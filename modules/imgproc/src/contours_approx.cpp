@@ -9,7 +9,7 @@
 #include <vector>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 
@@ -273,7 +273,7 @@ static void pass_cleanup(vector<ApproxItem>& ares, size_t start_idx)
 }  // namespace
 
 
-vector<Point> cv::approximateChainTC89(vector<schar> chain, const Point& origin, const int method)
+vector<Point> ncvslideio::approximateChainTC89(vector<schar> chain, const Point& origin, const int method)
 {
     if (chain.size() == 0)
     {
@@ -328,7 +328,7 @@ vector<Point> cv::approximateChainTC89(vector<schar> chain, const Point& origin,
             }
         }
 
-        if (method == cv::CHAIN_APPROX_TC89_L1)
+        if (method == ncvslideio::CHAIN_APPROX_TC89_L1)
         {
             // Pass 4.
             // Cleans remained couples of points

@@ -67,7 +67,7 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
             }
 
             if (!found_conv_algorithm)
-                CV_Error (cv::Error::GpuApiCallError, "cuDNN did not return a suitable algorithm for transpose convolution.");
+                CV_Error (ncvslideio::Error::GpuApiCallError, "cuDNN did not return a suitable algorithm for transpose convolution.");
 #else
             CUDA4DNN_CHECK_CUDNN(
                 cudnnGetConvolutionBackwardDataAlgorithm(

@@ -49,7 +49,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     template<class T> struct DynamicSharedMem
     {

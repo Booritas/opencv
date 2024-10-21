@@ -298,7 +298,7 @@ CV_INLINE double cvRandReal( CvRNG* rng )
 
 #ifdef __cplusplus
 typedef struct _IplImage IplImage;
-CV_EXPORTS _IplImage cvIplImage(const cv::Mat& m);
+CV_EXPORTS _IplImage cvIplImage(const ncvslideio::Mat& m);
 #endif
 
 /** The IplImage is taken from the Intel Image Processing Library, in which the format is native. OpenCV
@@ -349,7 +349,7 @@ _IplImage
         memset(this, 0, sizeof(*this));  // valid for POD structure
         nSize = sizeof(IplImage);
     }
-    _IplImage(const cv::Mat& m) { *this = cvIplImage(m); }
+    _IplImage(const ncvslideio::Mat& m) { *this = cvIplImage(m); }
 #endif
 }
 IplImage;
@@ -437,7 +437,7 @@ IplConvKernelFP;
 
 #ifdef __cplusplus
 typedef struct CvMat CvMat;
-CV_INLINE CvMat cvMat(const cv::Mat& m);
+CV_INLINE CvMat cvMat(const ncvslideio::Mat& m);
 #endif
 
 /** Matrix elements are stored row by row. Element (i, j) (i - 0-based row index, j - 0-based column
@@ -488,7 +488,7 @@ typedef struct CvMat
 
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvMat() {}
-    CvMat(const cv::Mat& m) { *this = cvMat(m); }
+    CvMat(const ncvslideio::Mat& m) { *this = cvMat(m); }
 #endif
 }
 CvMat;
@@ -553,13 +553,13 @@ CV_INLINE CvMat cvMat( int rows, int cols, int type, void* data CV_DEFAULT(NULL)
 
 #ifdef __cplusplus
 
-CV_INLINE CvMat cvMat(const cv::Mat& m)
+CV_INLINE CvMat cvMat(const ncvslideio::Mat& m)
 {
     CvMat self;
     CV_DbgAssert(m.dims <= 2);
     self = cvMat(m.rows, m.dims == 1 ? 1 : m.cols, m.type(), m.data);
     self.step = (int)m.step[0];
-    self.type = (self.type & ~cv::Mat::CONTINUOUS_FLAG) | (m.flags & cv::Mat::CONTINUOUS_FLAG);
+    self.type = (self.type & ~ncvslideio::Mat::CONTINUOUS_FLAG) | (m.flags & ncvslideio::Mat::CONTINUOUS_FLAG);
     return self;
 }
 CV_INLINE CvMat cvMat()
@@ -663,7 +663,7 @@ CV_INLINE int cvIplDepth( int type )
 
 #ifdef __cplusplus
 typedef struct CvMatND CvMatND;
-CV_EXPORTS CvMatND cvMatND(const cv::Mat& m);
+CV_EXPORTS CvMatND cvMatND(const ncvslideio::Mat& m);
 #endif
 
 /**
@@ -696,7 +696,7 @@ CvMatND
 
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvMatND() {}
-    CvMatND(const cv::Mat& m) { *this = cvMatND(m); }
+    CvMatND(const ncvslideio::Mat& m) { *this = cvMatND(m); }
 #endif
 }
 CvMatND;
@@ -742,13 +742,13 @@ typedef struct CvSparseMat
     int size[CV_MAX_DIM];
 
 #ifdef __cplusplus
-    CV_EXPORTS void copyToSparseMat(cv::SparseMat& m) const;
+    CV_EXPORTS void copyToSparseMat(ncvslideio::SparseMat& m) const;
 #endif
 }
 CvSparseMat;
 
 #ifdef __cplusplus
-CV_EXPORTS CvSparseMat* cvCreateSparseMat(const cv::SparseMat& m);
+CV_EXPORTS CvSparseMat* cvCreateSparseMat(const ncvslideio::SparseMat& m);
 #endif
 
 #define CV_IS_SPARSE_MAT_HDR(mat) \
@@ -849,11 +849,11 @@ typedef struct CvRect
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvRect(int _x = 0, int _y = 0, int w = 0, int h = 0): x(_x), y(_y), width(w), height(h) {}
     template<typename _Tp>
-    CvRect(const cv::Rect_<_Tp>& r): x(cv::saturate_cast<int>(r.x)), y(cv::saturate_cast<int>(r.y)), width(cv::saturate_cast<int>(r.width)), height(cv::saturate_cast<int>(r.height)) {}
+    CvRect(const ncvslideio::Rect_<_Tp>& r): x(ncvslideio::saturate_cast<int>(r.x)), y(ncvslideio::saturate_cast<int>(r.y)), width(ncvslideio::saturate_cast<int>(r.width)), height(ncvslideio::saturate_cast<int>(r.height)) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Rect_<_Tp>() const { return cv::Rect_<_Tp>((_Tp)x, (_Tp)y, (_Tp)width, (_Tp)height); }
+    operator ncvslideio::Rect_<_Tp>() const { return ncvslideio::Rect_<_Tp>((_Tp)x, (_Tp)y, (_Tp)width, (_Tp)height); }
 #endif
 }
 CvRect;
@@ -869,7 +869,7 @@ CV_INLINE  CvRect  cvRect( int x, int y, int width, int height )
     return r;
 }
 #ifdef __cplusplus
-CV_INLINE CvRect cvRect(const cv::Rect& rc) { return cvRect(rc.x, rc.y, rc.width, rc.height); }
+CV_INLINE CvRect cvRect(const ncvslideio::Rect& rc) { return cvRect(rc.x, rc.y, rc.width, rc.height); }
 #endif
 
 CV_INLINE  IplROI  cvRectToROI( CvRect rect, int coi )
@@ -907,10 +907,10 @@ typedef struct CvTermCriteria
     double epsilon;
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvTermCriteria(int _type = 0, int _iter = 0, double _eps = 0) : type(_type), max_iter(_iter), epsilon(_eps)  {}
-    CvTermCriteria(const cv::TermCriteria& t) : type(t.type), max_iter(t.maxCount), epsilon(t.epsilon)  {}
+    CvTermCriteria(const ncvslideio::TermCriteria& t) : type(t.type), max_iter(t.maxCount), epsilon(t.epsilon)  {}
 #endif
 #ifdef __cplusplus
-    operator cv::TermCriteria() const { return cv::TermCriteria(type, max_iter, epsilon); }
+    operator ncvslideio::TermCriteria() const { return ncvslideio::TermCriteria(type, max_iter, epsilon); }
 #endif
 }
 CvTermCriteria;
@@ -925,7 +925,7 @@ CV_INLINE  CvTermCriteria  cvTermCriteria( int type, int max_iter, double epsilo
     return t;
 }
 #ifdef __cplusplus
-CV_INLINE CvTermCriteria cvTermCriteria(const cv::TermCriteria& t) { return cvTermCriteria(t.type, t.maxCount, t.epsilon); }
+CV_INLINE CvTermCriteria cvTermCriteria(const ncvslideio::TermCriteria& t) { return cvTermCriteria(t.type, t.maxCount, t.epsilon); }
 #endif
 
 
@@ -950,11 +950,11 @@ typedef struct CvPoint
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvPoint(int _x = 0, int _y = 0): x(_x), y(_y) {}
     template<typename _Tp>
-    CvPoint(const cv::Point_<_Tp>& pt): x((int)pt.x), y((int)pt.y) {}
+    CvPoint(const ncvslideio::Point_<_Tp>& pt): x((int)pt.x), y((int)pt.y) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Point_<_Tp>() const { return cv::Point_<_Tp>(cv::saturate_cast<_Tp>(x), cv::saturate_cast<_Tp>(y)); }
+    operator ncvslideio::Point_<_Tp>() const { return ncvslideio::Point_<_Tp>(ncvslideio::saturate_cast<_Tp>(x), ncvslideio::saturate_cast<_Tp>(y)); }
 #endif
 }
 CvPoint;
@@ -970,7 +970,7 @@ CV_INLINE  CvPoint  cvPoint( int x, int y )
     return p;
 }
 #ifdef __cplusplus
-CV_INLINE CvPoint cvPoint(const cv::Point& pt) { return cvPoint(pt.x, pt.y); }
+CV_INLINE CvPoint cvPoint(const ncvslideio::Point& pt) { return cvPoint(pt.x, pt.y); }
 #endif
 
 typedef struct CvPoint2D32f
@@ -992,11 +992,11 @@ typedef struct CvPoint2D32f
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvPoint2D32f(float _x = 0, float _y = 0): x(_x), y(_y) {}
     template<typename _Tp>
-    CvPoint2D32f(const cv::Point_<_Tp>& pt): x((float)pt.x), y((float)pt.y) {}
+    CvPoint2D32f(const ncvslideio::Point_<_Tp>& pt): x((float)pt.x), y((float)pt.y) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Point_<_Tp>() const { return cv::Point_<_Tp>(cv::saturate_cast<_Tp>(x), cv::saturate_cast<_Tp>(y)); }
+    operator ncvslideio::Point_<_Tp>() const { return ncvslideio::Point_<_Tp>(ncvslideio::saturate_cast<_Tp>(x), ncvslideio::saturate_cast<_Tp>(y)); }
 #endif
 }
 CvPoint2D32f;
@@ -1014,7 +1014,7 @@ CV_INLINE  CvPoint2D32f  cvPoint2D32f( double x, double y )
 
 #ifdef __cplusplus
 template<typename _Tp>
-CvPoint2D32f cvPoint2D32f(const cv::Point_<_Tp>& pt)
+CvPoint2D32f cvPoint2D32f(const ncvslideio::Point_<_Tp>& pt)
 {
 #if !(defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus))
     CvPoint2D32f p = { (float)pt.x, (float)pt.y };
@@ -1063,11 +1063,11 @@ typedef struct CvPoint3D32f
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvPoint3D32f(float _x = 0, float _y = 0, float _z = 0): x(_x), y(_y), z(_z) {}
     template<typename _Tp>
-    CvPoint3D32f(const cv::Point3_<_Tp>& pt): x((float)pt.x), y((float)pt.y), z((float)pt.z) {}
+    CvPoint3D32f(const ncvslideio::Point3_<_Tp>& pt): x((float)pt.x), y((float)pt.y), z((float)pt.z) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Point3_<_Tp>() const { return cv::Point3_<_Tp>(cv::saturate_cast<_Tp>(x), cv::saturate_cast<_Tp>(y), cv::saturate_cast<_Tp>(z)); }
+    operator ncvslideio::Point3_<_Tp>() const { return ncvslideio::Point3_<_Tp>(ncvslideio::saturate_cast<_Tp>(x), ncvslideio::saturate_cast<_Tp>(y), ncvslideio::saturate_cast<_Tp>(z)); }
 #endif
 }
 CvPoint3D32f;
@@ -1085,7 +1085,7 @@ CV_INLINE  CvPoint3D32f  cvPoint3D32f( double x, double y, double z )
 
 #ifdef __cplusplus
 template<typename _Tp>
-CvPoint3D32f cvPoint3D32f(const cv::Point3_<_Tp>& pt)
+CvPoint3D32f cvPoint3D32f(const ncvslideio::Point3_<_Tp>& pt)
 {
 #if !(defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus))
     CvPoint3D32f p  = { (float)pt.x, (float)pt.y, (float)pt.z };
@@ -1173,11 +1173,11 @@ typedef struct CvSize
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvSize(int w = 0, int h = 0): width(w), height(h) {}
     template<typename _Tp>
-    CvSize(const cv::Size_<_Tp>& sz): width(cv::saturate_cast<int>(sz.width)), height(cv::saturate_cast<int>(sz.height)) {}
+    CvSize(const ncvslideio::Size_<_Tp>& sz): width(ncvslideio::saturate_cast<int>(sz.width)), height(ncvslideio::saturate_cast<int>(sz.height)) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Size_<_Tp>() const { return cv::Size_<_Tp>(cv::saturate_cast<_Tp>(width), cv::saturate_cast<_Tp>(height)); }
+    operator ncvslideio::Size_<_Tp>() const { return ncvslideio::Size_<_Tp>(ncvslideio::saturate_cast<_Tp>(width), ncvslideio::saturate_cast<_Tp>(height)); }
 #endif
 }
 CvSize;
@@ -1194,7 +1194,7 @@ CV_INLINE  CvSize  cvSize( int width, int height )
 }
 
 #ifdef __cplusplus
-CV_INLINE CvSize cvSize(const cv::Size& sz)
+CV_INLINE CvSize cvSize(const ncvslideio::Size& sz)
 {
 #if !(defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus))
     CvSize s = { sz.width, sz.height };
@@ -1224,11 +1224,11 @@ typedef struct CvSize2D32f
 #elif defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvSize2D32f(float w = 0, float h = 0): width(w), height(h) {}
     template<typename _Tp>
-    CvSize2D32f(const cv::Size_<_Tp>& sz): width(cv::saturate_cast<float>(sz.width)), height(cv::saturate_cast<float>(sz.height)) {}
+    CvSize2D32f(const ncvslideio::Size_<_Tp>& sz): width(ncvslideio::saturate_cast<float>(sz.width)), height(ncvslideio::saturate_cast<float>(sz.height)) {}
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Size_<_Tp>() const { return cv::Size_<_Tp>(cv::saturate_cast<_Tp>(width), cv::saturate_cast<_Tp>(height)); }
+    operator ncvslideio::Size_<_Tp>() const { return ncvslideio::Size_<_Tp>(ncvslideio::saturate_cast<_Tp>(width), ncvslideio::saturate_cast<_Tp>(height)); }
 #endif
 }
 CvSize2D32f;
@@ -1245,7 +1245,7 @@ CV_INLINE  CvSize2D32f  cvSize2D32f( double width, double height )
 }
 #ifdef __cplusplus
 template<typename _Tp>
-CvSize2D32f cvSize2D32f(const cv::Size_<_Tp>& sz)
+CvSize2D32f cvSize2D32f(const ncvslideio::Size_<_Tp>& sz)
 {
 #if !(defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus))
     CvSize2D32f s = { (float)sz.width, (float)sz.height };
@@ -1267,10 +1267,10 @@ typedef struct CvBox2D
 
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvBox2D(CvPoint2D32f c = CvPoint2D32f(), CvSize2D32f s = CvSize2D32f(), float a = 0) : center(c), size(s), angle(a) {}
-    CvBox2D(const cv::RotatedRect& rr) : center(rr.center), size(rr.size), angle(rr.angle) {}
+    CvBox2D(const ncvslideio::RotatedRect& rr) : center(rr.center), size(rr.size), angle(rr.angle) {}
 #endif
 #ifdef __cplusplus
-    operator cv::RotatedRect() const { return cv::RotatedRect(center, size, angle); }
+    operator ncvslideio::RotatedRect() const { return ncvslideio::RotatedRect(center, size, angle); }
 #endif
 }
 CvBox2D;
@@ -1285,7 +1285,7 @@ CV_INLINE CvBox2D cvBox2D(CvPoint2D32f c = CvPoint2D32f(), CvSize2D32f s = CvSiz
     self.angle = a;
     return self;
 }
-CV_INLINE CvBox2D cvBox2D(const cv::RotatedRect& rr)
+CV_INLINE CvBox2D cvBox2D(const ncvslideio::RotatedRect& rr)
 {
     CvBox2D self;
     self.center = cvPoint2D32f(rr.center);
@@ -1335,8 +1335,8 @@ typedef struct CvSlice
 #endif
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus) && !defined(__CUDACC__)
     CvSlice(int start = 0, int end = 0) : start_index(start), end_index(end) {}
-    CvSlice(const cv::Range& r) { *this = (r.start != INT_MIN && r.end != INT_MAX) ? CvSlice(r.start, r.end) : CvSlice(0, CV_WHOLE_SEQ_END_INDEX); }
-    operator cv::Range() const { return (start_index == 0 && end_index == CV_WHOLE_SEQ_END_INDEX ) ? cv::Range::all() : cv::Range(start_index, end_index); }
+    CvSlice(const ncvslideio::Range& r) { *this = (r.start != INT_MIN && r.end != INT_MAX) ? CvSlice(r.start, r.end) : CvSlice(0, CV_WHOLE_SEQ_END_INDEX); }
+    operator ncvslideio::Range() const { return (start_index == 0 && end_index == CV_WHOLE_SEQ_END_INDEX ) ? ncvslideio::Range::all() : ncvslideio::Range(start_index, end_index); }
 #endif
 }
 CvSlice;
@@ -1352,7 +1352,7 @@ CV_INLINE  CvSlice  cvSlice( int start, int end )
 }
 
 #if defined(__cplusplus)
-CV_INLINE  CvSlice  cvSlice(const cv::Range& r)
+CV_INLINE  CvSlice  cvSlice(const ncvslideio::Range& r)
 {
     CvSlice slice = (r.start != INT_MIN && r.end != INT_MAX) ? cvSlice(r.start, r.end) : cvSlice(0, CV_WHOLE_SEQ_END_INDEX);
     return slice;
@@ -1382,9 +1382,9 @@ typedef struct CvScalar
     CvScalar() {}
     CvScalar(double d0, double d1 = 0, double d2 = 0, double d3 = 0) { val[0] = d0; val[1] = d1; val[2] = d2; val[3] = d3; }
     template<typename _Tp>
-    CvScalar(const cv::Scalar_<_Tp>& s) { val[0] = s.val[0]; val[1] = s.val[1]; val[2] = s.val[2]; val[3] = s.val[3]; }
+    CvScalar(const ncvslideio::Scalar_<_Tp>& s) { val[0] = s.val[0]; val[1] = s.val[1]; val[2] = s.val[2]; val[3] = s.val[3]; }
     template<typename _Tp, int cn>
-    CvScalar(const cv::Vec<_Tp, cn>& v)
+    CvScalar(const ncvslideio::Vec<_Tp, cn>& v)
     {
         int i;
         for( i = 0; i < (cn < 4 ? cn : 4); i++ ) val[i] = v.val[i];
@@ -1393,7 +1393,7 @@ typedef struct CvScalar
 #endif
 #ifdef __cplusplus
     template<typename _Tp>
-    operator cv::Scalar_<_Tp>() const { return cv::Scalar_<_Tp>(cv::saturate_cast<_Tp>(val[0]), cv::saturate_cast<_Tp>(val[1]), cv::saturate_cast<_Tp>(val[2]), cv::saturate_cast<_Tp>(val[3])); }
+    operator ncvslideio::Scalar_<_Tp>() const { return ncvslideio::Scalar_<_Tp>(ncvslideio::saturate_cast<_Tp>(val[0]), ncvslideio::saturate_cast<_Tp>(val[1]), ncvslideio::saturate_cast<_Tp>(val[2]), ncvslideio::saturate_cast<_Tp>(val[3])); }
 #endif
 }
 CvScalar;
@@ -1422,7 +1422,7 @@ CV_INLINE CvScalar cvScalar()
     scalar.val[0] = scalar.val[1] = scalar.val[2] = scalar.val[3] = 0;
     return scalar;
 }
-CV_INLINE CvScalar cvScalar(const cv::Scalar& s)
+CV_INLINE CvScalar cvScalar(const ncvslideio::Scalar& s)
 {
 #if !(defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus))
     CvScalar scalar = CV_STRUCT_INITIALIZER;

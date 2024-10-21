@@ -76,7 +76,7 @@
 
 //! @cond IGNORED
 
-namespace cv
+namespace ncvslideio
 {
     class BlockedRange
     {
@@ -109,7 +109,7 @@ namespace cv
     // Returns a static string if there is a parallel framework,
     // NULL otherwise.
     CV_EXPORTS const char* currentParallelFramework();
-} //namespace cv
+} //namespace ncvslideio
 
 /****************************************************************************************\
 *                                  Common declarations                                   *
@@ -135,15 +135,15 @@ static inline int cvAlign( int size, int align )
 }
 
 #ifdef IPL_DEPTH_8U
-static inline cv::Size cvGetMatSize( const CvMat* mat )
+static inline ncvslideio::Size cvGetMatSize( const CvMat* mat )
 {
-    return cv::Size(mat->cols, mat->rows);
+    return ncvslideio::Size(mat->cols, mat->rows);
 }
 #endif
 
-namespace cv
+namespace ncvslideio
 {
-CV_EXPORTS void scalarToRawData(const cv::Scalar& s, void* buf, int type, int unroll_to = 0);
+CV_EXPORTS void scalarToRawData(const ncvslideio::Scalar& s, void* buf, int type, int unroll_to = 0);
 
 //! Allocate memory buffers which will not be freed, ease filtering memcheck issues. Uses fastMalloc() call.
 CV_EXPORTS void* allocSingletonBuffer(size_t size);
@@ -213,8 +213,8 @@ T* allocSingletonNew() { return new(allocSingletonNewBuffer(sizeof(T))) T(); }
 // Temporary disabled named IPP region. Performance
 #define IPP_DISABLE_PERF_COPYMAKE       1 // performance variations
 #define IPP_DISABLE_PERF_LUT            1 // there are no performance benefits (PR #2653)
-#define IPP_DISABLE_PERF_TRUE_DIST_MT   1 // cv::distanceTransform OpenCV MT performance is better
-#define IPP_DISABLE_PERF_CANNY_MT       1 // cv::Canny OpenCV MT performance is better
+#define IPP_DISABLE_PERF_TRUE_DIST_MT   1 // ncvslideio::distanceTransform OpenCV MT performance is better
+#define IPP_DISABLE_PERF_CANNY_MT       1 // ncvslideio::Canny OpenCV MT performance is better
 
 #ifdef HAVE_IPP
 #include "ippversion.h"
@@ -261,7 +261,7 @@ T* allocSingletonNew() { return new(allocSingletonNewBuffer(sizeof(T))) T(); }
 #define CV_IPP_MALLOC(SIZE) ippMalloc((int)SIZE)
 #endif
 
-#define setIppErrorStatus() cv::ipp::setIppStatus(-1, CV_Func, __FILE__, __LINE__)
+#define setIppErrorStatus() ncvslideio::ipp::setIppStatus(-1, CV_Func, __FILE__, __LINE__)
 
 #if IPP_VERSION_X100 >= 201700
 #define ippCPUID_AVX512_SKX (ippCPUID_AVX512F|ippCPUID_AVX512CD|ippCPUID_AVX512VL|ippCPUID_AVX512BW|ippCPUID_AVX512DQ)
@@ -271,7 +271,7 @@ T* allocSingletonNew() { return new(allocSingletonNewBuffer(sizeof(T))) T(); }
 #define ippCPUID_AVX512_KNL 0xFFFFFFFF
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace ipp
 {
@@ -285,7 +285,7 @@ static inline IppiSize ippiSize(size_t width, size_t height)
     return size;
 }
 
-static inline IppiSize ippiSize(const cv::Size & _size)
+static inline IppiSize ippiSize(const ncvslideio::Size & _size)
 {
     IppiSize size = { _size.width, _size.height };
     return size;
@@ -298,14 +298,14 @@ static inline IppiSizeL ippiSizeL(size_t width, size_t height)
     return size;
 }
 
-static inline IppiSizeL ippiSizeL(const cv::Size & _size)
+static inline IppiSizeL ippiSizeL(const ncvslideio::Size & _size)
 {
     IppiSizeL size = { _size.width, _size.height };
     return size;
 }
 #endif
 
-static inline IppiPoint ippiPoint(const cv::Point & _point)
+static inline IppiPoint ippiPoint(const ncvslideio::Point & _point)
 {
     IppiPoint point = { _point.x, _point.y };
     return point;
@@ -319,10 +319,10 @@ static inline IppiPoint ippiPoint(int x, int y)
 
 static inline IppiBorderType ippiGetBorderType(int borderTypeNI)
 {
-    return borderTypeNI == cv::BORDER_CONSTANT    ? ippBorderConst   :
-           borderTypeNI == cv::BORDER_TRANSPARENT ? ippBorderTransp  :
-           borderTypeNI == cv::BORDER_REPLICATE   ? ippBorderRepl    :
-           borderTypeNI == cv::BORDER_REFLECT_101 ? ippBorderMirror  :
+    return borderTypeNI == ncvslideio::BORDER_CONSTANT    ? ippBorderConst   :
+           borderTypeNI == ncvslideio::BORDER_TRANSPARENT ? ippBorderTransp  :
+           borderTypeNI == ncvslideio::BORDER_REPLICATE   ? ippBorderRepl    :
+           borderTypeNI == ncvslideio::BORDER_REFLECT_101 ? ippBorderMirror  :
            (IppiBorderType)-1;
 }
 
@@ -352,7 +352,7 @@ static inline IppDataType ippiGetDataType(int depth)
 
 static inline int ippiSuggestThreadsNum(size_t width, size_t height, size_t elemSize, double multiplier)
 {
-    int threads = cv::getNumThreads();
+    int threads = ncvslideio::getNumThreads();
     if(threads > 1 && height >= 64)
     {
         size_t opMemory = (int)(width*height*elemSize*multiplier);
@@ -368,7 +368,7 @@ static inline int ippiSuggestThreadsNum(size_t width, size_t height, size_t elem
     return 1;
 }
 
-static inline int ippiSuggestThreadsNum(const cv::Mat &image, double multiplier)
+static inline int ippiSuggestThreadsNum(const ncvslideio::Mat &image, double multiplier)
 {
     return ippiSuggestThreadsNum(image.cols, image.rows, image.elemSize(), multiplier);
 }
@@ -382,7 +382,7 @@ static inline bool ippiCheckAnchor(int x, int y, int kernelWidth, int kernelHeig
         return 1;
 }
 
-static inline ::ipp::IwiSize ippiGetSize(const cv::Size & size)
+static inline ::ipp::IwiSize ippiGetSize(const ncvslideio::Size & size)
 {
     return ::ipp::IwiSize((IwSize)size.width, (IwSize)size.height);
 }
@@ -396,13 +396,13 @@ static inline IwiDerivativeType ippiGetDerivType(int dx, int dy, bool nvert)
            (IwiDerivativeType)-1;
 }
 
-static inline void ippiGetImage(const cv::Mat &src, ::ipp::IwiImage &dst)
+static inline void ippiGetImage(const ncvslideio::Mat &src, ::ipp::IwiImage &dst)
 {
     ::ipp::IwiBorderSize inMemBorder;
     if(src.isSubmatrix()) // already have physical border
     {
-        cv::Size  origSize;
-        cv::Point offset;
+        ncvslideio::Size  origSize;
+        ncvslideio::Point offset;
         src.locateROI(origSize, offset);
 
         inMemBorder.left   = (IwSize)offset.x;
@@ -414,7 +414,7 @@ static inline void ippiGetImage(const cv::Mat &src, ::ipp::IwiImage &dst)
     dst.Init(ippiSize(src.size()), ippiGetDataType(src.depth()), src.channels(), inMemBorder, (void*)src.ptr(), src.step);
 }
 
-static inline ::ipp::IwiImage ippiGetImage(const cv::Mat &src)
+static inline ::ipp::IwiImage ippiGetImage(const ncvslideio::Mat &src)
 {
     ::ipp::IwiImage image;
     ippiGetImage(src, image);
@@ -424,11 +424,11 @@ static inline ::ipp::IwiImage ippiGetImage(const cv::Mat &src)
 static inline IppiBorderType ippiGetBorder(::ipp::IwiImage &image, int ocvBorderType, ipp::IwiBorderSize &borderSize)
 {
     int            inMemFlags = 0;
-    IppiBorderType border     = ippiGetBorderType(ocvBorderType & ~cv::BORDER_ISOLATED);
+    IppiBorderType border     = ippiGetBorderType(ocvBorderType & ~ncvslideio::BORDER_ISOLATED);
     if((int)border == -1)
         return (IppiBorderType)0;
 
-    if(!(ocvBorderType & cv::BORDER_ISOLATED))
+    if(!(ocvBorderType & ncvslideio::BORDER_ISOLATED))
     {
         if(image.m_inMemSize.left)
         {
@@ -473,7 +473,7 @@ static inline IppiBorderType ippiGetBorder(::ipp::IwiImage &image, int ocvBorder
     return (IppiBorderType)(border|inMemFlags);
 }
 
-static inline ::ipp::IwValueFloat ippiGetValue(const cv::Scalar &scalar)
+static inline ::ipp::IwValueFloat ippiGetValue(const ncvslideio::Scalar &scalar)
 {
     return ::ipp::IwValueFloat(scalar[0], scalar[1], scalar[2], scalar[3]);
 }
@@ -543,7 +543,7 @@ private:
 struct __IppInitializer__                               \
 {                                                       \
     __IppInitializer__()                                \
-    {IPP_INITIALIZER(cv::ipp::getIppFeatures())}        \
+    {IPP_INITIALIZER(ncvslideio::ipp::getIppFeatures())}        \
 };                                                      \
 static struct __IppInitializer__ __ipp_initializer__;
 #else
@@ -554,7 +554,7 @@ static struct __IppInitializer__ __ipp_initializer__;
 #define IPP_INITIALIZER_AUTO
 #endif
 
-#define CV_IPP_CHECK_COND (cv::ipp::useIPP())
+#define CV_IPP_CHECK_COND (ncvslideio::ipp::useIPP())
 #define CV_IPP_CHECK() if(CV_IPP_CHECK_COND)
 
 #ifdef HAVE_IPP
@@ -562,7 +562,7 @@ static struct __IppInitializer__ __ipp_initializer__;
 #ifdef CV_IPP_RUN_VERBOSE
 #define CV_IPP_RUN_(condition, func, ...)                                   \
     {                                                                       \
-        if (cv::ipp::useIPP() && (condition) && (func))                     \
+        if (ncvslideio::ipp::useIPP() && (condition) && (func))                     \
         {                                                                   \
             printf("%s: IPP implementation is running\n", CV_Func);         \
             fflush(stdout);                                                 \
@@ -578,7 +578,7 @@ static struct __IppInitializer__ __ipp_initializer__;
 #elif defined CV_IPP_RUN_ASSERT
 #define CV_IPP_RUN_(condition, func, ...)                                   \
     {                                                                       \
-        if (cv::ipp::useIPP() && (condition))                               \
+        if (ncvslideio::ipp::useIPP() && (condition))                               \
         {                                                                   \
             CV__TRACE_REGION_("IPP:" #func, CV_TRACE_NS::details::REGION_FLAG_IMPL_IPP) \
             if(func)                                                        \
@@ -588,14 +588,14 @@ static struct __IppInitializer__ __ipp_initializer__;
             else                                                            \
             {                                                               \
                 setIppErrorStatus();                                        \
-                CV_Error(cv::Error::StsAssert, #func);                      \
+                CV_Error(ncvslideio::Error::StsAssert, #func);                      \
             }                                                               \
             return __VA_ARGS__;                                             \
         }                                                                   \
     }
 #else
 #define CV_IPP_RUN_(condition, func, ...)                                   \
-        if (cv::ipp::useIPP() && (condition))                               \
+        if (ncvslideio::ipp::useIPP() && (condition))                               \
         {                                                                   \
             CV__TRACE_REGION_("IPP:" #func, CV_TRACE_NS::details::REGION_FLAG_IMPL_IPP) \
             if(func)                                                        \
@@ -658,7 +658,7 @@ typedef enum CvStatus
 CvStatus;
 
 #ifdef ENABLE_INSTRUMENTATION
-namespace cv
+namespace ncvslideio
 {
 namespace instr
 {
@@ -718,24 +718,24 @@ CV_EXPORTS InstrNode*   getCurrentNode();
 #endif
 
 // Instrument region
-#define CV_INSTRUMENT_REGION_META(NAME, ALWAYS_EXPAND, TYPE, IMPL)        ::cv::instr::IntrumentationRegion  CVAUX_CONCAT(__instr_region__, __LINE__) (NAME, __FILE__, __LINE__, CV_INSTRUMENT_GET_RETURN_ADDRESS, ALWAYS_EXPAND, TYPE, IMPL);
+#define CV_INSTRUMENT_REGION_META(NAME, ALWAYS_EXPAND, TYPE, IMPL)        ::ncvslideio::instr::IntrumentationRegion  CVAUX_CONCAT(__instr_region__, __LINE__) (NAME, __FILE__, __LINE__, CV_INSTRUMENT_GET_RETURN_ADDRESS, ALWAYS_EXPAND, TYPE, IMPL);
 #define CV_INSTRUMENT_REGION_CUSTOM_META(NAME, ALWAYS_EXPAND, TYPE, IMPL)\
     void *CVAUX_CONCAT(__curr_address__, __LINE__) = [&]() {return CV_INSTRUMENT_GET_RETURN_ADDRESS;}();\
-    ::cv::instr::IntrumentationRegion CVAUX_CONCAT(__instr_region__, __LINE__) (NAME, __FILE__, __LINE__, CVAUX_CONCAT(__curr_address__, __LINE__), false, ::cv::instr::TYPE_GENERAL, ::cv::instr::IMPL_PLAIN);
+    ::ncvslideio::instr::IntrumentationRegion CVAUX_CONCAT(__instr_region__, __LINE__) (NAME, __FILE__, __LINE__, CVAUX_CONCAT(__curr_address__, __LINE__), false, ::ncvslideio::instr::TYPE_GENERAL, ::ncvslideio::instr::IMPL_PLAIN);
 // Instrument functions with non-void return type
 #define CV_INSTRUMENT_FUN_RT_META(TYPE, IMPL, ERROR_COND, FUN, ...) ([&]()\
 {\
-    if(::cv::instr::useInstrumentation()){\
-        ::cv::instr::IntrumentationRegion __instr__(#FUN, __FILE__, __LINE__, NULL, false, TYPE, IMPL);\
+    if(::ncvslideio::instr::useInstrumentation()){\
+        ::ncvslideio::instr::IntrumentationRegion __instr__(#FUN, __FILE__, __LINE__, NULL, false, TYPE, IMPL);\
         try{\
             auto instrStatus = ((FUN)(__VA_ARGS__));\
             if(ERROR_COND){\
-                ::cv::instr::getCurrentNode()->m_payload.m_funError = true;\
+                ::ncvslideio::instr::getCurrentNode()->m_payload.m_funError = true;\
                 CV_INSTRUMENT_MARK_META(IMPL, #FUN " - BadExit");\
             }\
             return instrStatus;\
         }catch(...){\
-            ::cv::instr::getCurrentNode()->m_payload.m_funError = true;\
+            ::ncvslideio::instr::getCurrentNode()->m_payload.m_funError = true;\
             CV_INSTRUMENT_MARK_META(IMPL, #FUN " - BadExit");\
             throw;\
         }\
@@ -746,12 +746,12 @@ CV_EXPORTS InstrNode*   getCurrentNode();
 // Instrument functions with void return type
 #define CV_INSTRUMENT_FUN_RV_META(TYPE, IMPL, FUN, ...) ([&]()\
 {\
-    if(::cv::instr::useInstrumentation()){\
-        ::cv::instr::IntrumentationRegion __instr__(#FUN, __FILE__, __LINE__, NULL, false, TYPE, IMPL);\
+    if(::ncvslideio::instr::useInstrumentation()){\
+        ::ncvslideio::instr::IntrumentationRegion __instr__(#FUN, __FILE__, __LINE__, NULL, false, TYPE, IMPL);\
         try{\
             (FUN)(__VA_ARGS__);\
         }catch(...){\
-            ::cv::instr::getCurrentNode()->m_payload.m_funError = true;\
+            ::ncvslideio::instr::getCurrentNode()->m_payload.m_funError = true;\
             CV_INSTRUMENT_MARK_META(IMPL, #FUN "- BadExit");\
             throw;\
         }\
@@ -760,33 +760,33 @@ CV_EXPORTS InstrNode*   getCurrentNode();
     }\
 }())
 // Instrumentation information marker
-#define CV_INSTRUMENT_MARK_META(IMPL, NAME, ...) {::cv::instr::IntrumentationRegion __instr_mark__(NAME, __FILE__, __LINE__, NULL, false, ::cv::instr::TYPE_MARKER, IMPL);}
+#define CV_INSTRUMENT_MARK_META(IMPL, NAME, ...) {::ncvslideio::instr::IntrumentationRegion __instr_mark__(NAME, __FILE__, __LINE__, NULL, false, ::ncvslideio::instr::TYPE_MARKER, IMPL);}
 
 ///// General instrumentation
 // General OpenCV region instrumentation macro
-#define CV_INSTRUMENT_REGION_();             CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::cv::instr::TYPE_GENERAL, ::cv::instr::IMPL_PLAIN)
+#define CV_INSTRUMENT_REGION_();             CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::ncvslideio::instr::TYPE_GENERAL, ::ncvslideio::instr::IMPL_PLAIN)
 // Custom OpenCV region instrumentation macro
-#define CV_INSTRUMENT_REGION_NAME(NAME)     CV_INSTRUMENT_REGION_CUSTOM_META(NAME,  false, ::cv::instr::TYPE_GENERAL, ::cv::instr::IMPL_PLAIN)
+#define CV_INSTRUMENT_REGION_NAME(NAME)     CV_INSTRUMENT_REGION_CUSTOM_META(NAME,  false, ::ncvslideio::instr::TYPE_GENERAL, ::ncvslideio::instr::IMPL_PLAIN)
 // Instrumentation for parallel_for_ or other regions which forks and gathers threads
-#define CV_INSTRUMENT_REGION_MT_FORK();      CV_INSTRUMENT_REGION_META(__FUNCTION__, true,  ::cv::instr::TYPE_GENERAL, ::cv::instr::IMPL_PLAIN);
+#define CV_INSTRUMENT_REGION_MT_FORK();      CV_INSTRUMENT_REGION_META(__FUNCTION__, true,  ::ncvslideio::instr::TYPE_GENERAL, ::ncvslideio::instr::IMPL_PLAIN);
 
 ///// IPP instrumentation
 // Wrapper region instrumentation macro
-#define CV_INSTRUMENT_REGION_IPP();          CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::cv::instr::TYPE_WRAPPER, ::cv::instr::IMPL_IPP)
+#define CV_INSTRUMENT_REGION_IPP();          CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::ncvslideio::instr::TYPE_WRAPPER, ::ncvslideio::instr::IMPL_IPP)
 // Function instrumentation macro
-#define CV_INSTRUMENT_FUN_IPP(FUN, ...)     CV_INSTRUMENT_FUN_RT_META(::cv::instr::TYPE_FUN, ::cv::instr::IMPL_IPP, instrStatus < 0, FUN, __VA_ARGS__)
+#define CV_INSTRUMENT_FUN_IPP(FUN, ...)     CV_INSTRUMENT_FUN_RT_META(::ncvslideio::instr::TYPE_FUN, ::ncvslideio::instr::IMPL_IPP, instrStatus < 0, FUN, __VA_ARGS__)
 // Diagnostic markers
-#define CV_INSTRUMENT_MARK_IPP(NAME)        CV_INSTRUMENT_MARK_META(::cv::instr::IMPL_IPP, NAME)
+#define CV_INSTRUMENT_MARK_IPP(NAME)        CV_INSTRUMENT_MARK_META(::ncvslideio::instr::IMPL_IPP, NAME)
 
 ///// OpenCL instrumentation
 // Wrapper region instrumentation macro
-#define CV_INSTRUMENT_REGION_OPENCL();              CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::cv::instr::TYPE_WRAPPER, ::cv::instr::IMPL_OPENCL)
+#define CV_INSTRUMENT_REGION_OPENCL();              CV_INSTRUMENT_REGION_META(__FUNCTION__, false, ::ncvslideio::instr::TYPE_WRAPPER, ::ncvslideio::instr::IMPL_OPENCL)
 // OpenCL kernel compilation wrapper
-#define CV_INSTRUMENT_REGION_OPENCL_COMPILE(NAME)  CV_INSTRUMENT_REGION_META(NAME, false, ::cv::instr::TYPE_WRAPPER, ::cv::instr::IMPL_OPENCL)
+#define CV_INSTRUMENT_REGION_OPENCL_COMPILE(NAME)  CV_INSTRUMENT_REGION_META(NAME, false, ::ncvslideio::instr::TYPE_WRAPPER, ::ncvslideio::instr::IMPL_OPENCL)
 // OpenCL kernel run wrapper
-#define CV_INSTRUMENT_REGION_OPENCL_RUN(NAME)      CV_INSTRUMENT_REGION_META(NAME, false, ::cv::instr::TYPE_FUN, ::cv::instr::IMPL_OPENCL)
+#define CV_INSTRUMENT_REGION_OPENCL_RUN(NAME)      CV_INSTRUMENT_REGION_META(NAME, false, ::ncvslideio::instr::TYPE_FUN, ::ncvslideio::instr::IMPL_OPENCL)
 // Diagnostic markers
-#define CV_INSTRUMENT_MARK_OPENCL(NAME)            CV_INSTRUMENT_MARK_META(::cv::instr::IMPL_OPENCL, NAME)
+#define CV_INSTRUMENT_MARK_OPENCL(NAME)            CV_INSTRUMENT_MARK_META(::ncvslideio::instr::IMPL_OPENCL, NAME)
 #else
 #define CV_INSTRUMENT_REGION_META(...)
 
@@ -810,7 +810,7 @@ CV_EXPORTS InstrNode*   getCurrentNode();
 #define CV_INSTRUMENT_REGION() CV_INSTRUMENT_REGION_();
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 namespace utils {
 
@@ -841,7 +841,7 @@ Search directories:
 @note Implementation is not thread-safe.
 */
 CV_EXPORTS
-cv::String findDataFile(const cv::String& relative_path, bool required = true,
+ncvslideio::String findDataFile(const ncvslideio::String& relative_path, bool required = true,
                         const char* configuration_parameter = NULL);
 
 /** @overload
@@ -854,7 +854,7 @@ cv::String findDataFile(const cv::String& relative_path, bool required = true,
 @note Implementation is not thread-safe.
 */
 CV_EXPORTS
-cv::String findDataFile(const cv::String& relative_path,
+ncvslideio::String findDataFile(const ncvslideio::String& relative_path,
                         const char* configuration_parameter,
                         const std::vector<String>* search_paths,
                         const std::vector<String>* subdir_paths);
@@ -868,7 +868,7 @@ Passed paths are used in LIFO order.
 
 @note Implementation is not thread-safe.
 */
-CV_EXPORTS void addDataSearchPath(const cv::String& path);
+CV_EXPORTS void addDataSearchPath(const ncvslideio::String& path);
 
 /** @brief Append default search data sub directory
 
@@ -879,7 +879,7 @@ Passed subdirectories are used in LIFO order.
 
 @note Implementation is not thread-safe.
 */
-CV_EXPORTS void addDataSearchSubDirectory(const cv::String& subdir);
+CV_EXPORTS void addDataSearchSubDirectory(const ncvslideio::String& subdir);
 
 /** @brief Retrieve location of OpenCV libraries or current executable
  */
@@ -896,7 +896,7 @@ CV_EXPORTS bool getBinLocation(std::wstring& dst);
 //! @}
 
 } // namespace utils
-} // namespace cv
+} // namespace ncvslideio
 
 //! @endcond
 

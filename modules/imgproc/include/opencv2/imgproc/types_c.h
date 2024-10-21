@@ -80,7 +80,7 @@ enum SmoothMethod_c
     CV_MEDIAN =3,
     /** bilateral filter with a \f$\texttt{size1}\times\texttt{size1}\f$ square aperture, color
     sigma= sigma1 and spatial sigma= sigma2. If size1=0, the aperture square side is set to
-    cvRound(sigma2\*1.5)\*2+1. See cv::bilateralFilter */
+    cvRound(sigma2\*1.5)\*2+1. See ncvslideio::bilateralFilter */
     CV_BILATERAL =4
 };
 
@@ -413,7 +413,7 @@ typedef struct CvMoments
 
 #if defined(CV__ENABLE_C_API_CTORS) && defined(__cplusplus)
     CvMoments(){}
-    CvMoments(const cv::Moments& m)
+    CvMoments(const ncvslideio::Moments& m)
     {
         m00 = m.m00; m10 = m.m10; m01 = m.m01;
         m20 = m.m20; m11 = m.m11; m02 = m.m02;
@@ -423,9 +423,9 @@ typedef struct CvMoments
         double am00 = std::abs(m.m00);
         inv_sqrt_m00 = am00 > DBL_EPSILON ? 1./std::sqrt(am00) : 0;
     }
-    operator cv::Moments() const
+    operator ncvslideio::Moments() const
     {
-        return cv::Moments(m00, m10, m01, m20, m11, m02, m30, m21, m12, m03);
+        return ncvslideio::Moments(m00, m10, m01, m20, m11, m02, m30, m21, m12, m03);
     }
 #endif
 }
@@ -443,7 +443,7 @@ CV_INLINE CvMoments cvMoments()
 #endif
 }
 
-CV_INLINE CvMoments cvMoments(const cv::Moments& m)
+CV_INLINE CvMoments cvMoments(const ncvslideio::Moments& m)
 {
 #if !defined(CV__ENABLE_C_API_CTORS)
     double am00 = std::abs(m.m00);

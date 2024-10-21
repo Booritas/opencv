@@ -67,7 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "opencv2/core/softfloat.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /*----------------------------------------------------------------------------
@@ -249,19 +249,19 @@ softdouble::softdouble( const  int64_t a ) { *this =  i64_to_f64(a); }
 
 }
 
-int cvTrunc(const cv::softfloat& a) { return cv::f32_to_i32_r_minMag(a, false); }
-int cvRound(const cv::softfloat& a) { return cv::f32_to_i32(a, cv::round_near_even, false); }
-int cvFloor(const cv::softfloat& a) { return cv::f32_to_i32(a, cv::round_min, false); }
-int cvCeil (const cv::softfloat& a) { return cv::f32_to_i32(a, cv::round_max, false); }
+int cvTrunc(const ncvslideio::softfloat& a) { return ncvslideio::f32_to_i32_r_minMag(a, false); }
+int cvRound(const ncvslideio::softfloat& a) { return ncvslideio::f32_to_i32(a, ncvslideio::round_near_even, false); }
+int cvFloor(const ncvslideio::softfloat& a) { return ncvslideio::f32_to_i32(a, ncvslideio::round_min, false); }
+int cvCeil (const ncvslideio::softfloat& a) { return ncvslideio::f32_to_i32(a, ncvslideio::round_max, false); }
 
-int cvTrunc(const cv::softdouble& a) { return cv::f64_to_i32_r_minMag(a, false); }
-int cvRound(const cv::softdouble& a) { return cv::f64_to_i32(a, cv::round_near_even, false); }
-int cvFloor(const cv::softdouble& a) { return cv::f64_to_i32(a, cv::round_min, false); }
-int cvCeil (const cv::softdouble& a) { return cv::f64_to_i32(a, cv::round_max, false); }
+int cvTrunc(const ncvslideio::softdouble& a) { return ncvslideio::f64_to_i32_r_minMag(a, false); }
+int cvRound(const ncvslideio::softdouble& a) { return ncvslideio::f64_to_i32(a, ncvslideio::round_near_even, false); }
+int cvFloor(const ncvslideio::softdouble& a) { return ncvslideio::f64_to_i32(a, ncvslideio::round_min, false); }
+int cvCeil (const ncvslideio::softdouble& a) { return ncvslideio::f64_to_i32(a, ncvslideio::round_max, false); }
 
-int64_t cvRound64(const cv::softdouble& a) { return cv::f64_to_i64(a, cv::round_near_even, false); }
+int64_t cvRound64(const ncvslideio::softdouble& a) { return ncvslideio::f64_to_i64(a, ncvslideio::round_near_even, false); }
 
-namespace cv
+namespace ncvslideio
 {
 softdouble::operator softfloat() const { return f64_to_f32(*this); }
 

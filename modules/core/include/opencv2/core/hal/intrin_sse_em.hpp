@@ -5,7 +5,7 @@
 #ifndef OPENCV_HAL_INTRIN_SSE_EM_HPP
 #define OPENCV_HAL_INTRIN_SSE_EM_HPP
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -175,6 +175,6 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} // cv::
+} // ncvslideio::
 
 #endif // OPENCV_HAL_INTRIN_SSE_EM_HPP

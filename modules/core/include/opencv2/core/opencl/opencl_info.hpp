@@ -16,7 +16,7 @@
 #define DUMP_MESSAGE_STDOUT(...) do { std::cout << __VA_ARGS__ << std::endl; } while (false)
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 namespace {
 static std::string bytesToStringRepr(size_t value)
@@ -49,13 +49,13 @@ static std::string bytesToStringRepr(size_t value)
     return s;
 }
 
-static String getDeviceTypeString(const cv::ocl::Device& device)
+static String getDeviceTypeString(const ncvslideio::ocl::Device& device)
 {
-    if (device.type() == cv::ocl::Device::TYPE_CPU) {
+    if (device.type() == ncvslideio::ocl::Device::TYPE_CPU) {
         return "CPU";
     }
 
-    if (device.type() == cv::ocl::Device::TYPE_GPU) {
+    if (device.type() == ncvslideio::ocl::Device::TYPE_GPU) {
         if (device.hostUnifiedMemory()) {
             return "iGPU";
         } else {
@@ -69,7 +69,7 @@ static String getDeviceTypeString(const cv::ocl::Device& device)
 
 static void dumpOpenCLInformation()
 {
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
 
     try
     {
@@ -81,7 +81,7 @@ static void dumpOpenCLInformation()
         }
 
         std::vector<PlatformInfo> platforms;
-        cv::ocl::getPlatfomsInfo(platforms);
+        ncvslideio::ocl::getPlatfomsInfo(platforms);
         if (platforms.empty())
         {
             DUMP_MESSAGE_STDOUT("OpenCL is not available");

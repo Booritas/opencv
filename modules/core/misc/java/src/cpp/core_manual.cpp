@@ -13,9 +13,9 @@ namespace cv {
 void setErrorVerbosity(bool verbose)
 {
     if(verbose)
-        cv::redirectError(0);
+        ncvslideio::redirectError(0);
     else
-        cv::redirectError((cv::ErrorCallback)quietCallback);
+        ncvslideio::redirectError((ncvslideio::ErrorCallback)quietCallback);
 }
 
 }

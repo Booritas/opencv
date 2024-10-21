@@ -52,7 +52,7 @@
 #define CV_SIMD128_64F 1
 #define CV_SIMD128_FP16 0  // no native operations with FP16 type.
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED

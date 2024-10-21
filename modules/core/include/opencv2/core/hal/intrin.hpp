@@ -89,10 +89,10 @@ inline unsigned int trailingZeros32(unsigned int value) {
 }
 }
 
-// unlike HAL API, which is in cv::hal,
-// we put intrinsics into cv namespace to make its
+// unlike HAL API, which is in ncvslideio::hal,
+// we put intrinsics into ncvslideio namespace to make its
 // access from within opencv code more accessible
-namespace cv {
+namespace ncvslideio {
 
 namespace hal {
 
@@ -299,7 +299,7 @@ using namespace CV_CPU_OPTIMIZATION_HAL_NAMESPACE;
 
 //! @cond IGNORED
 
-namespace cv {
+namespace ncvslideio {
 
 #ifndef CV_DOXYGEN
 CV_CPU_OPTIMIZATION_HAL_NAMESPACE_BEGIN
@@ -977,7 +977,7 @@ namespace CV__SIMD_NAMESPACE {
 CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 #endif
 
-} // cv::
+} // ncvslideio::
 
 //! @endcond
 

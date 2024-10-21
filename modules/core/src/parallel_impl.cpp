@@ -70,7 +70,7 @@ DECLARE_CV_PAUSE
 #endif // CV_PAUSE
 
 
-namespace cv
+namespace ncvslideio
 {
 
 static int CV_ACTIVE_WAIT_PAUSE_LIMIT = (int)utils::getConfigurationParameterSizeT("OPENCV_THREAD_POOL_ACTIVE_WAIT_PAUSE_LIMIT", 16);  // iterations
@@ -277,7 +277,7 @@ public:
     static void* thread_loop_wrapper(void* thread_object)
     {
 #ifdef OPENCV_WITH_ITT
-        __itt_thread_set_name(cv::format("OpenCVThread-%03d", cv::utils::getThreadID()).c_str());
+        __itt_thread_set_name(ncvslideio::format("OpenCVThread-%03d", ncvslideio::utils::getThreadID()).c_str());
 #endif
         ((WorkerThread*)thread_object)->thread_body();
         return 0;
@@ -372,7 +372,7 @@ __attribute__((no_sanitize("thread")))
 #endif
 void WorkerThread::thread_body()
 {
-    (void)cv::utils::getThreadID(); // notify OpenCV about new thread
+    (void)ncvslideio::utils::getThreadID(); // notify OpenCV about new thread
     CV_LOG_VERBOSE(NULL, 5, "Thread: new thread: " << id);
 
     bool allow_active_wait = true;

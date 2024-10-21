@@ -62,7 +62,7 @@ namespace cv { namespace dnn { namespace cuda4dnn {
             if (scaleMode == ScaleShiftConfiguration::OpMode::UNTRAINABLE &&
                 shiftMode == ScaleShiftConfiguration::OpMode::UNTRAINABLE)
             {
-                CV_Error(cv::Error::StsNotImplemented, "scale and shift both in untrainable mode is not supported");
+                CV_Error(ncvslideio::Error::StsNotImplemented, "scale and shift both in untrainable mode is not supported");
             }
         }
 

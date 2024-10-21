@@ -708,7 +708,7 @@ protected:
         catch(const cv::Exception& e)
         {
             thrown = true;
-            if( e.code != expected_code && e.code != cv::Error::StsAssert && e.code != cv::Error::StsError )
+            if( e.code != expected_code && e.code != ncvslideio::Error::StsAssert && e.code != ncvslideio::Error::StsError )
             {
                 ts->printf(TS::LOG, "%s (test case #%d): the error code %d is different from the expected %d\n",
                     descr, test_case_idx, e.code, expected_code);

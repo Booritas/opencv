@@ -40,7 +40,7 @@
 //M*/
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 struct MinAreaState
@@ -88,28 +88,28 @@ enum { CALIPERS_MAXHEIGHT=0, CALIPERS_MINAREARECT=1, CALIPERS_MAXDIST=2 };
  //    Notes:
  //F*/
 
-static void rotate90CCW(const cv::Point2f& in, cv::Point2f &out)
+static void rotate90CCW(const ncvslideio::Point2f& in, ncvslideio::Point2f &out)
 {
     out.x = -in.y;
     out.y = in.x;
 }
 
-static void rotate90CW(const cv::Point2f& in, cv::Point2f &out)
+static void rotate90CW(const ncvslideio::Point2f& in, ncvslideio::Point2f &out)
 {
     out.x = in.y;
     out.y = -in.x;
 }
 
-static void rotate180(const cv::Point2f& in, cv::Point2f &out)
+static void rotate180(const ncvslideio::Point2f& in, ncvslideio::Point2f &out)
 {
     out.x = -in.x;
     out.y = -in.y;
 }
 
 /* return true if first vector is to the right (clockwise) of the second */
-static bool firstVecIsRight(const cv::Point2f& vec1, const cv::Point2f &vec2)
+static bool firstVecIsRight(const ncvslideio::Point2f& vec1, const ncvslideio::Point2f &vec2)
 {
-    cv::Point2f tmp;
+    ncvslideio::Point2f tmp;
     rotate90CW(vec1, tmp);
     return tmp.x * vec2.x + tmp.y * vec2.y < 0;
 }
@@ -245,7 +245,7 @@ static void rotatingCalipers( const Point2f* points, int n, int mode, float* out
                 base_b = lead_x;
                 break;
             default:
-                CV_Error(cv::Error::StsError, "main_element should be 0, 1, 2 or 3");
+                CV_Error(ncvslideio::Error::StsError, "main_element should be 0, 1, 2 or 3");
             }
         }
         /* change base point of main edge */
@@ -357,7 +357,7 @@ static void rotatingCalipers( const Point2f* points, int n, int mode, float* out
 }
 
 
-cv::RotatedRect cv::minAreaRect( InputArray _points )
+ncvslideio::RotatedRect ncvslideio::minAreaRect( InputArray _points )
 {
     CV_INSTRUMENT_REGION();
 
@@ -410,14 +410,14 @@ cv::RotatedRect cv::minAreaRect( InputArray _points )
 CV_IMPL CvBox2D
 cvMinAreaRect2( const CvArr* array, CvMemStorage* /*storage*/ )
 {
-    cv::AutoBuffer<double> abuf;
-    cv::Mat points = cv::cvarrToMat(array, false, false, 0, &abuf);
+    ncvslideio::AutoBuffer<double> abuf;
+    ncvslideio::Mat points = ncvslideio::cvarrToMat(array, false, false, 0, &abuf);
 
-    cv::RotatedRect rr = cv::minAreaRect(points);
+    ncvslideio::RotatedRect rr = ncvslideio::minAreaRect(points);
     return cvBox2D(rr);
 }
 
-void cv::boxPoints(cv::RotatedRect box, OutputArray _pts)
+void ncvslideio::boxPoints(ncvslideio::RotatedRect box, OutputArray _pts)
 {
     CV_INSTRUMENT_REGION();
 

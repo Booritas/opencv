@@ -4,7 +4,7 @@
 
 #include "precomp.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 typedef bool (*HasNonZeroFunc)(const uchar*, size_t);
 

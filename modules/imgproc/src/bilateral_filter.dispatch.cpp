@@ -55,7 +55,7 @@
                                    Bilateral Filtering
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 
 #ifdef HAVE_OPENCL
 
@@ -425,7 +425,7 @@ void bilateralFilter( InputArray _src, OutputArray _dst, int d,
     else if( src.depth() == CV_32F )
         bilateralFilter_32f( src, dst, d, sigmaColor, sigmaSpace, borderType );
     else
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
         "Bilateral filtering is only implemented for 8u and 32f images" );
 }
 

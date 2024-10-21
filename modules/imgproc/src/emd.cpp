@@ -120,7 +120,7 @@ static int icvInitEMD( const float *signature1, int size1,
                        int dims, CvDistanceFunction dist_func, void *user_param,
                        const float* cost, int cost_step,
                        CvEMDState * state, float *lower_bound,
-                       cv::AutoBuffer<char>& _buffer );
+                       ncvslideio::AutoBuffer<char>& _buffer );
 
 static int icvFindBasicVariables( float **cost, char **is_x,
                                   CvNode1D * u, CvNode1D * v, int ssize, int dsize );
@@ -155,7 +155,7 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
             float *lower_bound,
             void *user_param )
 {
-    cv::AutoBuffer<char> local_buf;
+    ncvslideio::AutoBuffer<char> local_buf;
     CvEMDState state;
     float emd = 0;
 
@@ -175,28 +175,28 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
     signature2 = cvGetMat( signature2, &sign_stub2 );
 
     if( signature1->cols != signature2->cols )
-        CV_Error( cv::Error::StsUnmatchedSizes, "The arrays must have equal number of columns (which is number of dimensions but 1)" );
+        CV_Error( ncvslideio::Error::StsUnmatchedSizes, "The arrays must have equal number of columns (which is number of dimensions but 1)" );
 
     dims = signature1->cols - 1;
     size1 = signature1->rows;
     size2 = signature2->rows;
 
     if( !CV_ARE_TYPES_EQ( signature1, signature2 ))
-        CV_Error( cv::Error::StsUnmatchedFormats, "The array must have equal types" );
+        CV_Error( ncvslideio::Error::StsUnmatchedFormats, "The array must have equal types" );
 
     if( CV_MAT_TYPE( signature1->type ) != CV_32FC1 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "The signatures must be 32fC1" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "The signatures must be 32fC1" );
 
     if( flow )
     {
         flow = cvGetMat( flow, &flow_stub );
 
         if( flow->rows != size1 || flow->cols != size2 )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
             "The flow matrix size does not match to the signatures' sizes" );
 
         if( CV_MAT_TYPE( flow->type ) != CV_32FC1 )
-            CV_Error( cv::Error::StsUnsupportedFormat, "The flow matrix must be 32fC1" );
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat, "The flow matrix must be 32fC1" );
     }
 
     cost->data.fl = 0;
@@ -207,43 +207,43 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
         if( cost_matrix )
         {
             if( dist_func )
-                CV_Error( cv::Error::StsBadArg,
+                CV_Error( ncvslideio::Error::StsBadArg,
                 "Only one of cost matrix or distance function should be non-NULL in case of user-defined distance" );
 
             if( lower_bound )
-                CV_Error( cv::Error::StsBadArg,
+                CV_Error( ncvslideio::Error::StsBadArg,
                 "The lower boundary can not be calculated if the cost matrix is used" );
 
             cost = cvGetMat( cost_matrix, &cost_stub );
             if( cost->rows != size1 || cost->cols != size2 )
-                CV_Error( cv::Error::StsUnmatchedSizes,
+                CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                 "The cost matrix size does not match to the signatures' sizes" );
 
             if( CV_MAT_TYPE( cost->type ) != CV_32FC1 )
-                CV_Error( cv::Error::StsUnsupportedFormat, "The cost matrix must be 32fC1" );
+                CV_Error( ncvslideio::Error::StsUnsupportedFormat, "The cost matrix must be 32fC1" );
         }
         else if( !dist_func )
-            CV_Error( cv::Error::StsNullPtr, "In case of user-defined distance Distance function is undefined" );
+            CV_Error( ncvslideio::Error::StsNullPtr, "In case of user-defined distance Distance function is undefined" );
     }
     else
     {
         if( dims == 0 )
-            CV_Error( cv::Error::StsBadSize,
+            CV_Error( ncvslideio::Error::StsBadSize,
             "Number of dimensions can be 0 only if a user-defined metric is used" );
         user_param = (void *) (size_t)dims;
         switch (dist_type)
         {
-        case cv::DIST_L1:
+        case ncvslideio::DIST_L1:
             dist_func = icvDistL1;
             break;
-        case cv::DIST_L2:
+        case ncvslideio::DIST_L2:
             dist_func = icvDistL2;
             break;
-        case cv::DIST_C:
+        case ncvslideio::DIST_C:
             dist_func = icvDistC;
             break;
         default:
-            CV_Error( cv::Error::StsBadFlag, "Bad or unsupported metric type" );
+            CV_Error( ncvslideio::Error::StsBadFlag, "Bad or unsupported metric type" );
         }
     }
 
@@ -280,7 +280,7 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
                                       state.ssize, state.dsize, state.enter_x );
 
             if( min_delta == CV_EMD_INF )
-                CV_Error( cv::Error::StsNoConv, "" );
+                CV_Error( ncvslideio::Error::StsNoConv, "" );
 
             /* if no negative deltamin, we found the optimal solution */
             if( min_delta >= -eps )
@@ -288,7 +288,7 @@ CV_IMPL float cvCalcEMD2( const CvArr* signature_arr1,
 
             /* improve solution */
             if(!icvNewSolution( &state ))
-                CV_Error( cv::Error::StsNoConv, "" );
+                CV_Error( ncvslideio::Error::StsNoConv, "" );
         }
     }
 
@@ -326,7 +326,7 @@ static int icvInitEMD( const float* signature1, int size1,
             int dims, CvDistanceFunction dist_func, void* user_param,
             const float* cost, int cost_step,
             CvEMDState* state, float* lower_bound,
-            cv::AutoBuffer<char>& _buffer )
+            ncvslideio::AutoBuffer<char>& _buffer )
 {
     float s_sum = 0, d_sum = 0, diff;
     int i, j;
@@ -388,7 +388,7 @@ static int icvInitEMD( const float* signature1, int size1,
 
         }
         else if( weight < 0 )
-            CV_Error(cv::Error::StsBadArg, "signature1 must not contain negative weights");
+            CV_Error(ncvslideio::Error::StsBadArg, "signature1 must not contain negative weights");
     }
 
     for( i = 0; i < size2; i++ )
@@ -402,13 +402,13 @@ static int icvInitEMD( const float* signature1, int size1,
             state->idx2[dsize++] = i;
         }
         else if( weight < 0 )
-            CV_Error(cv::Error::StsBadArg, "signature2 must not contain negative weights");
+            CV_Error(ncvslideio::Error::StsBadArg, "signature2 must not contain negative weights");
     }
 
     if( ssize == 0 )
-        CV_Error(cv::Error::StsBadArg, "signature1 must contain at least one non-zero value");
+        CV_Error(ncvslideio::Error::StsBadArg, "signature1 must contain at least one non-zero value");
     if( dsize == 0 )
-        CV_Error(cv::Error::StsBadArg, "signature2 must contain at least one non-zero value");
+        CV_Error(ncvslideio::Error::StsBadArg, "signature2 must contain at least one non-zero value");
 
     /* if supply different than the demand, add a zero-cost dummy cluster */
     diff = s_sum - d_sum;
@@ -1148,7 +1148,7 @@ icvDistC( const float *x, const float *y, void *user_param )
 }
 
 
-float cv::EMD_legacy( InputArray _signature1, InputArray _signature2,
+float ncvslideio::EMD_legacy( InputArray _signature1, InputArray _signature2,
                int distType, InputArray _cost,
                float* lowerBound, OutputArray _flow )
 {
@@ -1172,7 +1172,7 @@ float cv::EMD_legacy( InputArray _signature1, InputArray _signature2,
                        _flow.needed() ? &_cflow : 0, lowerBound, 0 );
 }
 
-float cv::wrapperEMD_legacy(InputArray _signature1, InputArray _signature2,
+float ncvslideio::wrapperEMD_legacy(InputArray _signature1, InputArray _signature2,
                int distType, InputArray _cost,
                Ptr<float> lowerBound, OutputArray _flow)
 {

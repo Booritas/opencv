@@ -56,7 +56,7 @@
 #include "opencv2/core/types.hpp"
 #include "opencv2/core/mat.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 /** @addtogroup core_xml
 
@@ -930,49 +930,49 @@ void write(FileStorage& fs, const Range& r )
 template<typename _Tp> static inline
 void write( FileStorage& fs, const std::vector<_Tp>& vec )
 {
-    cv::internal::VecWriterProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> w(&fs);
+    ncvslideio::internal::VecWriterProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> w(&fs);
     w(vec);
 }
 
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Point_<_Tp>& pt )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, pt);
 }
 
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Point3_<_Tp>& pt )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, pt);
 }
 
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Size_<_Tp>& sz )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, sz);
 }
 
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Complex<_Tp>& c )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, c);
 }
 
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Rect_<_Tp>& r )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, r);
 }
 
 template<typename _Tp, int cn> static inline
 void write(FileStorage& fs, const String& name, const Vec<_Tp, cn>& v )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, v);
 }
 
@@ -985,21 +985,21 @@ void write(FileStorage& fs, const String& name, const Matx<_Tp, m, n>& x )
 template<typename _Tp> static inline
 void write(FileStorage& fs, const String& name, const Scalar_<_Tp>& s )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, s);
 }
 
 static inline
 void write(FileStorage& fs, const String& name, const Range& r )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, r);
 }
 
 static inline
 void write(FileStorage& fs, const String& name, const KeyPoint& kpt)
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, kpt.pt.x);
     write(fs, kpt.pt.y);
     write(fs, kpt.size);
@@ -1012,7 +1012,7 @@ void write(FileStorage& fs, const String& name, const KeyPoint& kpt)
 static inline
 void write(FileStorage& fs, const String& name, const DMatch& m)
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+FileNode::FLOW);
     write(fs, m.queryIdx);
     write(fs, m.trainIdx);
     write(fs, m.imgIdx);
@@ -1028,17 +1028,17 @@ static inline void write( FileStorage& fs, const String& name, const _Tp& val )
 template<typename _Tp> static inline
 void write( FileStorage& fs, const String& name, const std::vector<_Tp>& vec )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ+(traits::SafeFmt<_Tp>::fmt != 0 ? FileNode::FLOW : 0));
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ+(traits::SafeFmt<_Tp>::fmt != 0 ? FileNode::FLOW : 0));
     write(fs, vec);
 }
 
 template<typename _Tp> static inline
 void write( FileStorage& fs, const String& name, const std::vector< std::vector<_Tp> >& vec )
 {
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
     for(size_t i = 0; i < vec.size(); i++)
     {
-        cv::internal::WriteStructContext ws_(fs, name, FileNode::SEQ+(traits::SafeFmt<_Tp>::fmt != 0 ? FileNode::FLOW : 0));
+        ncvslideio::internal::WriteStructContext ws_(fs, name, FileNode::SEQ+(traits::SafeFmt<_Tp>::fmt != 0 ? FileNode::FLOW : 0));
         write(fs, vec[i]);
     }
 }
@@ -1050,12 +1050,12 @@ static inline void write(FileStorage& fs, const KeyPoint& kpt) { write(fs, Strin
 static inline void write(FileStorage& fs, const DMatch& m) { write(fs, String(), m); }
 static inline void write(FileStorage& fs, const std::vector<KeyPoint>& vec)
 {
-    cv::internal::VecWriterProxy<KeyPoint, 0> w(&fs);
+    ncvslideio::internal::VecWriterProxy<KeyPoint, 0> w(&fs);
     w(vec);
 }
 static inline void write(FileStorage& fs, const std::vector<DMatch>& vec)
 {
-    cv::internal::VecWriterProxy<DMatch, 0> w(&fs);
+    ncvslideio::internal::VecWriterProxy<DMatch, 0> w(&fs);
     w(vec);
 
 }
@@ -1105,7 +1105,7 @@ void read(const FileNode& node, short& value, short default_value)
 template<typename _Tp> static inline
 void read( FileNodeIterator& it, std::vector<_Tp>& vec, size_t maxCount = (size_t)INT_MAX )
 {
-    cv::internal::VecReaderProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> r(&it);
+    ncvslideio::internal::VecReaderProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> r(&it);
     r(vec, maxCount);
 }
 
@@ -1192,7 +1192,7 @@ FileNodeIterator& operator >> (FileNodeIterator& it, _Tp& value)
 template<typename _Tp> static inline
 FileNodeIterator& operator >> (FileNodeIterator& it, std::vector<_Tp>& vec)
 {
-    cv::internal::VecReaderProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> r(&it);
+    ncvslideio::internal::VecReaderProxy<_Tp, traits::SafeFmt<_Tp>::fmt != 0> r(&it);
     r(vec, (size_t)INT_MAX);
     return it;
 }
@@ -1262,6 +1262,6 @@ bool operator < (const FileNodeIterator& it1, const FileNodeIterator& it2)
     return it1.remaining() > it2.remaining();
 }
 
-} // cv
+} // ncvslideio
 
 #endif // OPENCV_CORE_PERSISTENCE_HPP

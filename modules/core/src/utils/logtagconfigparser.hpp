@@ -14,7 +14,7 @@
 #include <opencv2/core/utils/logtag.hpp>
 #include "logtagconfig.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 

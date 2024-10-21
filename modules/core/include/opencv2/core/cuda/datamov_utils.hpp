@@ -51,7 +51,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     #if defined __CUDA_ARCH__ && __CUDA_ARCH__ >= 200
 
@@ -106,7 +106,7 @@ namespace cv { namespace cuda { namespace device
         #undef OPENCV_CUDA_ASM_PTR
 
     #endif // __CUDA_ARCH__ >= 200
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

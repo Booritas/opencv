@@ -34,7 +34,7 @@
 //@cond IGNORE
 ///////////////////////////////////////////////////////////////////////////////////////
 //Implementation
-namespace cv {
+namespace ncvslideio {
 
 template <typename T>
 Quat<T>::Quat() : w(0), x(0), y(0), z(0) {}
@@ -67,7 +67,7 @@ Quat<T> Quat<T>::createFromAngleAxis(const T angle, const Vec<T, 3> &axis)
 template <typename T>
 Quat<T> Quat<T>::createFromRotMat(InputArray _R)
 {
-    CV_CheckTypeEQ(_R.type(), cv::traits::Type<T>::value, "");
+    CV_CheckTypeEQ(_R.type(), ncvslideio::traits::Type<T>::value, "");
     if (_R.rows() != 3 || _R.cols() != 3)
     {
         CV_Error(Error::StsBadArg, "Cannot convert matrix to quaternion: rotation matrix should be a 3x3 matrix");
@@ -426,7 +426,7 @@ inline Quat<T> power(const Quat<T> &p, const Quat<T> &q, QuatAssumeType assumeUn
 template <typename T>
 inline Quat<T> Quat<T>::power(const Quat<T> &q, QuatAssumeType assumeUnit) const
 {
-    return cv::exp(q * log(assumeUnit));
+    return ncvslideio::exp(q * log(assumeUnit));
 }
 
 template <typename T>
@@ -580,7 +580,7 @@ inline Quat<T> asinh(const Quat<T> &q)
 template <typename T>
 inline Quat<T> Quat<T>::asinh() const
 {
-    return cv::log(*this + cv::power(*this * *this + Quat<T>(1, 0, 0, 0), 0.5));
+    return ncvslideio::log(*this + ncvslideio::power(*this * *this + Quat<T>(1, 0, 0, 0), 0.5));
 }
 
 template <typename T>
@@ -592,7 +592,7 @@ inline Quat<T> acosh(const Quat<T> &q)
 template <typename T>
 inline Quat<T> Quat<T>::acosh() const
 {
-    return cv::log(*this + cv::power(*this * *this - Quat<T>(1,0,0,0), 0.5));
+    return ncvslideio::log(*this + ncvslideio::power(*this * *this - Quat<T>(1,0,0,0), 0.5));
 }
 
 template <typename T>
@@ -837,7 +837,7 @@ Quat<T> Quat<T>::interPoint(const Quat<T> &q0, const Quat<T> &q1,
         v1 = v1.normalize();
         v2 = v2.normalize();
     }
-    return v1 * cv::exp(-(cv::log(v1.conjugate() * v0, assumeUnit) + (cv::log(v1.conjugate() * v2, assumeUnit))) / 4);
+    return v1 * ncvslideio::exp(-(ncvslideio::log(v1.conjugate() * v0, assumeUnit) + (ncvslideio::log(v1.conjugate() * v2, assumeUnit))) / 4);
 }
 
 template <typename T>

@@ -48,7 +48,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_eigen
@@ -252,7 +252,7 @@ namespace cv
         Vec3 rvec() const;
 
         //! @return the inverse of the current matrix.
-        Affine3 inv(int method = cv::DECOMP_SVD) const;
+        Affine3 inv(int method = ncvslideio::DECOMP_SVD) const;
 
         //! a.rotate(R) is equivalent to Affine(R, 0) * a;
         Affine3 rotate(const Mat3& R) const;
@@ -329,17 +329,17 @@ namespace cv
 // Implementation
 
 template<typename T> inline
-cv::Affine3<T>::Affine3()
+ncvslideio::Affine3<T>::Affine3()
     : matrix(Mat4::eye())
 {}
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const Mat4& affine)
+ncvslideio::Affine3<T>::Affine3(const Mat4& affine)
     : matrix(affine)
 {}
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const Mat3& R, const Vec3& t)
+ncvslideio::Affine3<T>::Affine3(const Mat3& R, const Vec3& t)
 {
     rotation(R);
     translation(t);
@@ -348,7 +348,7 @@ cv::Affine3<T>::Affine3(const Mat3& R, const Vec3& t)
 }
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const Vec3& _rvec, const Vec3& t)
+ncvslideio::Affine3<T>::Affine3(const Vec3& _rvec, const Vec3& t)
 {
     rotation(_rvec);
     translation(t);
@@ -357,9 +357,9 @@ cv::Affine3<T>::Affine3(const Vec3& _rvec, const Vec3& t)
 }
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const cv::Mat& data, const Vec3& t)
+ncvslideio::Affine3<T>::Affine3(const ncvslideio::Mat& data, const Vec3& t)
 {
-    CV_Assert(data.type() == cv::traits::Type<T>::value);
+    CV_Assert(data.type() == ncvslideio::traits::Type<T>::value);
     CV_Assert(data.channels() == 1);
 
     if (data.cols == 4 && data.rows == 4)
@@ -383,23 +383,23 @@ cv::Affine3<T>::Affine3(const cv::Mat& data, const Vec3& t)
 }
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const float_type* vals) : matrix(vals)
+ncvslideio::Affine3<T>::Affine3(const float_type* vals) : matrix(vals)
 {}
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::Identity()
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::Identity()
 {
-    return Affine3<T>(cv::Affine3<T>::Mat4::eye());
+    return Affine3<T>(ncvslideio::Affine3<T>::Mat4::eye());
 }
 
 template<typename T> inline
-void cv::Affine3<T>::rotation(const Mat3& R)
+void ncvslideio::Affine3<T>::rotation(const Mat3& R)
 {
     linear(R);
 }
 
 template<typename T> inline
-void cv::Affine3<T>::rotation(const Vec3& _rvec)
+void ncvslideio::Affine3<T>::rotation(const Vec3& _rvec)
 {
     double theta = norm(_rvec);
 
@@ -427,9 +427,9 @@ void cv::Affine3<T>::rotation(const Vec3& _rvec)
 
 //Combines rotation methods above. Supports 3x3, 1x3, 3x1 sizes of data matrix;
 template<typename T> inline
-void cv::Affine3<T>::rotation(const cv::Mat& data)
+void ncvslideio::Affine3<T>::rotation(const ncvslideio::Mat& data)
 {
-    CV_Assert(data.type() == cv::traits::Type<T>::value);
+    CV_Assert(data.type() == ncvslideio::traits::Type<T>::value);
     CV_Assert(data.channels() == 1);
 
     if (data.cols == 3 && data.rows == 3)
@@ -449,7 +449,7 @@ void cv::Affine3<T>::rotation(const cv::Mat& data)
 }
 
 template<typename T> inline
-void cv::Affine3<T>::linear(const Mat3& L)
+void ncvslideio::Affine3<T>::linear(const Mat3& L)
 {
     matrix.val[0] = L.val[0]; matrix.val[1] = L.val[1];  matrix.val[ 2] = L.val[2];
     matrix.val[4] = L.val[3]; matrix.val[5] = L.val[4];  matrix.val[ 6] = L.val[5];
@@ -457,21 +457,21 @@ void cv::Affine3<T>::linear(const Mat3& L)
 }
 
 template<typename T> inline
-void cv::Affine3<T>::translation(const Vec3& t)
+void ncvslideio::Affine3<T>::translation(const Vec3& t)
 {
     matrix.val[3] = t[0]; matrix.val[7] = t[1]; matrix.val[11] = t[2];
 }
 
 template<typename T> inline
-typename cv::Affine3<T>::Mat3 cv::Affine3<T>::rotation() const
+typename ncvslideio::Affine3<T>::Mat3 ncvslideio::Affine3<T>::rotation() const
 {
     return linear();
 }
 
 template<typename T> inline
-typename cv::Affine3<T>::Mat3 cv::Affine3<T>::linear() const
+typename ncvslideio::Affine3<T>::Mat3 ncvslideio::Affine3<T>::linear() const
 {
-    typename cv::Affine3<T>::Mat3 R;
+    typename ncvslideio::Affine3<T>::Mat3 R;
     R.val[0] = matrix.val[0];  R.val[1] = matrix.val[1];  R.val[2] = matrix.val[ 2];
     R.val[3] = matrix.val[4];  R.val[4] = matrix.val[5];  R.val[5] = matrix.val[ 6];
     R.val[6] = matrix.val[8];  R.val[7] = matrix.val[9];  R.val[8] = matrix.val[10];
@@ -479,17 +479,17 @@ typename cv::Affine3<T>::Mat3 cv::Affine3<T>::linear() const
 }
 
 template<typename T> inline
-typename cv::Affine3<T>::Vec3 cv::Affine3<T>::translation() const
+typename ncvslideio::Affine3<T>::Vec3 ncvslideio::Affine3<T>::translation() const
 {
     return Vec3(matrix.val[3], matrix.val[7], matrix.val[11]);
 }
 
 template<typename T> inline
-typename cv::Affine3<T>::Vec3 cv::Affine3<T>::rvec() const
+typename ncvslideio::Affine3<T>::Vec3 ncvslideio::Affine3<T>::rvec() const
 {
-    cv::Vec3d w;
-    cv::Matx33d u, vt, R = rotation();
-    cv::SVD::compute(R, w, u, vt, cv::SVD::FULL_UV + cv::SVD::MODIFY_A);
+    ncvslideio::Vec3d w;
+    ncvslideio::Matx33d u, vt, R = rotation();
+    ncvslideio::SVD::compute(R, w, u, vt, ncvslideio::SVD::FULL_UV + ncvslideio::SVD::MODIFY_A);
     R = u * vt;
 
     double rx = R.val[7] - R.val[5];
@@ -530,17 +530,17 @@ typename cv::Affine3<T>::Vec3 cv::Affine3<T>::rvec() const
         rx *= vth; ry *= vth; rz *= vth;
     }
 
-    return cv::Vec3d(rx, ry, rz);
+    return ncvslideio::Vec3d(rx, ry, rz);
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::inv(int method) const
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::inv(int method) const
 {
     return matrix.inv(method);
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::rotate(const Mat3& R) const
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::rotate(const Mat3& R) const
 {
     Mat3 Lc = linear();
     Vec3 tc = translation();
@@ -564,13 +564,13 @@ cv::Affine3<T> cv::Affine3<T>::rotate(const Mat3& R) const
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::rotate(const Vec3& _rvec) const
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::rotate(const Vec3& _rvec) const
 {
     return rotate(Affine3f(_rvec).rotation());
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::translate(const Vec3& t) const
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::translate(const Vec3& t) const
 {
     Mat4 m = matrix;
     m.val[ 3] += t[0];
@@ -580,31 +580,31 @@ cv::Affine3<T> cv::Affine3<T>::translate(const Vec3& t) const
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::Affine3<T>::concatenate(const Affine3<T>& affine) const
+ncvslideio::Affine3<T> ncvslideio::Affine3<T>::concatenate(const Affine3<T>& affine) const
 {
     return (*this).rotate(affine.rotation()).translate(affine.translation());
 }
 
 template<typename T> template <typename Y> inline
-cv::Affine3<T>::operator Affine3<Y>() const
+ncvslideio::Affine3<T>::operator Affine3<Y>() const
 {
     return Affine3<Y>(matrix);
 }
 
 template<typename T> template <typename Y> inline
-cv::Affine3<Y> cv::Affine3<T>::cast() const
+ncvslideio::Affine3<Y> ncvslideio::Affine3<T>::cast() const
 {
     return Affine3<Y>(matrix);
 }
 
 template<typename T> inline
-cv::Affine3<T> cv::operator*(const cv::Affine3<T>& affine1, const cv::Affine3<T>& affine2)
+ncvslideio::Affine3<T> ncvslideio::operator*(const ncvslideio::Affine3<T>& affine1, const ncvslideio::Affine3<T>& affine2)
 {
     return affine2.concatenate(affine1);
 }
 
 template<typename T, typename V> inline
-V cv::operator*(const cv::Affine3<T>& affine, const V& v)
+V ncvslideio::operator*(const ncvslideio::Affine3<T>& affine, const V& v)
 {
     const typename Affine3<T>::Mat4& m = affine.matrix;
 
@@ -616,10 +616,10 @@ V cv::operator*(const cv::Affine3<T>& affine, const V& v)
 }
 
 static inline
-cv::Vec3f cv::operator*(const cv::Affine3f& affine, const cv::Vec3f& v)
+ncvslideio::Vec3f ncvslideio::operator*(const ncvslideio::Affine3f& affine, const ncvslideio::Vec3f& v)
 {
-    const cv::Matx44f& m = affine.matrix;
-    cv::Vec3f r;
+    const ncvslideio::Matx44f& m = affine.matrix;
+    ncvslideio::Vec3f r;
     r.val[0] = m.val[0] * v[0] + m.val[1] * v[1] + m.val[ 2] * v[2] + m.val[ 3];
     r.val[1] = m.val[4] * v[0] + m.val[5] * v[1] + m.val[ 6] * v[2] + m.val[ 7];
     r.val[2] = m.val[8] * v[0] + m.val[9] * v[1] + m.val[10] * v[2] + m.val[11];
@@ -627,10 +627,10 @@ cv::Vec3f cv::operator*(const cv::Affine3f& affine, const cv::Vec3f& v)
 }
 
 static inline
-cv::Vec3d cv::operator*(const cv::Affine3d& affine, const cv::Vec3d& v)
+ncvslideio::Vec3d ncvslideio::operator*(const ncvslideio::Affine3d& affine, const ncvslideio::Vec3d& v)
 {
-    const cv::Matx44d& m = affine.matrix;
-    cv::Vec3d r;
+    const ncvslideio::Matx44d& m = affine.matrix;
+    ncvslideio::Vec3d r;
     r.val[0] = m.val[0] * v[0] + m.val[1] * v[1] + m.val[ 2] * v[2] + m.val[ 3];
     r.val[1] = m.val[4] * v[0] + m.val[5] * v[1] + m.val[ 6] * v[2] + m.val[ 7];
     r.val[2] = m.val[8] * v[0] + m.val[9] * v[1] + m.val[10] * v[2] + m.val[11];
@@ -642,29 +642,29 @@ cv::Vec3d cv::operator*(const cv::Affine3d& affine, const cv::Vec3d& v)
 #if defined EIGEN_WORLD_VERSION && defined EIGEN_GEOMETRY_MODULE_H
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)>& affine)
+ncvslideio::Affine3<T>::Affine3(const Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)>& affine)
 {
-    cv::Mat(4, 4, cv::traits::Type<T>::value, affine.matrix().data()).copyTo(matrix);
+    ncvslideio::Mat(4, 4, ncvslideio::traits::Type<T>::value, affine.matrix().data()).copyTo(matrix);
 }
 
 template<typename T> inline
-cv::Affine3<T>::Affine3(const Eigen::Transform<T, 3, Eigen::Affine>& affine)
+ncvslideio::Affine3<T>::Affine3(const Eigen::Transform<T, 3, Eigen::Affine>& affine)
 {
     Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)> a = affine;
-    cv::Mat(4, 4, cv::traits::Type<T>::value, a.matrix().data()).copyTo(matrix);
+    ncvslideio::Mat(4, 4, ncvslideio::traits::Type<T>::value, a.matrix().data()).copyTo(matrix);
 }
 
 template<typename T> inline
-cv::Affine3<T>::operator Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)>() const
+ncvslideio::Affine3<T>::operator Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)>() const
 {
     Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)> r;
-    cv::Mat hdr(4, 4, cv::traits::Type<T>::value, r.matrix().data());
-    cv::Mat(matrix, false).copyTo(hdr);
+    ncvslideio::Mat hdr(4, 4, ncvslideio::traits::Type<T>::value, r.matrix().data());
+    ncvslideio::Mat(matrix, false).copyTo(hdr);
     return r;
 }
 
 template<typename T> inline
-cv::Affine3<T>::operator Eigen::Transform<T, 3, Eigen::Affine>() const
+ncvslideio::Affine3<T>::operator Eigen::Transform<T, 3, Eigen::Affine>() const
 {
     return this->operator Eigen::Transform<T, 3, Eigen::Affine, (Eigen::RowMajor)>();
 }

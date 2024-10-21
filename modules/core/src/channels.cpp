@@ -11,7 +11,7 @@
 *                       Generalized split/merge: mixing channels                         *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static void
@@ -89,10 +89,10 @@ static MixChannelsFunc getMixchFunc(int depth)
     return mixchTab[depth];
 }
 
-} // cv::
+} // ncvslideio::
 
 
-void cv::mixChannels( const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int* fromTo, size_t npairs )
+void ncvslideio::mixChannels( const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int* fromTo, size_t npairs )
 {
     CV_INSTRUMENT_REGION();
 
@@ -173,7 +173,7 @@ void cv::mixChannels( const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, cons
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static void getUMatIndex(const std::vector<UMat> & um, int cn, int & idx, int & cnidx)
 {
@@ -270,7 +270,7 @@ static bool ocl_mixChannels(InputArrayOfArrays _src, InputOutputArrayOfArrays _d
 
 #endif
 
-void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
+void ncvslideio::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
                  const int* fromTo, size_t npairs)
 {
     CV_INSTRUMENT_REGION();
@@ -294,7 +294,7 @@ void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
     int ndst = dst_is_mat ? 1 : (int)dst.total();
 
     CV_Assert(nsrc > 0 && ndst > 0);
-    cv::AutoBuffer<Mat> _buf(nsrc + ndst);
+    ncvslideio::AutoBuffer<Mat> _buf(nsrc + ndst);
     Mat* buf = _buf.data();
     for( i = 0; i < nsrc; i++ )
         buf[i] = src.getMat(src_is_mat ? -1 : i);
@@ -303,7 +303,7 @@ void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
     mixChannels(&buf[0], nsrc, &buf[nsrc], ndst, fromTo, npairs);
 }
 
-void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
+void ncvslideio::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
                      const std::vector<int>& fromTo)
 {
     CV_INSTRUMENT_REGION();
@@ -327,7 +327,7 @@ void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
     int ndst = dst_is_mat ? 1 : (int)dst.total();
 
     CV_Assert(fromTo.size()%2 == 0 && nsrc > 0 && ndst > 0);
-    cv::AutoBuffer<Mat> _buf(nsrc + ndst);
+    ncvslideio::AutoBuffer<Mat> _buf(nsrc + ndst);
     Mat* buf = _buf.data();
     for( i = 0; i < nsrc; i++ )
         buf[i] = src.getMat(src_is_mat ? -1 : i);
@@ -338,7 +338,7 @@ void cv::mixChannels(InputArrayOfArrays src, InputOutputArrayOfArrays dst,
 
 #ifdef HAVE_IPP
 
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_extractChannel(const Mat &src, Mat &dst, int channel)
 {
@@ -418,7 +418,7 @@ static bool ipp_insertChannel(const Mat &src, Mat &dst, int channel)
 }
 #endif
 
-void cv::extractChannel(InputArray _src, OutputArray _dst, int coi)
+void ncvslideio::extractChannel(InputArray _src, OutputArray _dst, int coi)
 {
     CV_INSTRUMENT_REGION();
 
@@ -446,7 +446,7 @@ void cv::extractChannel(InputArray _src, OutputArray _dst, int coi)
     mixChannels(&src, 1, &dst, 1, ch, 1);
 }
 
-void cv::insertChannel(InputArray _src, InputOutputArray _dst, int coi)
+void ncvslideio::insertChannel(InputArray _src, InputOutputArray _dst, int coi)
 {
     CV_INSTRUMENT_REGION();
 

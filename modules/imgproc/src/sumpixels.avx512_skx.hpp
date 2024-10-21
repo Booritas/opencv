@@ -12,7 +12,7 @@
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 namespace { // Anonymous namespace to avoid exposing the implementation classes
@@ -470,7 +470,7 @@ void calculate_integral_avx512(const uchar *src,   size_t _srcstep,
 
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-}} // end namespace cv::hal
+}} // end namespace ncvslideio::hal
 
 #if defined(__GNUC__) && __GNUC__ == 12
 #pragma GCC diagnostic pop

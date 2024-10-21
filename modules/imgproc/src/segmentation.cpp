@@ -46,7 +46,7 @@
 *                                       Watershed                                        *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 // A node represents a pixel to label
 struct WSNode
@@ -85,7 +85,7 @@ allocWSNodes( std::vector<WSNode>& storage )
 }
 
 
-void cv::watershed( InputArray _src, InputOutputArray _markers )
+void ncvslideio::watershed( InputArray _src, InputOutputArray _markers )
 {
     CV_INSTRUMENT_REGION();
 
@@ -330,7 +330,7 @@ void cv::watershed( InputArray _src, InputOutputArray _markers )
 \****************************************************************************************/
 
 
-void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
+void ncvslideio::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
                                 double sp0, double sr, int max_level,
                                 TermCriteria termcrit )
 {
@@ -348,11 +348,11 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
     const int MAX_LEVELS = 8;
 
     if( (unsigned)max_level > (unsigned)MAX_LEVELS )
-        CV_Error( cv::Error::StsOutOfRange, "The number of pyramid levels is too large or negative" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "The number of pyramid levels is too large or negative" );
 
-    std::vector<cv::Mat> src_pyramid(max_level+1);
-    std::vector<cv::Mat> dst_pyramid(max_level+1);
-    cv::Mat mask0;
+    std::vector<ncvslideio::Mat> src_pyramid(max_level+1);
+    std::vector<ncvslideio::Mat> dst_pyramid(max_level+1);
+    ncvslideio::Mat mask0;
     int i, j, level;
     //uchar* submask = 0;
 
@@ -365,13 +365,13 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
 
 
     if( src0.type() != CV_8UC3 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "Only 8-bit, 3-channel images are supported" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "Only 8-bit, 3-channel images are supported" );
 
     if( src0.type() != dst0.type() )
-        CV_Error( cv::Error::StsUnmatchedFormats, "The input and output images must have the same type" );
+        CV_Error( ncvslideio::Error::StsUnmatchedFormats, "The input and output images must have the same type" );
 
     if( src0.size() != dst0.size() )
-        CV_Error( cv::Error::StsUnmatchedSizes, "The input and output images must have the same size" );
+        CV_Error( ncvslideio::Error::StsUnmatchedSizes, "The input and output images must have the same size" );
 
     if( !(termcrit.type & TermCriteria::MAX_ITER) )
         termcrit.maxCount = 5;
@@ -393,7 +393,7 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
                         (src_pyramid[level-1].cols+1)/2, src_pyramid[level-1].type() );
         dst_pyramid[level].create( src_pyramid[level].rows,
                         src_pyramid[level].cols, src_pyramid[level].type() );
-        cv::pyrDown( src_pyramid[level-1], src_pyramid[level], src_pyramid[level].size() );
+        ncvslideio::pyrDown( src_pyramid[level-1], src_pyramid[level], src_pyramid[level].size() );
     }
 
     mask0.create(src0.rows, src0.cols, CV_8UC1);
@@ -402,8 +402,8 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
     // 2. apply meanshift, starting from the pyramid top (i.e. the smallest layer)
     for( level = max_level; level >= 0; level-- )
     {
-        cv::Mat src = src_pyramid[level];
-        cv::Size size = src.size();
+        ncvslideio::Mat src = src_pyramid[level];
+        ncvslideio::Size size = src.size();
         const uchar* sptr = src.ptr();
         int sstep = (int)src.step;
         uchar* dptr;
@@ -411,15 +411,15 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
         float sp = (float)(sp0 / (1 << level));
         sp = MAX( sp, 1 );
 
-        cv::Mat m;
+        ncvslideio::Mat m;
         if( level < max_level )
         {
-            cv::Size size1 = dst_pyramid[level+1].size();
-            m = cv::Mat(size.height, size.width, CV_8UC1, mask0.ptr());
+            ncvslideio::Size size1 = dst_pyramid[level+1].size();
+            m = ncvslideio::Mat(size.height, size.width, CV_8UC1, mask0.ptr());
             dstep = (int)dst_pyramid[level+1].step;
             dptr = dst_pyramid[level+1].ptr() + dstep + cn;
-            cv::pyrUp( dst_pyramid[level+1], dst_pyramid[level], dst_pyramid[level].size() );
-            m.setTo(cv::Scalar::all(0));
+            ncvslideio::pyrUp( dst_pyramid[level+1], dst_pyramid[level], dst_pyramid[level].size() );
+            m.setTo(ncvslideio::Scalar::all(0));
 
             for( i = 1; i < size1.height-1; i++, dptr += dstep - (size1.width-2)*3)
             {
@@ -432,7 +432,7 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
                 }
             }
 
-            cv::dilate( m, m, cv::Mat() );
+            ncvslideio::dilate( m, m, ncvslideio::Mat() );
         }
 
         dptr = dst_pyramid[level].ptr();
@@ -550,8 +550,8 @@ void cv::pyrMeanShiftFiltering( InputArray _src, OutputArray _dst,
 
 CV_IMPL void cvWatershed( const CvArr* _src, CvArr* _markers )
 {
-    cv::Mat src = cv::cvarrToMat(_src), markers = cv::cvarrToMat(_markers);
-    cv::watershed(src, markers);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(_src), markers = ncvslideio::cvarrToMat(_markers);
+    ncvslideio::watershed(src, markers);
 }
 
 
@@ -560,8 +560,8 @@ cvPyrMeanShiftFiltering( const CvArr* srcarr, CvArr* dstarr,
                         double sp0, double sr, int max_level,
                         CvTermCriteria termcrit )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr);
-    const cv::Mat dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr);
+    const ncvslideio::Mat dst = ncvslideio::cvarrToMat(dstarr);
 
-    cv::pyrMeanShiftFiltering(src, dst, sp0, sr, max_level, termcrit);
+    ncvslideio::pyrMeanShiftFiltering(src, dst, sp0, sr, max_level, termcrit);
 }

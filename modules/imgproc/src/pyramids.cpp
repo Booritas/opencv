@@ -47,7 +47,7 @@
 
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T, int shift> struct FixPtCast
@@ -914,7 +914,7 @@ pyrDown_( const Mat& _src, Mat& _dst, int borderType )
     int *tabLPtr = tabL;
     int *tabRPtr = tabR;
 
-    cv::parallel_for_(Range(0,dsize.height), cv::PyrDownInvoker<CastOp>(_src, _dst, borderType, &tabRPtr, &tabM, &tabLPtr), cv::getNumThreads());
+    ncvslideio::parallel_for_(Range(0,dsize.height), ncvslideio::PyrDownInvoker<CastOp>(_src, _dst, borderType, &tabRPtr, &tabM, &tabLPtr), ncvslideio::getNumThreads());
 }
 
 template<class CastOp>
@@ -1267,7 +1267,7 @@ static bool ocl_pyrUp( InputArray _src, OutputArray _dst, const Size& _dsz, int 
 }
 
 #ifdef HAVE_OPENVX
-namespace cv
+namespace ncvslideio
 {
 static bool openvx_pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
 {
@@ -1289,7 +1289,7 @@ static bool openvx_pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz,
        (_dsz != acceptableSize && !_dsz.empty()))
         return false;
 
-    // The only border mode which is supported by both cv::pyrDown() and OpenVX
+    // The only border mode which is supported by both ncvslideio::pyrDown() and OpenVX
     // and produces predictable results
     ivx::border_t borderMode;
     borderMode.mode = VX_BORDER_REPLICATE;
@@ -1345,7 +1345,7 @@ static bool openvx_pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz,
 }
 #endif
 
-void cv::pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
+void ncvslideio::pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1389,14 +1389,14 @@ void cv::pyrDown( InputArray _src, OutputArray _dst, const Size& _dsz, int borde
     else if( depth == CV_64F )
         func = pyrDown_< FltCast<double, 8> >;
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     func( src, dst, borderType );
 }
 
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_pyrup( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
 {
@@ -1456,7 +1456,7 @@ static bool ipp_pyrup( InputArray _src, OutputArray _dst, const Size& _dsz, int 
 }
 #endif
 
-void cv::pyrUp( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
+void ncvslideio::pyrUp( InputArray _src, OutputArray _dst, const Size& _dsz, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1492,14 +1492,14 @@ void cv::pyrUp( InputArray _src, OutputArray _dst, const Size& _dsz, int borderT
     else if( depth == CV_64F )
         func = pyrUp_< FltCast<double, 6> >;
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     func( src, dst, borderType );
 }
 
 
 #ifdef HAVE_IPP
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_buildpyramid( InputArray _src, OutputArrayOfArrays _dst, int maxlevel, int borderType )
 {
@@ -1613,7 +1613,7 @@ static bool ipp_buildpyramid( InputArray _src, OutputArrayOfArrays _dst, int max
 }
 #endif
 
-void cv::buildPyramid( InputArray _src, OutputArrayOfArrays _dst, int maxlevel, int borderType )
+void ncvslideio::buildPyramid( InputArray _src, OutputArrayOfArrays _dst, int maxlevel, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1644,18 +1644,18 @@ void cv::buildPyramid( InputArray _src, OutputArrayOfArrays _dst, int maxlevel, 
 
 CV_IMPL void cvPyrDown( const void* srcarr, void* dstarr, int _filter )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( _filter == CV_GAUSSIAN_5x5 && src.type() == dst.type());
-    cv::pyrDown( src, dst, dst.size() );
+    ncvslideio::pyrDown( src, dst, dst.size() );
 }
 
 CV_IMPL void cvPyrUp( const void* srcarr, void* dstarr, int _filter )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( _filter == CV_GAUSSIAN_5x5 && src.type() == dst.type());
-    cv::pyrUp( src, dst, dst.size() );
+    ncvslideio::pyrUp( src, dst, dst.size() );
 }
 
 
@@ -1663,7 +1663,7 @@ CV_IMPL void
 cvReleasePyramid( CvMat*** _pyramid, int extra_layers )
 {
     if( !_pyramid )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     if( *_pyramid )
         for( int i = 0; i <= extra_layers; i++ )
@@ -1684,10 +1684,10 @@ cvCreatePyramid( const CvArr* srcarr, int extra_layers, double rate,
     CvMat stub, *src = cvGetMat( srcarr, &stub );
 
     if( extra_layers < 0 )
-        CV_Error( cv::Error::StsOutOfRange, "The number of extra layers must be non negative" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "The number of extra layers must be non negative" );
 
     int i, layer_step, elem_size = CV_ELEM_SIZE(src->type);
-    cv::Size layer_size, size = cvGetMatSize(src);
+    ncvslideio::Size layer_size, size = cvGetMatSize(src);
 
     if( bufarr )
     {
@@ -1711,7 +1711,7 @@ cvCreatePyramid( const CvArr* srcarr, int extra_layers, double rate,
         }
 
         if( bufsize < 0 )
-            CV_Error( cv::Error::StsOutOfRange, "The buffer is too small to fit the pyramid" );
+            CV_Error( ncvslideio::Error::StsOutOfRange, "The buffer is too small to fit the pyramid" );
         ptr = buf->data.ptr;
     }
 

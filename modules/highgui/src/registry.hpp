@@ -7,7 +7,7 @@
 
 #include "factory.hpp"
 
-namespace cv { namespace highgui_backend {
+namespace ncvslideio { namespace highgui_backend {
 
 struct BackendInfo
 {

@@ -12,10 +12,10 @@
 #ifdef HAVE_VA
 #  include <va/va.h>
 #else  // HAVE_VA
-#  define NO_VA_SUPPORT_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without VA support (libva)")
+#  define NO_VA_SUPPORT_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without VA support (libva)")
 #endif // HAVE_VA
 
-using namespace cv;
+using namespace ncvslideio;
 
 ////////////////////////////////////////////////////////////////////////
 // CL-VA Interoperability
@@ -39,14 +39,14 @@ using namespace cv;
 #ifndef OPENCV_LIBVA_LINK
 #include "va_wrapper.impl.hpp"
 #else
-namespace cv { namespace detail {
+namespace ncvslideio { namespace detail {
 static void init_libva() { /* nothing */ }
 }}  // namespace
 #endif
-using namespace cv::detail;
+using namespace ncvslideio::detail;
 #endif
 
-namespace cv { namespace va_intel {
+namespace ncvslideio { namespace va_intel {
 
 #ifdef HAVE_VA_INTEL
 
@@ -63,7 +63,7 @@ public:
         if (!clCreateFromVA_APIMediaSurfaceINTEL ||
             !clEnqueueAcquireVA_APIMediaSurfacesINTEL ||
             !clEnqueueReleaseVA_APIMediaSurfacesINTEL) {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get extension function for VA-API interop");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get extension function for VA-API interop");
         }
     }
     virtual ~VAAPIInterop() {
@@ -90,14 +90,14 @@ Context& initializeContextFromVA(VADisplay display, bool tryInterop)
         cl_uint numPlatforms;
         cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
         if (numPlatforms == 0)
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
         std::vector<cl_platform_id> platforms(numPlatforms);
         status = clGetPlatformIDs(numPlatforms, &platforms[0], NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get platform Id list");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get platform Id list");
 
         // For CL-VA interop, we must find platform/device with "cl_intel_va_api_media_sharing" extension.
         // With standard initialization procedure, we should examine platform extension string for that.
@@ -188,7 +188,7 @@ Context& initializeContextFromVA(VADisplay display, bool tryInterop)
 static bool ocl_convert_nv12_to_bgr(cl_mem clImageY, cl_mem clImageUV, cl_mem clBuffer, int step, int cols, int rows)
 {
     ocl::Kernel k;
-    k.create("YUV2BGR_NV12_8u", cv::ocl::core::cvtclr_dx_oclsrc, "");
+    k.create("YUV2BGR_NV12_8u", ncvslideio::ocl::core::cvtclr_dx_oclsrc, "");
     if (k.empty())
         return false;
 
@@ -201,7 +201,7 @@ static bool ocl_convert_nv12_to_bgr(cl_mem clImageY, cl_mem clImageUV, cl_mem cl
 static bool ocl_convert_bgr_to_nv12(cl_mem clBuffer, int step, int cols, int rows, cl_mem clImageY, cl_mem clImageUV)
 {
     ocl::Kernel k;
-    k.create("BGR2YUV_NV12_8u", cv::ocl::core::cvtclr_dx_oclsrc, "");
+    k.create("BGR2YUV_NV12_8u", ncvslideio::ocl::core::cvtclr_dx_oclsrc, "");
     if (k.empty())
         return false;
 
@@ -212,7 +212,7 @@ static bool ocl_convert_bgr_to_nv12(cl_mem clBuffer, int step, int cols, int row
 }
 #endif // HAVE_VA_INTEL
 
-} // namespace cv::va_intel::ocl
+} // namespace ncvslideio::va_intel::ocl
 
 #if defined(HAVE_VA)
 const int NCHANNELS = 3;
@@ -562,33 +562,33 @@ void convertToVASurface(VADisplay display, InputArray src, VASurfaceID surface, 
 
         cl_mem clImageY = interop->clCreateFromVA_APIMediaSurfaceINTEL(context, CL_MEM_WRITE_ONLY, &surface, 0, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (Y plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (Y plane)");
         cl_mem clImageUV = interop->clCreateFromVA_APIMediaSurfaceINTEL(context, CL_MEM_WRITE_ONLY, &surface, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (UV plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (UV plane)");
 
         cl_command_queue q = (cl_command_queue)ocl_context.getQueue().ptr();
 
         cl_mem images[2] = { clImageY, clImageUV };
         status = interop->clEnqueueAcquireVA_APIMediaSurfacesINTEL(q, 2, images, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireVA_APIMediaSurfacesINTEL failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireVA_APIMediaSurfacesINTEL failed");
         if (!ocl::ocl_convert_bgr_to_nv12(clBuffer, (int)u.step[0], u.cols, u.rows, clImageY, clImageUV))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
         interop->clEnqueueReleaseVA_APIMediaSurfacesINTEL(q, 2, images, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseVA_APIMediaSurfacesINTEL failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseVA_APIMediaSurfacesINTEL failed");
 
         status = clFinish(q); // TODO Use events
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
         status = clReleaseMemObject(clImageY); // TODO RAII
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (Y plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (Y plane)");
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (UV plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (UV plane)");
     }
     else
 # endif // HAVE_VA_INTEL
@@ -604,7 +604,7 @@ void convertToVASurface(VADisplay display, InputArray src, VASurfaceID surface, 
 
         status = vaSyncSurface(display, surface);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaSyncSurface failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaSyncSurface failed");
 
         bool indirect_buffer = false;
         VAImage image;
@@ -615,12 +615,12 @@ void convertToVASurface(VADisplay display, InputArray src, VASurfaceID surface, 
             indirect_buffer = true;
             int num_formats = vaMaxNumImageFormats(display);
             if (num_formats <= 0)
-                CV_Error(cv::Error::StsError, "VA-API: vaMaxNumImageFormats failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaMaxNumImageFormats failed");
             std::vector<VAImageFormat> fmt_list(num_formats);
 
             status = vaQueryImageFormats(display, fmt_list.data(), &num_formats);
             if (status != VA_STATUS_SUCCESS)
-                CV_Error(cv::Error::StsError, "VA-API: vaQueryImageFormats failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaQueryImageFormats failed");
             VAImageFormat *selected_format = nullptr;
             for (auto &fmt : fmt_list){
                 if (fmt.fourcc == VA_FOURCC_NV12 || fmt.fourcc == VA_FOURCC_YV12){
@@ -629,18 +629,18 @@ void convertToVASurface(VADisplay display, InputArray src, VASurfaceID surface, 
                 }
             }
             if (selected_format == nullptr)
-                CV_Error(cv::Error::StsError, "VA-API: vaQueryImageFormats did not return a supported format");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaQueryImageFormats did not return a supported format");
 
             status = vaCreateImage(display, selected_format, size.width, size.height, &image);
             if (status != VA_STATUS_SUCCESS)
-                CV_Error(cv::Error::StsError, "VA-API: vaCreateImage failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaCreateImage failed");
 
         }
 
         unsigned char* buffer = 0;
         status = vaMapBuffer(display, image.buf, (void **)&buffer);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaMapBuffer failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaMapBuffer failed");
 
         if (image.format.fourcc == VA_FOURCC_NV12)
             copy_convert_bgr_to_nv12(image, m, buffer);
@@ -651,19 +651,19 @@ void convertToVASurface(VADisplay display, InputArray src, VASurfaceID surface, 
 
         status = vaUnmapBuffer(display, image.buf);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaUnmapBuffer failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaUnmapBuffer failed");
 
         if (indirect_buffer){
             status = vaPutImage(display, surface, image.image_id, 0, 0, size.width, size.height, 0, 0, size.width, size.height);
             if (status != VA_STATUS_SUCCESS){
                 vaDestroyImage(display, image.image_id);
-                CV_Error(cv::Error::StsError, "VA-API: vaPutImage failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaPutImage failed");
             }
         }
 
         status = vaDestroyImage(display, image.image_id);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaDestroyImage failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaDestroyImage failed");
     }
 #endif  // !HAVE_VA
 }
@@ -699,33 +699,33 @@ void convertFromVASurface(VADisplay display, VASurfaceID surface, Size size, Out
 
         cl_mem clImageY = interop->clCreateFromVA_APIMediaSurfaceINTEL(context, CL_MEM_READ_ONLY, &surface, 0, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (Y plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (Y plane)");
         cl_mem clImageUV = interop->clCreateFromVA_APIMediaSurfaceINTEL(context, CL_MEM_READ_ONLY, &surface, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (UV plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromVA_APIMediaSurfaceINTEL failed (UV plane)");
 
         cl_command_queue q = (cl_command_queue)ocl_context.getQueue().ptr();
 
         cl_mem images[2] = { clImageY, clImageUV };
         status = interop->clEnqueueAcquireVA_APIMediaSurfacesINTEL(q, 2, images, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireVA_APIMediaSurfacesINTEL failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireVA_APIMediaSurfacesINTEL failed");
         if (!ocl::ocl_convert_nv12_to_bgr(clImageY, clImageUV, clBuffer, (int)u.step[0], u.cols, u.rows))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
         status = interop->clEnqueueReleaseVA_APIMediaSurfacesINTEL(q, 2, images, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseVA_APIMediaSurfacesINTEL failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseVA_APIMediaSurfacesINTEL failed");
 
         status = clFinish(q); // TODO Use events
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
         status = clReleaseMemObject(clImageY); // TODO RAII
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (Y plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (Y plane)");
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (UV plane)");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed (UV plane)");
     }
     else
 # endif // HAVE_VA_INTEL
@@ -741,7 +741,7 @@ void convertFromVASurface(VADisplay display, VASurfaceID surface, Size size, Out
 
         status = vaSyncSurface(display, surface);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaSyncSurface failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaSyncSurface failed");
 
         VAImage image;
         status = vaDeriveImage(display, surface, &image);
@@ -750,12 +750,12 @@ void convertFromVASurface(VADisplay display, VASurfaceID surface, Size size, Out
             //pick a format
             int num_formats = vaMaxNumImageFormats(display);
             if (num_formats <= 0)
-                CV_Error(cv::Error::StsError, "VA-API: vaMaxNumImageFormats failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaMaxNumImageFormats failed");
             std::vector<VAImageFormat> fmt_list(num_formats);
 
             status = vaQueryImageFormats(display, fmt_list.data(), &num_formats);
             if (status != VA_STATUS_SUCCESS)
-                CV_Error(cv::Error::StsError, "VA-API: vaQueryImageFormats failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaQueryImageFormats failed");
             VAImageFormat *selected_format = nullptr;
             for (auto &fmt : fmt_list){
                 if (fmt.fourcc == VA_FOURCC_NV12 || fmt.fourcc == VA_FOURCC_YV12){
@@ -764,23 +764,23 @@ void convertFromVASurface(VADisplay display, VASurfaceID surface, Size size, Out
                 }
             }
             if (selected_format == nullptr)
-                CV_Error(cv::Error::StsError, "VA-API: vaQueryImageFormats did not return a supported format");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaQueryImageFormats did not return a supported format");
 
             status = vaCreateImage(display, selected_format, size.width, size.height, &image);
             if (status != VA_STATUS_SUCCESS)
-                CV_Error(cv::Error::StsError, "VA-API: vaCreateImage failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaCreateImage failed");
 
             status = vaGetImage(display, surface, 0, 0, size.width, size.height, image.image_id);
             if (status != VA_STATUS_SUCCESS){
                 vaDestroyImage(display, image.image_id);
-                CV_Error(cv::Error::StsError, "VA-API: vaPutImage failed");
+                CV_Error(ncvslideio::Error::StsError, "VA-API: vaPutImage failed");
             }
         }
 
         unsigned char* buffer = 0;
         status = vaMapBuffer(display, image.buf, (void **)&buffer);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaMapBuffer failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaMapBuffer failed");
 
         if (image.format.fourcc == VA_FOURCC_NV12)
             copy_convert_nv12_to_bgr(image, buffer, m);
@@ -791,13 +791,13 @@ void convertFromVASurface(VADisplay display, VASurfaceID surface, Size size, Out
 
         status = vaUnmapBuffer(display, image.buf);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaUnmapBuffer failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaUnmapBuffer failed");
 
         status = vaDestroyImage(display, image.image_id);
         if (status != VA_STATUS_SUCCESS)
-            CV_Error(cv::Error::StsError, "VA-API: vaDestroyImage failed");
+            CV_Error(ncvslideio::Error::StsError, "VA-API: vaDestroyImage failed");
     }
 #endif  // !HAVE_VA
 }
 
-}} // namespace cv::va_intel
+}} // namespace ncvslideio::va_intel

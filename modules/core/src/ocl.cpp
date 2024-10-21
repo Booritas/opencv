@@ -123,17 +123,17 @@
 
 #include "umatrix.hpp"
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 
 #define IMPLEMENT_REFCOUNTABLE() \
     void addref() { CV_XADD(&refcount, 1); } \
-    void release() { if( CV_XADD(&refcount, -1) == 1 && !cv::__termination) delete this; } \
+    void release() { if( CV_XADD(&refcount, -1) == 1 && !ncvslideio::__termination) delete this; } \
     int refcount
 
-static cv::utils::AllocatorStatistics opencl_allocator_stats;
+static ncvslideio::utils::AllocatorStatistics opencl_allocator_stats;
 
-CV_EXPORTS cv::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics();
-cv::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics()
+CV_EXPORTS ncvslideio::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics();
+ncvslideio::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics()
 {
     return opencl_allocator_stats;
 }
@@ -145,7 +145,7 @@ static bool isRaiseError()
     static bool value = false;
     if (!initialized)
     {
-        value = cv::utils::getConfigurationParameterBool("OPENCV_OPENCL_RAISE_ERROR", false);
+        value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_OPENCL_RAISE_ERROR", false);
         initialized = true;
     }
     return value;
@@ -155,7 +155,7 @@ static bool isRaiseError()
 static void onOpenCLKernelBuildError()
 {
     // NB: no need to cache this value
-    bool value = cv::utils::getConfigurationParameterBool("OPENCV_OPENCL_ABORT_ON_BUILD_ERROR", false);
+    bool value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_OPENCL_ABORT_ON_BUILD_ERROR", false);
     if (value)
     {
         fprintf(stderr, "Abort on OpenCL kernel build failure!\n");
@@ -175,7 +175,7 @@ void traceOpenCLCheck(cl_int status, const char* message)
 #endif
 
 #define CV_OCL_API_ERROR_MSG(check_result, msg) \
-    cv::format("OpenCL error %s (%d) during call: %s", getOpenCLErrorString(check_result), check_result, msg)
+    ncvslideio::format("OpenCL error %s (%d) during call: %s", getOpenCLErrorString(check_result), check_result, msg)
 
 #define CV_OCL_CHECK_RESULT(check_result, msg) \
     do { \
@@ -183,7 +183,7 @@ void traceOpenCLCheck(cl_int status, const char* message)
         if (check_result != CL_SUCCESS) \
         { \
             static_assert(std::is_convertible<decltype(msg), const char*>::value, "msg of CV_OCL_CHECK_RESULT must be const char*"); \
-            cv::String error_msg = CV_OCL_API_ERROR_MSG(check_result, msg); \
+            ncvslideio::String error_msg = CV_OCL_API_ERROR_MSG(check_result, msg); \
             CV_Error(Error::OpenCLApiCallError, error_msg); \
         } \
     } while (0)
@@ -203,7 +203,7 @@ void traceOpenCLCheck(cl_int status, const char* message)
         if (check_result != CL_SUCCESS && isRaiseError()) \
         { \
             static_assert(std::is_convertible<decltype(msg), const char*>::value, "msg of CV_OCL_DBG_CHECK_RESULT must be const char*"); \
-            cv::String error_msg = CV_OCL_API_ERROR_MSG(check_result, msg); \
+            ncvslideio::String error_msg = CV_OCL_API_ERROR_MSG(check_result, msg); \
             CV_Error(Error::OpenCLApiCallError, error_msg); \
         } \
     } while (0)
@@ -310,9 +310,9 @@ static uint64 crc64( const uchar* data, size_t size, uint64 crc0=0 )
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
 struct OpenCLBinaryCacheConfigurator
 {
-    cv::String cache_path_;
-    cv::String cache_lock_filename_;
-    cv::Ptr<utils::fs::FileLock> cache_lock_;
+    ncvslideio::String cache_path_;
+    ncvslideio::String cache_lock_filename_;
+    ncvslideio::Ptr<utils::fs::FileLock> cache_lock_;
 
     typedef std::map<std::string, std::string> ContextCacheType;
     ContextCacheType prepared_contexts_;
@@ -369,7 +369,7 @@ struct OpenCLBinaryCacheConfigurator
                         }
                         CV_LOG_VERBOSE(NULL, 0, "Checking cache lock... Done!");
                     }
-                    catch (const cv::Exception& e)
+                    catch (const ncvslideio::Exception& e)
                     {
                         CV_LOG_WARNING(NULL, "Can't create OpenCL program cache lock: " << cache_lock_filename_ << std::endl << e.what());
                     }
@@ -391,7 +391,7 @@ struct OpenCLBinaryCacheConfigurator
                     }
                 }
             }
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 CV_LOG_WARNING(NULL, "Can't prepare OpenCL program cache: " << cache_path_ << std::endl << e.what());
                 clear();
@@ -448,7 +448,7 @@ struct OpenCLBinaryCacheConfigurator
                     CV_LOG_WARNING(NULL, "Can't create directory: " << target_directory);
                 }
             }
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 CV_LOG_ERROR(NULL, "Can't create OpenCL program cache directory for context: " << target_directory << std::endl << e.what());
             }
@@ -489,13 +489,13 @@ struct OpenCLBinaryCacheConfigurator
                     for (size_t i = 0; i < remove_entries.size(); i++)
                     {
                         const String& name = remove_entries[i];
-                        cv::String path = utils::fs::join(cache_path_, name);
+                        ncvslideio::String path = utils::fs::join(cache_path_, name);
                         try
                         {
                             utils::fs::remove_all(path);
                             CV_LOG_WARNING(NULL, "Removed: " << path);
                         }
-                        catch (const cv::Exception& e)
+                        catch (const ncvslideio::Exception& e)
                         {
                             CV_LOG_ERROR(NULL, "Exception during removal of obsolete OpenCL cache directory: " << path << std::endl << e.what());
                         }
@@ -624,7 +624,7 @@ public:
                 uint32_t fileSourceSignatureSize = readUInt32();
                 if (fileSourceSignatureSize == sourceSignatureSize_)
                 {
-                    cv::AutoBuffer<char> fileSourceSignature(fileSourceSignatureSize + 1);
+                    ncvslideio::AutoBuffer<char> fileSourceSignature(fileSourceSignatureSize + 1);
                     f.read(fileSourceSignature.data(), fileSourceSignatureSize);
                     if (f.eof())
                     {
@@ -640,7 +640,7 @@ public:
                     CV_LOG_ERROR(NULL, "Source code signature/hash mismatch (program source code has been changed/updated)");
                 }
             }
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 CV_LOG_ERROR(NULL, "Can't open binary program file: " << fileName << " : " << e.what());
             }
@@ -699,7 +699,7 @@ public:
             //CV_StaticAssert(sizeof(entry) == sizeof(uint32_t) * 3, "");
             f.read((char*)&entry, sizeof(entry));
             CV_Assert(!f.fail());
-            cv::AutoBuffer<char> fileKey(entry.keySize + 1);
+            ncvslideio::AutoBuffer<char> fileKey(entry.keySize + 1);
             if (key.size() == entry.keySize)
             {
                 if (entry.keySize > 0)
@@ -789,7 +789,7 @@ public:
             //CV_StaticAssert(sizeof(entry) == sizeof(uint32_t) * 3, "");
             f.read((char*)&entry, sizeof(entry));
             CV_Assert(!f.fail());
-            cv::AutoBuffer<char> fileKey(entry.keySize + 1);
+            ncvslideio::AutoBuffer<char> fileKey(entry.keySize + 1);
             if (key.size() == entry.keySize)
             {
                 if (entry.keySize > 0)
@@ -958,7 +958,7 @@ public:
                     useOpenCL_ = d.available();
                 }
             }
-            catch (const cv::Exception&)
+            catch (const ncvslideio::Exception&)
             {
                 // nothing
             }
@@ -987,7 +987,7 @@ public:
 
         if (!initialized)
         {
-            cv::AutoLock lock(getInitializationMutex());
+            ncvslideio::AutoLock lock(getInitializationMutex());
             if (!initialized)
             {
                 CV_LOG_INFO(NULL, "OpenCL: creating new execution context...");
@@ -1122,7 +1122,7 @@ OpenCLExecutionContext OpenCLExecutionContext::create(const Context& context, co
 {
     CV_TRACE_FUNCTION();
     if (!haveOpenCL())
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
 
     CV_Assert(!context.empty());
     CV_Assert(context.ptr());
@@ -1139,7 +1139,7 @@ OpenCLExecutionContext OpenCLExecutionContext::create(const Context& context, co
 {
     CV_TRACE_FUNCTION();
     if (!haveOpenCL())
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
 
     CV_Assert(!context.empty());
     CV_Assert(context.ptr());
@@ -1173,7 +1173,7 @@ bool haveOpenCL()
         const char* envPath = getenv("OPENCV_OPENCL_RUNTIME");
         if (envPath)
         {
-            if (cv::String(envPath) == "disabled")
+            if (ncvslideio::String(envPath) == "disabled")
             {
                 g_isOpenCLAvailable = false;
                 g_isOpenCLInitialized = true;
@@ -1181,7 +1181,7 @@ bool haveOpenCL()
             }
         }
 
-        cv::AutoLock lock(getInitializationMutex());
+        ncvslideio::AutoLock lock(getInitializationMutex());
         CV_LOG_INFO(NULL, "Initialize OpenCL runtime...");
         try
         {
@@ -1517,7 +1517,7 @@ void* Platform::ptr() const
 
 Platform& Platform::getDefault()
 {
-    CV_LOG_ONCE_WARNING(NULL, "OpenCL: Platform::getDefault() is deprecated and will be removed. Use cv::ocl::getPlatfomsInfo() for enumeration of available platforms");
+    CV_LOG_ONCE_WARNING(NULL, "OpenCL: Platform::getDefault() is deprecated and will be removed. Use ncvslideio::ocl::getPlatfomsInfo() for enumeration of available platforms");
     static Platform p;
     if( !p.p )
     {
@@ -1634,7 +1634,7 @@ struct Device::Impl
 #ifndef CL_DEVICE_SPIR_VERSIONS
 #define CL_DEVICE_SPIR_VERSIONS                     0x40E0
 #endif
-            cv::String spir_versions = getStrProp(CL_DEVICE_SPIR_VERSIONS);
+            ncvslideio::String spir_versions = getStrProp(CL_DEVICE_SPIR_VERSIONS);
             std::cout << spir_versions << std::endl;
         }
 #endif
@@ -1643,7 +1643,7 @@ struct Device::Impl
     ~Impl()
     {
 #ifdef _WIN32
-        if (!cv::__termination)
+        if (!ncvslideio::__termination)
 #endif
         {
             if (handle)
@@ -2393,9 +2393,9 @@ protected:
 #endif
     {
         if (!haveOpenCL())
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
 
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         auto& container = getGlobalContainer();
         container.resize(std::max(container.size(), (size_t)contextId + 1));
         container[contextId] = this;
@@ -2404,7 +2404,7 @@ protected:
     ~Impl()
     {
 #ifdef _WIN32
-        if (!cv::__termination)
+        if (!ncvslideio::__termination)
 #endif
         {
             if (handle)
@@ -2418,7 +2418,7 @@ protected:
         userContextStorage.clear();
 
         {
-            cv::AutoLock lock(cv::getInitializationMutex());
+            ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
             auto& container = getGlobalContainer();
             CV_CheckLT((size_t)contextId, container.size(), "");
             container[contextId] = NULL;
@@ -2433,7 +2433,7 @@ protected:
         CV_OCL_CHECK(clGetContextInfo(handle, CL_CONTEXT_NUM_DEVICES, sizeof(ndevices), &ndevices, NULL));
         CV_Assert(ndevices > 0);
 
-        cv::AutoBuffer<cl_device_id> cl_devices(ndevices);
+        ncvslideio::AutoBuffer<cl_device_id> cl_devices(ndevices);
         size_t devices_ret_size = 0;
         CV_OCL_CHECK(clGetContextInfo(handle, CL_CONTEXT_DEVICES, cl_devices.size() * sizeof(cl_device_id), &cl_devices[0], &devices_ret_size));
         CV_CheckEQ(devices_ret_size, cl_devices.size() * sizeof(cl_device_id), "");
@@ -2450,7 +2450,7 @@ protected:
     {
         if (!bufferPool_)
         {
-            cv::AutoLock lock(cv::getInitializationMutex());
+            ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
             if (!bufferPool_)
             {
                 const_cast<Impl*>(this)->__init_buffer_pools();
@@ -2461,7 +2461,7 @@ public:
     static Impl* findContext(const std::string& configuration)
     {
         CV_TRACE_FUNCTION();
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         auto& container = getGlobalContainer();
         if (configuration.empty() && !container.empty())
             return container[0];
@@ -2520,7 +2520,7 @@ public:
 
         CV_Assert(h);
 
-        std::string configuration = cv::format("@ctx-%p", (void*)h);
+        std::string configuration = ncvslideio::format("@ctx-%p", (void*)h);
         Impl* impl = findContext(configuration);
         if (impl)
         {
@@ -2552,7 +2552,7 @@ public:
         cl_device_id d = (cl_device_id)device.ptr();
         CV_Assert(d);
 
-        std::string configuration = cv::format("@dev-%p", (void*)d);
+        std::string configuration = ncvslideio::format("@dev-%p", (void*)d);
         Impl* impl = findContext(configuration);
         if (impl)
         {
@@ -2621,7 +2621,7 @@ public:
 
     void unloadProg(Program& prog)
     {
-        cv::AutoLock lock(program_cache_mutex);
+        ncvslideio::AutoLock lock(program_cache_mutex);
         for (CacheList::iterator i = cacheList.begin(); i != cacheList.end(); ++i)
         {
               phash_t::iterator it = phash.find(*i);
@@ -2641,14 +2641,14 @@ public:
     {
         if (prefix.empty())
         {
-            cv::AutoLock lock(program_cache_mutex);
+            ncvslideio::AutoLock lock(program_cache_mutex);
             if (prefix.empty())
             {
                 CV_Assert(!devices.empty());
                 const Device& d = devices[0];
                 int bits = d.addressBits();
                 if (bits > 0 && bits != 64)
-                    prefix = cv::format("%d-bit--", bits);
+                    prefix = ncvslideio::format("%d-bit--", bits);
                 prefix += d.vendorName() + "--" + d.name() + "--" + d.driverVersion();
                 // sanitize chars
                 for (size_t i = 0; i < prefix.size(); i++)
@@ -2668,13 +2668,13 @@ public:
     {
         if (prefix_base.empty())
         {
-            cv::AutoLock lock(program_cache_mutex);
+            ncvslideio::AutoLock lock(program_cache_mutex);
             if (prefix_base.empty())
             {
                 const Device& d = devices[0];
                 int bits = d.addressBits();
                 if (bits > 0 && bits != 64)
-                    prefix_base = cv::format("%d-bit--", bits);
+                    prefix_base = ncvslideio::format("%d-bit--", bits);
                 prefix_base += d.vendorName() + "--" + d.name() + "--";
                 // sanitize chars
                 for (size_t i = 0; i < prefix_base.size(); i++)
@@ -2701,10 +2701,10 @@ public:
     std::string prefix;
     std::string prefix_base;
 
-    cv::Mutex program_cache_mutex;
+    ncvslideio::Mutex program_cache_mutex;
     typedef std::map<std::string, Program> phash_t;
     phash_t phash;
-    typedef std::list<cv::String> CacheList;
+    typedef std::list<ncvslideio::String> CacheList;
     CacheList cacheList;
 
     std::shared_ptr<OpenCLBufferPoolImpl> bufferPool_;
@@ -2723,13 +2723,13 @@ public:
     }
 
     std::map<std::type_index, std::shared_ptr<UserContext>> userContextStorage;
-    cv::Mutex userContextMutex;
+    ncvslideio::Mutex userContextMutex;
     void setUserContext(std::type_index typeId, const std::shared_ptr<UserContext>& userContext) {
-        cv::AutoLock lock(userContextMutex);
+        ncvslideio::AutoLock lock(userContextMutex);
         userContextStorage[typeId] = userContext;
     }
     std::shared_ptr<UserContext> getUserContext(std::type_index typeId) {
-        cv::AutoLock lock(userContextMutex);
+        ncvslideio::AutoLock lock(userContextMutex);
         auto it = userContextStorage.find(typeId);
         if (it != userContextStorage.end())
             return it->second;
@@ -3132,7 +3132,7 @@ CV_EXPORTS bool useSVM(UMatUsageFlags usageFlags)
     return false; // don't use SVM by default
 }
 
-} // namespace cv::ocl::svm
+} // namespace ncvslideio::ocl::svm
 #endif // HAVE_OPENCL_SVM
 
 Context::UserContext::~UserContext()
@@ -3182,13 +3182,13 @@ OpenCLExecutionContext OpenCLExecutionContext::create(
 )
 {
     if (!haveOpenCL())
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL runtime is not available!");
 
     cl_uint cnt = 0;
     CV_OCL_CHECK(clGetPlatformIDs(0, 0, &cnt));
 
     if (cnt == 0)
-        CV_Error(cv::Error::OpenCLApiCallError, "No OpenCL platform available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "No OpenCL platform available!");
 
     std::vector<cl_platform_id> platforms(cnt);
 
@@ -3210,13 +3210,13 @@ OpenCLExecutionContext OpenCLExecutionContext::create(
     }
 
     if (!platformAvailable)
-        CV_Error(cv::Error::OpenCLApiCallError, "No matched platforms available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "No matched platforms available!");
 
     // check if platformID corresponds to platformName
     String actualPlatformName;
     get_platform_name((cl_platform_id)platformID, actualPlatformName);
     if (platformName != actualPlatformName)
-        CV_Error(cv::Error::OpenCLApiCallError, "No matched platforms available!");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "No matched platforms available!");
 
     OpenCLExecutionContext ctx;
     ctx.p = std::make_shared<OpenCLExecutionContext::Impl>((cl_platform_id)platformID, (cl_context)context, (cl_device_id)deviceID);
@@ -3290,7 +3290,7 @@ struct Queue::Impl
     ~Impl()
     {
 #ifdef _WIN32
-        if (!cv::__termination)
+        if (!ncvslideio::__termination)
 #endif
         {
             if(handle)
@@ -3302,7 +3302,7 @@ struct Queue::Impl
         }
     }
 
-    const cv::ocl::Queue& getProfilingQueue(const cv::ocl::Queue& self)
+    const ncvslideio::ocl::Queue& getProfilingQueue(const ncvslideio::ocl::Queue& self)
     {
         if (isProfilingQueue_)
             return self;
@@ -3332,7 +3332,7 @@ struct Queue::Impl
 
     cl_command_queue handle;
     bool isProfilingQueue_;
-    cv::ocl::Queue profiling_queue_;
+    ncvslideio::ocl::Queue profiling_queue_;
 };
 
 Queue::Queue() CV_NOEXCEPT
@@ -3466,7 +3466,7 @@ struct Kernel::Impl
         if (ph)
         {
             handle = clCreateKernel(ph, kname, &retval);
-            CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clCreateKernel('%s')", kname).c_str());
+            CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clCreateKernel('%s')", kname).c_str());
         }
         for( int i = 0; i < MAX_ARRS; i++ )
             u[i] = 0;
@@ -3559,7 +3559,7 @@ struct Kernel::Impl
 
     IMPLEMENT_REFCOUNTABLE();
 
-    cv::String name;
+    ncvslideio::String name;
     cl_kernel handle;
     enum { MAX_ARRS = 16 };
     UMatData* u[MAX_ARRS];
@@ -3571,7 +3571,7 @@ struct Kernel::Impl
     bool haveTempSrcUMats;
 };
 
-}} // namespace cv::ocl
+}} // namespace ncvslideio::ocl
 
 extern "C" {
 
@@ -3579,9 +3579,9 @@ static void CL_CALLBACK oclCleanupCallback(cl_event e, cl_int, void *p)
 {
     try
     {
-        ((cv::ocl::Kernel::Impl*)p)->finit(e);
+        ((ncvslideio::ocl::Kernel::Impl*)p)->finit(e);
     }
-    catch (const cv::Exception& exc)
+    catch (const ncvslideio::Exception& exc)
     {
         CV_LOG_ERROR(NULL, "OCL: Unexpected OpenCV exception in OpenCL callback: " << exc.what());
     }
@@ -3597,7 +3597,7 @@ static void CL_CALLBACK oclCleanupCallback(cl_event e, cl_int, void *p)
 
 }
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 
 Kernel::Kernel() CV_NOEXCEPT
 {
@@ -3698,17 +3698,17 @@ bool Kernel::empty() const
     return ptr() == 0;
 }
 
-static cv::String dumpValue(size_t sz, const void* p)
+static ncvslideio::String dumpValue(size_t sz, const void* p)
 {
     if (!p)
         return "NULL";
     if (sz == 2)
-        return cv::format("%d / %uu / 0x%04x", *(short*)p, *(unsigned short*)p, *(short*)p);
+        return ncvslideio::format("%d / %uu / 0x%04x", *(short*)p, *(unsigned short*)p, *(short*)p);
     if (sz == 4)
-        return cv::format("%d / %uu / 0x%08x / %g", *(int*)p, *(int*)p, *(int*)p, *(float*)p);
+        return ncvslideio::format("%d / %uu / 0x%08x / %g", *(int*)p, *(int*)p, *(int*)p, *(float*)p);
     if (sz == 8)
-        return cv::format("%lld / %lluu / 0x%16llx / %g", *(long long*)p, *(long long*)p, *(long long*)p, *(double*)p);
-    return cv::format("%p", p);
+        return ncvslideio::format("%lld / %lluu / 0x%16llx / %g", *(long long*)p, *(long long*)p, *(long long*)p, *(double*)p);
+    return ncvslideio::format("%p", p);
 }
 
 int Kernel::set(int i, const void* value, size_t sz)
@@ -3721,7 +3721,7 @@ int Kernel::set(int i, const void* value, size_t sz)
         p->cleanupUMats();
 
     cl_int retval = clSetKernelArg(p->handle, (cl_uint)i, sz, value);
-    CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clSetKernelArg('%s', arg_index=%d, size=%d, value=%s)", p->name.c_str(), (int)i, (int)sz, dumpValue(sz, value).c_str()).c_str());
+    CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, size=%d, value=%s)", p->name.c_str(), (int)i, (int)sz, dumpValue(sz, value).c_str()).c_str());
     if (retval != CL_SUCCESS)
         return -1;
     return i+1;
@@ -3747,7 +3747,7 @@ int Kernel::set(int i, const KernelArg& arg)
         return -1;
     if (i < 0)
     {
-        CV_LOG_ERROR(NULL, cv::format("OpenCL: Kernel(%s)::set(arg_index=%d): negative arg_index",
+        CV_LOG_ERROR(NULL, ncvslideio::format("OpenCL: Kernel(%s)::set(arg_index=%d): negative arg_index",
                 p->name.c_str(), (int)i));
         return i;
     }
@@ -3763,14 +3763,14 @@ int Kernel::set(int i, const KernelArg& arg)
         {
             cl_mem h_null = (cl_mem)NULL;
             status = clSetKernelArg(p->handle, (cl_uint)i, sizeof(h_null), &h_null);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, cl_mem=NULL)", p->name.c_str(), (int)i).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, cl_mem=NULL)", p->name.c_str(), (int)i).c_str());
             return i + 1;
         }
         cl_mem h = (cl_mem)arg.m->handle(accessFlags);
 
         if (!h)
         {
-            CV_LOG_ERROR(NULL, cv::format("OpenCL: Kernel(%s)::set(arg_index=%d, flags=%d): can't create cl_mem handle for passed UMat buffer (addr=%p)",
+            CV_LOG_ERROR(NULL, ncvslideio::format("OpenCL: Kernel(%s)::set(arg_index=%d, flags=%d): can't create cl_mem handle for passed UMat buffer (addr=%p)",
                     p->name.c_str(), (int)i, (int)arg.flags, arg.m));
             p->release();
             p = 0;
@@ -3789,13 +3789,13 @@ int Kernel::set(int i, const KernelArg& arg)
 #else
             status = svmFns->fn_clSetKernelArgSVMPointer(p->handle, (cl_uint)i, &svmDataPtr);
 #endif
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArgSVMPointer('%s', arg_index=%d, ptr=%p)", p->name.c_str(), (int)i, (void*)svmDataPtr).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArgSVMPointer('%s', arg_index=%d, ptr=%p)", p->name.c_str(), (int)i, (void*)svmDataPtr).c_str());
         }
         else
 #endif
         {
             status = clSetKernelArg(p->handle, (cl_uint)i, sizeof(h), &h);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, cl_mem=%p)", p->name.c_str(), (int)i, (void*)h).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, cl_mem=%p)", p->name.c_str(), (int)i, (void*)h).c_str());
         }
 
         if (ptronly)
@@ -3806,18 +3806,18 @@ int Kernel::set(int i, const KernelArg& arg)
         {
             UMat2D u2d(*arg.m);
             status = clSetKernelArg(p->handle, (cl_uint)(i+1), sizeof(u2d.step), &u2d.step);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, step_value=%d)", p->name.c_str(), (int)(i+1), (int)u2d.step).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, step_value=%d)", p->name.c_str(), (int)(i+1), (int)u2d.step).c_str());
             status = clSetKernelArg(p->handle, (cl_uint)(i+2), sizeof(u2d.offset), &u2d.offset);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, offset_value=%d)", p->name.c_str(), (int)(i+2), (int)u2d.offset).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, offset_value=%d)", p->name.c_str(), (int)(i+2), (int)u2d.offset).c_str());
             i += 3;
 
             if( !(arg.flags & KernelArg::NO_SIZE) )
             {
                 int cols = u2d.cols*arg.wscale/arg.iwscale;
                 status = clSetKernelArg(p->handle, (cl_uint)i, sizeof(u2d.rows), &u2d.rows);
-                CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, rows_value=%d)", p->name.c_str(), (int)i, (int)u2d.rows).c_str());
+                CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, rows_value=%d)", p->name.c_str(), (int)i, (int)u2d.rows).c_str());
                 status = clSetKernelArg(p->handle, (cl_uint)(i+1), sizeof(cols), &cols);
-                CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, cols_value=%d)", p->name.c_str(), (int)(i+1), (int)cols).c_str());
+                CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, cols_value=%d)", p->name.c_str(), (int)(i+1), (int)cols).c_str());
                 i += 2;
             }
         }
@@ -3825,21 +3825,21 @@ int Kernel::set(int i, const KernelArg& arg)
         {
             UMat3D u3d(*arg.m);
             status = clSetKernelArg(p->handle, (cl_uint)(i+1), sizeof(u3d.slicestep), &u3d.slicestep);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, slicestep_value=%d)", p->name.c_str(), (int)(i+1), (int)u3d.slicestep).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, slicestep_value=%d)", p->name.c_str(), (int)(i+1), (int)u3d.slicestep).c_str());
             status = clSetKernelArg(p->handle, (cl_uint)(i+2), sizeof(u3d.step), &u3d.step);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, step_value=%d)", p->name.c_str(), (int)(i+2), (int)u3d.step).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, step_value=%d)", p->name.c_str(), (int)(i+2), (int)u3d.step).c_str());
             status = clSetKernelArg(p->handle, (cl_uint)(i+3), sizeof(u3d.offset), &u3d.offset);
-            CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, offset_value=%d)", p->name.c_str(), (int)(i+3), (int)u3d.offset).c_str());
+            CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, offset_value=%d)", p->name.c_str(), (int)(i+3), (int)u3d.offset).c_str());
             i += 4;
             if( !(arg.flags & KernelArg::NO_SIZE) )
             {
                 int cols = u3d.cols*arg.wscale/arg.iwscale;
                 status = clSetKernelArg(p->handle, (cl_uint)i, sizeof(u3d.slices), &u3d.slices);
-                CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, slices_value=%d)", p->name.c_str(), (int)i, (int)u3d.slices).c_str());
+                CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, slices_value=%d)", p->name.c_str(), (int)i, (int)u3d.slices).c_str());
                 status = clSetKernelArg(p->handle, (cl_uint)(i+1), sizeof(u3d.rows), &u3d.rows);
-                CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, rows_value=%d)", p->name.c_str(), (int)(i+1), (int)u3d.rows).c_str());
+                CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, rows_value=%d)", p->name.c_str(), (int)(i+1), (int)u3d.rows).c_str());
                 status = clSetKernelArg(p->handle, (cl_uint)(i+2), sizeof(u3d.cols), &cols);
-                CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, cols_value=%d)", p->name.c_str(), (int)(i+2), (int)cols).c_str());
+                CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, cols_value=%d)", p->name.c_str(), (int)(i+2), (int)cols).c_str());
                 i += 3;
             }
         }
@@ -3847,7 +3847,7 @@ int Kernel::set(int i, const KernelArg& arg)
         return i;
     }
     status = clSetKernelArg(p->handle, (cl_uint)i, arg.sz, arg.obj);
-    CV_OCL_DBG_CHECK_RESULT(status, cv::format("clSetKernelArg('%s', arg_index=%d, size=%d, obj=%p)", p->name.c_str(), (int)i, (int)arg.sz, (void*)arg.obj).c_str());
+    CV_OCL_DBG_CHECK_RESULT(status, ncvslideio::format("clSetKernelArg('%s', arg_index=%d, size=%d, obj=%p)", p->name.c_str(), (int)i, (int)arg.sz, (void*)arg.obj).c_str());
     return i+1;
 }
 
@@ -3890,7 +3890,7 @@ static bool isRaiseErrorOnReuseAsyncKernel()
     static bool value = false;
     if (!initialized)
     {
-        value = cv::utils::getConfigurationParameterBool("OPENCV_OPENCL_RAISE_ERROR_REUSE_ASYNC_KERNEL", false);
+        value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_OPENCL_RAISE_ERROR_REUSE_ASYNC_KERNEL", false);
         initialized = true;
     }
     return value;
@@ -3943,9 +3943,9 @@ bool Kernel::Impl::run(int dims, size_t globalsize[], size_t localsize[],
     if (retval != CL_SUCCESS)
 #endif
     {
-        cv::String msg = cv::format("clEnqueueNDRangeKernel('%s', dims=%d, globalsize=%zux%zux%zu, localsize=%s) sync=%s", name.c_str(), (int)dims,
+        ncvslideio::String msg = ncvslideio::format("clEnqueueNDRangeKernel('%s', dims=%d, globalsize=%zux%zux%zu, localsize=%s) sync=%s", name.c_str(), (int)dims,
                         globalsize[0], (dims > 1 ? globalsize[1] : 1), (dims > 2 ? globalsize[2] : 1),
-                        (localsize ? cv::format("%zux%zux%zu", localsize[0], (dims > 1 ? localsize[1] : 1), (dims > 2 ? localsize[2] : 1)) : cv::String("NULL")).c_str(),
+                        (localsize ? ncvslideio::format("%zux%zux%zu", localsize[0], (dims > 1 ? localsize[1] : 1), (dims > 2 ? localsize[2] : 1)) : ncvslideio::String("NULL")).c_str(),
                         sync ? "true" : "false"
                         );
         if (retval != CL_SUCCESS)
@@ -3998,7 +3998,7 @@ bool Kernel::runTask(bool sync, const Queue& q)
     cl_command_queue qq = getQueue(q);
     cl_event asyncEvent = 0;
     cl_int retval = clEnqueueTask(qq, p->handle, 0, 0, sync ? 0 : &asyncEvent);
-    CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clEnqueueTask('%s') sync=%s", p->name.c_str(), sync ? "true" : "false").c_str());
+    CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clEnqueueTask('%s') sync=%s", p->name.c_str(), sync ? "true" : "false").c_str());
     if (sync || retval != CL_SUCCESS)
     {
         CV_OCL_DBG_CHECK(clFinish(qq));
@@ -4089,8 +4089,8 @@ struct ProgramSource::Impl
 
     Impl(const String& src)
     {
-        init(PROGRAM_SOURCE_CODE, cv::String(), cv::String());
-        initFromSource(src, cv::String());
+        init(PROGRAM_SOURCE_CODE, ncvslideio::String(), ncvslideio::String());
+        initFromSource(src, ncvslideio::String());
     }
     Impl(const String& module, const String& name, const String& codeStr, const String& codeHash)
     {
@@ -4129,7 +4129,7 @@ struct ProgramSource::Impl
     {
         if (hashStr)
         {
-            sourceHash_ = cv::String(hashStr);
+            sourceHash_ = ncvslideio::String(hashStr);
             isHashUpdated = true;
             return;
         }
@@ -4156,14 +4156,14 @@ struct ProgramSource::Impl
         default:
             CV_Error(Error::StsInternal, "Internal error");
         }
-        sourceHash_ = cv::format("%08jx", (uintmax_t)hash);
+        sourceHash_ = ncvslideio::format("%08jx", (uintmax_t)hash);
         isHashUpdated = true;
     }
 
     Impl(enum KIND kind,
             const String& module, const String& name,
             const unsigned char* binary, const size_t size,
-            const cv::String& buildOptions = cv::String())
+            const ncvslideio::String& buildOptions = ncvslideio::String())
     {
         init(kind, module, name);
 
@@ -4175,7 +4175,7 @@ struct ProgramSource::Impl
 
     static ProgramSource fromSourceWithStaticLifetime(const String& module, const String& name,
             const char* sourceCodeStaticStr, const char* hashStaticStr,
-            const cv::String& buildOptions)
+            const ncvslideio::String& buildOptions)
     {
         ProgramSource result;
         result.p = new Impl(PROGRAM_SOURCE_CODE, module, name,
@@ -4186,7 +4186,7 @@ struct ProgramSource::Impl
 
     static ProgramSource fromBinary(const String& module, const String& name,
             const unsigned char* binary, const size_t size,
-            const cv::String& buildOptions)
+            const ncvslideio::String& buildOptions)
     {
         ProgramSource result;
         result.p = new Impl(PROGRAM_BINARIES, module, name, binary, size, buildOptions);
@@ -4195,7 +4195,7 @@ struct ProgramSource::Impl
 
     static ProgramSource fromSPIR(const String& module, const String& name,
             const unsigned char* binary, const size_t size,
-            const cv::String& buildOptions)
+            const ncvslideio::String& buildOptions)
     {
         ProgramSource result;
         result.p = new Impl(PROGRAM_SPIR, module, name, binary, size, buildOptions);
@@ -4211,7 +4211,7 @@ struct ProgramSource::Impl
     const unsigned char* sourceAddr_;
     size_t sourceSize_;
 
-    cv::String buildOptions_;
+    ncvslideio::String buildOptions_;
 
     String sourceHash_;
     bool isHashUpdated;
@@ -4298,7 +4298,7 @@ ProgramSource::hash_t ProgramSource::hash() const
 
 ProgramSource ProgramSource::fromBinary(const String& module, const String& name,
         const unsigned char* binary, const size_t size,
-        const cv::String& buildOptions)
+        const ncvslideio::String& buildOptions)
 {
     CV_Assert(binary);
     CV_Assert(size > 0);
@@ -4307,7 +4307,7 @@ ProgramSource ProgramSource::fromBinary(const String& module, const String& name
 
 ProgramSource ProgramSource::fromSPIR(const String& module, const String& name,
         const unsigned char* binary, const size_t size,
-        const cv::String& buildOptions)
+        const ncvslideio::String& buildOptions)
 {
     CV_Assert(binary);
     CV_Assert(size > 0);
@@ -4319,10 +4319,10 @@ internal::ProgramEntry::operator ProgramSource&() const
 {
     if (this->pProgramSource == NULL)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (this->pProgramSource == NULL)
         {
-            ProgramSource ps = ProgramSource::Impl::fromSourceWithStaticLifetime(this->module, this->name, this->programCode, this->programHash, cv::String());
+            ProgramSource ps = ProgramSource::Impl::fromSourceWithStaticLifetime(this->module, this->name, this->programCode, this->programHash, ncvslideio::String());
             ProgramSource* ptr = new ProgramSource(ps);
             const_cast<ProgramEntry*>(this)->pProgramSource = ptr;
         }
@@ -4335,7 +4335,7 @@ internal::ProgramEntry::operator ProgramSource&() const
 /////////////////////////////////////////// Program /////////////////////////////////////////////
 
 static
-cv::String joinBuildOptions(const cv::String& a, const cv::String& b)
+ncvslideio::String joinBuildOptions(const ncvslideio::String& a, const ncvslideio::String& b)
 {
     if (b.empty())
         return a;
@@ -4343,7 +4343,7 @@ cv::String joinBuildOptions(const cv::String& a, const cv::String& b)
         return b;
     if (b[0] == ' ')
         return a + b;
-    return a + (cv::String(" ") + b);
+    return a + (ncvslideio::String(" ") + b);
 }
 
 struct Program::Impl
@@ -4385,7 +4385,7 @@ struct Program::Impl
             size_t retsz = 0;
             char kernels_buffer[4096] = {0};
             cl_int result = clGetProgramInfo(handle, CL_PROGRAM_KERNEL_NAMES, sizeof(kernels_buffer), &kernels_buffer[0], &retsz);
-            CV_OCL_DBG_CHECK_RESULT(result, cv::format("clGetProgramInfo(CL_PROGRAM_KERNEL_NAMES: %s/%s)", sourceModule_.c_str(), sourceName_.c_str()).c_str());
+            CV_OCL_DBG_CHECK_RESULT(result, ncvslideio::format("clGetProgramInfo(CL_PROGRAM_KERNEL_NAMES: %s/%s)", sourceModule_.c_str(), sourceName_.c_str()).c_str());
             if (result == CL_SUCCESS && retsz < sizeof(kernels_buffer))
             {
                 kernels_buffer[retsz] = 0;
@@ -4427,14 +4427,14 @@ struct Program::Impl
                 ctx.getImpl()->getPrefixBase()
         );
         const String& hash_str = src_->sourceHash_;
-        cv::String fname;
+        ncvslideio::String fname;
         if (!base_dir.empty() && !src_->module_.empty() && !src_->name_.empty())
         {
             CV_Assert(!hash_str.empty());
             fname = src_->module_ + "--" + src_->name_ + "_" + hash_str + ".bin";
             fname = utils::fs::join(base_dir, fname);
         }
-        const cv::Ptr<utils::fs::FileLock> fileLock = config.cache_lock_; // can be empty
+        const ncvslideio::Ptr<utils::fs::FileLock> fileLock = config.cache_lock_; // can be empty
         if (!fname.empty() && CV_OPENCL_CACHE_ENABLE)
         {
             try
@@ -4442,7 +4442,7 @@ struct Program::Impl
                 std::vector<char> binaryBuf;
                 bool res = false;
                 {
-                    cv::utils::optional_shared_lock_guard<cv::utils::fs::FileLock> lock_fs(fileLock.get());
+                    ncvslideio::utils::optional_shared_lock_guard<ncvslideio::utils::fs::FileLock> lock_fs(fileLock.get());
                     BinaryProgramFile file(fname, hash_str.c_str());
                     res = file.read(buildflags, binaryBuf);
                 }
@@ -4455,7 +4455,7 @@ struct Program::Impl
                         return true;
                 }
             }
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 CV_UNUSED(e);
                 CV_LOG_VERBOSE(NULL, 0, "Can't load OpenCL binary: " + fname << std::endl << e.what());
@@ -4477,7 +4477,7 @@ struct Program::Impl
         else if (src_->kind_ == ProgramSource::Impl::PROGRAM_SPIR)
         {
             buildflags = joinBuildOptions(buildflags, " -x spir");
-            if ((cv::String(" ") + buildflags).find(" -spir-std=") == cv::String::npos)
+            if ((ncvslideio::String(" ") + buildflags).find(" -spir-std=") == ncvslideio::String::npos)
             {
                 buildflags = joinBuildOptions(buildflags, " -spir-std=1.2");
             }
@@ -4503,12 +4503,12 @@ struct Program::Impl
                 std::vector<char> binaryBuf;
                 getProgramBinary(binaryBuf);
                 {
-                    cv::utils::optional_lock_guard<cv::utils::fs::FileLock> lock_fs(fileLock.get());
+                    ncvslideio::utils::optional_lock_guard<ncvslideio::utils::fs::FileLock> lock_fs(fileLock.get());
                     BinaryProgramFile file(fname, hash_str.c_str());
                     file.write(buildflags, binaryBuf);
                 }
             }
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 CV_LOG_WARNING(NULL, "Can't save OpenCL binary into cache: " + fname << std::endl << e.what());
             }
@@ -4695,7 +4695,7 @@ struct Program::Impl
         // call clBuildProgram()
         {
             result = clBuildProgram(handle, (cl_uint)ndevices, devices_.data(), buildflags.c_str(), 0, 0);
-            CV_OCL_DBG_CHECK_RESULT(result, cv::format("clBuildProgram(binary: %s/%s)", sourceModule_.c_str(), sourceName_.c_str()).c_str());
+            CV_OCL_DBG_CHECK_RESULT(result, ncvslideio::format("clBuildProgram(binary: %s/%s)", sourceModule_.c_str(), sourceName_.c_str()).c_str());
             if (result != CL_SUCCESS)
             {
                 dumpBuildLog_(result, devices, errmsg);
@@ -4757,7 +4757,7 @@ struct Program::Impl
         if( handle )
         {
 #ifdef _WIN32
-            if (!cv::__termination)
+            if (!ncvslideio::__termination)
 #endif
             {
                 clReleaseProgram(handle);
@@ -4873,14 +4873,14 @@ String Program::getPrefix() const
         return String();
     Context::Impl* ctx_ = Context::getDefault().getImpl();
     CV_Assert(ctx_);
-    return cv::format("opencl=%s\nbuildflags=%s", ctx_->getPrefixString().c_str(), p->buildflags.c_str());
+    return ncvslideio::format("opencl=%s\nbuildflags=%s", ctx_->getPrefixString().c_str(), p->buildflags.c_str());
 }
 
 String Program::getPrefix(const String& buildflags)
 {
         Context::Impl* ctx_ = Context::getDefault().getImpl();
         CV_Assert(ctx_);
-        return cv::format("opencl=%s\nbuildflags=%s", ctx_->getPrefixString().c_str(), buildflags.c_str());
+        return ncvslideio::format("opencl=%s\nbuildflags=%s", ctx_->getPrefixString().c_str(), buildflags.c_str());
 }
 #endif // OPENCV_REMOVE_DEPRECATED_API
 
@@ -4896,12 +4896,12 @@ Program Context::Impl::getProg(const ProgramSource& src,
     size_t limit = getProgramCountLimit();
     const ProgramSource::Impl* src_ = src.getImpl();
     CV_Assert(src_);
-    String key = cv::format("module=%s name=%s codehash=%s\nopencl=%s\nbuildflags=%s",
+    String key = ncvslideio::format("module=%s name=%s codehash=%s\nopencl=%s\nbuildflags=%s",
             src_->module_.c_str(), src_->name_.c_str(), src_->sourceHash_.c_str(),
             getPrefixString().c_str(),
             buildflags.c_str());
     {
-        cv::AutoLock lock(program_cache_mutex);
+        ncvslideio::AutoLock lock(program_cache_mutex);
         phash_t::iterator it = phash.find(key);
         if (it != phash.end())
         {
@@ -4939,7 +4939,7 @@ Program Context::Impl::getProg(const ProgramSource& src,
     Program prog(src, buildflags, errmsg);
     // Cache result of build failures too (to prevent unnecessary compiler invocations)
     {
-        cv::AutoLock lock(program_cache_mutex);
+        ncvslideio::AutoLock lock(program_cache_mutex);
         phash.insert(std::pair<std::string, Program>(key, prog));
         cacheList.push_front(key);
     }
@@ -5163,7 +5163,7 @@ public:
         Context& ctx = Context::getDefault();
         cl_int retval = CL_SUCCESS;
         entry.clBuffer_ = clCreateBuffer((cl_context)ctx.ptr(), CL_MEM_READ_WRITE|createFlags_, entry.capacity_, 0, &retval);
-        CV_OCL_CHECK_RESULT(retval, cv::format("clCreateBuffer(capacity=%lld) => %p", (long long int)entry.capacity_, (void*)entry.clBuffer_).c_str());
+        CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clCreateBuffer(capacity=%lld) => %p", (long long int)entry.capacity_, (void*)entry.clBuffer_).c_str());
         CV_Assert(entry.clBuffer_ != NULL);
         if(retval == CL_SUCCESS)
         {
@@ -5410,12 +5410,12 @@ public:
 
     static bool isOpenCLMapForced()  // force clEnqueueMapBuffer / clEnqueueUnmapMemObject OpenCL API
     {
-        static bool value = cv::utils::getConfigurationParameterBool("OPENCV_OPENCL_BUFFER_FORCE_MAPPING", false);
+        static bool value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_OPENCL_BUFFER_FORCE_MAPPING", false);
         return value;
     }
     static bool isOpenCLCopyingForced()  // force clEnqueueReadBuffer[Rect] / clEnqueueWriteBuffer[Rect] OpenCL API
     {
-        static bool value = cv::utils::getConfigurationParameterBool("OPENCV_OPENCL_BUFFER_FORCE_COPYING", false);
+        static bool value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_OPENCL_BUFFER_FORCE_COPYING", false);
         return value;
     }
 
@@ -5602,7 +5602,7 @@ public:
                     CV_OPENCL_ENABLE_MEM_USE_HOST_PTR
                     // There are OpenCL runtime issues for less aligned data
                     && (CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR != 0
-                        && u->origdata == cv::alignPtr(u->origdata, (int)CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR))
+                        && u->origdata == ncvslideio::alignPtr(u->origdata, (int)CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR))
                     // Avoid sharing of host memory between OpenCL buffers
                     && !(u->originalUMatData && u->originalUMatData->handle)
                 )
@@ -5611,23 +5611,23 @@ public:
                     // DMA-transfers over PCIe to the device. Often used with clEnqueueMapBuffer/clEnqueueUnmapMemObject
                     handle = clCreateBuffer(ctx_handle, CL_MEM_USE_HOST_PTR|(createFlags & ~CL_MEM_ALLOC_HOST_PTR),
                                             u->size, u->origdata, &retval);
-                    CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clCreateBuffer(CL_MEM_USE_HOST_PTR|(createFlags & ~CL_MEM_ALLOC_HOST_PTR), sz=%lld, origdata=%p) => %p",
+                    CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clCreateBuffer(CL_MEM_USE_HOST_PTR|(createFlags & ~CL_MEM_ALLOC_HOST_PTR), sz=%lld, origdata=%p) => %p",
                             (long long int)u->size, u->origdata, (void*)handle).c_str());
                 }
                 if((!handle || retval < 0) && !(accessFlags & ACCESS_FAST))
                 {
                     // Allocate device-side memory and immediately copy data from the host-side pointer origdata[size].
-                    // If createFlags=CL_MEM_ALLOC_HOST_PTR (aka cv::USAGE_ALLOCATE_HOST_MEMORY), then
+                    // If createFlags=CL_MEM_ALLOC_HOST_PTR (aka ncvslideio::USAGE_ALLOCATE_HOST_MEMORY), then
                     // additionally allocate a host-side "pinned" duplicate of the origdata that is
                     // managed by OpenCL. This is potentially faster in unaligned/unmanaged scenarios.
                     handle = clCreateBuffer(ctx_handle, CL_MEM_COPY_HOST_PTR|CL_MEM_READ_WRITE|createFlags,
                                                u->size, u->origdata, &retval);
-                    CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clCreateBuffer(CL_MEM_COPY_HOST_PTR|CL_MEM_READ_WRITE|createFlags, sz=%lld, origdata=%p) => %p",
+                    CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clCreateBuffer(CL_MEM_COPY_HOST_PTR|CL_MEM_READ_WRITE|createFlags, sz=%lld, origdata=%p) => %p",
                             (long long int)u->size, u->origdata, (void*)handle).c_str());
                     tempUMatFlags |= UMatData::TEMP_COPIED_UMAT;
                 }
             }
-            CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clCreateBuffer() => %p", (void*)handle).c_str());
+            CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clCreateBuffer() => %p", (void*)handle).c_str());
             if(!handle || retval != CL_SUCCESS)
                 return false;
             u->handle = handle;
@@ -5699,7 +5699,7 @@ public:
         }
 
 #ifdef _WIN32
-        if (cv::__termination)  // process is not in consistent state (after ExitProcess call) and terminating
+        if (ncvslideio::__termination)  // process is not in consistent state (after ExitProcess call) and terminating
             return;             // avoid any OpenCL calls
 #endif
         if(u->tempUMat())
@@ -5767,14 +5767,14 @@ public:
                             void* data = clEnqueueMapBuffer(q, (cl_mem)u->handle, CL_TRUE,
                                 (CL_MAP_READ | CL_MAP_WRITE),
                                 0, u->size, 0, 0, 0, &retval);
-                            CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueMapBuffer(handle=%p, sz=%lld) => %p", (void*)u->handle, (long long int)u->size, data).c_str());
+                            CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueMapBuffer(handle=%p, sz=%lld) => %p", (void*)u->handle, (long long int)u->size, data).c_str());
                             CV_Assert(u->origdata == data && "Details: https://github.com/opencv/opencv/issues/6293");
                             if (u->originalUMatData)
                             {
                                 CV_Assert(u->originalUMatData->data == data);
                             }
                             retval = clEnqueueUnmapMemObject(q, (cl_mem)u->handle, data, 0, 0, 0);
-                            CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueUnmapMemObject(handle=%p, data=%p, [sz=%lld])", (void*)u->handle, data, (long long int)u->size).c_str());
+                            CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueUnmapMemObject(handle=%p, data=%p, [sz=%lld])", (void*)u->handle, data, (long long int)u->size).c_str());
                             CV_OCL_DBG_CHECK(clFinish(q));
                         }
                     }
@@ -5802,7 +5802,7 @@ public:
 #endif
             {
                 cl_int retval = clReleaseMemObject((cl_mem)u->handle);
-                CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clReleaseMemObject(ptr=%p)", (void*)u->handle).c_str());
+                CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clReleaseMemObject(ptr=%p)", (void*)u->handle).c_str());
             }
             u->handle = 0;
             u->markDeviceCopyObsolete(true);
@@ -5930,7 +5930,7 @@ public:
                     u->data = (uchar*)clEnqueueMapBuffer(q, (cl_mem)u->handle, CL_TRUE,
                                                          (CL_MAP_READ | CL_MAP_WRITE),
                                                          0, u->size, 0, 0, 0, &retval);
-                    CV_OCL_DBG_CHECK_RESULT(retval, cv::format("clEnqueueMapBuffer(handle=%p, sz=%lld) => %p", (void*)u->handle, (long long int)u->size, u->data).c_str());
+                    CV_OCL_DBG_CHECK_RESULT(retval, ncvslideio::format("clEnqueueMapBuffer(handle=%p, sz=%lld) => %p", (void*)u->handle, (long long int)u->size, u->data).c_str());
                 }
                 if (u->data && retval == CL_SUCCESS)
                 {
@@ -5959,7 +5959,7 @@ public:
 #endif
             cl_int retval = clEnqueueReadBuffer(q, (cl_mem)u->handle, CL_TRUE,
                     0, u->size, alignedPtr.getAlignedPtr(), 0, 0, 0);
-            CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueReadBuffer(q, handle=%p, CL_TRUE, 0, sz=%lld, data=%p, 0, 0, 0)",
+            CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueReadBuffer(q, handle=%p, CL_TRUE, 0, sz=%lld, data=%p, 0, 0, 0)",
                     (void*)u->handle, (long long int)u->size, alignedPtr.getAlignedPtr()).c_str());
             u->markHostCopyObsolete(false);
         }
@@ -6010,7 +6010,7 @@ public:
             {
                 CV_Assert(u->mapcount-- == 1);
                 retval = clEnqueueUnmapMemObject(q, (cl_mem)u->handle, u->data, 0, 0, 0);
-                CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueUnmapMemObject(handle=%p, data=%p, [sz=%lld])", (void*)u->handle, u->data, (long long int)u->size).c_str());
+                CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueUnmapMemObject(handle=%p, data=%p, [sz=%lld])", (void*)u->handle, u->data, (long long int)u->size).c_str());
                 if (Device::getDefault().isAMD())
                 {
                     // required for multithreaded applications (see stitching test)
@@ -6030,7 +6030,7 @@ public:
 #endif
             retval = clEnqueueWriteBuffer(q, (cl_mem)u->handle, CL_TRUE,
                                 0, u->size, alignedPtr.getAlignedPtr(), 0, 0, 0);
-            CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueWriteBuffer(q, handle=%p, CL_TRUE, 0, sz=%lld, data=%p, 0, 0, 0)",
+            CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueWriteBuffer(q, handle=%p, CL_TRUE, 0, sz=%lld, data=%p, 0, 0, 0)",
                     (void*)u->handle, (long long int)u->size, alignedPtr.getAlignedPtr()).c_str());
             u->markDeviceCopyObsolete(false);
             u->markHostCopyObsolete(true);
@@ -6336,7 +6336,7 @@ public:
                 AlignedDataPtr<true, false> alignedPtr((uchar*)srcptr, total, CV_OPENCL_DATA_PTR_ALIGNMENT);
                 cl_int retval = clEnqueueWriteBuffer(q, (cl_mem)u->handle, CL_TRUE,
                     dstrawofs, total, alignedPtr.getAlignedPtr(), 0, 0, 0);
-                CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueWriteBuffer(q, handle=%p, CL_TRUE, offset=%lld, sz=%lld, data=%p, 0, 0, 0)",
+                CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueWriteBuffer(q, handle=%p, CL_TRUE, offset=%lld, sz=%lld, data=%p, 0, 0, 0)",
                         (void*)u->handle, (long long int)dstrawofs, (long long int)u->size, alignedPtr.getAlignedPtr()).c_str());
             }
             else if (CV_OPENCL_DISABLE_BUFFER_RECT_OPERATIONS)
@@ -6511,7 +6511,7 @@ public:
             {
                 retval = clEnqueueCopyBuffer(q, (cl_mem)src->handle, (cl_mem)dst->handle,
                                                srcrawofs, dstrawofs, total, 0, 0, 0);
-                CV_OCL_CHECK_RESULT(retval, cv::format("clEnqueueCopyBuffer(q, src=%p, dst=%p, src_offset=%lld, dst_offset=%lld, sz=%lld, 0, 0, 0)",
+                CV_OCL_CHECK_RESULT(retval, ncvslideio::format("clEnqueueCopyBuffer(q, src=%p, dst=%p, src_offset=%lld, dst_offset=%lld, sz=%lld, 0, 0, 0)",
                         (void*)src->handle, (void*)dst->handle, (long long int)srcrawofs, (long long int)dstrawofs, (long long int)total).c_str());
             }
             else if (CV_OPENCL_DISABLE_BUFFER_RECT_OPERATIONS)
@@ -6597,14 +6597,14 @@ public:
         }
         if (id != NULL && strcmp(id, "OCL") != 0)
         {
-            CV_Error(cv::Error::StsBadArg, "getBufferPoolController(): unknown BufferPool ID\n");
+            CV_Error(ncvslideio::Error::StsBadArg, "getBufferPoolController(): unknown BufferPool ID\n");
         }
         return &ctx.getImpl()->getBufferPool();
     }
 
     MatAllocator* matStdAllocator;
 
-    mutable cv::Mutex cleanupQueueMutex;
+    mutable ncvslideio::Mutex cleanupQueueMutex;
     mutable std::deque<UMatData*> cleanupQueue;
 
     void flushCleanupQueue() const
@@ -6613,7 +6613,7 @@ public:
         {
             std::deque<UMatData*> q;
             {
-                cv::AutoLock lock(cleanupQueueMutex);
+                ncvslideio::AutoLock lock(cleanupQueueMutex);
                 q.swap(cleanupQueue);
             }
             for (std::deque<UMatData*>::const_iterator i = q.begin(); i != q.end(); ++i)
@@ -6626,7 +6626,7 @@ public:
     {
         //TODO: Validation check: CV_Assert(!u->tempUMat());
         {
-            cv::AutoLock lock(cleanupQueueMutex);
+            ncvslideio::AutoLock lock(cleanupQueueMutex);
             cleanupQueue.push_back(u);
         }
     }
@@ -6642,20 +6642,20 @@ MatAllocator* getOpenCLAllocator()
     CV_SINGLETON_LAZY_INIT(MatAllocator, getOpenCLAllocator_())
 }
 
-}} // namespace cv::ocl
+}} // namespace ncvslideio::ocl
 
 
-namespace cv {
+namespace ncvslideio {
 
 // three funcs below are implemented in umatrix.cpp
 void setSize( UMat& m, int _dims, const int* _sz, const size_t* _steps,
               bool autoSteps = false );
 void finalizeHdr(UMat& m);
 
-} // namespace cv
+} // namespace ncvslideio
 
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 
 /*
 // Convert OpenCL buffer memory to UMat
@@ -6758,7 +6758,7 @@ void convertFromImage(void* cl_mem_image, UMat& dst)
         break;
 
     default:
-        CV_Error(cv::Error::OpenCLApiCallError, "Not supported image_channel_data_type");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "Not supported image_channel_data_type");
     }
 
     int type = CV_8UC1;
@@ -6789,7 +6789,7 @@ void convertFromImage(void* cl_mem_image, UMat& dst)
         break;
 
     default:
-        CV_Error(cv::Error::OpenCLApiCallError, "Not supported image_channel_order");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "Not supported image_channel_order");
         break;
     }
 
@@ -6828,7 +6828,7 @@ static void getDevices(std::vector<cl_device_id>& devices, cl_platform_id platfo
     if (status != CL_DEVICE_NOT_FOUND) // Not an error if platform has no devices
     {
         CV_OCL_DBG_CHECK_RESULT(status,
-            cv::format("clGetDeviceIDs(platform, Device::TYPE_ALL, num_entries=0, devices=NULL, numDevices=%p)", &numDevices).c_str());
+            ncvslideio::format("clGetDeviceIDs(platform, Device::TYPE_ALL, num_entries=0, devices=NULL, numDevices=%p)", &numDevices).c_str());
     }
 
     if (numDevices == 0)
@@ -7214,7 +7214,7 @@ String kernelToStr(InputArray _kernel, int ddepth, const char * name)
     const func_t func = funcs[ddepth];
     CV_Assert(func != 0);
 
-    return cv::format(" -D %s=%s", name ? name : "COEFF", func(kernel).c_str());
+    return ncvslideio::format(" -D %s=%s", name ? name : "COEFF", func(kernel).c_str());
 }
 
 #define PROCESS_SRC(src) \
@@ -7450,7 +7450,7 @@ struct Image2D::Impl
         if (!alias && !src.isContinuous())
         {
             devData = clCreateBuffer(context, CL_MEM_READ_ONLY, src.cols * src.rows * src.elemSize(), NULL, &err);
-            CV_OCL_CHECK_RESULT(err, cv::format("clCreateBuffer(CL_MEM_READ_ONLY, sz=%lld) => %p",
+            CV_OCL_CHECK_RESULT(err, ncvslideio::format("clCreateBuffer(CL_MEM_READ_ONLY, sz=%lld) => %p",
                     (long long int)(src.cols * src.rows * src.elemSize()), (void*)devData
                 ).c_str());
 

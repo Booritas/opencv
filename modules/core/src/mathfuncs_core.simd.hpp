@@ -4,7 +4,7 @@
 
 #include "mathfuncs.hpp"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
@@ -29,7 +29,7 @@ float fastAtan2(float y, float x);
 #ifndef CV_CPU_OPTIMIZATION_DECLARATIONS_ONLY
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 
@@ -513,7 +513,7 @@ void exp32f( const float *_x, float *y, int n )
 {
     CV_INSTRUMENT_REGION();
 
-    const float* const expTab_f = cv::details::getExpTab32f();
+    const float* const expTab_f = ncvslideio::details::getExpTab32f();
 
     const float
     A4 = (float)(1.000000000000002438532970795181890933776 / EXPPOLY_32F_A0),
@@ -626,7 +626,7 @@ void exp64f( const double *_x, double *y, int n )
 {
     CV_INSTRUMENT_REGION();
 
-    const double* const expTab = cv::details::getExpTab64f();
+    const double* const expTab = ncvslideio::details::getExpTab64f();
 
     const double
     A5 = .99999999999999999998285227504999 / EXPPOLY_32F_A0,
@@ -760,7 +760,7 @@ void log32f( const float *_x, float *y, int n )
 {
     CV_INSTRUMENT_REGION();
 
-    const float* const logTab_f = cv::details::getLogTab32f();
+    const float* const logTab_f = ncvslideio::details::getLogTab32f();
 
     const int LOGTAB_MASK2_32F = (1 << (23 - LOGTAB_SCALE)) - 1;
     const float
@@ -831,7 +831,7 @@ void log64f( const double *x, double *y, int n )
 {
     CV_INSTRUMENT_REGION();
 
-    const double* const logTab = cv::details::getLogTab64f();
+    const double* const logTab = ncvslideio::details::getLogTab64f();
 
     const int64 LOGTAB_MASK2_64F = ((int64)1 << (52 - LOGTAB_SCALE)) - 1;
     const double
@@ -921,4 +921,4 @@ float fastAtan2( float y, float x )
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
 
-}} // namespace cv::hal
+}} // namespace ncvslideio::hal

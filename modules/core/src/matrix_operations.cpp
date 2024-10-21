@@ -17,7 +17,7 @@
                                         Matrix Operations
 \*************************************************************************************************/
 
-void cv::swap( Mat& a, Mat& b )
+void ncvslideio::swap( Mat& a, Mat& b )
 {
     std::swap(a.flags, b.flags);
     std::swap(a.dims, b.dims);
@@ -49,7 +49,7 @@ void cv::swap( Mat& a, Mat& b )
 }
 
 
-void cv::hconcat(const Mat* src, size_t nsrc, OutputArray _dst)
+void ncvslideio::hconcat(const Mat* src, size_t nsrc, OutputArray _dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -77,7 +77,7 @@ void cv::hconcat(const Mat* src, size_t nsrc, OutputArray _dst)
     }
 }
 
-void cv::hconcat(InputArray src1, InputArray src2, OutputArray dst)
+void ncvslideio::hconcat(InputArray src1, InputArray src2, OutputArray dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -85,7 +85,7 @@ void cv::hconcat(InputArray src1, InputArray src2, OutputArray dst)
     hconcat(src, 2, dst);
 }
 
-void cv::hconcat(InputArray _src, OutputArray dst)
+void ncvslideio::hconcat(InputArray _src, OutputArray dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -94,7 +94,7 @@ void cv::hconcat(InputArray _src, OutputArray dst)
     hconcat(!src.empty() ? &src[0] : 0, src.size(), dst);
 }
 
-void cv::vconcat(const Mat* src, size_t nsrc, OutputArray _dst)
+void ncvslideio::vconcat(const Mat* src, size_t nsrc, OutputArray _dst)
 {
     CV_TRACE_FUNCTION_SKIP_NESTED()
 
@@ -122,7 +122,7 @@ void cv::vconcat(const Mat* src, size_t nsrc, OutputArray _dst)
     }
 }
 
-void cv::vconcat(InputArray src1, InputArray src2, OutputArray dst)
+void ncvslideio::vconcat(InputArray src1, InputArray src2, OutputArray dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -130,7 +130,7 @@ void cv::vconcat(InputArray src1, InputArray src2, OutputArray dst)
     vconcat(src, 2, dst);
 }
 
-void cv::vconcat(InputArray _src, OutputArray dst)
+void ncvslideio::vconcat(InputArray _src, OutputArray dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -143,7 +143,7 @@ void cv::vconcat(InputArray _src, OutputArray dst)
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static bool ocl_setIdentity( InputOutputArray _m, const Scalar& s )
 {
@@ -181,7 +181,7 @@ static bool ocl_setIdentity( InputOutputArray _m, const Scalar& s )
 
 #endif
 
-void cv::setIdentity( InputOutputArray _m, const Scalar& s )
+void ncvslideio::setIdentity( InputOutputArray _m, const Scalar& s )
 {
     CV_INSTRUMENT_REGION();
 
@@ -227,7 +227,7 @@ void cv::setIdentity( InputOutputArray _m, const Scalar& s )
 }
 
 
-namespace cv {
+namespace ncvslideio {
 
 UMat UMat::eye(int rows, int cols, int type, UMatUsageFlags usageFlags)
 {
@@ -245,7 +245,7 @@ UMat UMat::eye(Size size, int type, UMatUsageFlags usageFlags)
 
 //////////////////////////////////////////// trace ///////////////////////////////////////////
 
-cv::Scalar cv::trace( InputArray _m )
+ncvslideio::Scalar ncvslideio::trace( InputArray _m )
 {
     CV_INSTRUMENT_REGION();
 
@@ -274,13 +274,13 @@ cv::Scalar cv::trace( InputArray _m )
         return _s;
     }
 
-    return cv::sum(m.diag());
+    return ncvslideio::sum(m.diag());
 }
 
 
 ////////////////////////////////////// completeSymm /////////////////////////////////////////
 
-void cv::completeSymm( InputOutputArray _m, bool LtoR )
+void ncvslideio::completeSymm( InputOutputArray _m, bool LtoR )
 {
     CV_INSTRUMENT_REGION();
 
@@ -301,7 +301,7 @@ void cv::completeSymm( InputOutputArray _m, bool LtoR )
 }
 
 
-cv::Mat cv::Mat::cross(InputArray _m) const
+ncvslideio::Mat ncvslideio::Mat::cross(InputArray _m) const
 {
     Mat m = _m.getMat();
     int tp = type(), d = CV_MAT_DEPTH(tp);
@@ -338,7 +338,7 @@ cv::Mat cv::Mat::cross(InputArray _m) const
 
 ////////////////////////////////////////// reduce ////////////////////////////////////////////
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T, typename ST, typename WT, class Op, class OpInit>
@@ -498,7 +498,7 @@ typedef void (*ReduceFunc)( const Mat& src, Mat& dst );
 #define reduceMinR64f reduceR_<double,double,OpMin<double> >
 
 #ifdef HAVE_IPP
-static inline bool ipp_reduceSumC_8u16u16s32f_64f(const cv::Mat& srcmat, cv::Mat& dstmat)
+static inline bool ipp_reduceSumC_8u16u16s32f_64f(const ncvslideio::Mat& srcmat, ncvslideio::Mat& dstmat)
 {
     int sstep = (int)srcmat.step, stype = srcmat.type(),
             ddepth = dstmat.depth();
@@ -550,20 +550,20 @@ static inline bool ipp_reduceSumC_8u16u16s32f_64f(const cv::Mat& srcmat, cv::Mat
     return false;
 }
 
-static inline void reduceSumC_8u16u16s32f_64f(const cv::Mat& srcmat, cv::Mat& dstmat)
+static inline void reduceSumC_8u16u16s32f_64f(const ncvslideio::Mat& srcmat, ncvslideio::Mat& dstmat)
 {
     CV_IPP_RUN_FAST(ipp_reduceSumC_8u16u16s32f_64f(srcmat, dstmat));
 
-    cv::ReduceFunc func = 0;
+    ncvslideio::ReduceFunc func = 0;
 
     if(dstmat.depth() == CV_64F)
     {
         int sdepth = CV_MAT_DEPTH(srcmat.type());
         func =
-            sdepth == CV_8U ? (cv::ReduceFunc)cv::reduceC_<uchar, double,   cv::OpAdd<double> > :
-            sdepth == CV_16U ? (cv::ReduceFunc)cv::reduceC_<ushort, double,   cv::OpAdd<double> > :
-            sdepth == CV_16S ? (cv::ReduceFunc)cv::reduceC_<short, double,   cv::OpAdd<double> > :
-            sdepth == CV_32F ? (cv::ReduceFunc)cv::reduceC_<float, double,   cv::OpAdd<double> > : 0;
+            sdepth == CV_8U ? (ncvslideio::ReduceFunc)ncvslideio::reduceC_<uchar, double,   ncvslideio::OpAdd<double> > :
+            sdepth == CV_16U ? (ncvslideio::ReduceFunc)ncvslideio::reduceC_<ushort, double,   ncvslideio::OpAdd<double> > :
+            sdepth == CV_16S ? (ncvslideio::ReduceFunc)ncvslideio::reduceC_<short, double,   ncvslideio::OpAdd<double> > :
+            sdepth == CV_32F ? (ncvslideio::ReduceFunc)ncvslideio::reduceC_<float, double,   ncvslideio::OpAdd<double> > : 0;
     }
     CV_Assert(func);
 
@@ -605,7 +605,7 @@ static inline void reduceSumC_8u16u16s32f_64f(const cv::Mat& srcmat, cv::Mat& ds
 
 #ifdef HAVE_IPP
 #define REDUCE_OP(favor, optype, type1, type2) \
-static inline bool ipp_reduce##optype##C##favor(const cv::Mat& srcmat, cv::Mat& dstmat) \
+static inline bool ipp_reduce##optype##C##favor(const ncvslideio::Mat& srcmat, ncvslideio::Mat& dstmat) \
 { \
     if((srcmat.channels() == 1)) \
     { \
@@ -621,10 +621,10 @@ static inline bool ipp_reduce##optype##C##favor(const cv::Mat& srcmat, cv::Mat& 
     }\
     return false; \
 } \
-static inline void reduce##optype##C##favor(const cv::Mat& srcmat, cv::Mat& dstmat) \
+static inline void reduce##optype##C##favor(const ncvslideio::Mat& srcmat, ncvslideio::Mat& dstmat) \
 { \
     CV_IPP_RUN_FAST(ipp_reduce##optype##C##favor(srcmat, dstmat)); \
-    cv::reduceC_ < type1, type2, cv::Op##optype < type2 > >(srcmat, dstmat); \
+    ncvslideio::reduceC_ < type1, type2, ncvslideio::Op##optype < type2 > >(srcmat, dstmat); \
 }
 #endif
 
@@ -656,7 +656,7 @@ REDUCE_OP(32f, Min, float, float)
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static bool ocl_reduce(InputArray _src, OutputArray _dst,
                        int dim, int op, int op0, int stype, int dtype)
@@ -692,7 +692,7 @@ static bool ocl_reduce(InputArray _src, OutputArray _dst,
             tileHeight = min(tileHeight, defDev.localMemSize() / buf_cols / CV_ELEM_SIZE(CV_MAKETYPE(wdepth, cn)) / maxItemInGroupCount);
         }
         char cvt[3][50];
-        cv::String build_opt = format("-D OP_REDUCE_PRE -D BUF_COLS=%d -D TILE_HEIGHT=%zu -D %s -D dim=1"
+        ncvslideio::String build_opt = format("-D OP_REDUCE_PRE -D BUF_COLS=%d -D TILE_HEIGHT=%zu -D %s -D dim=1"
                                             " -D cn=%d -D ddepth=%d"
                                             " -D srcT=%s -D bufT=%s -D dstT=%s"
                                             " -D convertToWT=%s -D convertToBufT=%s -D convertToDT=%s%s",
@@ -726,7 +726,7 @@ static bool ocl_reduce(InputArray _src, OutputArray _dst,
     else
     {
         char cvt[2][50];
-        cv::String build_opt = format("-D %s -D dim=%d -D cn=%d -D ddepth=%d"
+        ncvslideio::String build_opt = format("-D %s -D dim=%d -D cn=%d -D ddepth=%d"
                                       " -D srcT=%s -D dstT=%s -D dstT0=%s -D convertToWT=%s"
                                       " -D convertToDT=%s -D convertToDT0=%s%s",
                                       ops[op], dim, cn, ddepth, ocl::typeToStr(useOptimized ? ddepth : sdepth),
@@ -762,7 +762,7 @@ static bool ocl_reduce(InputArray _src, OutputArray _dst,
 
 #endif
 
-void cv::reduce(InputArray _src, OutputArray _dst, int dim, int op, int dtype)
+void ncvslideio::reduce(InputArray _src, OutputArray _dst, int dim, int op, int dtype)
 {
     CV_INSTRUMENT_REGION();
 
@@ -954,7 +954,7 @@ void cv::reduce(InputArray _src, OutputArray _dst, int dim, int op, int dtype)
     }
 
     if( !func )
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                   "Unsupported combination of input and output array formats" );
 
     func( src, temp );
@@ -966,7 +966,7 @@ void cv::reduce(InputArray _src, OutputArray _dst, int dim, int op, int dtype)
 
 //////////////////////////////////////// sort ///////////////////////////////////////////
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static void sort_( const Mat& src, Mat& dst, int flags )
@@ -1249,7 +1249,7 @@ static bool ipp_sortIdx( const Mat& src, Mat& dst, int flags )
 typedef void (*SortFunc)(const Mat& src, Mat& dst, int flags);
 }
 
-void cv::sort( InputArray _src, OutputArray _dst, int flags )
+void ncvslideio::sort( InputArray _src, OutputArray _dst, int flags )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1270,7 +1270,7 @@ void cv::sort( InputArray _src, OutputArray _dst, int flags )
     func( src, dst, flags );
 }
 
-void cv::sortIdx( InputArray _src, OutputArray _dst, int flags )
+void ncvslideio::sortIdx( InputArray _src, OutputArray _dst, int flags )
 {
     CV_INSTRUMENT_REGION();
 

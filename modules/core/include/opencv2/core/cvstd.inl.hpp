@@ -55,7 +55,7 @@
 #pragma warning( disable: 4127 )
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename _Tp> class DataType< std::complex<_Tp> >
@@ -139,7 +139,7 @@ template<typename _Tp, int n> static inline
 std::ostream& operator << (std::ostream& out, const Vec<_Tp, n>& vec)
 {
     out << "[";
-    if (cv::traits::Depth<_Tp>::value <= CV_32S)
+    if (ncvslideio::traits::Depth<_Tp>::value <= CV_32S)
     {
         for (int i = 0; i < n - 1; ++i) {
             out << (int)vec[i] << ", ";
@@ -181,12 +181,12 @@ static inline std::ostream& operator << (std::ostream& out, const MatSize& msize
     return out;
 }
 
-static inline std::ostream &operator<< (std::ostream &s, cv::Range &r)
+static inline std::ostream &operator<< (std::ostream &s, ncvslideio::Range &r)
 {
     return s << "[" << r.start << " : " << r.end << ")";
 }
 
-} // cv
+} // ncvslideio
 
 #ifdef _MSC_VER
 #pragma warning( pop )

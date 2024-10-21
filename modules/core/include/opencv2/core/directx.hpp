@@ -62,10 +62,10 @@ struct IDirect3DSurface9;
 #endif
 
 
-namespace cv { namespace directx {
+namespace ncvslideio { namespace directx {
 
 namespace ocl {
-using namespace cv::ocl;
+using namespace ncvslideio::ocl;
 
 //! @addtogroup core_directx
 // This section describes OpenCL and DirectX interoperability.
@@ -104,7 +104,7 @@ CV_EXPORTS Context& initializeContextFromDirect3DDevice9(IDirect3DDevice9* pDire
 
 //! @}
 
-} // namespace cv::directx::ocl
+} // namespace ncvslideio::directx::ocl
 
 //! @addtogroup core_directx
 //! @{
@@ -179,6 +179,6 @@ CV_EXPORTS int getTypeFromD3DFORMAT(const int iD3DFORMAT); // enum D3DTYPE for D
 
 //! @}
 
-} } // namespace cv::directx
+} } // namespace ncvslideio::directx
 
 #endif // OPENCV_CORE_DIRECTX_HPP

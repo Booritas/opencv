@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static const uchar*
@@ -362,7 +362,7 @@ getQuadrangleSubPix_8u32f_CnR( const uchar* src, size_t src_step, Size src_size,
 }
 
 
-void cv::getRectSubPix( InputArray _image, Size patchSize, Point2f center,
+void ncvslideio::getRectSubPix( InputArray _image, Size patchSize, Point2f center,
                        OutputArray _patch, int patchType )
 {
     CV_INSTRUMENT_REGION();
@@ -417,32 +417,32 @@ void cv::getRectSubPix( InputArray _image, Size patchSize, Point2f center,
         getRectSubPix_Cn_<float, float, float, nop<float>, nop<float> >
         (image.ptr<float>(), image.step, image.size(), patch.ptr<float>(), patch.step, patch.size(), center, cn);
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "Unsupported combination of input and output formats");
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "Unsupported combination of input and output formats");
 }
 
 
 CV_IMPL void
 cvGetRectSubPix( const void* srcarr, void* dstarr, CvPoint2D32f center )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr);
-    const cv::Mat dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr);
+    const ncvslideio::Mat dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.channels() == dst.channels() );
 
-    cv::getRectSubPix(src, dst.size(), center, dst, dst.type());
+    ncvslideio::getRectSubPix(src, dst.size(), center, dst, dst.type());
 }
 
 
 CV_IMPL void
 cvGetQuadrangleSubPix( const void* srcarr, void* dstarr, const CvMat* mat )
 {
-    const cv::Mat src = cv::cvarrToMat(srcarr), m = cv::cvarrToMat(mat);
-    cv::Mat dst = cv::cvarrToMat(dstarr);
+    const ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), m = ncvslideio::cvarrToMat(mat);
+    ncvslideio::Mat dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.channels() == dst.channels() );
 
-    cv::Size win_size = dst.size();
+    ncvslideio::Size win_size = dst.size();
     double matrix[6] = {0};
-    cv::Mat M(2, 3, CV_64F, matrix);
+    ncvslideio::Mat M(2, 3, CV_64F, matrix);
     m.convertTo(M, CV_64F);
     double dx = (win_size.width - 1)*0.5;
     double dy = (win_size.height - 1)*0.5;
@@ -450,15 +450,15 @@ cvGetQuadrangleSubPix( const void* srcarr, void* dstarr, const CvMat* mat )
     matrix[5] -= matrix[3]*dx + matrix[4]*dy;
 
     if( src.depth() == CV_8U && dst.depth() == CV_32F )
-        cv::getQuadrangleSubPix_8u32f_CnR( src.ptr(), src.step, src.size(),
+        ncvslideio::getQuadrangleSubPix_8u32f_CnR( src.ptr(), src.step, src.size(),
                                            dst.ptr<float>(), dst.step, dst.size(),
                                            matrix, src.channels());
     else
     {
         CV_Assert( src.depth() == dst.depth() );
-        cv::warpAffine(src, dst, M, dst.size(),
-                       cv::INTER_LINEAR + cv::WARP_INVERSE_MAP,
-                       cv::BORDER_REPLICATE);
+        ncvslideio::warpAffine(src, dst, M, dst.size(),
+                       ncvslideio::INTER_LINEAR + ncvslideio::WARP_INVERSE_MAP,
+                       ncvslideio::BORDER_REPLICATE);
     }
 }
 
@@ -467,13 +467,13 @@ CV_IMPL int
 cvSampleLine( const void* _img, CvPoint pt1, CvPoint pt2,
               void* _buffer, int connectivity )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::LineIterator li(img, pt1, pt2, connectivity, false);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::LineIterator li(img, pt1, pt2, connectivity, false);
     uchar* buffer = (uchar*)_buffer;
     size_t pixsize = img.elemSize();
 
     if( !buffer )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     for( int i = 0; i < li.count; i++, ++li )
     {

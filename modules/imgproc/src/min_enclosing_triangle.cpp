@@ -104,15 +104,15 @@ namespace minEnclosingTriangle {
 
 static void advance(unsigned int &index, unsigned int nrOfPoints);
 
-static void advanceBToRightChain(const std::vector<cv::Point2f> &polygon,
+static void advanceBToRightChain(const std::vector<ncvslideio::Point2f> &polygon,
                                  unsigned int nrOfPoints, unsigned int &b,
                                  unsigned int c);
 
 static bool almostEqual(double number1, double number2);
 
-static double angleOfLineWrtOxAxis(const cv::Point2f &a, const cv::Point2f &b);
+static double angleOfLineWrtOxAxis(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b);
 
-static bool areEqualPoints(const cv::Point2f &point1, const cv::Point2f &point2);
+static bool areEqualPoints(const ncvslideio::Point2f &point1, const ncvslideio::Point2f &point2);
 
 static bool areIdenticalLines(const std::vector<double> &side1Params,
                               const std::vector<double> &side2Params, double sideCExtraParam);
@@ -121,70 +121,70 @@ static bool areIdenticalLines(double a1, double b1, double c1, double a2, double
 
 static bool areIntersectingLines(const std::vector<double> &side1Params,
                                  const std::vector<double> &side2Params,
-                                 double sideCExtraParam, cv::Point2f &intersectionPoint1,
-                                 cv::Point2f &intersectionPoint2);
+                                 double sideCExtraParam, ncvslideio::Point2f &intersectionPoint1,
+                                 ncvslideio::Point2f &intersectionPoint2);
 
-static bool areOnTheSameSideOfLine(const cv::Point2f &p1, const cv::Point2f &p2,
-                                   const cv::Point2f &a, const cv::Point2f &b);
+static bool areOnTheSameSideOfLine(const ncvslideio::Point2f &p1, const ncvslideio::Point2f &p2,
+                                   const ncvslideio::Point2f &a, const ncvslideio::Point2f &b);
 
-static double areaOfTriangle(const cv::Point2f &a, const cv::Point2f &b, const cv::Point2f &c);
+static double areaOfTriangle(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b, const ncvslideio::Point2f &c);
 
 
-static double distanceBtwPoints(const cv::Point2f &a, const cv::Point2f &b);
+static double distanceBtwPoints(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b);
 
-static double distanceFromPointToLine(const cv::Point2f &a, const cv::Point2f &linePointB,
-                                      const cv::Point2f &linePointC);
+static double distanceFromPointToLine(const ncvslideio::Point2f &a, const ncvslideio::Point2f &linePointB,
+                                      const ncvslideio::Point2f &linePointC);
 
-static bool findGammaIntersectionPoints(const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool findGammaIntersectionPoints(const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                         unsigned int c, unsigned int polygonPointIndex,
-                                        const cv::Point2f &side1StartVertex, const cv::Point2f &side1EndVertex,
-                                        const cv::Point2f &side2StartVertex, const cv::Point2f &side2EndVertex,
-                                        cv::Point2f &intersectionPoint1, cv::Point2f &intersectionPoint2);
+                                        const ncvslideio::Point2f &side1StartVertex, const ncvslideio::Point2f &side1EndVertex,
+                                        const ncvslideio::Point2f &side2StartVertex, const ncvslideio::Point2f &side2EndVertex,
+                                        ncvslideio::Point2f &intersectionPoint1, ncvslideio::Point2f &intersectionPoint2);
 
-static void findMinEnclosingTriangle(cv::InputArray points,
-                                     CV_OUT cv::OutputArray triangle, CV_OUT double &area);
+static void findMinEnclosingTriangle(ncvslideio::InputArray points,
+                                     CV_OUT ncvslideio::OutputArray triangle, CV_OUT double &area);
 
-static void findMinEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                     std::vector<cv::Point2f> &triangle, double &area);
+static void findMinEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                     std::vector<ncvslideio::Point2f> &triangle, double &area);
 
-static void findMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                             std::vector<cv::Point2f> &triangle, double &area);
+static void findMinimumAreaEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                             std::vector<ncvslideio::Point2f> &triangle, double &area);
 
-static cv::Point2f findVertexCOnSideB(const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static ncvslideio::Point2f findVertexCOnSideB(const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                       unsigned int a, unsigned int c,
-                                      const cv::Point2f &sideBStartVertex,
-                                      const cv::Point2f &sideBEndVertex,
-                                      const cv::Point2f &sideCStartVertex,
-                                      const cv::Point2f &sideCEndVertex);
+                                      const ncvslideio::Point2f &sideBStartVertex,
+                                      const ncvslideio::Point2f &sideBEndVertex,
+                                      const ncvslideio::Point2f &sideCStartVertex,
+                                      const ncvslideio::Point2f &sideCEndVertex);
 
-static bool gamma(unsigned int polygonPointIndex, cv::Point2f &gammaPoint,
-                  const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool gamma(unsigned int polygonPointIndex, ncvslideio::Point2f &gammaPoint,
+                  const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                   unsigned int a, unsigned int c);
 
 static bool greaterOrEqual(double number1, double number2);
 
-static double height(const cv::Point2f &polygonPoint, const std::vector<cv::Point2f> &polygon,
+static double height(const ncvslideio::Point2f &polygonPoint, const std::vector<ncvslideio::Point2f> &polygon,
                      unsigned int nrOfPoints, unsigned int c);
 
-static double height(unsigned int polygonPointIndex, const std::vector<cv::Point2f> &polygon,
+static double height(unsigned int polygonPointIndex, const std::vector<ncvslideio::Point2f> &polygon,
                      unsigned int nrOfPoints, unsigned int c);
 
-static void initialise(std::vector<cv::Point2f> &triangle, double &area);
+static void initialise(std::vector<ncvslideio::Point2f> &triangle, double &area);
 
 static unsigned int intersects(double angleGammaAndPoint, unsigned int polygonPointIndex,
-                               const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+                               const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                unsigned int c);
 
-static bool intersectsAbove(const cv::Point2f &gammaPoint, unsigned int polygonPointIndex,
-                            const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool intersectsAbove(const ncvslideio::Point2f &gammaPoint, unsigned int polygonPointIndex,
+                            const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                             unsigned int c);
 
 static unsigned int intersectsAboveOrBelow(unsigned int succPredIndex, unsigned int pointIndex,
-                                           const std::vector<cv::Point2f> &polygon,
+                                           const std::vector<ncvslideio::Point2f> &polygon,
                                            unsigned int nrOfPoints, unsigned int c);
 
-static bool intersectsBelow(const cv::Point2f &gammaPoint, unsigned int polygonPointIndex,
-                            const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool intersectsBelow(const ncvslideio::Point2f &gammaPoint, unsigned int polygonPointIndex,
+                            const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                             unsigned int c);
 
 static bool isAngleBetween(double angle1, double angle2, double angle3);
@@ -197,54 +197,54 @@ static bool isGammaAngleBtw(double &gammaAngle, double angle1, double angle2);
 
 static bool isGammaAngleEqualTo(double &gammaAngle, double angle);
 
-static bool isLocalMinimalTriangle(cv::Point2f &vertexA, cv::Point2f &vertexB,
-                                   cv::Point2f &vertexC, const std::vector<cv::Point2f> &polygon,
+static bool isLocalMinimalTriangle(ncvslideio::Point2f &vertexA, ncvslideio::Point2f &vertexB,
+                                   ncvslideio::Point2f &vertexC, const std::vector<ncvslideio::Point2f> &polygon,
                                    unsigned int nrOfPoints, unsigned int a, unsigned int b,
-                                   unsigned int validationFlag, const cv::Point2f &sideAStartVertex,
-                                   const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                                   const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                                   const cv::Point2f &sideCEndVertex);
+                                   unsigned int validationFlag, const ncvslideio::Point2f &sideAStartVertex,
+                                   const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                                   const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                                   const ncvslideio::Point2f &sideCEndVertex);
 
-static bool isNotBTangency(const std::vector<cv::Point2f> &polygon,
+static bool isNotBTangency(const std::vector<ncvslideio::Point2f> &polygon,
                            unsigned int nrOfPoints, unsigned int a, unsigned int b,
                            unsigned int c);
 
 static bool isOppositeAngleBetweenNonReflex(double angle1, double angle2, double angle3);
 
-static bool isPointOnLineSegment(const cv::Point2f &point, const cv::Point2f &lineSegmentStart,
-                                 const cv::Point2f &lineSegmentEnd);
+static bool isPointOnLineSegment(const ncvslideio::Point2f &point, const ncvslideio::Point2f &lineSegmentStart,
+                                 const ncvslideio::Point2f &lineSegmentEnd);
 
-static bool isValidMinimalTriangle(const cv::Point2f &vertexA, const cv::Point2f &vertexB,
-                                   const cv::Point2f &vertexC, const std::vector<cv::Point2f> &polygon,
+static bool isValidMinimalTriangle(const ncvslideio::Point2f &vertexA, const ncvslideio::Point2f &vertexB,
+                                   const ncvslideio::Point2f &vertexC, const std::vector<ncvslideio::Point2f> &polygon,
                                    unsigned int nrOfPoints, unsigned int a, unsigned int b,
-                                   unsigned int validationFlag, const cv::Point2f &sideAStartVertex,
-                                   const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                                   const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                                   const cv::Point2f &sideCEndVertex);
+                                   unsigned int validationFlag, const ncvslideio::Point2f &sideAStartVertex,
+                                   const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                                   const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                                   const ncvslideio::Point2f &sideCEndVertex);
 
 static bool lessOrEqual(double number1, double number2);
 
-static void lineEquationDeterminedByPoints(const cv::Point2f &p, const cv::Point2f &q,
+static void lineEquationDeterminedByPoints(const ncvslideio::Point2f &p, const ncvslideio::Point2f &q,
                                            double &a, double &b, double &c);
 
-static std::vector<double> lineEquationParameters(const cv::Point2f& p, const cv::Point2f &q);
+static std::vector<double> lineEquationParameters(const ncvslideio::Point2f& p, const ncvslideio::Point2f &q);
 
-static bool lineIntersection(const cv::Point2f &a1, const cv::Point2f &b1, const cv::Point2f &a2,
-                             const cv::Point2f &b2, cv::Point2f &intersection);
+static bool lineIntersection(const ncvslideio::Point2f &a1, const ncvslideio::Point2f &b1, const ncvslideio::Point2f &a2,
+                             const ncvslideio::Point2f &b2, ncvslideio::Point2f &intersection);
 
 static bool lineIntersection(double a1, double b1, double c1, double a2, double b2, double c2,
-                             cv::Point2f &intersection);
+                             ncvslideio::Point2f &intersection);
 
 static double maximum(double number1, double number2, double number3);
 
-static cv::Point2f middlePoint(const cv::Point2f &a, const cv::Point2f &b);
+static ncvslideio::Point2f middlePoint(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b);
 
-static bool middlePointOfSideB(cv::Point2f &middlePointOfSideB, const cv::Point2f &sideAStartVertex,
-                               const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                               const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                               const cv::Point2f &sideCEndVertex);
+static bool middlePointOfSideB(ncvslideio::Point2f &middlePointOfSideB, const ncvslideio::Point2f &sideAStartVertex,
+                               const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                               const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                               const ncvslideio::Point2f &sideCEndVertex);
 
-static void moveAIfLowAndBIfHigh(const std::vector<cv::Point2f> &polygon,
+static void moveAIfLowAndBIfHigh(const std::vector<ncvslideio::Point2f> &polygon,
                                  unsigned int nrOfPoints, unsigned int &a, unsigned int &b,
                                  unsigned int c);
 
@@ -252,10 +252,10 @@ static double oppositeAngle(double angle);
 
 static unsigned int predecessor(unsigned int index, unsigned int nrOfPoints);
 
-static void returnMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                               std::vector<cv::Point2f> &triangle, double &area);
+static void returnMinimumAreaEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                               std::vector<ncvslideio::Point2f> &triangle, double &area);
 
-static void searchForBTangency(const std::vector<cv::Point2f> &polygon,
+static void searchForBTangency(const std::vector<ncvslideio::Point2f> &polygon,
                                unsigned int nrOfPoints, unsigned int a, unsigned int &b,
                                unsigned int c);
 
@@ -263,26 +263,26 @@ static int sign(double number);
 
 static unsigned int successor(unsigned int index, unsigned int nrOfPoints);
 
-static void updateMinimumAreaEnclosingTriangle(std::vector<cv::Point2f> &triangle, double &area,
-                                               const cv::Point2f &vertexA, const cv::Point2f &vertexB,
-                                               const cv::Point2f &vertexC);
+static void updateMinimumAreaEnclosingTriangle(std::vector<ncvslideio::Point2f> &triangle, double &area,
+                                               const ncvslideio::Point2f &vertexA, const ncvslideio::Point2f &vertexB,
+                                               const ncvslideio::Point2f &vertexC);
 
-static void updateSideB(const std::vector<cv::Point2f> &polygon,
+static void updateSideB(const std::vector<ncvslideio::Point2f> &polygon,
                         unsigned int nrOfPoints, unsigned int a, unsigned int b,
                         unsigned int c, unsigned int &validationFlag,
-                        cv::Point2f &sideBStartVertex, cv::Point2f &sideBEndVertex);
+                        ncvslideio::Point2f &sideBStartVertex, ncvslideio::Point2f &sideBEndVertex);
 
-static void updateSidesBA(const std::vector<cv::Point2f> &polygon,
+static void updateSidesBA(const std::vector<ncvslideio::Point2f> &polygon,
                           unsigned int nrOfPoints, unsigned int a, unsigned int b,
                           unsigned int c, unsigned int &validationFlag,
-                          cv::Point2f &sideAStartVertex, cv::Point2f &sideAEndVertex,
-                          cv::Point2f &sideBStartVertex, cv::Point2f &sideBEndVertex,
-                          const cv::Point2f &sideCStartVertex, const cv::Point2f &sideCEndVertex);
+                          ncvslideio::Point2f &sideAStartVertex, ncvslideio::Point2f &sideAEndVertex,
+                          ncvslideio::Point2f &sideBStartVertex, ncvslideio::Point2f &sideBEndVertex,
+                          const ncvslideio::Point2f &sideCStartVertex, const ncvslideio::Point2f &sideCEndVertex);
 
-static void updateSidesCA(const std::vector<cv::Point2f> &polygon,
+static void updateSidesCA(const std::vector<ncvslideio::Point2f> &polygon,
                           unsigned int nrOfPoints, unsigned int a, unsigned int c,
-                          cv::Point2f &sideAStartVertex, cv::Point2f &sideAEndVertex,
-                          cv::Point2f &sideCStartVertex, cv::Point2f &sideCEndVertex);
+                          ncvslideio::Point2f &sideAStartVertex, ncvslideio::Point2f &sideAEndVertex,
+                          ncvslideio::Point2f &sideCStartVertex, ncvslideio::Point2f &sideCEndVertex);
 
 }
 
@@ -295,7 +295,7 @@ static void updateSidesCA(const std::vector<cv::Point2f> &polygon,
 * @param points         Set of points
 * @param triangle       Minimum area triangle enclosing the given set of points
 */
-double cv::minEnclosingTriangle(cv::InputArray points, CV_OUT cv::OutputArray triangle) {
+double ncvslideio::minEnclosingTriangle(ncvslideio::InputArray points, CV_OUT ncvslideio::OutputArray triangle) {
     double area;
 
     minEnclosingTriangle::findMinEnclosingTriangle(points, triangle, area);
@@ -315,14 +315,14 @@ namespace minEnclosingTriangle {
 * @param triangle       Minimum area triangle enclosing the given set of points
 * @param area           Area of the minimum area enclosing triangle
 */
-static void findMinEnclosingTriangle(cv::InputArray points,
-                                     CV_OUT cv::OutputArray triangle, CV_OUT double &area) {
+static void findMinEnclosingTriangle(ncvslideio::InputArray points,
+                                     CV_OUT ncvslideio::OutputArray triangle, CV_OUT double &area) {
     CV_Assert(!points.empty());
-    std::vector<cv::Point2f> resultingTriangle;
-    cv::Mat polygon;
+    std::vector<ncvslideio::Point2f> resultingTriangle;
+    ncvslideio::Mat polygon;
     convexHull(points, polygon, true, true);
     findMinEnclosingTriangle(polygon, resultingTriangle, area);
-    cv::Mat(resultingTriangle).copyTo(triangle);
+    ncvslideio::Mat(resultingTriangle).copyTo(triangle);
 }
 
 //! Find the minimum enclosing triangle and its area
@@ -334,8 +334,8 @@ static void findMinEnclosingTriangle(cv::InputArray points,
 * @param triangle   Minimum area triangle enclosing the given polygon
 * @param area       Area of the minimum area enclosing triangle
 */
-static void findMinEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                     std::vector<cv::Point2f> &triangle, double &area) {
+static void findMinEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                     std::vector<ncvslideio::Point2f> &triangle, double &area) {
     initialise(triangle, area);
 
     if (polygon.size() > 3) {
@@ -350,7 +350,7 @@ static void findMinEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
 * @param triangle       Minimum area triangle enclosing the given polygon
 * @param area           Area of the minimum area enclosing triangle
 */
-static void initialise(std::vector<cv::Point2f> &triangle, double &area) {
+static void initialise(std::vector<ncvslideio::Point2f> &triangle, double &area) {
     area = std::numeric_limits<double>::max();
 
     // Clear all points previously stored in the vector
@@ -363,17 +363,17 @@ static void initialise(std::vector<cv::Point2f> &triangle, double &area) {
 * @param triangle   Minimum area triangle enclosing the given polygon
 * @param area       Area of the minimum area enclosing triangle
 */
-static void findMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                             std::vector<cv::Point2f> &triangle, double &area) {
+static void findMinimumAreaEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                             std::vector<ncvslideio::Point2f> &triangle, double &area) {
     // Algorithm specific variables
 
     unsigned int validationFlag;
 
-    cv::Point2f vertexA, vertexB, vertexC;
+    ncvslideio::Point2f vertexA, vertexB, vertexC;
 
-    cv::Point2f sideAStartVertex, sideAEndVertex;
-    cv::Point2f sideBStartVertex, sideBEndVertex;
-    cv::Point2f sideCStartVertex, sideCEndVertex;
+    ncvslideio::Point2f sideAStartVertex, sideAEndVertex;
+    ncvslideio::Point2f sideBStartVertex, sideBEndVertex;
+    ncvslideio::Point2f sideCStartVertex, sideCEndVertex;
 
     unsigned int a, b, c;
     unsigned int nrOfPoints;
@@ -419,8 +419,8 @@ static void findMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &pol
 * @param triangle   Minimum area triangle enclosing the given polygon
 * @param area       Area of the minimum area enclosing triangle
 */
-static void returnMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &polygon,
-                                               std::vector<cv::Point2f> &triangle, double &area) {
+static void returnMinimumAreaEnclosingTriangle(const std::vector<ncvslideio::Point2f> &polygon,
+                                               std::vector<ncvslideio::Point2f> &triangle, double &area) {
     unsigned int nrOfPoints = static_cast<unsigned int>(polygon.size());
 
     for (int i = 0; i < 3; i++) {
@@ -439,7 +439,7 @@ static void returnMinimumAreaEnclosingTriangle(const std::vector<cv::Point2f> &p
 * @param b                  Index b
 * @param c                  Index c
 */
-static void advanceBToRightChain(const std::vector<cv::Point2f> &polygon,
+static void advanceBToRightChain(const std::vector<ncvslideio::Point2f> &polygon,
                                  unsigned int nrOfPoints, unsigned int &b,
                                  unsigned int c) {
     while (greaterOrEqual(height(successor(b, nrOfPoints), polygon, nrOfPoints, c),
@@ -458,10 +458,10 @@ static void advanceBToRightChain(const std::vector<cv::Point2f> &polygon,
 * @param b                  Index b
 * @param c                  Index c
 */
-static void moveAIfLowAndBIfHigh(const std::vector<cv::Point2f> &polygon,
+static void moveAIfLowAndBIfHigh(const std::vector<ncvslideio::Point2f> &polygon,
                                  unsigned int nrOfPoints, unsigned int &a, unsigned int &b,
                                  unsigned int c) {
-    cv::Point2f gammaOfA;
+    ncvslideio::Point2f gammaOfA;
 
     while(height(b, polygon, nrOfPoints, c) > height(a, polygon, nrOfPoints, c)) {
         if ((gamma(a, gammaOfA, polygon, nrOfPoints, a, c)) && (intersectsBelow(gammaOfA, b, polygon, nrOfPoints, c))) {
@@ -482,10 +482,10 @@ static void moveAIfLowAndBIfHigh(const std::vector<cv::Point2f> &polygon,
 * @param b                  Index b
 * @param c                  Index c
 */
-static void searchForBTangency(const std::vector<cv::Point2f> &polygon,
+static void searchForBTangency(const std::vector<ncvslideio::Point2f> &polygon,
                                unsigned int nrOfPoints, unsigned int a, unsigned int &b,
                                unsigned int c) {
-    cv::Point2f gammaOfB;
+    ncvslideio::Point2f gammaOfB;
 
     while (((gamma(b, gammaOfB, polygon, nrOfPoints, a, c)) &&
             (intersectsBelow(gammaOfB, b, polygon, nrOfPoints, c))) &&
@@ -506,10 +506,10 @@ static void searchForBTangency(const std::vector<cv::Point2f> &polygon,
 * @param b                  Index b
 * @param c                  Index c
 */
-static bool isNotBTangency(const std::vector<cv::Point2f> &polygon,
+static bool isNotBTangency(const std::vector<ncvslideio::Point2f> &polygon,
                            unsigned int nrOfPoints, unsigned int a, unsigned int b,
                            unsigned int c) {
-    cv::Point2f gammaOfB;
+    ncvslideio::Point2f gammaOfB;
 
     if (((gamma(b, gammaOfB, polygon, nrOfPoints, a, c)) &&
          (intersectsAbove(gammaOfB, b, polygon, nrOfPoints, c))) ||
@@ -534,10 +534,10 @@ static bool isNotBTangency(const std::vector<cv::Point2f> &polygon,
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static void updateSidesCA(const std::vector<cv::Point2f> &polygon,
+static void updateSidesCA(const std::vector<ncvslideio::Point2f> &polygon,
                           unsigned int nrOfPoints, unsigned int a, unsigned int c,
-                          cv::Point2f &sideAStartVertex, cv::Point2f &sideAEndVertex,
-                          cv::Point2f &sideCStartVertex, cv::Point2f &sideCEndVertex) {
+                          ncvslideio::Point2f &sideAStartVertex, ncvslideio::Point2f &sideAEndVertex,
+                          ncvslideio::Point2f &sideCStartVertex, ncvslideio::Point2f &sideCEndVertex) {
     sideCStartVertex = polygon[predecessor(c, nrOfPoints)];
     sideCEndVertex = polygon[c];
 
@@ -562,18 +562,18 @@ static void updateSidesCA(const std::vector<cv::Point2f> &polygon,
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static void updateSidesBA(const std::vector<cv::Point2f> &polygon,
+static void updateSidesBA(const std::vector<ncvslideio::Point2f> &polygon,
                           unsigned int nrOfPoints, unsigned int a, unsigned int b,
                           unsigned int c, unsigned int &validationFlag,
-                          cv::Point2f &sideAStartVertex, cv::Point2f &sideAEndVertex,
-                          cv::Point2f &sideBStartVertex, cv::Point2f &sideBEndVertex,
-                          const cv::Point2f &sideCStartVertex, const cv::Point2f &sideCEndVertex) {
+                          ncvslideio::Point2f &sideAStartVertex, ncvslideio::Point2f &sideAEndVertex,
+                          ncvslideio::Point2f &sideBStartVertex, ncvslideio::Point2f &sideBEndVertex,
+                          const ncvslideio::Point2f &sideCStartVertex, const ncvslideio::Point2f &sideCEndVertex) {
     // Side B is flush with edge [b, b-1]
     sideBStartVertex = polygon[predecessor(b, nrOfPoints)];
     sideBEndVertex = polygon[b];
 
     // Find middle point of side B
-    cv::Point2f sideBMiddlePoint;
+    ncvslideio::Point2f sideBMiddlePoint;
 
     if ((middlePointOfSideB(sideBMiddlePoint, sideAStartVertex, sideAEndVertex, sideBStartVertex,
                             sideBEndVertex, sideCStartVertex, sideCEndVertex)) &&
@@ -603,12 +603,12 @@ static void updateSidesBA(const std::vector<cv::Point2f> &polygon,
 * @param sideBStartVertex   Start vertex for defining side B
 * @param sideBEndVertex     End vertex for defining side B
 */
-static void updateSideB(const std::vector<cv::Point2f> &polygon,
+static void updateSideB(const std::vector<ncvslideio::Point2f> &polygon,
                         unsigned int nrOfPoints, unsigned int a, unsigned int b,
                         unsigned int c, unsigned int &validationFlag,
-                        cv::Point2f &sideBStartVertex, cv::Point2f &sideBEndVertex) {
+                        ncvslideio::Point2f &sideBStartVertex, ncvslideio::Point2f &sideBEndVertex) {
     if (!gamma(b, sideBStartVertex, polygon, nrOfPoints, a, c)) {
-        CV_Error(cv::Error::StsInternal, ERR_SIDE_B_GAMMA);
+        CV_Error(ncvslideio::Error::StsInternal, ERR_SIDE_B_GAMMA);
     }
 
     sideBEndVertex = polygon[b];
@@ -635,13 +635,13 @@ static void updateSideB(const std::vector<cv::Point2f> &polygon,
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static bool isLocalMinimalTriangle(cv::Point2f &vertexA, cv::Point2f &vertexB,
-                                   cv::Point2f &vertexC, const std::vector<cv::Point2f> &polygon,
+static bool isLocalMinimalTriangle(ncvslideio::Point2f &vertexA, ncvslideio::Point2f &vertexB,
+                                   ncvslideio::Point2f &vertexC, const std::vector<ncvslideio::Point2f> &polygon,
                                    unsigned int nrOfPoints, unsigned int a, unsigned int b,
-                                   unsigned int validationFlag, const cv::Point2f &sideAStartVertex,
-                                   const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                                   const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                                   const cv::Point2f &sideCEndVertex) {
+                                   unsigned int validationFlag, const ncvslideio::Point2f &sideAStartVertex,
+                                   const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                                   const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                                   const ncvslideio::Point2f &sideCEndVertex) {
     if ((!lineIntersection(sideAStartVertex, sideAEndVertex,
                            sideBStartVertex, sideBEndVertex, vertexC)) ||
         (!lineIntersection(sideAStartVertex, sideAEndVertex,
@@ -678,16 +678,16 @@ static bool isLocalMinimalTriangle(cv::Point2f &vertexA, cv::Point2f &vertexB,
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static bool isValidMinimalTriangle(const cv::Point2f &vertexA, const cv::Point2f &vertexB,
-                                   const cv::Point2f &vertexC, const std::vector<cv::Point2f> &polygon,
+static bool isValidMinimalTriangle(const ncvslideio::Point2f &vertexA, const ncvslideio::Point2f &vertexB,
+                                   const ncvslideio::Point2f &vertexC, const std::vector<ncvslideio::Point2f> &polygon,
                                    unsigned int nrOfPoints, unsigned int a, unsigned int b,
-                                   unsigned int validationFlag, const cv::Point2f &sideAStartVertex,
-                                   const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                                   const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                                   const cv::Point2f &sideCEndVertex) {
-    cv::Point2f midpointSideA = middlePoint(vertexB, vertexC);
-    cv::Point2f midpointSideB = middlePoint(vertexA, vertexC);
-    cv::Point2f midpointSideC = middlePoint(vertexA, vertexB);
+                                   unsigned int validationFlag, const ncvslideio::Point2f &sideAStartVertex,
+                                   const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                                   const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                                   const ncvslideio::Point2f &sideCEndVertex) {
+    ncvslideio::Point2f midpointSideA = middlePoint(vertexB, vertexC);
+    ncvslideio::Point2f midpointSideB = middlePoint(vertexA, vertexC);
+    ncvslideio::Point2f midpointSideC = middlePoint(vertexA, vertexB);
 
     bool sideAValid = (validationFlag == VALIDATION_SIDE_A_TANGENT)
                         ? (areEqualPoints(midpointSideA, polygon[predecessor(a, nrOfPoints)]))
@@ -710,9 +710,9 @@ static bool isValidMinimalTriangle(const cv::Point2f &vertexA, const cv::Point2f
 * @param vertexB    Vertex B of the enclosing triangle
 * @param vertexC    Vertex C of the enclosing triangle
 */
-static void updateMinimumAreaEnclosingTriangle(std::vector<cv::Point2f> &triangle, double &area,
-                                               const cv::Point2f &vertexA, const cv::Point2f &vertexB,
-                                               const cv::Point2f &vertexC) {
+static void updateMinimumAreaEnclosingTriangle(std::vector<ncvslideio::Point2f> &triangle, double &area,
+                                               const ncvslideio::Point2f &vertexA, const ncvslideio::Point2f &vertexB,
+                                               const ncvslideio::Point2f &vertexC) {
     double triangleArea = areaOfTriangle(vertexA, vertexB, vertexC);
 
     if (triangleArea < area) {
@@ -736,11 +736,11 @@ static void updateMinimumAreaEnclosingTriangle(std::vector<cv::Point2f> &triangl
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static bool middlePointOfSideB(cv::Point2f &middlePointOfSideB, const cv::Point2f &sideAStartVertex,
-                               const cv::Point2f &sideAEndVertex, const cv::Point2f &sideBStartVertex,
-                               const cv::Point2f &sideBEndVertex, const cv::Point2f &sideCStartVertex,
-                               const cv::Point2f &sideCEndVertex) {
-    cv::Point2f vertexA, vertexC;
+static bool middlePointOfSideB(ncvslideio::Point2f &middlePointOfSideB, const ncvslideio::Point2f &sideAStartVertex,
+                               const ncvslideio::Point2f &sideAEndVertex, const ncvslideio::Point2f &sideBStartVertex,
+                               const ncvslideio::Point2f &sideBEndVertex, const ncvslideio::Point2f &sideCStartVertex,
+                               const ncvslideio::Point2f &sideCEndVertex) {
+    ncvslideio::Point2f vertexA, vertexC;
 
     if ((!lineIntersection(sideBStartVertex, sideBEndVertex, sideCStartVertex, sideCEndVertex, vertexA)) ||
         (!lineIntersection(sideBStartVertex, sideBEndVertex, sideAStartVertex, sideAEndVertex, vertexC))) {
@@ -763,8 +763,8 @@ static bool middlePointOfSideB(cv::Point2f &middlePointOfSideB, const cv::Point2
 * @param nrOfPoints         Number of points defining the convex polygon
 * @param c                  Index c
 */
-static bool intersectsBelow(const cv::Point2f &gammaPoint, unsigned int polygonPointIndex,
-                            const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool intersectsBelow(const ncvslideio::Point2f &gammaPoint, unsigned int polygonPointIndex,
+                            const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                             unsigned int c) {
     double angleOfGammaAndPoint = angleOfLineWrtOxAxis(polygon[polygonPointIndex], gammaPoint);
 
@@ -782,8 +782,8 @@ static bool intersectsBelow(const cv::Point2f &gammaPoint, unsigned int polygonP
 * @param nrOfPoints         Number of points defining the convex polygon
 * @param c                  Index c
 */
-static bool intersectsAbove(const cv::Point2f &gammaPoint, unsigned int polygonPointIndex,
-                            const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool intersectsAbove(const ncvslideio::Point2f &gammaPoint, unsigned int polygonPointIndex,
+                            const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                             unsigned int c) {
     double angleOfGammaAndPoint = angleOfLineWrtOxAxis(gammaPoint, polygon[polygonPointIndex]);
 
@@ -799,7 +799,7 @@ static bool intersectsAbove(const cv::Point2f &gammaPoint, unsigned int polygonP
 * @param c                      Index c
 */
 static unsigned int intersects(double angleGammaAndPoint, unsigned int polygonPointIndex,
-                               const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+                               const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                unsigned int c) {
     double anglePointPredecessor = angleOfLineWrtOxAxis(polygon[predecessor(polygonPointIndex, nrOfPoints)],
                                                         polygon[polygonPointIndex]);
@@ -846,7 +846,7 @@ static unsigned int intersects(double angleGammaAndPoint, unsigned int polygonPo
 * @param c              Index c
 */
 static unsigned int intersectsAboveOrBelow(unsigned int succPredIndex, unsigned int pointIndex,
-                                           const std::vector<cv::Point2f> &polygon,
+                                           const std::vector<ncvslideio::Point2f> &polygon,
                                            unsigned int nrOfPoints, unsigned int c) {
     if (height(succPredIndex, polygon, nrOfPoints, c) > height(pointIndex, polygon, nrOfPoints, c)) {
         return INTERSECTS_ABOVE;
@@ -875,10 +875,10 @@ static unsigned int intersectsAboveOrBelow(unsigned int succPredIndex, unsigned 
 * @param a                 Index a
 * @param c                 Index c
 */
-static bool gamma(unsigned int polygonPointIndex, cv::Point2f &gammaPoint,
-                  const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool gamma(unsigned int polygonPointIndex, ncvslideio::Point2f &gammaPoint,
+                  const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                   unsigned int a, unsigned int c) {
-    cv::Point2f intersectionPoint1, intersectionPoint2;
+    ncvslideio::Point2f intersectionPoint1, intersectionPoint2;
 
     // Get intersection points if they exist
     if (!findGammaIntersectionPoints(polygon, nrOfPoints, c, polygonPointIndex,
@@ -918,20 +918,20 @@ static bool gamma(unsigned int polygonPointIndex, cv::Point2f &gammaPoint,
 * @param sideCStartVertex   Start vertex for defining side C
 * @param sideCEndVertex     End vertex for defining side C
 */
-static cv::Point2f findVertexCOnSideB(const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static ncvslideio::Point2f findVertexCOnSideB(const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                       unsigned int a, unsigned int c,
-                                      const cv::Point2f &sideBStartVertex,
-                                      const cv::Point2f &sideBEndVertex,
-                                      const cv::Point2f &sideCStartVertex,
-                                      const cv::Point2f &sideCEndVertex) {
-    cv::Point2f intersectionPoint1, intersectionPoint2;
+                                      const ncvslideio::Point2f &sideBStartVertex,
+                                      const ncvslideio::Point2f &sideBEndVertex,
+                                      const ncvslideio::Point2f &sideCStartVertex,
+                                      const ncvslideio::Point2f &sideCEndVertex) {
+    ncvslideio::Point2f intersectionPoint1, intersectionPoint2;
 
     // Get intersection points if they exist
     if (!findGammaIntersectionPoints(polygon, nrOfPoints, c, predecessor(a, nrOfPoints),
                                      sideBStartVertex, sideBEndVertex,
                                      sideCStartVertex, sideCEndVertex,
                                      intersectionPoint1, intersectionPoint2)) {
-        CV_Error(cv::Error::StsInternal, ERR_VERTEX_C_ON_SIDE_B);
+        CV_Error(ncvslideio::Error::StsInternal, ERR_VERTEX_C_ON_SIDE_B);
     }
 
     // Select the point which is on the same side of line C as the polygon
@@ -956,11 +956,11 @@ static cv::Point2f findVertexCOnSideB(const std::vector<cv::Point2f> &polygon, u
 * @param intersectionPoint1     First intersection point between one pair of lines
 * @param intersectionPoint2     Second intersection point between other pair of lines
 */
-static bool findGammaIntersectionPoints(const std::vector<cv::Point2f> &polygon, unsigned int nrOfPoints,
+static bool findGammaIntersectionPoints(const std::vector<ncvslideio::Point2f> &polygon, unsigned int nrOfPoints,
                                         unsigned int c, unsigned int polygonPointIndex,
-                                        const cv::Point2f &side1StartVertex, const cv::Point2f &side1EndVertex,
-                                        const cv::Point2f &side2StartVertex, const cv::Point2f &side2EndVertex,
-                                        cv::Point2f &intersectionPoint1, cv::Point2f &intersectionPoint2) {
+                                        const ncvslideio::Point2f &side1StartVertex, const ncvslideio::Point2f &side1EndVertex,
+                                        const ncvslideio::Point2f &side2StartVertex, const ncvslideio::Point2f &side2EndVertex,
+                                        ncvslideio::Point2f &intersectionPoint1, ncvslideio::Point2f &intersectionPoint2) {
     std::vector<double> side1Params = lineEquationParameters(side1StartVertex, side1EndVertex);
     std::vector<double> side2Params = lineEquationParameters(side2StartVertex, side2EndVertex);
 
@@ -1017,8 +1017,8 @@ static bool areIdenticalLines(const std::vector<double> &side1Params,
 */
 static bool areIntersectingLines(const std::vector<double> &side1Params,
                                  const std::vector<double> &side2Params,
-                                 double sideCExtraParam, cv::Point2f &intersectionPoint1,
-                                 cv::Point2f &intersectionPoint2) {
+                                 double sideCExtraParam, ncvslideio::Point2f &intersectionPoint1,
+                                 ncvslideio::Point2f &intersectionPoint2) {
     return (
         (lineIntersection(side1Params[0], side1Params[1], -(side1Params[2]),
                           side2Params[0], side2Params[1], -(side2Params[2]) - sideCExtraParam,
@@ -1037,7 +1037,7 @@ static bool areIntersectingLines(const std::vector<double> &side1Params,
 * @param p One point for defining the equation of the line
 * @param q Second point for defining the equation of the line
 */
-static std::vector<double> lineEquationParameters(const cv::Point2f& p, const cv::Point2f &q) {
+static std::vector<double> lineEquationParameters(const ncvslideio::Point2f& p, const ncvslideio::Point2f &q) {
     std::vector<double> lineEquationParameters;
     double a, b, c;
 
@@ -1059,10 +1059,10 @@ static std::vector<double> lineEquationParameters(const cv::Point2f& p, const cv
 * @param nrOfPoints         Number of points defining the convex polygon
 * @param c                  Index c
 */
-static double height(const cv::Point2f &polygonPoint, const std::vector<cv::Point2f> &polygon,
+static double height(const ncvslideio::Point2f &polygonPoint, const std::vector<ncvslideio::Point2f> &polygon,
                      unsigned int nrOfPoints, unsigned int c) {
-    cv::Point2f pointC = polygon[c];
-    cv::Point2f pointCPredecessor = polygon[predecessor(c, nrOfPoints)];
+    ncvslideio::Point2f pointC = polygon[c];
+    ncvslideio::Point2f pointCPredecessor = polygon[predecessor(c, nrOfPoints)];
 
     return distanceFromPointToLine(polygonPoint, pointC, pointCPredecessor);
 }
@@ -1076,12 +1076,12 @@ static double height(const cv::Point2f &polygonPoint, const std::vector<cv::Poin
 * @param nrOfPoints         Number of points defining the convex polygon
 * @param c                  Index c
 */
-static double height(unsigned int polygonPointIndex, const std::vector<cv::Point2f> &polygon,
+static double height(unsigned int polygonPointIndex, const std::vector<ncvslideio::Point2f> &polygon,
                      unsigned int nrOfPoints, unsigned int c) {
-    cv::Point2f pointC = polygon[c];
-    cv::Point2f pointCPredecessor = polygon[predecessor(c, nrOfPoints)];
+    ncvslideio::Point2f pointC = polygon[c];
+    ncvslideio::Point2f pointCPredecessor = polygon[predecessor(c, nrOfPoints)];
 
-    cv::Point2f polygonPoint = polygon[polygonPointIndex];
+    ncvslideio::Point2f polygonPoint = polygon[polygonPointIndex];
 
     return distanceFromPointToLine(polygonPoint, pointC, pointCPredecessor);
 }
@@ -1167,7 +1167,7 @@ static bool isGammaAngleBtw(double &gammaAngle, double angle1, double angle2) {
 * @param a Point a
 * @param b Point b
 */
-static double angleOfLineWrtOxAxis(const cv::Point2f &a, const cv::Point2f &b) {
+static double angleOfLineWrtOxAxis(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b) {
     double y = b.y - a.y;
     double x = b.x - a.x;
 
@@ -1253,8 +1253,8 @@ static double oppositeAngle(double angle) {
 * @param linePointB    One of the points determining the line
 * @param linePointC    One of the points determining the line
 */
-static double distanceFromPointToLine(const cv::Point2f &a, const cv::Point2f &linePointB,
-                                      const cv::Point2f &linePointC) {
+static double distanceFromPointToLine(const ncvslideio::Point2f &a, const ncvslideio::Point2f &linePointB,
+                                      const ncvslideio::Point2f &linePointC) {
     double term1 = linePointC.x - linePointB.x;
     double term2 = linePointB.y - a.y;
     double term3 = linePointB.x - a.x;
@@ -1273,7 +1273,7 @@ static double distanceFromPointToLine(const cv::Point2f &a, const cv::Point2f &l
 * @param a Point a
 * @param b Point b
 */
-static double distanceBtwPoints(const cv::Point2f &a, const cv::Point2f &b) {
+static double distanceBtwPoints(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b) {
     double xDiff = a.x - b.x;
     double yDiff = a.y - b.y;
 
@@ -1290,7 +1290,7 @@ static double distanceBtwPoints(const cv::Point2f &a, const cv::Point2f &b) {
 * @param b Point b
 * @param c Point c
 */
-static double areaOfTriangle(const cv::Point2f &a, const cv::Point2f &b, const cv::Point2f &c) {
+static double areaOfTriangle(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b, const ncvslideio::Point2f &c) {
     double posTerm = (a.x * b.y) + (a.y * c.x) + (b.x * c.y);
     double negTerm = (b.y * c.x) + (a.x * c.y) + (a.y * b.x);
 
@@ -1304,11 +1304,11 @@ static double areaOfTriangle(const cv::Point2f &a, const cv::Point2f &b, const c
 * @param a Point a
 * @param b Point b
 */
-static cv::Point2f middlePoint(const cv::Point2f &a, const cv::Point2f &b) {
+static ncvslideio::Point2f middlePoint(const ncvslideio::Point2f &a, const ncvslideio::Point2f &b) {
     double middleX = static_cast<double>((a.x + b.x) / 2);
     double middleY = static_cast<double>((a.y + b.y) / 2);
 
-    return cv::Point2f(static_cast<float>(middleX), static_cast<float>(middleY));
+    return ncvslideio::Point2f(static_cast<float>(middleX), static_cast<float>(middleY));
 }
 
 //! Determine the intersection point of two lines, if this point exists
@@ -1335,7 +1335,7 @@ static cv::Point2f middlePoint(const cv::Point2f &a, const cv::Point2f &b) {
 * @param intersection The intersection point, if this point exists
 */
 static bool lineIntersection(double a1, double b1, double c1, double a2, double b2, double c2,
-                             cv::Point2f &intersection) {
+                             ncvslideio::Point2f &intersection) {
     double det = (a1 * b2) - (a2 * b1);
 
     if (!(almostEqual(det, 0))) {
@@ -1372,8 +1372,8 @@ static bool lineIntersection(double a1, double b1, double c1, double a2, double 
 * @param b2 Second point for determining the second line
 * @param intersection The intersection point, if this point exists
 */
-static bool lineIntersection(const cv::Point2f &a1, const cv::Point2f &b1, const cv::Point2f &a2,
-                             const cv::Point2f &b2, cv::Point2f &intersection) {
+static bool lineIntersection(const ncvslideio::Point2f &a1, const ncvslideio::Point2f &b1, const ncvslideio::Point2f &a2,
+                             const ncvslideio::Point2f &b2, ncvslideio::Point2f &intersection) {
     double A1 = b1.y - a1.y;
     double B1 = a1.x - b1.x;
     double C1 = (a1.x * A1) + (a1.y * B1);
@@ -1406,7 +1406,7 @@ static bool lineIntersection(const cv::Point2f &a1, const cv::Point2f &b1, const
 * @param b Parameter "b" from the line equation
 * @param c Parameter "c" from the line equation
 */
-static void lineEquationDeterminedByPoints(const cv::Point2f &p, const cv::Point2f &q,
+static void lineEquationDeterminedByPoints(const ncvslideio::Point2f &p, const ncvslideio::Point2f &q,
                                            double &a, double &b, double &c) {
     CV_Assert(areEqualPoints(p, q) == false);
 
@@ -1422,8 +1422,8 @@ static void lineEquationDeterminedByPoints(const cv::Point2f &p, const cv::Point
 * @param a     First point for determining line
 * @param b     Second point for determining line
 */
-static bool areOnTheSameSideOfLine(const cv::Point2f &p1, const cv::Point2f &p2,
-                                   const cv::Point2f &a, const cv::Point2f &b) {
+static bool areOnTheSameSideOfLine(const ncvslideio::Point2f &p1, const ncvslideio::Point2f &p2,
+                                   const ncvslideio::Point2f &a, const ncvslideio::Point2f &b) {
     double a1, b1, c1;
 
     lineEquationDeterminedByPoints(a, b, a1, b1, c1);
@@ -1440,8 +1440,8 @@ static bool areOnTheSameSideOfLine(const cv::Point2f &p1, const cv::Point2f &p2,
 * @param lineSegmentStart  First point determining the line segment
 * @param lineSegmentEnd    Second point determining the line segment
 */
-static bool isPointOnLineSegment(const cv::Point2f &point, const cv::Point2f &lineSegmentStart,
-                                 const cv::Point2f &lineSegmentEnd) {
+static bool isPointOnLineSegment(const ncvslideio::Point2f &point, const ncvslideio::Point2f &lineSegmentStart,
+                                 const ncvslideio::Point2f &lineSegmentEnd) {
     double d1 = distanceBtwPoints(point, lineSegmentStart);
     double d2 = distanceBtwPoints(point, lineSegmentEnd);
     double lineSegmentLength = distanceBtwPoints(lineSegmentStart, lineSegmentEnd);
@@ -1481,7 +1481,7 @@ static bool areIdenticalLines(double a1, double b1, double c1, double a2, double
 * @param point1 One point
 * @param point2 The other point
 */
-static bool areEqualPoints(const cv::Point2f &point1, const cv::Point2f &point2) {
+static bool areEqualPoints(const ncvslideio::Point2f &point1, const ncvslideio::Point2f &point2) {
     return (almostEqual(point1.x, point2.x) && almostEqual(point1.y, point2.y));
 }
 

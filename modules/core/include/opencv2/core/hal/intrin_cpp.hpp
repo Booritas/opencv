@@ -70,7 +70,7 @@
 #endif
 //! @endcond
 
-namespace cv
+namespace ncvslideio
 {
 
 #ifndef CV_DOXYGEN
@@ -1139,7 +1139,7 @@ v_dotprod(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
 
 /** @brief Dot product of elements
 
-Same as cv::v_dotprod, but add a third element to the sum of adjacent pairs.
+Same as ncvslideio::v_dotprod, but add a third element to the sum of adjacent pairs.
 Scheme:
 @code
   {A1 A2 ...} // 16-bit
@@ -1161,7 +1161,7 @@ v_dotprod(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b,
 
 /** @brief Fast Dot product of elements
 
-Same as cv::v_dotprod, but it may perform unorder sum between result pairs in some platforms,
+Same as ncvslideio::v_dotprod, but it may perform unorder sum between result pairs in some platforms,
 this intrinsic can be used if the sum among all lanes is only matters
 and also it should be yielding better performance on the affected platforms.
 
@@ -1172,7 +1172,7 @@ v_dotprod_fast(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
 
 /** @brief Fast Dot product of elements
 
-Same as cv::v_dotprod_fast, but add a third element to the sum of adjacent pairs.
+Same as ncvslideio::v_dotprod_fast, but add a third element to the sum of adjacent pairs.
 */
 template<typename _Tp, int n> inline v_reg<typename V_TypeTraits<_Tp>::w_type, n/2>
 v_dotprod_fast(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b,
@@ -1205,7 +1205,7 @@ v_dotprod_expand(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
 
 /** @brief Dot product of elements
 
-Same as cv::v_dotprod_expand, but add a third element to the sum of adjacent pairs.
+Same as ncvslideio::v_dotprod_expand, but add a third element to the sum of adjacent pairs.
 Scheme:
 @code
   {A1 A2 A3 A4 ...} // 8-bit
@@ -1230,7 +1230,7 @@ v_dotprod_expand(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b,
 
 Multiply values in two registers and expand the sum of adjacent result pairs.
 
-Same as cv::v_dotprod_expand, but it may perform unorder sum between result pairs in some platforms,
+Same as ncvslideio::v_dotprod_expand, but it may perform unorder sum between result pairs in some platforms,
 this intrinsic can be used if the sum among all lanes is only matters
 and also it should be yielding better performance on the affected platforms.
 
@@ -1241,7 +1241,7 @@ v_dotprod_expand_fast(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
 
 /** @brief Fast Dot product of elements
 
-Same as cv::v_dotprod_expand_fast, but add a third element to the sum of adjacent pairs.
+Same as ncvslideio::v_dotprod_expand_fast, but add a third element to the sum of adjacent pairs.
 */
 template<typename _Tp, int n> inline v_reg<typename V_TypeTraits<_Tp>::q_type, n/4>
 v_dotprod_expand_fast(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b,
@@ -1538,7 +1538,7 @@ template<typename _Tp, int n> inline void v_expand(const v_reg<_Tp, n>& a,
 
 /** @brief Expand lower values to the wider pack type
 
-Same as cv::v_expand, but return lower half of the vector.
+Same as ncvslideio::v_expand, but return lower half of the vector.
 
 Scheme:
 @code
@@ -1557,7 +1557,7 @@ v_expand_low(const v_reg<_Tp, n>& a)
 
 /** @brief Expand higher values to the wider pack type
 
-Same as cv::v_expand_low, but expand higher half of the vector instead.
+Same as ncvslideio::v_expand_low, but expand higher half of the vector instead.
 
 Scheme:
 @code
@@ -1695,7 +1695,7 @@ inline v_reg<_Tp, simd512_width / sizeof(_Tp)> v512_load(const _Tp* ptr)
 
 /** @brief Load register contents from memory (aligned)
 
-similar to cv::v_load, but source memory block should be aligned (to 16-byte boundary in case of SIMD128, 32-byte - SIMD256, etc)
+similar to ncvslideio::v_load, but source memory block should be aligned (to 16-byte boundary in case of SIMD128, 32-byte - SIMD256, etc)
 
 @note Use vx_load_aligned version to get maximum available register length result
 */
@@ -1709,7 +1709,7 @@ inline v_reg<_Tp, simd128_width / sizeof(_Tp)> v_load_aligned(const _Tp* ptr)
 #if CV_SIMD256
 /** @brief Load register contents from memory (aligned)
 
-similar to cv::v256_load, but source memory block should be aligned (to 32-byte boundary in case of SIMD256, 64-byte - SIMD512, etc)
+similar to ncvslideio::v256_load, but source memory block should be aligned (to 32-byte boundary in case of SIMD256, 64-byte - SIMD512, etc)
 
 @note Check CV_SIMD256 preprocessor definition prior to use.
 Use vx_load_aligned version to get maximum available register length result
@@ -1725,7 +1725,7 @@ inline v_reg<_Tp, simd256_width / sizeof(_Tp)> v256_load_aligned(const _Tp* ptr)
 #if CV_SIMD512
 /** @brief Load register contents from memory (aligned)
 
-similar to cv::v512_load, but source memory block should be aligned (to 64-byte boundary in case of SIMD512, etc)
+similar to ncvslideio::v512_load, but source memory block should be aligned (to 64-byte boundary in case of SIMD512, etc)
 
 @note Check CV_SIMD512 preprocessor definition prior to use.
 Use vx_load_aligned version to get maximum available register length result
@@ -1911,7 +1911,7 @@ inline v_reg<_Tp, simd512_width / sizeof(_Tp)> v512_load_halves(const _Tp* loptr
 
 /** @brief Load register contents from memory with double expand
 
-Same as cv::v_load, but result pack type will be 2x wider than memory type.
+Same as ncvslideio::v_load, but result pack type will be 2x wider than memory type.
 
 @code{.cpp}
 short buf[4] = {1, 2, 3, 4}; // type is int16
@@ -1940,7 +1940,7 @@ v_load_expand(const _Tp* ptr)
 #if CV_SIMD256
 /** @brief Load register contents from memory with double expand
 
-Same as cv::v256_load, but result pack type will be 2x wider than memory type.
+Same as ncvslideio::v256_load, but result pack type will be 2x wider than memory type.
 
 @code{.cpp}
 short buf[8] = {1, 2, 3, 4, 5, 6, 7, 8}; // type is int16
@@ -1971,7 +1971,7 @@ v256_load_expand(const _Tp* ptr)
 #if CV_SIMD512
 /** @brief Load register contents from memory with double expand
 
-Same as cv::v512_load, but result pack type will be 2x wider than memory type.
+Same as ncvslideio::v512_load, but result pack type will be 2x wider than memory type.
 
 @code{.cpp}
 short buf[8] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}; // type is int16
@@ -2001,7 +2001,7 @@ v512_load_expand(const _Tp* ptr)
 
 /** @brief Load register contents from memory with quad expand
 
-Same as cv::v_load_expand, but result type is 4 times wider than source.
+Same as ncvslideio::v_load_expand, but result type is 4 times wider than source.
 @code{.cpp}
 char buf[4] = {1, 2, 3, 4}; // type is int8
 v_int32x4 r = v_load_expand_q(buf); // r = {1, 2, 3, 4} - type is int32
@@ -2029,7 +2029,7 @@ v_load_expand_q(const _Tp* ptr)
 #if CV_SIMD256
 /** @brief Load register contents from memory with quad expand
 
-Same as cv::v256_load_expand, but result type is 4 times wider than source.
+Same as ncvslideio::v256_load_expand, but result type is 4 times wider than source.
 @code{.cpp}
 char buf[8] = {1, 2, 3, 4, 5, 6, 7, 8}; // type is int8
 v_int32x8 r = v256_load_expand_q(buf); // r = {1, 2, 3, 4, 5, 6, 7, 8} - type is int32
@@ -2059,7 +2059,7 @@ v256_load_expand_q(const _Tp* ptr)
 #if CV_SIMD512
 /** @brief Load register contents from memory with quad expand
 
-Same as cv::v512_load_expand, but result type is 4 times wider than source.
+Same as ncvslideio::v512_load_expand, but result type is 4 times wider than source.
 @code{.cpp}
 char buf[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}; // type is int8
 v_int32x16 r = v512_load_expand_q(buf); // r = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16} - type is int32
@@ -2584,7 +2584,7 @@ template<int n> inline v_reg<int, n*2> v_trunc(const v_reg<double, n>& a)
 
 /** @brief Convert to float
 
-Supported input type is cv::v_int32. */
+Supported input type is ncvslideio::v_int32. */
 template<int n> inline v_reg<float, n> v_cvt_f32(const v_reg<int, n>& a)
 {
     v_reg<float, n> c;
@@ -2595,7 +2595,7 @@ template<int n> inline v_reg<float, n> v_cvt_f32(const v_reg<int, n>& a)
 
 /** @brief Convert lower half to float
 
-Supported input type is cv::v_float64. */
+Supported input type is ncvslideio::v_float64. */
 template<int n> inline v_reg<float, n*2> v_cvt_f32(const v_reg<double, n>& a)
 {
     v_reg<float, n*2> c;
@@ -2609,7 +2609,7 @@ template<int n> inline v_reg<float, n*2> v_cvt_f32(const v_reg<double, n>& a)
 
 /** @brief Convert to float
 
-Supported input type is cv::v_float64. */
+Supported input type is ncvslideio::v_float64. */
 template<int n> inline v_reg<float, n*2> v_cvt_f32(const v_reg<double, n>& a, const v_reg<double, n>& b)
 {
     v_reg<float, n*2> c;
@@ -2623,7 +2623,7 @@ template<int n> inline v_reg<float, n*2> v_cvt_f32(const v_reg<double, n>& a, co
 
 /** @brief Convert lower half to double
 
-Supported input type is cv::v_int32. */
+Supported input type is ncvslideio::v_int32. */
 template<int n> CV_INLINE v_reg<double, n/2> v_cvt_f64(const v_reg<int, n>& a)
 {
     v_reg<double, (n/2)> c;
@@ -2634,7 +2634,7 @@ template<int n> CV_INLINE v_reg<double, n/2> v_cvt_f64(const v_reg<int, n>& a)
 
 /** @brief Convert to double high part of vector
 
-Supported input type is cv::v_int32. */
+Supported input type is ncvslideio::v_int32. */
 template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<int, n>& a)
 {
     v_reg<double, (n/2)> c;
@@ -2645,7 +2645,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<int, n
 
 /** @brief Convert lower half to double
 
-Supported input type is cv::v_float32. */
+Supported input type is ncvslideio::v_float32. */
 template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64(const v_reg<float, n>& a)
 {
     v_reg<double, (n/2)> c;
@@ -2656,7 +2656,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64(const v_reg<float, n>& 
 
 /** @brief Convert to double high part of vector
 
-Supported input type is cv::v_float32. */
+Supported input type is ncvslideio::v_float32. */
 template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<float, n>& a)
 {
     v_reg<double, (n/2)> c;
@@ -2667,7 +2667,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<float,
 
 /** @brief Convert to double
 
-Supported input type is cv::v_int64. */
+Supported input type is ncvslideio::v_int64. */
 template<int n> CV_INLINE v_reg<double, n> v_cvt_f64(const v_reg<int64, n>& a)
 {
     v_reg<double, n> c;

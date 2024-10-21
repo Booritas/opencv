@@ -50,17 +50,17 @@
 
 namespace clahe
 {
-    static bool calcLut(cv::InputArray _src, cv::OutputArray _dst,
-        const int tilesX, const int tilesY, const cv::Size tileSize,
+    static bool calcLut(ncvslideio::InputArray _src, ncvslideio::OutputArray _dst,
+        const int tilesX, const int tilesY, const ncvslideio::Size tileSize,
         const int clipLimit, const float lutScale)
     {
-        cv::ocl::Kernel k("calcLut", cv::ocl::imgproc::clahe_oclsrc);
+        ncvslideio::ocl::Kernel k("calcLut", ncvslideio::ocl::imgproc::clahe_oclsrc);
         if(k.empty())
             return false;
 
-        cv::UMat src = _src.getUMat();
+        ncvslideio::UMat src = _src.getUMat();
         _dst.create(tilesX * tilesY, 256, CV_8UC1);
-        cv::UMat dst = _dst.getUMat();
+        ncvslideio::UMat dst = _dst.getUMat();
 
         int tile_size[2];
         tile_size[0] = tileSize.width;
@@ -70,8 +70,8 @@ namespace clahe
         size_t globalThreads[3] = { tilesX * localThreads[0], tilesY * localThreads[1], 1 };
 
         int idx = 0;
-        idx = k.set(idx, cv::ocl::KernelArg::ReadOnlyNoSize(src));
-        idx = k.set(idx, cv::ocl::KernelArg::WriteOnlyNoSize(dst));
+        idx = k.set(idx, ncvslideio::ocl::KernelArg::ReadOnlyNoSize(src));
+        idx = k.set(idx, ncvslideio::ocl::KernelArg::WriteOnlyNoSize(dst));
         idx = k.set(idx, tile_size);
         idx = k.set(idx, tilesX);
         idx = k.set(idx, clipLimit);
@@ -80,11 +80,11 @@ namespace clahe
         return k.run(2, globalThreads, localThreads, false);
     }
 
-    static bool transform(cv::InputArray _src, cv::OutputArray _dst, cv::InputArray _lut,
-        const int tilesX, const int tilesY, const cv::Size & tileSize)
+    static bool transform(ncvslideio::InputArray _src, ncvslideio::OutputArray _dst, ncvslideio::InputArray _lut,
+        const int tilesX, const int tilesY, const ncvslideio::Size & tileSize)
     {
 
-        cv::ocl::Kernel k("transform", cv::ocl::imgproc::clahe_oclsrc);
+        ncvslideio::ocl::Kernel k("transform", ncvslideio::ocl::imgproc::clahe_oclsrc);
         if(k.empty())
             return false;
 
@@ -92,18 +92,18 @@ namespace clahe
         tile_size[0] = tileSize.width;
         tile_size[1] = tileSize.height;
 
-        cv::UMat src = _src.getUMat();
+        ncvslideio::UMat src = _src.getUMat();
         _dst.create(src.size(), src.type());
-        cv::UMat dst = _dst.getUMat();
-        cv::UMat lut = _lut.getUMat();
+        ncvslideio::UMat dst = _dst.getUMat();
+        ncvslideio::UMat lut = _lut.getUMat();
 
         size_t localThreads[3]  = { 32, 8, 1 };
         size_t globalThreads[3] = { (size_t)src.cols, (size_t)src.rows, 1 };
 
         int idx = 0;
-        idx = k.set(idx, cv::ocl::KernelArg::ReadOnlyNoSize(src));
-        idx = k.set(idx, cv::ocl::KernelArg::WriteOnlyNoSize(dst));
-        idx = k.set(idx, cv::ocl::KernelArg::ReadOnlyNoSize(lut));
+        idx = k.set(idx, ncvslideio::ocl::KernelArg::ReadOnlyNoSize(src));
+        idx = k.set(idx, ncvslideio::ocl::KernelArg::WriteOnlyNoSize(dst));
+        idx = k.set(idx, ncvslideio::ocl::KernelArg::ReadOnlyNoSize(lut));
         idx = k.set(idx, src.cols);
         idx = k.set(idx, src.rows);
         idx = k.set(idx, tile_size);
@@ -119,28 +119,28 @@ namespace clahe
 namespace
 {
     template <class T, int histSize, int shift>
-    class CLAHE_CalcLut_Body : public cv::ParallelLoopBody
+    class CLAHE_CalcLut_Body : public ncvslideio::ParallelLoopBody
     {
     public:
-        CLAHE_CalcLut_Body(const cv::Mat& src, const cv::Mat& lut, const cv::Size& tileSize, const int& tilesX, const int& clipLimit, const float& lutScale) :
+        CLAHE_CalcLut_Body(const ncvslideio::Mat& src, const ncvslideio::Mat& lut, const ncvslideio::Size& tileSize, const int& tilesX, const int& clipLimit, const float& lutScale) :
             src_(src), lut_(lut), tileSize_(tileSize), tilesX_(tilesX), clipLimit_(clipLimit), lutScale_(lutScale)
         {
         }
 
-        void operator ()(const cv::Range& range) const CV_OVERRIDE;
+        void operator ()(const ncvslideio::Range& range) const CV_OVERRIDE;
 
     private:
-        cv::Mat src_;
-        mutable cv::Mat lut_;
+        ncvslideio::Mat src_;
+        mutable ncvslideio::Mat lut_;
 
-        cv::Size tileSize_;
+        ncvslideio::Size tileSize_;
         int tilesX_;
         int clipLimit_;
         float lutScale_;
     };
 
     template <class T, int histSize, int shift>
-    void CLAHE_CalcLut_Body<T,histSize,shift>::operator ()(const cv::Range& range) const
+    void CLAHE_CalcLut_Body<T,histSize,shift>::operator ()(const ncvslideio::Range& range) const
     {
         T* tileLut = lut_.ptr<T>(range.start);
         const size_t lut_step = lut_.step / sizeof(T);
@@ -152,17 +152,17 @@ namespace
 
             // retrieve tile submatrix
 
-            cv::Rect tileROI;
+            ncvslideio::Rect tileROI;
             tileROI.x = tx * tileSize_.width;
             tileROI.y = ty * tileSize_.height;
             tileROI.width = tileSize_.width;
             tileROI.height = tileSize_.height;
 
-            const cv::Mat tile = src_(tileROI);
+            const ncvslideio::Mat tile = src_(tileROI);
 
             // calc histogram
 
-            cv::AutoBuffer<int> _tileHist(histSize);
+            ncvslideio::AutoBuffer<int> _tileHist(histSize);
             int* tileHist = _tileHist.data();
             std::fill(tileHist, tileHist + histSize, 0);
 
@@ -219,16 +219,16 @@ namespace
             for (int i = 0; i < histSize; ++i)
             {
                 sum += tileHist[i];
-                tileLut[i] = cv::saturate_cast<T>(sum * lutScale_);
+                tileLut[i] = ncvslideio::saturate_cast<T>(sum * lutScale_);
             }
         }
     }
 
     template <class T, int shift>
-    class CLAHE_Interpolation_Body : public cv::ParallelLoopBody
+    class CLAHE_Interpolation_Body : public ncvslideio::ParallelLoopBody
     {
     public:
-        CLAHE_Interpolation_Body(const cv::Mat& src, const cv::Mat& dst, const cv::Mat& lut, const cv::Size& tileSize, const int& tilesX, const int& tilesY) :
+        CLAHE_Interpolation_Body(const ncvslideio::Mat& src, const ncvslideio::Mat& dst, const ncvslideio::Mat& lut, const ncvslideio::Size& tileSize, const int& tilesX, const int& tilesY) :
             src_(src), dst_(dst), lut_(lut), tileSize_(tileSize), tilesX_(tilesX), tilesY_(tilesY)
         {
             buf.allocate(src.cols << 2);
@@ -258,24 +258,24 @@ namespace
             }
         }
 
-        void operator ()(const cv::Range& range) const CV_OVERRIDE;
+        void operator ()(const ncvslideio::Range& range) const CV_OVERRIDE;
 
     private:
-        cv::Mat src_;
-        mutable cv::Mat dst_;
-        cv::Mat lut_;
+        ncvslideio::Mat src_;
+        mutable ncvslideio::Mat dst_;
+        ncvslideio::Mat lut_;
 
-        cv::Size tileSize_;
+        ncvslideio::Size tileSize_;
         int tilesX_;
         int tilesY_;
 
-        cv::AutoBuffer<int> buf;
+        ncvslideio::AutoBuffer<int> buf;
         int * ind1_p, * ind2_p;
         float * xa_p, * xa1_p;
     };
 
     template <class T, int shift>
-    void CLAHE_Interpolation_Body<T, shift>::operator ()(const cv::Range& range) const
+    void CLAHE_Interpolation_Body<T, shift>::operator ()(const ncvslideio::Range& range) const
     {
         float inv_th = 1.0f / tileSize_.height;
 
@@ -307,23 +307,23 @@ namespace
                 float res = (lutPlane1[ind1] * xa1_p[x] + lutPlane1[ind2] * xa_p[x]) * ya1 +
                             (lutPlane2[ind1] * xa1_p[x] + lutPlane2[ind2] * xa_p[x]) * ya;
 
-                dstRow[x] = cv::saturate_cast<T>(res) << shift;
+                dstRow[x] = ncvslideio::saturate_cast<T>(res) << shift;
             }
         }
     }
 
-    class CLAHE_Impl CV_FINAL : public cv::CLAHE
+    class CLAHE_Impl CV_FINAL : public ncvslideio::CLAHE
     {
     public:
         CLAHE_Impl(double clipLimit = 40.0, int tilesX = 8, int tilesY = 8);
 
-        void apply(cv::InputArray src, cv::OutputArray dst) CV_OVERRIDE;
+        void apply(ncvslideio::InputArray src, ncvslideio::OutputArray dst) CV_OVERRIDE;
 
         void setClipLimit(double clipLimit) CV_OVERRIDE;
         double getClipLimit() const CV_OVERRIDE;
 
-        void setTilesGridSize(cv::Size tileGridSize) CV_OVERRIDE;
-        cv::Size getTilesGridSize() const CV_OVERRIDE;
+        void setTilesGridSize(ncvslideio::Size tileGridSize) CV_OVERRIDE;
+        ncvslideio::Size getTilesGridSize() const CV_OVERRIDE;
 
         void collectGarbage() CV_OVERRIDE;
 
@@ -332,12 +332,12 @@ namespace
         int tilesX_;
         int tilesY_;
 
-        cv::Mat srcExt_;
-        cv::Mat lut_;
+        ncvslideio::Mat srcExt_;
+        ncvslideio::Mat lut_;
 
 #ifdef HAVE_OPENCL
-        cv::UMat usrcExt_;
-        cv::UMat ulut_;
+        ncvslideio::UMat usrcExt_;
+        ncvslideio::UMat ulut_;
 #endif
     };
 
@@ -346,24 +346,24 @@ namespace
     {
     }
 
-    void CLAHE_Impl::apply(cv::InputArray _src, cv::OutputArray _dst)
+    void CLAHE_Impl::apply(ncvslideio::InputArray _src, ncvslideio::OutputArray _dst)
     {
         CV_INSTRUMENT_REGION();
 
         CV_Assert( _src.type() == CV_8UC1 || _src.type() == CV_16UC1 );
 
 #ifdef HAVE_OPENCL
-        bool useOpenCL = cv::ocl::isOpenCLActivated() && _src.isUMat() && _src.dims()<=2 && _src.type() == CV_8UC1;
+        bool useOpenCL = ncvslideio::ocl::isOpenCLActivated() && _src.isUMat() && _src.dims()<=2 && _src.type() == CV_8UC1;
 #endif
 
         int histSize = _src.type() == CV_8UC1 ? 256 : 65536;
 
-        cv::Size tileSize;
-        cv::_InputArray _srcForLut;
+        ncvslideio::Size tileSize;
+        ncvslideio::_InputArray _srcForLut;
 
         if (_src.size().width % tilesX_ == 0 && _src.size().height % tilesY_ == 0)
         {
-            tileSize = cv::Size(_src.size().width / tilesX_, _src.size().height / tilesY_);
+            tileSize = ncvslideio::Size(_src.size().width / tilesX_, _src.size().height / tilesY_);
             _srcForLut = _src;
         }
         else
@@ -371,15 +371,15 @@ namespace
 #ifdef HAVE_OPENCL
             if(useOpenCL)
             {
-                cv::copyMakeBorder(_src, usrcExt_, 0, tilesY_ - (_src.size().height % tilesY_), 0, tilesX_ - (_src.size().width % tilesX_), cv::BORDER_REFLECT_101);
-                tileSize = cv::Size(usrcExt_.size().width / tilesX_, usrcExt_.size().height / tilesY_);
+                ncvslideio::copyMakeBorder(_src, usrcExt_, 0, tilesY_ - (_src.size().height % tilesY_), 0, tilesX_ - (_src.size().width % tilesX_), ncvslideio::BORDER_REFLECT_101);
+                tileSize = ncvslideio::Size(usrcExt_.size().width / tilesX_, usrcExt_.size().height / tilesY_);
                 _srcForLut = usrcExt_;
             }
             else
 #endif
             {
-                cv::copyMakeBorder(_src, srcExt_, 0, tilesY_ - (_src.size().height % tilesY_), 0, tilesX_ - (_src.size().width % tilesX_), cv::BORDER_REFLECT_101);
-                tileSize = cv::Size(srcExt_.size().width / tilesX_, srcExt_.size().height / tilesY_);
+                ncvslideio::copyMakeBorder(_src, srcExt_, 0, tilesY_ - (_src.size().height % tilesY_), 0, tilesX_ - (_src.size().width % tilesX_), ncvslideio::BORDER_REFLECT_101);
+                tileSize = ncvslideio::Size(srcExt_.size().width / tilesX_, srcExt_.size().height / tilesY_);
                 _srcForLut = srcExt_;
             }
         }
@@ -403,29 +403,29 @@ namespace
             }
 #endif
 
-        cv::Mat src = _src.getMat();
+        ncvslideio::Mat src = _src.getMat();
         _dst.create( src.size(), src.type() );
-        cv::Mat dst = _dst.getMat();
-        cv::Mat srcForLut = _srcForLut.getMat();
+        ncvslideio::Mat dst = _dst.getMat();
+        ncvslideio::Mat srcForLut = _srcForLut.getMat();
         lut_.create(tilesX_ * tilesY_, histSize, _src.type());
 
-        cv::Ptr<cv::ParallelLoopBody> calcLutBody;
+        ncvslideio::Ptr<ncvslideio::ParallelLoopBody> calcLutBody;
         if (_src.type() == CV_8UC1)
-            calcLutBody = cv::makePtr<CLAHE_CalcLut_Body<uchar, 256, 0> >(srcForLut, lut_, tileSize, tilesX_, clipLimit, lutScale);
+            calcLutBody = ncvslideio::makePtr<CLAHE_CalcLut_Body<uchar, 256, 0> >(srcForLut, lut_, tileSize, tilesX_, clipLimit, lutScale);
         else if (_src.type() == CV_16UC1)
-            calcLutBody = cv::makePtr<CLAHE_CalcLut_Body<ushort, 65536, 0> >(srcForLut, lut_, tileSize, tilesX_, clipLimit, lutScale);
+            calcLutBody = ncvslideio::makePtr<CLAHE_CalcLut_Body<ushort, 65536, 0> >(srcForLut, lut_, tileSize, tilesX_, clipLimit, lutScale);
         else
-            CV_Error( cv::Error::StsBadArg, "Unsupported type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported type" );
 
-        cv::parallel_for_(cv::Range(0, tilesX_ * tilesY_), *calcLutBody);
+        ncvslideio::parallel_for_(ncvslideio::Range(0, tilesX_ * tilesY_), *calcLutBody);
 
-        cv::Ptr<cv::ParallelLoopBody> interpolationBody;
+        ncvslideio::Ptr<ncvslideio::ParallelLoopBody> interpolationBody;
         if (_src.type() == CV_8UC1)
-            interpolationBody = cv::makePtr<CLAHE_Interpolation_Body<uchar, 0> >(src, dst, lut_, tileSize, tilesX_, tilesY_);
+            interpolationBody = ncvslideio::makePtr<CLAHE_Interpolation_Body<uchar, 0> >(src, dst, lut_, tileSize, tilesX_, tilesY_);
         else if (_src.type() == CV_16UC1)
-            interpolationBody = cv::makePtr<CLAHE_Interpolation_Body<ushort, 0> >(src, dst, lut_, tileSize, tilesX_, tilesY_);
+            interpolationBody = ncvslideio::makePtr<CLAHE_Interpolation_Body<ushort, 0> >(src, dst, lut_, tileSize, tilesX_, tilesY_);
 
-        cv::parallel_for_(cv::Range(0, src.rows), *interpolationBody);
+        ncvslideio::parallel_for_(ncvslideio::Range(0, src.rows), *interpolationBody);
     }
 
     void CLAHE_Impl::setClipLimit(double clipLimit)
@@ -438,15 +438,15 @@ namespace
         return clipLimit_;
     }
 
-    void CLAHE_Impl::setTilesGridSize(cv::Size tileGridSize)
+    void CLAHE_Impl::setTilesGridSize(ncvslideio::Size tileGridSize)
     {
         tilesX_ = tileGridSize.width;
         tilesY_ = tileGridSize.height;
     }
 
-    cv::Size CLAHE_Impl::getTilesGridSize() const
+    ncvslideio::Size CLAHE_Impl::getTilesGridSize() const
     {
-        return cv::Size(tilesX_, tilesY_);
+        return ncvslideio::Size(tilesX_, tilesY_);
     }
 
     void CLAHE_Impl::collectGarbage()
@@ -460,7 +460,7 @@ namespace
     }
 }
 
-cv::Ptr<cv::CLAHE> cv::createCLAHE(double clipLimit, cv::Size tileGridSize)
+ncvslideio::Ptr<ncvslideio::CLAHE> ncvslideio::createCLAHE(double clipLimit, ncvslideio::Size tileGridSize)
 {
     return makePtr<CLAHE_Impl>(clipLimit, tileGridSize.width, tileGridSize.height);
 }

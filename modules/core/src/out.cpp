@@ -43,7 +43,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
     class FormattedImpl CV_FINAL : public Formatted
     {
@@ -339,7 +339,7 @@ namespace cv
             if (mtx.cols == 1)
                 braces[0] = braces[1] = '\0';
             return makePtr<FormattedImpl>("array([",
-                cv::format("], dtype='%s')", numpyTypes[mtx.depth()]), mtx, &*braces,
+                ncvslideio::format("], dtype='%s')", numpyTypes[mtx.depth()]), mtx, &*braces,
                 mtx.rows == 1 || !multiline, false, mtx.depth() == CV_64F ? prec64f : prec32f );
         }
     };
@@ -391,4 +391,4 @@ namespace cv
         }
         return makePtr<DefaultFormatter>();
     }
-} // cv
+} // ncvslideio

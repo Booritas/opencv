@@ -48,10 +48,10 @@
 // in later times, use this file as a dispatcher to implementations like cvcap.cpp
 
 
-using namespace cv;
-using namespace cv::highgui_backend;
+using namespace ncvslideio;
+using namespace ncvslideio::highgui_backend;
 
-namespace cv {
+namespace ncvslideio {
 
 Mutex& getWindowMutex()
 {
@@ -70,7 +70,7 @@ static WindowsMap_t& getWindowsMap()
 
 static std::shared_ptr<UIWindow> findWindow_(const std::string& name)
 {
-    cv::AutoLock lock(cv::getWindowMutex());
+    ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
     auto& windowsMap = getWindowsMap();
     auto i = windowsMap.find(name);
     if (i != windowsMap.end())
@@ -94,7 +94,7 @@ static void cleanupTrackbarCallbacksWithData_();  // forward declaration
 
 static void cleanupClosedWindows_()
 {
-    cv::AutoLock lock(cv::getWindowMutex());
+    ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
     auto& windowsMap = getWindowsMap();
     for (auto it = windowsMap.begin(); it != windowsMap.end();)
     {
@@ -158,7 +158,7 @@ static TrackbarCallbacksWithData_t& getTrackbarCallbacksWithData()
 
 static void cleanupTrackbarCallbacksWithData_()
 {
-    cv::AutoLock lock(cv::getWindowMutex());
+    ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
     auto& callbacks = getTrackbarCallbacksWithData();
     for (auto it = callbacks.begin(); it != callbacks.end();)
     {
@@ -175,9 +175,9 @@ static void cleanupTrackbarCallbacksWithData_()
     }
 }
 
-}}  // namespace cv::impl
+}}  // namespace ncvslideio::impl
 
-using namespace cv::impl;
+using namespace ncvslideio::impl;
 
 #if defined(OPENCV_HIGHGUI_WITHOUT_BUILTIN_BACKEND) && defined(ENABLE_PLUGINS)
 static void deprecateNotFoundNoOpBehavior()
@@ -217,9 +217,9 @@ CV_IMPL void cvSetWindowProperty(const char* name, int prop_id, double prop_valu
     switch(prop_id)
     {
     //change between fullscreen or not.
-    case cv::WND_PROP_FULLSCREEN:
+    case ncvslideio::WND_PROP_FULLSCREEN:
 
-        if (prop_value != cv::WINDOW_NORMAL && prop_value != cv::WINDOW_FULLSCREEN)  // bad argument
+        if (prop_value != ncvslideio::WINDOW_NORMAL && prop_value != ncvslideio::WINDOW_FULLSCREEN)  // bad argument
             break;
 
         #if defined (HAVE_QT)
@@ -236,19 +236,19 @@ CV_IMPL void cvSetWindowProperty(const char* name, int prop_id, double prop_valu
 
     break;
 
-    case cv::WND_PROP_AUTOSIZE:
+    case ncvslideio::WND_PROP_AUTOSIZE:
         #if defined (HAVE_QT)
             cvSetPropWindow_QT(name,prop_value);
         #endif
     break;
 
-    case cv::WND_PROP_ASPECT_RATIO:
+    case ncvslideio::WND_PROP_ASPECT_RATIO:
         #if defined (HAVE_QT)
             cvSetRatioWindow_QT(name,prop_value);
         #endif
     break;
 
-    case cv::WND_PROP_TOPMOST:
+    case ncvslideio::WND_PROP_TOPMOST:
         #if defined (HAVE_QT)
             // nothing
         #elif defined(HAVE_WIN32UI)
@@ -258,7 +258,7 @@ CV_IMPL void cvSetWindowProperty(const char* name, int prop_id, double prop_valu
         #endif
     break;
 
-    case cv::WND_PROP_VSYNC:
+    case ncvslideio::WND_PROP_VSYNC:
         #if defined (HAVE_QT)
             // nothing
         #elif defined (HAVE_WIN32UI)
@@ -305,7 +305,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
 #else
     switch(prop_id)
     {
-    case cv::WND_PROP_FULLSCREEN:
+    case ncvslideio::WND_PROP_FULLSCREEN:
 
         #if defined (HAVE_QT)
             return cvGetModeWindow_QT(name);
@@ -322,7 +322,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_AUTOSIZE:
+    case ncvslideio::WND_PROP_AUTOSIZE:
 
         #if defined (HAVE_QT)
             return cvGetPropWindow_QT(name);
@@ -335,7 +335,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_ASPECT_RATIO:
+    case ncvslideio::WND_PROP_ASPECT_RATIO:
 
         #if defined (HAVE_QT)
             return cvGetRatioWindow_QT(name);
@@ -348,7 +348,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_OPENGL:
+    case ncvslideio::WND_PROP_OPENGL:
 
         #if defined (HAVE_QT)
             return cvGetOpenGlProp_QT(name);
@@ -361,7 +361,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_VISIBLE:
+    case ncvslideio::WND_PROP_VISIBLE:
         #if defined (HAVE_QT)
             return cvGetPropVisible_QT(name);
         #elif defined(HAVE_WIN32UI)
@@ -373,7 +373,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_TOPMOST:
+    case ncvslideio::WND_PROP_TOPMOST:
         #if defined (HAVE_QT)
             return -1;
         #elif defined(HAVE_WIN32UI)
@@ -385,7 +385,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
         #endif
     break;
 
-    case cv::WND_PROP_VSYNC:
+    case ncvslideio::WND_PROP_VSYNC:
         #if defined (HAVE_QT)
             return -1;
         #elif defined (HAVE_WIN32UI)
@@ -401,7 +401,7 @@ CV_IMPL double cvGetWindowProperty(const char* name, int prop_id)
 #endif
 }
 
-cv::Rect cv::getWindowImageRect(const String& winname)
+ncvslideio::Rect ncvslideio::getWindowImageRect(const String& winname)
 {
     CV_TRACE_FUNCTION();
     CV_Assert(!winname.empty());
@@ -445,13 +445,13 @@ cv::Rect cv::getWindowImageRect(const String& winname)
 #endif
 }
 
-void cv::namedWindow( const String& winname, int flags )
+void ncvslideio::namedWindow( const String& winname, int flags )
 {
     CV_TRACE_FUNCTION();
     CV_Assert(!winname.empty());
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         cleanupClosedWindows_();
         auto& windowsMap = getWindowsMap();
         auto i = windowsMap.find(winname);
@@ -485,7 +485,7 @@ void cv::namedWindow( const String& winname, int flags )
     cvNamedWindow( winname.c_str(), flags );
 }
 
-void cv::destroyWindow( const String& winname )
+void ncvslideio::destroyWindow( const String& winname )
 {
     CV_TRACE_FUNCTION();
 
@@ -502,12 +502,12 @@ void cv::destroyWindow( const String& winname )
     cvDestroyWindow( winname.c_str() );
 }
 
-void cv::destroyAllWindows()
+void ncvslideio::destroyAllWindows()
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto backend = getCurrentUIBackend();
         if (backend)
         {
@@ -520,7 +520,7 @@ void cv::destroyAllWindows()
     cvDestroyAllWindows();
 }
 
-void cv::resizeWindow( const String& winname, int width, int height )
+void ncvslideio::resizeWindow( const String& winname, int width, int height )
 {
     CV_TRACE_FUNCTION();
 
@@ -549,13 +549,13 @@ void cv::resizeWindow( const String& winname, int width, int height )
 #endif
 }
 
-void cv::resizeWindow(const String& winname, const cv::Size& size)
+void ncvslideio::resizeWindow(const String& winname, const ncvslideio::Size& size)
 {
    CV_TRACE_FUNCTION();
    cvResizeWindow(winname.c_str(), size.width, size.height);
 }
 
-void cv::moveWindow( const String& winname, int x, int y )
+void ncvslideio::moveWindow( const String& winname, int x, int y )
 {
     CV_TRACE_FUNCTION();
 
@@ -584,12 +584,12 @@ void cv::moveWindow( const String& winname, int x, int y )
 #endif
 }
 
-void cv::setWindowTitle(const String& winname, const String& title)
+void ncvslideio::setWindowTitle(const String& winname, const String& title)
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winname);
         if (window)
         {
@@ -626,24 +626,24 @@ void cv::setWindowTitle(const String& winname, const String& title)
 #endif
 }
 
-void cv::setWindowProperty(const String& winname, int prop_id, double prop_value)
+void ncvslideio::setWindowProperty(const String& winname, int prop_id, double prop_value)
 {
     CV_TRACE_FUNCTION();
     cvSetWindowProperty( winname.c_str(), prop_id, prop_value);
 }
 
-double cv::getWindowProperty(const String& winname, int prop_id)
+double ncvslideio::getWindowProperty(const String& winname, int prop_id)
 {
     CV_TRACE_FUNCTION();
     return cvGetWindowProperty(winname.c_str(), prop_id);
 }
 
-int cv::waitKeyEx(int delay)
+int ncvslideio::waitKeyEx(int delay)
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto backend = getCurrentUIBackend();
         if (backend)
         {
@@ -654,7 +654,7 @@ int cv::waitKeyEx(int delay)
     return cvWaitKey(delay);
 }
 
-int cv::waitKey(int delay)
+int ncvslideio::waitKey(int delay)
 {
     CV_TRACE_FUNCTION();
     int code = waitKeyEx(delay);
@@ -673,12 +673,12 @@ int cv::waitKey(int delay)
 /*
  * process until queue is empty but don't wait.
  */
-int cv::pollKey()
+int ncvslideio::pollKey()
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto backend = getCurrentUIBackend();
         if (backend)
         {
@@ -694,7 +694,7 @@ int cv::pollKey()
 #endif
 }
 
-int cv::createTrackbar(const String& trackbarName, const String& winName,
+int ncvslideio::createTrackbar(const String& trackbarName, const String& winName,
                    int* value, int count, TrackbarCallback callback,
                    void* userdata)
 {
@@ -704,7 +704,7 @@ int cv::createTrackbar(const String& trackbarName, const String& winName,
             "To fetch trackbar value setup callback.");
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winName);
         if (window)
         {
@@ -755,12 +755,12 @@ int cv::createTrackbar(const String& trackbarName, const String& winName,
 #endif
 }
 
-void cv::setTrackbarPos( const String& trackbarName, const String& winName, int value )
+void ncvslideio::setTrackbarPos( const String& trackbarName, const String& winName, int value )
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winName);
         if (window)
         {
@@ -787,12 +787,12 @@ void cv::setTrackbarPos( const String& trackbarName, const String& winName, int 
 #endif
 }
 
-void cv::setTrackbarMax(const String& trackbarName, const String& winName, int maxval)
+void ncvslideio::setTrackbarMax(const String& trackbarName, const String& winName, int maxval)
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winName);
         if (window)
         {
@@ -821,12 +821,12 @@ void cv::setTrackbarMax(const String& trackbarName, const String& winName, int m
 #endif
 }
 
-void cv::setTrackbarMin(const String& trackbarName, const String& winName, int minval)
+void ncvslideio::setTrackbarMin(const String& trackbarName, const String& winName, int minval)
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winName);
         if (window)
         {
@@ -855,12 +855,12 @@ void cv::setTrackbarMin(const String& trackbarName, const String& winName, int m
 #endif
 }
 
-int cv::getTrackbarPos( const String& trackbarName, const String& winName )
+int ncvslideio::getTrackbarPos( const String& trackbarName, const String& winName )
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(winName);
         if (window)
         {
@@ -887,12 +887,12 @@ int cv::getTrackbarPos( const String& trackbarName, const String& winName )
 #endif
 }
 
-void cv::setMouseCallback( const String& windowName, MouseCallback onMouse, void* param)
+void ncvslideio::setMouseCallback( const String& windowName, MouseCallback onMouse, void* param)
 {
     CV_TRACE_FUNCTION();
 
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         auto window = findWindow_(windowName);
         if (window)
         {
@@ -917,13 +917,13 @@ void cv::setMouseCallback( const String& windowName, MouseCallback onMouse, void
 #endif
 }
 
-int cv::getMouseWheelDelta( int flags )
+int ncvslideio::getMouseWheelDelta( int flags )
 {
     CV_TRACE_FUNCTION();
     return CV_GET_WHEEL_DELTA(flags);
 }
 
-int cv::startWindowThread()
+int ncvslideio::startWindowThread()
 {
     CV_TRACE_FUNCTION();
     return cvStartWindowThread();
@@ -931,19 +931,19 @@ int cv::startWindowThread()
 
 // OpenGL support
 
-void cv::setOpenGlDrawCallback(const String& name, OpenGlDrawCallback callback, void* userdata)
+void ncvslideio::setOpenGlDrawCallback(const String& name, OpenGlDrawCallback callback, void* userdata)
 {
     CV_TRACE_FUNCTION();
     cvSetOpenGlDrawCallback(name.c_str(), callback, userdata);
 }
 
-void cv::setOpenGlContext(const String& windowName)
+void ncvslideio::setOpenGlContext(const String& windowName)
 {
     CV_TRACE_FUNCTION();
     cvSetOpenGlContext(windowName.c_str());
 }
 
-void cv::updateWindow(const String& windowName)
+void ncvslideio::updateWindow(const String& windowName)
 {
     CV_TRACE_FUNCTION();
     cvUpdateWindow(windowName.c_str());
@@ -952,27 +952,27 @@ void cv::updateWindow(const String& windowName)
 #ifdef HAVE_OPENGL
 namespace
 {
-    std::map<cv::String, cv::ogl::Texture2D> wndTexs;
-    std::map<cv::String, cv::ogl::Texture2D> ownWndTexs;
-    std::map<cv::String, cv::ogl::Buffer> ownWndBufs;
+    std::map<ncvslideio::String, ncvslideio::ogl::Texture2D> wndTexs;
+    std::map<ncvslideio::String, ncvslideio::ogl::Texture2D> ownWndTexs;
+    std::map<ncvslideio::String, ncvslideio::ogl::Buffer> ownWndBufs;
 
     void glDrawTextureCallback(void* userdata)
     {
-        cv::ogl::Texture2D* texObj = static_cast<cv::ogl::Texture2D*>(userdata);
+        ncvslideio::ogl::Texture2D* texObj = static_cast<ncvslideio::ogl::Texture2D*>(userdata);
 
-        cv::ogl::render(*texObj);
+        ncvslideio::ogl::render(*texObj);
     }
 }
 #endif // HAVE_OPENGL
 
-void cv::imshow( const String& winname, InputArray _img )
+void ncvslideio::imshow( const String& winname, InputArray _img )
 {
     CV_TRACE_FUNCTION();
 
     const Size size = _img.size();
     CV_Assert(size.width>0 && size.height>0);
     {
-        cv::AutoLock lock(cv::getWindowMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getWindowMutex());
         cleanupClosedWindows_();
         auto& windowsMap = getWindowsMap();
         auto i = windowsMap.find(winname);
@@ -1029,11 +1029,11 @@ void cv::imshow( const String& winname, InputArray _img )
 
         setOpenGlContext(winname);
 
-        cv::ogl::Texture2D& tex = ownWndTexs[winname];
+        ncvslideio::ogl::Texture2D& tex = ownWndTexs[winname];
 
         if (_img.kind() == _InputArray::CUDA_GPU_MAT)
         {
-            cv::ogl::Buffer& buf = ownWndBufs[winname];
+            ncvslideio::ogl::Buffer& buf = ownWndBufs[winname];
             buf.copyFrom(_img);
             buf.setAutoRelease(false);
 
@@ -1054,19 +1054,19 @@ void cv::imshow( const String& winname, InputArray _img )
 #endif
 }
 
-void cv::imshow(const String& winname, const ogl::Texture2D& _tex)
+void ncvslideio::imshow(const String& winname, const ogl::Texture2D& _tex)
 {
     CV_TRACE_FUNCTION();
 #ifndef HAVE_OPENGL
     CV_UNUSED(winname);
     CV_UNUSED(_tex);
-    CV_Error(cv::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
+    CV_Error(ncvslideio::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
 #else
     const double useGl = getWindowProperty(winname, WND_PROP_OPENGL);
 
     if (useGl <= 0)
     {
-        CV_Error(cv::Error::OpenGlNotSupported, "The window was created without OpenGL context");
+        CV_Error(ncvslideio::Error::OpenGlNotSupported, "The window was created without OpenGL context");
     }
     else
     {
@@ -1080,7 +1080,7 @@ void cv::imshow(const String& winname, const ogl::Texture2D& _tex)
 
         setOpenGlContext(winname);
 
-        cv::ogl::Texture2D& tex = wndTexs[winname];
+        ncvslideio::ogl::Texture2D& tex = wndTexs[winname];
 
         tex = _tex;
 
@@ -1093,7 +1093,7 @@ void cv::imshow(const String& winname, const ogl::Texture2D& _tex)
 #endif
 }
 
-const std::string cv::currentUIFramework()
+const std::string ncvslideio::currentUIFramework()
 {
     CV_TRACE_FUNCTION();
 
@@ -1126,37 +1126,37 @@ const std::string cv::currentUIFramework()
 
 CV_IMPL void cvSetOpenGlDrawCallback(const char*, CvOpenGlDrawCallback, void*)
 {
-    CV_Error(cv::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
+    CV_Error(ncvslideio::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
 }
 
 CV_IMPL void cvSetOpenGlContext(const char*)
 {
-    CV_Error(cv::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
+    CV_Error(ncvslideio::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
 }
 
 CV_IMPL void cvUpdateWindow(const char*)
 {
-    CV_Error(cv::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
+    CV_Error(ncvslideio::Error::OpenGlNotSupported, "The library is compiled without OpenGL support");
 }
 
 #endif // !HAVE_OPENGL
 
 #if defined (HAVE_QT)
 
-cv::QtFont cv::fontQt(const String& nameFont, int pointSize, Scalar color, int weight, int style, int spacing)
+ncvslideio::QtFont ncvslideio::fontQt(const String& nameFont, int pointSize, Scalar color, int weight, int style, int spacing)
 {
     CvFont f = cvFontQt(nameFont.c_str(), pointSize, cvScalar(color), weight, style, spacing);
     void* pf = &f; // to suppress strict-aliasing
-    return *(cv::QtFont*)pf;
+    return *(ncvslideio::QtFont*)pf;
 }
 
-void cv::addText( const Mat& img, const String& text, Point org, const QtFont& font)
+void ncvslideio::addText( const Mat& img, const String& text, Point org, const QtFont& font)
 {
     CvMat _img = cvMat(img);
     cvAddText( &_img, text.c_str(), cvPoint(org), (CvFont*)&font);
 }
 
-void cv::addText( const Mat& img, const String& text, Point org, const String& nameFont,
+void ncvslideio::addText( const Mat& img, const String& text, Point org, const String& nameFont,
         int pointSize, Scalar color, int weight, int style, int spacing)
 {
     CvFont f = cvFontQt(nameFont.c_str(), pointSize, cvScalar(color), weight, style, spacing);
@@ -1164,37 +1164,37 @@ void cv::addText( const Mat& img, const String& text, Point org, const String& n
     cvAddText( &_img, text.c_str(), cvPoint(org), &f);
 }
 
-void cv::displayStatusBar(const String& name,  const String& text, int delayms)
+void ncvslideio::displayStatusBar(const String& name,  const String& text, int delayms)
 {
     cvDisplayStatusBar(name.c_str(),text.c_str(), delayms);
 }
 
-void cv::displayOverlay(const String& name,  const String& text, int delayms)
+void ncvslideio::displayOverlay(const String& name,  const String& text, int delayms)
 {
     cvDisplayOverlay(name.c_str(),text.c_str(), delayms);
 }
 
-int cv::startLoop(int (*pt2Func)(int argc, char *argv[]), int argc, char* argv[])
+int ncvslideio::startLoop(int (*pt2Func)(int argc, char *argv[]), int argc, char* argv[])
 {
     return cvStartLoop(pt2Func, argc, argv);
 }
 
-void cv::stopLoop()
+void ncvslideio::stopLoop()
 {
     cvStopLoop();
 }
 
-void cv::saveWindowParameters(const String& windowName)
+void ncvslideio::saveWindowParameters(const String& windowName)
 {
     cvSaveWindowParameters(windowName.c_str());
 }
 
-void cv::loadWindowParameters(const String& windowName)
+void ncvslideio::loadWindowParameters(const String& windowName)
 {
     cvLoadWindowParameters(windowName.c_str());
 }
 
-int cv::createButton(const String& button_name, ButtonCallback on_change, void* userdata, int button_type , bool initial_button_state  )
+int ncvslideio::createButton(const String& button_name, ButtonCallback on_change, void* userdata, int button_type , bool initial_button_state  )
 {
     return cvCreateButton(button_name.c_str(), on_change, userdata, button_type , initial_button_state );
 }
@@ -1203,54 +1203,54 @@ int cv::createButton(const String& button_name, ButtonCallback on_change, void* 
 
 static const char* NO_QT_ERR_MSG = "The library is compiled without QT support";
 
-cv::QtFont cv::fontQt(const String&, int, Scalar, int,  int, int)
+ncvslideio::QtFont ncvslideio::fontQt(const String&, int, Scalar, int,  int, int)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::addText( const Mat&, const String&, Point, const QtFont&)
+void ncvslideio::addText( const Mat&, const String&, Point, const QtFont&)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::addText(const Mat&, const String&, Point, const String&, int, Scalar, int, int, int)
+void ncvslideio::addText(const Mat&, const String&, Point, const String&, int, Scalar, int, int, int)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::displayStatusBar(const String&,  const String&, int)
+void ncvslideio::displayStatusBar(const String&,  const String&, int)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::displayOverlay(const String&,  const String&, int )
+void ncvslideio::displayOverlay(const String&,  const String&, int )
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-int cv::startLoop(int (*)(int argc, char *argv[]), int , char**)
+int ncvslideio::startLoop(int (*)(int argc, char *argv[]), int , char**)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::stopLoop()
+void ncvslideio::stopLoop()
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::saveWindowParameters(const String&)
+void ncvslideio::saveWindowParameters(const String&)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-void cv::loadWindowParameters(const String&)
+void ncvslideio::loadWindowParameters(const String&)
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
-int cv::createButton(const String&, ButtonCallback, void*, int , bool )
+int ncvslideio::createButton(const String&, ButtonCallback, void*, int , bool )
 {
-    CV_Error(cv::Error::StsNotImplemented, NO_QT_ERR_MSG);
+    CV_Error(ncvslideio::Error::StsNotImplemented, NO_QT_ERR_MSG);
 }
 
 #endif
@@ -1272,7 +1272,7 @@ int cv::createButton(const String&, ButtonCallback, void*, int , bool )
 // applications or libraries.
 
 #define CV_NO_GUI_ERROR(funcname) \
-    cv::error(cv::Error::StsError, \
+    ncvslideio::error(ncvslideio::Error::StsError, \
     "The function is not implemented. " \
     "Rebuild the library with Windows, GTK+ 2.x or Cocoa support. "\
     "If you are on Ubuntu or Debian, install libgtk2.0-dev and pkg-config, then re-run cmake or configure script", \

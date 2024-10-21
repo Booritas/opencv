@@ -41,14 +41,14 @@
 #include "precomp.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 CV_IMPL CvRect
 cvMaxRect( const CvRect* rect1, const CvRect* rect2 )
 {
     if( rect1 && rect2 )
     {
-        cv::Rect max_rect;
+        ncvslideio::Rect max_rect;
         int a, b;
 
         max_rect.x = a = rect1->x;
@@ -89,12 +89,12 @@ CV_IMPL void
 cvBoxPoints( CvBox2D box, CvPoint2D32f pt[4] )
 {
     if( !pt )
-        CV_Error( cv::Error::StsNullPtr, "NULL vertex array pointer" );
-    cv::RotatedRect(box).points((cv::Point2f*)pt);
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL vertex array pointer" );
+    ncvslideio::RotatedRect(box).points((ncvslideio::Point2f*)pt);
 }
 
 
-double cv::pointPolygonTest( InputArray _contour, Point2f pt, bool measureDist )
+double ncvslideio::pointPolygonTest( InputArray _contour, Point2f pt, bool measureDist )
 {
     CV_INSTRUMENT_REGION();
 
@@ -248,9 +248,9 @@ double cv::pointPolygonTest( InputArray _contour, Point2f pt, bool measureDist )
 CV_IMPL double
 cvPointPolygonTest( const CvArr* _contour, CvPoint2D32f pt, int measure_dist )
 {
-    cv::AutoBuffer<double> abuf;
-    cv::Mat contour = cv::cvarrToMat(_contour, false, false, 0, &abuf);
-    return cv::pointPolygonTest(contour, pt, measure_dist != 0);
+    ncvslideio::AutoBuffer<double> abuf;
+    ncvslideio::Mat contour = ncvslideio::cvarrToMat(_contour, false, false, 0, &abuf);
+    return ncvslideio::pointPolygonTest(contour, pt, measure_dist != 0);
 }
 
 /*
@@ -268,7 +268,7 @@ cvPointPolygonTest( const CvArr* _contour, CvPoint2D32f pt, int measure_dist )
  --------------------------------------------------------------------
  */
 
-namespace cv
+namespace ncvslideio
 {
 typedef enum { Pin, Qin, Unknown } tInFlag;
 
@@ -494,7 +494,7 @@ static int intersectConvexConvex_( const Point2f* P, int n, const Point2f* Q, in
 
 }
 
-float cv::intersectConvexConvex( InputArray _p1, InputArray _p2, OutputArray _p12, bool handleNested )
+float ncvslideio::intersectConvexConvex( InputArray _p1, InputArray _p2, OutputArray _p12, bool handleNested )
 {
     CV_INSTRUMENT_REGION();
 
@@ -880,7 +880,7 @@ static Rect pointSetBoundingRect( const Mat& points )
 }
 
 
-cv::Rect cv::boundingRect(InputArray array)
+ncvslideio::Rect ncvslideio::boundingRect(InputArray array)
 {
     CV_INSTRUMENT_REGION();
 
@@ -893,7 +893,7 @@ cv::Rect cv::boundingRect(InputArray array)
 CV_IMPL  CvRect
 cvBoundingRect( CvArr* array, int update )
 {
-    cv::Rect rect;
+    ncvslideio::Rect rect;
     CvContour contour_header;
     CvSeq* ptseq = 0;
     CvSeqBlock block;
@@ -905,7 +905,7 @@ cvBoundingRect( CvArr* array, int update )
     {
         ptseq = (CvSeq*)array;
         if( !CV_IS_SEQ_POINT_SET( ptseq ))
-            CV_Error( cv::Error::StsBadArg, "Unsupported sequence type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported sequence type" );
 
         if( ptseq->header_size < (int)sizeof(CvContour))
         {
@@ -924,7 +924,7 @@ cvBoundingRect( CvArr* array, int update )
         }
         else if( CV_MAT_TYPE(mat->type) != CV_8UC1 &&
                 CV_MAT_TYPE(mat->type) != CV_8SC1 )
-            CV_Error( cv::Error::StsUnsupportedFormat,
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                 "The image/matrix format is not supported by the function" );
         update = 0;
         calculate = 1;
@@ -935,12 +935,12 @@ cvBoundingRect( CvArr* array, int update )
 
     if( mat )
     {
-        rect = cvRect(maskBoundingRect(cv::cvarrToMat(mat)));
+        rect = cvRect(maskBoundingRect(ncvslideio::cvarrToMat(mat)));
     }
     else if( ptseq->total )
     {
-        cv::AutoBuffer<double> abuf;
-        rect = cvRect(pointSetBoundingRect(cv::cvarrToMat(ptseq, false, false, 0, &abuf)));
+        ncvslideio::AutoBuffer<double> abuf;
+        rect = cvRect(pointSetBoundingRect(ncvslideio::cvarrToMat(ptseq, false, false, 0, &abuf)));
     }
     if( update )
         ((CvContour*)ptseq)->rect = cvRect(rect);

@@ -17,7 +17,7 @@
 #include <opencv2/core/utils/logtag.hpp>
 #include "logtagconfig.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 
@@ -37,8 +37,8 @@ private:
     // also, extensible functions (accepting user-provided callback) are not allowed
     // to call LogTagManger (to prevent iterator invalidation), which needs enforced
     // with a non-recursive mutex.
-    using MutexType = cv::Mutex;
-    using LockType = cv::AutoLock;
+    using MutexType = ncvslideio::Mutex;
+    using LockType = ncvslideio::AutoLock;
 
     enum class MatchingScope
     {

@@ -57,7 +57,7 @@
 #include "opencv2/core/cvdef.h"
 #include "opencv2/core/cvstd.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_utils
@@ -317,7 +317,7 @@ CV_EXPORTS CV_NORETURN void terminate(int code, const String& err, const char* f
 // In practice, some macro are not processed correctly (noreturn is not detected).
 // We need to use simplified definition for them.
 #define CV_Error(code, msg) do { (void)(code); (void)(msg); abort(); } while (0)
-#define CV_Error_(code, args) do { (void)(code); (void)(cv::format args); abort(); } while (0)
+#define CV_Error_(code, args) do { (void)(code); (void)(ncvslideio::format args); abort(); } while (0)
 #define CV_Assert( expr ) do { if (!(expr)) abort(); } while (0)
 
 #else // CV_STATIC_ANALYSIS
@@ -332,7 +332,7 @@ configuration, the exception is thrown.
 @param code one of Error::Code
 @param msg error message
 */
-#define CV_Error( code, msg ) cv::error( code, msg, CV_Func, __FILE__, __LINE__ )
+#define CV_Error( code, msg ) ncvslideio::error( code, msg, CV_Func, __FILE__, __LINE__ )
 
 /**  @brief Call the error handler.
 
@@ -346,18 +346,18 @@ for example:
 @param code one of Error::Code
 @param args printf-like formatted error message in parentheses
 */
-#define CV_Error_( code, args ) cv::error( code, cv::format args, CV_Func, __FILE__, __LINE__ )
+#define CV_Error_( code, args ) ncvslideio::error( code, ncvslideio::format args, CV_Func, __FILE__, __LINE__ )
 
 /** @brief Checks a condition at runtime and throws exception if it fails
 
 The macros CV_Assert (and CV_DbgAssert(expr)) evaluate the specified expression. If it is 0, the macros
-raise an error (see cv::error). The macro CV_Assert checks the condition in both Debug and Release
+raise an error (see ncvslideio::error). The macro CV_Assert checks the condition in both Debug and Release
 configurations while CV_DbgAssert is only retained in the Debug configuration.
 CV_AssertTerminate is analog of CV_Assert for invariants check in functions with noexcept attribute.
 It does not throw exception, but terminates the application.
 */
-#define CV_Assert( expr ) do { if(!!(expr)) ; else cv::error( cv::Error::StsAssert, #expr, CV_Func, __FILE__, __LINE__ ); } while(0)
-#define CV_AssertTerminate( expr ) do { if(!!(expr)) ; else cv::terminate( #expr, CV_Func, __FILE__, __LINE__ ); } while(0)
+#define CV_Assert( expr ) do { if(!!(expr)) ; else ncvslideio::error( ncvslideio::Error::StsAssert, #expr, CV_Func, __FILE__, __LINE__ ); } while(0)
+#define CV_AssertTerminate( expr ) do { if(!!(expr)) ; else ncvslideio::terminate( #expr, CV_Func, __FILE__, __LINE__ ); } while(0)
 
 #endif // CV_STATIC_ANALYSIS
 
@@ -673,7 +673,7 @@ static inline void setUseIPP_NE(bool flag) { setUseIPP_NotExact(flag); }
 
 
 
-} // cv
+} // ncvslideio
 
 #include "opencv2/core/neon_utils.hpp"
 #include "opencv2/core/vsx_utils.hpp"

@@ -43,7 +43,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 ////////////////////// KeyPoint //////////////////////
@@ -83,7 +83,7 @@ void KeyPoint::convert(const std::vector<KeyPoint>& keypoints, std::vector<Point
                 points2f[i] = keypoints[idx].pt;
             else
             {
-                CV_Error( cv::Error::StsBadArg, "keypointIndexes has element < 0. TODO: process this case" );
+                CV_Error( ncvslideio::Error::StsBadArg, "keypointIndexes has element < 0. TODO: process this case" );
                 //points2f[i] = Point2f(-1, -1);
             }
         }
@@ -214,4 +214,4 @@ Rect_<float> RotatedRect::boundingRect2f() const
     return r;
 }
 
-} // cv
+} // ncvslideio

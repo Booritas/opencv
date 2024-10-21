@@ -31,7 +31,7 @@
 
 #endif // !defined(BUILD_PLUGIN)
 
-typedef cv::highgui_backend::UIBackend* CvPluginUIBackend;
+typedef ncvslideio::highgui_backend::UIBackend* CvPluginUIBackend;
 
 struct OpenCV_UI_Plugin_API_v0_0_api_entries
 {

@@ -44,7 +44,7 @@
 
 //! @cond IGNORED
 
-namespace cv {
+namespace ncvslideio {
 namespace ocl {
 
 class ProgramSource;

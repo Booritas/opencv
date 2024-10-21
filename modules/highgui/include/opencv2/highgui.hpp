@@ -129,7 +129,7 @@ It provides easy interface to:
 */
 
 ///////////////////////// graphical user interface //////////////////////////
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup highgui
@@ -138,7 +138,7 @@ namespace cv
 //! @addtogroup highgui_window_flags
 //! @{
 
-//! Flags for cv::namedWindow
+//! Flags for ncvslideio::namedWindow
 enum WindowFlags {
        WINDOW_NORMAL     = 0x00000000, //!< the user can resize the window (no constraint) / also use to switch a fullscreen window to a normal size.
        WINDOW_AUTOSIZE   = 0x00000001, //!< the user cannot resize the window, the size is constrainted by the image displayed.
@@ -151,7 +151,7 @@ enum WindowFlags {
        WINDOW_GUI_NORMAL = 0x00000010, //!< old fashious way
     };
 
-//! Flags for cv::setWindowProperty / cv::getWindowProperty
+//! Flags for ncvslideio::setWindowProperty / ncvslideio::getWindowProperty
 enum WindowPropertyFlags {
        WND_PROP_FULLSCREEN   = 0, //!< fullscreen property    (can be WINDOW_NORMAL or WINDOW_FULLSCREEN).
        WND_PROP_AUTOSIZE     = 1, //!< autosize property      (can be WINDOW_NORMAL or WINDOW_AUTOSIZE).
@@ -162,7 +162,7 @@ enum WindowPropertyFlags {
        WND_PROP_VSYNC        = 6  //!< enable or disable VSYNC (in OpenGL mode)
      };
 
-//! Mouse Events see cv::MouseCallback
+//! Mouse Events see ncvslideio::MouseCallback
 enum MouseEventTypes {
        EVENT_MOUSEMOVE      = 0, //!< indicates that the mouse pointer has moved over the window.
        EVENT_LBUTTONDOWN    = 1, //!< indicates that the left mouse button is pressed.
@@ -178,7 +178,7 @@ enum MouseEventTypes {
        EVENT_MOUSEHWHEEL    = 11 //!< positive and negative values mean right and left scrolling, respectively.
      };
 
-//! Mouse Event Flags see cv::MouseCallback
+//! Mouse Event Flags see ncvslideio::MouseCallback
 enum MouseEventFlags {
        EVENT_FLAG_LBUTTON   = 1, //!< indicates that the left mouse button is down.
        EVENT_FLAG_RBUTTON   = 2, //!< indicates that the right mouse button is down.
@@ -252,7 +252,7 @@ trackbars. Created windows are referred to by their names.
 
 If a window with the same name already exists, the function does nothing.
 
-You can call cv::destroyWindow or cv::destroyAllWindows to close the window and de-allocate any associated
+You can call ncvslideio::destroyWindow or ncvslideio::destroyAllWindows to close the window and de-allocate any associated
 memory usage. For a simple program, you do not really have to call these functions because all the
 resources and windows of the application are closed automatically by the operating system upon exit.
 
@@ -340,7 +340,7 @@ CV_EXPORTS_W int pollKey();
 /** @brief Displays an image in the specified window.
 
 The function imshow displays an image in the specified window. If the window was created with the
-cv::WINDOW_AUTOSIZE flag, the image is shown with its original size, however it is still limited by the screen resolution.
+ncvslideio::WINDOW_AUTOSIZE flag, the image is shown with its original size, however it is still limited by the screen resolution.
 Otherwise, the image is scaled to fit the window. The function may scale the image, depending on its depth:
 
 -   If the image is 8-bit unsigned, it is displayed as is.
@@ -351,10 +351,10 @@ Otherwise, the image is scaled to fit the window. The function may scale the ima
 -   32-bit integer images are not processed anymore due to ambiguouty of required transform.
     Convert to 8-bit unsigned matrix using a custom preprocessing specific to image's context.
 
-If window was created with OpenGL support, cv::imshow also support ogl::Buffer , ogl::Texture2D and
+If window was created with OpenGL support, ncvslideio::imshow also support ogl::Buffer , ogl::Texture2D and
 cuda::GpuMat as input.
 
-If the window was not created before this function, it is assumed creating a window with cv::WINDOW_AUTOSIZE.
+If the window was not created before this function, it is assumed creating a window with ncvslideio::WINDOW_AUTOSIZE.
 
 If you need to show an image that is bigger than the screen resolution, you will need to call namedWindow("", WINDOW_NORMAL) before the imshow.
 
@@ -392,7 +392,7 @@ CV_EXPORTS_W void resizeWindow(const String& winname, int width, int height);
 @param winname Window name.
 @param size The new window size.
 */
-CV_EXPORTS_W void resizeWindow(const String& winname, const cv::Size& size);
+CV_EXPORTS_W void resizeWindow(const String& winname, const ncvslideio::Size& size);
 
 /** @brief Moves the window to the specified position
 
@@ -466,8 +466,8 @@ a one notch rotation of the wheel or the threshold for action to be taken and on
 occur for each delta. Some high-precision mice with higher-resolution freely-rotating wheels may
 generate smaller values.
 
-For cv::EVENT_MOUSEWHEEL positive and negative values mean forward and backward scrolling,
-respectively. For cv::EVENT_MOUSEHWHEEL, where available, positive and negative values mean right and
+For ncvslideio::EVENT_MOUSEWHEEL positive and negative values mean forward and backward scrolling,
+respectively. For ncvslideio::EVENT_MOUSEHWHEEL, where available, positive and negative values mean right and
 left scrolling, respectively.
 
 @note Mouse-wheel events are currently supported only on Windows and Cocoa.
@@ -479,7 +479,7 @@ CV_EXPORTS int getMouseWheelDelta(int flags);
 /** @brief Allows users to select a ROI on the given image.
 
 The function creates a window and allows users to select a ROI using the mouse.
-Controls: use `space` or `enter` to finish selection, use key `c` to cancel selection (function will return the zero cv::Rect).
+Controls: use `space` or `enter` to finish selection, use key `c` to cancel selection (function will return the zero ncvslideio::Rect).
 
 @param windowName name of the window where selection process will be shown.
 @param img image to select a ROI.
@@ -673,20 +673,20 @@ struct QtFont
 {
     const char* nameFont;  //!< Name of the font
     Scalar      color;     //!< Color of the font. Scalar(blue_component, green_component, red_component[, alpha_component])
-    int         font_face; //!< See cv::QtFontStyles
+    int         font_face; //!< See ncvslideio::QtFontStyles
     const int*  ascii;     //!< font data and metrics
     const int*  greek;
     const int*  cyrillic;
     float       hscale, vscale;
     float       shear;     //!< slope coefficient: 0 - normal, >0 - italic
-    int         thickness; //!< See cv::QtFontWeights
+    int         thickness; //!< See ncvslideio::QtFontWeights
     float       dx;        //!< horizontal interval between letters
     int         line_type; //!< PointSize
 };
 
 /** @brief Creates the font to draw a text on an image.
 
-The function fontQt creates a cv::QtFont object. This cv::QtFont is not compatible with putText .
+The function fontQt creates a ncvslideio::QtFont object. This ncvslideio::QtFont is not compatible with putText .
 
 A basic usage of this function is the following: :
 @code
@@ -710,7 +710,7 @@ CV_EXPORTS QtFont fontQt(const String& nameFont, int pointSize = -1,
 
 /** @brief Draws a text on the image.
 
-The function addText draws *text* on the image *img* using a specific font *font* (see example cv::fontQt
+The function addText draws *text* on the image *img* using a specific font *font* (see example ncvslideio::fontQt
 )
 
 @param img 8-bit 3-channel image where the text should be drawn.
@@ -794,7 +794,7 @@ buttonbar to the right of the last button. A new buttonbar is created if nothing
 control panel before, or if the last element attached to the control panel was a trackbar or if the
 QT_NEW_BUTTONBAR flag is added to the type.
 
-See below various examples of the cv::createButton function call: :
+See below various examples of the ncvslideio::createButton function call: :
 @code
     createButton("",callbackButton);//create a push button "button 0", that will call callbackButton.
     createButton("button2",callbackButton,NULL,QT_CHECKBOX,0);
@@ -821,6 +821,6 @@ CV_EXPORTS int createButton( const String& bar_name, ButtonCallback on_change,
 
 //! @} highgui
 
-} // cv
+} // ncvslideio
 
 #endif

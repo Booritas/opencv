@@ -6,7 +6,7 @@
 #include "precomp.hpp"
 #include "convert.hpp"
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 BinaryFunc getCvtScaleAbsFunc(int depth);

@@ -198,7 +198,7 @@ This module offers a comprehensive suite of image processing functions, enabling
   @}
 */
 
-namespace cv
+namespace ncvslideio
 {
 
 /** @addtogroup imgproc
@@ -909,7 +909,7 @@ enum HersheyFonts {
     FONT_ITALIC                 = 16 //!< flag for italic font
 };
 
-/** Possible set of marker types used for the cv::drawMarker function
+/** Possible set of marker types used for the ncvslideio::drawMarker function
 @ingroup imgproc_draw
 */
 enum MarkerTypes
@@ -1543,7 +1543,7 @@ sigmaX, and sigmaY.
 CV_EXPORTS_W void GaussianBlur( InputArray src, OutputArray dst, Size ksize,
                                 double sigmaX, double sigmaY = 0,
                                 int borderType = BORDER_DEFAULT,
-                                AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
+                                AlgorithmHint hint = ncvslideio::ALGO_HINT_DEFAULT );
 
 /** @brief Applies the bilateral filter to an image.
 
@@ -2349,7 +2349,7 @@ CV_EXPORTS_W void dilate( InputArray src, OutputArray dst, InputArray kernel,
 
 /** @brief Performs advanced morphological transformations.
 
-The function cv::morphologyEx can perform advanced morphological transformations using an erosion and dilation as
+The function ncvslideio::morphologyEx can perform advanced morphological transformations using an erosion and dilation as
 basic operations.
 
 Any of the operations can be done in-place. In case of multi-channel images, each channel is
@@ -2451,7 +2451,7 @@ CV_EXPORTS_W void warpAffine( InputArray src, OutputArray dst,
                               const Scalar& borderValue = Scalar());
 
 /** @example samples/cpp/warpPerspective_demo.cpp
-An example program shows using cv::getPerspectiveTransform and cv::warpPerspective for image warping
+An example program shows using ncvslideio::getPerspectiveTransform and ncvslideio::warpPerspective for image warping
 */
 
 /** @brief Applies a perspective transformation to an image.
@@ -2667,7 +2667,7 @@ CV_EXPORTS_W void getRectSubPix( InputArray image, Size patchSize,
                                  Point2f center, OutputArray patch, int patchType = -1 );
 
 /** @example samples/cpp/polar_transforms.cpp
-An example using the cv::linearPolar and cv::logPolar operations
+An example using the ncvslideio::linearPolar and ncvslideio::logPolar operations
 */
 
 /** @brief Remaps an image to semilog-polar coordinates space.
@@ -2908,7 +2908,7 @@ The function adds src or some of its elements to dst :
 
 The function supports multi-channel images. Each channel is processed independently.
 
-The function cv::accumulate can be used, for example, to collect statistics of a scene background
+The function ncvslideio::accumulate can be used, for example, to collect statistics of a scene background
 viewed by a still camera and for the further foreground-background segmentation.
 
 @param src Input image of type CV_8UC(n), CV_16UC(n), CV_32FC(n) or CV_64FC(n), where n is a positive integer.
@@ -3036,7 +3036,7 @@ CV_EXPORTS_W void createHanningWindow(OutputArray dst, Size winSize, int type);
 
 /** @brief Performs the per-element division of the first Fourier spectrum by the second Fourier spectrum.
 
-The function cv::divSpectrums performs the per-element division of the first array by the second array.
+The function ncvslideio::divSpectrums performs the per-element division of the first array by the second array.
 The arrays are CCS-packed or complex matrices that are results of a real or complex Fourier transform.
 
 @param a first input array.
@@ -3188,7 +3188,7 @@ An example for creating histograms of an image
 
 /** @brief Calculates a histogram of a set of arrays.
 
-The function cv::calcHist calculates the histogram of one or more arrays. The elements of a tuple used
+The function ncvslideio::calcHist calculates the histogram of one or more arrays. The elements of a tuple used
 to increment a histogram bin are taken from the corresponding input arrays at the same location. The
 sample below shows how to compute a 2D Hue-Saturation histogram for a color image. :
 @include snippets/imgproc_calcHist.cpp
@@ -3251,7 +3251,7 @@ CV_EXPORTS_W void calcHist( InputArrayOfArrays images,
 
 /** @brief Calculates the back projection of a histogram.
 
-The function cv::calcBackProject calculates the back project of the histogram. That is, similarly to
+The function ncvslideio::calcBackProject calculates the back project of the histogram. That is, similarly to
 #calcHist , at each location (x, y) the function collects the values from the selected channels
 in the input images and finds the corresponding histogram bin. But instead of incrementing it, the
 function reads the bin value, scales it by scale , and stores in backProject(x,y) . In terms of
@@ -3307,7 +3307,7 @@ CV_EXPORTS_W void calcBackProject( InputArrayOfArrays images, const std::vector<
 
 /** @brief Compares two histograms.
 
-The function cv::compareHist compares two dense or two sparse histograms using the specified method.
+The function ncvslideio::compareHist compares two dense or two sparse histograms using the specified method.
 
 The function returns \f$d(H_1, H_2)\f$ .
 
@@ -3515,7 +3515,7 @@ An example on using the distance transform
 
 /** @brief Calculates the distance to the closest zero pixel for each pixel of the source image.
 
-The function cv::distanceTransform calculates the approximate or precise distance from every binary
+The function ncvslideio::distanceTransform calculates the approximate or precise distance from every binary
 image pixel to the nearest zero pixel. For zero image pixels, the distance will obviously be zero.
 
 When maskSize == #DIST_MASK_PRECISE and distanceType == #DIST_L2 , the function runs the
@@ -3586,7 +3586,7 @@ CV_EXPORTS_W void distanceTransform( InputArray src, OutputArray dst,
 
 /** @brief Fills a connected component with the given color.
 
-The function cv::floodFill fills a connected component starting from the seed point with the specified
+The function ncvslideio::floodFill fills a connected component starting from the seed point with the specified
 color. The connectivity is determined by the color/brightness closeness of the neighbor pixels. The
 pixel at \f$(x,y)\f$ is considered to belong to the repainted domain if:
 
@@ -3730,7 +3730,7 @@ channels is derived automatically from src and code.
 
 @see @ref imgproc_color_conversions
  */
-CV_EXPORTS_W void cvtColor( InputArray src, OutputArray dst, int code, int dstCn = 0, AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
+CV_EXPORTS_W void cvtColor( InputArray src, OutputArray dst, int code, int dstCn = 0, AlgorithmHint hint = ncvslideio::ALGO_HINT_DEFAULT );
 
 /** @brief Converts an image from one color space to another where the source image is
 stored in two planes.
@@ -3751,7 +3751,7 @@ This function only supports YUV420 to RGB conversion as of now.
 - #COLOR_YUV2RGBA_NV21
 @param hint Implementation modfication flags. See #AlgorithmHint
 */
-CV_EXPORTS_W void cvtColorTwoPlane( InputArray src1, InputArray src2, OutputArray dst, int code, AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
+CV_EXPORTS_W void cvtColorTwoPlane( InputArray src1, InputArray src2, OutputArray dst, int code, AlgorithmHint hint = ncvslideio::ALGO_HINT_DEFAULT );
 
 /** @brief main function for all demosaicing processes
 
@@ -3793,7 +3793,7 @@ CV_EXPORTS_W void demosaicing(InputArray src, OutputArray dst, int code, int dst
 /** @brief Calculates all of the moments up to the third order of a polygon or rasterized shape.
 
 The function computes moments, up to the 3rd order, of a vector shape or a rasterized shape. The
-results are returned in the structure cv::Moments.
+results are returned in the structure ncvslideio::Moments.
 
 @param array Single chanel raster image (CV_8U, CV_16U, CV_16S, CV_32F, CV_64F) or an array (
 \f$1 \times N\f$ or \f$N \times 1\f$ ) of 2D points (Point or Point2f).
@@ -4034,12 +4034,12 @@ CV_EXPORTS void findContours( InputArray image, OutputArrayOfArrays contours,
 
 //! @brief Find contours using link runs algorithm
 //!
-//! This function implements an algorithm different from cv::findContours:
+//! This function implements an algorithm different from ncvslideio::findContours:
 //! - doesn't allocate temporary image internally, thus it has reduced memory consumption
 //! - supports CV_8UC1 images only
 //! - outputs 2-level hierarhy only (RETR_CCOMP mode)
 //! - doesn't support approximation change other than CHAIN_APPROX_SIMPLE
-//! In all other aspects this function is compatible with cv::findContours.
+//! In all other aspects this function is compatible with ncvslideio::findContours.
 CV_EXPORTS_W void findContoursLinkRuns(InputArray image, OutputArrayOfArrays contours, OutputArray hierarchy);
 
 //! @overload
@@ -4047,7 +4047,7 @@ CV_EXPORTS_W void findContoursLinkRuns(InputArray image, OutputArrayOfArrays con
 
 /** @brief Approximates a polygonal curve(s) with the specified precision.
 
-The function cv::approxPolyDP approximates a curve or a polygon with another curve/polygon with less
+The function ncvslideio::approxPolyDP approximates a curve or a polygon with another curve/polygon with less
 vertices so that the distance between them is less or equal to the specified precision. It uses the
 Douglas-Peucker algorithm <http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm>
 
@@ -4064,7 +4064,7 @@ CV_EXPORTS_W void approxPolyDP( InputArray curve,
 
 /** @brief Approximates a polygon with a convex hull with a specified accuracy and number of sides.
 
-The cv::approxPolyN function approximates a polygon with a convex hull
+The ncvslideio::approxPolyN function approximates a polygon with a convex hull
 so that the difference between the contour area of the original contour and the new polygon is minimal.
 It uses a greedy algorithm for contracting two vertices into one in such a way that the additional area is minimal.
 Straight lines formed by each edge of the convex contour are drawn and the areas of the resulting triangles are considered.
@@ -4208,7 +4208,7 @@ An example using the convexHull functionality
 
 /** @brief Finds the convex hull of a point set.
 
-The function cv::convexHull finds the convex hull of a 2D point set using the Sklansky's algorithm @cite Sklansky82
+The function ncvslideio::convexHull finds the convex hull of a 2D point set using the Sklansky's algorithm @cite Sklansky82
 that has *O(N logN)* complexity in the current implementation.
 
 @param points Input 2D point set, stored in std::vector or Mat.
@@ -4521,7 +4521,7 @@ CV_EXPORTS_W void applyColorMap(InputArray src, OutputArray dst, InputArray user
 
 
 /** OpenCV color channel order is BGR[A] */
-#define CV_RGB(r, g, b)  cv::Scalar((b), (g), (r), 0)
+#define CV_RGB(r, g, b)  ncvslideio::Scalar((b), (g), (r), 0)
 
 /** @brief Draws a line segment connecting two points.
 
@@ -4543,7 +4543,7 @@ CV_EXPORTS_W void line(InputOutputArray img, Point pt1, Point pt2, const Scalar&
 
 /** @brief Draws an arrow segment pointing from the first point to the second one.
 
-The function cv::arrowedLine draws an arrow between pt1 and pt2 points in the image. See also #line.
+The function ncvslideio::arrowedLine draws an arrow between pt1 and pt2 points in the image. See also #line.
 
 @param img Image.
 @param pt1 The point the arrow starts from.
@@ -4559,7 +4559,7 @@ CV_EXPORTS_W void arrowedLine(InputOutputArray img, Point pt1, Point pt2, const 
 
 /** @brief Draws a simple, thick, or filled up-right rectangle.
 
-The function cv::rectangle draws a rectangle outline or a filled rectangle whose two opposite corners
+The function ncvslideio::rectangle draws a rectangle outline or a filled rectangle whose two opposite corners
 are pt1 and pt2.
 
 @param img Image.
@@ -4590,7 +4590,7 @@ An example using drawing functions
 
 /** @brief Draws a circle.
 
-The function cv::circle draws a simple or filled circle with a given center and radius.
+The function ncvslideio::circle draws a simple or filled circle with a given center and radius.
 @param img Image where the circle is drawn.
 @param center Center of the circle.
 @param radius Radius of the circle.
@@ -4606,7 +4606,7 @@ CV_EXPORTS_W void circle(InputOutputArray img, Point center, int radius,
 
 /** @brief Draws a simple or thick elliptic arc or fills an ellipse sector.
 
-The function cv::ellipse with more parameters draws an ellipse outline, a filled ellipse, an elliptic
+The function ncvslideio::ellipse with more parameters draws an ellipse outline, a filled ellipse, an elliptic
 arc, or a filled ellipse sector. The drawing code uses general parametric form.
 A piecewise-linear curve is used to approximate the elliptic arc
 boundary. If you need more control of the ellipse rendering, you can retrieve the curve using
@@ -4652,7 +4652,7 @@ CV_EXPORTS_W void ellipse(InputOutputArray img, const RotatedRect& box, const Sc
 
 /** @brief Draws a marker on a predefined position in an image.
 
-The function cv::drawMarker draws a marker on a given position in the image. For the moment several
+The function ncvslideio::drawMarker draws a marker on a given position in the image. For the moment several
 marker types are supported, see #MarkerTypes for more information.
 
 @param img Image.
@@ -4673,7 +4673,7 @@ CV_EXPORTS_W void drawMarker(InputOutputArray img, Point position, const Scalar&
 
 /** @brief Fills a convex polygon.
 
-The function cv::fillConvexPoly draws a filled convex polygon. This function is much faster than the
+The function ncvslideio::fillConvexPoly draws a filled convex polygon. This function is much faster than the
 function #fillPoly . It can fill not only convex polygons but any monotonic polygon without
 self-intersections, that is, a polygon whose contour intersects every horizontal line (scan line)
 twice at the most (though, its top-most and/or the bottom edge could be horizontal).
@@ -4700,7 +4700,7 @@ Check @ref tutorial_random_generator_and_text "the corresponding tutorial" for m
 
 /** @brief Fills the area bounded by one or more polygons.
 
-The function cv::fillPoly fills an area bounded by several polygonal contours. The function can fill
+The function ncvslideio::fillPoly fills an area bounded by several polygonal contours. The function can fill
 complex areas, for example, areas with holes, contours with self-intersections (some of their
 parts), and so forth.
 
@@ -4732,7 +4732,7 @@ the function draws a line from the last vertex of each curve to its first vertex
 @param lineType Type of the line segments. See #LineTypes
 @param shift Number of fractional bits in the vertex coordinates.
 
-The function cv::polylines draws one or more polygonal curves.
+The function ncvslideio::polylines draws one or more polygonal curves.
  */
 CV_EXPORTS_W void polylines(InputOutputArray img, InputArrayOfArrays pts,
                             bool isClosed, const Scalar& color,
@@ -4744,7 +4744,7 @@ CV_EXPORTS void polylines(InputOutputArray img, const Point* const* pts, const i
                           int thickness = 1, int lineType = LINE_8, int shift = 0 );
 
 /** @example samples/cpp/contours2.cpp
-An example program illustrates the use of cv::findContours and cv::drawContours
+An example program illustrates the use of ncvslideio::findContours and ncvslideio::drawContours
 \image html WindowsQtContoursOutput.png "Screenshot of the program"
 */
 
@@ -4788,7 +4788,7 @@ CV_EXPORTS_W void drawContours( InputOutputArray image, InputArrayOfArrays conto
 
 /** @brief Clips the line against the image rectangle.
 
-The function cv::clipLine calculates a part of the line segment that is entirely within the specified
+The function ncvslideio::clipLine calculates a part of the line segment that is entirely within the specified
 rectangle. It returns false if the line segment is completely outside the rectangle. Otherwise,
 it returns true .
 @param imgSize Image size. The image rectangle is Rect(0, 0, imgSize.width, imgSize.height) .
@@ -4844,7 +4844,7 @@ CV_EXPORTS void ellipse2Poly(Point2d center, Size2d axes, int angle,
 
 /** @brief Draws a text string.
 
-The function cv::putText renders the specified text string in the image. Symbols that cannot be rendered
+The function ncvslideio::putText renders the specified text string in the image. Symbols that cannot be rendered
 using the specified font are replaced by question marks. See #getTextSize for a text rendering code
 example.
 
@@ -4866,7 +4866,7 @@ CV_EXPORTS_W void putText( InputOutputArray img, const String& text, Point org,
 
 /** @brief Calculates the width and height of a text string.
 
-The function cv::getTextSize calculates and returns the size of a box that contains the specified text.
+The function ncvslideio::getTextSize calculates and returns the size of a box that contains the specified text.
 That is, the following code renders some text, the tight box surrounding it, and the baseline: :
 @code
     String text = "Funny text inside the box";
@@ -5090,7 +5090,7 @@ Point LineIterator::pos() const
 
 //! @} imgproc
 
-} // cv
+} // ncvslideio
 
 
 #include "./imgproc/segmentation.hpp"

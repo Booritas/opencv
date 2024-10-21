@@ -10,7 +10,7 @@
 #include "count_non_zero.simd.hpp"
 #include "count_non_zero.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 static CountNonZeroFunc getCountNonZeroTab(int depth)
 {
@@ -52,7 +52,7 @@ static bool ocl_countNonZero( InputArray _src, int & res )
 
     size_t globalsize = dbsize * wgs;
     if (k.run(1, &globalsize, &wgs, true))
-        return res = saturate_cast<int>(cv::sum(db.getMat(ACCESS_READ))[0]), true;
+        return res = saturate_cast<int>(ncvslideio::sum(db.getMat(ACCESS_READ))[0]), true;
     return false;
 }
 #endif
@@ -64,7 +64,7 @@ static bool ipp_countNonZero( Mat &src, int &res )
 
 #if IPP_VERSION_X100 < 201801
     // Poor performance of SSE42
-    if(cv::ipp::getIppTopFeatures() == ippCPUID_SSE42)
+    if(ncvslideio::ipp::getIppTopFeatures() == ippCPUID_SSE42)
         return false;
 #endif
 

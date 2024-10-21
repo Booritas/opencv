@@ -33,7 +33,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Implementation
-namespace cv {
+namespace ncvslideio {
 
 template <typename T>
 DualQuat<T>::DualQuat():w(0), x(0), y(0), z(0), w_(0), x_(0), y_(0), z_(0){}
@@ -71,7 +71,7 @@ DualQuat<T> DualQuat<T>::createFromAngleAxisTrans(const T angle, const Vec<T, 3>
 template <typename T>
 DualQuat<T> DualQuat<T>::createFromMat(InputArray _R)
 {
-    CV_CheckTypeEQ(_R.type(), cv::traits::Type<T>::value, "");
+    CV_CheckTypeEQ(_R.type(), ncvslideio::traits::Type<T>::value, "");
     if (_R.size() != Size(4, 4))
     {
         CV_Error(Error::StsBadArg, "The input matrix must have 4 columns and 4 rows");
@@ -320,8 +320,8 @@ template <typename _Tp>
 Matx<_Tp, 4, 4> jacob_exp(const Quat<_Tp> &q)
 {
     _Tp nv = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
-    _Tp sinc_nv = abs(nv) < cv::DualQuat<_Tp>::CV_DUAL_QUAT_EPS ? _Tp(1.0) - nv * nv * _Tp(1.0/6.0) : std::sin(nv) / nv;
-    _Tp csiii_nv = abs(nv) < cv::DualQuat<_Tp>::CV_DUAL_QUAT_EPS ? -_Tp(1.0/3.0) : (std::cos(nv) - sinc_nv) / nv / nv;
+    _Tp sinc_nv = abs(nv) < ncvslideio::DualQuat<_Tp>::CV_DUAL_QUAT_EPS ? _Tp(1.0) - nv * nv * _Tp(1.0/6.0) : std::sin(nv) / nv;
+    _Tp csiii_nv = abs(nv) < ncvslideio::DualQuat<_Tp>::CV_DUAL_QUAT_EPS ? -_Tp(1.0/3.0) : (std::cos(nv) - sinc_nv) / nv / nv;
     Matx<_Tp, 4, 4> J_exp_quat {
         std::cos(nv), -sinc_nv * q.x,  -sinc_nv * q.y,  -sinc_nv * q.z,
         sinc_nv * q.x, csiii_nv * q.x * q.x + sinc_nv, csiii_nv * q.x * q.y, csiii_nv * q.x * q.z,
@@ -439,8 +439,8 @@ DualQuat<T> DualQuat<T>::dqblend(const DualQuat<T> &q1, const DualQuat<T> &q2, c
 template <typename T>
 DualQuat<T> DualQuat<T>::gdqblend(InputArray _dualquat, InputArray _weight, QuatAssumeType assumeUnit)
 {
-    CV_CheckTypeEQ(_weight.type(), cv::traits::Type<T>::value, "");
-    CV_CheckTypeEQ(_dualquat.type(), CV_MAKETYPE(CV_MAT_DEPTH(cv::traits::Type<T>::value), 8), "");
+    CV_CheckTypeEQ(_weight.type(), ncvslideio::traits::Type<T>::value, "");
+    CV_CheckTypeEQ(_dualquat.type(), CV_MAKETYPE(CV_MAT_DEPTH(ncvslideio::traits::Type<T>::value), 8), "");
     Size dq_s = _dualquat.size();
     if (dq_s != _weight.size() || (dq_s.height != 1 && dq_s.width != 1))
     {
@@ -482,6 +482,6 @@ DualQuat<T> DualQuat<T>::gdqblend(const Vec<DualQuat<T>, cn> &_dualquat, InputAr
     return gdqblend(dualquat_mat, _weight, assumeUnit);
 }
 
-} //namespace cv
+} //namespace ncvslideio
 
 #endif /*OPENCV_CORE_DUALQUATERNION_INL_HPP*/

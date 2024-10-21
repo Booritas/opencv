@@ -10,7 +10,7 @@
 #include "has_non_zero.simd.hpp"
 #include "has_non_zero.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 static HasNonZeroFunc getHasNonZeroTab(int depth)
 {
@@ -52,7 +52,7 @@ static bool ocl_hasNonZero( InputArray _src, bool & res )
 
     size_t globalsize = dbsize * wgs;
     if (k.run(1, &globalsize, &wgs, true))
-        return res = (saturate_cast<int>(cv::sum(db.getMat(ACCESS_READ))[0])>0), true;
+        return res = (saturate_cast<int>(ncvslideio::sum(db.getMat(ACCESS_READ))[0])>0), true;
     return false;
 }
 #endif

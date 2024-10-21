@@ -94,12 +94,12 @@ extern const float icv8x32fSqrTab[];
 #ifdef HAVE_IPP
 static inline IppiInterpolationType ippiGetInterpolation(int inter)
 {
-    inter &= cv::INTER_MAX;
-    return inter == cv::INTER_NEAREST ? ippNearest :
-        inter == cv::INTER_LINEAR ? ippLinear :
-        inter == cv::INTER_CUBIC ? ippCubic :
-        inter == cv::INTER_LANCZOS4 ? ippLanczos :
-        inter == cv::INTER_AREA ? ippSuper :
+    inter &= ncvslideio::INTER_MAX;
+    return inter == ncvslideio::INTER_NEAREST ? ippNearest :
+        inter == ncvslideio::INTER_LINEAR ? ippLinear :
+        inter == ncvslideio::INTER_CUBIC ? ippCubic :
+        inter == ncvslideio::INTER_LANCZOS4 ? ippLanczos :
+        inter == ncvslideio::INTER_AREA ? ippSuper :
         (IppiInterpolationType)-1;
 }
 #endif
@@ -115,15 +115,15 @@ inline bool isStorageOrMat(void * arr)
         return true;
     else if (CV_IS_MAT( arr ))
         return false;
-    CV_Error( cv::Error::StsBadArg, "Destination is not CvMemStorage* nor CvMat*" );
+    CV_Error( ncvslideio::Error::StsBadArg, "Destination is not CvMemStorage* nor CvMat*" );
 }
 
 
-namespace cv {
+namespace ncvslideio {
 
 CV_EXPORTS
-cv::Mutex& getInitializationMutex();  // defined in core module
+ncvslideio::Mutex& getInitializationMutex();  // defined in core module
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif /*__OPENCV_PRECOMP_H__*/

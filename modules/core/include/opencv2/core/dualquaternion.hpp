@@ -29,7 +29,7 @@
 #include <opencv2/core/quaternion.hpp>
 #include <opencv2/core/affine.hpp>
 
-namespace cv{
+namespace ncvslideio{
 //! @addtogroup core_quaternion
 //! @{
 
@@ -72,7 +72,7 @@ template <typename _Tp> std::ostream& operator<<(std::ostream&, const DualQuat<_
  * If you want to create a dual quaternion, you can use:
  *
  * ```
- * using namespace cv;
+ * using namespace ncvslideio;
  * double angle = CV_PI;
  *
  * // create from eight number
@@ -866,7 +866,7 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator+(const T s, const DualQuat<T>&);
+    friend DualQuat<T> ncvslideio::operator+(const T s, const DualQuat<T>&);
 
     /**
      * @brief Addition operator of a dual quaternions and a scalar.
@@ -881,7 +881,7 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator+(const DualQuat<T>&, const T s);
+    friend DualQuat<T> ncvslideio::operator+(const DualQuat<T>&, const T s);
 
     /**
      * @brief Multiplication operator of a scalar and a dual quaternions.
@@ -906,7 +906,7 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator*(const T s, const DualQuat<T>&);
+    friend DualQuat<T> ncvslideio::operator*(const T s, const DualQuat<T>&);
 
     /**
      * @brief Subtraction operator of a dual quaternion and a scalar.
@@ -921,7 +921,7 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator-(const DualQuat<T>&, const T s);
+    friend DualQuat<T> ncvslideio::operator-(const DualQuat<T>&, const T s);
 
     /**
      * @brief Subtraction operator of a scalar and a dual quaternions.
@@ -936,7 +936,7 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator-(const T s, const DualQuat<T>&);
+    friend DualQuat<T> ncvslideio::operator-(const T s, const DualQuat<T>&);
 
     /**
      * @brief Multiplication operator of a dual quaternions and a scalar.
@@ -961,10 +961,10 @@ public:
      * @note the type of scalar should be equal to the dual quaternion.
      */
     template <typename T>
-    friend DualQuat<T> cv::operator*(const DualQuat<T>&, const T s);
+    friend DualQuat<T> ncvslideio::operator*(const DualQuat<T>&, const T s);
 
     template <typename S>
-    friend std::ostream& cv::operator<<(std::ostream&, const DualQuat<S>&);
+    friend std::ostream& ncvslideio::operator<<(std::ostream&, const DualQuat<S>&);
 
 };
 

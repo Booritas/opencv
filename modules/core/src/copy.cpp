@@ -50,7 +50,7 @@
 #include "opencl_kernels_core.hpp"
 
 
-namespace cv
+namespace ncvslideio
 {
 
 template <typename T> static inline
@@ -96,7 +96,7 @@ void scalarToRawData(const Scalar& s, void* _buf, int type, int unroll_to)
         scalarToRawData_<hfloat>(s, (hfloat*)_buf, cn, unroll_to);
         break;
     default:
-        CV_Error(cv::Error::StsUnsupportedFormat,"");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat,"");
     }
 }
 
@@ -733,7 +733,7 @@ Mat repeat(const Mat& src, int ny, int nx)
 }
 
 
-} // cv
+} // ncvslideio
 
 
 /*
@@ -745,7 +745,7 @@ Mat repeat(const Mat& src, int ny, int nx)
  * BORDER_WRAP:          cdefgh|abcdefgh|abcdefg
  * BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
  */
-int cv::borderInterpolate( int p, int len, int borderType )
+int ncvslideio::borderInterpolate( int p, int len, int borderType )
 {
     CV_TRACE_FUNCTION_VERBOSE();
 
@@ -788,15 +788,15 @@ int cv::borderInterpolate( int p, int len, int borderType )
     else if( borderType == BORDER_CONSTANT )
         p = -1;
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown/unsupported border type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown/unsupported border type" );
     return p;
 }
 
 namespace
 {
 
-void copyMakeBorder_8u( const uchar* src, size_t srcstep, cv::Size srcroi,
-                        uchar* dst, size_t dststep, cv::Size dstroi,
+void copyMakeBorder_8u( const uchar* src, size_t srcstep, ncvslideio::Size srcroi,
+                        uchar* dst, size_t dststep, ncvslideio::Size dstroi,
                         int top, int left, int cn, int borderType )
 {
     const int isz = (int)sizeof(int);
@@ -810,21 +810,21 @@ void copyMakeBorder_8u( const uchar* src, size_t srcstep, cv::Size srcroi,
         intMode = true;
     }
 
-    cv::AutoBuffer<int> _tab((dstroi.width - srcroi.width)*cn);
+    ncvslideio::AutoBuffer<int> _tab((dstroi.width - srcroi.width)*cn);
     int* tab = _tab.data();
     int right = dstroi.width - srcroi.width - left;
     int bottom = dstroi.height - srcroi.height - top;
 
     for( i = 0; i < left; i++ )
     {
-        j = cv::borderInterpolate(i - left, srcroi.width, borderType)*cn;
+        j = ncvslideio::borderInterpolate(i - left, srcroi.width, borderType)*cn;
         for( k = 0; k < cn; k++ )
             tab[i*cn + k] = j + k;
     }
 
     for( i = 0; i < right; i++ )
     {
-        j = cv::borderInterpolate(srcroi.width + i, srcroi.width, borderType)*cn;
+        j = ncvslideio::borderInterpolate(srcroi.width + i, srcroi.width, borderType)*cn;
         for( k = 0; k < cn; k++ )
             tab[(i+left)*cn + k] = j + k;
     }
@@ -863,25 +863,25 @@ void copyMakeBorder_8u( const uchar* src, size_t srcstep, cv::Size srcroi,
 
     for( i = 0; i < top; i++ )
     {
-        j = cv::borderInterpolate(i - top, srcroi.height, borderType);
+        j = ncvslideio::borderInterpolate(i - top, srcroi.height, borderType);
         memcpy(dst + i*dststep, dst + (top+j)*dststep, dstroi.width);
     }
 
     dst += dststep*top;
     for( i = 0; i < bottom; i++ )
     {
-        j = cv::borderInterpolate(i + srcroi.height, srcroi.height, borderType);
+        j = ncvslideio::borderInterpolate(i + srcroi.height, srcroi.height, borderType);
         memcpy(dst + (i + srcroi.height)*dststep, dst + j*dststep, dstroi.width);
     }
 }
 
 
-void copyMakeConstBorder_8u( const uchar* src, size_t srcstep, cv::Size srcroi,
-                             uchar* dst, size_t dststep, cv::Size dstroi,
+void copyMakeConstBorder_8u( const uchar* src, size_t srcstep, ncvslideio::Size srcroi,
+                             uchar* dst, size_t dststep, ncvslideio::Size dstroi,
                              int top, int left, int cn, const uchar* value )
 {
     int i, j;
-    cv::AutoBuffer<uchar> _constBuf(dstroi.width*cn);
+    ncvslideio::AutoBuffer<uchar> _constBuf(dstroi.width*cn);
     uchar* constBuf = _constBuf.data();
     int right = dstroi.width - srcroi.width - left;
     int bottom = dstroi.height - srcroi.height - top;
@@ -919,7 +919,7 @@ void copyMakeConstBorder_8u( const uchar* src, size_t srcstep, cv::Size srcroi,
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static bool ocl_copyMakeBorder( InputArray _src, OutputArray _dst, int top, int bottom,
                                 int left, int right, int borderType, const Scalar& value )
@@ -927,7 +927,7 @@ static bool ocl_copyMakeBorder( InputArray _src, OutputArray _dst, int top, int 
     int type = _src.type(), cn = CV_MAT_CN(type), depth = CV_MAT_DEPTH(type),
             rowsPerWI = ocl::Device::getDefault().isIntel() ? 4 : 1;
     bool isolated = (borderType & BORDER_ISOLATED) != 0;
-    borderType &= ~cv::BORDER_ISOLATED;
+    borderType &= ~ncvslideio::BORDER_ISOLATED;
 
     if ( !(borderType == BORDER_CONSTANT || borderType == BORDER_REPLICATE || borderType == BORDER_REFLECT ||
            borderType == BORDER_WRAP || borderType == BORDER_REFLECT_101) ||
@@ -984,7 +984,7 @@ static bool ocl_copyMakeBorder( InputArray _src, OutputArray _dst, int top, int 
 #endif
 
 #ifdef HAVE_IPP
-namespace cv {
+namespace ncvslideio {
 
 static bool ipp_copyMakeBorder( Mat &_src, Mat &_dst, int top, int bottom,
                                 int left, int right, int _borderType, const Scalar& value )
@@ -1018,7 +1018,7 @@ static bool ipp_copyMakeBorder( Mat &_src, Mat &_dst, int top, int bottom,
 }
 #endif
 
-void cv::copyMakeBorder( InputArray _src, OutputArray _dst, int top, int bottom,
+void ncvslideio::copyMakeBorder( InputArray _src, OutputArray _dst, int top, int bottom,
                          int left, int right, int borderType, const Scalar& value )
 {
     CV_INSTRUMENT_REGION();
@@ -1123,7 +1123,7 @@ cvCopy( const void* srcarr, void* dstarr, const void* maskarr )
         }
         return;
     }
-    cv::Mat src = cv::cvarrToMat(srcarr, false, true, 1), dst = cv::cvarrToMat(dstarr, false, true, 1);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr, false, true, 1), dst = ncvslideio::cvarrToMat(dstarr, false, true, 1);
     CV_Assert( src.depth() == dst.depth() && src.size == dst.size );
 
     int coi1 = 0, coi2 = 0;
@@ -1138,7 +1138,7 @@ cvCopy( const void* srcarr, void* dstarr, const void* maskarr )
             (coi2 != 0 || dst.channels() == 1) );
 
         int pair[] = { std::max(coi1-1, 0), std::max(coi2-1, 0) };
-        cv::mixChannels( &src, 1, &dst, 1, pair, 1 );
+        ncvslideio::mixChannels( &src, 1, &dst, 1, pair, 1 );
         return;
     }
     else
@@ -1147,17 +1147,17 @@ cvCopy( const void* srcarr, void* dstarr, const void* maskarr )
     if( !maskarr )
         src.copyTo(dst);
     else
-        src.copyTo(dst, cv::cvarrToMat(maskarr));
+        src.copyTo(dst, ncvslideio::cvarrToMat(maskarr));
 }
 
 CV_IMPL void
 cvSet( void* arr, CvScalar value, const void* maskarr )
 {
-    cv::Mat m = cv::cvarrToMat(arr);
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(arr);
     if( !maskarr )
         m = value;
     else
-        m.setTo(cv::Scalar(value), cv::cvarrToMat(maskarr));
+        m.setTo(ncvslideio::Scalar(value), ncvslideio::cvarrToMat(maskarr));
 }
 
 CV_IMPL void
@@ -1171,32 +1171,32 @@ cvSetZero( CvArr* arr )
             memset( mat1->hashtable, 0, mat1->hashsize*sizeof(mat1->hashtable[0]));
         return;
     }
-    cv::Mat m = cv::cvarrToMat(arr);
-    m = cv::Scalar(0);
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(arr);
+    m = ncvslideio::Scalar(0);
 }
 
 CV_IMPL void
 cvFlip( const CvArr* srcarr, CvArr* dstarr, int flip_mode )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr);
-    cv::Mat dst;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr);
+    ncvslideio::Mat dst;
 
     if (!dstarr)
       dst = src;
     else
-      dst = cv::cvarrToMat(dstarr);
+      dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.type() == dst.type() && src.size() == dst.size() );
-    cv::flip( src, dst, flip_mode );
+    ncvslideio::flip( src, dst, flip_mode );
 }
 
 CV_IMPL void
 cvRepeat( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.type() == dst.type() &&
         dst.rows % src.rows == 0 && dst.cols % src.cols == 0 );
-    cv::repeat(src, dst.rows/src.rows, dst.cols/src.cols, dst);
+    ncvslideio::repeat(src, dst.rows/src.rows, dst.cols/src.cols, dst);
 }
 
 #endif  // OPENCV_EXCLUDE_C_API

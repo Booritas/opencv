@@ -9,18 +9,18 @@
 #ifndef OPENCV_EXCLUDE_C_API
 // glue
 
-CvMatND cvMatND(const cv::Mat& m)
+CvMatND cvMatND(const ncvslideio::Mat& m)
 {
     CvMatND self;
     cvInitMatNDHeader(&self, m.dims, m.size, m.type(), m.data );
     int i, d = m.dims;
     for( i = 0; i < d; i++ )
         self.dim[i].step = (int)m.step[i];
-    self.type |= m.flags & cv::Mat::CONTINUOUS_FLAG;
+    self.type |= m.flags & ncvslideio::Mat::CONTINUOUS_FLAG;
     return self;
 }
 
-_IplImage cvIplImage(const cv::Mat& m)
+_IplImage cvIplImage(const ncvslideio::Mat& m)
 {
     _IplImage self;
     CV_Assert( m.dims <= 2 );
@@ -29,7 +29,7 @@ _IplImage cvIplImage(const cv::Mat& m)
     return self;
 }
 
-namespace cv {
+namespace ncvslideio {
 
 static Mat cvMatToMat(const CvMat* m, bool copyData)
 {
@@ -163,7 +163,7 @@ Mat cvarrToMat(const CvArr* arr, bool copyData,
     {
         const IplImage* iplimg = (const IplImage*)arr;
         if( coiMode == 0 && iplimg->roi && iplimg->roi->coi > 0 )
-            CV_Error(cv::Error::BadCOI, "COI is not supported by the function");
+            CV_Error(ncvslideio::Error::BadCOI, "COI is not supported by the function");
         return iplImageToMat(iplimg, copyData);
     }
     if( CV_IS_SEQ(arr) )
@@ -187,7 +187,7 @@ Mat cvarrToMat(const CvArr* arr, bool copyData,
         cvCvtSeqToArray(seq, buf.ptr(), CV_WHOLE_SEQ);
         return buf;
     }
-    CV_Error(cv::Error::StsBadArg, "Unknown array type");
+    CV_Error(ncvslideio::Error::StsBadArg, "Unknown array type");
 }
 
 void extractImageCOI(const CvArr* arr, OutputArray _ch, int coi)
@@ -218,26 +218,26 @@ void insertImageCOI(InputArray _ch, CvArr* arr, int coi)
     mixChannels( &ch, 1, &mat, 1, _pairs, 1 );
 }
 
-} // cv::
+} // ncvslideio::
 
 // operations
 
 CV_IMPL void cvSetIdentity( CvArr* arr, CvScalar value )
 {
-    cv::Mat m = cv::cvarrToMat(arr);
-    cv::setIdentity(m, value);
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(arr);
+    ncvslideio::setIdentity(m, value);
 }
 
 
 CV_IMPL CvScalar cvTrace( const CvArr* arr )
 {
-    return cvScalar(cv::trace(cv::cvarrToMat(arr)));
+    return cvScalar(ncvslideio::trace(ncvslideio::cvarrToMat(arr)));
 }
 
 
 CV_IMPL void cvTranspose( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.rows == dst.cols && src.cols == dst.rows && src.type() == dst.type() );
     transpose( src, dst );
@@ -246,39 +246,39 @@ CV_IMPL void cvTranspose( const CvArr* srcarr, CvArr* dstarr )
 
 CV_IMPL void cvCompleteSymm( CvMat* matrix, int LtoR )
 {
-    cv::Mat m = cv::cvarrToMat(matrix);
-    cv::completeSymm( m, LtoR != 0 );
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(matrix);
+    ncvslideio::completeSymm( m, LtoR != 0 );
 }
 
 
 CV_IMPL void cvCrossProduct( const CvArr* srcAarr, const CvArr* srcBarr, CvArr* dstarr )
 {
-    cv::Mat srcA = cv::cvarrToMat(srcAarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat srcA = ncvslideio::cvarrToMat(srcAarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( srcA.size() == dst.size() && srcA.type() == dst.type() );
-    srcA.cross(cv::cvarrToMat(srcBarr)).copyTo(dst);
+    srcA.cross(ncvslideio::cvarrToMat(srcBarr)).copyTo(dst);
 }
 
 
 CV_IMPL void
 cvReduce( const CvArr* srcarr, CvArr* dstarr, int dim, int op )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     if( dim < 0 )
         dim = src.rows > dst.rows ? 0 : src.cols > dst.cols ? 1 : dst.cols == 1;
 
     if( dim > 1 )
-        CV_Error( cv::Error::StsOutOfRange, "The reduced dimensionality index is out of range" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "The reduced dimensionality index is out of range" );
 
     if( (dim == 0 && (dst.cols != src.cols || dst.rows != 1)) ||
         (dim == 1 && (dst.rows != src.rows || dst.cols != 1)) )
-        CV_Error( cv::Error::StsBadSize, "The output array size is incorrect" );
+        CV_Error( ncvslideio::Error::StsBadSize, "The output array size is incorrect" );
 
     if( src.channels() != dst.channels() )
-        CV_Error( cv::Error::StsUnmatchedFormats, "Input and output arrays must have the same number of channels" );
+        CV_Error( ncvslideio::Error::StsUnmatchedFormats, "Input and output arrays must have the same number of channels" );
 
-    cv::reduce(src, dst, dim, op, dst.type());
+    ncvslideio::reduce(src, dst, dim, op, dst.type());
 }
 
 
@@ -333,7 +333,7 @@ cvRange( CvArr* arr, double start, double end )
                 fdata[j] = (float)val;
     }
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "The function only supports 32sC1 and 32fC1 datatypes" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "The function only supports 32sC1 and 32fC1 datatypes" );
 
     return arr;
 }
@@ -342,21 +342,21 @@ cvRange( CvArr* arr, double start, double end )
 CV_IMPL void
 cvSort( const CvArr* _src, CvArr* _dst, CvArr* _idx, int flags )
 {
-    cv::Mat src = cv::cvarrToMat(_src);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(_src);
 
     if( _idx )
     {
-        cv::Mat idx0 = cv::cvarrToMat(_idx), idx = idx0;
+        ncvslideio::Mat idx0 = ncvslideio::cvarrToMat(_idx), idx = idx0;
         CV_Assert( src.size() == idx.size() && idx.type() == CV_32S && src.data != idx.data );
-        cv::sortIdx( src, idx, flags );
+        ncvslideio::sortIdx( src, idx, flags );
         CV_Assert( idx0.data == idx.data );
     }
 
     if( _dst )
     {
-        cv::Mat dst0 = cv::cvarrToMat(_dst), dst = dst0;
+        ncvslideio::Mat dst0 = ncvslideio::cvarrToMat(_dst), dst = dst0;
         CV_Assert( src.size() == dst.size() && src.type() == dst.type() );
-        cv::sort( src, dst, flags );
+        ncvslideio::sort( src, dst, flags );
         CV_Assert( dst0.data == dst.data );
     }
 }
@@ -366,10 +366,10 @@ cvKMeans2( const CvArr* _samples, int cluster_count, CvArr* _labels,
            CvTermCriteria termcrit, int attempts, CvRNG*,
            int flags, CvArr* _centers, double* _compactness )
 {
-    cv::Mat data = cv::cvarrToMat(_samples), labels = cv::cvarrToMat(_labels), centers;
+    ncvslideio::Mat data = ncvslideio::cvarrToMat(_samples), labels = ncvslideio::cvarrToMat(_labels), centers;
     if( _centers )
     {
-        centers = cv::cvarrToMat(_centers);
+        centers = ncvslideio::cvarrToMat(_centers);
 
         centers = centers.reshape(1);
         data = data.reshape(1);
@@ -383,8 +383,8 @@ cvKMeans2( const CvArr* _samples, int cluster_count, CvArr* _labels,
         (labels.cols == 1 || labels.rows == 1) &&
         labels.cols + labels.rows - 1 == data.rows );
 
-    double compactness = cv::kmeans(data, cluster_count, labels, termcrit, attempts,
-                                    flags, _centers ? cv::_OutputArray(centers) : cv::_OutputArray() );
+    double compactness = ncvslideio::kmeans(data, cluster_count, labels, termcrit, attempts,
+                                    flags, _centers ? ncvslideio::_OutputArray(centers) : ncvslideio::_OutputArray() );
     if( _compactness )
         *_compactness = compactness;
     return 1;

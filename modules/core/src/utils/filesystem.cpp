@@ -44,7 +44,7 @@
 
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-namespace cv { namespace utils { namespace fs {
+namespace ncvslideio { namespace utils { namespace fs {
 
 #ifdef _WIN32
 static const char native_separator = '\\';
@@ -58,7 +58,7 @@ bool isPathSeparator(char c)
     return c == '/' || c == '\\';
 }
 
-cv::String join(const cv::String& base, const cv::String& path)
+ncvslideio::String join(const ncvslideio::String& base, const ncvslideio::String& path)
 {
     if (base.empty())
         return path;
@@ -83,7 +83,7 @@ cv::String join(const cv::String& base, const cv::String& path)
     return result;
 }
 
-CV_EXPORTS cv::String getParent(const cv::String &path)
+CV_EXPORTS ncvslideio::String getParent(const ncvslideio::String &path)
 {
     std::string::size_type loc = path.find_last_of("/\\");
     if (loc == std::string::npos)
@@ -101,9 +101,9 @@ CV_EXPORTS std::wstring getParent(const std::wstring& path)
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-cv::String canonical(const cv::String& path)
+ncvslideio::String canonical(const ncvslideio::String& path)
 {
-    cv::String result;
+    ncvslideio::String result;
 #ifdef _WIN32
     const char* result_str = _fullpath(NULL, path.c_str(), 0);
 #else
@@ -111,14 +111,14 @@ cv::String canonical(const cv::String& path)
 #endif
     if (result_str)
     {
-        result = cv::String(result_str);
+        result = ncvslideio::String(result_str);
         free((void*)result_str);
     }
     return result.empty() ? path : result;
 }
 
 
-bool exists(const cv::String& path)
+bool exists(const ncvslideio::String& path)
 {
     CV_INSTRUMENT_REGION();
 
@@ -143,14 +143,14 @@ bool exists(const cv::String& path)
 #endif
 }
 
-CV_EXPORTS void remove_all(const cv::String& path)
+CV_EXPORTS void remove_all(const ncvslideio::String& path)
 {
     if (!exists(path))
         return;
     if (isDirectory(path))
     {
         std::vector<String> entries;
-        utils::fs::glob(path, cv::String(), entries, false, true);
+        utils::fs::glob(path, ncvslideio::String(), entries, false, true);
         for (size_t i = 0; i < entries.size(); i++)
         {
             const String& e = entries[i];
@@ -181,18 +181,18 @@ CV_EXPORTS void remove_all(const cv::String& path)
 }
 
 
-cv::String getcwd()
+ncvslideio::String getcwd()
 {
     CV_INSTRUMENT_REGION();
-    cv::AutoBuffer<char, 4096> buf;
+    ncvslideio::AutoBuffer<char, 4096> buf;
 #if defined WIN32 || defined _WIN32 || defined WINCE
 #ifdef WINRT
-    return cv::String();
+    return ncvslideio::String();
 #else
     DWORD sz = GetCurrentDirectoryA(0, NULL);
     buf.allocate((size_t)sz);
     sz = GetCurrentDirectoryA((DWORD)buf.size(), buf.data());
-    return cv::String(buf.data(), (size_t)sz);
+    return ncvslideio::String(buf.data(), (size_t)sz);
 #endif
 #elif defined __linux__ || defined __APPLE__ || defined __HAIKU__ || defined __FreeBSD__ || defined __EMSCRIPTEN__ || defined __QNX__
     for(;;)
@@ -205,18 +205,18 @@ cv::String getcwd()
                 buf.allocate(buf.size() * 2);
                 continue;
             }
-            return cv::String();
+            return ncvslideio::String();
         }
         break;
     }
-    return cv::String(buf.data(), (size_t)strlen(buf.data()));
+    return ncvslideio::String(buf.data(), (size_t)strlen(buf.data()));
 #else
-    return cv::String();
+    return ncvslideio::String();
 #endif
 }
 
 
-bool createDirectory(const cv::String& path)
+bool createDirectory(const ncvslideio::String& path)
 {
     CV_INSTRUMENT_REGION();
 #if defined WIN32 || defined _WIN32 || defined WINCE
@@ -241,9 +241,9 @@ bool createDirectory(const cv::String& path)
     return true;
 }
 
-bool createDirectories(const cv::String& path_)
+bool createDirectories(const ncvslideio::String& path_)
 {
-    cv::String path = path_;
+    ncvslideio::String path = path_;
     for (;;)
     {
         char last_char = path.empty() ? 0 : path[path.length() - 1];
@@ -261,11 +261,11 @@ bool createDirectories(const cv::String& path_)
         return true;
 
     size_t pos = path.rfind('/');
-    if (pos == cv::String::npos)
+    if (pos == ncvslideio::String::npos)
         pos = path.rfind('\\');
-    if (pos != cv::String::npos)
+    if (pos != ncvslideio::String::npos)
     {
-        cv::String parent_directory = path.substr(0, pos);
+        ncvslideio::String parent_directory = path.substr(0, pos);
         if (!parent_directory.empty())
         {
             if (!createDirectories(parent_directory))
@@ -427,7 +427,7 @@ void FileLock::unlock_shared() { CV_Assert(pImpl->unlock_shared()); }
 
 
 
-cv::String getCacheDirectory(const char* sub_directory_name, const char* configuration_name)
+ncvslideio::String getCacheDirectory(const char* sub_directory_name, const char* configuration_name)
 {
     String cache_path;
     if (configuration_name)
@@ -436,7 +436,7 @@ cv::String getCacheDirectory(const char* sub_directory_name, const char* configu
     }
     if (cache_path.empty())
     {
-        cv::String default_cache_path;
+        ncvslideio::String default_cache_path;
 #ifdef _WIN32
         char tmp_path_buf[MAX_PATH+1] = {0};
         DWORD res = GetTempPath(MAX_PATH, tmp_path_buf);
@@ -472,8 +472,8 @@ cv::String getCacheDirectory(const char* sub_directory_name, const char* configu
             const char* home_env = getenv("HOME");
             if (home_env && home_env[0] && utils::fs::isDirectory(home_env))
             {
-                cv::String home_path = home_env;
-                cv::String home_cache_path = utils::fs::join(home_path, ".cache/");
+                ncvslideio::String home_path = home_env;
+                ncvslideio::String home_cache_path = utils::fs::join(home_path, ".cache/");
                 if (utils::fs::isDirectory(home_cache_path))
                 {
                     default_cache_path = home_cache_path;
@@ -502,12 +502,12 @@ cv::String getCacheDirectory(const char* sub_directory_name, const char* configu
         {
             if (utils::fs::isDirectory(default_cache_path))
             {
-                cv::String default_cache_path_base = utils::fs::join(default_cache_path, "opencv");
+                ncvslideio::String default_cache_path_base = utils::fs::join(default_cache_path, "opencv");
                 default_cache_path = utils::fs::join(default_cache_path_base, "4.x" CV_VERSION_STATUS);
                 if (utils::getConfigurationParameterBool("OPENCV_CACHE_SHOW_CLEANUP_MESSAGE", true)
                     && !utils::fs::isDirectory(default_cache_path))
                 {
-                    std::vector<cv::String> existedCacheDirs;
+                    std::vector<ncvslideio::String> existedCacheDirs;
                     try
                     {
                         utils::fs::glob_relative(default_cache_path_base, "*", existedCacheDirs, false, true);
@@ -529,7 +529,7 @@ cv::String getCacheDirectory(const char* sub_directory_name, const char* configu
                     }
                 }
                 if (sub_directory_name && sub_directory_name[0] != '\0')
-                    default_cache_path = utils::fs::join(default_cache_path, cv::String(sub_directory_name) + native_separator);
+                    default_cache_path = utils::fs::join(default_cache_path, ncvslideio::String(sub_directory_name) + native_separator);
                 if (!utils::fs::createDirectories(default_cache_path))
                 {
                     CV_LOG_DEBUG(NULL, "Can't create OpenCV cache sub-directory: " << default_cache_path);
@@ -576,13 +576,13 @@ cv::String getCacheDirectory(const char* sub_directory_name, const char* configu
 
 #else
 #define NOT_IMPLEMENTED CV_Error(Error::StsNotImplemented, "");
-cv::String canonical(const cv::String& /*path*/) { NOT_IMPLEMENTED }
-bool exists(const cv::String& /*path*/) { NOT_IMPLEMENTED }
-void remove_all(const cv::String& /*path*/) { NOT_IMPLEMENTED }
-cv::String getcwd() { NOT_IMPLEMENTED }
-bool createDirectory(const cv::String& /*path*/) { NOT_IMPLEMENTED }
-bool createDirectories(const cv::String& /*path*/) { NOT_IMPLEMENTED }
-cv::String getCacheDirectory(const char* /*sub_directory_name*/, const char* /*configuration_name = NULL*/) { NOT_IMPLEMENTED }
+ncvslideio::String canonical(const ncvslideio::String& /*path*/) { NOT_IMPLEMENTED }
+bool exists(const ncvslideio::String& /*path*/) { NOT_IMPLEMENTED }
+void remove_all(const ncvslideio::String& /*path*/) { NOT_IMPLEMENTED }
+ncvslideio::String getcwd() { NOT_IMPLEMENTED }
+bool createDirectory(const ncvslideio::String& /*path*/) { NOT_IMPLEMENTED }
+bool createDirectories(const ncvslideio::String& /*path*/) { NOT_IMPLEMENTED }
+ncvslideio::String getCacheDirectory(const char* /*sub_directory_name*/, const char* /*configuration_name = NULL*/) { NOT_IMPLEMENTED }
 #undef NOT_IMPLEMENTED
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 

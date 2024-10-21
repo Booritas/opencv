@@ -12,7 +12,7 @@
 
 #define IPP_DISABLE_CVTCOLOR_GRAY2BGR_8UC3 1
 
-namespace cv {
+namespace ncvslideio {
 
 //
 // IPP functions
@@ -616,4 +616,4 @@ void cvtColormRGBA2RGBA( InputArray _src, OutputArray _dst)
     hal::cvtMultipliedRGBAtoRGBA(h.src.data, h.src.step, h.dst.data, h.dst.step, h.src.cols, h.src.rows);
 }
 
-} // namespace cv
+} // namespace ncvslideio

@@ -48,7 +48,7 @@
 #include <algorithm>
 #include "opencv2/core/utility.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED

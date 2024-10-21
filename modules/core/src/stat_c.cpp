@@ -9,14 +9,14 @@
 
 CV_IMPL CvScalar cvSum( const CvArr* srcarr )
 {
-    cv::Scalar sum = cv::sum(cv::cvarrToMat(srcarr, false, true, 1));
+    ncvslideio::Scalar sum = ncvslideio::sum(ncvslideio::cvarrToMat(srcarr, false, true, 1));
     if( CV_IS_IMAGE(srcarr) )
     {
         int coi = cvGetImageCOI((IplImage*)srcarr);
         if( coi )
         {
             CV_Assert( 0 < coi && coi <= 4 );
-            sum = cv::Scalar(sum[coi-1]);
+            sum = ncvslideio::Scalar(sum[coi-1]);
         }
     }
     return cvScalar(sum);
@@ -24,9 +24,9 @@ CV_IMPL CvScalar cvSum( const CvArr* srcarr )
 
 CV_IMPL int cvCountNonZero( const CvArr* imgarr )
 {
-    cv::Mat img = cv::cvarrToMat(imgarr, false, true, 1);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(imgarr, false, true, 1);
     if( img.channels() > 1 )
-        cv::extractImageCOI(imgarr, img);
+        ncvslideio::extractImageCOI(imgarr, img);
     return countNonZero(img);
 }
 
@@ -34,15 +34,15 @@ CV_IMPL int cvCountNonZero( const CvArr* imgarr )
 CV_IMPL  CvScalar
 cvAvg( const void* imgarr, const void* maskarr )
 {
-    cv::Mat img = cv::cvarrToMat(imgarr, false, true, 1);
-    cv::Scalar mean = !maskarr ? cv::mean(img) : cv::mean(img, cv::cvarrToMat(maskarr));
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(imgarr, false, true, 1);
+    ncvslideio::Scalar mean = !maskarr ? ncvslideio::mean(img) : ncvslideio::mean(img, ncvslideio::cvarrToMat(maskarr));
     if( CV_IS_IMAGE(imgarr) )
     {
         int coi = cvGetImageCOI((IplImage*)imgarr);
         if( coi )
         {
             CV_Assert( 0 < coi && coi <= 4 );
-            mean = cv::Scalar(mean[coi-1]);
+            mean = ncvslideio::Scalar(mean[coi-1]);
         }
     }
     return cvScalar(mean);
@@ -52,13 +52,13 @@ cvAvg( const void* imgarr, const void* maskarr )
 CV_IMPL  void
 cvAvgSdv( const CvArr* imgarr, CvScalar* _mean, CvScalar* _sdv, const void* maskarr )
 {
-    cv::Scalar mean, sdv;
+    ncvslideio::Scalar mean, sdv;
 
-    cv::Mat mask;
+    ncvslideio::Mat mask;
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
+        mask = ncvslideio::cvarrToMat(maskarr);
 
-    cv::meanStdDev(cv::cvarrToMat(imgarr, false, true, 1), mean, sdv, mask );
+    ncvslideio::meanStdDev(ncvslideio::cvarrToMat(imgarr, false, true, 1), mean, sdv, mask );
 
     if( CV_IS_IMAGE(imgarr) )
     {
@@ -66,15 +66,15 @@ cvAvgSdv( const CvArr* imgarr, CvScalar* _mean, CvScalar* _sdv, const void* mask
         if( coi )
         {
             CV_Assert( 0 < coi && coi <= 4 );
-            mean = cv::Scalar(mean[coi-1]);
-            sdv = cv::Scalar(sdv[coi-1]);
+            mean = ncvslideio::Scalar(mean[coi-1]);
+            sdv = ncvslideio::Scalar(sdv[coi-1]);
         }
     }
 
     if( _mean )
-        *(cv::Scalar*)_mean = mean;
+        *(ncvslideio::Scalar*)_mean = mean;
     if( _sdv )
-        *(cv::Scalar*)_sdv = sdv;
+        *(ncvslideio::Scalar*)_sdv = sdv;
 }
 
 
@@ -82,42 +82,42 @@ CV_IMPL void
 cvMinMaxLoc( const void* imgarr, double* _minVal, double* _maxVal,
              CvPoint* _minLoc, CvPoint* _maxLoc, const void* maskarr )
 {
-    cv::Mat mask, img = cv::cvarrToMat(imgarr, false, true, 1);
+    ncvslideio::Mat mask, img = ncvslideio::cvarrToMat(imgarr, false, true, 1);
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
+        mask = ncvslideio::cvarrToMat(maskarr);
     if( img.channels() > 1 )
-        cv::extractImageCOI(imgarr, img);
+        ncvslideio::extractImageCOI(imgarr, img);
 
-    cv::minMaxLoc( img, _minVal, _maxVal,
-                   (cv::Point*)_minLoc, (cv::Point*)_maxLoc, mask );
+    ncvslideio::minMaxLoc( img, _minVal, _maxVal,
+                   (ncvslideio::Point*)_minLoc, (ncvslideio::Point*)_maxLoc, mask );
 }
 
 
 CV_IMPL  double
 cvNorm( const void* imgA, const void* imgB, int normType, const void* maskarr )
 {
-    cv::Mat a, mask;
+    ncvslideio::Mat a, mask;
     if( !imgA )
     {
         imgA = imgB;
         imgB = 0;
     }
 
-    a = cv::cvarrToMat(imgA, false, true, 1);
+    a = ncvslideio::cvarrToMat(imgA, false, true, 1);
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
+        mask = ncvslideio::cvarrToMat(maskarr);
 
     if( a.channels() > 1 && CV_IS_IMAGE(imgA) && cvGetImageCOI((const IplImage*)imgA) > 0 )
-        cv::extractImageCOI(imgA, a);
+        ncvslideio::extractImageCOI(imgA, a);
 
     if( !imgB )
-        return !maskarr ? cv::norm(a, normType) : cv::norm(a, normType, mask);
+        return !maskarr ? ncvslideio::norm(a, normType) : ncvslideio::norm(a, normType, mask);
 
-    cv::Mat b = cv::cvarrToMat(imgB, false, true, 1);
+    ncvslideio::Mat b = ncvslideio::cvarrToMat(imgB, false, true, 1);
     if( b.channels() > 1 && CV_IS_IMAGE(imgB) && cvGetImageCOI((const IplImage*)imgB) > 0 )
-        cv::extractImageCOI(imgB, b);
+        ncvslideio::extractImageCOI(imgB, b);
 
-    return !maskarr ? cv::norm(a, b, normType) : cv::norm(a, b, normType, mask);
+    return !maskarr ? ncvslideio::norm(a, b, normType) : ncvslideio::norm(a, b, normType, mask);
 }
 
 #endif  // OPENCV_EXCLUDE_C_API

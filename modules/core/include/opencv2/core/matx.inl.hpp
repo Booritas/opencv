@@ -11,7 +11,7 @@
 
 #include "opencv2/core/matx.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //==============================================================================
@@ -516,7 +516,7 @@ Vec<_Tp, n> Matx<_Tp, m, n>::solve(const Vec<_Tp, m>& rhs, int method) const
 template<typename _Tp, int m> static inline
 double determinant(const Matx<_Tp, m, m>& a)
 {
-    return cv::internal::Matx_DetOp<_Tp, m>()(a);
+    return ncvslideio::internal::Matx_DetOp<_Tp, m>()(a);
 }
 
 template<typename _Tp, int m, int n> static inline
@@ -868,25 +868,25 @@ Vec<_Tp, cn> Vec<_Tp, cn>::mul(const Vec<_Tp, cn>& v) const
 template<> inline
 Vec<float, 2> Vec<float, 2>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return ncvslideio::internal::conjugate(*this);
 }
 
 template<> inline
 Vec<double, 2> Vec<double, 2>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return ncvslideio::internal::conjugate(*this);
 }
 
 template<> inline
 Vec<float, 4> Vec<float, 4>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return ncvslideio::internal::conjugate(*this);
 }
 
 template<> inline
 Vec<double, 4> Vec<double, 4>::conj() const
 {
-    return cv::internal::conjugate(*this);
+    return ncvslideio::internal::conjugate(*this);
 }
 
 template<typename _Tp, int cn> inline
@@ -1110,6 +1110,6 @@ template<typename _Tp> inline Vec<_Tp, 4>& operator *= (Vec<_Tp, 4>& v1, const V
     return v1;
 }
 
-} // cv::
+} // ncvslideio::
 
 #endif // OPENCV_CORE_MATX_INL_HPP

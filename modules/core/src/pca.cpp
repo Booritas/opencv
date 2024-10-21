@@ -47,7 +47,7 @@
 *                                          PCA                                           *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 PCA::PCA() {}
@@ -163,9 +163,9 @@ void PCA::read(const FileNode& fn)
     CV_Assert( !fn.empty() );
     CV_Assert( (String)fn["name"] == "PCA" );
 
-    cv::read(fn["vectors"], eigenvectors);
-    cv::read(fn["values"], eigenvalues);
-    cv::read(fn["mean"], mean);
+    ncvslideio::read(fn["vectors"], eigenvectors);
+    ncvslideio::read(fn["values"], eigenvalues);
+    ncvslideio::read(fn["mean"], mean);
 }
 
 template <typename T>
@@ -349,7 +349,7 @@ Mat PCA::backProject(InputArray data) const
 
 }
 
-void cv::PCACompute(InputArray data, InputOutputArray mean,
+void ncvslideio::PCACompute(InputArray data, InputOutputArray mean,
                     OutputArray eigenvectors, int maxComponents)
 {
     CV_INSTRUMENT_REGION();
@@ -360,7 +360,7 @@ void cv::PCACompute(InputArray data, InputOutputArray mean,
     pca.eigenvectors.copyTo(eigenvectors);
 }
 
-void cv::PCACompute(InputArray data, InputOutputArray mean,
+void ncvslideio::PCACompute(InputArray data, InputOutputArray mean,
                     OutputArray eigenvectors, OutputArray eigenvalues,
                     int maxComponents)
 {
@@ -373,7 +373,7 @@ void cv::PCACompute(InputArray data, InputOutputArray mean,
     pca.eigenvalues.copyTo(eigenvalues);
 }
 
-void cv::PCACompute(InputArray data, InputOutputArray mean,
+void ncvslideio::PCACompute(InputArray data, InputOutputArray mean,
                     OutputArray eigenvectors, double retainedVariance)
 {
     CV_INSTRUMENT_REGION();
@@ -384,7 +384,7 @@ void cv::PCACompute(InputArray data, InputOutputArray mean,
     pca.eigenvectors.copyTo(eigenvectors);
 }
 
-void cv::PCACompute(InputArray data, InputOutputArray mean,
+void ncvslideio::PCACompute(InputArray data, InputOutputArray mean,
                     OutputArray eigenvectors, OutputArray eigenvalues,
                     double retainedVariance)
 {
@@ -397,7 +397,7 @@ void cv::PCACompute(InputArray data, InputOutputArray mean,
     pca.eigenvalues.copyTo(eigenvalues);
 }
 
-void cv::PCAProject(InputArray data, InputArray mean,
+void ncvslideio::PCAProject(InputArray data, InputArray mean,
                     InputArray eigenvectors, OutputArray result)
 {
     CV_INSTRUMENT_REGION();
@@ -408,7 +408,7 @@ void cv::PCAProject(InputArray data, InputArray mean,
     pca.project(data, result);
 }
 
-void cv::PCABackProject(InputArray data, InputArray mean,
+void ncvslideio::PCABackProject(InputArray data, InputArray mean,
                     InputArray eigenvectors, OutputArray result)
 {
     CV_INSTRUMENT_REGION();

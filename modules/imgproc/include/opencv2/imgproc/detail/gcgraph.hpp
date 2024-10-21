@@ -44,7 +44,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace detail {
+namespace ncvslideio { namespace detail {
 template <class TWeight> class GCGraph
 {
 public:
@@ -387,7 +387,7 @@ bool GCGraph<TWeight>::inSourceSegment( int i )
     return vtcs[i].t == 0;
 }
 
-}} // namespace detail, cv
+}} // namespace detail, ncvslideio
 
 
 //! @endcond

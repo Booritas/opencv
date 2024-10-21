@@ -130,6 +130,6 @@ public:
     virtual const std::string getName() const override;
 };
 
-}} // cv::highgui_backend::
+}} // ncvslideio::highgui_backend::
 
 #endif

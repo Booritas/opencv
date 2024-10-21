@@ -795,4 +795,4 @@ const std::string FramebufferBackend::getName() const
     return "FB";
 }
 
-}} // cv::highgui_backend::
+}} // ncvslideio::highgui_backend::

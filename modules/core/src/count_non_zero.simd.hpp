@@ -4,7 +4,7 @@
 
 #include "precomp.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 typedef int (*CountNonZeroFunc)(const uchar*, int);
 

@@ -5,7 +5,7 @@
 #include "precomp.hpp"
 #include "persistence.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 void write( FileStorage& fs, const String& name, const Mat& m )
@@ -243,7 +243,7 @@ void read(const FileNode& node, DMatch& value, const DMatch& default_value)
 void write( FileStorage& fs, const std::string& name, const std::vector<KeyPoint>& vec)
 {
     // from template implementation
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
     write(fs, vec);
 }
 
@@ -280,7 +280,7 @@ void read(const FileNode& node, std::vector<KeyPoint>& keypoints)
 void write( FileStorage& fs, const std::string& name, const std::vector<DMatch>& vec)
 {
     // from template implementation
-    cv::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
+    ncvslideio::internal::WriteStructContext ws(fs, name, FileNode::SEQ);
     write(fs, vec);
 }
 

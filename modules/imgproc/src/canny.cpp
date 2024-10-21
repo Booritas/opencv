@@ -47,7 +47,7 @@
 
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 #ifdef HAVE_IPP
@@ -57,7 +57,7 @@ static bool ipp_Canny(const Mat& src , const Mat& dx_, const Mat& dy_, Mat& dst,
     CV_INSTRUMENT_REGION_IPP();
 
 #if IPP_DISABLE_PERF_CANNY_MT
-    if(cv::getNumThreads()>1)
+    if(ncvslideio::getNumThreads()>1)
         return false;
 #endif
 
@@ -844,7 +844,7 @@ void Canny( InputArray _src, OutputArray _dst,
     }
 
     if ((aperture_size & 1) == 0 || (aperture_size != -1 && (aperture_size < 3 || aperture_size > 7)))
-        CV_Error(cv::Error::StsBadFlag, "Aperture size should be odd between 3 and 7");
+        CV_Error(ncvslideio::Error::StsBadFlag, "Aperture size should be odd between 3 and 7");
 
     if (aperture_size == 7)
     {
@@ -1002,15 +1002,15 @@ void Canny( InputArray _dx, InputArray _dy, OutputArray _dst,
     parallel_for_(Range(0, dx.rows), finalPass(map, dst), dx.total()/(double)(1<<16));
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
 void cvCanny( const CvArr* image, CvArr* edges, double threshold1,
               double threshold2, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(image), dst = cv::cvarrToMat(edges);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(image), dst = ncvslideio::cvarrToMat(edges);
     CV_Assert( src.size == dst.size && src.depth() == CV_8U && dst.type() == CV_8U );
 
-    cv::Canny(src, dst, threshold1, threshold2, aperture_size & 255,
+    ncvslideio::Canny(src, dst, threshold1, threshold2, aperture_size & 255,
               (aperture_size & CV_CANNY_L2_GRADIENT) != 0);
 }
 

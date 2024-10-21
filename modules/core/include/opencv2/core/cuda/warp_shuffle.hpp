@@ -49,7 +49,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
 #if __CUDACC_VER_MAJOR__ >= 9
 #  define __shfl(x, y, z) __shfl_sync(0xFFFFFFFFU, x, y, z)

@@ -61,7 +61,7 @@
 #  define CV_FORMAT_PRINTF(A, B)
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 //! @cond IGNORED
 
@@ -148,7 +148,7 @@ template<typename _Tp, int m, int l, int n> struct Matx_FastSolveOp
     bool operator()(const Matx<_Tp, m, l>& a, const Matx<_Tp, m, n>& b,
                     Matx<_Tp, l, n>& x, int method) const
     {
-        return cv::solve(a, b, x, method);
+        return ncvslideio::solve(a, b, x, method);
     }
 };
 
@@ -168,7 +168,7 @@ template<typename _Tp, int m, int n> struct Matx_FastSolveOp<_Tp, m, m, n>
         }
         else
         {
-            return cv::solve(a, b, x, method);
+            return ncvslideio::solve(a, b, x, method);
         }
     }
 };
@@ -218,7 +218,7 @@ template<typename _Tp, int m, int n> inline
 Matx<_Tp,m,n> Matx<_Tp,m,n>::randu(_Tp a, _Tp b)
 {
     Matx<_Tp,m,n> M;
-    cv::randu(M, Scalar(a), Scalar(b));
+    ncvslideio::randu(M, Scalar(a), Scalar(b));
     return M;
 }
 
@@ -226,7 +226,7 @@ template<typename _Tp, int m, int n> inline
 Matx<_Tp,m,n> Matx<_Tp,m,n>::randn(_Tp a, _Tp b)
 {
     Matx<_Tp,m,n> M;
-    cv::randn(M, Scalar(a), Scalar(b));
+    ncvslideio::randn(M, Scalar(a), Scalar(b));
     return M;
 }
 
@@ -234,7 +234,7 @@ template<typename _Tp, int cn> inline
 Vec<_Tp, cn> Vec<_Tp, cn>::randu(_Tp a, _Tp b)
 {
     Vec<_Tp,cn> V;
-    cv::randu(V, Scalar(a), Scalar(b));
+    ncvslideio::randu(V, Scalar(a), Scalar(b));
     return V;
 }
 
@@ -242,7 +242,7 @@ template<typename _Tp, int cn> inline
 Vec<_Tp, cn> Vec<_Tp, cn>::randn(_Tp a, _Tp b)
 {
     Vec<_Tp,cn> V;
-    cv::randn(V, Scalar(a), Scalar(b));
+    ncvslideio::randn(V, Scalar(a), Scalar(b));
     return V;
 }
 
@@ -250,7 +250,7 @@ template<typename _Tp, int m, int n> inline
 Matx<_Tp, n, m> Matx<_Tp, m, n>::inv(int method, bool *p_is_ok /*= NULL*/) const
 {
     Matx<_Tp, n, m> b;
-    bool ok = cv::internal::Matx_FastInvOp<_Tp, m, n>()(*this, b, method);
+    bool ok = ncvslideio::internal::Matx_FastInvOp<_Tp, m, n>()(*this, b, method);
     if (p_is_ok) *p_is_ok = ok;
     return ok ? b : Matx<_Tp, n, m>::zeros();
 }
@@ -259,7 +259,7 @@ template<typename _Tp, int m, int n> template<int l> inline
 Matx<_Tp, n, l> Matx<_Tp, m, n>::solve(const Matx<_Tp, m, l>& rhs, int method) const
 {
     Matx<_Tp, n, l> x;
-    bool ok = cv::internal::Matx_FastSolveOp<_Tp, m, n, l>()(*this, rhs, x, method);
+    bool ok = ncvslideio::internal::Matx_FastSolveOp<_Tp, m, n, l>()(*this, rhs, x, method);
     return ok ? x : Matx<_Tp, n, l>::zeros();
 }
 
@@ -282,61 +282,61 @@ Matx<_Tp, n, l> Matx<_Tp, m, n>::solve(const Matx<_Tp, m, l>& rhs, int method) c
     template<typename _Tp, int m, int n> static inline A& operator op (A& a, const Matx<_Tp,m,n>& b) { cvop; return a; } \
     template<typename _Tp, int m, int n> static inline const A& operator op (const A& a, const Matx<_Tp,m,n>& b) { cvop; return a; }
 
-CV_MAT_AUG_OPERATOR  (+=, cv::add(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR  (+=, cv::add(a, b, (const Mat&)a), Mat, Scalar)
-CV_MAT_AUG_OPERATOR_T(+=, cv::add(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(+=, cv::add(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
-CV_MAT_AUG_OPERATOR_T(+=, cv::add(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
-CV_MAT_AUG_OPERATOR_TN(+=, cv::add(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(+=, cv::add(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (+=, ncvslideio::add(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR  (+=, ncvslideio::add(a, b, (const Mat&)a), Mat, Scalar)
+CV_MAT_AUG_OPERATOR_T(+=, ncvslideio::add(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(+=, ncvslideio::add(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
+CV_MAT_AUG_OPERATOR_T(+=, ncvslideio::add(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(+=, ncvslideio::add(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(+=, ncvslideio::add(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (-=, cv::subtract(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR  (-=, cv::subtract(a, b, (const Mat&)a), Mat, Scalar)
-CV_MAT_AUG_OPERATOR_T(-=, cv::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(-=, cv::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
-CV_MAT_AUG_OPERATOR_T(-=, cv::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
-CV_MAT_AUG_OPERATOR_TN(-=, cv::subtract(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(-=, cv::subtract(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (-=, ncvslideio::subtract(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR  (-=, ncvslideio::subtract(a, b, (const Mat&)a), Mat, Scalar)
+CV_MAT_AUG_OPERATOR_T(-=, ncvslideio::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(-=, ncvslideio::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
+CV_MAT_AUG_OPERATOR_T(-=, ncvslideio::subtract(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(-=, ncvslideio::subtract(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(-=, ncvslideio::subtract(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (*=, cv::gemm(a, b, 1, Mat(), 0, a, 0), Mat, Mat)
-CV_MAT_AUG_OPERATOR_T(*=, cv::gemm(a, b, 1, Mat(), 0, a, 0), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(*=, cv::gemm(a, b, 1, Mat(), 0, a, 0), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (*=, ncvslideio::gemm(a, b, 1, Mat(), 0, a, 0), Mat, Mat)
+CV_MAT_AUG_OPERATOR_T(*=, ncvslideio::gemm(a, b, 1, Mat(), 0, a, 0), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(*=, ncvslideio::gemm(a, b, 1, Mat(), 0, a, 0), Mat_<_Tp>, Mat_<_Tp>)
 CV_MAT_AUG_OPERATOR  (*=, a.convertTo(a, -1, b), Mat, double)
 CV_MAT_AUG_OPERATOR_T(*=, a.convertTo(a, -1, b), Mat_<_Tp>, double)
-CV_MAT_AUG_OPERATOR_TN(*=, cv::gemm(a, Mat(b), 1, Mat(), 0, a, 0), Mat)
-CV_MAT_AUG_OPERATOR_TN(*=, cv::gemm(a, Mat(b), 1, Mat(), 0, a, 0), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(*=, ncvslideio::gemm(a, Mat(b), 1, Mat(), 0, a, 0), Mat)
+CV_MAT_AUG_OPERATOR_TN(*=, ncvslideio::gemm(a, Mat(b), 1, Mat(), 0, a, 0), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (/=, cv::divide(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR_T(/=, cv::divide(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(/=, cv::divide(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (/=, ncvslideio::divide(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR_T(/=, ncvslideio::divide(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(/=, ncvslideio::divide(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
 CV_MAT_AUG_OPERATOR  (/=, a.convertTo((Mat&)a, -1, 1./b), Mat, double)
 CV_MAT_AUG_OPERATOR_T(/=, a.convertTo((Mat&)a, -1, 1./b), Mat_<_Tp>, double)
-CV_MAT_AUG_OPERATOR_TN(/=, cv::divide(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(/=, cv::divide(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(/=, ncvslideio::divide(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(/=, ncvslideio::divide(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (&=, cv::bitwise_and(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR  (&=, cv::bitwise_and(a, b, (const Mat&)a), Mat, Scalar)
-CV_MAT_AUG_OPERATOR_T(&=, cv::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(&=, cv::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
-CV_MAT_AUG_OPERATOR_T(&=, cv::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
-CV_MAT_AUG_OPERATOR_TN(&=, cv::bitwise_and(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(&=, cv::bitwise_and(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (&=, ncvslideio::bitwise_and(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR  (&=, ncvslideio::bitwise_and(a, b, (const Mat&)a), Mat, Scalar)
+CV_MAT_AUG_OPERATOR_T(&=, ncvslideio::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(&=, ncvslideio::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
+CV_MAT_AUG_OPERATOR_T(&=, ncvslideio::bitwise_and(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(&=, ncvslideio::bitwise_and(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(&=, ncvslideio::bitwise_and(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (|=, cv::bitwise_or(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR  (|=, cv::bitwise_or(a, b, (const Mat&)a), Mat, Scalar)
-CV_MAT_AUG_OPERATOR_T(|=, cv::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(|=, cv::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
-CV_MAT_AUG_OPERATOR_T(|=, cv::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
-CV_MAT_AUG_OPERATOR_TN(|=, cv::bitwise_or(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(|=, cv::bitwise_or(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (|=, ncvslideio::bitwise_or(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR  (|=, ncvslideio::bitwise_or(a, b, (const Mat&)a), Mat, Scalar)
+CV_MAT_AUG_OPERATOR_T(|=, ncvslideio::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(|=, ncvslideio::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
+CV_MAT_AUG_OPERATOR_T(|=, ncvslideio::bitwise_or(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(|=, ncvslideio::bitwise_or(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(|=, ncvslideio::bitwise_or(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
-CV_MAT_AUG_OPERATOR  (^=, cv::bitwise_xor(a, b, (const Mat&)a), Mat, Mat)
-CV_MAT_AUG_OPERATOR  (^=, cv::bitwise_xor(a, b, (const Mat&)a), Mat, Scalar)
-CV_MAT_AUG_OPERATOR_T(^=, cv::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
-CV_MAT_AUG_OPERATOR_T(^=, cv::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
-CV_MAT_AUG_OPERATOR_T(^=, cv::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
-CV_MAT_AUG_OPERATOR_TN(^=, cv::bitwise_xor(a, Mat(b), (const Mat&)a), Mat)
-CV_MAT_AUG_OPERATOR_TN(^=, cv::bitwise_xor(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR  (^=, ncvslideio::bitwise_xor(a, b, (const Mat&)a), Mat, Mat)
+CV_MAT_AUG_OPERATOR  (^=, ncvslideio::bitwise_xor(a, b, (const Mat&)a), Mat, Scalar)
+CV_MAT_AUG_OPERATOR_T(^=, ncvslideio::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Mat)
+CV_MAT_AUG_OPERATOR_T(^=, ncvslideio::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Scalar)
+CV_MAT_AUG_OPERATOR_T(^=, ncvslideio::bitwise_xor(a, b, (const Mat&)a), Mat_<_Tp>, Mat_<_Tp>)
+CV_MAT_AUG_OPERATOR_TN(^=, ncvslideio::bitwise_xor(a, Mat(b), (const Mat&)a), Mat)
+CV_MAT_AUG_OPERATOR_TN(^=, ncvslideio::bitwise_xor(a, Mat(b), (const Mat&)a), Mat_<_Tp>)
 
 #undef CV_MAT_AUG_OPERATOR_TN
 #undef CV_MAT_AUG_OPERATOR_T
@@ -425,7 +425,7 @@ template<typename _Tp> static inline _Tp randu()
 }
 
 
-///////////////////////////////// Formatted output of cv::Mat /////////////////////////////////
+///////////////////////////////// Formatted output of ncvslideio::Mat /////////////////////////////////
 
 static inline
 Ptr<Formatted> format(InputArray mtx, Formatter::FormatType fmt)
@@ -471,7 +471,7 @@ int print(const std::vector<Point3_<_Tp> >& vec, FILE* stream = stdout)
 template<typename _Tp, int m, int n> static inline
 int print(const Matx<_Tp, m, n>& matx, FILE* stream = stdout)
 {
-    return print(Formatter::get()->format(cv::Mat(matx)), stream);
+    return print(Formatter::get()->format(ncvslideio::Mat(matx)), stream);
 }
 
 //! @endcond
@@ -607,6 +607,6 @@ partition( const std::vector<_Tp>& vec, std::vector<int>& labels,
     return nclasses;
 }
 
-} // cv
+} // ncvslideio
 
 #endif

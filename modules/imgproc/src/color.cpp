@@ -6,7 +6,7 @@
 #include "opencl_kernels_imgproc.hpp"
 #include "color.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 #ifdef HAVE_OPENCL
@@ -177,7 +177,7 @@ void cvtColorTwoPlane( InputArray _ysrc, InputArray _uvsrc, OutputArray _dst, in
         case COLOR_YUV2BGRA_NV21: case COLOR_YUV2RGBA_NV21: case COLOR_YUV2BGRA_NV12: case COLOR_YUV2RGBA_NV12:
             break;
         default:
-            CV_Error( cv::Error::StsBadFlag, "Unknown/unsupported color conversion code" );
+            CV_Error( ncvslideio::Error::StsBadFlag, "Unknown/unsupported color conversion code" );
             return;
     }
 
@@ -193,8 +193,8 @@ void cvtColor( InputArray _src, OutputArray _dst, int code, int dcn, AlgorithmHi
 {
     CV_INSTRUMENT_REGION();
 
-    if (hint == cv::ALGO_HINT_DEFAULT)
-        hint = cv::getDefaultAlgorithmHint();
+    if (hint == ncvslideio::ALGO_HINT_DEFAULT)
+        hint = ncvslideio::getDefaultAlgorithmHint();
 
     CV_Assert(!_src.empty());
 
@@ -382,18 +382,18 @@ void cvtColor( InputArray _src, OutputArray _dst, int code, int dcn, AlgorithmHi
             cvtColormRGBA2RGBA(_src, _dst);
             break;
         default:
-            CV_Error( cv::Error::StsBadFlag, "Unknown/unsupported color conversion code" );
+            CV_Error( ncvslideio::Error::StsBadFlag, "Unknown/unsupported color conversion code" );
     }
 }
-} //namespace cv
+} //namespace ncvslideio
 
 
 CV_IMPL void
 cvCvtColor( const CvArr* srcarr, CvArr* dstarr, int code )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst0 = cv::cvarrToMat(dstarr), dst = dst0;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst0 = ncvslideio::cvarrToMat(dstarr), dst = dst0;
     CV_Assert( src.depth() == dst.depth() );
 
-    cv::cvtColor(src, dst, code, dst.channels());
+    ncvslideio::cvtColor(src, dst, code, dst.channels());
     CV_Assert( dst.data == dst0.data );
 }

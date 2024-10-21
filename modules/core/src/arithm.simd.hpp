@@ -96,7 +96,7 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 #ifndef ARITHM_DISPATCHING_ONLY
     CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
@@ -1934,4 +1934,4 @@ DEFINE_SIMD_ALL(recip, recip_loop)
     #define SIMD_GUARD
 #endif
 
-}} // cv::hal::
+}} // ncvslideio::hal::

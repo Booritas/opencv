@@ -16,7 +16,7 @@
     #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 
 static
 CV_NORETURN void throw_no_ocl()
@@ -318,8 +318,8 @@ ProgramSource& ProgramSource::operator=(ProgramSource&&) CV_NOEXCEPT { return *t
 const String& ProgramSource::source() const { OCL_NOT_AVAILABLE(); }
 ProgramSource::hash_t ProgramSource::hash() const { OCL_NOT_AVAILABLE(); }
 
-/* static */ ProgramSource ProgramSource::fromBinary(const String& module, const String& name, const unsigned char* binary, const size_t size, const cv::String& buildOptions) { OCL_NOT_AVAILABLE(); }
-/* static */ ProgramSource ProgramSource::fromSPIR(const String& module, const String& name, const unsigned char* binary, const size_t size, const cv::String& buildOptions) { OCL_NOT_AVAILABLE(); }
+/* static */ ProgramSource ProgramSource::fromBinary(const String& module, const String& name, const unsigned char* binary, const size_t size, const ncvslideio::String& buildOptions) { OCL_NOT_AVAILABLE(); }
+/* static */ ProgramSource ProgramSource::fromSPIR(const String& module, const String& name, const unsigned char* binary, const size_t size, const ncvslideio::String& buildOptions) { OCL_NOT_AVAILABLE(); }
 
 
 PlatformInfo::PlatformInfo() CV_NOEXCEPT : p(NULL) { }

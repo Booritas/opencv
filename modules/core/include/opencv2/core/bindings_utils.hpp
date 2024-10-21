@@ -11,7 +11,7 @@
 
 #include <stdexcept>
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 //! @addtogroup core_utils
 //! @{
 
@@ -32,7 +32,7 @@ String dumpBool(bool argument)
 CV_WRAP static inline
 String dumpInt(int argument)
 {
-    return cv::format("Int: %d", argument);
+    return ncvslideio::format("Int: %d", argument);
 }
 
 CV_WRAP static inline
@@ -54,25 +54,25 @@ String dumpSizeT(size_t argument)
 CV_WRAP static inline
 String dumpFloat(float argument)
 {
-    return cv::format("Float: %.2f", argument);
+    return ncvslideio::format("Float: %.2f", argument);
 }
 
 CV_WRAP static inline
 String dumpDouble(double argument)
 {
-    return cv::format("Double: %.2f", argument);
+    return ncvslideio::format("Double: %.2f", argument);
 }
 
 CV_WRAP static inline
 String dumpCString(const char* argument)
 {
-    return cv::format("String: %s", argument);
+    return ncvslideio::format("String: %s", argument);
 }
 
 CV_WRAP static inline
 String dumpString(const String& argument)
 {
-    return cv::format("String: %s", argument.c_str());
+    return ncvslideio::format("String: %s", argument.c_str());
 }
 
 CV_WRAP static inline
@@ -223,7 +223,7 @@ AsyncArray testAsyncException()
     {
         CV_Error(Error::StsOk, "Test: Generated async error");
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         p.setException(e);
     }
@@ -231,7 +231,7 @@ AsyncArray testAsyncException()
 }
 
 CV_WRAP static inline
-String dumpVec2i(const cv::Vec2i value = cv::Vec2i(42, 24)) {
+String dumpVec2i(const ncvslideio::Vec2i value = ncvslideio::Vec2i(42, 24)) {
     return format("Vec2i(%d, %d)", value[0], value[1]);
 }
 
@@ -329,11 +329,11 @@ typedef OriginalClassName::Params OriginalClassName_Params;
 //! @endcond IGNORED
 
 namespace fs {
-    CV_EXPORTS_W cv::String getCacheDirectoryForDownloads();
+    CV_EXPORTS_W ncvslideio::String getCacheDirectoryForDownloads();
 } // namespace fs
 
 //! @}  // core_utils
-}  // namespace cv::utils
+}  // namespace ncvslideio::utils
 
 //! @cond IGNORED
 
@@ -341,17 +341,17 @@ CV_WRAP static inline
 int setLogLevel(int level)
 {
     // NB: Binding generators doesn't work with enums properly yet, so we define separate overload here
-    return cv::utils::logging::setLogLevel((cv::utils::logging::LogLevel)level);
+    return ncvslideio::utils::logging::setLogLevel((ncvslideio::utils::logging::LogLevel)level);
 }
 
 CV_WRAP static inline
 int getLogLevel()
 {
-    return cv::utils::logging::getLogLevel();
+    return ncvslideio::utils::logging::getLogLevel();
 }
 
 //! @endcond IGNORED
 
-} // namespaces cv /  utils
+} // namespaces ncvslideio /  utils
 
 #endif // OPENCV_CORE_BINDINGS_UTILS_HPP

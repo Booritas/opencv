@@ -7,7 +7,7 @@
 #include <memory>
 #include <map>
 
-namespace cv { namespace highgui_backend {
+namespace ncvslideio { namespace highgui_backend {
 
 class CV_EXPORTS UIWindowBase
 {
@@ -86,8 +86,8 @@ public:
     virtual int getPos() const = 0;
     virtual void setPos(int pos) = 0;
 
-    virtual cv::Range getRange() const = 0;
-    virtual void setRange(const cv::Range& range) = 0;
+    virtual ncvslideio::Range getRange() const = 0;
+    virtual void setRange(const ncvslideio::Range& range) = 0;
 };  // UITrackbar
 
 

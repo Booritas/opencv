@@ -15,7 +15,7 @@
 #include "runtime/opencl_svm_20.hpp"
 #include "runtime/opencl_svm_hsa_extension.hpp"
 
-namespace cv { namespace ocl { namespace svm {
+namespace ncvslideio { namespace ocl { namespace svm {
 
 struct SVMCapabilities
 {
@@ -74,7 +74,7 @@ CV_EXPORTS const SVMFunctions* getSVMFunctions(const ocl::Context& context);
 
 CV_EXPORTS bool useSVM(UMatUsageFlags usageFlags);
 
-}}} //namespace cv::ocl::svm
+}}} //namespace ncvslideio::ocl::svm
 #endif
 
 #endif // OPENCV_CORE_OPENCL_SVM_HPP

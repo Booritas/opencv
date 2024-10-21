@@ -62,7 +62,7 @@
 #include <mutex>  // std::mutex, std::lock_guard
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_utils
@@ -166,7 +166,7 @@ extern "C" typedef int (*ErrorCallback)( int status, const char* func_name,
 
 /** @brief Sets the new error handler and the optional user data.
 
-  The function sets the new error handler, called from cv::error().
+  The function sets the new error handler, called from ncvslideio::error().
 
   \param errCallback the new error handler. If NULL, the default error handler is used.
   \param userdata the optional user data pointer, passed to the callback.
@@ -334,13 +334,13 @@ public:
     //! starts counting ticks.
     CV_WRAP void start()
     {
-        startTime = cv::getTickCount();
+        startTime = ncvslideio::getTickCount();
     }
 
     //! stops counting ticks.
     CV_WRAP void stop()
     {
-        const int64 time = cv::getTickCount();
+        const int64 time = ncvslideio::getTickCount();
         if (startTime == 0)
             return;
         ++counter;
@@ -669,7 +669,7 @@ public:
         // nothing
     }
 
-    virtual void operator() (const cv::Range& range) const CV_OVERRIDE
+    virtual void operator() (const ncvslideio::Range& range) const CV_OVERRIDE
     {
         m_functor(range);
     }
@@ -683,7 +683,7 @@ void parallel_for_(const Range& range, std::function<void(const Range&)> functor
 }
 
 
-/////////////////////////////// forEach method of cv::Mat ////////////////////////////
+/////////////////////////////// forEach method of ncvslideio::Mat ////////////////////////////
 template<typename _Tp, typename Functor> inline
 void Mat::forEach_impl(const Functor& operation) {
     if (false) {
@@ -778,7 +778,7 @@ void Mat::forEach_impl(const Functor& operation) {
         }
     };
 
-    parallel_for_(cv::Range(0, LINES), PixelOperationWrapper(reinterpret_cast<Mat_<_Tp>*>(this), operation));
+    parallel_for_(ncvslideio::Range(0, LINES), PixelOperationWrapper(reinterpret_cast<Mat_<_Tp>*>(this), operation));
 }
 
 /////////////////////////// Synchronization Primitives ///////////////////////////////
@@ -786,20 +786,20 @@ void Mat::forEach_impl(const Functor& operation) {
 #if !defined(_M_CEE)
 #ifndef OPENCV_DISABLE_THREAD_SUPPORT
 typedef std::recursive_mutex Mutex;
-typedef std::lock_guard<cv::Mutex> AutoLock;
+typedef std::lock_guard<ncvslideio::Mutex> AutoLock;
 #else // OPENCV_DISABLE_THREAD_SUPPORT
 // Custom (failing) implementation of `std::recursive_mutex`.
 struct Mutex {
     void lock(){
-        CV_Error(cv::Error::StsNotImplemented,
-                 "cv::Mutex is disabled by OPENCV_DISABLE_THREAD_SUPPORT=ON");
+        CV_Error(ncvslideio::Error::StsNotImplemented,
+                 "ncvslideio::Mutex is disabled by OPENCV_DISABLE_THREAD_SUPPORT=ON");
     }
     void unlock(){
-        CV_Error(cv::Error::StsNotImplemented,
-                 "cv::Mutex is disabled by OPENCV_DISABLE_THREAD_SUPPORT=ON");
+        CV_Error(ncvslideio::Error::StsNotImplemented,
+                 "ncvslideio::Mutex is disabled by OPENCV_DISABLE_THREAD_SUPPORT=ON");
     }
 };
-// Stub for cv::AutoLock when threads are disabled.
+// Stub for ncvslideio::AutoLock when threads are disabled.
 struct AutoLock {
     AutoLock(Mutex &) { }
 };
@@ -1250,13 +1250,13 @@ Search directories:
 @param silentMode Disables messages
 @return Returns path (absolute or relative to the current directory) or empty string if file is not found
 */
-CV_EXPORTS_W cv::String findFile(const cv::String& relative_path, bool required = true, bool silentMode = false);
+CV_EXPORTS_W ncvslideio::String findFile(const ncvslideio::String& relative_path, bool required = true, bool silentMode = false);
 
-CV_EXPORTS_W cv::String findFileOrKeep(const cv::String& relative_path, bool silentMode = false);
+CV_EXPORTS_W ncvslideio::String findFileOrKeep(const ncvslideio::String& relative_path, bool silentMode = false);
 
-inline cv::String findFileOrKeep(const cv::String& relative_path, bool silentMode)
+inline ncvslideio::String findFileOrKeep(const ncvslideio::String& relative_path, bool silentMode)
 {
-    cv::String res = findFile(relative_path, false, silentMode);
+    ncvslideio::String res = findFile(relative_path, false, silentMode);
     if (res.empty())
         return relative_path;
     return res;
@@ -1269,7 +1269,7 @@ Passed paths are used in LIFO order.
 
 @param path Path to used samples data
 */
-CV_EXPORTS_W void addSamplesDataSearchPath(const cv::String& path);
+CV_EXPORTS_W void addSamplesDataSearchPath(const ncvslideio::String& path);
 
 /** @brief Append samples search data sub directory
 
@@ -1278,7 +1278,7 @@ Passed subdirectories are used in LIFO order.
 
 @param subdir samples data sub directory
 */
-CV_EXPORTS_W void addSamplesDataSearchSubDirectory(const cv::String& subdir);
+CV_EXPORTS_W void addSamplesDataSearchSubDirectory(const ncvslideio::String& subdir);
 
 //! @}
 } // namespace samples
@@ -1289,7 +1289,7 @@ CV_EXPORTS int getThreadID();
 
 } // namespace
 
-} //namespace cv
+} //namespace ncvslideio
 
 #ifdef CV_COLLECT_IMPL_DATA
 #include "opencv2/core/utils/instrumentation.hpp"

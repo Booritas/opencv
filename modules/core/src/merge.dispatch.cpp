@@ -9,7 +9,7 @@
 #include "merge.simd.hpp"
 #include "merge.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 void merge8u(const uchar** src, uchar* dst, int len, int cn )
 {
@@ -43,7 +43,7 @@ void merge64s(const int64** src, int64* dst, int len, int cn )
         CV_CPU_DISPATCH_MODES_ALL);
 }
 
-} // namespace cv::hal::
+} // namespace ncvslideio::hal::
 
 
 typedef void (*MergeFunc)(const uchar** src, uchar* dst, int len, int cn);
@@ -52,10 +52,10 @@ static MergeFunc getMergeFunc(int depth)
 {
     static MergeFunc mergeTab[CV_DEPTH_MAX] =
     {
-        (MergeFunc)GET_OPTIMIZED(cv::hal::merge8u), (MergeFunc)GET_OPTIMIZED(cv::hal::merge8u),
-        (MergeFunc)GET_OPTIMIZED(cv::hal::merge16u), (MergeFunc)GET_OPTIMIZED(cv::hal::merge16u),
-        (MergeFunc)GET_OPTIMIZED(cv::hal::merge32s), (MergeFunc)GET_OPTIMIZED(cv::hal::merge32s),
-        (MergeFunc)GET_OPTIMIZED(cv::hal::merge64s), (MergeFunc)GET_OPTIMIZED(cv::hal::merge16u)
+        (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge8u), (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge8u),
+        (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge16u), (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge16u),
+        (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge32s), (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge32s),
+        (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge64s), (MergeFunc)GET_OPTIMIZED(ncvslideio::hal::merge16u)
     };
 
     return mergeTab[depth];

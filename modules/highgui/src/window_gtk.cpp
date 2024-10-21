@@ -2089,7 +2089,7 @@ CV_IMPL int cvWaitKey( int delay )
 
 namespace cv { namespace impl {
 
-using namespace cv::highgui_backend;
+using namespace ncvslideio::highgui_backend;
 
 class GTKTrackbar;
 

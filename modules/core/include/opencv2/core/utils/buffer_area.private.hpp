@@ -9,7 +9,7 @@
 #include <opencv2/core/utility.hpp>
 #include <vector>
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 //! @addtogroup core_utils
 //! @{
@@ -131,6 +131,6 @@ private:
 
 //! @}
 
-}} // cv::utils::
+}} // ncvslideio::utils::
 
 #endif

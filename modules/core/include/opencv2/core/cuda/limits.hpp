@@ -53,7 +53,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
 template <class T> struct numeric_limits;
 
@@ -121,7 +121,7 @@ template <> struct numeric_limits<double>
     __device__ __forceinline__ static double epsilon() { return DBL_EPSILON; }
     static const bool is_signed = true;
 };
-}}} // namespace cv { namespace cuda { namespace cudev {
+}}} // namespace ncvslideio { namespace cuda { namespace cudev {
 
 //! @endcond
 

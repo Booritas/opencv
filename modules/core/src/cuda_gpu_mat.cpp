@@ -43,17 +43,17 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
-void cv::cuda::GpuMat::updateContinuityFlag()
+void ncvslideio::cuda::GpuMat::updateContinuityFlag()
 {
     int sz[] = { rows, cols };
     size_t steps[] = { step, elemSize() };
-    flags = cv::updateContinuityFlag(flags, 2, sz, steps);
+    flags = ncvslideio::updateContinuityFlag(flags, 2, sz, steps);
 }
 
-cv::cuda::GpuMat::GpuMat(int rows_, int cols_, int type_, void* data_, size_t step_) :
+ncvslideio::cuda::GpuMat::GpuMat(int rows_, int cols_, int type_, void* data_, size_t step_) :
     flags(Mat::MAGIC_VAL + (type_ & Mat::TYPE_MASK)), rows(rows_), cols(cols_),
     step(step_), data((uchar*)data_), refcount(0),
     datastart((uchar*)data_), dataend((const uchar*)data_),
@@ -77,7 +77,7 @@ cv::cuda::GpuMat::GpuMat(int rows_, int cols_, int type_, void* data_, size_t st
     updateContinuityFlag();
 }
 
-cv::cuda::GpuMat::GpuMat(Size size_, int type_, void* data_, size_t step_) :
+ncvslideio::cuda::GpuMat::GpuMat(Size size_, int type_, void* data_, size_t step_) :
     flags(Mat::MAGIC_VAL + (type_ & Mat::TYPE_MASK)), rows(size_.height), cols(size_.width),
     step(step_), data((uchar*)data_), refcount(0),
     datastart((uchar*)data_), dataend((const uchar*)data_),
@@ -101,7 +101,7 @@ cv::cuda::GpuMat::GpuMat(Size size_, int type_, void* data_, size_t step_) :
     updateContinuityFlag();
 }
 
-cv::cuda::GpuMat::GpuMat(const GpuMat& m, Range rowRange_, Range colRange_)
+ncvslideio::cuda::GpuMat::GpuMat(const GpuMat& m, Range rowRange_, Range colRange_)
 {
     flags = m.flags;
     step = m.step; refcount = m.refcount;
@@ -141,7 +141,7 @@ cv::cuda::GpuMat::GpuMat(const GpuMat& m, Range rowRange_, Range colRange_)
     updateContinuityFlag();
 }
 
-cv::cuda::GpuMat::GpuMat(const GpuMat& m, Rect roi) :
+ncvslideio::cuda::GpuMat::GpuMat(const GpuMat& m, Rect roi) :
     flags(m.flags), rows(roi.height), cols(roi.width),
     step(m.step), data(m.data + roi.y*step), refcount(m.refcount),
     datastart(m.datastart), dataend(m.dataend),
@@ -162,7 +162,7 @@ cv::cuda::GpuMat::GpuMat(const GpuMat& m, Rect roi) :
     updateContinuityFlag();
 }
 
-GpuMat cv::cuda::GpuMat::reshape(int new_cn, int new_rows) const
+GpuMat ncvslideio::cuda::GpuMat::reshape(int new_cn, int new_rows) const
 {
     GpuMat hdr = *this;
 
@@ -180,15 +180,15 @@ GpuMat cv::cuda::GpuMat::reshape(int new_cn, int new_rows) const
         int total_size = total_width * rows;
 
         if (!isContinuous())
-            CV_Error(cv::Error::BadStep, "The matrix is not continuous, thus its number of rows can not be changed");
+            CV_Error(ncvslideio::Error::BadStep, "The matrix is not continuous, thus its number of rows can not be changed");
 
         if ((unsigned)new_rows > (unsigned)total_size)
-            CV_Error(cv::Error::StsOutOfRange, "Bad new number of rows");
+            CV_Error(ncvslideio::Error::StsOutOfRange, "Bad new number of rows");
 
         total_width = total_size / new_rows;
 
         if (total_width * new_rows != total_size)
-            CV_Error(cv::Error::StsBadArg, "The total number of matrix elements is not divisible by the new number of rows");
+            CV_Error(ncvslideio::Error::StsBadArg, "The total number of matrix elements is not divisible by the new number of rows");
 
         hdr.rows = new_rows;
         hdr.step = total_width * elemSize1();
@@ -197,7 +197,7 @@ GpuMat cv::cuda::GpuMat::reshape(int new_cn, int new_rows) const
     int new_width = total_width / new_cn;
 
     if (new_width * new_cn != total_width)
-        CV_Error(cv::Error::BadNumChannels, "The total width is not divisible by the new number of channels");
+        CV_Error(ncvslideio::Error::BadNumChannels, "The total width is not divisible by the new number of channels");
 
     hdr.cols = new_width;
     hdr.flags = (hdr.flags & ~CV_MAT_CN_MASK) | ((new_cn - 1) << CV_CN_SHIFT);
@@ -205,7 +205,7 @@ GpuMat cv::cuda::GpuMat::reshape(int new_cn, int new_rows) const
     return hdr;
 }
 
-void cv::cuda::GpuMat::locateROI(Size& wholeSize, Point& ofs) const
+void ncvslideio::cuda::GpuMat::locateROI(Size& wholeSize, Point& ofs) const
 {
     CV_DbgAssert( step > 0 );
 
@@ -231,7 +231,7 @@ void cv::cuda::GpuMat::locateROI(Size& wholeSize, Point& ofs) const
     wholeSize.width = std::max(static_cast<int>((delta2 - step * (wholeSize.height - 1)) / esz), ofs.x + cols);
 }
 
-GpuMat& cv::cuda::GpuMat::adjustROI(int dtop, int dbottom, int dleft, int dright)
+GpuMat& ncvslideio::cuda::GpuMat::adjustROI(int dtop, int dbottom, int dleft, int dright)
 {
     Size wholeSize;
     Point ofs;
@@ -267,7 +267,7 @@ namespace
     }
 }
 
-void cv::cuda::createContinuous(int rows, int cols, int type, OutputArray arr)
+void ncvslideio::cuda::createContinuous(int rows, int cols, int type, OutputArray arr)
 {
     switch (arr.kind())
     {
@@ -321,7 +321,7 @@ namespace
     }
 }
 
-void cv::cuda::ensureSizeIsEnough(int rows, int cols, int type, OutputArray arr)
+void ncvslideio::cuda::ensureSizeIsEnough(int rows, int cols, int type, OutputArray arr)
 {
     switch (arr.kind())
     {
@@ -342,7 +342,7 @@ void cv::cuda::ensureSizeIsEnough(int rows, int cols, int type, OutputArray arr)
     }
 }
 
-GpuMat cv::cuda::getInputMat(InputArray _src, Stream& stream)
+GpuMat ncvslideio::cuda::getInputMat(InputArray _src, Stream& stream)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(_src);
@@ -364,7 +364,7 @@ GpuMat cv::cuda::getInputMat(InputArray _src, Stream& stream)
 #endif
 }
 
-GpuMat cv::cuda::getOutputMat(OutputArray _dst, int rows, int cols, int type, Stream& stream)
+GpuMat ncvslideio::cuda::getOutputMat(OutputArray _dst, int rows, int cols, int type, Stream& stream)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(_dst);
@@ -389,7 +389,7 @@ GpuMat cv::cuda::getOutputMat(OutputArray _dst, int rows, int cols, int type, St
 #endif
 }
 
-void cv::cuda::syncOutput(const GpuMat& dst, OutputArray _dst, Stream& stream)
+void ncvslideio::cuda::syncOutput(const GpuMat& dst, OutputArray _dst, Stream& stream)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(dst);
@@ -409,23 +409,23 @@ void cv::cuda::syncOutput(const GpuMat& dst, OutputArray _dst, Stream& stream)
 
 #ifndef HAVE_CUDA
 
-GpuMat::Allocator* cv::cuda::GpuMat::defaultAllocator()
+GpuMat::Allocator* ncvslideio::cuda::GpuMat::defaultAllocator()
 {
     return 0;
 }
 
-void cv::cuda::GpuMat::setDefaultAllocator(Allocator* allocator)
+void ncvslideio::cuda::GpuMat::setDefaultAllocator(Allocator* allocator)
 {
     CV_UNUSED(allocator);
     throw_no_cuda();
 }
 
-GpuMat::Allocator* cv::cuda::GpuMat::getStdAllocator()
+GpuMat::Allocator* ncvslideio::cuda::GpuMat::getStdAllocator()
 {
     return 0;
 }
 
-void cv::cuda::GpuMat::create(int _rows, int _cols, int _type)
+void ncvslideio::cuda::GpuMat::create(int _rows, int _cols, int _type)
 {
     CV_UNUSED(_rows);
     CV_UNUSED(_cols);
@@ -433,50 +433,50 @@ void cv::cuda::GpuMat::create(int _rows, int _cols, int _type)
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::release()
+void ncvslideio::cuda::GpuMat::release()
 {
 }
 
-void cv::cuda::GpuMat::upload(InputArray arr)
-{
-    CV_UNUSED(arr);
-    throw_no_cuda();
-}
-
-void cv::cuda::GpuMat::upload(InputArray arr, Stream& _stream)
+void ncvslideio::cuda::GpuMat::upload(InputArray arr)
 {
     CV_UNUSED(arr);
+    throw_no_cuda();
+}
+
+void ncvslideio::cuda::GpuMat::upload(InputArray arr, Stream& _stream)
+{
+    CV_UNUSED(arr);
     CV_UNUSED(_stream);
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::download(OutputArray _dst) const
+void ncvslideio::cuda::GpuMat::download(OutputArray _dst) const
 {
     CV_UNUSED(_dst);
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::download(OutputArray _dst, Stream& _stream) const
-{
-    CV_UNUSED(_dst);
-    CV_UNUSED(_stream);
-    throw_no_cuda();
-}
-
-void cv::cuda::GpuMat::copyTo(OutputArray _dst) const
-{
-    CV_UNUSED(_dst);
-    throw_no_cuda();
-}
-
-void cv::cuda::GpuMat::copyTo(OutputArray _dst, Stream& _stream) const
+void ncvslideio::cuda::GpuMat::download(OutputArray _dst, Stream& _stream) const
 {
     CV_UNUSED(_dst);
     CV_UNUSED(_stream);
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::copyTo(OutputArray _dst, InputArray _mask, Stream& _stream) const
+void ncvslideio::cuda::GpuMat::copyTo(OutputArray _dst) const
+{
+    CV_UNUSED(_dst);
+    throw_no_cuda();
+}
+
+void ncvslideio::cuda::GpuMat::copyTo(OutputArray _dst, Stream& _stream) const
+{
+    CV_UNUSED(_dst);
+    CV_UNUSED(_stream);
+    throw_no_cuda();
+}
+
+void ncvslideio::cuda::GpuMat::copyTo(OutputArray _dst, InputArray _mask, Stream& _stream) const
 {
     CV_UNUSED(_dst);
     CV_UNUSED(_mask);
@@ -484,14 +484,14 @@ void cv::cuda::GpuMat::copyTo(OutputArray _dst, InputArray _mask, Stream& _strea
     throw_no_cuda();
 }
 
-GpuMat& cv::cuda::GpuMat::setTo(Scalar s, Stream& _stream)
+GpuMat& ncvslideio::cuda::GpuMat::setTo(Scalar s, Stream& _stream)
 {
     CV_UNUSED(s);
     CV_UNUSED(_stream);
     throw_no_cuda();
 }
 
-GpuMat& cv::cuda::GpuMat::setTo(Scalar s, InputArray _mask, Stream& _stream)
+GpuMat& ncvslideio::cuda::GpuMat::setTo(Scalar s, InputArray _mask, Stream& _stream)
 {
     CV_UNUSED(s);
     CV_UNUSED(_mask);
@@ -499,7 +499,7 @@ GpuMat& cv::cuda::GpuMat::setTo(Scalar s, InputArray _mask, Stream& _stream)
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::convertTo(OutputArray _dst, int rtype, Stream& _stream) const
+void ncvslideio::cuda::GpuMat::convertTo(OutputArray _dst, int rtype, Stream& _stream) const
 {
     CV_UNUSED(_dst);
     CV_UNUSED(rtype);
@@ -507,7 +507,7 @@ void cv::cuda::GpuMat::convertTo(OutputArray _dst, int rtype, Stream& _stream) c
     throw_no_cuda();
 }
 
-void cv::cuda::GpuMat::convertTo(OutputArray _dst, int rtype, double alpha, double beta, Stream& _stream) const
+void ncvslideio::cuda::GpuMat::convertTo(OutputArray _dst, int rtype, double alpha, double beta, Stream& _stream) const
 {
     CV_UNUSED(_dst);
     CV_UNUSED(rtype);

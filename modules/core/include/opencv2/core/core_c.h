@@ -2199,7 +2199,7 @@ CVAPI(void) cvWriteRawData( CvFileStorage* fs, const void* src,
 
 /** @brief Writes multiple numbers in Base64.
 
-If either CV_STORAGE_WRITE_BASE64 or cv::FileStorage::WRITE_BASE64 is used,
+If either CV_STORAGE_WRITE_BASE64 or ncvslideio::FileStorage::WRITE_BASE64 is used,
 this function will be the same as cvWriteRawData. If neither, the main
 difference is that it outputs a sequence in Base64 encoding rather than
 in plain text.
@@ -2730,7 +2730,7 @@ static char cvFuncName[] = Name
 
 #include "opencv2/core/utility.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_c_glue
@@ -2738,7 +2738,7 @@ namespace cv
 
 /////////////////////////////////////////// glue ///////////////////////////////////////////
 
-//! converts array (CvMat or IplImage) to cv::Mat
+//! converts array (CvMat or IplImage) to ncvslideio::Mat
 CV_EXPORTS Mat cvarrToMat(const CvArr* arr, bool copyData=false,
                           bool allowND=true, int coiMode=0,
                           AutoBuffer<double>* buf=0);
@@ -2749,9 +2749,9 @@ static inline Mat cvarrToMatND(const CvArr* arr, bool copyData=false, int coiMod
 }
 
 
-//! extracts Channel of Interest from CvMat or IplImage and makes cv::Mat out of it.
+//! extracts Channel of Interest from CvMat or IplImage and makes ncvslideio::Mat out of it.
 CV_EXPORTS void extractImageCOI(const CvArr* arr, OutputArray coiimg, int coi=-1);
-//! inserts single-channel cv::Mat into a multi-channel CvMat or IplImage
+//! inserts single-channel ncvslideio::Mat into a multi-channel CvMat or IplImage
 CV_EXPORTS void insertImageCOI(InputArray coiimg, CvArr* arr, int coi=-1);
 
 
@@ -3121,7 +3121,7 @@ template<typename _Tp> inline bool operator != (const SeqIterator<_Tp>& a,
 
 //! @}
 
-} // cv
+} // ncvslideio
 
 #endif
 

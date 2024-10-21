@@ -52,7 +52,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     struct CV_EXPORTS ThrustAllocator
     {
@@ -223,7 +223,7 @@ namespace cv { namespace cuda { namespace device
 
         return false;
     }
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

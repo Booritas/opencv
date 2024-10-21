@@ -8,7 +8,7 @@
 
 #include "opencv2/core/types.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 #if (CV_SIMD || CV_SIMD_SCALABLE)

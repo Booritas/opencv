@@ -92,7 +92,7 @@
 
 #define  CV_DESCALE(x,n)     (((x) + (1 << ((n)-1))) >> (n))
 
-namespace cv
+namespace ncvslideio
 {
 
 
@@ -1077,7 +1077,7 @@ static void Bayer2RGB_VNG_8u( const Mat& srcmat, Mat& dstmat, int code )
     const int brows = 3, bcn = 7;
     int N = size.width, N2 = N*2, N3 = N*3, N4 = N*4, N5 = N*5, N6 = N*6, N7 = N*7;
     int i, bufstep = N7*bcn;
-    cv::AutoBuffer<ushort> _buf(bufstep*brows);
+    ncvslideio::AutoBuffer<ushort> _buf(bufstep*brows);
     ushort* buf = _buf.data();
 
     bayer += bstep*2;
@@ -1323,9 +1323,9 @@ static void Bayer2RGB_VNG_8u( const Mat& srcmat, Mat& dstmat, int code )
                     R = G + cvRound((Rs - Gs)*scale[ng]);
                     B = G + cvRound((Bs - Gs)*scale[ng]);
                 }
-                dstrow[blueIdx] = cv::saturate_cast<uchar>(B);
-                dstrow[1] = cv::saturate_cast<uchar>(G);
-                dstrow[blueIdx^2] = cv::saturate_cast<uchar>(R);
+                dstrow[blueIdx] = ncvslideio::saturate_cast<uchar>(B);
+                dstrow[1] = ncvslideio::saturate_cast<uchar>(G);
+                dstrow[blueIdx^2] = ncvslideio::saturate_cast<uchar>(R);
                 greenCell = !greenCell;
             }
 
@@ -1590,7 +1590,7 @@ static void Bayer2RGB_VNG_8u( const Mat& srcmat, Mat& dstmat, int code )
 
 template <typename T, typename SIMDInterpolator>
 class Bayer2RGB_EdgeAware_T_Invoker :
-    public cv::ParallelLoopBody
+    public ncvslideio::ParallelLoopBody
 {
 public:
     Bayer2RGB_EdgeAware_T_Invoker(const Mat& _src, Mat& _dst, const Size& _size,
@@ -1731,13 +1731,13 @@ static void Bayer2RGB_EdgeAware_T(const Mat& src, Mat& dst, int code)
             firstRow[x] = lastRow[x] = 0;
 }
 
-} // end namespace cv
+} // end namespace ncvslideio
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                           The main Demosaicing function                              //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void cv::demosaicing(InputArray _src, OutputArray _dst, int code, int dcn)
+void ncvslideio::demosaicing(InputArray _src, OutputArray _dst, int code, int dcn)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1763,7 +1763,7 @@ void cv::demosaicing(InputArray _src, OutputArray _dst, int code, int dcn)
         else if( depth == CV_16U )
             Bayer2Gray_<ushort, SIMDBayerStubInterpolator_<ushort> >(src, dst, code);
         else
-            CV_Error(cv::Error::StsUnsupportedFormat, "Bayer->Gray demosaicing only supports 8u and 16u types");
+            CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Bayer->Gray demosaicing only supports 8u and 16u types");
         break;
 
     case COLOR_BayerBG2BGRA: case COLOR_BayerGB2BGRA: case COLOR_BayerRG2BGRA: case COLOR_BayerGR2BGRA:
@@ -1790,7 +1790,7 @@ void cv::demosaicing(InputArray _src, OutputArray _dst, int code, int dcn)
                 else if( depth == CV_16U )
                     Bayer2RGB_<ushort, SIMDBayerStubInterpolator_<ushort> >(src, dst_, code);
                 else
-                    CV_Error(cv::Error::StsUnsupportedFormat, "Bayer->RGB demosaicing only supports 8u and 16u types");
+                    CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Bayer->RGB demosaicing only supports 8u and 16u types");
             }
             else
             {
@@ -1813,11 +1813,11 @@ void cv::demosaicing(InputArray _src, OutputArray _dst, int code, int dcn)
         else if (depth == CV_16U)
             Bayer2RGB_EdgeAware_T<ushort, SIMDBayerStubInterpolator_<ushort> >(src, dst, code);
         else
-            CV_Error(cv::Error::StsUnsupportedFormat, "Bayer->RGB Edge-Aware demosaicing only currently supports 8u and 16u types");
+            CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Bayer->RGB Edge-Aware demosaicing only currently supports 8u and 16u types");
 
         break;
 
     default:
-        CV_Error( cv::Error::StsBadFlag, "Unknown / unsupported color conversion code" );
+        CV_Error( ncvslideio::Error::StsBadFlag, "Unknown / unsupported color conversion code" );
     }
 }

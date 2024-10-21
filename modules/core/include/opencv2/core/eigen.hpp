@@ -67,7 +67,7 @@
 #endif  // EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION >= 3
 #endif  // !defined(OPENCV_DISABLE_EIGEN_TENSOR_SUPPORT)
 
-namespace cv
+namespace ncvslideio
 {
 
 /** @addtogroup core_eigen
@@ -84,7 +84,7 @@ included before this header.
 #if defined(OPENCV_EIGEN_TENSOR_SUPPORT) || defined(CV_DOXYGEN)
 /** @brief Converts an Eigen::Tensor to a cv::Mat.
 
-The method converts an Eigen::Tensor with shape (H x W x C) to a cv::Mat where:
+The method converts an Eigen::Tensor with shape (H x W x C) to a ncvslideio::Mat where:
  H = number of rows
  W = number of columns
  C = number of channels
@@ -116,7 +116,7 @@ void eigen2cv( const Eigen::Tensor<_Tp, 3, _layout> &src, OutputArray dst )
 
 /** @brief Converts a cv::Mat to an Eigen::Tensor.
 
-The method converts a cv::Mat to an Eigen Tensor with shape (H x W x C) where:
+The method converts a ncvslideio::Mat to an Eigen Tensor with shape (H x W x C) where:
  H = number of rows
  W = number of columns
  C = number of channels
@@ -166,7 +166,7 @@ Explicit instantiation of the return type is required.
 @note Caller should be aware of the lifetime of the cv::Mat instance and take appropriate safety measures.
 The cv::Mat instance will retain ownership of the data and the Eigen::TensorMap will lose access when the cv::Mat data is deallocated.
 
-The example below initializes a cv::Mat and produces an Eigen::TensorMap:
+The example below initializes a ncvslideio::Mat and produces an Eigen::TensorMap:
 \code
 float arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 Mat a_mat(2, 2, CV_32FC3, arr);
@@ -420,6 +420,6 @@ void cv2eigen( const Matx<_Tp, 1, _cols>& src,
 
 //! @}
 
-} // cv
+} // ncvslideio
 
 #endif

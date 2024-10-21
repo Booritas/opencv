@@ -46,7 +46,7 @@
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 struct FFillSegment
@@ -455,7 +455,7 @@ floodFillGrad_CnIR( Mat& image, Mat& msk,
 *                                    External Functions                                  *
 \****************************************************************************************/
 
-int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
+int ncvslideio::floodFill( InputOutputArray _image, InputOutputArray _mask,
                   Point seedPoint, Scalar newVal, Rect* rect,
                   Scalar loDiff, Scalar upDiff, int flags )
 {
@@ -487,12 +487,12 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
 
     if ( (cn != 1) && (cn != 3) )
     {
-        CV_Error( cv::Error::StsBadArg, "Number of channels in input image must be 1 or 3" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Number of channels in input image must be 1 or 3" );
     }
 
     const int connectivity = flags & 255;
     if( connectivity != 0 && connectivity != 4 && connectivity != 8 )
-        CV_Error( cv::Error::StsBadFlag, "Connectivity must be 4, 0(=4) or 8" );
+        CV_Error( ncvslideio::Error::StsBadFlag, "Connectivity must be 4, 0(=4) or 8" );
 
     if( _mask.empty() )
     {
@@ -513,13 +513,13 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
     for( i = 0; i < cn; i++ )
     {
         if( loDiff[i] < 0 || upDiff[i] < 0 )
-            CV_Error( cv::Error::StsBadArg, "lo_diff and up_diff must be non-negative" );
+            CV_Error( ncvslideio::Error::StsBadArg, "lo_diff and up_diff must be non-negative" );
         is_simple = is_simple && fabs(loDiff[i]) < DBL_EPSILON && fabs(upDiff[i]) < DBL_EPSILON;
     }
 
     if( (unsigned)seedPoint.x >= (unsigned)size.width ||
        (unsigned)seedPoint.y >= (unsigned)size.height )
-        CV_Error( cv::Error::StsOutOfRange, "Seed point is outside of image" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Seed point is outside of image" );
 
     scalarToRawData( newVal, &nv_buf, type, 0);
     size_t buffer_size = MAX( size.width, size.height ) * 2;
@@ -550,7 +550,7 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
             else if( type == CV_32FC3 )
                 floodFill_CnIR(img, seedPoint, Vec3f(nv_buf.f), &comp, flags, &buffer);
             else
-                CV_Error( cv::Error::StsUnsupportedFormat, "" );
+                CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
             if( rect )
                 *rect = comp.rect;
             return comp.area;
@@ -583,7 +583,7 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
             ud_buf.f[i] = (float)upDiff[i];
         }
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     uchar newMaskVal = (uchar)((flags & 0xff00) == 0 ? 1 : ((flags >> 8) & 255));
 
@@ -618,7 +618,7 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
                 Diff32fC3(ld_buf.f, ud_buf.f),
                 &comp, flags, &buffer);
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 
     if( rect )
         *rect = comp.rect;
@@ -626,7 +626,7 @@ int cv::floodFill( InputOutputArray _image, InputOutputArray _mask,
 }
 
 
-int cv::floodFill( InputOutputArray _image, Point seedPoint,
+int ncvslideio::floodFill( InputOutputArray _image, Point seedPoint,
                   Scalar newVal, Rect* rect,
                   Scalar loDiff, Scalar upDiff, int flags )
 {
@@ -645,9 +645,9 @@ cvFloodFill( CvArr* arr, CvPoint seed_point,
     if( comp )
         memset( comp, 0, sizeof(*comp) );
 
-    cv::Mat img = cv::cvarrToMat(arr), mask = cv::cvarrToMat(maskarr);
-    int area = cv::floodFill(img, mask, seed_point, newVal,
-                             comp ? (cv::Rect*)&comp->rect : 0,
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(arr), mask = ncvslideio::cvarrToMat(maskarr);
+    int area = ncvslideio::floodFill(img, mask, seed_point, newVal,
+                             comp ? (ncvslideio::Rect*)&comp->rect : 0,
                              lo_diff, up_diff, flags );
     if( comp )
     {

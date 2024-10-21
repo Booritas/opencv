@@ -39,7 +39,7 @@
 #include "precomp.hpp"
 #include <vector>
 
-namespace cv
+namespace ncvslideio
 {
 
 static void magSpectrums( InputArray _src, OutputArray _dst)
@@ -433,7 +433,7 @@ static void fftShift(InputOutputArray _out)
     merge(planes, out);
 }
 
-static Point2d weightedCentroid(InputArray _src, cv::Point peakLocation, cv::Size weightBoxSize, double* response)
+static Point2d weightedCentroid(InputArray _src, ncvslideio::Point peakLocation, ncvslideio::Size weightBoxSize, double* response)
 {
     Mat src = _src.getMat();
 
@@ -515,7 +515,7 @@ static Point2d weightedCentroid(InputArray _src, cv::Point peakLocation, cv::Siz
 
 }
 
-cv::Point2d cv::phaseCorrelate(InputArray _src1, InputArray _src2, InputArray _window, double* response)
+ncvslideio::Point2d ncvslideio::phaseCorrelate(InputArray _src1, InputArray _src2, InputArray _window, double* response)
 {
     CV_INSTRUMENT_REGION();
 
@@ -598,7 +598,7 @@ cv::Point2d cv::phaseCorrelate(InputArray _src1, InputArray _src2, InputArray _w
 }
 
 
-void cv::createHanningWindow(OutputArray _dst, cv::Size winSize, int type)
+void ncvslideio::createHanningWindow(OutputArray _dst, ncvslideio::Size winSize, int type)
 {
     CV_INSTRUMENT_REGION();
 
@@ -639,5 +639,5 @@ void cv::createHanningWindow(OutputArray _dst, cv::Size winSize, int type)
     }
 
     // perform batch sqrt for SSE performance gains
-    cv::sqrt(dst, dst);
+    ncvslideio::sqrt(dst, dst);
 }

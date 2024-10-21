@@ -5,7 +5,7 @@
 #ifndef OPENCV_CORE_BASE64_ENCODING_HPP
 #define OPENCV_CORE_BASE64_ENCODING_HPP
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace base64
@@ -35,7 +35,7 @@ class Impl;
 class Base64Writer
 {
 public:
-    Base64Writer(cv::FileStorage::Impl& fs, bool can_indent);
+    Base64Writer(ncvslideio::FileStorage::Impl& fs, bool can_indent);
     ~Base64Writer();
     void write(const void* _data, size_t len, const char* dt);
     template<typename _to_binary_convertor_t> void write(_to_binary_convertor_t & convertor, const char* dt);

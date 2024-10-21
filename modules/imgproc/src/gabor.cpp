@@ -48,7 +48,7 @@
  http://en.wikipedia.org/wiki/Gabor_filter
 */
 
-cv::Mat cv::getGaborKernel( Size ksize, double sigma, double theta,
+ncvslideio::Mat ncvslideio::getGaborKernel( Size ksize, double sigma, double theta,
                             double lambd, double gamma, double psi, int ktype )
 {
     double sigma_x = sigma;

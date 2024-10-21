@@ -49,7 +49,7 @@
                                    Bilateral Filtering
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations
 void bilateralFilterInvoker_8u(
@@ -198,7 +198,7 @@ public:
 #endif
                 for (; j < size.width; j++)
                 {
-                    // overflow is not possible here => there is no need to use cv::saturate_cast
+                    // overflow is not possible here => there is no need to use ncvslideio::saturate_cast
                     CV_DbgAssert(fabs(wsum[j]) > 0);
                     dptr[j] = (uchar)cvRound(sum[j]/wsum[j]);
                 }

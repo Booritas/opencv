@@ -55,7 +55,7 @@
 
 #include <initializer_list>
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_basic
@@ -341,7 +341,7 @@ bool operator != (const Matx<_Tp, m, n>& a, const Matx<_Tp, m, n>& b);
 
 This template class represents short numerical vectors (of 1, 2, 3, 4 ... elements) on which you
 can perform basic arithmetical operations, access individual elements using [] operator etc. The
-vectors are allocated on stack, as opposite to std::valarray, std::vector, cv::Mat etc., which
+vectors are allocated on stack, as opposite to std::valarray, std::vector, ncvslideio::Mat etc., which
 elements are dynamically allocated in the heap.
 
 The template takes 2 parameters:
@@ -537,7 +537,7 @@ Vec<_Tp, 4>& operator *= (Vec<_Tp, 4>& v1, const Vec<_Tp, 4>& v2);
 
 //! @} core_basic
 
-} // cv
+} // ncvslideio
 
 #include "opencv2/core/matx.inl.hpp"
 

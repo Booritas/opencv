@@ -48,7 +48,7 @@
 
 #include "backend.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #include <windowsx.h> // required for GET_X_LPARAM() and GET_Y_LPARAM() macros
 
@@ -195,7 +195,7 @@ struct CvWindow : public std::enable_shared_from_this<CvWindow>
     void destroy();
 
     int signature;
-    cv::Mutex mutex;
+    ncvslideio::Mutex mutex;
     HWND hwnd = 0;
     std::string name;
     HWND frame = 0;
@@ -587,7 +587,7 @@ void cvSetModeWindow_W32(const char* name, double prop_value)//Yannick Verdie
 
 static bool setModeWindow_(CvWindow& window, int mode)
 {
-    if (window.flags & cv::WINDOW_AUTOSIZE)//if the flag cv::WINDOW_AUTOSIZE is set
+    if (window.flags & ncvslideio::WINDOW_AUTOSIZE)//if the flag ncvslideio::WINDOW_AUTOSIZE is set
         return false;
 
     if (window.status == mode)
@@ -597,18 +597,18 @@ static bool setModeWindow_(CvWindow& window, int mode)
         DWORD dwStyle = (DWORD)GetWindowLongPtr(window.frame, GWL_STYLE);
         CvRect position;
 
-        if (window.status == cv::WINDOW_FULLSCREEN && mode == cv::WINDOW_NORMAL)
+        if (window.status == ncvslideio::WINDOW_FULLSCREEN && mode == ncvslideio::WINDOW_NORMAL)
         {
             icvLoadWindowPos(window.name.c_str(), position);
             SetWindowLongPtr(window.frame, GWL_STYLE, dwStyle | WS_CAPTION | WS_THICKFRAME);
 
             SetWindowPos(window.frame, HWND_TOP, position.x, position.y , position.width,position.height, SWP_NOZORDER | SWP_FRAMECHANGED);
-            window.status=cv::WINDOW_NORMAL;
+            window.status=ncvslideio::WINDOW_NORMAL;
 
             return true;
         }
 
-        if (window.status == cv::WINDOW_NORMAL && mode == cv::WINDOW_FULLSCREEN)
+        if (window.status == ncvslideio::WINDOW_NORMAL && mode == ncvslideio::WINDOW_FULLSCREEN)
         {
             //save dimension
             RECT rect = { 0 };
@@ -630,7 +630,7 @@ static bool setModeWindow_(CvWindow& window, int mode)
             SetWindowLongPtr(window.frame, GWL_STYLE, dwStyle & ~WS_CAPTION & ~WS_THICKFRAME);
 
             SetWindowPos(window.frame, HWND_TOP, position.x, position.y , position.width,position.height, SWP_NOZORDER | SWP_FRAMECHANGED);
-            window.status=cv::WINDOW_FULLSCREEN;
+            window.status=ncvslideio::WINDOW_FULLSCREEN;
 
             return true;
         }
@@ -836,7 +836,7 @@ double cvGetPropWindowAutoSize_W32(const char* name)
     if (!window)
         CV_Error_(Error::StsNullPtr, ("NULL window: '%s'", name));
 
-    result = window->flags & cv::WINDOW_AUTOSIZE;
+    result = window->flags & ncvslideio::WINDOW_AUTOSIZE;
 
     return result;
 }
@@ -1055,11 +1055,11 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
     CvRect rect;
     icvLoadWindowPos(name.c_str(), rect);
 
-    if (!(flags & cv::WINDOW_AUTOSIZE))//YV add border in order to resize the window
+    if (!(flags & ncvslideio::WINDOW_AUTOSIZE))//YV add border in order to resize the window
        defStyle |= WS_SIZEBOX;
 
 #ifdef HAVE_OPENGL
-    if (flags & cv::WINDOW_OPENGL)
+    if (flags & ncvslideio::WINDOW_OPENGL)
         defStyle |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 #endif
 
@@ -1076,14 +1076,14 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
         CV_Error(Error::StsError, "Frame window can not be created");
 
 #ifndef HAVE_OPENGL
-    if (flags & cv::WINDOW_OPENGL)
+    if (flags & ncvslideio::WINDOW_OPENGL)
         CV_Error(Error::OpenGlNotSupported, "Library was built without OpenGL support");
 #else
     useGl = false;
     hGLDC = 0;
     hGLRC = 0;
 
-    if (flags & cv::WINDOW_OPENGL)
+    if (flags & ncvslideio::WINDOW_OPENGL)
         createGlContext(hWnd, hGLDC, hGLRC, useGl);
 #endif
 
@@ -1117,7 +1117,7 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
 #endif
 
     window->last_key = 0;
-    window->status = cv::WINDOW_NORMAL;//YV
+    window->status = ncvslideio::WINDOW_NORMAL;//YV
 
     window->on_mouse = 0;
     window->on_mouse_param = 0;
@@ -1338,7 +1338,7 @@ static void icvUpdateWindowPos(CvWindow& window)
 {
     RECT rect = { 0 };
 
-    if ((window.flags & cv::WINDOW_AUTOSIZE) && window.image)
+    if ((window.flags & ncvslideio::WINDOW_AUTOSIZE) && window.image)
     {
         int i;
         SIZE size = {0,0};
@@ -1383,7 +1383,7 @@ cvShowImage(const char* name, const CvArr* arr)
         window = icvFindWindowByName(name);
         if (!window)
         {
-            cvNamedWindow(name, cv::WINDOW_AUTOSIZE);
+            cvNamedWindow(name, ncvslideio::WINDOW_AUTOSIZE);
             window = icvFindWindowByName(name);
         }
     }
@@ -1393,11 +1393,11 @@ cvShowImage(const char* name, const CvArr* arr)
 
     CvMat stub = {};
     CvMat* image_c = cvGetMat(arr, &stub);
-    Mat image = cv::cvarrToMat(image_c);
+    Mat image = ncvslideio::cvarrToMat(image_c);
 #ifdef HAVE_OPENGL
     if (window->useGl)
     {
-        cv::imshow(name, image);
+        ncvslideio::imshow(name, image);
         return;
     }
 #endif
@@ -1443,10 +1443,10 @@ static void showImage_(CvWindow& window, const Mat& image)
     }
 
     {
-        cv::Mat dst(size.cy, size.cx, CV_8UC3, dst_ptr, (size.cx * channels + 3) & -4);
+        ncvslideio::Mat dst(size.cy, size.cx, CV_8UC3, dst_ptr, (size.cx * channels + 3) & -4);
         convertToShow(image, dst, false);
         CV_Assert(dst.data == (uchar*)dst_ptr);
-        cv::flip(dst, dst, 0);
+        ncvslideio::flip(dst, dst, 0);
     }
 
     // only resize window if needed
@@ -1548,7 +1548,7 @@ MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_GETMINMAXINFO:
-        if (!(window.flags & cv::WINDOW_AUTOSIZE))
+        if (!(window.flags & ncvslideio::WINDOW_AUTOSIZE))
         {
             MINMAXINFO* minmax = (MINMAXINFO*)lParam;
             RECT rect = { 0 };
@@ -1579,7 +1579,7 @@ MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 MoveWindow(window.toolbar.toolbar, 0, 0, pos->cx, rect.bottom - rect.top, TRUE);
             }
 
-            if (!(window.flags & cv::WINDOW_AUTOSIZE))
+            if (!(window.flags & ncvslideio::WINDOW_AUTOSIZE))
                 icvUpdateWindowPos(window);
 
             break;
@@ -1648,7 +1648,7 @@ MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 #ifdef HAVE_OPENGL
           if (window.useGl)
           {
-              cv::ogl::Texture2D* texObj = static_cast<cv::ogl::Texture2D*>(window.glDrawData);
+              ncvslideio::ogl::Texture2D* texObj = static_cast<ncvslideio::ogl::Texture2D*>(window.glDrawData);
               size.cx = texObj->cols();
               size.cy = texObj->rows();
           }
@@ -1846,7 +1846,7 @@ static LRESULT CALLBACK HighGUIProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             pt.x = GET_X_LPARAM(lParam);
             pt.y = GET_Y_LPARAM(lParam);
 
-            if (window.flags & cv::WINDOW_AUTOSIZE)
+            if (window.flags & ncvslideio::WINDOW_AUTOSIZE)
             {
                 // As user can't change window size, do not scale window coordinates. Underlying windowing system
                 // may prevent full window from being displayed and in this case coordinates should not be scaled.
@@ -1861,7 +1861,7 @@ static LRESULT CALLBACK HighGUIProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 #ifdef HAVE_OPENGL
                 if (window.useGl)
                 {
-                    cv::ogl::Texture2D* texObj = static_cast<cv::ogl::Texture2D*>(window.glDrawData);
+                    ncvslideio::ogl::Texture2D* texObj = static_cast<ncvslideio::ogl::Texture2D*>(window.glDrawData);
                     size.cx = texObj->cols();
                     size.cy = texObj->rows();
                 }
@@ -1908,7 +1908,7 @@ static LRESULT CALLBACK HighGUIProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                 SetDIBColorTable(window.dc, 0, 255, table);
             }
 
-            if (window.flags & cv::WINDOW_AUTOSIZE)
+            if (window.flags & ncvslideio::WINDOW_AUTOSIZE)
             {
                 BitBlt(hdc, 0, 0, size.cx, size.cy, window.dc, 0, 0, SRCCOPY);
             }
@@ -2185,13 +2185,13 @@ static void showSaveDialog(CvWindow& window)
 
     if (GetSaveFileName(&ofn))
     {
-        cv::Mat tmp;
-        cv::flip(cv::Mat(sz.cy, sz.cx, CV_8UC(channels), data, (sz.cx * channels + 3) & -4), tmp, 0);
-        cv::imwrite(szFileName, tmp);
+        ncvslideio::Mat tmp;
+        ncvslideio::flip(ncvslideio::Mat(sz.cy, sz.cx, CV_8UC(channels), data, (sz.cx * channels + 3) & -4), tmp, 0);
+        ncvslideio::imwrite(szFileName, tmp);
     }
 #else
     CV_UNUSED(window);
-    CV_LOG_WARNING("Save dialog requires enabled 'imgcodecs' module.");
+    //CV_LOG_WARNING("Save dialog requires enabled 'imgcodecs' module.");
     return;
 #endif
 }
@@ -2294,8 +2294,8 @@ int pollKey_W32()
 CV_IMPL int
 cvWaitKey(int delay)
 {
-    int64 time0 = cv::getTickCount();
-    int64 timeEnd = time0 + (int64)(delay * 0.001f * cv::getTickFrequency());
+    int64 time0 = ncvslideio::getTickCount();
+    int64 timeEnd = time0 + (int64)(delay * 0.001f * ncvslideio::getTickFrequency());
 
     for(;;)
     {
@@ -2305,7 +2305,7 @@ cvWaitKey(int delay)
             GetMessage(&message, 0, 0, 0);
         else if (PeekMessage(&message, 0, 0, 0, PM_REMOVE) == FALSE)
         {
-            int64 t = cv::getTickCount();
+            int64 t = ncvslideio::getTickCount();
             if (t - timeEnd >= 0)
                 return -1;  // no messages and no more time
             Sleep(1);
@@ -2464,7 +2464,7 @@ std::shared_ptr<CvTrackbar> createTrackbar_(CvWindow& window, const std::string&
     trackbar->id = tbs.idCommand;
     window.toolbar.trackbars.push_back(trackbar);
 
-    auto slider_name = cv::format("Trackbar%p", trackbar.get());
+    auto slider_name = ncvslideio::format("Trackbar%p", trackbar.get());
     trackbar->hwnd = CreateWindowEx(0, TRACKBAR_CLASS, slider_name.c_str(),
                         WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS |
                         TBS_FIXEDLENGTH | TBS_HORZ | TBS_BOTTOM,
@@ -2473,7 +2473,7 @@ std::shared_ptr<CvTrackbar> createTrackbar_(CvWindow& window, const std::string&
                         rect.bottom - rect.top, window.toolbar.toolbar,
                         (HMENU)(size_t)bcount, hg_hinstance, 0);
 
-    slider_name = cv::format("Buddy%p", trackbar.get());
+    slider_name = ncvslideio::format("Buddy%p", trackbar.get());
     trackbar->buddy = CreateWindowEx(0, "STATIC", slider_name.c_str(),
                         WS_CHILD | SS_RIGHT,
                         rect.left, rect.top,
@@ -2704,9 +2704,9 @@ cvSetPostprocessFuncWin32_(const void* callback)
 
 
 
-namespace cv { namespace impl {
+namespace ncvslideio { namespace impl {
 
-using namespace cv::highgui_backend;
+using namespace ncvslideio::highgui_backend;
 
 class Win32UITrackbar;
 
@@ -2739,7 +2739,7 @@ public:
 
     void destroy() CV_OVERRIDE
     {
-        cv::AutoLock lock(getWindowMutex());
+        ncvslideio::AutoLock lock(getWindowMutex());
         if (!window_.expired())
         {
             auto window = window_.lock();
@@ -2883,7 +2883,7 @@ public:
         auto trackbar = createTrackbar_(window, name, count, onChange, userdata);
         auto ui_trackbar = std::make_shared<Win32UITrackbar>(name, trackbar, shared_from_this());
         {
-            cv::AutoLock lock(getWindowMutex());
+            ncvslideio::AutoLock lock(getWindowMutex());
             trackbars_.emplace(name, ui_trackbar);
         }
         return std::static_pointer_cast<UITrackbar>(ui_trackbar);
@@ -2891,7 +2891,7 @@ public:
 
     std::shared_ptr<UITrackbar> findTrackbar(const std::string& name) CV_OVERRIDE
     {
-        cv::AutoLock lock(getWindowMutex());
+        ncvslideio::AutoLock lock(getWindowMutex());
         auto i = trackbars_.find(name);
         if (i != trackbars_.end())
         {
@@ -2949,15 +2949,15 @@ public:
         icvUpdateTrackbar(trackbar, pos);
     }
 
-    cv::Range getRange() const CV_OVERRIDE
+    ncvslideio::Range getRange() const CV_OVERRIDE
     {
         auto trackbar_ptr = trackbar_.lock();
         CV_Assert(trackbar_ptr);
         CvTrackbar& trackbar = *trackbar_ptr;
-        return cv::Range(trackbar.minval, trackbar.maxval);
+        return ncvslideio::Range(trackbar.minval, trackbar.maxval);
     }
 
-    void setRange(const cv::Range& range) CV_OVERRIDE
+    void setRange(const ncvslideio::Range& range) CV_OVERRIDE
     {
         auto trackbar_ptr = trackbar_.lock();
         CV_Assert(trackbar_ptr);
@@ -3047,7 +3047,7 @@ CvResult cv_getInstance(CV_OUT CvPluginUIBackend* handle) CV_NOEXCEPT
     {
         if (!handle)
             return CV_ERROR_FAIL;
-        *handle = cv::impl::getInstance().get();
+        *handle = ncvslideio::impl::getInstance().get();
         return CV_ERROR_OK;
     }
     catch (...)

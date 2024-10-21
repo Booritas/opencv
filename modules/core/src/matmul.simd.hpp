@@ -49,7 +49,7 @@
 #define CV_MAHALANOBIS_BASELINE_ONLY
 #define CV_MULTRANSPOSED_BASELINE_ONLY
 
-namespace cv {
+namespace ncvslideio {
 
 // forward declarations
 typedef void (*TransformFunc)(const uchar* src, uchar* dst, const uchar* m, int len, int scn, int dcn);
@@ -186,7 +186,7 @@ GEMMSingleMul( const T* a_data, size_t a_step,
 {
     int i, j, k, n = a_size.width, m = d_size.width, drows = d_size.height;
     const T *_a_data = a_data, *_b_data = b_data, *_c_data = c_data;
-    cv::AutoBuffer<T> _a_buf;
+    ncvslideio::AutoBuffer<T> _a_buf;
     T* a_buf = 0;
     size_t a_step0, a_step1, c_step0, c_step1, t_step;
 
@@ -217,7 +217,7 @@ GEMMSingleMul( const T* a_data, size_t a_step,
 
     if( n == 1 ) /* external product */
     {
-        cv::AutoBuffer<T> _b_buf;
+        ncvslideio::AutoBuffer<T> _b_buf;
         T* b_buf = 0;
 
         if( a_step > 1 && a_size.height > 1 )
@@ -371,7 +371,7 @@ GEMMSingleMul( const T* a_data, size_t a_step,
     }
     else
     {
-        cv::AutoBuffer<WT> _d_buf(m);
+        ncvslideio::AutoBuffer<WT> _d_buf(m);
         WT* d_buf = _d_buf.data();
 
         for( i = 0; i < drows; i++, _a_data += a_step0, _c_data += c_step0, d_data += d_step )
@@ -420,7 +420,7 @@ GEMMBlockMul( const T* a_data, size_t a_step,
 {
     int i, j, k, n = a_size.width, m = d_size.width;
     const T *_a_data = a_data, *_b_data = b_data;
-    cv::AutoBuffer<T> _a_buf;
+    ncvslideio::AutoBuffer<T> _a_buf;
     T* a_buf = 0;
     size_t a_step0, a_step1, t_step;
     int do_acc = flags & 16;

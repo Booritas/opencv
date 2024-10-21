@@ -4,7 +4,7 @@
 #ifndef OPENCV_CORE_SRC_UMATRIX_HPP
 #define OPENCV_CORE_SRC_UMATRIX_HPP
 
-namespace cv {
+namespace ncvslideio {
 
 struct CV_EXPORTS UMatDataAutoLock
 {

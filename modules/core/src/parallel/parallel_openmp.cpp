@@ -8,17 +8,17 @@
 #include "parallel.hpp"
 #include "opencv2/core/parallel/backend/parallel_for.openmp.hpp"
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 
 static
-std::shared_ptr<cv::parallel::openmp::ParallelForBackend>& getInstance()
+std::shared_ptr<ncvslideio::parallel::openmp::ParallelForBackend>& getInstance()
 {
-    static std::shared_ptr<cv::parallel::openmp::ParallelForBackend> g_instance = std::make_shared<cv::parallel::openmp::ParallelForBackend>();
+    static std::shared_ptr<ncvslideio::parallel::openmp::ParallelForBackend> g_instance = std::make_shared<ncvslideio::parallel::openmp::ParallelForBackend>();
     return g_instance;
 }
 
 #ifndef BUILD_PLUGIN
-std::shared_ptr<cv::parallel::ParallelForAPI> createParallelBackendOpenMP()
+std::shared_ptr<ncvslideio::parallel::ParallelForAPI> createParallelBackendOpenMP()
 {
     return getInstance();
 }
@@ -39,7 +39,7 @@ CvResult cv_getInstance(CV_OUT CvPluginParallelBackendAPI* handle) CV_NOEXCEPT
     {
         if (!handle)
             return CV_ERROR_FAIL;
-        *handle = cv::parallel::getInstance().get();
+        *handle = ncvslideio::parallel::getInstance().get();
         return CV_ERROR_OK;
     }
     catch (...)

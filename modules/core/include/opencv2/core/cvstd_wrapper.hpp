@@ -11,7 +11,7 @@
 #include <memory>  // std::shared_ptr
 #include <type_traits>  // std::enable_if
 
-namespace cv {
+namespace ncvslideio {
 
 using std::nullptr_t;
 
@@ -25,7 +25,7 @@ template <typename _Tp> using Ptr = std::shared_ptr<_Tp>;  // In ideal world it 
 template<typename _Tp, typename ... A1> static inline
 Ptr<_Tp> makePtr(const A1&... a1) { return std::make_shared<_Tp>(a1...); }
 
-#else  // cv::Ptr with compatibility workarounds
+#else  // ncvslideio::Ptr with compatibility workarounds
 
 // It should be defined for C-API types only.
 // C++ types should use regular "delete" operator.
@@ -149,6 +149,6 @@ Ptr<_Tp> makePtr(const A1&... a1)
 #endif // CV_DOXYGEN
 
 //! @} core_basic
-} // cv
+} // ncvslideio
 
 #endif //OPENCV_CORE_CVSTD_WRAPPER_HPP

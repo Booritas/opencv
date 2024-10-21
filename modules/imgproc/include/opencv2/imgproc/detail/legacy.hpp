@@ -7,7 +7,7 @@
 
 #include "opencv2/imgproc.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 #ifdef __OPENCV_BUILD
 
@@ -33,6 +33,6 @@ CV_EXPORTS float wrapperEMD_legacy(InputArray _signature1, InputArray _signature
 
 #endif
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // OPENCV_IMGPROC_DETAIL_LEGACY_HPP

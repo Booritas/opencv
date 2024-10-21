@@ -25,7 +25,7 @@
 *                                       minMaxLoc                                        *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T, typename WT> static void
@@ -1333,15 +1333,15 @@ static bool ipp_minMaxIdx(Mat &src, double* _minVal, double* _maxVal, int* _minI
     CV_INSTRUMENT_REGION_IPP();
 
 #if IPP_VERSION_X100 < 201800
-    // cv::minMaxIdx problem with NaN input
+    // ncvslideio::minMaxIdx problem with NaN input
     // Disable 32F processing only
-    if(src.depth() == CV_32F && cv::ipp::getIppTopFeatures() == ippCPUID_SSE42)
+    if(src.depth() == CV_32F && ncvslideio::ipp::getIppTopFeatures() == ippCPUID_SSE42)
         return false;
 #endif
 
 #if IPP_VERSION_X100 < 201801
-    // cv::minMaxIdx problem with index positions on AVX
-    if(!mask.empty() && _maxIdx && cv::ipp::getIppTopFeatures() != ippCPUID_SSE42)
+    // ncvslideio::minMaxIdx problem with index positions on AVX
+    if(!mask.empty() && _maxIdx && ncvslideio::ipp::getIppTopFeatures() != ippCPUID_SSE42)
         return false;
 #endif
 
@@ -1453,7 +1453,7 @@ static bool ipp_minMaxIdx(Mat &src, double* _minVal, double* _maxVal, int* _minI
             if(ptrs[1])
             {
                 Mat localMask(Size(size.width, 1), CV_8U, ptrs[1], maskStep);
-                if(!cv::countNonZero(localMask))
+                if(!ncvslideio::countNonZero(localMask))
                     continue;
             }
 #endif
@@ -1497,7 +1497,7 @@ static bool ipp_minMaxIdx(Mat &src, double* _minVal, double* _maxVal, int* _minI
 
 }
 
-void cv::minMaxIdx(InputArray _src, double* minVal,
+void ncvslideio::minMaxIdx(InputArray _src, double* minVal,
                    double* maxVal, int* minIdx, int* maxIdx,
                    InputArray _mask)
 {
@@ -1533,7 +1533,7 @@ void cv::minMaxIdx(InputArray _src, double* minVal,
         }
         else if (res != CV_HAL_ERROR_NOT_IMPLEMENTED)
         {
-            CV_Error_(cv::Error::StsInternal,
+            CV_Error_(ncvslideio::Error::StsInternal,
             ("HAL implementation minMaxIdx ==> " CVAUX_STR(cv_hal_minMaxIdx) " returned %d (0x%08x)", res, res));
         }
     }
@@ -1592,7 +1592,7 @@ void cv::minMaxIdx(InputArray _src, double* minVal,
         ofs2idx(src, maxidx, maxIdx);
 }
 
-void cv::minMaxLoc( InputArray _img, double* minVal, double* maxVal,
+void ncvslideio::minMaxLoc( InputArray _img, double* minVal, double* maxVal,
                     Point* minLoc, Point* maxLoc, InputArray mask )
 {
     CV_INSTRUMENT_REGION();
@@ -1628,7 +1628,7 @@ enum class ReduceMode
 template <typename T>
 struct reduceMinMaxImpl
 {
-    void operator()(const cv::Mat& src, cv::Mat& dst, ReduceMode mode, const int axis) const
+    void operator()(const ncvslideio::Mat& src, ncvslideio::Mat& dst, ReduceMode mode, const int axis) const
     {
         switch(mode)
         {
@@ -1648,7 +1648,7 @@ struct reduceMinMaxImpl
     }
 
     template <template<class> class Cmp>
-    static void reduceMinMaxApply(const cv::Mat& src, cv::Mat& dst, const int axis)
+    static void reduceMinMaxApply(const ncvslideio::Mat& src, ncvslideio::Mat& dst, const int axis)
     {
         Cmp<T> cmp;
 
@@ -1687,11 +1687,11 @@ struct reduceMinMaxImpl
     }
 };
 
-static void reduceMinMax(cv::InputArray src, cv::OutputArray dst, ReduceMode mode, int axis)
+static void reduceMinMax(ncvslideio::InputArray src, ncvslideio::OutputArray dst, ReduceMode mode, int axis)
 {
     CV_INSTRUMENT_REGION();
 
-    cv::Mat srcMat = src.getMat();
+    ncvslideio::Mat srcMat = src.getMat();
     axis = (axis + srcMat.dims) % srcMat.dims;
     CV_Assert(srcMat.channels() == 1 && axis >= 0 && axis < srcMat.dims);
 
@@ -1700,8 +1700,8 @@ static void reduceMinMax(cv::InputArray src, cv::OutputArray dst, ReduceMode mod
     sizes[axis] = 1;
 
     dst.create(srcMat.dims, sizes.data(), CV_32SC1); // indices
-    cv::Mat dstMat = dst.getMat();
-    dstMat.setTo(cv::Scalar::all(0));
+    ncvslideio::Mat dstMat = dst.getMat();
+    dstMat.setTo(ncvslideio::Scalar::all(0));
 
     if (!srcMat.isContinuous())
     {
@@ -1714,7 +1714,7 @@ static void reduceMinMax(cv::InputArray src, cv::OutputArray dst, ReduceMode mod
         dstMat = dstMat.clone();
     }
 
-    cv::detail::depthDispatch<reduceMinMaxImpl>(srcMat.depth(), srcMat, dstMat, mode, axis);
+    ncvslideio::detail::depthDispatch<reduceMinMaxImpl>(srcMat.depth(), srcMat, dstMat, mode, axis);
 
     if (needs_copy)
     {
@@ -1722,12 +1722,12 @@ static void reduceMinMax(cv::InputArray src, cv::OutputArray dst, ReduceMode mod
     }
 }
 
-void cv::reduceArgMin(InputArray src, OutputArray dst, int axis, bool lastIndex)
+void ncvslideio::reduceArgMin(InputArray src, OutputArray dst, int axis, bool lastIndex)
 {
     reduceMinMax(src, dst, lastIndex ? ReduceMode::LAST_MIN : ReduceMode::FIRST_MIN, axis);
 }
 
-void cv::reduceArgMax(InputArray src, OutputArray dst, int axis, bool lastIndex)
+void ncvslideio::reduceArgMax(InputArray src, OutputArray dst, int axis, bool lastIndex)
 {
     reduceMinMax(src, dst, lastIndex ? ReduceMode::LAST_MAX : ReduceMode::FIRST_MAX, axis);
 }

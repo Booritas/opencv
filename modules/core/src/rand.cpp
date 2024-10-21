@@ -48,7 +48,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 ///////////////////////////// Functions Declaration //////////////////////////////////////
@@ -574,7 +574,7 @@ void RNG::fill( InputOutputArray _mat, int disttype,
         CV_Assert( scaleFunc != 0 );
     }
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown distribution type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown distribution type" );
 
     const Mat* arrays[] = {&mat, 0};
     uchar* ptr;
@@ -651,32 +651,32 @@ void RNG::fill( InputOutputArray _mat, int disttype,
 
 }
 
-cv::RNG& cv::theRNG()
+ncvslideio::RNG& ncvslideio::theRNG()
 {
     return getCoreTlsData().rng;
 }
 
-void cv::setRNGSeed(int seed)
+void ncvslideio::setRNGSeed(int seed)
 {
     theRNG() = RNG(static_cast<uint64>(seed));
 }
 
 
-void cv::randu(InputOutputArray dst, InputArray low, InputArray high)
+void ncvslideio::randu(InputOutputArray dst, InputArray low, InputArray high)
 {
     CV_INSTRUMENT_REGION();
 
     theRNG().fill(dst, RNG::UNIFORM, low, high);
 }
 
-void cv::randn(InputOutputArray dst, InputArray mean, InputArray stddev)
+void ncvslideio::randn(InputOutputArray dst, InputArray mean, InputArray stddev)
 {
     CV_INSTRUMENT_REGION();
 
     theRNG().fill(dst, RNG::NORMAL, mean, stddev);
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static void
@@ -717,7 +717,7 @@ typedef void (*RandShuffleFunc)( Mat& dst, RNG& rng, double iterFactor );
 
 }
 
-void cv::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
+void ncvslideio::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
 {
     CV_INSTRUMENT_REGION();
 
@@ -754,8 +754,8 @@ void cv::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
 #ifndef OPENCV_EXCLUDE_C_API
 
 // Related with https://github.com/opencv/opencv/issues/26258
-// To suppress cast-user-defined warning for casting CvRNG to cv::RNG& with GCC14.
-// ( CvRNG is uint64, and cv::RNG has only status member which is uint64. )
+// To suppress cast-user-defined warning for casting CvRNG to ncvslideio::RNG& with GCC14.
+// ( CvRNG is uint64, and ncvslideio::RNG has only status member which is uint64. )
 
 #if defined(__GNUC__) && __GNUC__ >= 14
 #define CV_IGNORE_CAST_USER_DEFINED_WARNING
@@ -764,7 +764,7 @@ void cv::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
 CV_IMPL void
 cvRandArr( CvRNG* _rng, CvArr* arr, int disttype, CvScalar param1, CvScalar param2 )
 {
-    cv::Mat mat = cv::cvarrToMat(arr);
+    ncvslideio::Mat mat = ncvslideio::cvarrToMat(arr);
 
 #ifdef CV_IGNORE_CAST_USER_DEFINED_WARNING
 #pragma GCC diagnostic push
@@ -772,32 +772,32 @@ cvRandArr( CvRNG* _rng, CvArr* arr, int disttype, CvScalar param1, CvScalar para
 #endif
 
     // !!! this will only work for current 64-bit MWC RNG !!!
-    cv::RNG& rng = _rng ? (cv::RNG&)*_rng : cv::theRNG();
+    ncvslideio::RNG& rng = _rng ? (ncvslideio::RNG&)*_rng : ncvslideio::theRNG();
 
 #ifdef CV_IGNORE_CAST_USER_DEFINED_WARNING
 #pragma GCC diagnostic pop
 #endif
 
     rng.fill(mat, disttype == CV_RAND_NORMAL ?
-        cv::RNG::NORMAL : cv::RNG::UNIFORM, cv::Scalar(param1), cv::Scalar(param2) );
+        ncvslideio::RNG::NORMAL : ncvslideio::RNG::UNIFORM, ncvslideio::Scalar(param1), ncvslideio::Scalar(param2) );
 }
 
 CV_IMPL void cvRandShuffle( CvArr* arr, CvRNG* _rng, double iter_factor )
 {
-    cv::Mat dst = cv::cvarrToMat(arr);
+    ncvslideio::Mat dst = ncvslideio::cvarrToMat(arr);
 
 #ifdef CV_IGNORE_CAST_USER_DEFINED_WARNING
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-user-defined"
 #endif
 
-    cv::RNG& rng = _rng ? (cv::RNG&)*_rng : cv::theRNG();
+    ncvslideio::RNG& rng = _rng ? (ncvslideio::RNG&)*_rng : ncvslideio::theRNG();
 
 #ifdef CV_IGNORE_CAST_USER_DEFINED_WARNING
 #pragma GCC diagnostic pop
 #endif
 
-    cv::randShuffle( dst, iter_factor, &rng );
+    ncvslideio::randShuffle( dst, iter_factor, &rng );
 }
 
 #ifdef CV_IGNORE_CAST_USER_DEFINED_WARNING
@@ -853,11 +853,11 @@ CV_IMPL void cvRandShuffle( CvArr* arr, CvRNG* _rng, double iter_factor )
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
-cv::RNG_MT19937::RNG_MT19937(unsigned s) { seed(s); }
+ncvslideio::RNG_MT19937::RNG_MT19937(unsigned s) { seed(s); }
 
-cv::RNG_MT19937::RNG_MT19937() { seed(5489U); }
+ncvslideio::RNG_MT19937::RNG_MT19937() { seed(5489U); }
 
-void cv::RNG_MT19937::seed(unsigned s)
+void ncvslideio::RNG_MT19937::seed(unsigned s)
 {
     state[0]= s;
     for (mti = 1; mti < N; mti++)
@@ -867,7 +867,7 @@ void cv::RNG_MT19937::seed(unsigned s)
     }
 }
 
-unsigned cv::RNG_MT19937::next()
+unsigned ncvslideio::RNG_MT19937::next()
 {
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
     static unsigned mag01[2] = { 0x0U, /*MATRIX_A*/ 0x9908b0dfU};
@@ -909,27 +909,27 @@ unsigned cv::RNG_MT19937::next()
     return y;
 }
 
-cv::RNG_MT19937::operator unsigned() { return next(); }
+ncvslideio::RNG_MT19937::operator unsigned() { return next(); }
 
-cv::RNG_MT19937::operator int() { return (int)next();}
+ncvslideio::RNG_MT19937::operator int() { return (int)next();}
 
-cv::RNG_MT19937::operator float() { return next() * (1.f / 4294967296.f); }
+ncvslideio::RNG_MT19937::operator float() { return next() * (1.f / 4294967296.f); }
 
-cv::RNG_MT19937::operator double()
+ncvslideio::RNG_MT19937::operator double()
 {
     unsigned a = next() >> 5;
     unsigned b = next() >> 6;
     return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
 }
 
-int cv::RNG_MT19937::uniform(int a, int b) { return (int)(next() % (b - a) + a); }
+int ncvslideio::RNG_MT19937::uniform(int a, int b) { return (int)(next() % (b - a) + a); }
 
-float cv::RNG_MT19937::uniform(float a, float b) { return ((float)*this)*(b - a) + a; }
+float ncvslideio::RNG_MT19937::uniform(float a, float b) { return ((float)*this)*(b - a) + a; }
 
-double cv::RNG_MT19937::uniform(double a, double b) { return ((double)*this)*(b - a) + a; }
+double ncvslideio::RNG_MT19937::uniform(double a, double b) { return ((double)*this)*(b - a) + a; }
 
-unsigned cv::RNG_MT19937::operator ()(unsigned b) { return next() % b; }
+unsigned ncvslideio::RNG_MT19937::operator ()(unsigned b) { return next() % b; }
 
-unsigned cv::RNG_MT19937::operator ()() { return next(); }
+unsigned ncvslideio::RNG_MT19937::operator ()() { return next(); }
 
 /* End of file. */

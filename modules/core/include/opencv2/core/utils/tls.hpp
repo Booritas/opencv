@@ -9,7 +9,7 @@
 #error "tls.hpp must be included after opencv2/core/utility.hpp or opencv2/core.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 //! @addtogroup core_utils
 //! @{
@@ -43,7 +43,7 @@ protected:
 private:
     int key_;
 
-    friend class cv::details::TlsStorage;  // core/src/system.cpp
+    friend class ncvslideio::details::TlsStorage;  // core/src/system.cpp
 
 public:
     void cleanup(); //!< Release created TLS data container objects. It is similar to release() call, but it keeps TLS container valid.
@@ -87,7 +87,7 @@ protected:
 template <typename T>
 class TLSDataAccumulator : public TLSData<T>
 {
-    mutable cv::Mutex mutex;
+    mutable ncvslideio::Mutex mutex;
     mutable std::vector<T*> dataFromTerminatedThreads;
     std::vector<T*> detachedData;
     bool cleanupMode;

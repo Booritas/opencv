@@ -5,7 +5,7 @@
 #ifndef OPENCV_UTILS_LOCK_HPP
 #define OPENCV_UTILS_LOCK_HPP
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 
 /** @brief A simple scoped lock (RAII-style locking for exclusive/write access).

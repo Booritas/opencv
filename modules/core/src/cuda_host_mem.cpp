@@ -44,8 +44,8 @@
 #include "precomp.hpp"
 #include <map>
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 #ifdef HAVE_CUDA
 
@@ -133,7 +133,7 @@ private:
 
 #endif
 
-MatAllocator* cv::cuda::HostMem::getAllocator(AllocType alloc_type)
+MatAllocator* ncvslideio::cuda::HostMem::getAllocator(AllocType alloc_type)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(alloc_type);
@@ -148,7 +148,7 @@ MatAllocator* cv::cuda::HostMem::getAllocator(AllocType alloc_type)
     case PAGE_LOCKED:    flag = cudaHostAllocDefault; break;
     case SHARED:         flag = cudaHostAllocMapped;  break;
     case WRITE_COMBINED: flag = cudaHostAllocWriteCombined; break;
-    default:             CV_Error(cv::Error::StsBadFlag, "Invalid alloc type");
+    default:             CV_Error(ncvslideio::Error::StsBadFlag, "Invalid alloc type");
     }
 
     Ptr<MatAllocator>& a = allocators[flag];
@@ -175,7 +175,7 @@ namespace
 }
 #endif
 
-void cv::cuda::HostMem::create(int rows_, int cols_, int type_)
+void ncvslideio::cuda::HostMem::create(int rows_, int cols_, int type_)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(rows_);
@@ -219,7 +219,7 @@ void cv::cuda::HostMem::create(int rows_, int cols_, int type_)
         size_t nettosize = (size_t)_nettosize;
 
         if (_nettosize != (int64)nettosize)
-            CV_Error(cv::Error::StsNoMem, "Too big buffer is allocated");
+            CV_Error(ncvslideio::Error::StsNoMem, "Too big buffer is allocated");
 
         size_t datasize = alignSize(nettosize, (int)sizeof(*refcount));
 
@@ -230,19 +230,19 @@ void cv::cuda::HostMem::create(int rows_, int cols_, int type_)
         case PAGE_LOCKED:    cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocDefault) ); break;
         case SHARED:         cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocMapped) );  break;
         case WRITE_COMBINED: cudaSafeCall( cudaHostAlloc(&ptr, datasize, cudaHostAllocWriteCombined) ); break;
-        default:             CV_Error(cv::Error::StsBadFlag, "Invalid alloc type");
+        default:             CV_Error(ncvslideio::Error::StsBadFlag, "Invalid alloc type");
         }
 
         datastart = data =  (uchar*)ptr;
         dataend = data + nettosize;
 
-        refcount = (int*)cv::fastMalloc(sizeof(*refcount));
+        refcount = (int*)ncvslideio::fastMalloc(sizeof(*refcount));
         *refcount = 1;
     }
 #endif
 }
 
-HostMem cv::cuda::HostMem::reshape(int new_cn, int new_rows) const
+HostMem ncvslideio::cuda::HostMem::reshape(int new_cn, int new_rows) const
 {
     HostMem hdr = *this;
 
@@ -260,15 +260,15 @@ HostMem cv::cuda::HostMem::reshape(int new_cn, int new_rows) const
         int total_size = total_width * rows;
 
         if (!isContinuous())
-            CV_Error(cv::Error::BadStep, "The matrix is not continuous, thus its number of rows can not be changed");
+            CV_Error(ncvslideio::Error::BadStep, "The matrix is not continuous, thus its number of rows can not be changed");
 
         if ((unsigned)new_rows > (unsigned)total_size)
-            CV_Error(cv::Error::StsOutOfRange, "Bad new number of rows");
+            CV_Error(ncvslideio::Error::StsOutOfRange, "Bad new number of rows");
 
         total_width = total_size / new_rows;
 
         if (total_width * new_rows != total_size)
-            CV_Error(cv::Error::StsBadArg, "The total number of matrix elements is not divisible by the new number of rows");
+            CV_Error(ncvslideio::Error::StsBadArg, "The total number of matrix elements is not divisible by the new number of rows");
 
         hdr.rows = new_rows;
         hdr.step = total_width * elemSize1();
@@ -277,7 +277,7 @@ HostMem cv::cuda::HostMem::reshape(int new_cn, int new_rows) const
     int new_width = total_width / new_cn;
 
     if (new_width * new_cn != total_width)
-        CV_Error(cv::Error::BadNumChannels, "The total width is not divisible by the new number of channels");
+        CV_Error(ncvslideio::Error::BadNumChannels, "The total width is not divisible by the new number of channels");
 
     hdr.cols = new_width;
     hdr.flags = (hdr.flags & ~CV_MAT_CN_MASK) | ((new_cn - 1) << CV_CN_SHIFT);
@@ -285,7 +285,7 @@ HostMem cv::cuda::HostMem::reshape(int new_cn, int new_rows) const
     return hdr;
 }
 
-void cv::cuda::HostMem::release()
+void ncvslideio::cuda::HostMem::release()
 {
 #ifdef HAVE_CUDA
     if (refcount && CV_XADD(refcount, -1) == 1)
@@ -300,7 +300,7 @@ void cv::cuda::HostMem::release()
 #endif
 }
 
-GpuMat cv::cuda::HostMem::createGpuMatHeader() const
+GpuMat ncvslideio::cuda::HostMem::createGpuMatHeader() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -314,7 +314,7 @@ GpuMat cv::cuda::HostMem::createGpuMatHeader() const
 #endif
 }
 
-void cv::cuda::registerPageLocked(Mat& m)
+void ncvslideio::cuda::registerPageLocked(Mat& m)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(m);
@@ -325,7 +325,7 @@ void cv::cuda::registerPageLocked(Mat& m)
 #endif
 }
 
-void cv::cuda::unregisterPageLocked(Mat& m)
+void ncvslideio::cuda::unregisterPageLocked(Mat& m)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(m);

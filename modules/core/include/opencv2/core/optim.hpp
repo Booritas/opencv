@@ -44,7 +44,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /** @addtogroup core_optim
@@ -253,7 +253,7 @@ public:
                                       TermCriteria termcrit=TermCriteria(TermCriteria::MAX_ITER+TermCriteria::EPS,5000,0.000001));
 };
 
-//! return codes for cv::solveLP() function
+//! return codes for ncvslideio::solveLP() function
 enum SolveLPResult
 {
     SOLVELP_LOST   = -3, //!< problem is feasible, but solver lost solution due to floating-point arithmetic errors
@@ -302,6 +302,6 @@ CV_EXPORTS_W int solveLP(InputArray Func, InputArray Constr, OutputArray z);
 
 //! @}
 
-}// cv
+}// ncvslideio
 
 #endif

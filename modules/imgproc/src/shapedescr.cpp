@@ -41,7 +41,7 @@
 #include "precomp.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 const float EPS = 1.0e-4f;
@@ -188,10 +188,10 @@ static void findMinEnclosingCircle(const PT *pts, int count, Point2f &center, fl
         }
     }
 }
-} // namespace cv
+} // namespace ncvslideio
 
 // see Welzl, Emo. Smallest enclosing disks (balls and ellipsoids). Springer Berlin Heidelberg, 1991.
-void cv::minEnclosingCircle( InputArray _points, Point2f& _center, float& _radius )
+void ncvslideio::minEnclosingCircle( InputArray _points, Point2f& _center, float& _radius )
 {
     CV_INSTRUMENT_REGION();
 
@@ -270,7 +270,7 @@ void cv::minEnclosingCircle( InputArray _points, Point2f& _center, float& _radiu
 
 
 // calculates length of a curve (e.g. contour perimeter)
-double cv::arcLength( InputArray _curve, bool is_closed )
+double ncvslideio::arcLength( InputArray _curve, bool is_closed )
 {
     CV_INSTRUMENT_REGION();
 
@@ -305,7 +305,7 @@ double cv::arcLength( InputArray _curve, bool is_closed )
 }
 
 // area of a whole sequence
-double cv::contourArea( InputArray _contour, bool oriented )
+double ncvslideio::contourArea( InputArray _contour, bool oriented )
 {
     CV_INSTRUMENT_REGION();
 
@@ -337,7 +337,7 @@ double cv::contourArea( InputArray _contour, bool oriented )
     return a00;
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 static inline Point2f getOfs(int i, float eps)
@@ -357,7 +357,7 @@ static RotatedRect fitEllipseNoDirect( InputArray _points )
     RotatedRect box;
 
     if( n < 5 )
-        CV_Error( cv::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
+        CV_Error( ncvslideio::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
 
     // New fitellipse algorithm, contributed by Dr. Daniel Weiss
     Point2f c(0,0);
@@ -501,7 +501,7 @@ static RotatedRect fitEllipseNoDirect( InputArray _points )
 }
 }
 
-cv::RotatedRect cv::fitEllipse( InputArray _points )
+ncvslideio::RotatedRect ncvslideio::fitEllipse( InputArray _points )
 {
     CV_INSTRUMENT_REGION();
 
@@ -510,7 +510,7 @@ cv::RotatedRect cv::fitEllipse( InputArray _points )
     return n == 5 ? fitEllipseDirect(points) : fitEllipseNoDirect(points);
 }
 
-cv::RotatedRect cv::fitEllipseAMS( InputArray _points )
+ncvslideio::RotatedRect ncvslideio::fitEllipseAMS( InputArray _points )
 {
     Mat points = _points.getMat();
     int i, n = points.checkVector(2);
@@ -520,7 +520,7 @@ cv::RotatedRect cv::fitEllipseAMS( InputArray _points )
     RotatedRect box;
 
     if( n < 5 )
-        CV_Error( cv::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
+        CV_Error( ncvslideio::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
 
     Point2f c(0,0);
 
@@ -564,7 +564,7 @@ cv::RotatedRect cv::fitEllipseAMS( InputArray _points )
         A.at<double>(i,4) = py;
         A.at<double>(i,5) = 1.0;
     }
-    cv::mulTransposed( A, DM, true, noArray(), 1.0, -1 );
+    ncvslideio::mulTransposed( A, DM, true, noArray(), 1.0, -1 );
     DM *= (1.0/n);
     double dnm = ( DM(2,5)*(DM(0,5) + DM(2,5)) - (DM(1,5)*DM(1,5)) );
     double ddm =  (4.*(DM(0,5) + DM(2,5))*( (DM(0,5)*DM(2,5)) - (DM(1,5)*DM(1,5))));
@@ -602,7 +602,7 @@ cv::RotatedRect cv::fitEllipseAMS( InputArray _points )
     M(4,3)=DM(3,4);
     M(4,4)=DM(4,4);
 
-    if (fabs(cv::determinant(M)) > 1.0e-10) {
+    if (fabs(ncvslideio::determinant(M)) > 1.0e-10) {
             Mat eVal, eVec;
             eigenNonSymmetric(M, eVal, eVec);
 
@@ -685,16 +685,16 @@ cv::RotatedRect cv::fitEllipseAMS( InputArray _points )
 
 
         } else {
-            box = cv::fitEllipseDirect( points );
+            box = ncvslideio::fitEllipseDirect( points );
         }
     } else {
-        box = cv::fitEllipseNoDirect( points );
+        box = ncvslideio::fitEllipseNoDirect( points );
     }
 
     return box;
 }
 
-cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
+ncvslideio::RotatedRect ncvslideio::fitEllipseDirect( InputArray _points )
 {
     Mat points = _points.getMat();
     int i, n = points.checkVector(2);
@@ -705,7 +705,7 @@ cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
     RotatedRect box;
 
     if( n < 5 )
-        CV_Error( cv::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
+        CV_Error( ncvslideio::Error::StsBadSize, "There should be at least 5 points to fit the ellipse" );
 
     Point2d c(0., 0.);
 
@@ -754,7 +754,7 @@ cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
             A.at<double>(i,4) = py;
             A.at<double>(i,5) = 1.0;
         }
-        cv::mulTransposed( A, DM, true, noArray(), 1.0, -1 );
+        ncvslideio::mulTransposed( A, DM, true, noArray(), 1.0, -1 );
         DM *= (1.0/n);
 
         TM(0,0) = DM(0,5)*DM(3,5)*DM(4,4) - DM(0,5)*DM(3,4)*DM(4,5) - DM(0,4)*DM(3,5)*DM(5,4) + \
@@ -789,7 +789,7 @@ cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
         M(2,1) = (DM(0,1) + (DM(0,3)*TM(0,1) + DM(0,4)*TM(1,1) + DM(0,5)*TM(2,1))/Ts)/2.;
         M(2,2) = (DM(0,2) + (DM(0,3)*TM(0,2) + DM(0,4)*TM(1,2) + DM(0,5)*TM(2,2))/Ts)/2.;
 
-        double det = fabs(cv::determinant(M));
+        double det = fabs(ncvslideio::determinant(M));
         if (fabs(det) > 1.0e-10)
             break;
         eps = (float)(s/(n*2)*1e-2);
@@ -857,7 +857,7 @@ cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
             box.angle = (float)(fmod(theta*180/CV_PI,180.0));
         };
     } else {
-        box = cv::fitEllipseNoDirect( points );
+        box = ncvslideio::fitEllipseNoDirect( points );
     }
     return box;
 }
@@ -867,12 +867,12 @@ cv::RotatedRect cv::fitEllipseDirect( InputArray _points )
 CV_IMPL int
 cvMinEnclosingCircle( const void* array, CvPoint2D32f * _center, float *_radius )
 {
-    cv::AutoBuffer<double> abuf;
-    cv::Mat points = cv::cvarrToMat(array, false, false, 0, &abuf);
-    cv::Point2f center;
+    ncvslideio::AutoBuffer<double> abuf;
+    ncvslideio::Mat points = ncvslideio::cvarrToMat(array, false, false, 0, &abuf);
+    ncvslideio::Point2f center;
     float radius;
 
-    cv::minEnclosingCircle(points, center, radius);
+    ncvslideio::minEnclosingCircle(points, center, radius);
     if(_center)
         *_center = cvPoint2D32f(center);
     if(_radius)
@@ -914,8 +914,8 @@ icvMemCopy( double **buf1, double **buf2, double **buf3, int *b_max )
 /* area of a contour sector */
 static double icvContourSecArea( CvSeq * contour, CvSlice slice )
 {
-    cv::Point pt;                 /*  pointer to points   */
-    cv::Point pt_s, pt_e;         /*  first and last points  */
+    ncvslideio::Point pt;                 /*  pointer to points   */
+    ncvslideio::Point pt_s, pt_e;         /*  first and last points  */
     CvSeqReader reader;         /*  points reader of contour   */
 
     int p_max = 2, p_ind;
@@ -1084,7 +1084,7 @@ cvContourArea( const void *array, CvSlice slice, int oriented )
     {
         contour = (CvSeq*)array;
         if( !CV_IS_SEQ_POLYLINE( contour ))
-            CV_Error( cv::Error::StsBadArg, "Unsupported sequence type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported sequence type" );
     }
     else
     {
@@ -1093,13 +1093,13 @@ cvContourArea( const void *array, CvSlice slice, int oriented )
 
     if( cvSliceLength( slice, contour ) == contour->total )
     {
-        cv::AutoBuffer<double> abuf;
-        cv::Mat points = cv::cvarrToMat(contour, false, false, 0, &abuf);
-        return cv::contourArea( points, oriented !=0 );
+        ncvslideio::AutoBuffer<double> abuf;
+        ncvslideio::Mat points = ncvslideio::cvarrToMat(contour, false, false, 0, &abuf);
+        return ncvslideio::contourArea( points, oriented !=0 );
     }
 
     if( CV_SEQ_ELTYPE( contour ) != CV_32SC2 )
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
         "Only curves with integer coordinates are supported in case of contour slice" );
     area = icvContourSecArea( contour, slice );
     return oriented ? area : fabs(area);
@@ -1125,7 +1125,7 @@ cvArcLength( const void *array, CvSlice slice, int is_closed )
     {
         contour = (CvSeq*)array;
         if( !CV_IS_SEQ_POLYLINE( contour ))
-            CV_Error( cv::Error::StsBadArg, "Unsupported sequence type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported sequence type" );
         if( is_closed < 0 )
             is_closed = CV_IS_SEQ_CLOSED( contour );
     }
@@ -1197,9 +1197,9 @@ cvArcLength( const void *array, CvSlice slice, int is_closed )
 CV_IMPL CvBox2D
 cvFitEllipse2( const CvArr* array )
 {
-    cv::AutoBuffer<double> abuf;
-    cv::Mat points = cv::cvarrToMat(array, false, false, 0, &abuf);
-    return cvBox2D(cv::fitEllipse(points));
+    ncvslideio::AutoBuffer<double> abuf;
+    ncvslideio::Mat points = ncvslideio::cvarrToMat(array, false, false, 0, &abuf);
+    return cvBox2D(ncvslideio::fitEllipse(points));
 }
 
 /* End of file. */

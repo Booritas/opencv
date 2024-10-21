@@ -8,7 +8,7 @@
 
 #include "opencv2/core/utils/plugin_loader.private.hpp"  // DynamicLib
 
-namespace cv { namespace detail {
+namespace ncvslideio { namespace detail {
 
 typedef VAStatus (*FN_vaDeriveImage)(VADisplay dpy, VASurfaceID surface, VAImage *image);
 typedef VAStatus (*FN_vaDestroyImage)(VADisplay dpy, VAImageID image);
@@ -44,13 +44,13 @@ static FN_vaGetImage fn_vaGetImage = NULL;
 #define vaGetImage fn_vaGetImage
 
 
-static std::shared_ptr<cv::plugin::impl::DynamicLib> loadLibVA()
+static std::shared_ptr<ncvslideio::plugin::impl::DynamicLib> loadLibVA()
 {
-    std::shared_ptr<cv::plugin::impl::DynamicLib> lib;
+    std::shared_ptr<ncvslideio::plugin::impl::DynamicLib> lib;
     const char* envPath = getenv("OPENCV_LIBVA_RUNTIME");
     if (envPath)
     {
-        lib = std::make_shared<cv::plugin::impl::DynamicLib>(envPath);
+        lib = std::make_shared<ncvslideio::plugin::impl::DynamicLib>(envPath);
         return lib;
     }
     static const char* const candidates[] = {
@@ -60,7 +60,7 @@ static std::shared_ptr<cv::plugin::impl::DynamicLib> loadLibVA()
     };
     for (int i = 0; i < 3; ++i)
     {
-        lib = std::make_shared<cv::plugin::impl::DynamicLib>(candidates[i]);
+        lib = std::make_shared<ncvslideio::plugin::impl::DynamicLib>(candidates[i]);
         if (lib->isLoaded())
             break;
     }
@@ -75,7 +75,7 @@ static void init_libva()
         if (!library || !library->isLoaded())
         {
             library.reset();
-            CV_Error(cv::Error::StsBadFunc, "OpenCV can't load VA library (libva)");
+            CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV can't load VA library (libva)");
         }
         auto& lib = *library.get();
 #define VA_LOAD_SYMBOL(name) fn_ ## name = reinterpret_cast<FN_ ## name>(lib.getSymbol(#name)); \
@@ -83,7 +83,7 @@ static void init_libva()
         { \
             library.reset(); \
             initialized = true; \
-            CV_Error_(cv::Error::StsBadFunc, ("OpenCV can't load VA library (libva), missing symbol: %s", #name)); \
+            CV_Error_(ncvslideio::Error::StsBadFunc, ("OpenCV can't load VA library (libva), missing symbol: %s", #name)); \
         }
 
         VA_LOAD_SYMBOL(vaDeriveImage);
@@ -99,7 +99,7 @@ static void init_libva()
         initialized = true;
     }
     if (!library)
-        CV_Error(cv::Error::StsBadFunc, "OpenCV can't load/initialize VA library (libva)");
+        CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV can't load/initialize VA library (libva)");
 }
 
 }}  // namespace

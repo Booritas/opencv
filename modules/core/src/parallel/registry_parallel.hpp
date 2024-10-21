@@ -7,7 +7,7 @@
 
 #include "factory_parallel.hpp"
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 
 struct ParallelBackendInfo
 {

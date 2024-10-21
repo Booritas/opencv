@@ -49,7 +49,7 @@
 #include <climits>
 #include "opencv2/core/fast_math.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_utils
@@ -175,6 +175,6 @@ template<> inline hfloat saturate_cast<hfloat>(double v)  { return hfloat((float
 
 //! @}
 
-} // cv
+} // ncvslideio
 
 #endif // OPENCV_CORE_SATURATE_HPP

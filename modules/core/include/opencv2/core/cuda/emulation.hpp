@@ -52,7 +52,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     struct Emulation
     {
@@ -262,7 +262,7 @@ namespace cv { namespace cuda { namespace device
             }
         };
     }; //struct Emulation
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

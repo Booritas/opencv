@@ -49,7 +49,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     template <class T>
     __device__ __forceinline__ T warp_reduce(volatile T *ptr , const unsigned int tid = threadIdx.x)
@@ -69,7 +69,7 @@ namespace cv { namespace cuda { namespace device
 
         return ptr[tid - lane];
     }
-}}} // namespace cv { namespace cuda { namespace cudev {
+}}} // namespace ncvslideio { namespace cuda { namespace cudev {
 
 //! @endcond
 

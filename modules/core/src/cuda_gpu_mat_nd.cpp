@@ -4,8 +4,8 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 GpuMatND::~GpuMatND() = default;
 
@@ -40,7 +40,7 @@ GpuMatND GpuMatND::operator()(const std::vector<Range>& ranges) const
         }
     }
 
-    ret.flags = cv::updateContinuityFlag(ret.flags, dims, ret.size.data(), ret.step.data());
+    ret.flags = ncvslideio::updateContinuityFlag(ret.flags, dims, ret.size.data(), ret.step.data());
 
     return ret;
 }
@@ -108,7 +108,7 @@ void GpuMatND::setFields(SizeArray _size, int _type, StepArray _step)
         step = std::move(_step);
         step.push_back(elemSize());
 
-        flags = cv::updateContinuityFlag(flags, dims, size.data(), step.data());
+        flags = ncvslideio::updateContinuityFlag(flags, dims, size.data(), step.data());
     }
 
     CV_Assert(size.size() == step.size());

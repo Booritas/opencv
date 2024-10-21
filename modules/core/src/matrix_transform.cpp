@@ -10,7 +10,7 @@
 #include <algorithm> // std::swap_ranges
 #include <numeric> // std::accumulate
 
-namespace cv {
+namespace ncvslideio {
 
 ////////////////////////////////////// transpose /////////////////////////////////////////
 
@@ -743,7 +743,7 @@ static bool ipp_flip(Mat &src, Mat &dst, int flip_mode)
 
     // Details: https://github.com/opencv/opencv/issues/12943
     if (flip_mode <= 0 /* swap rows */
-        && cv::ipp::getIppTopFeatures() != ippCPUID_SSE42
+        && ncvslideio::ipp::getIppTopFeatures() != ippCPUID_SSE42
         && (int64_t)(src.total()) * src.elemSize() >= CV_BIG_INT(0x80000000)/*2Gb*/
     )
         return false;
@@ -976,7 +976,7 @@ void broadcast(InputArray _src, InputArray _shape, OutputArray _dst) {
     int max_ndims = std::max(dims_src, dims_shape);
     const int all_ndims[2] = {src.dims, dst.dims};
     const int* orig_shapes[2] = {src.size.p, dst.size.p};
-    cv::AutoBuffer<size_t> buff(max_ndims * 4);
+    ncvslideio::AutoBuffer<size_t> buff(max_ndims * 4);
     int* flatten_shapes[2] = {(int*)buff.data(), (int*)(buff.data() + max_ndims)};
     size_t* flatten_steps[2] = {(size_t*)(buff.data() + 2 * max_ndims), (size_t*)(buff.data() + 3 * max_ndims)};
     if (_flatten_for_broadcast(2, max_ndims, all_ndims, orig_shapes, flatten_shapes, flatten_steps)) {
@@ -1033,7 +1033,7 @@ void broadcast(InputArray _src, InputArray _shape, OutputArray _dst) {
             } else if (esz == 8) {
                 OPENCV_CORE_BROADCAST_LOOP(int64_t);
             } else {
-                CV_Error(cv::Error::StsNotImplemented, "");
+                CV_Error(ncvslideio::Error::StsNotImplemented, "");
             }
             #undef OPENCV_CORE_BROADCAST_LOOP
         }

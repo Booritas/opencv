@@ -9,7 +9,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSE
 #  define CV_TRY_SSE 1
 #  define CV_CPU_FORCE_SSE 0
-#  define CV_CPU_HAS_SUPPORT_SSE (cv::checkHardwareSupport(CV_CPU_SSE))
+#  define CV_CPU_HAS_SUPPORT_SSE (ncvslideio::checkHardwareSupport(CV_CPU_SSE))
 #  define CV_CPU_CALL_SSE(fn, args) if (CV_CPU_HAS_SUPPORT_SSE) return (opt_SSE::fn args)
 #  define CV_CPU_CALL_SSE_(fn, args) if (CV_CPU_HAS_SUPPORT_SSE) return (opt_SSE::fn args)
 #else
@@ -30,7 +30,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSE2
 #  define CV_TRY_SSE2 1
 #  define CV_CPU_FORCE_SSE2 0
-#  define CV_CPU_HAS_SUPPORT_SSE2 (cv::checkHardwareSupport(CV_CPU_SSE2))
+#  define CV_CPU_HAS_SUPPORT_SSE2 (ncvslideio::checkHardwareSupport(CV_CPU_SSE2))
 #  define CV_CPU_CALL_SSE2(fn, args) if (CV_CPU_HAS_SUPPORT_SSE2) return (opt_SSE2::fn args)
 #  define CV_CPU_CALL_SSE2_(fn, args) if (CV_CPU_HAS_SUPPORT_SSE2) return (opt_SSE2::fn args)
 #else
@@ -51,7 +51,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSE3
 #  define CV_TRY_SSE3 1
 #  define CV_CPU_FORCE_SSE3 0
-#  define CV_CPU_HAS_SUPPORT_SSE3 (cv::checkHardwareSupport(CV_CPU_SSE3))
+#  define CV_CPU_HAS_SUPPORT_SSE3 (ncvslideio::checkHardwareSupport(CV_CPU_SSE3))
 #  define CV_CPU_CALL_SSE3(fn, args) if (CV_CPU_HAS_SUPPORT_SSE3) return (opt_SSE3::fn args)
 #  define CV_CPU_CALL_SSE3_(fn, args) if (CV_CPU_HAS_SUPPORT_SSE3) return (opt_SSE3::fn args)
 #else
@@ -72,7 +72,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSSE3
 #  define CV_TRY_SSSE3 1
 #  define CV_CPU_FORCE_SSSE3 0
-#  define CV_CPU_HAS_SUPPORT_SSSE3 (cv::checkHardwareSupport(CV_CPU_SSSE3))
+#  define CV_CPU_HAS_SUPPORT_SSSE3 (ncvslideio::checkHardwareSupport(CV_CPU_SSSE3))
 #  define CV_CPU_CALL_SSSE3(fn, args) if (CV_CPU_HAS_SUPPORT_SSSE3) return (opt_SSSE3::fn args)
 #  define CV_CPU_CALL_SSSE3_(fn, args) if (CV_CPU_HAS_SUPPORT_SSSE3) return (opt_SSSE3::fn args)
 #else
@@ -93,7 +93,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSE4_1
 #  define CV_TRY_SSE4_1 1
 #  define CV_CPU_FORCE_SSE4_1 0
-#  define CV_CPU_HAS_SUPPORT_SSE4_1 (cv::checkHardwareSupport(CV_CPU_SSE4_1))
+#  define CV_CPU_HAS_SUPPORT_SSE4_1 (ncvslideio::checkHardwareSupport(CV_CPU_SSE4_1))
 #  define CV_CPU_CALL_SSE4_1(fn, args) if (CV_CPU_HAS_SUPPORT_SSE4_1) return (opt_SSE4_1::fn args)
 #  define CV_CPU_CALL_SSE4_1_(fn, args) if (CV_CPU_HAS_SUPPORT_SSE4_1) return (opt_SSE4_1::fn args)
 #else
@@ -114,7 +114,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_SSE4_2
 #  define CV_TRY_SSE4_2 1
 #  define CV_CPU_FORCE_SSE4_2 0
-#  define CV_CPU_HAS_SUPPORT_SSE4_2 (cv::checkHardwareSupport(CV_CPU_SSE4_2))
+#  define CV_CPU_HAS_SUPPORT_SSE4_2 (ncvslideio::checkHardwareSupport(CV_CPU_SSE4_2))
 #  define CV_CPU_CALL_SSE4_2(fn, args) if (CV_CPU_HAS_SUPPORT_SSE4_2) return (opt_SSE4_2::fn args)
 #  define CV_CPU_CALL_SSE4_2_(fn, args) if (CV_CPU_HAS_SUPPORT_SSE4_2) return (opt_SSE4_2::fn args)
 #else
@@ -135,7 +135,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_POPCNT
 #  define CV_TRY_POPCNT 1
 #  define CV_CPU_FORCE_POPCNT 0
-#  define CV_CPU_HAS_SUPPORT_POPCNT (cv::checkHardwareSupport(CV_CPU_POPCNT))
+#  define CV_CPU_HAS_SUPPORT_POPCNT (ncvslideio::checkHardwareSupport(CV_CPU_POPCNT))
 #  define CV_CPU_CALL_POPCNT(fn, args) if (CV_CPU_HAS_SUPPORT_POPCNT) return (opt_POPCNT::fn args)
 #  define CV_CPU_CALL_POPCNT_(fn, args) if (CV_CPU_HAS_SUPPORT_POPCNT) return (opt_POPCNT::fn args)
 #else
@@ -156,7 +156,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX
 #  define CV_TRY_AVX 1
 #  define CV_CPU_FORCE_AVX 0
-#  define CV_CPU_HAS_SUPPORT_AVX (cv::checkHardwareSupport(CV_CPU_AVX))
+#  define CV_CPU_HAS_SUPPORT_AVX (ncvslideio::checkHardwareSupport(CV_CPU_AVX))
 #  define CV_CPU_CALL_AVX(fn, args) if (CV_CPU_HAS_SUPPORT_AVX) return (opt_AVX::fn args)
 #  define CV_CPU_CALL_AVX_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX) return (opt_AVX::fn args)
 #else
@@ -177,7 +177,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_FP16
 #  define CV_TRY_FP16 1
 #  define CV_CPU_FORCE_FP16 0
-#  define CV_CPU_HAS_SUPPORT_FP16 (cv::checkHardwareSupport(CV_CPU_FP16))
+#  define CV_CPU_HAS_SUPPORT_FP16 (ncvslideio::checkHardwareSupport(CV_CPU_FP16))
 #  define CV_CPU_CALL_FP16(fn, args) if (CV_CPU_HAS_SUPPORT_FP16) return (opt_FP16::fn args)
 #  define CV_CPU_CALL_FP16_(fn, args) if (CV_CPU_HAS_SUPPORT_FP16) return (opt_FP16::fn args)
 #else
@@ -198,7 +198,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX2
 #  define CV_TRY_AVX2 1
 #  define CV_CPU_FORCE_AVX2 0
-#  define CV_CPU_HAS_SUPPORT_AVX2 (cv::checkHardwareSupport(CV_CPU_AVX2))
+#  define CV_CPU_HAS_SUPPORT_AVX2 (ncvslideio::checkHardwareSupport(CV_CPU_AVX2))
 #  define CV_CPU_CALL_AVX2(fn, args) if (CV_CPU_HAS_SUPPORT_AVX2) return (opt_AVX2::fn args)
 #  define CV_CPU_CALL_AVX2_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX2) return (opt_AVX2::fn args)
 #else
@@ -219,7 +219,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_FMA3
 #  define CV_TRY_FMA3 1
 #  define CV_CPU_FORCE_FMA3 0
-#  define CV_CPU_HAS_SUPPORT_FMA3 (cv::checkHardwareSupport(CV_CPU_FMA3))
+#  define CV_CPU_HAS_SUPPORT_FMA3 (ncvslideio::checkHardwareSupport(CV_CPU_FMA3))
 #  define CV_CPU_CALL_FMA3(fn, args) if (CV_CPU_HAS_SUPPORT_FMA3) return (opt_FMA3::fn args)
 #  define CV_CPU_CALL_FMA3_(fn, args) if (CV_CPU_HAS_SUPPORT_FMA3) return (opt_FMA3::fn args)
 #else
@@ -240,7 +240,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX_512F
 #  define CV_TRY_AVX_512F 1
 #  define CV_CPU_FORCE_AVX_512F 0
-#  define CV_CPU_HAS_SUPPORT_AVX_512F (cv::checkHardwareSupport(CV_CPU_AVX_512F))
+#  define CV_CPU_HAS_SUPPORT_AVX_512F (ncvslideio::checkHardwareSupport(CV_CPU_AVX_512F))
 #  define CV_CPU_CALL_AVX_512F(fn, args) if (CV_CPU_HAS_SUPPORT_AVX_512F) return (opt_AVX_512F::fn args)
 #  define CV_CPU_CALL_AVX_512F_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX_512F) return (opt_AVX_512F::fn args)
 #else
@@ -261,7 +261,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_COMMON
 #  define CV_TRY_AVX512_COMMON 1
 #  define CV_CPU_FORCE_AVX512_COMMON 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_COMMON (cv::checkHardwareSupport(CV_CPU_AVX512_COMMON))
+#  define CV_CPU_HAS_SUPPORT_AVX512_COMMON (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_COMMON))
 #  define CV_CPU_CALL_AVX512_COMMON(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_COMMON) return (opt_AVX512_COMMON::fn args)
 #  define CV_CPU_CALL_AVX512_COMMON_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_COMMON) return (opt_AVX512_COMMON::fn args)
 #else
@@ -282,7 +282,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_KNL
 #  define CV_TRY_AVX512_KNL 1
 #  define CV_CPU_FORCE_AVX512_KNL 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_KNL (cv::checkHardwareSupport(CV_CPU_AVX512_KNL))
+#  define CV_CPU_HAS_SUPPORT_AVX512_KNL (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_KNL))
 #  define CV_CPU_CALL_AVX512_KNL(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_KNL) return (opt_AVX512_KNL::fn args)
 #  define CV_CPU_CALL_AVX512_KNL_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_KNL) return (opt_AVX512_KNL::fn args)
 #else
@@ -303,7 +303,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_KNM
 #  define CV_TRY_AVX512_KNM 1
 #  define CV_CPU_FORCE_AVX512_KNM 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_KNM (cv::checkHardwareSupport(CV_CPU_AVX512_KNM))
+#  define CV_CPU_HAS_SUPPORT_AVX512_KNM (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_KNM))
 #  define CV_CPU_CALL_AVX512_KNM(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_KNM) return (opt_AVX512_KNM::fn args)
 #  define CV_CPU_CALL_AVX512_KNM_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_KNM) return (opt_AVX512_KNM::fn args)
 #else
@@ -324,7 +324,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_SKX
 #  define CV_TRY_AVX512_SKX 1
 #  define CV_CPU_FORCE_AVX512_SKX 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_SKX (cv::checkHardwareSupport(CV_CPU_AVX512_SKX))
+#  define CV_CPU_HAS_SUPPORT_AVX512_SKX (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_SKX))
 #  define CV_CPU_CALL_AVX512_SKX(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_SKX) return (opt_AVX512_SKX::fn args)
 #  define CV_CPU_CALL_AVX512_SKX_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_SKX) return (opt_AVX512_SKX::fn args)
 #else
@@ -345,7 +345,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_CNL
 #  define CV_TRY_AVX512_CNL 1
 #  define CV_CPU_FORCE_AVX512_CNL 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_CNL (cv::checkHardwareSupport(CV_CPU_AVX512_CNL))
+#  define CV_CPU_HAS_SUPPORT_AVX512_CNL (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_CNL))
 #  define CV_CPU_CALL_AVX512_CNL(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_CNL) return (opt_AVX512_CNL::fn args)
 #  define CV_CPU_CALL_AVX512_CNL_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_CNL) return (opt_AVX512_CNL::fn args)
 #else
@@ -366,7 +366,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_CLX
 #  define CV_TRY_AVX512_CLX 1
 #  define CV_CPU_FORCE_AVX512_CLX 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_CLX (cv::checkHardwareSupport(CV_CPU_AVX512_CLX))
+#  define CV_CPU_HAS_SUPPORT_AVX512_CLX (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_CLX))
 #  define CV_CPU_CALL_AVX512_CLX(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_CLX) return (opt_AVX512_CLX::fn args)
 #  define CV_CPU_CALL_AVX512_CLX_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_CLX) return (opt_AVX512_CLX::fn args)
 #else
@@ -387,7 +387,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_AVX512_ICL
 #  define CV_TRY_AVX512_ICL 1
 #  define CV_CPU_FORCE_AVX512_ICL 0
-#  define CV_CPU_HAS_SUPPORT_AVX512_ICL (cv::checkHardwareSupport(CV_CPU_AVX512_ICL))
+#  define CV_CPU_HAS_SUPPORT_AVX512_ICL (ncvslideio::checkHardwareSupport(CV_CPU_AVX512_ICL))
 #  define CV_CPU_CALL_AVX512_ICL(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_ICL) return (opt_AVX512_ICL::fn args)
 #  define CV_CPU_CALL_AVX512_ICL_(fn, args) if (CV_CPU_HAS_SUPPORT_AVX512_ICL) return (opt_AVX512_ICL::fn args)
 #else
@@ -408,7 +408,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_NEON
 #  define CV_TRY_NEON 1
 #  define CV_CPU_FORCE_NEON 0
-#  define CV_CPU_HAS_SUPPORT_NEON (cv::checkHardwareSupport(CV_CPU_NEON))
+#  define CV_CPU_HAS_SUPPORT_NEON (ncvslideio::checkHardwareSupport(CV_CPU_NEON))
 #  define CV_CPU_CALL_NEON(fn, args) if (CV_CPU_HAS_SUPPORT_NEON) return (opt_NEON::fn args)
 #  define CV_CPU_CALL_NEON_(fn, args) if (CV_CPU_HAS_SUPPORT_NEON) return (opt_NEON::fn args)
 #else
@@ -429,7 +429,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_NEON_DOTPROD
 #  define CV_TRY_NEON_DOTPROD 1
 #  define CV_CPU_FORCE_NEON_DOTPROD 0
-#  define CV_CPU_HAS_SUPPORT_NEON_DOTPROD (cv::checkHardwareSupport(CV_CPU_NEON_DOTPROD))
+#  define CV_CPU_HAS_SUPPORT_NEON_DOTPROD (ncvslideio::checkHardwareSupport(CV_CPU_NEON_DOTPROD))
 #  define CV_CPU_CALL_NEON_DOTPROD(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_DOTPROD) return (opt_NEON_DOTPROD::fn args)
 #  define CV_CPU_CALL_NEON_DOTPROD_(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_DOTPROD) return (opt_NEON_DOTPROD::fn args)
 #else
@@ -450,7 +450,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_NEON_FP16
 #  define CV_TRY_NEON_FP16 1
 #  define CV_CPU_FORCE_NEON_FP16 0
-#  define CV_CPU_HAS_SUPPORT_NEON_FP16 (cv::checkHardwareSupport(CV_CPU_NEON_FP16))
+#  define CV_CPU_HAS_SUPPORT_NEON_FP16 (ncvslideio::checkHardwareSupport(CV_CPU_NEON_FP16))
 #  define CV_CPU_CALL_NEON_FP16(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_FP16) return (opt_NEON_FP16::fn args)
 #  define CV_CPU_CALL_NEON_FP16_(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_FP16) return (opt_NEON_FP16::fn args)
 #else
@@ -471,7 +471,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_NEON_BF16
 #  define CV_TRY_NEON_BF16 1
 #  define CV_CPU_FORCE_NEON_BF16 0
-#  define CV_CPU_HAS_SUPPORT_NEON_BF16 (cv::checkHardwareSupport(CV_CPU_NEON_BF16))
+#  define CV_CPU_HAS_SUPPORT_NEON_BF16 (ncvslideio::checkHardwareSupport(CV_CPU_NEON_BF16))
 #  define CV_CPU_CALL_NEON_BF16(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_BF16) return (opt_NEON_BF16::fn args)
 #  define CV_CPU_CALL_NEON_BF16_(fn, args) if (CV_CPU_HAS_SUPPORT_NEON_BF16) return (opt_NEON_BF16::fn args)
 #else
@@ -492,7 +492,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_MSA
 #  define CV_TRY_MSA 1
 #  define CV_CPU_FORCE_MSA 0
-#  define CV_CPU_HAS_SUPPORT_MSA (cv::checkHardwareSupport(CV_CPU_MSA))
+#  define CV_CPU_HAS_SUPPORT_MSA (ncvslideio::checkHardwareSupport(CV_CPU_MSA))
 #  define CV_CPU_CALL_MSA(fn, args) if (CV_CPU_HAS_SUPPORT_MSA) return (opt_MSA::fn args)
 #  define CV_CPU_CALL_MSA_(fn, args) if (CV_CPU_HAS_SUPPORT_MSA) return (opt_MSA::fn args)
 #else
@@ -513,7 +513,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_VSX
 #  define CV_TRY_VSX 1
 #  define CV_CPU_FORCE_VSX 0
-#  define CV_CPU_HAS_SUPPORT_VSX (cv::checkHardwareSupport(CV_CPU_VSX))
+#  define CV_CPU_HAS_SUPPORT_VSX (ncvslideio::checkHardwareSupport(CV_CPU_VSX))
 #  define CV_CPU_CALL_VSX(fn, args) if (CV_CPU_HAS_SUPPORT_VSX) return (opt_VSX::fn args)
 #  define CV_CPU_CALL_VSX_(fn, args) if (CV_CPU_HAS_SUPPORT_VSX) return (opt_VSX::fn args)
 #else
@@ -534,7 +534,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_VSX3
 #  define CV_TRY_VSX3 1
 #  define CV_CPU_FORCE_VSX3 0
-#  define CV_CPU_HAS_SUPPORT_VSX3 (cv::checkHardwareSupport(CV_CPU_VSX3))
+#  define CV_CPU_HAS_SUPPORT_VSX3 (ncvslideio::checkHardwareSupport(CV_CPU_VSX3))
 #  define CV_CPU_CALL_VSX3(fn, args) if (CV_CPU_HAS_SUPPORT_VSX3) return (opt_VSX3::fn args)
 #  define CV_CPU_CALL_VSX3_(fn, args) if (CV_CPU_HAS_SUPPORT_VSX3) return (opt_VSX3::fn args)
 #else
@@ -555,7 +555,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_RVV
 #  define CV_TRY_RVV 1
 #  define CV_CPU_FORCE_RVV 0
-#  define CV_CPU_HAS_SUPPORT_RVV (cv::checkHardwareSupport(CV_CPU_RVV))
+#  define CV_CPU_HAS_SUPPORT_RVV (ncvslideio::checkHardwareSupport(CV_CPU_RVV))
 #  define CV_CPU_CALL_RVV(fn, args) if (CV_CPU_HAS_SUPPORT_RVV) return (opt_RVV::fn args)
 #  define CV_CPU_CALL_RVV_(fn, args) if (CV_CPU_HAS_SUPPORT_RVV) return (opt_RVV::fn args)
 #else
@@ -576,7 +576,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_LSX
 #  define CV_TRY_LSX 1
 #  define CV_CPU_FORCE_LSX 0
-#  define CV_CPU_HAS_SUPPORT_LSX (cv::checkHardwareSupport(CV_CPU_LSX))
+#  define CV_CPU_HAS_SUPPORT_LSX (ncvslideio::checkHardwareSupport(CV_CPU_LSX))
 #  define CV_CPU_CALL_LSX(fn, args) if (CV_CPU_HAS_SUPPORT_LSX) return (opt_LSX::fn args)
 #  define CV_CPU_CALL_LSX_(fn, args) if (CV_CPU_HAS_SUPPORT_LSX) return (opt_LSX::fn args)
 #else
@@ -597,7 +597,7 @@
 #elif !defined CV_DISABLE_OPTIMIZATION && defined CV_ENABLE_INTRINSICS && defined CV_CPU_DISPATCH_COMPILE_LASX
 #  define CV_TRY_LASX 1
 #  define CV_CPU_FORCE_LASX 0
-#  define CV_CPU_HAS_SUPPORT_LASX (cv::checkHardwareSupport(CV_CPU_LASX))
+#  define CV_CPU_HAS_SUPPORT_LASX (ncvslideio::checkHardwareSupport(CV_CPU_LASX))
 #  define CV_CPU_CALL_LASX(fn, args) if (CV_CPU_HAS_SUPPORT_LASX) return (opt_LASX::fn args)
 #  define CV_CPU_CALL_LASX_(fn, args) if (CV_CPU_HAS_SUPPORT_LASX) return (opt_LASX::fn args)
 #else

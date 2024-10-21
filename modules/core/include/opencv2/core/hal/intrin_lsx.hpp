@@ -11,7 +11,7 @@
 #define CV_SIMD128_64F 1
 #define CV_SIMD128_FP16 0
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -2541,6 +2541,6 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} // cv::
+} // ncvslideio::
 
 #endif // OPENCV_HAL_INTRIN_LSX_HPP

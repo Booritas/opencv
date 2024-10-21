@@ -61,7 +61,7 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
 {
     static const int abs_diff[] = { 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1 };
 
-    cv::AutoBuffer<_CvPtInfo> buf(chain->total + 8);
+    ncvslideio::AutoBuffer<_CvPtInfo> buf(chain->total + 8);
 
     _CvPtInfo       temp;
     _CvPtInfo       *array = buf.data(), *first = 0, *current = 0, *prev_current = 0;
@@ -104,9 +104,9 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
         /* calc 1-curvature */
         s = abs_diff[reader.code - prev_code + 7];
 
-        if( method <= cv::CHAIN_APPROX_SIMPLE )
+        if( method <= ncvslideio::CHAIN_APPROX_SIMPLE )
         {
-            if( method == cv::CHAIN_APPROX_NONE || s != 0 )
+            if( method == ncvslideio::CHAIN_APPROX_NONE || s != 0 )
             {
                 CV_WRITE_SEQ_ELEM( pt, writer );
             }
@@ -122,7 +122,7 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
 
     //CV_Assert( pt.x == chain->origin.x && pt.y == chain->origin.y );
 
-    if( method <= cv::CHAIN_APPROX_SIMPLE )
+    if( method <= ncvslideio::CHAIN_APPROX_SIMPLE )
         return cvEndWriteSeq( &writer );
 
     current->next = 0;
@@ -136,7 +136,7 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
        Determines support region for all the remained points */
     do
     {
-        cv::Point2i pt0;
+        ncvslideio::Point2i pt0;
         int k, l = 0, d_num = 0;
 
         i = (int)(current - array);
@@ -177,7 +177,7 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
         current->k = --k;
 
         /* determine cosine curvature if it should be used */
-        if( method == cv::CHAIN_APPROX_TC89_KCOS )
+        if( method == ncvslideio::CHAIN_APPROX_TC89_KCOS )
         {
             /* calc k-cosine curvature */
             for( j = k, s = 0; j > 0; j-- )
@@ -289,7 +289,7 @@ CvSeq* icvApproximateChainTC89( CvChain* chain, int header_size,
     }
     while( current != 0 );
 
-    if( method == cv::CHAIN_APPROX_TC89_KCOS )
+    if( method == ncvslideio::CHAIN_APPROX_TC89_KCOS )
         goto copy_vect;
 
     /* Pass 4.
@@ -390,9 +390,9 @@ cvApproxChains( CvSeq*              src_seq,
     CvSeq *dst_seq = 0;
 
     if( !src_seq || !storage )
-        CV_Error( cv::Error::StsNullPtr, "" );
-    if( method > cv::CHAIN_APPROX_TC89_KCOS || method <= 0 || minimal_perimeter < 0 )
-        CV_Error( cv::Error::StsOutOfRange, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
+    if( method > ncvslideio::CHAIN_APPROX_TC89_KCOS || method <= 0 || minimal_perimeter < 0 )
+        CV_Error( ncvslideio::Error::StsOutOfRange, "" );
 
     while( src_seq != 0 )
     {
@@ -404,14 +404,14 @@ cvApproxChains( CvSeq*              src_seq,
 
             switch( method )
             {
-            case cv::CHAIN_APPROX_NONE:
-            case cv::CHAIN_APPROX_SIMPLE:
-            case cv::CHAIN_APPROX_TC89_L1:
-            case cv::CHAIN_APPROX_TC89_KCOS:
+            case ncvslideio::CHAIN_APPROX_NONE:
+            case ncvslideio::CHAIN_APPROX_SIMPLE:
+            case ncvslideio::CHAIN_APPROX_TC89_L1:
+            case ncvslideio::CHAIN_APPROX_TC89_KCOS:
                 contour = icvApproximateChainTC89( (CvChain *) src_seq, sizeof( CvContour ), storage, method );
                 break;
             default:
-                CV_Error( cv::Error::StsOutOfRange, "" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "" );
             }
 
             if( contour->total > 0 )
@@ -471,7 +471,7 @@ cvApproxChains( CvSeq*              src_seq,
 
 /* Ramer-Douglas-Peucker algorithm for polygon simplification */
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static int
@@ -498,7 +498,7 @@ approxPolyDP_( const Point_<T>* src_contour, int count0, Point_<T>* dst_contour,
     #define WRITE_PT(pt) \
         dst_contour[new_count++] = pt
 
-    typedef cv::Point_<T> PT;
+    typedef ncvslideio::Point_<T> PT;
     int             init_iters = 3;
     Range           slice(0, 0), right_slice(0, 0);
     PT              start_pt((T)-1000000, (T)-1000000), end_pt(0, 0), pt(0,0);
@@ -673,7 +673,7 @@ approxPolyDP_( const Point_<T>* src_contour, int count0, Point_<T>* dst_contour,
 
 }
 
-void cv::approxPolyDP( InputArray _curve, OutputArray _approxCurve,
+void ncvslideio::approxPolyDP( InputArray _curve, OutputArray _approxCurve,
                       double epsilon, bool closed )
 {
     CV_INSTRUMENT_REGION();
@@ -682,7 +682,7 @@ void cv::approxPolyDP( InputArray _curve, OutputArray _approxCurve,
     //from being used.
     if (epsilon < 0.0 || !(epsilon < 1e30))
     {
-        CV_Error(cv::Error::StsOutOfRange, "Epsilon not valid.");
+        CV_Error(ncvslideio::Error::StsOutOfRange, "Epsilon not valid.");
     }
 
     Mat curve = _curve.getMat();
@@ -705,7 +705,7 @@ void cv::approxPolyDP( InputArray _curve, OutputArray _approxCurve,
     else if( depth == CV_32F )
         nout = approxPolyDP_(curve.ptr<Point2f>(), npoints, (Point2f*)buf, closed, epsilon, _stack);
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     Mat(nout, 1, CV_MAKETYPE(depth, 2), buf).copyTo(_approxCurve);
 }
@@ -716,8 +716,8 @@ cvApproxPoly( const void* array, int header_size,
              CvMemStorage* storage, int method,
              double parameter, int parameter2 )
 {
-    cv::AutoBuffer<cv::Point> _buf;
-    cv::AutoBuffer<cv::Range> stack(100);
+    ncvslideio::AutoBuffer<ncvslideio::Point> _buf;
+    ncvslideio::AutoBuffer<ncvslideio::Range> stack(100);
     CvSeq* dst_seq = 0;
     CvSeq *prev_contour = 0, *parent = 0;
     CvContour contour_header;
@@ -729,7 +729,7 @@ cvApproxPoly( const void* array, int header_size,
     {
         src_seq = (CvSeq*)array;
         if( !CV_IS_SEQ_POLYLINE( src_seq ))
-            CV_Error( cv::Error::StsBadArg, "Unsupported sequence type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported sequence type" );
 
         recursive = parameter2;
 
@@ -744,10 +744,10 @@ cvApproxPoly( const void* array, int header_size,
     }
 
     if( !storage )
-        CV_Error( cv::Error::StsNullPtr, "NULL storage pointer " );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL storage pointer " );
 
     if( header_size < 0 )
-        CV_Error( cv::Error::StsOutOfRange, "header_size is negative. "
+        CV_Error( ncvslideio::Error::StsOutOfRange, "header_size is negative. "
                  "Pass 0 to make the destination header_size == input header_size" );
 
     if( header_size == 0 )
@@ -757,12 +757,12 @@ cvApproxPoly( const void* array, int header_size,
     {
         if( CV_IS_SEQ_CHAIN( src_seq ))
         {
-            CV_Error( cv::Error::StsBadArg, "Input curves are not polygonal. "
+            CV_Error( ncvslideio::Error::StsBadArg, "Input curves are not polygonal. "
                      "Use cvApproxChains first" );
         }
         else
         {
-            CV_Error( cv::Error::StsBadArg, "Input curves have unknown type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Input curves have unknown type" );
         }
     }
 
@@ -770,10 +770,10 @@ cvApproxPoly( const void* array, int header_size,
         header_size = src_seq->header_size;
 
     if( header_size < (int)sizeof(CvContour) )
-        CV_Error( cv::Error::StsBadSize, "New header size must be non-less than sizeof(CvContour)" );
+        CV_Error( ncvslideio::Error::StsBadSize, "New header size must be non-less than sizeof(CvContour)" );
 
     if( method != CV_POLY_APPROX_DP )
-        CV_Error( cv::Error::StsOutOfRange, "Unknown approximation method" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Unknown approximation method" );
 
     while( src_seq != 0 )
     {
@@ -783,7 +783,7 @@ cvApproxPoly( const void* array, int header_size,
         {
         case CV_POLY_APPROX_DP:
             if( parameter < 0 )
-                CV_Error( cv::Error::StsOutOfRange, "Accuracy must be non-negative" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "Accuracy must be non-negative" );
 
             CV_Assert( CV_SEQ_ELTYPE(src_seq) == CV_32SC2 ||
                       CV_SEQ_ELTYPE(src_seq) == CV_32FC2 );
@@ -791,21 +791,21 @@ cvApproxPoly( const void* array, int header_size,
             {
             int npoints = src_seq->total, nout = 0;
             _buf.allocate(npoints*2);
-            cv::Point *src = _buf.data(), *dst = src + npoints;
+            ncvslideio::Point *src = _buf.data(), *dst = src + npoints;
             bool closed = CV_IS_SEQ_CLOSED(src_seq);
 
             if( src_seq->first->next == src_seq->first )
-                src = (cv::Point*)src_seq->first->data;
+                src = (ncvslideio::Point*)src_seq->first->data;
             else
                 cvCvtSeqToArray(src_seq, src);
 
             if( CV_SEQ_ELTYPE(src_seq) == CV_32SC2 )
-                nout = cv::approxPolyDP_(src, npoints, dst, closed, parameter, stack);
+                nout = ncvslideio::approxPolyDP_(src, npoints, dst, closed, parameter, stack);
             else if( CV_SEQ_ELTYPE(src_seq) == CV_32FC2 )
-                nout = cv::approxPolyDP_((cv::Point2f*)src, npoints,
-                                         (cv::Point2f*)dst, closed, parameter, stack);
+                nout = ncvslideio::approxPolyDP_((ncvslideio::Point2f*)src, npoints,
+                                         (ncvslideio::Point2f*)dst, closed, parameter, stack);
             else
-                CV_Error( cv::Error::StsUnsupportedFormat, "" );
+                CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
             contour = cvCreateSeq( src_seq->flags, header_size,
                                   src_seq->elem_size, storage );
@@ -813,7 +813,7 @@ cvApproxPoly( const void* array, int header_size,
             }
             break;
         default:
-            CV_Error( cv::Error::StsBadArg, "Invalid approximation method" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Invalid approximation method" );
         }
 
         CV_Assert( contour );
@@ -871,11 +871,11 @@ enum class PointStatus : int8_t
 struct neighbours
 {
     PointStatus pointStatus;
-    cv::Point2f point;
+    ncvslideio::Point2f point;
     int next;
     int prev;
 
-    explicit neighbours(int next_ = -1, int prev_ = -1, const cv::Point2f& point_ = { -1, -1 })
+    explicit neighbours(int next_ = -1, int prev_ = -1, const ncvslideio::Point2f& point_ = { -1, -1 })
     {
         next = next_;
         prev = prev_;
@@ -888,9 +888,9 @@ struct changes
 {
     float area;
     int vertex;
-    cv::Point2f intersection;
+    ncvslideio::Point2f intersection;
 
-    explicit changes(float area_, int vertex_, const cv::Point2f& intersection_)
+    explicit changes(float area_, int vertex_, const ncvslideio::Point2f& intersection_)
     {
         area = area_;
         vertex = vertex_;
@@ -912,12 +912,12 @@ struct changes
 */
 static void recalculation(std::vector<neighbours>& hull, int vertex_id, float& area_, float& x, float& y)
 {
-    cv::Point2f vertex = hull[vertex_id].point,
+    ncvslideio::Point2f vertex = hull[vertex_id].point,
         next_vertex = hull[hull[vertex_id].next].point,
         extra_vertex_1 = hull[hull[vertex_id].prev].point,
         extra_vertex_2 = hull[hull[hull[vertex_id].next].next].point;
 
-    cv::Point2f curr_edge = next_vertex - vertex,
+    ncvslideio::Point2f curr_edge = next_vertex - vertex,
         prev_edge = vertex - extra_vertex_1,
         next_edge = extra_vertex_2 - next_vertex;
 
@@ -931,7 +931,7 @@ static void recalculation(std::vector<neighbours>& hull, int vertex_id, float& a
     }
 
     float t = (curr_edge.x * next_edge.y - curr_edge.y * next_edge.x) / cross;
-    cv::Point2f intersection = vertex + cv::Point2f(prev_edge.x * t, prev_edge.y * t);
+    ncvslideio::Point2f intersection = vertex + ncvslideio::Point2f(prev_edge.x * t, prev_edge.y * t);
 
     float area = 0.5f * abs((next_vertex.x - vertex.x) * (intersection.y - vertex.y)
         - (intersection.x - vertex.x) * (next_vertex.y - vertex.y));
@@ -956,7 +956,7 @@ static void update(std::vector<neighbours>& hull, int vertex_id)
 /*
     A greedy algorithm based on contraction of vertices for approximating a convex contour by a bounding polygon
 */
-void cv::approxPolyN(InputArray _curve, OutputArray _approxCurve,
+void ncvslideio::approxPolyN(InputArray _curve, OutputArray _approxCurve,
     int nsides, float epsilon_percentage, bool ensure_convex)
 {
     CV_INSTRUMENT_REGION();
@@ -976,7 +976,7 @@ void cv::approxPolyN(InputArray _curve, OutputArray _approxCurve,
 
     if (ensure_convex)
     {
-        cv::convexHull(_curve, curve);
+        ncvslideio::convexHull(_curve, curve);
     }
     else
     {
@@ -1001,7 +1001,7 @@ void cv::approxPolyN(InputArray _curve, OutputArray _approxCurve,
     {
         for (int i = 0; i < size; ++i)
         {
-            Point t = curve.at<cv::Point>(i, 0);
+            Point t = curve.at<ncvslideio::Point>(i, 0);
             hull[i] = neighbours(i + 1, i - 1, Point2f(static_cast<float>(t.x), static_cast<float>(t.y)));
         }
     }
@@ -1009,7 +1009,7 @@ void cv::approxPolyN(InputArray _curve, OutputArray _approxCurve,
     {
         for (int i = 0; i < size; ++i)
         {
-            Point2f t = curve.at<cv::Point2f>(i, 0);
+            Point2f t = curve.at<ncvslideio::Point2f>(i, 0);
             hull[i] = neighbours(i + 1, i - 1, t);
         }
     }

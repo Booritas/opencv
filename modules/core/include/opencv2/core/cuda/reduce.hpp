@@ -57,7 +57,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     template <int N, typename T, class Op>
     __device__ __forceinline__ void reduce(volatile T* smem, T& val, unsigned int tid, const Op& op)

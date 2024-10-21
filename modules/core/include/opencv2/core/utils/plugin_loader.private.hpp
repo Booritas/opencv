@@ -16,7 +16,7 @@
 #include <dlfcn.h>
 #endif
 
-namespace cv { namespace plugin { namespace impl {
+namespace ncvslideio { namespace plugin { namespace impl {
 
 #if defined(_WIN32)
 typedef HMODULE LibHandle_t;

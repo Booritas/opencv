@@ -39,9 +39,9 @@
 //
 //M*/
 #include "precomp.hpp"
-using namespace cv;
+using namespace ncvslideio;
 
-namespace cv
+namespace ncvslideio
 {
 
 enum { XY_SHIFT = 16, XY_ONE = 1 << XY_SHIFT, DRAWING_STORAGE_BLOCK = (1<<12) - 256 };
@@ -1113,7 +1113,7 @@ FillConvexPoly( Mat& img, const Point2l* v, int npts, const void* color, int lin
     Point2l p0;
     int delta1, delta2;
 
-    if( line_type < cv::LINE_AA )
+    if( line_type < ncvslideio::LINE_AA )
         delta1 = delta2 = XY_ONE >> 1;
     else
         delta1 = XY_ONE - 1, delta2 = 0;
@@ -1183,7 +1183,7 @@ FillConvexPoly( Mat& img, const Point2l* v, int npts, const void* color, int lin
 
     do
     {
-        if( line_type < cv::LINE_AA || y < (int)ymax || y == (int)ymin )
+        if( line_type < ncvslideio::LINE_AA || y < (int)ymax || y == (int)ymin )
         {
             for( i = 0; i < 2; i++ )
             {
@@ -1281,7 +1281,7 @@ CollectPolyEdges( Mat& img, const Point2l* v, int count, std::vector<PolyEdge>& 
 
         Point2l pt0c(pt0), pt1c(pt1);
 
-        if (line_type < cv::LINE_AA)
+        if (line_type < ncvslideio::LINE_AA)
         {
             t0.y = pt0.y; t1.y = pt1.y;
             t0.x = (pt0.x + (XY_ONE >> 1)) >> XY_SHIFT;
@@ -1654,7 +1654,7 @@ ThickLine( Mat& img, Point2l p0, Point2l p1, const void* color,
 
     if( thickness <= 1 )
     {
-        if( line_type < cv::LINE_AA )
+        if( line_type < ncvslideio::LINE_AA )
         {
             if( line_type == 1 || line_type == 4 || shift == 0 )
             {
@@ -1700,7 +1700,7 @@ ThickLine( Mat& img, Point2l p0, Point2l p1, const void* color,
         {
             if( flags & (i+1) )
             {
-                if( line_type < cv::LINE_AA )
+                if( line_type < ncvslideio::LINE_AA )
                 {
                     Point center;
                     center.x = (int)((p0.x + (XY_ONE>>1)) >> XY_SHIFT);
@@ -1818,7 +1818,7 @@ void line( InputOutputArray _img, Point pt1, Point pt2, const Scalar& color,
 
     Mat img = _img.getMat();
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     CV_Assert( 0 < thickness && thickness <= MAX_THICKNESS );
@@ -1857,7 +1857,7 @@ void rectangle( InputOutputArray _img, Point pt1, Point pt2,
 
     Mat img = _img.getMat();
 
-    if( lineType == cv::LINE_AA && img.depth() != CV_8U )
+    if( lineType == ncvslideio::LINE_AA && img.depth() != CV_8U )
         lineType = 8;
 
     CV_Assert( thickness <= MAX_THICKNESS );
@@ -1907,7 +1907,7 @@ void circle( InputOutputArray _img, Point center, int radius,
 
     Mat img = _img.getMat();
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     CV_Assert( radius >= 0 && thickness <= MAX_THICKNESS &&
@@ -1939,7 +1939,7 @@ void ellipse( InputOutputArray _img, Point center, Size axes,
 
     Mat img = _img.getMat();
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     CV_Assert( axes.width >= 0 && axes.height >= 0 &&
@@ -1969,7 +1969,7 @@ void ellipse(InputOutputArray _img, const RotatedRect& box, const Scalar& color,
 
     Mat img = _img.getMat();
 
-    if( lineType == cv::LINE_AA && img.depth() != CV_8U )
+    if( lineType == ncvslideio::LINE_AA && img.depth() != CV_8U )
         lineType = 8;
 
     CV_Assert( box.size.width >= 0 && box.size.height >= 0 &&
@@ -2000,7 +2000,7 @@ void fillConvexPoly( InputOutputArray _img, const Point* pts, int npts,
     if( !pts || npts <= 0 )
         return;
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     double buf[4];
@@ -2018,7 +2018,7 @@ void fillPoly( InputOutputArray _img, const Point** pts, const int* npts, int nc
 
     Mat img = _img.getMat();
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     CV_Assert( pts && npts && ncontours >= 0 && 0 <= shift && shift <= XY_SHIFT );
@@ -2052,7 +2052,7 @@ void polylines( InputOutputArray _img, const Point* const* pts, const int* npts,
 
     Mat img = _img.getMat();
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     CV_Assert( pts && npts && ncontours >= 0 &&
@@ -2234,7 +2234,7 @@ static const int* getFontData(int fontFace)
         ascii = HersheyScriptComplex;
         break;
     default:
-        CV_Error( cv::Error::StsOutOfRange, "Unknown font type" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Unknown font type" );
     }
     return ascii;
 }
@@ -2305,7 +2305,7 @@ void putText( InputOutputArray _img, const String& text, Point org,
     int base_line = -(ascii[0] & 15);
     int hscale = cvRound(fontScale*XY_ONE), vscale = hscale;
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     if( bottomLeftOrigin )
@@ -2315,7 +2315,7 @@ void putText( InputOutputArray _img, const String& text, Point org,
     int64 view_y = ((int64)org.y << XY_SHIFT) + base_line*vscale;
     std::vector<Point2l> pts;
     pts.reserve(1 << 10);
-    const char **faces = cv::g_HersheyGlyphs;
+    const char **faces = ncvslideio::g_HersheyGlyphs;
 
     for( int i = 0; i < (int)text.size(); i++ )
     {
@@ -2357,7 +2357,7 @@ Size getTextSize( const String& text, int fontFace, double fontScale, int thickn
 {
     Size size;
     double view_x = 0;
-    const char **faces = cv::g_HersheyGlyphs;
+    const char **faces = ncvslideio::g_HersheyGlyphs;
     const int* ascii = getFontData(fontFace);
 
     int base_line = (ascii[0] & 15);
@@ -2396,7 +2396,7 @@ double getFontScaleFromHeight(const int fontFace, const int pixelHeight, const i
 
 }
 
-void cv::fillConvexPoly(InputOutputArray img, InputArray _points,
+void ncvslideio::fillConvexPoly(InputOutputArray img, InputArray _points,
                         const Scalar& color, int lineType, int shift)
 {
     CV_INSTRUMENT_REGION();
@@ -2406,7 +2406,7 @@ void cv::fillConvexPoly(InputOutputArray img, InputArray _points,
     fillConvexPoly(img, points.ptr<Point>(), points.rows*points.cols*points.channels()/2, color, lineType, shift);
 }
 
-void cv::fillPoly(InputOutputArray img, InputArrayOfArrays pts,
+void ncvslideio::fillPoly(InputOutputArray img, InputArrayOfArrays pts,
                   const Scalar& color, int lineType, int shift, Point offset)
 {
     CV_INSTRUMENT_REGION();
@@ -2431,7 +2431,7 @@ void cv::fillPoly(InputOutputArray img, InputArrayOfArrays pts,
     fillPoly(img, (const Point**)ptsptr, npts, (int)ncontours, color, lineType, shift, offset);
 }
 
-void cv::polylines(InputOutputArray img, InputArrayOfArrays pts,
+void ncvslideio::polylines(InputOutputArray img, InputArrayOfArrays pts,
                    bool isClosed, const Scalar& color,
                    int thickness, int lineType, int shift)
 {
@@ -2464,7 +2464,7 @@ void cv::polylines(InputOutputArray img, InputArrayOfArrays pts,
 }
 
 
-void cv::drawContours( InputOutputArray _image, InputArrayOfArrays _contours,
+void ncvslideio::drawContours( InputOutputArray _image, InputArrayOfArrays _contours,
                    int contourIdx, const Scalar& color, int thickness,
                    int lineType, InputArray _hierarchy,
                    int maxLevel, Point offset )
@@ -2475,7 +2475,7 @@ void cv::drawContours( InputOutputArray _image, InputArrayOfArrays _contours,
     if (!ncontours)
         return;
     CV_Assert(ncontours <= (size_t)std::numeric_limits<int>::max());
-    if (lineType == cv::LINE_AA && _image.depth() != CV_8U)
+    if (lineType == ncvslideio::LINE_AA && _image.depth() != CV_8U)
         lineType = 8;
     Mat image = _image.getMat(), hierarchy = _hierarchy.getMat();
 
@@ -2501,7 +2501,7 @@ void cv::drawContours( InputOutputArray _image, InputArrayOfArrays _contours,
                 const bool isLastIter = j == npoints - 1;
                 const Point pt1 = cnt.at<Point>(j);
                 const Point pt2 = cnt.at<Point>(isLastIter ? 0 : j + 1);
-                cv::ThickLine(image, pt1 + offset, pt2 + offset, color_buf, thickness, lineType, 2, 0);
+                ncvslideio::ThickLine(image, pt1 + offset, pt2 + offset, color_buf, thickness, lineType, 2, 0);
             }
         }
     }
@@ -2574,14 +2574,14 @@ cvDrawContours( void* _img, CvSeq* contour,
 {
     CvSeq *contour0 = contour, *h_next = 0;
     CvTreeNodeIterator iterator;
-    std::vector<cv::PolyEdge> edges;
-    std::vector<cv::Point2l> pts;
-    cv::Scalar externalColor = _externalColor, holeColor = _holeColor;
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::Point offset = _offset;
+    std::vector<ncvslideio::PolyEdge> edges;
+    std::vector<ncvslideio::Point2l> pts;
+    ncvslideio::Scalar externalColor = _externalColor, holeColor = _holeColor;
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::Point offset = _offset;
     double ext_buf[4], hole_buf[4];
 
-    if( line_type == cv::LINE_AA && img.depth() != CV_8U )
+    if( line_type == ncvslideio::LINE_AA && img.depth() != CV_8U )
         line_type = 8;
 
     if( !contour )
@@ -2617,8 +2617,8 @@ cvDrawContours( void* _img, CvSeq* contour,
 
         if( CV_IS_SEQ_CHAIN_CONTOUR( contour ))
         {
-            cv::Point pt = ((CvChain*)contour)->origin;
-            cv::Point prev_pt = pt;
+            ncvslideio::Point pt = ((CvChain*)contour)->origin;
+            ncvslideio::Point prev_pt = pt;
             char prev_code = reader.ptr ? reader.ptr[0] : '\0';
 
             prev_pt += offset;
@@ -2634,7 +2634,7 @@ cvDrawContours( void* _img, CvSeq* contour,
                 {
                     prev_code = code;
                     if( thickness >= 0 )
-                        cv::ThickLine( img, prev_pt, pt, clr, thickness, line_type, 2, 0 );
+                        ncvslideio::ThickLine( img, prev_pt, pt, clr, thickness, line_type, 2, 0 );
                     else
                         pts.push_back(pt);
                     prev_pt = pt;
@@ -2645,17 +2645,17 @@ cvDrawContours( void* _img, CvSeq* contour,
             }
 
             if( thickness >= 0 )
-                cv::ThickLine( img, prev_pt,
-                    cv::Point(((CvChain*)contour)->origin) + offset,
+                ncvslideio::ThickLine( img, prev_pt,
+                    ncvslideio::Point(((CvChain*)contour)->origin) + offset,
                     clr, thickness, line_type, 2, 0 );
             else
-                cv::CollectPolyEdges(img, &pts[0], (int)pts.size(),
+                ncvslideio::CollectPolyEdges(img, &pts[0], (int)pts.size(),
                                      edges, ext_buf, line_type, 0, offset);
         }
         else if( CV_IS_SEQ_POLYLINE( contour ))
         {
             CV_Assert( elem_type == CV_32SC2 );
-            cv::Point pt1, pt2;
+            ncvslideio::Point pt1, pt2;
             int shift = 0;
 
             count -= !CV_IS_SEQ_CLOSED(contour);
@@ -2669,19 +2669,19 @@ cvDrawContours( void* _img, CvSeq* contour,
                 { CvPoint pt_ = CV_STRUCT_INITIALIZER; CV_READ_SEQ_ELEM(pt_, reader); pt2 = pt_; }
                 pt2 += offset;
                 if( thickness >= 0 )
-                    cv::ThickLine( img, pt1, pt2, clr, thickness, line_type, 2, shift );
+                    ncvslideio::ThickLine( img, pt1, pt2, clr, thickness, line_type, 2, shift );
                 else
                     pts.push_back(pt2);
                 pt1 = pt2;
             }
             if( thickness < 0 )
-                cv::CollectPolyEdges( img, &pts[0], (int)pts.size(),
-                                      edges, ext_buf, line_type, 0, cv::Point() );
+                ncvslideio::CollectPolyEdges( img, &pts[0], (int)pts.size(),
+                                      edges, ext_buf, line_type, 0, ncvslideio::Point() );
         }
     }
 
     if( thickness < 0 )
-        cv::FillEdgeCollection( img, edges, ext_buf );
+        ncvslideio::FillEdgeCollection( img, edges, ext_buf );
 
     if( h_next && contour0 )
         contour0->h_next = h_next;
@@ -2691,7 +2691,7 @@ CV_IMPL int
 cvClipLine( CvSize size, CvPoint* pt1, CvPoint* pt2 )
 {
     CV_Assert( pt1 && pt2 );
-    return cv::clipLine( size, *(cv::Point*)pt1, *(cv::Point*)pt2 );
+    return ncvslideio::clipLine( size, *(ncvslideio::Point*)pt1, *(ncvslideio::Point*)pt2 );
 }
 
 
@@ -2699,8 +2699,8 @@ CV_IMPL int
 cvEllipse2Poly( CvPoint center, CvSize axes, int angle,
                 int arc_start, int arc_end, CvPoint* _pts, int delta )
 {
-    std::vector<cv::Point> pts;
-    cv::ellipse2Poly( Point(center), Size(axes), angle, arc_start, arc_end, delta, pts );
+    std::vector<ncvslideio::Point> pts;
+    ncvslideio::ellipse2Poly( Point(center), Size(axes), angle, arc_start, arc_end, delta, pts );
     memcpy( _pts, &pts[0], pts.size()*sizeof(_pts[0]) );
     return (int)pts.size();
 }
@@ -2708,7 +2708,7 @@ cvEllipse2Poly( CvPoint center, CvSize axes, int angle,
 CV_IMPL CvScalar
 cvColorToScalar( double packed_color, int type )
 {
-    cv::Scalar scalar;
+    ncvslideio::Scalar scalar;
 
     if( CV_MAT_DEPTH( type ) == CV_8U )
     {
@@ -2722,7 +2722,7 @@ cvColorToScalar( double packed_color, int type )
         }
         else
         {
-            scalar.val[0] = cv::saturate_cast<uchar>( icolor );
+            scalar.val[0] = ncvslideio::saturate_cast<uchar>( icolor );
             scalar.val[1] = scalar.val[2] = scalar.val[3] = 0;
         }
     }
@@ -2738,7 +2738,7 @@ cvColorToScalar( double packed_color, int type )
         }
         else
         {
-            scalar.val[0] = cv::saturate_cast<schar>( icolor );
+            scalar.val[0] = ncvslideio::saturate_cast<schar>( icolor );
             scalar.val[1] = scalar.val[2] = scalar.val[3] = 0;
         }
     }
@@ -2775,7 +2775,7 @@ cvInitLineIterator( const CvArr* img, CvPoint pt1, CvPoint pt2,
                     int left_to_right )
 {
     CV_Assert( iterator != 0 );
-    cv::LineIterator li(cv::cvarrToMat(img), pt1, pt2, connectivity, left_to_right!=0);
+    ncvslideio::LineIterator li(ncvslideio::cvarrToMat(img), pt1, pt2, connectivity, left_to_right!=0);
 
     iterator->err = li.err;
     iterator->minus_delta = li.minusDelta;
@@ -2791,8 +2791,8 @@ CV_IMPL void
 cvLine( CvArr* _img, CvPoint pt1, CvPoint pt2, CvScalar color,
         int thickness, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::line( img, pt1, pt2, color, thickness, line_type, shift );
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::line( img, pt1, pt2, color, thickness, line_type, shift );
 }
 
 CV_IMPL void
@@ -2800,8 +2800,8 @@ cvRectangle( CvArr* _img, CvPoint pt1, CvPoint pt2,
              CvScalar color, int thickness,
              int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::rectangle( img, pt1, pt2, color, thickness, line_type, shift );
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::rectangle( img, pt1, pt2, color, thickness, line_type, shift );
 }
 
 CV_IMPL void
@@ -2809,16 +2809,16 @@ cvRectangleR( CvArr* _img, CvRect rec,
               CvScalar color, int thickness,
               int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::rectangle( img, rec, color, thickness, line_type, shift );
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::rectangle( img, rec, color, thickness, line_type, shift );
 }
 
 CV_IMPL void
 cvCircle( CvArr* _img, CvPoint center, int radius,
           CvScalar color, int thickness, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::circle( img, center, radius, color, thickness, line_type, shift );
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::circle( img, center, radius, color, thickness, line_type, shift );
 }
 
 CV_IMPL void
@@ -2826,8 +2826,8 @@ cvEllipse( CvArr* _img, CvPoint center, CvSize axes,
            double angle, double start_angle, double end_angle,
            CvScalar color, int thickness, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::ellipse( img, center, axes, angle, start_angle, end_angle,
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::ellipse( img, center, axes, angle, start_angle, end_angle,
         color, thickness, line_type, shift );
 }
 
@@ -2835,8 +2835,8 @@ CV_IMPL void
 cvFillConvexPoly( CvArr* _img, const CvPoint *pts, int npts,
                   CvScalar color, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
-    cv::fillConvexPoly( img, (const cv::Point*)pts, npts,
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
+    ncvslideio::fillConvexPoly( img, (const ncvslideio::Point*)pts, npts,
                         color, line_type, shift );
 }
 
@@ -2844,9 +2844,9 @@ CV_IMPL void
 cvFillPoly( CvArr* _img, CvPoint **pts, const int *npts, int ncontours,
             CvScalar color, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
 
-    cv::fillPoly( img, (const cv::Point**)pts, npts, ncontours, color, line_type, shift );
+    ncvslideio::fillPoly( img, (const ncvslideio::Point**)pts, npts, ncontours, color, line_type, shift );
 }
 
 CV_IMPL void
@@ -2854,18 +2854,18 @@ cvPolyLine( CvArr* _img, CvPoint **pts, const int *npts,
             int ncontours, int closed, CvScalar color,
             int thickness, int line_type, int shift )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
 
-    cv::polylines( img, (const cv::Point**)pts, npts, ncontours,
+    ncvslideio::polylines( img, (const ncvslideio::Point**)pts, npts, ncontours,
                    closed != 0, color, thickness, line_type, shift );
 }
 
 CV_IMPL void
 cvPutText( CvArr* _img, const char *text, CvPoint org, const CvFont *_font, CvScalar color )
 {
-    cv::Mat img = cv::cvarrToMat(_img);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img);
     CV_Assert( text != 0 && _font != 0);
-    cv::putText( img, text, org, _font->font_face, (_font->hscale+_font->vscale)*0.5,
+    ncvslideio::putText( img, text, org, _font->font_face, (_font->hscale+_font->vscale)*0.5,
                 color, _font->thickness, _font->line_type,
                 CV_IS_IMAGE(_img) && ((IplImage*)_img)->origin != 0 );
 }
@@ -2877,7 +2877,7 @@ cvInitFont( CvFont *font, int font_face, double hscale, double vscale,
 {
     CV_Assert( font != 0 && hscale > 0 && vscale > 0 && thickness >= 0 );
 
-    font->ascii = cv::getFontData(font_face);
+    font->ascii = ncvslideio::getFontData(font_face);
     font->font_face = font_face;
     font->hscale = (float)hscale;
     font->vscale = (float)vscale;
@@ -2891,7 +2891,7 @@ CV_IMPL void
 cvGetTextSize( const char *text, const CvFont *_font, CvSize *_size, int *_base_line )
 {
     CV_Assert(text != 0 && _font != 0);
-    cv::Size size = cv::getTextSize( text, _font->font_face, (_font->hscale + _font->vscale)*0.5,
+    ncvslideio::Size size = ncvslideio::getTextSize( text, _font->font_face, (_font->hscale + _font->vscale)*0.5,
                                      _font->thickness, _base_line );
     if( _size )
         *_size = cvSize(size);

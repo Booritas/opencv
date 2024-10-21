@@ -5,7 +5,7 @@
 #include "opencv2/core/cvstd.hpp"
 #include "opencv2/core/hal/interface.h"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 //! @addtogroup imgproc_hal_functions
 //! @{

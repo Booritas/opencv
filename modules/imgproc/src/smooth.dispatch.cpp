@@ -59,14 +59,14 @@
 
 #include "opencv2/core/softfloat.hpp"
 
-namespace cv {
+namespace ncvslideio {
 #include "fixedpoint.inl.hpp"
 }
 
 #include "smooth.simd.hpp"
 #include "smooth.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 /****************************************************************************************\
                                      Gaussian Blur
@@ -153,7 +153,7 @@ softdouble getGaussianKernelBitExact(std::vector<softdouble>& result, int n, dou
     softdouble scale2X = sd_minus_0_125/(sigmaX*sigmaX);
 
     int n2_ = (n - 1) / 2;
-    cv::AutoBuffer<softdouble> values(n2_ + 1);
+    ncvslideio::AutoBuffer<softdouble> values(n2_ + 1);
     softdouble sum = softdouble::zero();
     for (int i = 0, x = 1 - n; i < n2_; i++, x+=2)
     {
@@ -361,9 +361,9 @@ static bool ocl_GaussianBlur_8UC1(InputArray _src, OutputArray _dst, Size ksize,
     ocl::Kernel kernel;
 
     if (ksize.width == 3)
-        kernel.create("gaussianBlur3x3_8UC1_cols16_rows2", cv::ocl::imgproc::gaussianBlur3x3_oclsrc, build_opts);
+        kernel.create("gaussianBlur3x3_8UC1_cols16_rows2", ncvslideio::ocl::imgproc::gaussianBlur3x3_oclsrc, build_opts);
     else if (ksize.width == 5)
-        kernel.create("gaussianBlur5x5_8UC1_cols4", cv::ocl::imgproc::gaussianBlur5x5_oclsrc, build_opts);
+        kernel.create("gaussianBlur5x5_8UC1_cols4", ncvslideio::ocl::imgproc::gaussianBlur5x5_oclsrc, build_opts);
 
     if (kernel.empty())
         return false;
@@ -526,7 +526,7 @@ private:
 
 #endif
 
-static bool ipp_GaussianBlur(cv::Mat& src, cv::Mat& dst, Size ksize,
+static bool ipp_GaussianBlur(ncvslideio::Mat& src, ncvslideio::Mat& dst, Size ksize,
                    double sigma1, double sigma2, int borderType )
 {
 #ifdef HAVE_IPP_IW
@@ -612,8 +612,8 @@ void GaussianBlur(InputArray _src, OutputArray _dst, Size ksize,
 {
     CV_INSTRUMENT_REGION();
 
-    if (hint == cv::ALGO_HINT_DEFAULT)
-        hint = cv::getDefaultAlgorithmHint();
+    if (hint == ncvslideio::ALGO_HINT_DEFAULT)
+        hint = ncvslideio::getDefaultAlgorithmHint();
 
     CV_Assert(!_src.empty());
 
@@ -833,7 +833,7 @@ CV_IMPL void
 cvSmooth( const void* srcarr, void* dstarr, int smooth_type,
           int param1, int param2, double param3, double param4 )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst0 = cv::cvarrToMat(dstarr), dst = dst0;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst0 = ncvslideio::cvarrToMat(dstarr), dst = dst0;
 
     CV_Assert( dst.size() == src.size() &&
         (smooth_type == CV_BLUR_NO_SCALE || dst.type() == src.type()) );
@@ -842,17 +842,17 @@ cvSmooth( const void* srcarr, void* dstarr, int smooth_type,
         param2 = param1;
 
     if( smooth_type == CV_BLUR || smooth_type == CV_BLUR_NO_SCALE )
-        cv::boxFilter( src, dst, dst.depth(), cv::Size(param1, param2), cv::Point(-1,-1),
-            smooth_type == CV_BLUR, cv::BORDER_REPLICATE );
+        ncvslideio::boxFilter( src, dst, dst.depth(), ncvslideio::Size(param1, param2), ncvslideio::Point(-1,-1),
+            smooth_type == CV_BLUR, ncvslideio::BORDER_REPLICATE );
     else if( smooth_type == CV_GAUSSIAN )
-        cv::GaussianBlur( src, dst, cv::Size(param1, param2), param3, param4, cv::BORDER_REPLICATE );
+        ncvslideio::GaussianBlur( src, dst, ncvslideio::Size(param1, param2), param3, param4, ncvslideio::BORDER_REPLICATE );
     else if( smooth_type == CV_MEDIAN )
-        cv::medianBlur( src, dst, param1 );
+        ncvslideio::medianBlur( src, dst, param1 );
     else
-        cv::bilateralFilter( src, dst, param1, param3, param4, cv::BORDER_REPLICATE );
+        ncvslideio::bilateralFilter( src, dst, param1, param3, param4, ncvslideio::BORDER_REPLICATE );
 
     if( dst.data != dst0.data )
-        CV_Error( cv::Error::StsUnmatchedFormats, "The destination image does not have the proper type" );
+        CV_Error( ncvslideio::Error::StsUnmatchedFormats, "The destination image does not have the proper type" );
 }
 
 /* End of file. */

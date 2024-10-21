@@ -8,7 +8,7 @@
 // This file contains special overloads for OpenCV bindings
 // No need to use these functions in C++ code.
 
-namespace cv {
+namespace ncvslideio {
 
 /** @brief Finds lines in a binary image using the standard Hough transform and get accumulator.
  *

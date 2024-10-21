@@ -52,7 +52,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
 
 // saturate_cast
@@ -916,7 +916,7 @@ CV_CUDEV_IMPLEMENT_SCALAR_BINARY_FUNC(atan2, ::atan2, double, double, double)
 
 #undef CV_CUDEV_IMPLEMENT_SCALAR_BINARY_FUNC
 
-}}} // namespace cv { namespace cuda { namespace device
+}}} // namespace ncvslideio { namespace cuda { namespace device
 
 //! @endcond
 

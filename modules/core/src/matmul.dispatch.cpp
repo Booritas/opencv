@@ -52,7 +52,7 @@
 #include "matmul.simd.hpp"
 #include "matmul.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv
+namespace ncvslideio
 {
 
 /****************************************************************************************\
@@ -65,7 +65,7 @@ static bool ocl_gemm_amdblas( InputArray matA, InputArray matB, double alpha,
                       InputArray matC, double beta, OutputArray matD, int flags )
 {
     int type = matA.type(), esz = CV_ELEM_SIZE(type);
-    bool haveC = matC.kind() != cv::_InputArray::NONE;
+    bool haveC = matC.kind() != ncvslideio::_InputArray::NONE;
     Size sizeA = matA.size(), sizeB = matB.size(), sizeC = haveC ? matC.size() : Size(0, 0);
     bool atrans = (flags & GEMM_1_T) != 0, btrans = (flags & GEMM_2_T) != 0, ctrans = (flags & GEMM_3_T) != 0;
 
@@ -170,7 +170,7 @@ static bool ocl_gemm( InputArray matA, InputArray matB, double alpha,
     if (!doubleSupport && depth == CV_64F)
         return false;
 
-    bool haveC = matC.kind() != cv::_InputArray::NONE;
+    bool haveC = matC.kind() != ncvslideio::_InputArray::NONE;
     Size sizeA = matA.size(), sizeB = matB.size(), sizeC = haveC ? matC.size() : Size(0, 0);
     bool atrans = (flags & GEMM_1_T) != 0, btrans = (flags & GEMM_2_T) != 0, ctrans = (flags & GEMM_3_T) != 0;
 
@@ -252,7 +252,7 @@ static bool ocl_gemm( InputArray matA, InputArray matB, double alpha,
                       haveC ? " -D HAVE_C" : "",
                       doubleSupport ? " -D DOUBLE_SUPPORT" : "");
 
-    ocl::Kernel k("gemm", cv::ocl::core::gemm_oclsrc, opts);
+    ocl::Kernel k("gemm", ncvslideio::ocl::core::gemm_oclsrc, opts);
     if (k.empty())
         return false;
 
@@ -733,7 +733,7 @@ void calcCovarMatrix( InputArray _src, OutputArray _covar, InputOutputArray _mea
 
     if(_src.kind() == _InputArray::STD_VECTOR_MAT || _src.kind() == _InputArray::STD_ARRAY_MAT)
     {
-        std::vector<cv::Mat> src;
+        std::vector<ncvslideio::Mat> src;
         _src.getMatVector(src);
 
         CV_Assert( src.size() > 0 );
@@ -746,7 +746,7 @@ void calcCovarMatrix( InputArray _src, OutputArray _covar, InputOutputArray _mea
         Mat _data(static_cast<int>(src.size()), size.area(), type);
 
         int i = 0;
-        for(std::vector<cv::Mat>::iterator each = src.begin(); each != src.end(); ++each, ++i )
+        for(std::vector<ncvslideio::Mat>::iterator each = src.begin(); each != src.end(); ++each, ++i )
         {
             CV_Assert_N( (*each).size() == size, (*each).type() == type );
             Mat dataRow(size.height, size.width, type, _data.ptr(i));
@@ -921,7 +921,7 @@ void mulTransposed(InputArray _src, OutputArray _dst, bool ata,
     {
         MulTransposedFunc func = getMulTransposedFunc(stype, dtype, ata);
         if( !func )
-            CV_Error( cv::Error::StsUnsupportedFormat, "" );
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
         func( src, dst, delta, scale );
         completeSymm( dst, false );
@@ -1096,7 +1096,7 @@ double UMat::dot(InputArray m) const
     return getMat(ACCESS_READ).dot(m);
 }
 
-}  // namespace cv::
+}  // namespace ncvslideio::
 
 
 #ifndef OPENCV_EXCLUDE_C_API
@@ -1107,11 +1107,11 @@ double UMat::dot(InputArray m) const
 CV_IMPL void cvGEMM( const CvArr* Aarr, const CvArr* Barr, double alpha,
                      const CvArr* Carr, double beta, CvArr* Darr, int flags )
 {
-    cv::Mat A = cv::cvarrToMat(Aarr), B = cv::cvarrToMat(Barr);
-    cv::Mat C, D = cv::cvarrToMat(Darr);
+    ncvslideio::Mat A = ncvslideio::cvarrToMat(Aarr), B = ncvslideio::cvarrToMat(Barr);
+    ncvslideio::Mat C, D = ncvslideio::cvarrToMat(Darr);
 
     if( Carr )
-        C = cv::cvarrToMat(Carr);
+        C = ncvslideio::cvarrToMat(Carr);
 
     CV_Assert_N( (D.rows == ((flags & CV_GEMM_A_T) == 0 ? A.rows : A.cols)),
                (D.cols == ((flags & CV_GEMM_B_T) == 0 ? B.cols : B.rows)),
@@ -1125,11 +1125,11 @@ CV_IMPL void
 cvTransform( const CvArr* srcarr, CvArr* dstarr,
              const CvMat* transmat, const CvMat* shiftvec )
 {
-    cv::Mat m = cv::cvarrToMat(transmat), src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(transmat), src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     if( shiftvec )
     {
-        cv::Mat v = cv::cvarrToMat(shiftvec).reshape(1,m.rows),
+        ncvslideio::Mat v = ncvslideio::cvarrToMat(shiftvec).reshape(1,m.rows),
             _m(m.rows, m.cols + 1, m.type()), m1 = _m.colRange(0,m.cols), v1 = _m.col(m.cols);
         m.convertTo(m1, m1.type());
         v.convertTo(v1, v1.type());
@@ -1137,27 +1137,27 @@ cvTransform( const CvArr* srcarr, CvArr* dstarr,
     }
 
     CV_Assert_N( dst.depth() == src.depth(), dst.channels() == m.rows );
-    cv::transform( src, dst, m );
+    ncvslideio::transform( src, dst, m );
 }
 
 
 CV_IMPL void
 cvPerspectiveTransform( const CvArr* srcarr, CvArr* dstarr, const CvMat* mat )
 {
-    cv::Mat m = cv::cvarrToMat(mat), src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat m = ncvslideio::cvarrToMat(mat), src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert_N( dst.type() == src.type(), dst.channels() == m.rows-1 );
-    cv::perspectiveTransform( src, dst, m );
+    ncvslideio::perspectiveTransform( src, dst, m );
 }
 
 
 CV_IMPL void cvScaleAdd( const CvArr* srcarr1, CvScalar scale,
                          const CvArr* srcarr2, CvArr* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert_N( src1.size == dst.size, src1.type() == dst.type() );
-    cv::scaleAdd( src1, scale.val[0], cv::cvarrToMat(srcarr2), dst );
+    ncvslideio::scaleAdd( src1, scale.val[0], ncvslideio::cvarrToMat(srcarr2), dst );
 }
 
 
@@ -1165,24 +1165,24 @@ CV_IMPL void
 cvCalcCovarMatrix( const CvArr** vecarr, int count,
                    CvArr* covarr, CvArr* avgarr, int flags )
 {
-    cv::Mat cov0 = cv::cvarrToMat(covarr), cov = cov0, mean0, mean;
+    ncvslideio::Mat cov0 = ncvslideio::cvarrToMat(covarr), cov = cov0, mean0, mean;
     CV_Assert_N( vecarr != 0, count >= 1 );
 
     if( avgarr )
-        mean = mean0 = cv::cvarrToMat(avgarr);
+        mean = mean0 = ncvslideio::cvarrToMat(avgarr);
 
     if( (flags & CV_COVAR_COLS) != 0 || (flags & CV_COVAR_ROWS) != 0 )
     {
 
-        cv::Mat data = cv::cvarrToMat(vecarr[0]);
-        cv::calcCovarMatrix( data, cov, mean, flags, cov.type() );
+        ncvslideio::Mat data = ncvslideio::cvarrToMat(vecarr[0]);
+        ncvslideio::calcCovarMatrix( data, cov, mean, flags, cov.type() );
     }
     else
     {
-        std::vector<cv::Mat> data(count);
+        std::vector<ncvslideio::Mat> data(count);
         for( int i = 0; i < count; i++ )
-            data[i] = cv::cvarrToMat(vecarr[i]);
-        cv::calcCovarMatrix( &data[0], count, cov, mean, flags, cov.type() );
+            data[i] = ncvslideio::cvarrToMat(vecarr[i]);
+        ncvslideio::calcCovarMatrix( &data[0], count, cov, mean, flags, cov.type() );
     }
 
     if( mean.data != mean0.data && mean0.data )
@@ -1196,48 +1196,48 @@ cvCalcCovarMatrix( const CvArr** vecarr, int count,
 CV_IMPL double
 cvMahalanobis( const CvArr* srcAarr, const CvArr* srcBarr, const CvArr* matarr )
 {
-    return cv::Mahalanobis(cv::cvarrToMat(srcAarr),
-        cv::cvarrToMat(srcBarr), cv::cvarrToMat(matarr));
+    return ncvslideio::Mahalanobis(ncvslideio::cvarrToMat(srcAarr),
+        ncvslideio::cvarrToMat(srcBarr), ncvslideio::cvarrToMat(matarr));
 }
 
 CV_IMPL void
 cvMulTransposed( const CvArr* srcarr, CvArr* dstarr,
                  int order, const CvArr* deltaarr, double scale )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst0 = cv::cvarrToMat(dstarr), dst = dst0, delta;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst0 = ncvslideio::cvarrToMat(dstarr), dst = dst0, delta;
     if( deltaarr )
-        delta = cv::cvarrToMat(deltaarr);
-    cv::mulTransposed( src, dst, order != 0, delta, scale, dst.type());
+        delta = ncvslideio::cvarrToMat(deltaarr);
+    ncvslideio::mulTransposed( src, dst, order != 0, delta, scale, dst.type());
     if( dst.data != dst0.data )
         dst.convertTo(dst0, dst0.type());
 }
 
 CV_IMPL double cvDotProduct( const CvArr* srcAarr, const CvArr* srcBarr )
 {
-    return cv::cvarrToMat(srcAarr).dot(cv::cvarrToMat(srcBarr));
+    return ncvslideio::cvarrToMat(srcAarr).dot(ncvslideio::cvarrToMat(srcBarr));
 }
 
 
 CV_IMPL void
 cvCalcPCA( const CvArr* data_arr, CvArr* avg_arr, CvArr* eigenvals, CvArr* eigenvects, int flags )
 {
-    cv::Mat data = cv::cvarrToMat(data_arr), mean0 = cv::cvarrToMat(avg_arr);
-    cv::Mat evals0 = cv::cvarrToMat(eigenvals), evects0 = cv::cvarrToMat(eigenvects);
-    cv::Mat mean = mean0, evals = evals0, evects = evects0;
+    ncvslideio::Mat data = ncvslideio::cvarrToMat(data_arr), mean0 = ncvslideio::cvarrToMat(avg_arr);
+    ncvslideio::Mat evals0 = ncvslideio::cvarrToMat(eigenvals), evects0 = ncvslideio::cvarrToMat(eigenvects);
+    ncvslideio::Mat mean = mean0, evals = evals0, evects = evects0;
 
-    cv::PCA pca;
+    ncvslideio::PCA pca;
     pca.mean = mean;
     pca.eigenvalues = evals;
     pca.eigenvectors = evects;
 
-    pca(data, (flags & CV_PCA_USE_AVG) ? mean : cv::Mat(),
+    pca(data, (flags & CV_PCA_USE_AVG) ? mean : ncvslideio::Mat(),
         flags, !evals.empty() ? evals.rows + evals.cols - 1 : 0);
 
     if( pca.mean.size() == mean.size() )
         pca.mean.convertTo( mean, mean.type() );
     else
     {
-        cv::Mat temp; pca.mean.convertTo( temp, mean.type() );
+        ncvslideio::Mat temp; pca.mean.convertTo( temp, mean.type() );
         transpose( temp, mean );
     }
 
@@ -1251,7 +1251,7 @@ cvCalcPCA( const CvArr* data_arr, CvArr* avg_arr, CvArr* eigenvals, CvArr* eigen
                 evects0.cols == evects.cols,
                 evects0.rows == ecount0 );
 
-    cv::Mat temp = evals0;
+    ncvslideio::Mat temp = evals0;
     if( evals.rows == 1 )
         evals.colRange(0, ecount0).convertTo(temp, evals0.type());
     else
@@ -1269,10 +1269,10 @@ CV_IMPL void
 cvProjectPCA( const CvArr* data_arr, const CvArr* avg_arr,
               const CvArr* eigenvects, CvArr* result_arr )
 {
-    cv::Mat data = cv::cvarrToMat(data_arr), mean = cv::cvarrToMat(avg_arr);
-    cv::Mat evects = cv::cvarrToMat(eigenvects), dst0 = cv::cvarrToMat(result_arr), dst = dst0;
+    ncvslideio::Mat data = ncvslideio::cvarrToMat(data_arr), mean = ncvslideio::cvarrToMat(avg_arr);
+    ncvslideio::Mat evects = ncvslideio::cvarrToMat(eigenvects), dst0 = ncvslideio::cvarrToMat(result_arr), dst = dst0;
 
-    cv::PCA pca;
+    ncvslideio::PCA pca;
     pca.mean = mean;
     int n;
     if( mean.rows == 1 )
@@ -1287,7 +1287,7 @@ cvProjectPCA( const CvArr* data_arr, const CvArr* avg_arr,
     }
     pca.eigenvectors = evects.rowRange(0, n);
 
-    cv::Mat result = pca.project(data);
+    ncvslideio::Mat result = pca.project(data);
     if( result.cols != dst.cols )
         result = result.reshape(1, 1);
     result.convertTo(dst, dst.type());
@@ -1300,10 +1300,10 @@ CV_IMPL void
 cvBackProjectPCA( const CvArr* proj_arr, const CvArr* avg_arr,
                   const CvArr* eigenvects, CvArr* result_arr )
 {
-    cv::Mat data = cv::cvarrToMat(proj_arr), mean = cv::cvarrToMat(avg_arr);
-    cv::Mat evects = cv::cvarrToMat(eigenvects), dst0 = cv::cvarrToMat(result_arr), dst = dst0;
+    ncvslideio::Mat data = ncvslideio::cvarrToMat(proj_arr), mean = ncvslideio::cvarrToMat(avg_arr);
+    ncvslideio::Mat evects = ncvslideio::cvarrToMat(eigenvects), dst0 = ncvslideio::cvarrToMat(result_arr), dst = dst0;
 
-    cv::PCA pca;
+    ncvslideio::PCA pca;
     pca.mean = mean;
     int n;
     if( mean.rows == 1 )
@@ -1318,7 +1318,7 @@ cvBackProjectPCA( const CvArr* proj_arr, const CvArr* avg_arr,
     }
     pca.eigenvectors = evects.rowRange(0, n);
 
-    cv::Mat result = pca.backProject(data);
+    ncvslideio::Mat result = pca.backProject(data);
     result.convertTo(dst, dst.type());
 
     CV_Assert(dst0.data == dst.data);

@@ -53,7 +53,7 @@ void accProd_##suffix(const type* src1, const type* src2, acctype* dst, const uc
 void accW_##suffix(const type* src, acctype* dst, const uchar* mask, int len, int cn, double alpha);
 
 
-namespace cv {
+namespace ncvslideio {
 
 DECLARATE_ACC_FUNCS(8u32f, uchar, float)
 DECLARATE_ACC_FUNCS(8u64f, uchar, double)
@@ -3104,6 +3104,6 @@ void accW_simd_(const double* src, double* dst, const uchar* mask, int len, int 
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
 
-} // namespace cv
+} // namespace ncvslideio
 
 ///* End of file. */

@@ -7,7 +7,7 @@
 
 #include "opencv2/imgproc.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace segmentation {
 
@@ -136,6 +136,6 @@ protected:
 //! @}
 
 }  // namespace segmentation
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // OPENCV_IMGPROC_SEGMENTATION_HPP

@@ -62,21 +62,21 @@
     #endif
 #endif
 
-namespace cv { namespace cuda {
+namespace ncvslideio { namespace cuda {
     static inline void checkCudaError(cudaError_t err, const char* file, const int line, const char* func)
     {
         if (cudaSuccess != err) {
             cudaGetLastError(); // reset the last stored error to cudaSuccess
-            cv::error(cv::Error::GpuApiCallError, cudaGetErrorString(err), func, file, line);
+            ncvslideio::error(ncvslideio::Error::GpuApiCallError, cudaGetErrorString(err), func, file, line);
         }
     }
 }}
 
 #ifndef cudaSafeCall
-    #define cudaSafeCall(expr)  cv::cuda::checkCudaError(expr, __FILE__, __LINE__, CV_Func)
+    #define cudaSafeCall(expr)  ncvslideio::cuda::checkCudaError(expr, __FILE__, __LINE__, CV_Func)
 #endif
 
-namespace cv { namespace cuda
+namespace ncvslideio { namespace cuda
 {
     template <typename T> static inline bool isAligned(const T* ptr, size_t size)
     {
@@ -89,7 +89,7 @@ namespace cv { namespace cuda
     }
 }}
 
-namespace cv { namespace cuda
+namespace ncvslideio { namespace cuda
 {
     namespace device
     {
@@ -100,7 +100,7 @@ namespace cv { namespace cuda
 
 #if (CUDART_VERSION >= 12000)
         template<class T> inline void createTextureObjectPitch2D(cudaTextureObject_t*, PtrStepSz<T>&, const cudaTextureDesc&) {
-            CV_Error(cv::Error::GpuNotSupported, "Function removed in CUDA SDK 12"); }
+            CV_Error(ncvslideio::Error::GpuNotSupported, "Function removed in CUDA SDK 12"); }
 #else
         //TODO: remove from OpenCV 5.x
         template<class T> inline void bindTexture(const textureReference* tex, const PtrStepSz<T>& img)

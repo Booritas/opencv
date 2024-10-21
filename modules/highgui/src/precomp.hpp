@@ -126,11 +126,11 @@ void cvSetPropTopmost_COCOA(const char* name, const bool topmost);
 double cvGetPropVsync_W32(const char* name);
 void cvSetPropVsync_W32(const char* name, const bool enabled);
 
-void setWindowTitle_W32(const cv::String& name, const cv::String& title);
-void setWindowTitle_GTK(const cv::String& name, const cv::String& title);
-void setWindowTitle_QT(const cv::String& name, const cv::String& title);
-void setWindowTitle_COCOA(const cv::String& name, const cv::String& title);
-void setWindowTitle_WAYLAND(const cv::String& name, const cv::String& title);
+void setWindowTitle_W32(const ncvslideio::String& name, const ncvslideio::String& title);
+void setWindowTitle_GTK(const ncvslideio::String& name, const ncvslideio::String& title);
+void setWindowTitle_QT(const ncvslideio::String& name, const ncvslideio::String& title);
+void setWindowTitle_COCOA(const ncvslideio::String& name, const ncvslideio::String& title);
+void setWindowTitle_WAYLAND(const ncvslideio::String& name, const ncvslideio::String& title);
 
 int pollKey_W32();
 
@@ -150,42 +150,42 @@ double cvGetOpenGlProp_QT(const char* name);
 double cvGetPropVisible_QT(const char* name);
 #endif
 
-inline void convertToShow(const cv::Mat &src, cv::Mat &dst, bool toRGB = true)
+inline void convertToShow(const ncvslideio::Mat &src, ncvslideio::Mat &dst, bool toRGB = true)
 {
     const int src_depth = src.depth();
     CV_Assert(src_depth != CV_16F && src_depth != CV_32S);
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     switch(src_depth)
     {
     case CV_8U:
         tmp = src;
         break;
     case CV_8S:
-        cv::convertScaleAbs(src, tmp, 1, 127);
+        ncvslideio::convertScaleAbs(src, tmp, 1, 127);
         break;
     case CV_16S:
-        cv::convertScaleAbs(src, tmp, 1/255., 127);
+        ncvslideio::convertScaleAbs(src, tmp, 1/255., 127);
         break;
     case CV_16U:
-        cv::convertScaleAbs(src, tmp, 1/255.);
+        ncvslideio::convertScaleAbs(src, tmp, 1/255.);
         break;
     case CV_32F:
     case CV_64F: // assuming image has values in range [0, 1)
         src.convertTo(tmp, CV_8U, 255., 0.);
         break;
     }
-    cv::cvtColor(tmp, dst, toRGB ? cv::COLOR_BGR2RGB : cv::COLOR_BGRA2BGR, dst.channels());
+    ncvslideio::cvtColor(tmp, dst, toRGB ? ncvslideio::COLOR_BGR2RGB : ncvslideio::COLOR_BGRA2BGR, dst.channels());
 }
 
-inline void convertToShow(const cv::Mat &src, const CvMat* arr, bool toRGB = true)
+inline void convertToShow(const ncvslideio::Mat &src, const CvMat* arr, bool toRGB = true)
 {
-    cv::Mat dst = cv::cvarrToMat(arr);
+    ncvslideio::Mat dst = ncvslideio::cvarrToMat(arr);
     convertToShow(src, dst, toRGB);
     CV_Assert(dst.data == arr->data.ptr);
 }
 
 
-namespace cv {
+namespace ncvslideio {
 
 CV_EXPORTS Mutex& getWindowMutex();
 static inline Mutex& getInitializationMutex() { return getWindowMutex(); }

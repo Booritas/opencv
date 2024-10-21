@@ -7,23 +7,23 @@
 
 #include <opencv2/core/base.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
-/** Returns string of cv::Mat depth value: CV_8U -> "CV_8U" or "<invalid depth>" */
+/** Returns string of ncvslideio::Mat depth value: CV_8U -> "CV_8U" or "<invalid depth>" */
 CV_EXPORTS const char* depthToString(int depth);
 
-/** Returns string of cv::Mat depth value: CV_8UC3 -> "CV_8UC3" or "<invalid type>" */
+/** Returns string of ncvslideio::Mat depth value: CV_8UC3 -> "CV_8UC3" or "<invalid type>" */
 CV_EXPORTS String typeToString(int type);
 
 
 //! @cond IGNORED
 namespace detail {
 
-/** Returns string of cv::Mat depth value: CV_8U -> "CV_8U" or NULL */
+/** Returns string of ncvslideio::Mat depth value: CV_8U -> "CV_8U" or NULL */
 CV_EXPORTS const char* depthToString_(int depth);
 
-/** Returns string of cv::Mat depth value: CV_8UC3 -> "CV_8UC3" or cv::String() */
-CV_EXPORTS cv::String typeToString_(int type);
+/** Returns string of ncvslideio::Mat depth value: CV_8UC3 -> "CV_8UC3" or ncvslideio::String() */
+CV_EXPORTS ncvslideio::String typeToString_(int type);
 
 enum TestOp {
   TEST_CUSTOM = 0,
@@ -62,7 +62,7 @@ struct CheckContext {
 
 #define CV__CHECK_LOCATION_VARNAME(id) CVAUX_CONCAT(CVAUX_CONCAT(__cv_check_, id), __LINE__)
 #define CV__DEFINE_CHECK_CONTEXT(id, message, testOp, p1_str, p2_str) \
-    static const cv::detail::CheckContext CV__CHECK_LOCATION_VARNAME(id) = \
+    static const ncvslideio::detail::CheckContext CV__CHECK_LOCATION_VARNAME(id) = \
             { CV__CHECK_FUNCTION, CV__CHECK_FILENAME, __LINE__, testOp, "" message, "" p1_str, "" p2_str }
 
 CV_EXPORTS void CV_NORETURN check_failed_auto(const bool v1, const bool v2, const CheckContext& ctx);
@@ -98,15 +98,15 @@ CV_EXPORTS void CV_NORETURN check_failed_MatChannels(const int v, const CheckCon
 
 #define CV__CHECK(id, op, type, v1, v2, v1_str, v2_str, msg_str) do { \
     if(CV__TEST_##op((v1), (v2))) ; else { \
-        CV__DEFINE_CHECK_CONTEXT(id, msg_str, cv::detail::TEST_ ## op, v1_str, v2_str); \
-        cv::detail::check_failed_ ## type((v1), (v2), CV__CHECK_LOCATION_VARNAME(id)); \
+        CV__DEFINE_CHECK_CONTEXT(id, msg_str, ncvslideio::detail::TEST_ ## op, v1_str, v2_str); \
+        ncvslideio::detail::check_failed_ ## type((v1), (v2), CV__CHECK_LOCATION_VARNAME(id)); \
     } \
 } while (0)
 
 #define CV__CHECK_CUSTOM_TEST(id, type, v, test_expr, v_str, test_expr_str, msg_str) do { \
     if(!!(test_expr)) ; else { \
-        CV__DEFINE_CHECK_CONTEXT(id, msg_str, cv::detail::TEST_CUSTOM, v_str, test_expr_str); \
-        cv::detail::check_failed_ ## type((v), CV__CHECK_LOCATION_VARNAME(id)); \
+        CV__DEFINE_CHECK_CONTEXT(id, msg_str, ncvslideio::detail::TEST_CUSTOM, v_str, test_expr_str); \
+        ncvslideio::detail::check_failed_ ## type((v), CV__CHECK_LOCATION_VARNAME(id)); \
     } \
 } while (0)
 

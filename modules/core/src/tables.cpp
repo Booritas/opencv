@@ -48,7 +48,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 const float g_8x32fTab[] =

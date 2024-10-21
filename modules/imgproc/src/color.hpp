@@ -5,7 +5,7 @@
 #include "opencv2/imgproc.hpp"
 #include "hal_replacement.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 //
 // Helper functions
@@ -271,13 +271,13 @@ struct OclHelper
         dst = _dst.getUMat();
     }
 
-    bool createKernel(cv::String name, ocl::ProgramSource& source, cv::String options)
+    bool createKernel(ncvslideio::String name, ocl::ProgramSource& source, ncvslideio::String options)
     {
         ocl::Device dev = ocl::Device::getDefault();
         int pxPerWIy = dev.isIntel() && (dev.type() & ocl::Device::TYPE_GPU) ? 4 : 1;
         int pxPerWIx = 1;
 
-        cv::String baseOptions = format("-D SRC_DEPTH=%d -D SCN=%d -D PIX_PER_WI_Y=%d ",
+        ncvslideio::String baseOptions = format("-D SRC_DEPTH=%d -D SCN=%d -D PIX_PER_WI_Y=%d ",
                                         src.depth(), src.channels(), pxPerWIy);
 
         switch (sizePolicy)
@@ -583,4 +583,4 @@ void cvtColorGray25x5( InputArray _src, OutputArray _dst, int gbits);
 void cvtColorRGBA2mRGBA(InputArray _src, OutputArray _dst);
 void cvtColormRGBA2RGBA(InputArray _src, OutputArray _dst);
 
-} //namespace cv
+} //namespace ncvslideio

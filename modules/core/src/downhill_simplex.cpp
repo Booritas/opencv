@@ -87,7 +87,7 @@ Created by @SareeAlnaghy
 #include <opencv2\optim\optim.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 void test(Ptr<optim::DownhillSolver> MinProblemSolver, Ptr<optim::MinProblemSolver::Function> ptr_F, Mat &P, Mat &step)
 {
@@ -137,7 +137,7 @@ multiple lines in three dimensions as not all lines intersect in three dimension
 
 */
 
-namespace cv
+namespace ncvslideio
 {
 
 class DownhillSolverImpl CV_FINAL : public DownhillSolver

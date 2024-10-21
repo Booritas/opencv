@@ -46,7 +46,7 @@
 
 #include "opencv2/core/cvdef.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 //#define OPENCV_TRAITS_ENABLE_DEPRECATED
@@ -412,6 +412,6 @@ struct SafeFmt<T, true>
 
 } // namespace
 
-} // cv
+} // ncvslideio
 
 #endif // OPENCV_CORE_TRAITS_HPP

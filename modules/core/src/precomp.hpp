@@ -79,10 +79,10 @@
 #include <cstring>
 #include <cassert>
 
-#define USE_SSE2  (cv::checkHardwareSupport(CV_CPU_SSE2))
-#define USE_SSE4_2  (cv::checkHardwareSupport(CV_CPU_SSE4_2))
-#define USE_AVX  (cv::checkHardwareSupport(CV_CPU_AVX))
-#define USE_AVX2  (cv::checkHardwareSupport(CV_CPU_AVX2))
+#define USE_SSE2  (ncvslideio::checkHardwareSupport(CV_CPU_SSE2))
+#define USE_SSE4_2  (ncvslideio::checkHardwareSupport(CV_CPU_SSE4_2))
+#define USE_AVX  (ncvslideio::checkHardwareSupport(CV_CPU_AVX))
+#define USE_AVX2  (ncvslideio::checkHardwareSupport(CV_CPU_AVX2))
 
 #include "opencv2/core/hal/hal.hpp"
 #include "opencv2/core/hal/intrin.hpp"
@@ -93,18 +93,18 @@
 
 #define GET_OPTIMIZED(func) (func)
 
-namespace cv
+namespace ncvslideio
 {
 
 // -128.f ... 255.f
 extern const float g_8x32fTab[];
-#define CV_8TO32F(x)  cv::g_8x32fTab[(x)+128]
+#define CV_8TO32F(x)  ncvslideio::g_8x32fTab[(x)+128]
 
 extern const ushort g_8x16uSqrTab[];
-#define CV_SQR_8U(x)  cv::g_8x16uSqrTab[(x)+255]
+#define CV_SQR_8U(x)  ncvslideio::g_8x16uSqrTab[(x)+255]
 
 extern const uchar g_Saturate8u[];
-#define CV_FAST_CAST_8U(t)   (assert(-256 <= (t) && (t) <= 512), cv::g_Saturate8u[(t)+256])
+#define CV_FAST_CAST_8U(t)   (assert(-256 <= (t) && (t) <= 512), ncvslideio::g_Saturate8u[(t)+256])
 #define CV_MIN_8U(a,b)       ((a) - CV_FAST_CAST_8U((a) - (b)))
 #define CV_MAX_8U(a,b)       ((a) + CV_FAST_CAST_8U((b) - (a)))
 
@@ -341,7 +341,7 @@ struct ImplCollector
     std::vector<int>    implCode;
     std::vector<String> implFun;
 
-    cv::Mutex mutex;
+    ncvslideio::Mutex mutex;
 };
 #endif
 
@@ -390,7 +390,7 @@ bool __termination;  // skip some cleanups, because process is terminating
                      // (for example, if ExitProcess() was already called)
 
 CV_EXPORTS
-cv::Mutex& getInitializationMutex();
+ncvslideio::Mutex& getInitializationMutex();
 
 /// @brief Returns timestamp in nanoseconds since program launch
 int64 getTimestampNS();

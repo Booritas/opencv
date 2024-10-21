@@ -13,7 +13,7 @@
 
 #include "cvdef.h"
 
-namespace cv
+namespace ncvslideio
 {
 /// Check if use of OpenVX is possible
 CV_EXPORTS_W bool haveOpenVX();
@@ -23,6 +23,6 @@ CV_EXPORTS_W bool useOpenVX();
 
 /// Enable/disable use of OpenVX
 CV_EXPORTS_W void setUseOpenVX(bool flag);
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_OVX_HPP

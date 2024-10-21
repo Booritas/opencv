@@ -62,7 +62,7 @@
 #pragma warning(disable: 4459)  // declaration of '...' hides global declaration
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_basic
@@ -272,7 +272,7 @@ public:
 #endif
     //! conversion to another data type
     template<typename _Tp2> operator Point3_<_Tp2>() const;
-    //! conversion to cv::Vec<>
+    //! conversion to ncvslideio::Vec<>
     operator Vec<_Tp, 3>() const;
 
     //! dot product
@@ -438,7 +438,7 @@ rect2):
         return (r1 & r2) == r1;
     }
 @endcode
-For your convenience, the Rect_\<\> alias is available: cv::Rect
+For your convenience, the Rect_\<\> alias is available: ncvslideio::Rect
 */
 template<typename _Tp> class Rect_
 {
@@ -2205,7 +2205,7 @@ Scalar_<_Tp>::Scalar_(const Vec<_Tp2, cn>& v)
 {
     int i;
     for( i = 0; i < (cn < 4 ? cn : 4); i++ )
-        this->val[i] = cv::saturate_cast<_Tp>(v.val[i]);
+        this->val[i] = ncvslideio::saturate_cast<_Tp>(v.val[i]);
     for( ; i < 4; i++ )
         this->val[i] = 0;
 }
@@ -2478,7 +2478,7 @@ TermCriteria::TermCriteria(int _type, int _maxCount, double _epsilon)
 
 //! @endcond
 
-} // cv
+} // ncvslideio
 
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -61,7 +61,7 @@
 #  include <cstdlib> //for abs(int)
 #  include <cmath>
 
-namespace cv
+namespace ncvslideio
 {
     static inline uchar abs(uchar a) { return a; }
     static inline ushort abs(ushort a) { return a; }
@@ -80,7 +80,7 @@ namespace cv
 
 #include "cvstd_wrapper.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 //! @addtogroup core_utils
 //! @{
@@ -105,7 +105,7 @@ double memory deallocation.
 CV_EXPORTS void fastFree(void* ptr);
 
 /*!
-  The STL-compliant memory Allocator based on cv::fastMalloc() and cv::fastFree()
+  The STL-compliant memory Allocator based on ncvslideio::fastMalloc() and ncvslideio::fastFree()
 */
 template<typename _Tp> class Allocator
 {
@@ -135,7 +135,7 @@ public:
     void construct(pointer p, const _Tp& v) { new(static_cast<void*>(p)) _Tp(v); }
     void destroy(pointer p) { p->~_Tp(); }
 
-    size_type max_size() const { return cv::max(static_cast<_Tp>(-1)/sizeof(_Tp), 1); }
+    size_type max_size() const { return ncvslideio::max(static_cast<_Tp>(-1)/sizeof(_Tp), 1); }
 };
 
 //! @} core_utils
@@ -184,6 +184,6 @@ static inline std::string toUpperCase(const std::string& str)
 #endif // OPENCV_DISABLE_STRING_LOWER_UPPER_CONVERSIONS
 
 //! @} core_basic
-} // cv
+} // ncvslideio
 
 #endif //OPENCV_CORE_CVSTD_HPP

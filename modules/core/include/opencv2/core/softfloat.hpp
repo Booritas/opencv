@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "cvdef.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 /** @addtogroup core_utils_softfloat
@@ -382,25 +382,25 @@ CV_EXPORTS softdouble sqrt( const softdouble& a );
 *----------------------------------------------------------------------------*/
 
 /** @brief Truncates number to integer with minimum magnitude */
-CV_EXPORTS int cvTrunc(const cv::softfloat&  a);
-CV_EXPORTS int cvTrunc(const cv::softdouble& a);
+CV_EXPORTS int cvTrunc(const ncvslideio::softfloat&  a);
+CV_EXPORTS int cvTrunc(const ncvslideio::softdouble& a);
 
 /** @brief Rounds a number to nearest even integer */
-CV_EXPORTS int cvRound(const cv::softfloat&  a);
-CV_EXPORTS int cvRound(const cv::softdouble& a);
+CV_EXPORTS int cvRound(const ncvslideio::softfloat&  a);
+CV_EXPORTS int cvRound(const ncvslideio::softdouble& a);
 
 /** @brief Rounds a number to nearest even long long integer */
-CV_EXPORTS int64_t cvRound64(const cv::softdouble& a);
+CV_EXPORTS int64_t cvRound64(const ncvslideio::softdouble& a);
 
 /** @brief Rounds a number down to integer */
-CV_EXPORTS int cvFloor(const cv::softfloat&  a);
-CV_EXPORTS int cvFloor(const cv::softdouble& a);
+CV_EXPORTS int cvFloor(const ncvslideio::softfloat&  a);
+CV_EXPORTS int cvFloor(const ncvslideio::softdouble& a);
 
 /** @brief Rounds number up to integer */
-CV_EXPORTS int  cvCeil(const cv::softfloat&  a);
-CV_EXPORTS int  cvCeil(const cv::softdouble& a);
+CV_EXPORTS int  cvCeil(const ncvslideio::softfloat&  a);
+CV_EXPORTS int  cvCeil(const ncvslideio::softdouble& a);
 
-namespace cv
+namespace ncvslideio
 {
 /** @brief Saturate casts */
 template<typename _Tp> static inline _Tp saturate_cast(softfloat  a) { return _Tp(a); }
@@ -509,6 +509,6 @@ CV_EXPORTS softdouble cos( const softdouble& a );
 
 //! @} core_utils_softfloat
 
-} // cv::
+} // ncvslideio::
 
 #endif

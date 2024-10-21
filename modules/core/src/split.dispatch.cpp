@@ -9,7 +9,7 @@
 #include "split.simd.hpp"
 #include "split.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 void split8u(const uchar* src, uchar** dst, int len, int cn )
 {
@@ -43,7 +43,7 @@ void split64s(const int64* src, int64** dst, int len, int cn )
         CV_CPU_DISPATCH_MODES_ALL);
 }
 
-} // namespace cv::hal::
+} // namespace ncvslideio::hal::
 
 /****************************************************************************************\
 *                                       split & merge                                    *
@@ -55,10 +55,10 @@ static SplitFunc getSplitFunc(int depth)
 {
     static SplitFunc splitTab[CV_DEPTH_MAX] =
     {
-        (SplitFunc)GET_OPTIMIZED(cv::hal::split8u), (SplitFunc)GET_OPTIMIZED(cv::hal::split8u),
-        (SplitFunc)GET_OPTIMIZED(cv::hal::split16u), (SplitFunc)GET_OPTIMIZED(cv::hal::split16u),
-        (SplitFunc)GET_OPTIMIZED(cv::hal::split32s), (SplitFunc)GET_OPTIMIZED(cv::hal::split32s),
-        (SplitFunc)GET_OPTIMIZED(cv::hal::split64s), (SplitFunc)GET_OPTIMIZED(cv::hal::split16u)
+        (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split8u), (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split8u),
+        (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split16u), (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split16u),
+        (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split32s), (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split32s),
+        (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split64s), (SplitFunc)GET_OPTIMIZED(ncvslideio::hal::split16u)
     };
 
     return splitTab[depth];

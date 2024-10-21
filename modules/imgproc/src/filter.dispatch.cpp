@@ -61,7 +61,7 @@
                                     Base Image Filter
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 
 BaseRowFilter::BaseRowFilter() { ksize = anchor = -1; }
 BaseRowFilter::~BaseRowFilter() {}
@@ -563,7 +563,7 @@ static bool ocl_filter2D( InputArray _src, OutputArray _dst, int ddepth,
 
     bool isolated = (borderType & BORDER_ISOLATED) != 0;
     borderType &= ~BORDER_ISOLATED;
-    const cv::ocl::Device &device = cv::ocl::Device::getDefault();
+    const ncvslideio::ocl::Device &device = ncvslideio::ocl::Device::getDefault();
     bool doubleSupport = device.doubleFPConfig() > 0;
     if (wdepth == CV_64F && !doubleSupport)
         return false;
@@ -571,8 +571,8 @@ static bool ocl_filter2D( InputArray _src, OutputArray _dst, int ddepth,
     const char * const borderMap[] = { "BORDER_CONSTANT", "BORDER_REPLICATE", "BORDER_REFLECT",
                                        "BORDER_WRAP", "BORDER_REFLECT_101" };
 
-    cv::Mat kernelMat = _kernel.getMat();
-    cv::Size sz = _src.size(), wholeSize;
+    ncvslideio::Mat kernelMat = _kernel.getMat();
+    ncvslideio::Size sz = _src.size(), wholeSize;
     size_t globalsize[2] = { (size_t)sz.width, (size_t)sz.height };
     size_t localsize_general[2] = {0, 1};
     size_t* localsize = NULL;
@@ -652,7 +652,7 @@ static bool ocl_filter2D( InputArray _src, OutputArray _dst, int ddepth,
                 ocl::convertTypeStr(sdepth, wdepth, cn, cvt[0], sizeof(cvt[0])),
                 ocl::convertTypeStr(wdepth, ddepth, cn, cvt[1], sizeof(cvt[1])), kerStr.c_str());
 
-        if (!k.create("filter2DSmall", cv::ocl::imgproc::filter2DSmall_oclsrc, build_options))
+        if (!k.create("filter2DSmall", ncvslideio::ocl::imgproc::filter2DSmall_oclsrc, build_options))
             return false;
     }
     else
@@ -701,7 +701,7 @@ static bool ocl_filter2D( InputArray _src, OutputArray _dst, int ddepth,
             globalsize[0] = DIVUP(sz.width, BLOCK_SIZE - (ksize.width - 1)) * BLOCK_SIZE;
             globalsize[1] = sz.height;
 
-            if (!k.create("filter2D", cv::ocl::imgproc::filter2D_oclsrc, opts))
+            if (!k.create("filter2D", ncvslideio::ocl::imgproc::filter2D_oclsrc, opts))
                 return false;
 
             size_t kernelWorkGroupSize = k.workGroupSize();
@@ -763,7 +763,7 @@ static bool ocl_sepRowFilter2D(const UMat & src, UMat & buf, const Mat & kernelX
     extra_extrapolation |= src.cols < radiusX;
 
     char cvt[50];
-    cv::String build_options = cv::format("-D RADIUSX=%d -D LSIZE0=%d -D LSIZE1=%d -D CN=%d -D %s -D %s -D %s"
+    ncvslideio::String build_options = ncvslideio::format("-D RADIUSX=%d -D LSIZE0=%d -D LSIZE1=%d -D CN=%d -D %s -D %s -D %s"
                                           " -D srcT=%s -D dstT=%s -D convertToDstT=%s -D srcT1=%s -D dstT1=%s%s%s",
                                           radiusX, (int)localsize[0], (int)localsize[1], cn, btype,
                                           extra_extrapolation ? "EXTRA_EXTRAPOLATION" : "NO_EXTRA_EXTRAPOLATION",
@@ -782,7 +782,7 @@ static bool ocl_sepRowFilter2D(const UMat & src, UMat & buf, const Mat & kernelX
     if (fast8uc1)
         kernelName += "_C1_D0";
 
-    ocl::Kernel k(kernelName.c_str(), cv::ocl::imgproc::filterSepRow_oclsrc,
+    ocl::Kernel k(kernelName.c_str(), ncvslideio::ocl::imgproc::filterSepRow_oclsrc,
                   build_options);
     if (k.empty())
         return false;
@@ -825,7 +825,7 @@ static bool ocl_sepColFilter2D(const UMat & buf, UMat & dst, const Mat & kernelY
 
     char cvt[2][50];
     int floatT = std::max(CV_32F, bdepth);
-    cv::String build_options = cv::format("-D RADIUSY=%d -D LSIZE0=%d -D LSIZE1=%d -D CN=%d"
+    ncvslideio::String build_options = ncvslideio::format("-D RADIUSY=%d -D LSIZE0=%d -D LSIZE1=%d -D CN=%d"
                                           " -D srcT=%s -D dstT=%s -D convertToFloatT=%s -D floatT=%s -D convertToDstT=%s"
                                           " -D srcT1=%s -D dstT1=%s -D SHIFT_BITS=%d%s%s",
                                           anchor, (int)localsize[0], (int)localsize[1], cn,
@@ -838,7 +838,7 @@ static bool ocl_sepColFilter2D(const UMat & buf, UMat & dst, const Mat & kernelY
                                           int_arithm ? " -D INTEGER_ARITHMETIC" : "");
     build_options += ocl::kernelToStr(kernelY, bdepth);
 
-    ocl::Kernel k("col_filter", cv::ocl::imgproc::filterSepCol_oclsrc,
+    ocl::Kernel k("col_filter", ncvslideio::ocl::imgproc::filterSepCol_oclsrc,
                   build_options);
     if (k.empty())
         return false;
@@ -893,7 +893,7 @@ static bool ocl_sepFilter2D_SinglePass(InputArray _src, OutputArray _dst,
     const char * const borderMap[] = { "BORDER_CONSTANT", "BORDER_REPLICATE", "BORDER_REFLECT", "BORDER_WRAP",
                                        "BORDER_REFLECT_101" };
 
-    String opts = cv::format("-D BLK_X=%d -D BLK_Y=%d -D RADIUSX=%d -D RADIUSY=%d%s%s"
+    String opts = ncvslideio::format("-D BLK_X=%d -D BLK_Y=%d -D RADIUSX=%d -D RADIUSY=%d%s%s"
                              " -D srcT=%s -D convertToWT=%s -D WT=%s -D dstT=%s -D convertToDstT=%s"
                              " -D %s -D srcT1=%s -D dstT1=%s -D WT1=%s -D CN=%d -D SHIFT_BITS=%d%s",
                              (int)lt2[0], (int)lt2[1], kernelX.cols / 2, kernelY.cols / 2,
@@ -1110,7 +1110,7 @@ bool ocl_sepFilter2D_BitExact(
 
 #endif
 
-Ptr<cv::BaseFilter> getLinearFilter(
+Ptr<ncvslideio::BaseFilter> getLinearFilter(
         int srcType, int dstType,
         InputArray filter_kernel, Point anchor,
         double delta, int bits)
@@ -1123,7 +1123,7 @@ Ptr<cv::BaseFilter> getLinearFilter(
 }
 
 
-Ptr<cv::FilterEngine> createLinearFilter(
+Ptr<ncvslideio::FilterEngine> createLinearFilter(
         int _srcType, int _dstType,
         InputArray filter_kernel,
         Point _anchor, double _delta,
@@ -1513,7 +1513,7 @@ void sepFilter2D(int stype, int dtype, int ktype,
                  anchor_x, anchor_y, delta, borderType);
 }
 
-} // namespace cv::hal::
+} // namespace ncvslideio::hal::
 
 //================================================================
 //   Main interface
@@ -1599,12 +1599,12 @@ void sepFilter2D(InputArray _src, OutputArray _dst, int ddepth,
 CV_IMPL void
 cvFilter2D( const CvArr* srcarr, CvArr* dstarr, const CvMat* _kernel, CvPoint anchor )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
-    cv::Mat kernel = cv::cvarrToMat(_kernel);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
+    ncvslideio::Mat kernel = ncvslideio::cvarrToMat(_kernel);
 
     CV_Assert( src.size() == dst.size() && src.channels() == dst.channels() );
 
-    cv::filter2D( src, dst, dst.depth(), kernel, anchor, 0, cv::BORDER_REPLICATE );
+    ncvslideio::filter2D( src, dst, dst.depth(), kernel, anchor, 0, ncvslideio::BORDER_REPLICATE );
 }
 
 /* End of file. */

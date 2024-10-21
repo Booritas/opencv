@@ -13,7 +13,7 @@
 
 #include <omp.h>
 
-namespace cv { namespace parallel { namespace openmp {
+namespace ncvslideio { namespace parallel { namespace openmp {
 
 /** OpenMP parallel_for API implementation
  *

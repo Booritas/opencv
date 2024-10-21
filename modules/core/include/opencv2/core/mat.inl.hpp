@@ -69,7 +69,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated-anon-enum-enum-conversion"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 CV__DEBUG_NS_BEGIN
 
@@ -3091,43 +3091,43 @@ MatExpr::operator Mat_<_Tp>() const
 template<typename _Tp> static inline
 MatExpr min(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
-    return cv::min((const Mat&)a, (const Mat&)b);
+    return ncvslideio::min((const Mat&)a, (const Mat&)b);
 }
 
 template<typename _Tp> static inline
 MatExpr min(const Mat_<_Tp>& a, double s)
 {
-    return cv::min((const Mat&)a, s);
+    return ncvslideio::min((const Mat&)a, s);
 }
 
 template<typename _Tp> static inline
 MatExpr min(double s, const Mat_<_Tp>& a)
 {
-    return cv::min((const Mat&)a, s);
+    return ncvslideio::min((const Mat&)a, s);
 }
 
 template<typename _Tp> static inline
 MatExpr max(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
-    return cv::max((const Mat&)a, (const Mat&)b);
+    return ncvslideio::max((const Mat&)a, (const Mat&)b);
 }
 
 template<typename _Tp> static inline
 MatExpr max(const Mat_<_Tp>& a, double s)
 {
-    return cv::max((const Mat&)a, s);
+    return ncvslideio::max((const Mat&)a, s);
 }
 
 template<typename _Tp> static inline
 MatExpr max(double s, const Mat_<_Tp>& a)
 {
-    return cv::max((const Mat&)a, s);
+    return ncvslideio::max((const Mat&)a, s);
 }
 
 template<typename _Tp> static inline
 MatExpr abs(const Mat_<_Tp>& m)
 {
-    return cv::abs((const Mat&)m);
+    return ncvslideio::abs((const Mat&)m);
 }
 
 
@@ -3408,7 +3408,7 @@ inline void UMatData::markDeviceCopyObsolete(bool flag)
 static inline
 void swap(MatExpr& a, MatExpr& b) { a.swap(b); }
 
-} //cv
+} //ncvslideio
 
 #ifdef _MSC_VER
 #pragma warning( pop )

@@ -11,7 +11,7 @@
 
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace fs
@@ -169,7 +169,7 @@ static int symbolToType(char c)
         return CV_SEQ_ELTYPE_PTR;
     const char* pos = strchr( symbols, c );
     if( !pos )
-        CV_Error( cv::Error::StsBadArg, "Invalid data type specification" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid data type specification" );
     return static_cast<int>(pos - symbols);
 }
 
@@ -215,7 +215,7 @@ int decodeFormat( const char* dt, int* fmt_pairs, int max_len )
             }
 
             if( count <= 0 )
-                CV_Error( cv::Error::StsBadArg, "Invalid data type specification" );
+                CV_Error( ncvslideio::Error::StsBadArg, "Invalid data type specification" );
 
             fmt_pairs[i] = count;
         }
@@ -231,7 +231,7 @@ int decodeFormat( const char* dt, int* fmt_pairs, int max_len )
             {
                 i += 2;
                 if( i >= max_len )
-                    CV_Error( cv::Error::StsBadArg, "Too long data type specification" );
+                    CV_Error( ncvslideio::Error::StsBadArg, "Too long data type specification" );
             }
             fmt_pairs[i] = 0;
         }
@@ -298,7 +298,7 @@ int decodeSimpleFormat( const char* dt )
 
     fmt_pair_count = decodeFormat( dt, fmt_pairs, CV_FS_MAX_FMT_PAIRS );
     if( fmt_pair_count != 1 || fmt_pairs[0] >= CV_CN_MAX)
-        CV_Error( cv::Error::StsError, "Too complex format for the matrix" );
+        CV_Error( ncvslideio::Error::StsError, "Too complex format for the matrix" );
 
     elem_type = CV_MAKETYPE( fmt_pairs[1], fmt_pairs[0] );
 
@@ -443,7 +443,7 @@ void FileStorage::Impl::release(String *out) {
                 puts("}\n");
         }
         if (mem_mode && out) {
-            *out = cv::String(outbuf.begin(), outbuf.end());
+            *out = ncvslideio::String(outbuf.begin(), outbuf.end());
         }
     }
     closeFile();
@@ -502,10 +502,10 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
     }
 
     if (filename.size() == 0 && !mem_mode && !write_mode)
-        CV_Error(cv::Error::StsNullPtr, "NULL or empty filename");
+        CV_Error(ncvslideio::Error::StsNullPtr, "NULL or empty filename");
 
     if (mem_mode && append)
-        CV_Error(cv::Error::StsBadFlag, "FileStorage::APPEND and FileStorage::MEMORY are not currently compatible");
+        CV_Error(ncvslideio::Error::StsBadFlag, "FileStorage::APPEND and FileStorage::MEMORY are not currently compatible");
 
     flags = _flags;
 
@@ -516,7 +516,7 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
         if (dot_pos && dot_pos[1] == 'g' && dot_pos[2] == 'z' &&
             (dot_pos[3] == '\0' || (cv_isdigit(dot_pos[3]) && dot_pos[4] == '\0'))) {
             if (append) {
-                CV_Error(cv::Error::StsNotImplemented, "Appending data to compressed file is not implemented");
+                CV_Error(ncvslideio::Error::StsNotImplemented, "Appending data to compressed file is not implemented");
             }
             isGZ = true;
             compression = dot_pos[3];
@@ -541,7 +541,7 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
                 return false;
             }
 #else
-            CV_Error(cv::Error::StsNotImplemented, "There is no compressed file storage support in this configuration");
+            CV_Error(ncvslideio::Error::StsNotImplemented, "There is no compressed file storage support in this configuration");
 #endif
         }
     }
@@ -606,7 +606,7 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
                 if (encoding && *encoding != '\0') {
                     if (fs::strcasecmp(encoding, "UTF-16") == 0) {
                         release();
-                        CV_Error(cv::Error::StsBadArg, "UTF-16 XML encoding is not supported! Use 8-bit encoding\n");
+                        CV_Error(ncvslideio::Error::StsBadArg, "UTF-16 XML encoding is not supported! Use 8-bit encoding\n");
                     }
 
                     CV_Assert(strlen(encoding) < 1000);
@@ -640,7 +640,7 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
                 }
                 if (last_occurrence < 0) {
                     release();
-                    CV_Error(cv::Error::StsError, "Could not find </opencv_storage> in the end of file.\n");
+                    CV_Error(ncvslideio::Error::StsError, "Could not find </opencv_storage> in the end of file.\n");
                 }
                 closeFile();
                 file = fopen(filename.c_str(), "r+t");
@@ -685,7 +685,7 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
                     fseek(file, roffset, SEEK_END);
                     fputs(",", file);
                 } else {
-                    CV_Error(cv::Error::StsError, "Could not find '}' in the end of file.\n");
+                    CV_Error(ncvslideio::Error::StsError, "Could not find '}' in the end of file.\n");
                 }
             }
             write_stack.back().indent = 4;
@@ -715,9 +715,9 @@ bool FileStorage::Impl::open(const char *filename_or_buf, int _flags, const char
         else if (strncmp(bufPtr, xml_signature, strlen(xml_signature)) == 0)
             fmt = FileStorage::FORMAT_XML;
         else if (strbufsize == bufOffset)
-            CV_Error(cv::Error::StsBadArg, "Input file is invalid");
+            CV_Error(ncvslideio::Error::StsBadArg, "Input file is invalid");
         else
-            CV_Error(cv::Error::StsBadArg, "Unsupported file storage format");
+            CV_Error(ncvslideio::Error::StsBadArg, "Unsupported file storage format");
 
         rewind();
         strbufpos = bufOffset;
@@ -793,7 +793,7 @@ void FileStorage::Impl::puts(const char *str) {
         gzputs(gzfile, str);
 #endif
     else
-        CV_Error(cv::Error::StsError, "The storage is not opened");
+        CV_Error(ncvslideio::Error::StsError, "The storage is not opened");
 }
 
 char *FileStorage::Impl::getsFromFile(char *buf, int count) {
@@ -803,7 +803,7 @@ char *FileStorage::Impl::getsFromFile(char *buf, int count) {
     if (gzfile)
         return gzgets(gzfile, buf, count);
 #endif
-    CV_Error(cv::Error::StsError, "The storage is not opened");
+    CV_Error(ncvslideio::Error::StsError, "The storage is not opened");
 }
 
 char *FileStorage::Impl::gets(size_t maxCount) {
@@ -977,7 +977,7 @@ void FileStorage::Impl::startWriteStruct_helper(const char *key, int struct_flag
 
     struct_flags = (struct_flags & (FileNode::TYPE_MASK | FileNode::FLOW)) | FileNode::EMPTY;
     if (!FileNode::isCollection(struct_flags))
-        CV_Error(cv::Error::StsBadArg,
+        CV_Error(ncvslideio::Error::StsBadArg,
                  "Some collection type: FileNode::SEQ or FileNode::MAP must be specified");
 
     if (type_name && type_name[0] == '\0')
@@ -1011,9 +1011,9 @@ void FileStorage::Impl::startWriteStruct(const char *key, int struct_flags,
     } else if (type_name && memcmp(type_name, "binary", 6) == 0) {
         /* Must output Base64 data */
         if ((FileNode::TYPE_MASK & struct_flags) != FileNode::SEQ)
-            CV_Error(cv::Error::StsBadArg, "must set 'struct_flags |= CV_NODE_SEQ' if using Base64.");
+            CV_Error(ncvslideio::Error::StsBadArg, "must set 'struct_flags |= CV_NODE_SEQ' if using Base64.");
         else if (state_of_writing_base64 != FileStorage_API::Uncertain)
-            CV_Error(cv::Error::StsError, "function \'cvStartWriteStruct\' calls cannot be nested if using Base64.");
+            CV_Error(ncvslideio::Error::StsError, "function \'cvStartWriteStruct\' calls cannot be nested if using Base64.");
 
         startWriteStruct_helper(key, struct_flags, "binary");
 
@@ -1023,7 +1023,7 @@ void FileStorage::Impl::startWriteStruct(const char *key, int struct_flags,
     } else {
         /* Won't output Base64 data */
         if (state_of_writing_base64 == FileStorage_API::InUse)
-            CV_Error(cv::Error::StsError, "At the end of the output Base64, `cvEndWriteStruct` is needed.");
+            CV_Error(ncvslideio::Error::StsError, "At the end of the output Base64, `cvEndWriteStruct` is needed.");
 
         startWriteStruct_helper(key, struct_flags, type_name);
 
@@ -1092,7 +1092,7 @@ void FileStorage::Impl::writeRawData(const std::string &dt, const void *_data, s
         return;
 
     if (!data0)
-        CV_Error(cv::Error::StsNullPtr, "Null data pointer");
+        CV_Error(ncvslideio::Error::StsNullPtr, "Null data pointer");
 
     if (fmt_pair_count == 1) {
         fmt_pairs[0] *= (int) len;
@@ -1145,7 +1145,7 @@ void FileStorage::Impl::writeRawData(const std::string &dt, const void *_data, s
                         data += sizeof(hfloat);
                         break;
                     default:
-                        CV_Error(cv::Error::StsUnsupportedFormat, "Unsupported type");
+                        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Unsupported type");
                         return;
                 }
 
@@ -1175,7 +1175,7 @@ void FileStorage::Impl::switch_to_Base64_state(FileStorage_API::Base64State new_
                 case FileStorage_API::Base64State::InUse:
                 {
                     CV_DbgAssert(base64_writer == 0);
-                    bool can_indent = (fmt != cv::FileStorage::Mode::FORMAT_JSON);
+                    bool can_indent = (fmt != ncvslideio::FileStorage::Mode::FORMAT_JSON);
                     base64_writer = new base64::Base64Writer(*this, can_indent);
                     if (!can_indent) {
                         char *ptr = bufferPtr();
@@ -1192,7 +1192,7 @@ void FileStorage::Impl::switch_to_Base64_state(FileStorage_API::Base64State new_
                 case FileStorage_API::Base64State::NotUse:
                     break;
                 default:
-                    CV_Error(cv::Error::StsError, err_unkonwn_state);
+                    CV_Error(ncvslideio::Error::StsError, err_unkonwn_state);
                     break;
             }
             break;
@@ -1200,12 +1200,12 @@ void FileStorage::Impl::switch_to_Base64_state(FileStorage_API::Base64State new_
             switch (new_state) {
                 case FileStorage_API::Base64State::InUse:
                 case FileStorage_API::Base64State::NotUse:
-                    CV_Error(cv::Error::StsError, err_unable_to_switch);
+                    CV_Error(ncvslideio::Error::StsError, err_unable_to_switch);
                     break;
                 case FileStorage_API::Base64State::Uncertain:
                     delete base64_writer;
                     base64_writer = 0;
-                    if ( fmt == cv::FileStorage::FORMAT_JSON )
+                    if ( fmt == ncvslideio::FileStorage::FORMAT_JSON )
                     {
                         puts("\"");
                         setBufferPtr(bufferStart());
@@ -1215,7 +1215,7 @@ void FileStorage::Impl::switch_to_Base64_state(FileStorage_API::Base64State new_
                     }
                     break;
                 default:
-                    CV_Error(cv::Error::StsError, err_unkonwn_state);
+                    CV_Error(ncvslideio::Error::StsError, err_unkonwn_state);
                     break;
             }
             break;
@@ -1223,17 +1223,17 @@ void FileStorage::Impl::switch_to_Base64_state(FileStorage_API::Base64State new_
             switch (new_state) {
                 case FileStorage_API::Base64State::InUse:
                 case FileStorage_API::Base64State::NotUse:
-                    CV_Error(cv::Error::StsError, err_unable_to_switch);
+                    CV_Error(ncvslideio::Error::StsError, err_unable_to_switch);
                     break;
                 case FileStorage_API::Base64State::Uncertain:
                     break;
                 default:
-                    CV_Error(cv::Error::StsError, err_unkonwn_state);
+                    CV_Error(ncvslideio::Error::StsError, err_unkonwn_state);
                     break;
             }
             break;
         default:
-            CV_Error(cv::Error::StsError, err_unkonwn_state);
+            CV_Error(ncvslideio::Error::StsError, err_unkonwn_state);
             break;
     }
 
@@ -1307,7 +1307,7 @@ void FileStorage::Impl::writeRawDataBase64(const void *_data, size_t len, const 
     if (state_of_writing_base64 == FileStorage_API::Base64State::Uncertain) {
         switch_to_Base64_state(FileStorage_API::Base64State::InUse);
     } else if (state_of_writing_base64 != FileStorage_API::Base64State::InUse) {
-        CV_Error(cv::Error::StsError, "Base64 should not be used at present.");
+        CV_Error(ncvslideio::Error::StsError, "Base64 should not be used at present.");
     }
 
     base64_writer->write(_data, len, dt);
@@ -1945,7 +1945,7 @@ std::string FileStorage::getDefaultObjectName(const std::string& _filename)
     const char* filename = _filename.c_str();
     const char* ptr2 = filename + _filename.size();
     const char* ptr = ptr2 - 1;
-    cv::AutoBuffer<char> name_buf(_filename.size()+1);
+    ncvslideio::AutoBuffer<char> name_buf(_filename.size()+1);
 
     while( ptr >= filename && *ptr != '\\' && *ptr != '/' && *ptr != ':' )
     {
@@ -1955,7 +1955,7 @@ std::string FileStorage::getDefaultObjectName(const std::string& _filename)
     }
     ptr++;
     if( ptr == ptr2 )
-        CV_Error( cv::Error::StsBadArg, "Invalid filename" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid filename" );
 
     char* name = name_buf.data();
 
@@ -2061,8 +2061,8 @@ void write( FileStorage& fs, const String& name, const String& value )
 void FileStorage::write(const String& name, int val) { p->write(name, val); }
 void FileStorage::write(const String& name, double val) { p->write(name, val); }
 void FileStorage::write(const String& name, const String& val) { p->write(name, val); }
-void FileStorage::write(const String& name, const Mat& val) { cv::write(*this, name, val); }
-void FileStorage::write(const String& name, const std::vector<String>& val) { cv::write(*this, name, val); }
+void FileStorage::write(const String& name, const Mat& val) { ncvslideio::write(*this, name, val); }
+void FileStorage::write(const String& name, const std::vector<String>& val) { ncvslideio::write(*this, name, val); }
 
 FileStorage& operator << (FileStorage& fs, const String& str)
 {
@@ -2078,14 +2078,14 @@ FileStorage& operator << (FileStorage& fs, const String& str)
     if( c == '}' || c == ']' )
     {
         if( fs_impl->write_stack.empty() )
-            CV_Error_( cv::Error::StsError, ("Extra closing '%c'", *_str) );
+            CV_Error_( ncvslideio::Error::StsError, ("Extra closing '%c'", *_str) );
 
         fs_impl->workaround();
 
         int struct_flags = fs_impl->write_stack.back().flags;
         char expected_bracket = FileNode::isMap(struct_flags) ? '}' : ']';
         if( c != expected_bracket )
-            CV_Error_( cv::Error::StsError, ("The closing '%c' does not match the opening '%c'", c, expected_bracket));
+            CV_Error_( ncvslideio::Error::StsError, ("The closing '%c' does not match the opening '%c'", c, expected_bracket));
         fs_impl->endWriteStruct();
         CV_Assert(!fs_impl->write_stack.empty());
         struct_flags = fs_impl->write_stack.back().flags;
@@ -2095,7 +2095,7 @@ FileStorage& operator << (FileStorage& fs, const String& str)
     else if( fs.state == NAME_EXPECTED + INSIDE_MAP )
     {
         if (!cv_isalpha(c) && c != '_')
-            CV_Error_( cv::Error::StsError, ("Incorrect element name %s; should start with a letter or '_'", _str) );
+            CV_Error_( ncvslideio::Error::StsError, ("Incorrect element name %s; should start with a letter or '_'", _str) );
         fs.elname = str;
         fs.state = VALUE_EXPECTED + INSIDE_MAP;
     }
@@ -2124,7 +2124,7 @@ FileStorage& operator << (FileStorage& fs, const String& str)
         }
     }
     else
-        CV_Error( cv::Error::StsError, "Invalid fs.state" );
+        CV_Error( ncvslideio::Error::StsError, "Invalid fs.state" );
     return fs;
 }
 

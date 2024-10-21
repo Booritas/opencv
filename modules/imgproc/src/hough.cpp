@@ -47,7 +47,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace cv
+namespace ncvslideio
 {
 
 // Classical Hough Transform
@@ -1098,7 +1098,7 @@ public:
 
     void insert(const NZPointSet& from)
     {
-        cv::bitwise_or(from.positions, positions, positions);
+        ncvslideio::bitwise_or(from.positions, positions, positions);
     }
 
     void toList(NZPointList& list) const
@@ -1655,7 +1655,7 @@ static void HoughCirclesGradient(InputArray _image, OutputArray _circles,
     parallel_for_(Range(0, edges.rows),
                   HoughCirclesAccumInvoker(edges, dx, dy, minRadius, maxRadius, idp, accumVec, nz, mtx),
                   numThreads);
-    int nzSz = cv::countNonZero(nz.positions);
+    int nzSz = ncvslideio::countNonZero(nz.positions);
     if(nzSz <= 0)
         return;
 
@@ -1722,7 +1722,7 @@ static void HoughCirclesGradient(InputArray _image, OutputArray _circles,
     if (circles.size() > 0)
     {
         int numCircles = std::min(maxCircles, int(circles.size()));
-        Mat(1, numCircles, cv::traits::Type<CircleType>::value, &circles[0]).copyTo(_circles);
+        Mat(1, numCircles, ncvslideio::traits::Type<CircleType>::value, &circles[0]).copyTo(_circles);
         return;
     }
 }
@@ -2320,7 +2320,7 @@ static void HoughCircles( InputArray _image, OutputArray _circles,
                 for( i = 0; i < ncircles; i++ )
                     cw[i] = GetCircle4f(circles[i]);
                 if (ncircles > 0)
-                    Mat(1, (int)ncircles, cv::traits::Type<Vec4f>::value, &cw[0]).copyTo(_circles);
+                    Mat(1, (int)ncircles, ncvslideio::traits::Type<Vec4f>::value, &cw[0]).copyTo(_circles);
             }
             else if( type == CV_32FC3 )
             {
@@ -2328,7 +2328,7 @@ static void HoughCircles( InputArray _image, OutputArray _circles,
                 for( i = 0; i < ncircles; i++ )
                     cwow[i] = GetCircle(circles[i]);
                 if (ncircles > 0)
-                    Mat(1, (int)ncircles, cv::traits::Type<Vec3f>::value, &cwow[0]).copyTo(_circles);
+                    Mat(1, (int)ncircles, ncvslideio::traits::Type<Vec3f>::value, &cwow[0]).copyTo(_circles);
             }
             else
                 CV_Error(Error::StsError, "Internal error");
@@ -2346,7 +2346,7 @@ void HoughCircles( InputArray _image, OutputArray _circles,
 {
     HoughCircles(_image, _circles, method, dp, minDist, param1, param2, minRadius, maxRadius, -1, 3);
 }
-} // \namespace cv
+} // \namespace ncvslideio
 
 
 /* Wrapper function for standard hough transform */
@@ -2356,9 +2356,9 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
                double param1, double param2,
                double min_theta, double max_theta )
 {
-    cv::Mat image = cv::cvarrToMat(src_image);
-    std::vector<cv::Vec2f> l2;
-    std::vector<cv::Vec4i> l4;
+    ncvslideio::Mat image = ncvslideio::cvarrToMat(src_image);
+    std::vector<ncvslideio::Vec2f> l2;
+    std::vector<ncvslideio::Vec4i> l4;
 
     CvMat* mat = 0;
     CvSeq* lines = 0;
@@ -2369,10 +2369,10 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
     int iparam1, iparam2;
 
     if( !lineStorage )
-        CV_Error(cv::Error::StsNullPtr, "NULL destination" );
+        CV_Error(ncvslideio::Error::StsNullPtr, "NULL destination" );
 
     if( rho <= 0 || theta <= 0 || threshold <= 0 )
-        CV_Error( cv::Error::StsOutOfRange, "rho, theta and threshold must be positive" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "rho, theta and threshold must be positive" );
 
     if( method != CV_HOUGH_PROBABILISTIC )
     {
@@ -2396,11 +2396,11 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
         mat = (CvMat*)lineStorage;
 
         if( !CV_IS_MAT_CONT( mat->type ) || (mat->rows != 1 && mat->cols != 1) )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
             "The destination matrix should be continuous and have a single row or a single column" );
 
         if( CV_MAT_TYPE( mat->type ) != lineType )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
             "The destination matrix data type is inappropriate, see the manual" );
 
         lines = cvMakeSeqHeaderForArray( lineType, sizeof(CvSeq), elemSize, mat->data.ptr,
@@ -2427,7 +2427,7 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
                 threshold, iparam1, iparam2, l4, linesMax );
         break;
     default:
-        CV_Error( cv::Error::StsBadArg, "Unrecognized method id" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unrecognized method id" );
     }
 
     int nlines = (int)(l2.size() + l4.size());
@@ -2442,8 +2442,8 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
 
     if( nlines )
     {
-        cv::Mat lx = method == CV_HOUGH_STANDARD || method == CV_HOUGH_MULTI_SCALE ?
-            cv::Mat(nlines, 1, CV_32FC2, &l2[0]) : cv::Mat(nlines, 1, CV_32SC4, &l4[0]);
+        ncvslideio::Mat lx = method == CV_HOUGH_STANDARD || method == CV_HOUGH_MULTI_SCALE ?
+            ncvslideio::Mat(nlines, 1, CV_32FC2, &l2[0]) : ncvslideio::Mat(nlines, 1, CV_32SC4, &l4[0]);
 
         if (isStorage)
         {
@@ -2451,7 +2451,7 @@ cvHoughLines2( CvArr* src_image, void* lineStorage, int method,
         }
         else
         {
-            cv::Mat dst(nlines, 1, lx.type(), mat->data.ptr);
+            ncvslideio::Mat dst(nlines, 1, lx.type(), mat->data.ptr);
             lx.copyTo(dst);
         }
     }
@@ -2470,10 +2470,10 @@ cvHoughCircles( CvArr* src_image, void* circle_storage,
 {
     CvSeq* circles = NULL;
     int circles_max = INT_MAX;
-    cv::Mat src = cv::cvarrToMat(src_image), circles_mat;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(src_image), circles_mat;
 
     if( !circle_storage )
-        CV_Error( cv::Error::StsNullPtr, "NULL destination" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL destination" );
 
     bool isStorage = isStorageOrMat(circle_storage);
 
@@ -2490,7 +2490,7 @@ cvHoughCircles( CvArr* src_image, void* circle_storage,
 
         if( !CV_IS_MAT_CONT( mat->type ) || (mat->rows != 1 && mat->cols != 1) ||
             CV_MAT_TYPE(mat->type) != CV_32FC3 )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
                       "The destination matrix should be continuous and have a single row or a single column" );
 
         circles = cvMakeSeqHeaderForArray( CV_32FC3, sizeof(CvSeq), sizeof(float)*3,
@@ -2499,7 +2499,7 @@ cvHoughCircles( CvArr* src_image, void* circle_storage,
         cvClearSeq( circles );
     }
 
-    cv::HoughCircles(src, circles_mat, method, dp, min_dist, param1, param2, min_radius, max_radius, circles_max, 3);
+    ncvslideio::HoughCircles(src, circles_mat, method, dp, min_dist, param1, param2, min_radius, max_radius, circles_max, 3);
     cvSeqPushMulti(circles, circles_mat.data, (int)circles_mat.total());
     return circles;
 }

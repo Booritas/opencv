@@ -52,7 +52,7 @@
 #define CV_LOG_SKIP(...) {}
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace trace {
 namespace details {
@@ -74,9 +74,9 @@ static int param_maxRegionDepthOpenCV = (int)utils::getConfigurationParameterSiz
 static int param_maxRegionChildrenOpenCV = (int)utils::getConfigurationParameterSizeT("OPENCV_TRACE_MAX_CHILDREN_OPENCV", 1000);
 static int param_maxRegionChildren = (int)utils::getConfigurationParameterSizeT("OPENCV_TRACE_MAX_CHILDREN", 10000);
 
-static const cv::String& getParameterTraceLocation()
+static const ncvslideio::String& getParameterTraceLocation()
 {
-    static cv::String param_traceLocation = utils::getConfigurationParameterString("OPENCV_TRACE_LOCATION", "OpenCVTrace");
+    static ncvslideio::String param_traceLocation = utils::getConfigurationParameterString("OPENCV_TRACE_LOCATION", "OpenCVTrace");
     return param_traceLocation;
 }
 
@@ -200,7 +200,7 @@ static bool isITTEnabled()
     static bool isEnabled = false;
     if (!isInitialized)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (!isInitialized)
         {
             bool param_traceITTEnable = utils::getConfigurationParameterBool("OPENCV_TRACE_ITT_ENABLE", true);
@@ -255,7 +255,7 @@ Region::LocationExtraData::LocationExtraData(const LocationStaticStorage& locati
     CV_DbgAssert(pLocationExtra);
     if (*pLocationExtra == NULL)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (*pLocationExtra == NULL)
         {
             *pLocationExtra = new Region::LocationExtraData(location);
@@ -611,8 +611,8 @@ void Region::destroy()
 #endif
 #ifdef HAVE_OPENCL
         case REGION_FLAG_IMPL_OPENCL:
-            if (param_synchronizeOpenCL && cv::ocl::isOpenCLActivated())
-                cv::ocl::finish();
+            if (param_synchronizeOpenCL && ncvslideio::ocl::isOpenCLActivated())
+                ncvslideio::ocl::finish();
             myCodePath = Impl::CODE_PATH_OPENCL;
             break;
 #endif
@@ -770,7 +770,7 @@ public:
 class SyncTraceStorage CV_FINAL : public TraceStorage
 {
     mutable std::ofstream out;
-    mutable cv::Mutex mutex;
+    mutable ncvslideio::Mutex mutex;
 public:
     const std::string name;
 
@@ -783,7 +783,7 @@ public:
     }
     ~SyncTraceStorage()
     {
-        cv::AutoLock l(mutex);
+        ncvslideio::AutoLock l(mutex);
         out.close();
     }
 
@@ -792,7 +792,7 @@ public:
         if (msg.hasError)
             return false;
         {
-            cv::AutoLock l(mutex);
+            ncvslideio::AutoLock l(mutex);
             out << msg.buffer;
             std::flush(out); // TODO configure flag
         }
@@ -809,7 +809,7 @@ TraceStorage* TraceManagerThreadLocal::getStorage() const
         TraceStorage* global = getTraceManager().trace_storage.get();
         if (global)
         {
-            const std::string filepath = cv::format("%s-%03d.txt", getParameterTraceLocation().c_str(), threadID).c_str();
+            const std::string filepath = ncvslideio::format("%s-%03d.txt", getParameterTraceLocation().c_str(), threadID).c_str();
             TraceMessage msg;
             const char* pos = strrchr(filepath.c_str(), '/'); // extract filename
 #ifdef _WIN32
@@ -835,7 +835,7 @@ static bool isInitialized = false;
 
 TraceManager::TraceManager()
 {
-    (void)cv::getTimestampNS();
+    (void)ncvslideio::getTimestampNS();
 
     isInitialized = true;
     CV_LOG("TraceManager ctor: " << (void*)this);
@@ -888,7 +888,7 @@ TraceManager::~TraceManager()
 
     // This is a global static object, so process starts shutdown here
     // Turn off trace
-    cv::__termination = true; // also set in DllMain() notifications handler for DLL_PROCESS_DETACH
+    ncvslideio::__termination = true; // also set in DllMain() notifications handler for DLL_PROCESS_DETACH
     activated = false;
 }
 
@@ -896,7 +896,7 @@ bool TraceManager::isActivated()
 {
     // Check if process starts shutdown, and set earlyExit to true
     // to prevent further instrumentation processing earlier.
-    if (cv::__termination)
+    if (ncvslideio::__termination)
     {
         activated = false;
         return false;
@@ -1054,7 +1054,7 @@ static void initTraceArg(TraceManagerThreadLocal& ctx, const TraceArg& arg)
     TraceArg::ExtraData** pExtra = arg.ppExtra;
     if (*pExtra == NULL)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (*pExtra == NULL)
         {
             *pExtra = new TraceArg::ExtraData(ctx, arg);

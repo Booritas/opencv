@@ -11,7 +11,7 @@
 #include "opencv2/core/utility.hpp"
 #include "cvconfig.h"
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 #ifdef HAVE_OPENCL
 /// Call is similar to useOpenCL() but doesn't try to load OpenCL runtime or create OpenCL context
 CV_EXPORTS bool isOpenCLActivated();
@@ -28,7 +28,7 @@ static inline bool isOpenCLActivated() { return false; }
 #ifdef CV_OPENCL_RUN_VERBOSE
 #define CV_OCL_RUN_(condition, func, ...)                                   \
     {                                                                       \
-        if (cv::ocl::isOpenCLActivated() && (condition) && func)            \
+        if (ncvslideio::ocl::isOpenCLActivated() && (condition) && func)            \
         {                                                                   \
             printf("%s: OpenCL implementation is running\n", CV_Func);      \
             fflush(stdout);                                                 \
@@ -44,7 +44,7 @@ static inline bool isOpenCLActivated() { return false; }
 #elif defined CV_OPENCL_RUN_ASSERT
 #define CV_OCL_RUN_(condition, func, ...)                                   \
     {                                                                       \
-        if (cv::ocl::isOpenCLActivated() && (condition))                    \
+        if (ncvslideio::ocl::isOpenCLActivated() && (condition))                    \
         {                                                                   \
             if(func)                                                        \
             {                                                               \
@@ -52,7 +52,7 @@ static inline bool isOpenCLActivated() { return false; }
             }                                                               \
             else                                                            \
             {                                                               \
-                CV_Error(cv::Error::StsAssert, #func);                      \
+                CV_Error(ncvslideio::Error::StsAssert, #func);                      \
             }                                                               \
             return __VA_ARGS__;                                             \
         }                                                                   \
@@ -61,13 +61,13 @@ static inline bool isOpenCLActivated() { return false; }
 #define CV_OCL_RUN_(condition, func, ...)                                   \
 try \
 { \
-    if (cv::ocl::isOpenCLActivated() && (condition) && func)                \
+    if (ncvslideio::ocl::isOpenCLActivated() && (condition) && func)                \
     {                                                                       \
         CV_IMPL_ADD(CV_IMPL_OCL);                                           \
         return __VA_ARGS__;                                                 \
     } \
 } \
-catch (const cv::Exception& e) \
+catch (const ncvslideio::Exception& e) \
 { \
     CV_UNUSED(e); /* TODO: Add some logging here */ \
 }

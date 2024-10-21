@@ -43,7 +43,7 @@
 #include <functional>
 #include <limits>
 
-using namespace cv;
+using namespace ncvslideio;
 
 // common
 
@@ -491,7 +491,7 @@ namespace
     }
 }
 
-Ptr<GeneralizedHoughBallard> cv::createGeneralizedHoughBallard()
+Ptr<GeneralizedHoughBallard> ncvslideio::createGeneralizedHoughBallard()
 {
     return makePtr<GeneralizedHoughBallardImpl>();
 }
@@ -939,7 +939,7 @@ namespace
     }
 }
 
-Ptr<GeneralizedHoughGuil> cv::createGeneralizedHoughGuil()
+Ptr<GeneralizedHoughGuil> ncvslideio::createGeneralizedHoughGuil()
 {
     return makePtr<GeneralizedHoughGuilImpl>();
 }

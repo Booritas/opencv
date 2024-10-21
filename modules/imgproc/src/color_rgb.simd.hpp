@@ -5,7 +5,7 @@
 #include "precomp.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations

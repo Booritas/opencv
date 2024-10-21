@@ -21,7 +21,7 @@
 #include "plugin_wrapper.impl.hpp"
 
 
-namespace cv { namespace highgui_backend {
+namespace ncvslideio { namespace highgui_backend {
 
 UIBackend::~UIBackend()
 {
@@ -46,7 +46,7 @@ UITrackbar::~UITrackbar()
 static
 std::string& getUIBackendName()
 {
-    static std::string g_backendName = toUpperCase(cv::utils::getConfigurationParameterString("OPENCV_UI_BACKEND", ""));
+    static std::string g_backendName = toUpperCase(ncvslideio::utils::getConfigurationParameterString("OPENCV_UI_BACKEND", ""));
     return g_backendName;
 }
 
@@ -178,4 +178,4 @@ bool setUIBackend(const std::string& backendName)
     return true;
 }
 
-}}  // namespace cv::highgui_backend
+}}  // namespace ncvslideio::highgui_backend

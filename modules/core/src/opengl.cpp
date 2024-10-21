@@ -61,11 +61,11 @@
 #    include <cuda_gl_interop.h>
 #  endif
 #else // HAVE_OPENGL
-#  define NO_OPENGL_SUPPORT_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without OpenGL support")
+#  define NO_OPENGL_SUPPORT_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without OpenGL support")
 #endif // HAVE_OPENGL
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4702)  // unreachable code
@@ -74,7 +74,7 @@ using namespace cv::cuda;
 namespace
 {
 #ifndef HAVE_OPENGL
-inline static CV_NORETURN void throw_no_ogl() { CV_Error(cv::Error::OpenGlNotSupported, "The library is compiled without OpenGL support"); }
+inline static CV_NORETURN void throw_no_ogl() { CV_Error(ncvslideio::Error::OpenGlNotSupported, "The library is compiled without OpenGL support"); }
 #elif defined _DEBUG
 inline static bool checkError(const char* file, const int line, const char* func = 0)
 {
@@ -99,7 +99,7 @@ inline static bool checkError(const char* file, const int line, const char* func
         default:
             msg = "Unknown error";
         };
-        cv::error(Error::OpenGlApiCallError, func, msg, file, line);
+        ncvslideio::error(Error::OpenGlApiCallError, func, msg, file, line);
     }
     return true;
 }
@@ -118,7 +118,7 @@ namespace
 ////////////////////////////////////////////////////////////////////////
 // setGlDevice
 
-void cv::cuda::setGlDevice(int device)
+void ncvslideio::cuda::setGlDevice(int device)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(device);
@@ -294,13 +294,13 @@ namespace
 
 #ifndef HAVE_OPENGL
 
-class cv::ogl::Buffer::Impl
+class ncvslideio::ogl::Buffer::Impl
 {
 };
 
 #else
 
-class cv::ogl::Buffer::Impl
+class ncvslideio::ogl::Buffer::Impl
 {
 public:
     static const Ptr<Impl>& empty();
@@ -342,22 +342,22 @@ private:
 #endif
 };
 
-const Ptr<cv::ogl::Buffer::Impl>& cv::ogl::Buffer::Impl::empty()
+const Ptr<ncvslideio::ogl::Buffer::Impl>& ncvslideio::ogl::Buffer::Impl::empty()
 {
     static Ptr<Impl> p(new Impl);
     return p;
 }
 
-cv::ogl::Buffer::Impl::Impl() : bufId_(0), autoRelease_(false)
+ncvslideio::ogl::Buffer::Impl::Impl() : bufId_(0), autoRelease_(false)
 {
 }
 
-cv::ogl::Buffer::Impl::Impl(GLuint abufId, bool autoRelease) : bufId_(abufId), autoRelease_(autoRelease)
+ncvslideio::ogl::Buffer::Impl::Impl(GLuint abufId, bool autoRelease) : bufId_(abufId), autoRelease_(autoRelease)
 {
     CV_Assert( gl::IsBuffer(abufId) == gl::TRUE_ );
 }
 
-cv::ogl::Buffer::Impl::Impl(GLsizeiptr size, const GLvoid* data, GLenum target, bool autoRelease) : bufId_(0), autoRelease_(autoRelease)
+ncvslideio::ogl::Buffer::Impl::Impl(GLsizeiptr size, const GLvoid* data, GLenum target, bool autoRelease) : bufId_(0), autoRelease_(autoRelease)
 {
     gl::GenBuffers(1, &bufId_);
     CV_CheckGlError();
@@ -374,19 +374,19 @@ cv::ogl::Buffer::Impl::Impl(GLsizeiptr size, const GLvoid* data, GLenum target, 
     CV_CheckGlError();
 }
 
-cv::ogl::Buffer::Impl::~Impl()
+ncvslideio::ogl::Buffer::Impl::~Impl()
 {
     if (autoRelease_ && bufId_)
         gl::DeleteBuffers(1, &bufId_);
 }
 
-void cv::ogl::Buffer::Impl::bind(GLenum target) const
+void ncvslideio::ogl::Buffer::Impl::bind(GLenum target) const
 {
     gl::BindBuffer(target, bufId_);
     CV_CheckGlError();
 }
 
-void cv::ogl::Buffer::Impl::copyFrom(GLuint srcBuf, GLsizeiptr size)
+void ncvslideio::ogl::Buffer::Impl::copyFrom(GLuint srcBuf, GLsizeiptr size)
 {
     gl::BindBuffer(gl::COPY_WRITE_BUFFER, bufId_);
     CV_CheckGlError();
@@ -398,7 +398,7 @@ void cv::ogl::Buffer::Impl::copyFrom(GLuint srcBuf, GLsizeiptr size)
     CV_CheckGlError();
 }
 
-void cv::ogl::Buffer::Impl::copyFrom(GLsizeiptr size, const GLvoid* data)
+void ncvslideio::ogl::Buffer::Impl::copyFrom(GLsizeiptr size, const GLvoid* data)
 {
     gl::BindBuffer(gl::COPY_WRITE_BUFFER, bufId_);
     CV_CheckGlError();
@@ -407,7 +407,7 @@ void cv::ogl::Buffer::Impl::copyFrom(GLsizeiptr size, const GLvoid* data)
     CV_CheckGlError();
 }
 
-void cv::ogl::Buffer::Impl::copyTo(GLsizeiptr size, GLvoid* data) const
+void ncvslideio::ogl::Buffer::Impl::copyTo(GLsizeiptr size, GLvoid* data) const
 {
     gl::BindBuffer(gl::COPY_READ_BUFFER, bufId_);
     CV_CheckGlError();
@@ -416,7 +416,7 @@ void cv::ogl::Buffer::Impl::copyTo(GLsizeiptr size, GLvoid* data) const
     CV_CheckGlError();
 }
 
-void* cv::ogl::Buffer::Impl::mapHost(GLenum access)
+void* ncvslideio::ogl::Buffer::Impl::mapHost(GLenum access)
 {
     gl::BindBuffer(gl::COPY_READ_BUFFER, bufId_);
     CV_CheckGlError();
@@ -427,32 +427,32 @@ void* cv::ogl::Buffer::Impl::mapHost(GLenum access)
     return data;
 }
 
-void cv::ogl::Buffer::Impl::unmapHost()
+void ncvslideio::ogl::Buffer::Impl::unmapHost()
 {
     gl::UnmapBuffer(gl::COPY_READ_BUFFER);
 }
 
 #ifdef HAVE_CUDA
 
-void cv::ogl::Buffer::Impl::copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream)
+void ncvslideio::ogl::Buffer::Impl::copyFrom(const void* src, size_t spitch, size_t width, size_t height, cudaStream_t stream)
 {
     cudaResource_.registerBuffer(bufId_);
     cudaResource_.copyFrom(src, spitch, width, height, stream);
 }
 
-void cv::ogl::Buffer::Impl::copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream) const
+void ncvslideio::ogl::Buffer::Impl::copyTo(void* dst, size_t dpitch, size_t width, size_t height, cudaStream_t stream) const
 {
     cudaResource_.registerBuffer(bufId_);
     cudaResource_.copyTo(dst, dpitch, width, height, stream);
 }
 
-void* cv::ogl::Buffer::Impl::mapDevice(cudaStream_t stream)
+void* ncvslideio::ogl::Buffer::Impl::mapDevice(cudaStream_t stream)
 {
     cudaResource_.registerBuffer(bufId_);
     return cudaResource_.map(stream);
 }
 
-void cv::ogl::Buffer::Impl::unmapDevice(cudaStream_t stream)
+void ncvslideio::ogl::Buffer::Impl::unmapDevice(cudaStream_t stream)
 {
     cudaResource_.unmap(stream);
 }
@@ -461,7 +461,7 @@ void cv::ogl::Buffer::Impl::unmapDevice(cudaStream_t stream)
 
 #endif // HAVE_OPENGL
 
-cv::ogl::Buffer::Buffer() : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer() : rows_(0), cols_(0), type_(0)
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -470,7 +470,7 @@ cv::ogl::Buffer::Buffer() : rows_(0), cols_(0), type_(0)
 #endif
 }
 
-cv::ogl::Buffer::Buffer(int arows, int acols, int atype, unsigned int abufId, bool autoRelease) : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer(int arows, int acols, int atype, unsigned int abufId, bool autoRelease) : rows_(0), cols_(0), type_(0)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arows);
@@ -487,7 +487,7 @@ cv::ogl::Buffer::Buffer(int arows, int acols, int atype, unsigned int abufId, bo
 #endif
 }
 
-cv::ogl::Buffer::Buffer(Size asize, int atype, unsigned int abufId, bool autoRelease) : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer(Size asize, int atype, unsigned int abufId, bool autoRelease) : rows_(0), cols_(0), type_(0)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(asize);
@@ -503,7 +503,7 @@ cv::ogl::Buffer::Buffer(Size asize, int atype, unsigned int abufId, bool autoRel
 #endif
 }
 
-cv::ogl::Buffer::Buffer(InputArray arr, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer(InputArray arr, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -535,7 +535,7 @@ cv::ogl::Buffer::Buffer(InputArray arr, Target target, bool autoRelease) : rows_
 #endif
 }
 
-void cv::ogl::Buffer::create(int arows, int acols, int atype, Target target, bool autoRelease)
+void ncvslideio::ogl::Buffer::create(int arows, int acols, int atype, Target target, bool autoRelease)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arows);
@@ -556,7 +556,7 @@ void cv::ogl::Buffer::create(int arows, int acols, int atype, Target target, boo
 #endif
 }
 
-void cv::ogl::Buffer::release()
+void ncvslideio::ogl::Buffer::release()
 {
 #ifdef HAVE_OPENGL
     if (impl_)
@@ -568,7 +568,7 @@ void cv::ogl::Buffer::release()
 #endif
 }
 
-void cv::ogl::Buffer::setAutoRelease(bool flag)
+void ncvslideio::ogl::Buffer::setAutoRelease(bool flag)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(flag);
@@ -578,7 +578,7 @@ void cv::ogl::Buffer::setAutoRelease(bool flag)
 #endif
 }
 
-void cv::ogl::Buffer::copyFrom(InputArray arr, Target target, bool autoRelease)
+void ncvslideio::ogl::Buffer::copyFrom(InputArray arr, Target target, bool autoRelease)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -623,7 +623,7 @@ void cv::ogl::Buffer::copyFrom(InputArray arr, Target target, bool autoRelease)
 #endif
 }
 
-void cv::ogl::Buffer::copyFrom(InputArray arr, cuda::Stream& stream, Target target, bool autoRelease)
+void ncvslideio::ogl::Buffer::copyFrom(InputArray arr, cuda::Stream& stream, Target target, bool autoRelease)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -648,7 +648,7 @@ void cv::ogl::Buffer::copyFrom(InputArray arr, cuda::Stream& stream, Target targ
 #endif
 }
 
-void cv::ogl::Buffer::copyTo(OutputArray arr) const
+void ncvslideio::ogl::Buffer::copyTo(OutputArray arr) const
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -688,7 +688,7 @@ void cv::ogl::Buffer::copyTo(OutputArray arr) const
 #endif
 }
 
-void cv::ogl::Buffer::copyTo(OutputArray arr, cuda::Stream& stream) const
+void ncvslideio::ogl::Buffer::copyTo(OutputArray arr, cuda::Stream& stream) const
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -707,7 +707,7 @@ void cv::ogl::Buffer::copyTo(OutputArray arr, cuda::Stream& stream) const
 #endif
 }
 
-cv::ogl::Buffer cv::ogl::Buffer::clone(Target target, bool autoRelease) const
+ncvslideio::ogl::Buffer ncvslideio::ogl::Buffer::clone(Target target, bool autoRelease) const
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(target);
@@ -720,7 +720,7 @@ cv::ogl::Buffer cv::ogl::Buffer::clone(Target target, bool autoRelease) const
 #endif
 }
 
-void cv::ogl::Buffer::bind(Target target) const
+void ncvslideio::ogl::Buffer::bind(Target target) const
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(target);
@@ -730,7 +730,7 @@ void cv::ogl::Buffer::bind(Target target) const
 #endif
 }
 
-void cv::ogl::Buffer::unbind(Target target)
+void ncvslideio::ogl::Buffer::unbind(Target target)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(target);
@@ -741,7 +741,7 @@ void cv::ogl::Buffer::unbind(Target target)
 #endif
 }
 
-Mat cv::ogl::Buffer::mapHost(Access access)
+Mat ncvslideio::ogl::Buffer::mapHost(Access access)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(access);
@@ -751,7 +751,7 @@ Mat cv::ogl::Buffer::mapHost(Access access)
 #endif
 }
 
-void cv::ogl::Buffer::unmapHost()
+void ncvslideio::ogl::Buffer::unmapHost()
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -760,7 +760,7 @@ void cv::ogl::Buffer::unmapHost()
 #endif
 }
 
-GpuMat cv::ogl::Buffer::mapDevice()
+GpuMat ncvslideio::ogl::Buffer::mapDevice()
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -773,7 +773,7 @@ GpuMat cv::ogl::Buffer::mapDevice()
 #endif
 }
 
-void cv::ogl::Buffer::unmapDevice()
+void ncvslideio::ogl::Buffer::unmapDevice()
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -786,7 +786,7 @@ void cv::ogl::Buffer::unmapDevice()
 #endif
 }
 
-cuda::GpuMat cv::ogl::Buffer::mapDevice(cuda::Stream& stream)
+cuda::GpuMat ncvslideio::ogl::Buffer::mapDevice(cuda::Stream& stream)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(stream);
@@ -801,7 +801,7 @@ cuda::GpuMat cv::ogl::Buffer::mapDevice(cuda::Stream& stream)
 #endif
 }
 
-void cv::ogl::Buffer::unmapDevice(cuda::Stream& stream)
+void ncvslideio::ogl::Buffer::unmapDevice(cuda::Stream& stream)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(stream);
@@ -816,7 +816,7 @@ void cv::ogl::Buffer::unmapDevice(cuda::Stream& stream)
 #endif
 }
 
-unsigned int cv::ogl::Buffer::bufId() const
+unsigned int ncvslideio::ogl::Buffer::bufId() const
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -831,13 +831,13 @@ unsigned int cv::ogl::Buffer::bufId() const
 
 #ifndef HAVE_OPENGL
 
-class cv::ogl::Texture2D::Impl
+class ncvslideio::ogl::Texture2D::Impl
 {
 };
 
 #else
 
-class cv::ogl::Texture2D::Impl
+class ncvslideio::ogl::Texture2D::Impl
 {
 public:
     static const Ptr<Impl> empty();
@@ -862,22 +862,22 @@ private:
     bool autoRelease_;
 };
 
-const Ptr<cv::ogl::Texture2D::Impl> cv::ogl::Texture2D::Impl::empty()
+const Ptr<ncvslideio::ogl::Texture2D::Impl> ncvslideio::ogl::Texture2D::Impl::empty()
 {
     static Ptr<Impl> p(new Impl);
     return p;
 }
 
-cv::ogl::Texture2D::Impl::Impl() : texId_(0), autoRelease_(false)
+ncvslideio::ogl::Texture2D::Impl::Impl() : texId_(0), autoRelease_(false)
 {
 }
 
-cv::ogl::Texture2D::Impl::Impl(GLuint atexId, bool autoRelease) : texId_(atexId), autoRelease_(autoRelease)
+ncvslideio::ogl::Texture2D::Impl::Impl(GLuint atexId, bool autoRelease) : texId_(atexId), autoRelease_(autoRelease)
 {
     CV_Assert( gl::IsTexture(atexId) == gl::TRUE_ );
 }
 
-cv::ogl::Texture2D::Impl::Impl(GLint internalFormat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels, bool autoRelease) : texId_(0), autoRelease_(autoRelease)
+ncvslideio::ogl::Texture2D::Impl::Impl(GLint internalFormat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels, bool autoRelease) : texId_(0), autoRelease_(autoRelease)
 {
     gl::GenTextures(1, &texId_);
     CV_CheckGlError();
@@ -897,13 +897,13 @@ cv::ogl::Texture2D::Impl::Impl(GLint internalFormat, GLsizei width, GLsizei heig
     CV_CheckGlError();
 }
 
-cv::ogl::Texture2D::Impl::~Impl()
+ncvslideio::ogl::Texture2D::Impl::~Impl()
 {
     if (autoRelease_ && texId_)
         gl::DeleteTextures(1, &texId_);
 }
 
-void cv::ogl::Texture2D::Impl::copyFrom(GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels)
+void ncvslideio::ogl::Texture2D::Impl::copyFrom(GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels)
 {
     gl::BindTexture(gl::TEXTURE_2D, texId_);
     CV_CheckGlError();
@@ -918,7 +918,7 @@ void cv::ogl::Texture2D::Impl::copyFrom(GLsizei width, GLsizei height, GLenum fo
     CV_CheckGlError();
 }
 
-void cv::ogl::Texture2D::Impl::copyTo(GLenum format, GLenum type, GLvoid* pixels) const
+void ncvslideio::ogl::Texture2D::Impl::copyTo(GLenum format, GLenum type, GLvoid* pixels) const
 {
     gl::BindTexture(gl::TEXTURE_2D, texId_);
     CV_CheckGlError();
@@ -930,7 +930,7 @@ void cv::ogl::Texture2D::Impl::copyTo(GLenum format, GLenum type, GLvoid* pixels
     CV_CheckGlError();
 }
 
-void cv::ogl::Texture2D::Impl::bind() const
+void ncvslideio::ogl::Texture2D::Impl::bind() const
 {
     gl::BindTexture(gl::TEXTURE_2D, texId_);
     CV_CheckGlError();
@@ -938,7 +938,7 @@ void cv::ogl::Texture2D::Impl::bind() const
 
 #endif // HAVE_OPENGL
 
-cv::ogl::Texture2D::Texture2D() : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D() : rows_(0), cols_(0), format_(NONE)
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -947,7 +947,7 @@ cv::ogl::Texture2D::Texture2D() : rows_(0), cols_(0), format_(NONE)
 #endif
 }
 
-cv::ogl::Texture2D::Texture2D(int arows, int acols, Format aformat, unsigned int atexId, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D(int arows, int acols, Format aformat, unsigned int atexId, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arows);
@@ -964,7 +964,7 @@ cv::ogl::Texture2D::Texture2D(int arows, int acols, Format aformat, unsigned int
 #endif
 }
 
-cv::ogl::Texture2D::Texture2D(Size asize, Format aformat, unsigned int atexId, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D(Size asize, Format aformat, unsigned int atexId, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(asize);
@@ -980,7 +980,7 @@ cv::ogl::Texture2D::Texture2D(Size asize, Format aformat, unsigned int atexId, b
 #endif
 }
 
-cv::ogl::Texture2D::Texture2D(InputArray arr, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D(InputArray arr, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -1050,7 +1050,7 @@ cv::ogl::Texture2D::Texture2D(InputArray arr, bool autoRelease) : rows_(0), cols
 #endif
 }
 
-void cv::ogl::Texture2D::create(int arows, int acols, Format aformat, bool autoRelease)
+void ncvslideio::ogl::Texture2D::create(int arows, int acols, Format aformat, bool autoRelease)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arows);
@@ -1070,7 +1070,7 @@ void cv::ogl::Texture2D::create(int arows, int acols, Format aformat, bool autoR
 #endif
 }
 
-void cv::ogl::Texture2D::release()
+void ncvslideio::ogl::Texture2D::release()
 {
 #ifdef HAVE_OPENGL
     if (impl_)
@@ -1082,7 +1082,7 @@ void cv::ogl::Texture2D::release()
 #endif
 }
 
-void cv::ogl::Texture2D::setAutoRelease(bool flag)
+void ncvslideio::ogl::Texture2D::setAutoRelease(bool flag)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(flag);
@@ -1092,7 +1092,7 @@ void cv::ogl::Texture2D::setAutoRelease(bool flag)
 #endif
 }
 
-void cv::ogl::Texture2D::copyFrom(InputArray arr, bool autoRelease)
+void ncvslideio::ogl::Texture2D::copyFrom(InputArray arr, bool autoRelease)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -1159,7 +1159,7 @@ void cv::ogl::Texture2D::copyFrom(InputArray arr, bool autoRelease)
 #endif
 }
 
-void cv::ogl::Texture2D::copyTo(OutputArray arr, int ddepth, bool autoRelease) const
+void ncvslideio::ogl::Texture2D::copyTo(OutputArray arr, int ddepth, bool autoRelease) const
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -1212,7 +1212,7 @@ void cv::ogl::Texture2D::copyTo(OutputArray arr, int ddepth, bool autoRelease) c
 #endif
 }
 
-void cv::ogl::Texture2D::bind() const
+void ncvslideio::ogl::Texture2D::bind() const
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -1221,7 +1221,7 @@ void cv::ogl::Texture2D::bind() const
 #endif
 }
 
-unsigned int cv::ogl::Texture2D::texId() const
+unsigned int ncvslideio::ogl::Texture2D::texId() const
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -1234,7 +1234,7 @@ unsigned int cv::ogl::Texture2D::texId() const
 ////////////////////////////////////////////////////////////////////////
 // ogl::Arrays
 
-void cv::ogl::Arrays::setVertexArray(InputArray vertex)
+void ncvslideio::ogl::Arrays::setVertexArray(InputArray vertex)
 {
     const int cn = vertex.channels();
     const int depth = vertex.depth();
@@ -1250,13 +1250,13 @@ void cv::ogl::Arrays::setVertexArray(InputArray vertex)
     size_ = vertex_.size().area();
 }
 
-void cv::ogl::Arrays::resetVertexArray()
+void ncvslideio::ogl::Arrays::resetVertexArray()
 {
     vertex_.release();
     size_ = 0;
 }
 
-void cv::ogl::Arrays::setColorArray(InputArray color)
+void ncvslideio::ogl::Arrays::setColorArray(InputArray color)
 {
     const int cn = color.channels();
 
@@ -1268,12 +1268,12 @@ void cv::ogl::Arrays::setColorArray(InputArray color)
         color_.copyFrom(color);
 }
 
-void cv::ogl::Arrays::resetColorArray()
+void ncvslideio::ogl::Arrays::resetColorArray()
 {
     color_.release();
 }
 
-void cv::ogl::Arrays::setNormalArray(InputArray normal)
+void ncvslideio::ogl::Arrays::setNormalArray(InputArray normal)
 {
     const int cn = normal.channels();
     const int depth = normal.depth();
@@ -1287,12 +1287,12 @@ void cv::ogl::Arrays::setNormalArray(InputArray normal)
         normal_.copyFrom(normal);
 }
 
-void cv::ogl::Arrays::resetNormalArray()
+void ncvslideio::ogl::Arrays::resetNormalArray()
 {
     normal_.release();
 }
 
-void cv::ogl::Arrays::setTexCoordArray(InputArray texCoord)
+void ncvslideio::ogl::Arrays::setTexCoordArray(InputArray texCoord)
 {
     const int cn = texCoord.channels();
     const int depth = texCoord.depth();
@@ -1306,12 +1306,12 @@ void cv::ogl::Arrays::setTexCoordArray(InputArray texCoord)
         texCoord_.copyFrom(texCoord);
 }
 
-void cv::ogl::Arrays::resetTexCoordArray()
+void ncvslideio::ogl::Arrays::resetTexCoordArray()
 {
     texCoord_.release();
 }
 
-void cv::ogl::Arrays::release()
+void ncvslideio::ogl::Arrays::release()
 {
     resetVertexArray();
     resetColorArray();
@@ -1319,7 +1319,7 @@ void cv::ogl::Arrays::release()
     resetTexCoordArray();
 }
 
-void cv::ogl::Arrays::setAutoRelease(bool flag)
+void ncvslideio::ogl::Arrays::setAutoRelease(bool flag)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(flag);
@@ -1332,7 +1332,7 @@ void cv::ogl::Arrays::setAutoRelease(bool flag)
 #endif
 }
 
-void cv::ogl::Arrays::bind() const
+void ncvslideio::ogl::Arrays::bind() const
 {
 #ifndef HAVE_OPENGL
     throw_no_ogl();
@@ -1414,7 +1414,7 @@ void cv::ogl::Arrays::bind() const
 ////////////////////////////////////////////////////////////////////////
 // Rendering
 
-void cv::ogl::render(const ogl::Texture2D& tex, Rect_<double> wndRect, Rect_<double> texRect)
+void ncvslideio::ogl::render(const ogl::Texture2D& tex, Rect_<double> wndRect, Rect_<double> texRect)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(tex);
@@ -1486,7 +1486,7 @@ void cv::ogl::render(const ogl::Texture2D& tex, Rect_<double> wndRect, Rect_<dou
 #endif
 }
 
-void cv::ogl::render(const ogl::Arrays& arr, int mode, Scalar color)
+void ncvslideio::ogl::render(const ogl::Arrays& arr, int mode, Scalar color)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -1505,7 +1505,7 @@ void cv::ogl::render(const ogl::Arrays& arr, int mode, Scalar color)
 #endif
 }
 
-void cv::ogl::render(const ogl::Arrays& arr, InputArray indices, int mode, Scalar color)
+void ncvslideio::ogl::render(const ogl::Arrays& arr, InputArray indices, int mode, Scalar color)
 {
 #ifndef HAVE_OPENGL
     CV_UNUSED(arr);
@@ -1586,10 +1586,10 @@ void cv::ogl::render(const ogl::Arrays& arr, InputArray indices, int mode, Scala
 #  ifdef cl_khr_gl_sharing
 #    define HAVE_OPENCL_OPENGL_SHARING
 #  else
-#    define NO_OPENCL_SHARING_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without OpenCL/OpenGL sharing support")
+#    define NO_OPENCL_SHARING_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without OpenCL/OpenGL sharing support")
 #  endif
 #else // HAVE_OPENCL
-#  define NO_OPENCL_SUPPORT_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without OpenCL support")
+#  define NO_OPENCL_SUPPORT_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without OpenCL support")
 #endif // HAVE_OPENCL
 
 #if defined(HAVE_OPENGL)
@@ -1600,13 +1600,13 @@ void cv::ogl::render(const ogl::Arrays& arr, InputArray indices, int mode, Scala
 #  endif
 #endif // HAVE_OPENGL
 
-namespace cv { namespace ogl {
+namespace ncvslideio { namespace ogl {
 
 #if defined(HAVE_OPENCL) && defined(HAVE_OPENGL) && defined(HAVE_OPENCL_OPENGL_SHARING)
 // Check to avoid crash in OpenCL runtime: https://github.com/opencv/opencv/issues/5209
 static void checkOpenCLVersion()
 {
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
     const Device& device = Device::getDefault();
     //CV_Assert(!device.empty());
     cl_device_id dev = (cl_device_id)device.ptr();
@@ -1623,7 +1623,7 @@ static void checkOpenCLVersion()
     int versionMajor = pi.versionMajor();
     int versionMinor = pi.versionMinor();
     if (versionMajor < 1 || (versionMajor == 1 && versionMinor <= 1))
-        CV_Error_(cv::Error::OpenCLApiCallError,
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError,
             ("OpenCL: clCreateFromGLTexture requires OpenCL 1.2+ version: %d.%d - %s (%s)",
                 versionMajor, versionMinor, pi.name().c_str(), pi.version().c_str())
         );
@@ -1649,14 +1649,14 @@ Context& initializeContextFromGL()
 
     cl_int status = clGetPlatformIDs(0, NULL, &platformsCnt);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: Can't get number of platforms: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: Can't get number of platforms: %d", status));
     if (platformsCnt == 0)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
     std::vector<cl_platform_id> platforms(platformsCnt);
     status = clGetPlatformIDs(platformsCnt, &platforms[0], NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: Can't get platforms: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: Can't get platforms: %d", status));
 
 
     // TODO Filter platforms by name from OPENCV_OPENCL_DEVICE
@@ -1665,20 +1665,20 @@ Context& initializeContextFromGL()
     for (unsigned int i = 0; (!sharingSupported && (i < platformsCnt)); ++i) {
         status = clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, 0, NULL, &devCnt);
         if (status != CL_SUCCESS)
-            CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: No devices available: %d", status));
+            CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: No devices available: %d", status));
 
         try {
             devices = new cl_device_id[devCnt];
 
             status = clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, devCnt, devices, NULL);
             if (status != CL_SUCCESS)
-                CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: Can't get platform devices: %d", status));
+                CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: Can't get platform devices: %d", status));
 
             for (unsigned int j = 0; (!sharingSupported && (j < devCnt)); ++j) {
                 size_t extensionSize;
                 status = clGetDeviceInfo(devices[j], CL_DEVICE_EXTENSIONS, 0, NULL, &extensionSize );
                 if (status != CL_SUCCESS)
-                    CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: No devices available: %d", status));
+                    CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: No devices available: %d", status));
 
                 if(extensionSize > 0)
                 {
@@ -1691,7 +1691,7 @@ Context& initializeContextFromGL()
                         if (status != CL_SUCCESS)
                             continue;
                     } catch(...) {
-                        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Exception thrown during device extensions gathering");
+                        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Exception thrown during device extensions gathering");
                     }
 
                     std::string devString;
@@ -1701,7 +1701,7 @@ Context& initializeContextFromGL()
                         delete[] extensions;
                     }
                     else {
-                        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Unexpected error during device extensions gathering");
+                        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Unexpected error during device extensions gathering");
                     }
 
                     size_t oldPos = 0;
@@ -1723,7 +1723,7 @@ Context& initializeContextFromGL()
                 }
             }
         } catch(...) {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Exception thrown during device information gathering");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Exception thrown during device information gathering");
             if(devices != nullptr) {
                 delete[] devices;
             }
@@ -1772,7 +1772,7 @@ Context& initializeContextFromGL()
         }
 
         if (status != CL_SUCCESS)
-            CV_Error_(cv::Error::OpenCLInitError, ("OpenCL: Can't create context for OpenGL interop: %d", status));
+            CV_Error_(ncvslideio::Error::OpenCLInitError, ("OpenCL: Can't create context for OpenGL interop: %d", status));
         else
             break;
     }
@@ -1789,7 +1789,7 @@ Context& initializeContextFromGL()
 #endif
 }
 
-} // namespace cv::ogl::ocl
+} // namespace ncvslideio::ogl::ocl
 
 void convertToGLTexture2D(InputArray src, Texture2D& texture)
 {
@@ -1804,7 +1804,7 @@ void convertToGLTexture2D(InputArray src, Texture2D& texture)
     Size srcSize = src.size();
     CV_Assert(srcSize.width == (int)texture.cols() && srcSize.height == (int)texture.rows());
 
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
     Context& ctx = Context::getDefault();
     cl_context context = (cl_context)ctx.ptr();
 
@@ -1819,31 +1819,31 @@ void convertToGLTexture2D(InputArray src, Texture2D& texture)
     cl_int status = 0;
     cl_mem clImage = clCreateFromGLTexture(context, CL_MEM_WRITE_ONLY, gl::TEXTURE_2D, 0, texture.texId(), &status);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLTexture failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLTexture failed: %d", status));
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = clEnqueueAcquireGLObjects(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
     size_t offset = 0; // TODO
     size_t dst_origin[3] = {0, 0, 0};
     size_t region[3] = { (size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyBufferToImage(q, clBuffer, clImage, offset, dst_origin, region, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueCopyBufferToImage failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueCopyBufferToImage failed: %d", status));
     status = clEnqueueReleaseGLObjects(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
 #endif
 }
 
@@ -1864,7 +1864,7 @@ void convertFromGLTexture2D(const Texture2D& texture, OutputArray dst)
     int textureType = dtype;
     CV_Assert(textureType >= 0);
 
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
     Context& ctx = Context::getDefault();
     cl_context context = (cl_context)ctx.ptr();
 
@@ -1881,31 +1881,31 @@ void convertFromGLTexture2D(const Texture2D& texture, OutputArray dst)
     cl_int status = 0;
     cl_mem clImage = clCreateFromGLTexture(context, CL_MEM_READ_ONLY, gl::TEXTURE_2D, 0, texture.texId(), &status);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLTexture failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLTexture failed: %d", status));
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = clEnqueueAcquireGLObjects(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
     size_t offset = 0; // TODO
     size_t src_origin[3] = {0, 0, 0};
     size_t region[3] = { (size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyImageToBuffer(q, clImage, clBuffer, src_origin, region, offset, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueCopyImageToBuffer failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueCopyImageToBuffer failed: %d", status));
     status = clEnqueueReleaseGLObjects(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
 #endif
 }
 
@@ -1920,7 +1920,7 @@ UMat mapGLBuffer(const Buffer& buffer, AccessFlag accessFlags)
 #elif !defined(HAVE_OPENCL_OPENGL_SHARING)
     NO_OPENCL_SHARING_ERROR;
 #else
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
     Context& ctx = Context::getDefault();
     cl_context context = (cl_context)ctx.ptr();
     cl_command_queue clQueue = (cl_command_queue)Queue::getDefault().ptr();
@@ -1943,13 +1943,13 @@ UMat mapGLBuffer(const Buffer& buffer, AccessFlag accessFlags)
     cl_int status = 0;
     cl_mem clBuffer = clCreateFromGLBuffer(context, clAccessFlags, buffer.bufId(), &status);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLBuffer failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clCreateFromGLBuffer failed: %d", status));
 
     gl::Finish();
 
     status = clEnqueueAcquireGLObjects(clQueue, 1, &clBuffer, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueAcquireGLObjects failed: %d", status));
 
     size_t step = buffer.cols() * buffer.elemSize();
     int rows = buffer.rows();
@@ -1972,7 +1972,7 @@ void unmapGLBuffer(UMat& u)
 #elif !defined(HAVE_OPENCL_OPENGL_SHARING)
     NO_OPENCL_SHARING_ERROR;
 #else
-    using namespace cv::ocl;
+    using namespace ncvslideio::ocl;
     cl_command_queue clQueue = (cl_command_queue)Queue::getDefault().ptr();
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
@@ -1981,16 +1981,16 @@ void unmapGLBuffer(UMat& u)
 
     cl_int status = clEnqueueReleaseGLObjects(clQueue, 1, &clBuffer, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clEnqueueReleaseGLObjects failed: %d", status));
 
     status = clFinish(clQueue);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clFinish failed: %d", status));
 
     status = clReleaseMemObject(clBuffer);
     if (status != CL_SUCCESS)
-        CV_Error_(cv::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
+        CV_Error_(ncvslideio::Error::OpenCLApiCallError, ("OpenCL: clReleaseMemObject failed: %d", status));
 #endif
 }
 
-}} // namespace cv::ogl
+}} // namespace ncvslideio::ogl

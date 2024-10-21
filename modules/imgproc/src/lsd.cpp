@@ -115,18 +115,18 @@ inline bool double_equal(const double& a, const double& b)
 }
 
 // function to sort points by y and then by x
-inline bool AsmallerB_YoverX(const cv::Point2d &a, const cv::Point2d &b) {
+inline bool AsmallerB_YoverX(const ncvslideio::Point2d &a, const ncvslideio::Point2d &b) {
     if (a.y == b.y) return a.x < b.x;
     else return a.y < b.y;
 }
 
 // function to get the slope of the rectangle for a specific row
-inline double get_slope(cv::Point2d p1, cv::Point2d p2) {
+inline double get_slope(ncvslideio::Point2d p1, ncvslideio::Point2d p2) {
     return ((int) ceil(p2.y) != (int) ceil(p1.y)) ? (p2.x - p1.x) / (p2.y - p1.y) : 0;
 }
 
 // function to get the limit of the rectangle for a specific row
-inline double get_limit(cv::Point2d p, int row, double slope) {
+inline double get_limit(ncvslideio::Point2d p, int row, double slope) {
     return p.x + (row - p.y) * slope;
 }
 
@@ -162,7 +162,7 @@ inline double log_gamma_lanczos(const double& x)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace cv{
+namespace ncvslideio{
 
 class LineSegmentDetectorImpl CV_FINAL : public LineSegmentDetector
 {
@@ -947,11 +947,11 @@ double LineSegmentDetectorImpl::rect_nfa(const rect& rec) const
     double dyhw = rec.dy * half_width;
     double dxhw = rec.dx * half_width;
 
-    cv::Point2d v_tmp[4];
-    v_tmp[0] = cv::Point2d(rec.x1 - dyhw, rec.y1 + dxhw);
-    v_tmp[1] = cv::Point2d(rec.x2 - dyhw, rec.y2 + dxhw);
-    v_tmp[2] = cv::Point2d(rec.x2 + dyhw, rec.y2 - dxhw);
-    v_tmp[3] = cv::Point2d(rec.x1 + dyhw, rec.y1 - dxhw);
+    ncvslideio::Point2d v_tmp[4];
+    v_tmp[0] = ncvslideio::Point2d(rec.x1 - dyhw, rec.y1 + dxhw);
+    v_tmp[1] = ncvslideio::Point2d(rec.x2 - dyhw, rec.y2 + dxhw);
+    v_tmp[2] = ncvslideio::Point2d(rec.x2 + dyhw, rec.y2 - dxhw);
+    v_tmp[3] = ncvslideio::Point2d(rec.x1 + dyhw, rec.y1 - dxhw);
 
     // Find the vertex with the smallest y coordinate (or the smallest x if there is a tie).
     int offset = 0;
@@ -963,7 +963,7 @@ double LineSegmentDetectorImpl::rect_nfa(const rect& rec) const
 
     // Rotate the vertices so that the first one is the one with the smallest y coordinate (or the smallest x if there is a tie).
     // The rest will be then ordered counterclockwise.
-    cv::Point2d ordered_y[4];
+    ncvslideio::Point2d ordered_y[4];
     for (int i = 0; i < 4; ++i) {
         ordered_y[i] = v_tmp[(i + offset) % 4];
     }
@@ -977,7 +977,7 @@ double LineSegmentDetectorImpl::rect_nfa(const rect& rec) const
     double top_y = ordered_y[0].y, bottom_y = ordered_y[2].y;
 
     // Loop around all points in the region and count those that are aligned.
-    std::vector<cv::Point> points;
+    std::vector<ncvslideio::Point> points;
     double left_limit, right_limit;
     for(int y = (int) ceil(top_y); y <= (int) ceil(bottom_y); ++y)
     {
@@ -1172,4 +1172,4 @@ int LineSegmentDetectorImpl::compareSegments(const Size& size, InputArray lines1
     return N;
 }
 
-} // namespace cv
+} // namespace ncvslideio

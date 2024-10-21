@@ -44,7 +44,7 @@
 
 ////////////////////////////////////////////////// matchTemplate //////////////////////////////////////////////////////////
 
-namespace cv
+namespace ncvslideio
 {
 
 #ifdef HAVE_OPENCL
@@ -145,7 +145,7 @@ void ConvolveBuf::create(Size image_size, Size templ_size)
     dft_size.width = std::max(getOptimalDFTSize(block_size.width + templ_size.width - 1), 2);
     dft_size.height = getOptimalDFTSize(block_size.height + templ_size.height - 1);
     if( dft_size.width <= 0 || dft_size.height <= 0 )
-        CV_Error( cv::Error::StsOutOfRange, "the input arrays are too big" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "the input arrays are too big" );
 
     // recompute block size
     block_size.width = dft_size.width - templ_size.width + 1;
@@ -215,7 +215,7 @@ static bool convolve_dft(InputArray _image, InputArray _templ, OutputArray _resu
 
             mulSpectrums(image_spect, templ_spect, result_spect, 0, true);
 
-            dft(result_spect, result_data, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT | cv::DFT_SCALE);
+            dft(result_spect, result_data, ncvslideio::DFT_INVERSE | ncvslideio::DFT_REAL_OUTPUT | ncvslideio::DFT_SCALE);
 
             Size result_roi_size(std::min(x + block_size.width, result.cols) - x,
                                  std::min(y + block_size.height, result.rows) - y);
@@ -315,7 +315,7 @@ static bool matchTemplate_CCORR(InputArray _image, InputArray _templ, OutputArra
 
 static bool matchTemplate_CCORR_NORMED(InputArray _image, InputArray _templ, OutputArray _result)
 {
-    matchTemplate(_image, _templ, _result, cv::TM_CCORR);
+    matchTemplate(_image, _templ, _result, ncvslideio::TM_CCORR);
 
     int type = _image.type(), cn = CV_MAT_CN(type);
 
@@ -373,7 +373,7 @@ static bool matchTemplate_SQDIFF(InputArray _image, InputArray _templ, OutputArr
         return( matchTemplateNaive_SQDIFF(_image, _templ, _result));
     else
     {
-        matchTemplate(_image, _templ, _result, cv::TM_CCORR);
+        matchTemplate(_image, _templ, _result, ncvslideio::TM_CCORR);
 
         int type = _image.type(), cn = CV_MAT_CN(type);
 
@@ -404,7 +404,7 @@ static bool matchTemplate_SQDIFF(InputArray _image, InputArray _templ, OutputArr
 
 static bool matchTemplate_SQDIFF_NORMED(InputArray _image, InputArray _templ, OutputArray _result)
 {
-    matchTemplate(_image, _templ, _result, cv::TM_CCORR);
+    matchTemplate(_image, _templ, _result, ncvslideio::TM_CCORR);
 
     int type = _image.type(), cn = CV_MAT_CN(type);
 
@@ -436,7 +436,7 @@ static bool matchTemplate_SQDIFF_NORMED(InputArray _image, InputArray _templ, Ou
 
 static bool matchTemplate_CCOEFF(InputArray _image, InputArray _templ, OutputArray _result)
 {
-    matchTemplate(_image, _templ, _result, cv::TM_CCORR);
+    matchTemplate(_image, _templ, _result, ncvslideio::TM_CCORR);
 
     UMat image_sums, temp;
     integral(_image, image_sums, CV_32F);
@@ -471,7 +471,7 @@ static bool matchTemplate_CCOEFF(InputArray _image, InputArray _templ, OutputArr
 
 static bool matchTemplate_CCOEFF_NORMED(InputArray _image, InputArray _templ, OutputArray _result)
 {
-    matchTemplate(_image, _templ, _result, cv::TM_CCORR);
+    matchTemplate(_image, _templ, _result, ncvslideio::TM_CCORR);
 
     UMat temp, image_sums, image_sqsums;
     integral(_image, image_sums, image_sqsums, CV_32F, CV_32F);
@@ -602,7 +602,7 @@ void crossCorr( const Mat& img, const Mat& _templ, Mat& corr,
     dftsize.width = std::max(getOptimalDFTSize(blocksize.width + templ.cols - 1), 2);
     dftsize.height = getOptimalDFTSize(blocksize.height + templ.rows - 1);
     if( dftsize.width <= 0 || dftsize.height <= 0 )
-        CV_Error( cv::Error::StsOutOfRange, "the input arrays are too big" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "the input arrays are too big" );
 
     // recompute block size
     blocksize.width = dftsize.width - templ.cols + 1;
@@ -796,7 +796,7 @@ static void matchTemplateMask( InputArray _img, InputArray _templ, OutputArray _
         merge(maskChannels.data(), templ.channels(), mask);
     }
 
-    if (method == cv::TM_SQDIFF || method == cv::TM_SQDIFF_NORMED)
+    if (method == ncvslideio::TM_SQDIFF || method == ncvslideio::TM_SQDIFF_NORMED)
     {
         Mat temp_result(corrSize, CV_32F);
         Mat img2 = img.mul(img);
@@ -810,19 +810,19 @@ static void matchTemplateMask( InputArray _img, InputArray _templ, OutputArray _
         // for normalization.
         result = -2 * result + temp_result + templ2_mask2_sum;
 
-        if (method == cv::TM_SQDIFF_NORMED)
+        if (method == ncvslideio::TM_SQDIFF_NORMED)
         {
             sqrt(templ2_mask2_sum * temp_result, temp_result);
             result /= temp_result;
         }
     }
-    else if (method == cv::TM_CCORR || method == cv::TM_CCORR_NORMED)
+    else if (method == ncvslideio::TM_CCORR || method == ncvslideio::TM_CCORR_NORMED)
     {
         // If the mul() is ever unnested, declare MatExpr, *not* Mat, to be more efficient.
         Mat templ_mask2 = templ.mul(mask.mul(mask));
         crossCorr(img, templ_mask2, result, Point(0,0), 0, 0);
 
-        if (method == cv::TM_CCORR_NORMED)
+        if (method == ncvslideio::TM_CCORR_NORMED)
         {
             Mat temp_result(corrSize, CV_32F);
             Mat img2 = img.mul(img);
@@ -834,7 +834,7 @@ static void matchTemplateMask( InputArray _img, InputArray _templ, OutputArray _
             result /= temp_result;
         }
     }
-    else if (method == cv::TM_CCOEFF || method == cv::TM_CCOEFF_NORMED)
+    else if (method == ncvslideio::TM_CCOEFF || method == ncvslideio::TM_CCOEFF_NORMED)
     {
         // Do mul() inline or declare MatExpr where possible, *not* Mat, to be more efficient.
 
@@ -864,7 +864,7 @@ static void matchTemplateMask( InputArray _img, InputArray _templ, OutputArray _
             // transform back, but now with only one channel
             result -= temp_res.reshape(1, result.rows);
         }
-        if (method == cv::TM_CCOEFF_NORMED)
+        if (method == ncvslideio::TM_CCOEFF_NORMED)
         {
             // norm(T')
             double norm_templx = norm(mask.mul(templ - sum(mask.mul(templ)).div(mask_sum)),
@@ -905,14 +905,14 @@ static void matchTemplateMask( InputArray _img, InputArray _templ, OutputArray _
 
 static void common_matchTemplate( Mat& img, Mat& templ, Mat& result, int method, int cn )
 {
-    if( method == cv::TM_CCORR )
+    if( method == ncvslideio::TM_CCORR )
         return;
 
-    int numType = method == cv::TM_CCORR || method == cv::TM_CCORR_NORMED ? 0 :
-                  method == cv::TM_CCOEFF || method == cv::TM_CCOEFF_NORMED ? 1 : 2;
-    bool isNormed = method == cv::TM_CCORR_NORMED ||
-                    method == cv::TM_SQDIFF_NORMED ||
-                    method == cv::TM_CCOEFF_NORMED;
+    int numType = method == ncvslideio::TM_CCORR || method == ncvslideio::TM_CCORR_NORMED ? 0 :
+                  method == ncvslideio::TM_CCOEFF || method == ncvslideio::TM_CCOEFF_NORMED ? 1 : 2;
+    bool isNormed = method == ncvslideio::TM_CCORR_NORMED ||
+                    method == ncvslideio::TM_SQDIFF_NORMED ||
+                    method == ncvslideio::TM_CCOEFF_NORMED;
 
     double invArea = 1./((double)templ.rows * templ.cols);
 
@@ -921,7 +921,7 @@ static void common_matchTemplate( Mat& img, Mat& templ, Mat& result, int method,
     double *q0 = 0, *q1 = 0, *q2 = 0, *q3 = 0;
     double templNorm = 0, templSum2 = 0;
 
-    if( method == cv::TM_CCOEFF )
+    if( method == ncvslideio::TM_CCOEFF )
     {
         integral(img, sum, CV_64F);
         templMean = mean(templ);
@@ -933,7 +933,7 @@ static void common_matchTemplate( Mat& img, Mat& templ, Mat& result, int method,
 
         templNorm = templSdv[0]*templSdv[0] + templSdv[1]*templSdv[1] + templSdv[2]*templSdv[2] + templSdv[3]*templSdv[3];
 
-        if( templNorm < DBL_EPSILON && method == cv::TM_CCOEFF_NORMED )
+        if( templNorm < DBL_EPSILON && method == ncvslideio::TM_CCOEFF_NORMED )
         {
             result = Scalar::all(1);
             return;
@@ -1020,7 +1020,7 @@ static void common_matchTemplate( Mat& img, Mat& templ, Mat& result, int method,
                 else if( fabs(num) < t*1.125 )
                     num = num > 0 ? 1 : -1;
                 else
-                    num = method != cv::TM_SQDIFF_NORMED ? 0 : 1;
+                    num = method != ncvslideio::TM_SQDIFF_NORMED ? 0 : 1;
             }
 
             rrow[j] = (float)num;
@@ -1031,7 +1031,7 @@ static void common_matchTemplate( Mat& img, Mat& templ, Mat& result, int method,
 
 
 #if defined HAVE_IPP
-namespace cv
+namespace ncvslideio
 {
 typedef IppStatus (CV_STDCALL * ippimatchTemplate)(const void*, int, IppiSize, const void*, int, IppiSize, Ipp32f* , int , IppEnum , Ipp8u*);
 
@@ -1101,7 +1101,7 @@ static bool ipp_sqrDistance(const Mat& src, const Mat& tpl, Mat& dst)
     buffer.allocate( bufSize );
 
     status = CV_INSTRUMENT_FUN_IPP(ippiSqrDistanceNorm, src.ptr(), (int)src.step, srcRoiSize, tpl.ptr(), (int)tpl.step, tplRoiSize, dst.ptr<Ipp32f>(), (int)dst.step, funCfg, buffer);
-    dst = cv::max(dst, 0); // handle edge case from rounding in variance computation which can result in negative values
+    dst = ncvslideio::max(dst, 0); // handle edge case from rounding in variance computation which can result in negative values
     return status >= 0;
 }
 
@@ -1116,30 +1116,30 @@ static bool ipp_matchTemplate( Mat& img, Mat& templ, Mat& result, int method)
     if(templ.size().area()*4 > img.size().area())
         return false;
 
-    if(method == cv::TM_SQDIFF)
+    if(method == ncvslideio::TM_SQDIFF)
     {
         if(ipp_sqrDistance(img, templ, result))
             return true;
     }
-    else if(method == cv::TM_SQDIFF_NORMED)
+    else if(method == ncvslideio::TM_SQDIFF_NORMED)
     {
         if(ipp_crossCorr(img, templ, result, false))
         {
-            common_matchTemplate(img, templ, result, cv::TM_SQDIFF_NORMED, 1);
+            common_matchTemplate(img, templ, result, ncvslideio::TM_SQDIFF_NORMED, 1);
             return true;
         }
     }
-    else if(method == cv::TM_CCORR)
+    else if(method == ncvslideio::TM_CCORR)
     {
         if(ipp_crossCorr(img, templ, result, false))
             return true;
     }
-    else if(method == cv::TM_CCORR_NORMED)
+    else if(method == ncvslideio::TM_CCORR_NORMED)
     {
         if(ipp_crossCorr(img, templ, result, true))
             return true;
     }
-    else if(method == cv::TM_CCOEFF || method == cv::TM_CCOEFF_NORMED)
+    else if(method == ncvslideio::TM_CCOEFF || method == ncvslideio::TM_CCOEFF_NORMED)
     {
         if(ipp_crossCorr(img, templ, result, false))
         {
@@ -1155,17 +1155,17 @@ static bool ipp_matchTemplate( Mat& img, Mat& templ, Mat& result, int method)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void cv::matchTemplate( InputArray _img, InputArray _templ, OutputArray _result, int method, InputArray _mask )
+void ncvslideio::matchTemplate( InputArray _img, InputArray _templ, OutputArray _result, int method, InputArray _mask )
 {
     CV_INSTRUMENT_REGION();
 
     int type = _img.type(), depth = CV_MAT_DEPTH(type), cn = CV_MAT_CN(type);
-    CV_Assert( cv::TM_SQDIFF <= method && method <= cv::TM_CCOEFF_NORMED );
+    CV_Assert( ncvslideio::TM_SQDIFF <= method && method <= ncvslideio::TM_CCOEFF_NORMED );
     CV_Assert( (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 );
 
     if (!_mask.empty())
     {
-        cv::matchTemplateMask(_img, _templ, _result, method, _mask);
+        ncvslideio::matchTemplateMask(_img, _templ, _result, method, _mask);
         return;
     }
 
@@ -1196,9 +1196,9 @@ void cv::matchTemplate( InputArray _img, InputArray _templ, OutputArray _result,
 CV_IMPL void
 cvMatchTemplate( const CvArr* _img, const CvArr* _templ, CvArr* _result, int method )
 {
-    cv::Mat img = cv::cvarrToMat(_img), templ = cv::cvarrToMat(_templ),
-        result = cv::cvarrToMat(_result);
-    CV_Assert( result.size() == cv::Size(std::abs(img.cols - templ.cols) + 1,
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(_img), templ = ncvslideio::cvarrToMat(_templ),
+        result = ncvslideio::cvarrToMat(_result);
+    CV_Assert( result.size() == ncvslideio::Size(std::abs(img.cols - templ.cols) + 1,
                                          std::abs(img.rows - templ.rows) + 1) &&
               result.type() == CV_32F );
     matchTemplate(img, templ, result, method);

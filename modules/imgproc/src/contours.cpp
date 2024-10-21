@@ -42,7 +42,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include "opencv2/imgproc/detail/legacy.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 /* initializes 8-element array for fast access to 3x3 neighborhood of a pixel */
 #define  CV_INIT_3X3_DELTAS( deltas, step, nch )            \
@@ -60,10 +60,10 @@ cvStartReadChainPoints( CvChain * chain, CvChainPtReader * reader )
     int i;
 
     if( !chain || !reader )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     if( chain->elem_size != 1 || chain->header_size < (int)sizeof(CvChain))
-        CV_Error( cv::Error::StsBadSize, "" );
+        CV_Error( ncvslideio::Error::StsBadSize, "" );
 
     cvStartReadSeq( (CvSeq *) chain, (CvSeqReader *) reader, 0 );
 
@@ -81,9 +81,9 @@ CV_IMPL CvPoint
 cvReadChainPoint( CvChainPtReader * reader )
 {
     if( !reader )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
-    cv::Point2i pt = reader->pt;
+    ncvslideio::Point2i pt = reader->pt;
 
     schar *ptr = reader->ptr;
     if (ptr)
@@ -181,7 +181,7 @@ cvStartFindContours_Impl( void* _img, CvMemStorage* storage,
                      int  method, CvPoint offset, int needFillBorder )
 {
     if( !storage )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     CvMat stub, *mat = cvGetMat( _img, &stub );
 
@@ -190,7 +190,7 @@ cvStartFindContours_Impl( void* _img, CvMemStorage* storage,
 
     if( !((CV_IS_MASK_ARR( mat ) && mode < CV_RETR_FLOODFILL) ||
           (CV_MAT_TYPE(mat->type) == CV_32SC1 && mode == CV_RETR_FLOODFILL)) )
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                   "[Start]FindContours supports only CV_8UC1 images when mode != CV_RETR_FLOODFILL "
                   "otherwise supports CV_32SC1 images only" );
 
@@ -199,10 +199,10 @@ cvStartFindContours_Impl( void* _img, CvMemStorage* storage,
     uchar* img = (uchar*)(mat->data.ptr);
 
     if( method < 0 || method > CV_CHAIN_APPROX_TC89_KCOS )
-        CV_Error( cv::Error::StsOutOfRange, "" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "" );
 
     if( header_size < (int) (method == CV_CHAIN_CODE ? sizeof( CvChain ) : sizeof( CvContour )))
-        CV_Error( cv::Error::StsBadSize, "" );
+        CV_Error( ncvslideio::Error::StsBadSize, "" );
 
     CvContourScanner scanner = (CvContourScanner)cvAlloc( sizeof( *scanner ));
     memset( scanner, 0, sizeof(*scanner) );
@@ -302,7 +302,7 @@ cvStartFindContours_Impl( void* _img, CvMemStorage* storage,
 
     /* converts all pixels to 0 or 1 */
     if( CV_MAT_TYPE(mat->type) != CV_32S )
-        cvThreshold( mat, mat, 0, 1, cv::THRESH_BINARY );
+        cvThreshold( mat, mat, 0, 1, ncvslideio::THRESH_BINARY );
 
     return scanner;
 }
@@ -488,7 +488,7 @@ cvSubstituteContour( CvContourScanner scanner, CvSeq * new_contour )
     _CvContourInfo *l_cinfo;
 
     if( !scanner )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     l_cinfo = scanner->l_cinfo;
     if( l_cinfo && l_cinfo->contour && l_cinfo->contour != new_contour )
@@ -715,7 +715,7 @@ icvFetchContourEx( schar*               ptr,
     int         deltas[MAX_SIZE];
     CvSeqWriter writer;
     schar        *i0 = ptr, *i1, *i3, *i4 = NULL;
-    cv::Rect    rect;
+    ncvslideio::Rect    rect;
     int         prev_s = -1, s, s_end;
     int         method = _method - 1;
 
@@ -903,7 +903,7 @@ icvFetchContourEx_32s( int*                 ptr,
     int         deltas[MAX_SIZE];
     CvSeqWriter writer;
     int        *i0 = ptr, *i1, *i3, *i4;
-    cv::Rect    rect;
+    ncvslideio::Rect    rect;
     int         prev_s = -1, s, s_end;
     int         method = _method - 1;
     const int   right_flag = INT_MIN;
@@ -1030,7 +1030,7 @@ CvSeq *
 cvFindNextContour( CvContourScanner scanner )
 {
     if( !scanner )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     CV_Assert(scanner->img_step >= 0);
 
@@ -1046,7 +1046,7 @@ cvFindNextContour( CvContourScanner scanner )
     int width = scanner->img_size.width;
     int height = scanner->img_size.height;
     int mode = scanner->mode;
-    cv::Point2i lnbd = scanner->lnbd;
+    ncvslideio::Point2i lnbd = scanner->lnbd;
     int nbd = scanner->nbd;
     int prev = img[x - 1];
     int new_mask = -2;
@@ -1110,7 +1110,7 @@ cvFindNextContour( CvContourScanner scanner )
                 _CvContourInfo *par_info = 0;
                 CvSeq *seq = 0;
                 int is_hole = 0;
-                cv::Point2i origin;
+                ncvslideio::Point2i origin;
 
                 /* if not external contour */
                 if( (!img_i && !(prev == 0 && p == 1)) ||
@@ -1314,7 +1314,7 @@ cvEndFindContours( CvContourScanner * _scanner )
     CvSeq *first = 0;
 
     if( !_scanner )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
     scanner = *_scanner;
 
     if( scanner )
@@ -1403,15 +1403,15 @@ icvFindContoursInInterval( const CvArr* src,
                            int contourHeaderSize )
 {
     int count = 0;
-    cv::Ptr<CvMemStorage> storage00;
-    cv::Ptr<CvMemStorage> storage01;
+    ncvslideio::Ptr<CvMemStorage> storage00;
+    ncvslideio::Ptr<CvMemStorage> storage01;
     CvSeq* first = 0;
 
     int j, k, n;
 
     uchar*  src_data = 0;
     int  img_step = 0;
-    cv::Size img_size;
+    ncvslideio::Size img_size;
 
     int  connect_flag;
     int  lower_total;
@@ -1439,13 +1439,13 @@ icvFindContoursInInterval( const CvArr* src,
     CvSeq* prev = 0;
 
     if( !storage )
-        CV_Error( cv::Error::StsNullPtr, "NULL storage pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL storage pointer" );
 
     if( !result )
-        CV_Error( cv::Error::StsNullPtr, "NULL double CvSeq pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL double CvSeq pointer" );
 
     if( contourHeaderSize < (int)sizeof(CvContour))
-        CV_Error( cv::Error::StsBadSize, "Contour header size must be >= sizeof(CvContour)" );
+        CV_Error( ncvslideio::Error::StsBadSize, "Contour header size must be >= sizeof(CvContour)" );
 
     storage00.reset(cvCreateChildMemStorage(storage));
     storage01.reset(cvCreateChildMemStorage(storage));
@@ -1454,7 +1454,7 @@ icvFindContoursInInterval( const CvArr* src,
 
     mat = cvGetMat( src, &stub );
     if( !CV_IS_MASK_ARR(mat))
-        CV_Error( cv::Error::StsBadArg, "Input array must be 8uC1 or 8sC1" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Input array must be 8uC1 or 8sC1" );
     src_data = mat->data.ptr;
     img_step = mat->step;
     img_size = cvGetMatSize(mat);
@@ -1746,14 +1746,14 @@ cvFindContours_Impl( void*  img,  CvMemStorage*  storage,
     int count = -1;
 
     if( !firstContour )
-        CV_Error( cv::Error::StsNullPtr, "NULL double CvSeq pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL double CvSeq pointer" );
 
     *firstContour = 0;
 
     if( method == CV_LINK_RUNS )
     {
         if( offset.x != 0 || offset.y != 0 )
-            CV_Error( cv::Error::StsOutOfRange,
+            CV_Error( ncvslideio::Error::StsOutOfRange,
             "Nonzero offset is not supported in CV_LINK_RUNS yet" );
 
         count = icvFindContoursInInterval( img, storage, firstContour, cntHeaderSize );
@@ -1814,7 +1814,7 @@ cvFindContours( void*  img,  CvMemStorage*  storage,
     return cvFindContours_Impl(img, storage, firstContour, cntHeaderSize, mode, method, offset, 1);
 }
 
-void cv::findContours_legacy( InputArray _image, OutputArrayOfArrays _contours,
+void ncvslideio::findContours_legacy( InputArray _image, OutputArrayOfArrays _contours,
                    OutputArray _hierarchy, int mode, int method, Point offset )
 {
     CV_INSTRUMENT_REGION();
@@ -1879,7 +1879,7 @@ void cv::findContours_legacy( InputArray _image, OutputArrayOfArrays _contours,
     }
 }
 
-void cv::findContours_legacy( InputArray _image, OutputArrayOfArrays _contours,
+void ncvslideio::findContours_legacy( InputArray _image, OutputArrayOfArrays _contours,
                        int mode, int method, Point offset)
 {
     CV_INSTRUMENT_REGION();

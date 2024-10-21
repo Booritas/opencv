@@ -45,7 +45,7 @@
 #include "opencl_kernels_core.hpp"
 #include <map>
 
-namespace cv
+namespace ncvslideio
 {
 
 // On Win64 optimized versions of DFT and DCT fail the tests (fixed in VS2010)
@@ -1710,7 +1710,7 @@ typedef IppStatus (CV_STDCALL* IppDFTGetSizeFunc)(int, int, IppHintAlgorithm, in
 typedef IppStatus (CV_STDCALL* IppDFTInitFunc)(int, int, IppHintAlgorithm, void*, uchar*);
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 #if defined USE_IPP_DFT
 
@@ -2036,7 +2036,7 @@ static bool ippi_DFT_R_32F(const uchar * src, size_t src_step, uchar * dst, size
 
 #ifdef HAVE_OPENCL
 
-namespace cv
+namespace ncvslideio
 {
 
 enum FftType
@@ -2408,13 +2408,13 @@ static bool ocl_dft(InputArray _src, OutputArray _dst, int flags, int nonzero_ro
     return result;
 }
 
-} // namespace cv;
+} // namespace ncvslideio;
 
 #endif
 
 #ifdef HAVE_CLAMDFFT
 
-namespace cv {
+namespace ncvslideio {
 
 #define CLAMDDFT_Assert(func) \
     { \
@@ -2650,7 +2650,7 @@ static bool ocl_dft_amdfft(InputArray _src, OutputArray _dst, int flags)
 
 #endif // HAVE_CLAMDFFT
 
-namespace cv
+namespace ncvslideio
 {
 
 template <typename T>
@@ -3469,7 +3469,7 @@ Ptr<DFT2D> DFT2D::create(int width, int height, int depth,
     {
         if(width == 1 && nonzero_rows > 0 )
         {
-            CV_Error( cv::Error::StsNotImplemented,
+            CV_Error( ncvslideio::Error::StsNotImplemented,
             "This mode (using nonzero_rows with a single-column matrix) breaks the function's logic, so it is prohibited.\n"
             "For fast convolution/correlation use 2-column matrix or single-row matrix instead" );
         }
@@ -3479,11 +3479,11 @@ Ptr<DFT2D> DFT2D::create(int width, int height, int depth,
     }
 }
 
-} // cv::hal::
-} // cv::
+} // ncvslideio::hal::
+} // ncvslideio::
 
 
-void cv::dft( InputArray _src0, OutputArray _dst, int flags, int nonzero_rows )
+void ncvslideio::dft( InputArray _src0, OutputArray _dst, int flags, int nonzero_rows )
 {
     CV_INSTRUMENT_REGION();
 
@@ -3533,7 +3533,7 @@ void cv::dft( InputArray _src0, OutputArray _dst, int flags, int nonzero_rows )
 }
 
 
-void cv::idft( InputArray src, OutputArray dst, int flags, int nonzero_rows )
+void ncvslideio::idft( InputArray src, OutputArray dst, int flags, int nonzero_rows )
 {
     CV_INSTRUMENT_REGION();
 
@@ -3542,7 +3542,7 @@ void cv::idft( InputArray src, OutputArray dst, int flags, int nonzero_rows )
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static bool ocl_mulSpectrums( InputArray _srcA, InputArray _srcB,
                               OutputArray _dst, int flags, bool conjB )
@@ -3697,7 +3697,7 @@ void mulSpectrums_Impl(const T* dataA, const T* dataB, T* dataC, size_t stepA, s
 
 } // namespace
 
-void cv::mulSpectrums( InputArray _srcA, InputArray _srcB,
+void ncvslideio::mulSpectrums( InputArray _srcA, InputArray _srcB,
                        OutputArray _dst, int flags, bool conjB )
 {
     CV_INSTRUMENT_REGION();
@@ -3759,7 +3759,7 @@ void cv::mulSpectrums( InputArray _srcA, InputArray _srcB,
                                Discrete Cosine Transform
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 /* DCT is calculated using DFT, as described here:
@@ -3957,7 +3957,7 @@ static void IDCT_64f(const OcvDftOptions & c, const double* src, size_t src_step
 }
 
 #ifdef HAVE_IPP
-namespace cv
+namespace ncvslideio
 {
 
 #if IPP_VERSION_X100 >= 900
@@ -4217,7 +4217,7 @@ static bool ippi_DCT_32f(const uchar * src, size_t src_step, uchar * dst, size_t
 }
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 class OcvDctImpl CV_FINAL : public hal::DCT2D
 {
@@ -4317,7 +4317,7 @@ public:
             if( len != prev_len )
             {
                 if( len > 1 && (len & 1) )
-                    CV_Error( cv::Error::StsNotImplemented, "Odd-size DCT\'s are not implemented" );
+                    CV_Error( ncvslideio::Error::StsNotImplemented, "Odd-size DCT\'s are not implemented" );
 
                 opt.nf = DFTFactorize( len, opt.factors );
                 bool inplace_transform = opt.factors[0] == opt.factors[opt.nf-1];
@@ -4402,10 +4402,10 @@ Ptr<DCT2D> DCT2D::create(int width, int height, int depth, int flags)
     }
 }
 
-} // cv::hal::
-} // cv::
+} // ncvslideio::hal::
+} // ncvslideio::
 
-void cv::dct( InputArray _src0, OutputArray _dst, int flags )
+void ncvslideio::dct( InputArray _src0, OutputArray _dst, int flags )
 {
     CV_INSTRUMENT_REGION();
 
@@ -4429,14 +4429,14 @@ void cv::dct( InputArray _src0, OutputArray _dst, int flags )
 }
 
 
-void cv::idct( InputArray src, OutputArray dst, int flags )
+void ncvslideio::idct( InputArray src, OutputArray dst, int flags )
 {
     CV_INSTRUMENT_REGION();
 
     dct( src, dst, flags | DCT_INVERSE );
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 static const int optimalDFTSizeTab[] = {
@@ -4622,7 +4622,7 @@ static const int optimalDFTSizeTab[] = {
 
 }
 
-int cv::getOptimalDFTSize( int size0 )
+int ncvslideio::getOptimalDFTSize( int size0 )
 {
     int a = 0, b = sizeof(optimalDFTSizeTab)/sizeof(optimalDFTSizeTab[0]) - 1;
     if( (unsigned)size0 >= (unsigned)optimalDFTSizeTab[b] )
@@ -4646,22 +4646,22 @@ int cv::getOptimalDFTSize( int size0 )
 CV_IMPL void
 cvDFT( const CvArr* srcarr, CvArr* dstarr, int flags, int nonzero_rows )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst0 = cv::cvarrToMat(dstarr), dst = dst0;
-    int _flags = ((flags & CV_DXT_INVERSE) ? cv::DFT_INVERSE : 0) |
-        ((flags & CV_DXT_SCALE) ? cv::DFT_SCALE : 0) |
-        ((flags & CV_DXT_ROWS) ? cv::DFT_ROWS : 0);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst0 = ncvslideio::cvarrToMat(dstarr), dst = dst0;
+    int _flags = ((flags & CV_DXT_INVERSE) ? ncvslideio::DFT_INVERSE : 0) |
+        ((flags & CV_DXT_SCALE) ? ncvslideio::DFT_SCALE : 0) |
+        ((flags & CV_DXT_ROWS) ? ncvslideio::DFT_ROWS : 0);
 
     CV_Assert( src.size == dst.size );
 
     if( src.type() != dst.type() )
     {
         if( dst.channels() == 2 )
-            _flags |= cv::DFT_COMPLEX_OUTPUT;
+            _flags |= ncvslideio::DFT_COMPLEX_OUTPUT;
         else
-            _flags |= cv::DFT_REAL_OUTPUT;
+            _flags |= ncvslideio::DFT_REAL_OUTPUT;
     }
 
-    cv::dft( src, dst, _flags, nonzero_rows );
+    ncvslideio::dft( src, dst, _flags, nonzero_rows );
     CV_Assert( dst.data == dst0.data ); // otherwise it means that the destination size or type was incorrect
 }
 
@@ -4670,13 +4670,13 @@ CV_IMPL void
 cvMulSpectrums( const CvArr* srcAarr, const CvArr* srcBarr,
                 CvArr* dstarr, int flags )
 {
-    cv::Mat srcA = cv::cvarrToMat(srcAarr),
-        srcB = cv::cvarrToMat(srcBarr),
-        dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat srcA = ncvslideio::cvarrToMat(srcAarr),
+        srcB = ncvslideio::cvarrToMat(srcBarr),
+        dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( srcA.size == dst.size && srcA.type() == dst.type() );
 
-    cv::mulSpectrums(srcA, srcB, dst,
-        (flags & CV_DXT_ROWS) ? cv::DFT_ROWS : 0,
+    ncvslideio::mulSpectrums(srcA, srcB, dst,
+        (flags & CV_DXT_ROWS) ? ncvslideio::DFT_ROWS : 0,
         (flags & CV_DXT_MUL_CONJ) != 0 );
 }
 
@@ -4684,18 +4684,18 @@ cvMulSpectrums( const CvArr* srcAarr, const CvArr* srcBarr,
 CV_IMPL void
 cvDCT( const CvArr* srcarr, CvArr* dstarr, int flags )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
-    int _flags = ((flags & CV_DXT_INVERSE) ? cv::DCT_INVERSE : 0) |
-            ((flags & CV_DXT_ROWS) ? cv::DCT_ROWS : 0);
-    cv::dct( src, dst, _flags );
+    int _flags = ((flags & CV_DXT_INVERSE) ? ncvslideio::DCT_INVERSE : 0) |
+            ((flags & CV_DXT_ROWS) ? ncvslideio::DCT_ROWS : 0);
+    ncvslideio::dct( src, dst, _flags );
 }
 
 
 CV_IMPL int
 cvGetOptimalDFTSize( int size0 )
 {
-    return cv::getOptimalDFTSize(size0);
+    return ncvslideio::getOptimalDFTSize(size0);
 }
 
 #endif  // OPENCV_EXCLUDE_C_API

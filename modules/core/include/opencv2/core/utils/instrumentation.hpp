@@ -8,7 +8,7 @@
 #include <opencv2/core/utility.hpp>
 #include <opencv2/core/utils/tls.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 //! @addtogroup core_utils
 //! @{
@@ -30,9 +30,9 @@ CV_EXPORTS void setUseCollection(bool flag); // set implementation collection st
 
 #undef CV_IMPL_ADD
 #define CV_IMPL_ADD(impl)                                                   \
-    if(cv::useCollection())                                                 \
+    if(ncvslideio::useCollection())                                                 \
     {                                                                       \
-        cv::addImpl(impl, CV_Func);                                         \
+        ncvslideio::addImpl(impl, CV_Func);                                         \
     }
 #endif
 
@@ -69,14 +69,14 @@ struct NodeDataTls
 class CV_EXPORTS NodeData
 {
 public:
-    NodeData(const char* funName = 0, const char* fileName = NULL, int lineNum = 0, void* retAddress = NULL, bool alwaysExpand = false, cv::instr::TYPE instrType = TYPE_GENERAL, cv::instr::IMPL implType = IMPL_PLAIN);
+    NodeData(const char* funName = 0, const char* fileName = NULL, int lineNum = 0, void* retAddress = NULL, bool alwaysExpand = false, ncvslideio::instr::TYPE instrType = TYPE_GENERAL, ncvslideio::instr::IMPL implType = IMPL_PLAIN);
     NodeData(NodeData &ref);
     ~NodeData();
     NodeData& operator=(const NodeData&);
 
-    cv::String          m_funName;
-    cv::instr::TYPE     m_instrType;
-    cv::instr::IMPL     m_implType;
+    ncvslideio::String          m_funName;
+    ncvslideio::instr::TYPE     m_instrType;
+    ncvslideio::instr::IMPL     m_implType;
     const char*         m_fileName;
     int                 m_lineNum;
     void*               m_retAddress;
@@ -89,8 +89,8 @@ public:
     int                  m_threads;
 
     // No synchronization
-    double getTotalMs()   const { return ((double)m_ticksTotal / cv::getTickFrequency()) * 1000; }
-    double getMeanMs()    const { return (((double)m_ticksTotal/m_counter) / cv::getTickFrequency()) * 1000; }
+    double getTotalMs()   const { return ((double)m_ticksTotal / ncvslideio::getTickFrequency()) * 1000; }
+    double getMeanMs()    const { return (((double)m_ticksTotal/m_counter) / ncvslideio::getTickFrequency()) * 1000; }
 };
 bool operator==(const NodeData& lhs, const NodeData& rhs);
 

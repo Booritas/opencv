@@ -54,7 +54,7 @@
 #include "box_filter.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
 
-namespace cv {
+namespace ncvslideio {
 
 #ifdef HAVE_OPENCL
 
@@ -91,7 +91,7 @@ static bool ocl_boxFilter3x3_8UC1( InputArray _src, OutputArray _dst, int ddepth
     char build_opts[1024];
     snprintf(build_opts, sizeof(build_opts), "-D %s %s", borderMap[borderType], normalize ? "-D NORMALIZE" : "");
 
-    ocl::Kernel kernel("boxFilter3x3_8UC1_cols16_rows2", cv::ocl::imgproc::boxFilter3x3_oclsrc, build_opts);
+    ocl::Kernel kernel("boxFilter3x3_8UC1_cols16_rows2", ncvslideio::ocl::imgproc::boxFilter3x3_oclsrc, build_opts);
     if (kernel.empty())
         return false;
 
@@ -217,7 +217,7 @@ static bool ocl_boxFilter( InputArray _src, OutputArray _dst, int ddepth,
                 );
 
 
-        if (!kernel.create("filterSmall", cv::ocl::imgproc::filterSmall_oclsrc, build_options))
+        if (!kernel.create("filterSmall", ncvslideio::ocl::imgproc::filterSmall_oclsrc, build_options))
             return false;
     }
     else
@@ -252,7 +252,7 @@ static bool ocl_boxFilter( InputArray _src, OutputArray _dst, int ddepth,
             globalsize[0] = divUp(size.width, BLOCK_SIZE_X - (ksize.width - 1)) * BLOCK_SIZE_X;
             globalsize[1] = divUp(size.height, BLOCK_SIZE_Y);
 
-            kernel.create("boxFilter", cv::ocl::imgproc::boxFilter_oclsrc, opts);
+            kernel.create("boxFilter", ncvslideio::ocl::imgproc::boxFilter_oclsrc, opts);
             if (kernel.empty())
                 return false;
 

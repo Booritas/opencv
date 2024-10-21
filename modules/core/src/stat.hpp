@@ -8,7 +8,7 @@
 
 #include "opencv2/core/mat.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 #ifdef HAVE_OPENCL
 

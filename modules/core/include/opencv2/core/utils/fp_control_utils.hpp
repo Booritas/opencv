@@ -5,7 +5,7 @@
 #ifndef OPENCV_CORE_FP_CONTROL_UTILS_HPP
 #define OPENCV_CORE_FP_CONTROL_UTILS_HPP
 
-namespace cv {
+namespace ncvslideio {
 
 namespace details {
 
@@ -64,6 +64,6 @@ typedef details::FPDenormalsIgnoreHintScope FPDenormalsIgnoreHintScope;
 typedef details::FPDenormalsIgnoreHintScopeNOOP FPDenormalsIgnoreHintScope;
 #endif
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // OPENCV_CORE_FP_CONTROL_UTILS_HPP

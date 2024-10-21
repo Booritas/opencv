@@ -62,7 +62,7 @@
   @}
  */
 
-namespace cv { namespace cuda {
+namespace ncvslideio { namespace cuda {
 
 //! @addtogroup cudacore_struct
 //! @{
@@ -837,7 +837,7 @@ public:
      */
     GpuMat createGpuMatHeader() const;
 
-    // Please see cv::Mat for descriptions
+    // Please see ncvslideio::Mat for descriptions
     CV_WRAP bool isContinuous() const;
     CV_WRAP size_t elemSize() const;
     CV_WRAP size_t elemSize1() const;
@@ -848,7 +848,7 @@ public:
     CV_WRAP Size size() const;
     CV_WRAP bool empty() const;
 
-    // Please see cv::Mat for descriptions
+    // Please see ncvslideio::Mat for descriptions
     int flags;
     int rows, cols;
     CV_PROP size_t step;
@@ -1330,7 +1330,7 @@ CV_EXPORTS void convertFp16(InputArray _src, OutputArray _dst, Stream& stream = 
 
 //! @} cudacore_init
 
-}} // namespace cv { namespace cuda {
+}} // namespace ncvslideio { namespace cuda {
 
 
 #include "opencv2/core/cuda.inl.hpp"

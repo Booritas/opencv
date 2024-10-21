@@ -11,7 +11,7 @@
 #include <iterator>
 
 
-namespace cv
+namespace ncvslideio
 {
 
 enum Base64State{
@@ -20,7 +20,7 @@ enum Base64State{
     InUse,
 };
 
-class cv::FileStorage::Impl : public FileStorage_API
+class ncvslideio::FileStorage::Impl : public FileStorage_API
 {
 public:
     void init();

@@ -10,7 +10,7 @@
 //#include <future>
 #include <chrono>
 
-namespace cv {
+namespace ncvslideio {
 
 /** @addtogroup core_async
 
