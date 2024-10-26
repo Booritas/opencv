@@ -11,7 +11,7 @@
 #include <string>
 
 #include <opencv2/gapi/own/exports.hpp> // GAPI_EXPORTS
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -100,6 +100,6 @@ struct GAPI_EXPORTS IDataProvider {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_ONEVPL_DATA_PROVIDER_INTERFACE_HPP

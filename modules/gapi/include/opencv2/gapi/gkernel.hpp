@@ -24,17 +24,17 @@
 #include <opencv2/gapi/util/compiler_hints.hpp> //suppress_unused_warning
 #include <opencv2/gapi/gtransform.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 struct GTypeInfo
 {
     GShape                 shape;
-    cv::detail::OpaqueKind kind;
+    ncvslideio::detail::OpaqueKind kind;
     detail::HostCtor       ctor;
 };
 
 using GShapes    = std::vector<GShape>;
-using GKinds     = std::vector<cv::detail::OpaqueKind>;
+using GKinds     = std::vector<ncvslideio::detail::OpaqueKind>;
 using GCtors     = std::vector<detail::HostCtor>;
 using GTypesInfo = std::vector<GTypeInfo>;
 
@@ -72,29 +72,29 @@ namespace detail
     // lazy "return value" of G-API operations
     //
     template<typename T> struct Yield;
-    template<> struct Yield<cv::GMat>
+    template<> struct Yield<ncvslideio::GMat>
     {
-        static inline cv::GMat yield(cv::GCall &call, int i) { return call.yield(i); }
+        static inline ncvslideio::GMat yield(ncvslideio::GCall &call, int i) { return call.yield(i); }
     };
-    template<> struct Yield<cv::GMatP>
+    template<> struct Yield<ncvslideio::GMatP>
     {
-        static inline cv::GMatP yield(cv::GCall &call, int i) { return call.yieldP(i); }
+        static inline ncvslideio::GMatP yield(ncvslideio::GCall &call, int i) { return call.yieldP(i); }
     };
-    template<> struct Yield<cv::GScalar>
+    template<> struct Yield<ncvslideio::GScalar>
     {
-        static inline cv::GScalar yield(cv::GCall &call, int i) { return call.yieldScalar(i); }
+        static inline ncvslideio::GScalar yield(ncvslideio::GCall &call, int i) { return call.yieldScalar(i); }
     };
-    template<typename U> struct Yield<cv::GArray<U> >
+    template<typename U> struct Yield<ncvslideio::GArray<U> >
     {
-        static inline cv::GArray<U> yield(cv::GCall &call, int i) { return call.yieldArray<U>(i); }
+        static inline ncvslideio::GArray<U> yield(ncvslideio::GCall &call, int i) { return call.yieldArray<U>(i); }
     };
-    template<typename U> struct Yield<cv::GOpaque<U> >
+    template<typename U> struct Yield<ncvslideio::GOpaque<U> >
     {
-        static inline cv::GOpaque<U> yield(cv::GCall &call, int i) { return call.yieldOpaque<U>(i); }
+        static inline ncvslideio::GOpaque<U> yield(ncvslideio::GCall &call, int i) { return call.yieldOpaque<U>(i); }
     };
     template<> struct Yield<GFrame>
     {
-        static inline cv::GFrame yield(cv::GCall &call, int i) { return call.yieldFrame(i); }
+        static inline ncvslideio::GFrame yield(ncvslideio::GCall &call, int i) { return call.yieldFrame(i); }
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -105,12 +105,12 @@ namespace detail
     //    types and its metadata descriptor types.
     //    This mapping is used to transform types to call outMeta() callback.
     template<typename T> struct MetaType;
-    template<> struct MetaType<cv::GMat>    { using type = GMatDesc; };
-    template<> struct MetaType<cv::GMatP>   { using type = GMatDesc; };
-    template<> struct MetaType<cv::GFrame>  { using type = GFrameDesc; };
-    template<> struct MetaType<cv::GScalar> { using type = GScalarDesc; };
-    template<typename U> struct MetaType<cv::GArray<U> >  { using type = GArrayDesc; };
-    template<typename U> struct MetaType<cv::GOpaque<U> > { using type = GOpaqueDesc; };
+    template<> struct MetaType<ncvslideio::GMat>    { using type = GMatDesc; };
+    template<> struct MetaType<ncvslideio::GMatP>   { using type = GMatDesc; };
+    template<> struct MetaType<ncvslideio::GFrame>  { using type = GFrameDesc; };
+    template<> struct MetaType<ncvslideio::GScalar> { using type = GScalarDesc; };
+    template<typename U> struct MetaType<ncvslideio::GArray<U> >  { using type = GArrayDesc; };
+    template<typename U> struct MetaType<ncvslideio::GOpaque<U> > { using type = GOpaqueDesc; };
     template<typename T> struct MetaType    { using type = T; }; // opaque args passed as-is
     // FIXME: Move it to type traits?
 
@@ -211,7 +211,7 @@ class GKernelTypeM<K, std::function<std::tuple<R...>(Args...)> >
     , public detail::NoTag
 {
     template<int... IIs>
-    static std::tuple<R...> yield(cv::GCall &call, detail::Seq<IIs...>)
+    static std::tuple<R...> yield(ncvslideio::GCall &call, detail::Seq<IIs...>)
     {
         return std::make_tuple(detail::Yield<R>::yield(call, IIs)...);
     }
@@ -223,7 +223,7 @@ public:
     // TODO: Args&&... here?
     static std::tuple<R...> on(Args... args)
     {
-        cv::GCall call(GKernel{ K::id()
+        ncvslideio::GCall call(GKernel{ K::id()
                               , K::tag()
                               , &K::getOutMeta
                               , {detail::GTypeTraits<R>::shape...}
@@ -248,7 +248,7 @@ public:
 
     static R on(Args... args)
     {
-        cv::GCall call(GKernel{ K::id()
+        ncvslideio::GCall call(GKernel{ K::id()
                               , K::tag()
                               , &K::getOutMeta
                               , {detail::GTypeTraits<R>::shape}
@@ -267,14 +267,14 @@ template<typename, typename> class KernelTypeMedium;
 
 template<typename K, typename... R, typename... Args>
 class KernelTypeMedium<K, std::function<std::tuple<R...>(Args...)>> :
-    public cv::GKernelTypeM<K, std::function<std::tuple<R...>(Args...)>> {};
+    public ncvslideio::GKernelTypeM<K, std::function<std::tuple<R...>(Args...)>> {};
 
 template<typename K, typename R, typename... Args>
 class KernelTypeMedium<K, std::function<R(Args...)>> :
-    public cv::GKernelType<K, std::function<R(Args...)>> {};
+    public ncvslideio::GKernelType<K, std::function<R(Args...)>> {};
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 
 // FIXME: I don't know a better way so far. Feel free to suggest one
@@ -307,7 +307,7 @@ class KernelTypeMedium<K, std::function<R(Args...)>> :
  */
 #define G_TYPED_KERNEL_HELPER(Class, API, Id)                                               \
     G_ID_HELPER_BODY(Class, Id)                                                             \
-    struct Class final: public cv::detail::KernelTypeMedium<Class, std::function API >,     \
+    struct Class final: public ncvslideio::detail::KernelTypeMedium<Class, std::function API >,     \
                         public G_ID_HELPER_CLASS(Class)
 // {body} is to be defined by user
 
@@ -369,7 +369,7 @@ G_TYPED_KERNEL_HELPER(Class, COMBINE_SIGNATURE(_1, _2, _3, _4, _5, _6, _7, _8, _
 #define G_API_OP   G_TYPED_KERNEL
 #define G_API_OP_M G_API_OP
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -400,32 +400,32 @@ namespace gapi
         return !(lhs == rhs);
     }
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 namespace std
 {
-    template<> struct hash<cv::gapi::GBackend>
+    template<> struct hash<ncvslideio::gapi::GBackend>
     {
-        std::size_t operator() (const cv::gapi::GBackend &b) const
+        std::size_t operator() (const ncvslideio::gapi::GBackend &b) const
         {
             return b.hash();
         }
     };
 } // namespace std
 
-namespace cv {
+namespace ncvslideio {
     class GAPI_EXPORTS_W_SIMPLE GKernelPackage;
 
 namespace gapi {
-    GAPI_EXPORTS_W cv::GKernelPackage combine(const cv::GKernelPackage  &lhs,
-                                              const cv::GKernelPackage  &rhs);
+    GAPI_EXPORTS_W ncvslideio::GKernelPackage combine(const ncvslideio::GKernelPackage  &lhs,
+                                              const ncvslideio::GKernelPackage  &rhs);
 
     /// @private
     class GFunctor
     {
     public:
-        virtual cv::GKernelImpl impl()       const = 0;
-        virtual cv::gapi::GBackend backend() const = 0;
+        virtual ncvslideio::GKernelImpl impl()       const = 0;
+        virtual ncvslideio::gapi::GBackend backend() const = 0;
         const char* id()                     const { return m_id; }
 
         virtual ~GFunctor() = default;
@@ -447,13 +447,13 @@ namespace gapi {
      *
      * GKernelPackage is a special container class which stores kernel
      * _implementations_ and graph _transformations_. Objects of this class
-     * are created and passed to cv::GComputation::compile() to specify
+     * are created and passed to ncvslideio::GComputation::compile() to specify
      * which kernels to use and which transformations to apply in the
      * compiled graph. GKernelPackage may contain kernels of
      * different backends, e.g. be heterogeneous.
      *
      * The most easy way to create a kernel package is to use function
-     * cv::gapi::kernels(). This template functions takes kernel
+     * ncvslideio::gapi::kernels(). This template functions takes kernel
      * implementations in form of type list (variadic template) and
      * generates a kernel package atop of that.
      *
@@ -465,13 +465,13 @@ namespace gapi {
      * not objects.
      *
      * Finally, two kernel packages can be combined into a new one
-     * with function cv::gapi::combine().
+     * with function ncvslideio::gapi::combine().
      */
     class GAPI_EXPORTS_W_SIMPLE GKernelPackage
     {
 
         /// @private
-        using M = std::unordered_map<std::string, std::pair<cv::gapi::GBackend, cv::GKernelImpl>>;
+        using M = std::unordered_map<std::string, std::pair<ncvslideio::gapi::GBackend, ncvslideio::GKernelImpl>>;
 
         /// @private
         M m_id_kernels;
@@ -487,7 +487,7 @@ namespace gapi {
         /// @private
         // Partial include() specialization for kernels
         template <typename KImpl>
-        typename std::enable_if<(std::is_base_of<cv::detail::KernelTag, KImpl>::value), void>::type
+        typename std::enable_if<(std::is_base_of<ncvslideio::detail::KernelTag, KImpl>::value), void>::type
         includeHelper()
         {
             auto backend     = KImpl::backend();
@@ -501,14 +501,14 @@ namespace gapi {
         /// @private
         // Partial include() specialization for transformations
         template <typename TImpl>
-        typename std::enable_if<(std::is_base_of<cv::detail::TransformTag, TImpl>::value), void>::type
+        typename std::enable_if<(std::is_base_of<ncvslideio::detail::TransformTag, TImpl>::value), void>::type
         includeHelper()
         {
             m_transformations.emplace_back(TImpl::transformation());
         }
 
     public:
-        void include(const cv::gapi::GFunctor& functor);
+        void include(const ncvslideio::gapi::GFunctor& functor);
 
         /**
          * @brief Returns total number of kernels
@@ -545,7 +545,7 @@ namespace gapi {
         template<typename KImpl>
         bool includes() const
         {
-            static_assert(std::is_base_of<cv::detail::KernelTag, KImpl>::value,
+            static_assert(std::is_base_of<ncvslideio::detail::KernelTag, KImpl>::value,
                           "includes() can be applied to kernels only");
 
             auto kernel_it = m_id_kernels.find(KImpl::API::id());
@@ -561,7 +561,7 @@ namespace gapi {
          *
          * @param backend backend which kernels to remove
          */
-        void remove(const cv::gapi::GBackend& backend);
+        void remove(const ncvslideio::gapi::GBackend& backend);
 
         /**
          * @brief Remove all kernels implementing the given API from
@@ -601,13 +601,13 @@ namespace gapi {
          *
          */
         template<typename KAPI>
-        cv::gapi::GBackend lookup() const
+        ncvslideio::gapi::GBackend lookup() const
         {
             return lookup(KAPI::id()).first;
         }
 
         /// @private
-        std::pair<cv::gapi::GBackend, cv::GKernelImpl>
+        std::pair<ncvslideio::gapi::GBackend, ncvslideio::GKernelImpl>
         lookup(const std::string &id) const;
 
         // FIXME: No overwrites allowed?
@@ -627,14 +627,14 @@ namespace gapi {
          * @param backend backend associated with the kernel
          * @param kernel_id a name/id of the kernel
          */
-        void include(const cv::gapi::GBackend& backend, const std::string& kernel_id);
+        void include(const ncvslideio::gapi::GBackend& backend, const std::string& kernel_id);
 
         /**
          * @brief Lists all backends which are included into package
          *
          * @return vector of backends
          */
-        std::vector<cv::gapi::GBackend> backends() const;
+        std::vector<ncvslideio::gapi::GBackend> backends() const;
 
         // TODO: Doxygen bug -- it wants me to place this comment
         // here, not below.
@@ -645,13 +645,13 @@ namespace gapi {
          * @param rhs "Right-hand-side" package in the process
          * @return a new kernel package.
          */
-        friend GAPI_EXPORTS GKernelPackage cv::gapi::combine(const GKernelPackage  &lhs,
+        friend GAPI_EXPORTS GKernelPackage ncvslideio::gapi::combine(const GKernelPackage  &lhs,
                                                              const GKernelPackage  &rhs);
     };
     /** @} */
 
 namespace gapi {
-    using GKernelPackage = cv::GKernelPackage; // Keep backward compatibility
+    using GKernelPackage = ncvslideio::GKernelPackage; // Keep backward compatibility
 
     /** \addtogroup gapi_compile_args
      * @{
@@ -679,7 +679,7 @@ namespace gapi {
     {
         // FIXME: currently there is no check that transformations' signatures are unique
         // and won't be any intersection in graph compilation stage
-        static_assert(cv::detail::all_unique<typename KK::API...>::value, "Kernels API must be unique");
+        static_assert(ncvslideio::detail::all_unique<typename KK::API...>::value, "Kernels API must be unique");
 
         GKernelPackage pkg;
 
@@ -690,7 +690,7 @@ namespace gapi {
         // and parentheses are used to hide function call in the expanded sequence.
         // Leading 0 helps to handle case when KK is an empty list (kernels<>()).
         int unused[] = { 0, (pkg.include<KK>(), 0)... };
-        cv::util::suppress_unused_warning(unused);
+        ncvslideio::util::suppress_unused_warning(unused);
         return pkg;
     }
 
@@ -699,7 +699,7 @@ namespace gapi {
     {
         GKernelPackage pkg;
         int unused[] = { 0, (pkg.include(functors), 0)... };
-        cv::util::suppress_unused_warning(unused);
+        ncvslideio::util::suppress_unused_warning(unused);
         return pkg;
     }
 
@@ -716,7 +716,7 @@ namespace gapi {
      * @return The resulting kernel package
      */
     template<typename... Ps>
-    cv::GKernelPackage combine(const cv::GKernelPackage &a, const cv::GKernelPackage &b, Ps&&... rest)
+    ncvslideio::GKernelPackage combine(const ncvslideio::GKernelPackage &a, const ncvslideio::GKernelPackage &b, Ps&&... rest)
     {
         return combine(a, combine(b, rest...));
     }
@@ -727,8 +727,8 @@ namespace gapi {
      * @{
      */
     /**
-     * @brief cv::gapi::use_only() is a special combinator which hints G-API to use only
-     * kernels specified in cv::GComputation::compile() (and not to extend kernels available by
+     * @brief ncvslideio::gapi::use_only() is a special combinator which hints G-API to use only
+     * kernels specified in ncvslideio::GComputation::compile() (and not to extend kernels available by
      * default with that package).
      */
     struct GAPI_EXPORTS use_only
@@ -741,17 +741,17 @@ namespace gapi {
 
 namespace detail
 {
-    template<> struct CompileArgTag<cv::GKernelPackage>
+    template<> struct CompileArgTag<ncvslideio::GKernelPackage>
     {
         static const char* tag() { return "gapi.kernel_package"; }
     };
 
-    template<> struct CompileArgTag<cv::gapi::use_only>
+    template<> struct CompileArgTag<ncvslideio::gapi::use_only>
     {
         static const char* tag() { return "gapi.use_only"; }
     };
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GKERNEL_HPP

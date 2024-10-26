@@ -15,7 +15,7 @@
 #include "op_timvx.hpp"
 #include "op_cann.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -31,7 +31,7 @@ BackendWrapper::BackendWrapper(int backendId, int targetId)
     , targetId(targetId)
 {}
 
-BackendWrapper::BackendWrapper(int targetId, const cv::Mat& m)
+BackendWrapper::BackendWrapper(int targetId, const ncvslideio::Mat& m)
 {
     CV_Error(Error::StsNotImplemented,
             "Constructor of backend wrapper must be implemented");
@@ -50,7 +50,7 @@ BackendWrapper::~BackendWrapper() {}
 inline namespace detail {
 
 
-Ptr<BackendWrapper> wrapMat(int backendId, int targetId, cv::Mat& m)
+Ptr<BackendWrapper> wrapMat(int backendId, int targetId, ncvslideio::Mat& m)
 {
     if (backendId == DNN_BACKEND_OPENCV)
     {
@@ -128,4 +128,4 @@ Ptr<BackendWrapper> wrapMat(int backendId, int targetId, cv::Mat& m)
 
 }  // namespace detail
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

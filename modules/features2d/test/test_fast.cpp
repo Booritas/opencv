@@ -81,13 +81,13 @@ void CV_FastTest::run( int )
     for(size_t i = 0; i < keypoints1.size(); ++i)
     {
         const KeyPoint& kp = keypoints1[i];
-        cv::circle(image1, kp.pt, cvRound(kp.size/2), Scalar(255, 0, 0));
+        ncvslideio::circle(image1, kp.pt, cvRound(kp.size/2), Scalar(255, 0, 0));
     }
 
     for(size_t i = 0; i < keypoints2.size(); ++i)
     {
         const KeyPoint& kp = keypoints2[i];
-        cv::circle(image2, kp.pt, cvRound(kp.size/2), Scalar(255, 0, 0));
+        ncvslideio::circle(image2, kp.pt, cvRound(kp.size/2), Scalar(255, 0, 0));
     }
 
     Mat kps1(1, (int)(keypoints1.size() * sizeof(KeyPoint)), CV_8U, &keypoints1[0]);
@@ -125,9 +125,9 @@ void CV_FastTest::run( int )
         return;
     }
 
-    /*cv::namedWindow("Img1"); cv::imshow("Img1", image1);
-    cv::namedWindow("Img2"); cv::imshow("Img2", image2);
-    cv::waitKey(0);*/
+    /*ncvslideio::namedWindow("Img1"); ncvslideio::imshow("Img1", image1);
+    ncvslideio::namedWindow("Img2"); ncvslideio::imshow("Img2", image2);
+    ncvslideio::waitKey(0);*/
   }
 
   ts->set_failed_test_info(cvtest::TS::OK);

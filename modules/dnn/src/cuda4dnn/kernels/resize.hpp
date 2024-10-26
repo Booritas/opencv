@@ -8,7 +8,7 @@
 #include "../csl/stream.hpp"
 #include "../csl/tensor.hpp"
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void resize_nn(const csl::Stream& stream, csl::TensorSpan<T> output, csl::TensorView<T> input, float scale_y, float scale_x, bool round, bool half_pixel_centers);
@@ -16,6 +16,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
     template <class T>
     void resize_bilinear(const csl::Stream& stream, csl::TensorSpan<T> output, csl::TensorView<T> input, float scale_y, float scale_x, bool half_pixel_centers);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_RESIZE_HPP */

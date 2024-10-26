@@ -7,16 +7,16 @@ QUnit.module('Core', {});
 QUnit.test('test_LUT', function(assert) {
     // test LUT
     {
-        let src = cv.matFromArray(3, 3, cv.CV_8UC1, [255, 128, 0, 0, 128, 255, 1, 2, 254]);
+        let src = ncvslideio.matFromArray(3, 3, ncvslideio.CV_8UC1, [255, 128, 0, 0, 128, 255, 1, 2, 254]);
         let lutTable = [];
         for (let i = 0; i < 256; i++)
         {
            lutTable[i] = 255 - i;
         }
-        let lut = cv.matFromArray(1, 256, cv.CV_8UC1, lutTable);
-        let dst = new cv.Mat();
+        let lut = ncvslideio.matFromArray(1, 256, ncvslideio.CV_8UC1, lutTable);
+        let dst = new ncvslideio.Mat();
 
-        cv.LUT(src, lut, dst);
+        ncvslideio.LUT(src, lut, dst);
 
         //console.log(dst.data);
         assert.equal(dst.ucharAt(0), 0);

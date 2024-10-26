@@ -294,12 +294,12 @@ BIGDATA_TEST(Imgproc_DistanceTransform, large_image_12218)
         for( j = 0; j < src.cols; j++ )
             src.at<uchar>(i, j) = (j > (src.cols / 2)) ? 0 : 255;
 
-    distanceTransform(src, dst, labels, cv::DIST_L2, cv::DIST_MASK_3, DIST_LABEL_PIXEL);
+    distanceTransform(src, dst, labels, ncvslideio::DIST_L2, ncvslideio::DIST_MASK_3, DIST_LABEL_PIXEL);
 
     double scale = (double)lls_mincnt / (double)lls_maxcnt;
     labels.convertTo(labels, CV_32SC1, scale);
     Size size = labels.size();
-    nz = cv::countNonZero(labels);
+    nz = ncvslideio::countNonZero(labels);
     EXPECT_EQ(nz, (size.height*size.width / 2));
 }
 
@@ -413,7 +413,7 @@ TEST(Imgproc_DistanceTransform, precise_long_dist)
     std::iota(expected.begin<float>(), expected.end<float>(), 0.f);
     expected.colRange(maxDist, expected.cols).setTo(maxDist);
 
-    EXPECT_EQ(cv::norm(expected, dist, NORM_INF), 0);
+    EXPECT_EQ(ncvslideio::norm(expected, dist, NORM_INF), 0);
 }
 
 }} // namespace

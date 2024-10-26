@@ -51,7 +51,7 @@ The references are:
 
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 template<int patternSize>
@@ -436,19 +436,19 @@ static bool openvx_FAST(InputArray _img, std::vector<KeyPoint>& keypoints,
 
 #endif
 
-static inline int hal_FAST(cv::Mat& src, std::vector<KeyPoint>& keypoints, int threshold, bool nonmax_suppression, FastFeatureDetector::DetectorType type)
+static inline int hal_FAST(ncvslideio::Mat& src, std::vector<KeyPoint>& keypoints, int threshold, bool nonmax_suppression, FastFeatureDetector::DetectorType type)
 {
     if (threshold > 20)
         return CV_HAL_ERROR_NOT_IMPLEMENTED;
 
-    cv::Mat scores(src.size(), src.type());
+    ncvslideio::Mat scores(src.size(), src.type());
 
     int error = cv_hal_FAST_dense(src.data, src.step, scores.data, scores.step, src.cols, src.rows, type);
 
     if (error != CV_HAL_ERROR_OK)
         return error;
 
-    cv::Mat suppressedScores(src.size(), src.type());
+    ncvslideio::Mat suppressedScores(src.size(), src.type());
 
     if (nonmax_suppression)
     {
@@ -464,7 +464,7 @@ static inline int hal_FAST(cv::Mat& src, std::vector<KeyPoint>& keypoints, int t
 
     if (!threshold && nonmax_suppression) threshold = 1;
 
-    cv::KeyPoint kpt(0, 0, 7.f, -1, 0);
+    ncvslideio::KeyPoint kpt(0, 0, 7.f, -1, 0);
 
     unsigned uthreshold = (unsigned) threshold;
 
@@ -500,7 +500,7 @@ void FAST(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, bool
     CV_OCL_RUN(_img.isUMat() && type == FastFeatureDetector::TYPE_9_16,
                ocl_FAST(_img, keypoints, threshold, nonmax_suppression, 10000));
 
-    cv::Mat img = _img.getMat();
+    ncvslideio::Mat img = _img.getMat();
     CALL_HAL(fast_dense, hal_FAST, img, keypoints, threshold, nonmax_suppression, type);
 
     size_t keypoints_count;

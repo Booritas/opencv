@@ -28,14 +28,14 @@
 @}
  */
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 /**
  * @brief This namespace contains G-API Operation Types for OpenCV
  * Core module functionality.
  */
 namespace core {
-    using GResize = cv::gapi::imgproc::GResize;
-    using GResizeP = cv::gapi::imgproc::GResizeP;
+    using GResize = ncvslideio::gapi::imgproc::GResize;
+    using GResizeP = ncvslideio::gapi::imgproc::GResizeP;
 
     using GMat2 = std::tuple<GMat,GMat>;
     using GMat3 = std::tuple<GMat,GMat,GMat>; // FIXME: how to avoid this?
@@ -471,18 +471,18 @@ namespace core {
         }
     };
 
-    G_TYPED_KERNEL(GWarpPerspective, <GMat(GMat, const Mat&, Size, int, int, const cv::Scalar&)>, "org.opencv.core.warpPerspective") {
-        static GMatDesc outMeta(GMatDesc in, const Mat&, Size dsize, int, int borderMode, const cv::Scalar&) {
-            GAPI_Assert((borderMode == cv::BORDER_CONSTANT || borderMode == cv::BORDER_REPLICATE) &&
-                        "cv::gapi::warpPerspective supports only cv::BORDER_CONSTANT and cv::BORDER_REPLICATE border modes");
+    G_TYPED_KERNEL(GWarpPerspective, <GMat(GMat, const Mat&, Size, int, int, const ncvslideio::Scalar&)>, "org.opencv.core.warpPerspective") {
+        static GMatDesc outMeta(GMatDesc in, const Mat&, Size dsize, int, int borderMode, const ncvslideio::Scalar&) {
+            GAPI_Assert((borderMode == ncvslideio::BORDER_CONSTANT || borderMode == ncvslideio::BORDER_REPLICATE) &&
+                        "ncvslideio::gapi::warpPerspective supports only ncvslideio::BORDER_CONSTANT and ncvslideio::BORDER_REPLICATE border modes");
             return in.withType(in.depth, in.chan).withSize(dsize);
         }
     };
 
-    G_TYPED_KERNEL(GWarpAffine, <GMat(GMat, const Mat&, Size, int, int, const cv::Scalar&)>, "org.opencv.core.warpAffine") {
-        static GMatDesc outMeta(GMatDesc in, const Mat&, Size dsize, int, int border_mode, const cv::Scalar&) {
-            GAPI_Assert(border_mode != cv::BORDER_TRANSPARENT &&
-                        "cv::BORDER_TRANSPARENT mode is not supported in cv::gapi::warpAffine");
+    G_TYPED_KERNEL(GWarpAffine, <GMat(GMat, const Mat&, Size, int, int, const ncvslideio::Scalar&)>, "org.opencv.core.warpAffine") {
+        static GMatDesc outMeta(GMatDesc in, const Mat&, Size dsize, int, int border_mode, const ncvslideio::Scalar&) {
+            GAPI_Assert(border_mode != ncvslideio::BORDER_TRANSPARENT &&
+                        "ncvslideio::BORDER_TRANSPARENT mode is not supported in ncvslideio::gapi::warpAffine");
             return in.withType(in.depth, in.chan).withSize(dsize);
         }
     };
@@ -883,7 +883,7 @@ GAPI_EXPORTS_W std::tuple<GMat, GMat> cartToPolar(const GMat& x, const GMat& y,
 
 /** @brief Calculates the rotation angle of 2D vectors.
 
-The function cv::phase calculates the rotation angle of each 2D vector that
+The function ncvslideio::phase calculates the rotation angle of each 2D vector that
 is formed from the corresponding elements of x and y :
 \f[\texttt{angle} (I) =  \texttt{atan2} ( \texttt{y} (I), \texttt{x} (I))\f]
 
@@ -900,7 +900,7 @@ GAPI_EXPORTS_W GMat phase(const GMat& x, const GMat &y, bool angleInDegrees = fa
 
 /** @brief Calculates a square root of array elements.
 
-The function cv::gapi::sqrt calculates a square root of each input array element.
+The function ncvslideio::gapi::sqrt calculates a square root of each input array element.
 In case of multi-channel arrays, each channel is processed
 independently. The accuracy is approximately the same as of the built-in
 std::sqrt .
@@ -1397,28 +1397,28 @@ this purpose) or for removing a noise, that is, filtering out pixels with too sm
 values. There are several types of thresholding supported by the function. They are determined by
 type parameter.
 
-Also, the special values cv::THRESH_OTSU or cv::THRESH_TRIANGLE may be combined with one of the
+Also, the special values ncvslideio::THRESH_OTSU or ncvslideio::THRESH_TRIANGLE may be combined with one of the
 above values. In these cases, the function determines the optimal threshold value using the Otsu's
 or Triangle algorithm and uses it instead of the specified thresh . The function returns the
 computed threshold value in addititon to thresholded matrix.
 The Otsu's and Triangle methods are implemented only for 8-bit matrices.
 
-Input image should be single channel only in case of cv::THRESH_OTSU or cv::THRESH_TRIANGLE flags.
+Input image should be single channel only in case of ncvslideio::THRESH_OTSU or ncvslideio::THRESH_TRIANGLE flags.
 Output matrix must be of the same size and depth as src.
 
 @note Function textual ID is "org.opencv.core.matrixop.threshold"
 
 @param src input matrix (@ref CV_8UC1, @ref CV_8UC3, or @ref CV_32FC1).
 @param thresh threshold value.
-@param maxval maximum value to use with the cv::THRESH_BINARY and cv::THRESH_BINARY_INV thresholding
+@param maxval maximum value to use with the ncvslideio::THRESH_BINARY and ncvslideio::THRESH_BINARY_INV thresholding
 types.
-@param type thresholding type (see the cv::ThresholdTypes).
+@param type thresholding type (see the ncvslideio::ThresholdTypes).
 
 @sa min, max, cmpGT, cmpLE, cmpGE, cmpLT
  */
 GAPI_EXPORTS_W GMat threshold(const GMat& src, const GScalar& thresh, const GScalar& maxval, int type);
 /** @overload
-This function applicable for all threshold types except cv::THRESH_OTSU and cv::THRESH_TRIANGLE
+This function applicable for all threshold types except ncvslideio::THRESH_OTSU and ncvslideio::THRESH_TRIANGLE
 @note Function textual ID is "org.opencv.core.matrixop.thresholdOT"
 */
 GAPI_EXPORTS_W std::tuple<GMat, GScalar> threshold(const GMat& src, const GScalar& maxval, int type);
@@ -1541,9 +1541,9 @@ Output image must be of the same size and depth as input one.
 CV_32FC1, or CV_32FC2.
 @param map2 The second map of y values having the type CV_16UC1, CV_32FC1, or none (empty map
 if map1 is (x,y) points), respectively.
-@param interpolation Interpolation method (see cv::InterpolationFlags). The methods #INTER_AREA
+@param interpolation Interpolation method (see ncvslideio::InterpolationFlags). The methods #INTER_AREA
 and #INTER_LINEAR_EXACT are not supported by this function.
-@param borderMode Pixel extrapolation method (see cv::BorderTypes). When
+@param borderMode Pixel extrapolation method (see ncvslideio::BorderTypes). When
 borderMode=BORDER_TRANSPARENT, it means that the pixels in the destination image that
 corresponds to the "outliers" in the source image are not modified by the function.
 @param borderValue Value used in case of a constant border. By default, it is 0.
@@ -1591,7 +1591,7 @@ GAPI_EXPORTS_W GMat flip(const GMat& src, int flipCode);
 
 /** @brief Crops a 2D matrix.
 
-The function crops the matrix by given cv::Rect.
+The function crops the matrix by given ncvslideio::Rect.
 
 Output matrix must be of the same depth as input one, size is specified by given rect size.
 
@@ -1730,7 +1730,7 @@ when normType=NORM_MINMAX (for dense arrays only).
 normalization.
 @param beta upper range boundary in case of the range normalization; it is not used for the norm
 normalization.
-@param norm_type normalization type (see cv::NormTypes).
+@param norm_type normalization type (see ncvslideio::NormTypes).
 @param ddepth when negative, the output array has the same type as src; otherwise, it has the same
 number of channels as src and the depth =ddepth.
 @sa norm, Mat::convertTo
@@ -1759,8 +1759,8 @@ optional flag #WARP_INVERSE_MAP, that sets M as the inverse transformation (
 
 @sa  warpAffine, resize, remap, getRectSubPix, perspectiveTransform
  */
-GAPI_EXPORTS_W GMat warpPerspective(const GMat& src, const Mat& M, const Size& dsize, int flags = cv::INTER_LINEAR,
-                                    int borderMode = cv::BORDER_CONSTANT, const Scalar& borderValue = Scalar());
+GAPI_EXPORTS_W GMat warpPerspective(const GMat& src, const Mat& M, const Size& dsize, int flags = ncvslideio::INTER_LINEAR,
+                                    int borderMode = ncvslideio::BORDER_CONSTANT, const Scalar& borderValue = Scalar());
 
 /** @brief Applies an affine transformation to an image.
 
@@ -1784,8 +1784,8 @@ borderMode=#BORDER_TRANSPARENT isn't supported
 
 @sa  warpPerspective, resize, remap, getRectSubPix, transform
  */
-GAPI_EXPORTS_W GMat warpAffine(const GMat& src, const Mat& M, const Size& dsize, int flags = cv::INTER_LINEAR,
-                               int borderMode = cv::BORDER_CONSTANT, const Scalar& borderValue = Scalar());
+GAPI_EXPORTS_W GMat warpAffine(const GMat& src, const Mat& M, const Size& dsize, int flags = ncvslideio::INTER_LINEAR,
+                               int borderMode = ncvslideio::BORDER_CONSTANT, const Scalar& borderValue = Scalar());
 //! @} gapi_transform
 
 /** @brief Finds centers of clusters and groups input samples around the clusters.
@@ -1824,7 +1824,7 @@ the cluster centers moves by less than criteria.epsilon on some iteration, the a
 @param attempts Flag to specify the number of times the algorithm is executed using different
 initial labellings. The algorithm returns the labels that yield the best compactness (see the first
 function return value).
-@param flags Flag that can take values of cv::KmeansFlags .
+@param flags Flag that can take values of ncvslideio::KmeansFlags .
 
 @return
  - Compactness measure that is computed as
@@ -1906,6 +1906,6 @@ GAPI_EXPORTS_W GOpaque<Size> size(const GOpaque<Rect>& r);
 GAPI_EXPORTS_W GOpaque<Size> size(const GFrame& src);
 } //namespace streaming
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio
 
 #endif //OPENCV_GAPI_CORE_HPP

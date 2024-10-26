@@ -145,7 +145,7 @@ static void generatePose(const vector<Point3d>& points, Mat& rvec, Mat& tvec, RN
         }
 
         Mat R;
-        cv::Rodrigues(rvec, R);
+        ncvslideio::Rodrigues(rvec, R);
         bool positiveDepth = true;
         for (size_t i = 0; i < points.size() && positiveDepth; i++)
         {
@@ -253,7 +253,7 @@ protected:
             Mat rvec, tvec, R;
             rvec_double.convertTo(rvec, CV_32F);
             tvec_double.convertTo(tvec, CV_32F);
-            cv::Rodrigues(rvec, R);
+            ncvslideio::Rodrigues(rvec, R);
 
             for (size_t i = 0; i < points.size(); i++)
             {
@@ -722,9 +722,9 @@ TEST(Calib3d_SolvePnPRansac, concurrency)
     camera_mat.at<float>(2, 1) = 0.f;
     camera_mat.at<float>(2, 2) = 1.f;
 
-    Mat dist_coef(1, 8, CV_32F, cv::Scalar::all(0));
+    Mat dist_coef(1, 8, CV_32F, ncvslideio::Scalar::all(0));
 
-    vector<cv::Point2f> image_vec;
+    vector<ncvslideio::Point2f> image_vec;
     Mat rvec_gold(1, 3, CV_32FC1);
     randu(rvec_gold, 0, 1);
     Mat tvec_gold(1, 3, CV_32FC1);
@@ -751,7 +751,7 @@ TEST(Calib3d_SolvePnPRansac, concurrency)
         // parallel executions
         for(int i = 0; i < 10; ++i)
         {
-            cv::theRNG().state = 20121010;
+            ncvslideio::theRNG().state = 20121010;
             solvePnPRansac(object, image, camera_mat, dist_coef, rvec, tvec);
         }
     }
@@ -776,30 +776,30 @@ TEST(Calib3d_SolvePnPRansac, input_type)
     Matx33d intrinsics(5.4794130238156129e+002, 0., 2.9835545700043139e+002, 0.,
                        5.4817724002728005e+002, 2.3062194051986233e+002, 0., 0., 1.);
 
-    std::vector<cv::Point3f> points3d;
-    std::vector<cv::Point2f> points2d;
+    std::vector<ncvslideio::Point3f> points3d;
+    std::vector<ncvslideio::Point2f> points2d;
     for (int i = 0; i < numPoints; i+=2)
     {
-        points3d.push_back(cv::Point3i(5+i, 3, 2));
-        points3d.push_back(cv::Point3i(5+i, 3+i, 2+i));
-        points2d.push_back(cv::Point2i(0, i));
-        points2d.push_back(cv::Point2i(-i, i));
+        points3d.push_back(ncvslideio::Point3i(5+i, 3, 2));
+        points3d.push_back(ncvslideio::Point3i(5+i, 3+i, 2+i));
+        points2d.push_back(ncvslideio::Point2i(0, i));
+        points2d.push_back(ncvslideio::Point2i(-i, i));
     }
     Mat R1, t1, R2, t2, R3, t3, R4, t4;
 
-    EXPECT_TRUE(solvePnPRansac(points3d, points2d, intrinsics, cv::Mat(), R1, t1));
+    EXPECT_TRUE(solvePnPRansac(points3d, points2d, intrinsics, ncvslideio::Mat(), R1, t1));
 
     Mat points3dMat(points3d);
     Mat points2dMat(points2d);
-    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, cv::Mat(), R2, t2));
+    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, ncvslideio::Mat(), R2, t2));
 
     points3dMat = points3dMat.reshape(3, 1);
     points2dMat = points2dMat.reshape(2, 1);
-    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, cv::Mat(), R3, t3));
+    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, ncvslideio::Mat(), R3, t3));
 
     points3dMat = points3dMat.reshape(1, numPoints);
     points2dMat = points2dMat.reshape(1, numPoints);
-    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, cv::Mat(), R4, t4));
+    EXPECT_TRUE(solvePnPRansac(points3dMat, points2dMat, intrinsics, ncvslideio::Mat(), R4, t4));
 
     EXPECT_LE(cvtest::norm(R1, R2, NORM_INF), 1e-6);
     EXPECT_LE(cvtest::norm(t1, t2, NORM_INF), 1e-6);
@@ -813,26 +813,26 @@ TEST(Calib3d_SolvePnPRansac, double_support)
 {
     Matx33d intrinsics(5.4794130238156129e+002, 0., 2.9835545700043139e+002, 0.,
                        5.4817724002728005e+002, 2.3062194051986233e+002, 0., 0., 1.);
-    std::vector<cv::Point3d> points3d;
-    std::vector<cv::Point2d> points2d;
-    std::vector<cv::Point3f> points3dF;
-    std::vector<cv::Point2f> points2dF;
+    std::vector<ncvslideio::Point3d> points3d;
+    std::vector<ncvslideio::Point2d> points2d;
+    std::vector<ncvslideio::Point3f> points3dF;
+    std::vector<ncvslideio::Point2f> points2dF;
     for (int i = 0; i < 10 ; i+=2)
     {
-        points3d.push_back(cv::Point3d(5+i, 3, 2));
-        points3dF.push_back(cv::Point3f(static_cast<float>(5+i), 3, 2));
-        points3d.push_back(cv::Point3d(5+i, 3+i, 2+i));
-        points3dF.push_back(cv::Point3f(static_cast<float>(5+i), static_cast<float>(3+i), static_cast<float>(2+i)));
-        points2d.push_back(cv::Point2d(0, i));
-        points2dF.push_back(cv::Point2f(0, static_cast<float>(i)));
-        points2d.push_back(cv::Point2d(-i, i));
-        points2dF.push_back(cv::Point2f(static_cast<float>(-i), static_cast<float>(i)));
+        points3d.push_back(ncvslideio::Point3d(5+i, 3, 2));
+        points3dF.push_back(ncvslideio::Point3f(static_cast<float>(5+i), 3, 2));
+        points3d.push_back(ncvslideio::Point3d(5+i, 3+i, 2+i));
+        points3dF.push_back(ncvslideio::Point3f(static_cast<float>(5+i), static_cast<float>(3+i), static_cast<float>(2+i)));
+        points2d.push_back(ncvslideio::Point2d(0, i));
+        points2dF.push_back(ncvslideio::Point2f(0, static_cast<float>(i)));
+        points2d.push_back(ncvslideio::Point2d(-i, i));
+        points2dF.push_back(ncvslideio::Point2f(static_cast<float>(-i), static_cast<float>(i)));
     }
     Mat R, t, RF, tF;
     vector<int> inliers;
 
-    solvePnPRansac(points3dF, points2dF, intrinsics, cv::Mat(), RF, tF, true, 100, 8.f, 0.999, inliers, cv::SOLVEPNP_P3P);
-    solvePnPRansac(points3d, points2d, intrinsics, cv::Mat(), R, t, true, 100, 8.f, 0.999, inliers, cv::SOLVEPNP_P3P);
+    solvePnPRansac(points3dF, points2dF, intrinsics, ncvslideio::Mat(), RF, tF, true, 100, 8.f, 0.999, inliers, ncvslideio::SOLVEPNP_P3P);
+    solvePnPRansac(points3d, points2d, intrinsics, ncvslideio::Mat(), R, t, true, 100, 8.f, 0.999, inliers, ncvslideio::SOLVEPNP_P3P);
 
     EXPECT_LE(cvtest::norm(R, Mat_<double>(RF), NORM_INF), 1e-3);
     EXPECT_LE(cvtest::norm(t, Mat_<double>(tF), NORM_INF), 1e-3);
@@ -2259,7 +2259,7 @@ TEST(Calib3d_SolvePnP, inputShape)
     }
 }
 
-bool hasNan(const cv::Mat& mat)
+bool hasNan(const ncvslideio::Mat& mat)
 {
     bool has = false;
     if (mat.type() == CV_32F)
@@ -2285,15 +2285,15 @@ TEST(AP3P, ctheta1p_nan_23607)
 {
     // the task is not well defined and may not converge (empty R, t) or should
     // converge to some non-NaN solution
-    const std::array<cv::Point2d, 3> cameraPts = {
-        cv::Point2d{0.042784865945577621, 0.59844839572906494},
-        cv::Point2d{-0.028428621590137482, 0.60354739427566528},
-        cv::Point2d{0.0046037044376134872, 0.70674681663513184}
+    const std::array<ncvslideio::Point2d, 3> cameraPts = {
+        ncvslideio::Point2d{0.042784865945577621, 0.59844839572906494},
+        ncvslideio::Point2d{-0.028428621590137482, 0.60354739427566528},
+        ncvslideio::Point2d{0.0046037044376134872, 0.70674681663513184}
     };
-    const std::array<cv::Point3d, 3> modelPts = {
-        cv::Point3d{-0.043258000165224075, 0.020459245890378952, -0.0069921980611979961},
-        cv::Point3d{-0.045648999512195587, 0.0029820732306689024, 0.0079000638797879219},
-        cv::Point3d{-0.043276999145746231, -0.013622495345771313, 0.0080113131552934647}
+    const std::array<ncvslideio::Point3d, 3> modelPts = {
+        ncvslideio::Point3d{-0.043258000165224075, 0.020459245890378952, -0.0069921980611979961},
+        ncvslideio::Point3d{-0.045648999512195587, 0.0029820732306689024, 0.0079000638797879219},
+        ncvslideio::Point3d{-0.043276999145746231, -0.013622495345771313, 0.0080113131552934647}
     };
 
     std::vector<Mat> R, t;
@@ -2310,7 +2310,7 @@ TEST(AP3P, ctheta1p_nan_23607)
         EXPECT_TRUE(!hasNan(t[i]));
 
         Mat transform;
-        cv::Rodrigues(R[i], transform);
+        ncvslideio::Rodrigues(R[i], transform);
         Mat res = pts * transform.t();
         for (int j = 0; j < 3; ++j) {
             res.row(j) += t[i].reshape(1, 1);

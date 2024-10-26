@@ -5,8 +5,8 @@
 #include "opencv2/cudaimgproc.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 int main()
 {

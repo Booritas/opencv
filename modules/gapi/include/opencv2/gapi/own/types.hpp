@@ -11,7 +11,7 @@
 #include <algorithm>              // std::max, std::min
 #include <ostream>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -60,8 +60,8 @@ public:
     Rect() = default;
     Rect(int _x, int _y, int _width, int _height) : x(_x), y(_y),   width(_width),  height(_height) {}
 #if !defined(GAPI_STANDALONE)
-    Rect(const cv::Rect& other) : x(other.x), y(other.y), width(other.width), height(other.height) {}
-    inline Rect& operator=(const cv::Rect& other)
+    Rect(const ncvslideio::Rect& other) : x(other.x), y(other.y), width(other.width), height(other.height) {}
+    inline Rect& operator=(const ncvslideio::Rect& other)
     {
         x = other.x;
         y = other.x;
@@ -117,8 +117,8 @@ public:
     Size() = default;
     Size(int _width, int _height) : width(_width),  height(_height) {}
 #if !defined(GAPI_STANDALONE)
-    Size(const cv::Size& other) : width(other.width), height(other.height) {}
-    inline Size& operator=(const cv::Size& rhs)
+    Size(const ncvslideio::Size& other) : width(other.width), height(other.height) {}
+    inline Size& operator=(const ncvslideio::Size& rhs)
     {
         width  = rhs.width;
         height = rhs.height;
@@ -157,6 +157,6 @@ inline std::ostream& operator<<(std::ostream& o, const Size& s)
 struct VoidType {};
 } // namespace own
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_TYPES_HPP

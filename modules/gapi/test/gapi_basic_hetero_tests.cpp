@@ -17,7 +17,7 @@ namespace
 {
     GAPI_OCV_KERNEL(OCVFoo, I::Foo)
     {
-        static void run(const cv::Mat &in, cv::Mat &out)
+        static void run(const ncvslideio::Mat &in, ncvslideio::Mat &out)
         {
             out = in + 2;
         }
@@ -25,7 +25,7 @@ namespace
 
     GAPI_OCV_KERNEL(OCVBar, I::Bar)
     {
-        static void run(const cv::Mat &a, const cv::Mat &b, cv::Mat &out)
+        static void run(const ncvslideio::Mat &a, const ncvslideio::Mat &b, ncvslideio::Mat &out)
         {
             out = 4*(a + b);
         }
@@ -51,8 +51,8 @@ namespace
     {
         static const int Window = 1;
 
-        static void run(const cv::gapi::fluid::View   &in,
-                              cv::gapi::fluid::Buffer &out)
+        static void run(const ncvslideio::gapi::fluid::View   &in,
+                              ncvslideio::gapi::fluid::Buffer &out)
         {
             FluidFooRow(in.InLineB(0), out.OutLineB(), in.length());
         }
@@ -62,30 +62,30 @@ namespace
     {
         static const int Window = 1;
 
-        static void run(const cv::gapi::fluid::View   &in1,
-                        const cv::gapi::fluid::View   &in2,
-                              cv::gapi::fluid::Buffer &out)
+        static void run(const ncvslideio::gapi::fluid::View   &in1,
+                        const ncvslideio::gapi::fluid::View   &in2,
+                              ncvslideio::gapi::fluid::Buffer &out)
         {
             FluidBarRow(in1.InLineB(0), in2.InLineB(0), out.OutLineB(), in1.length());
         }
     };
 
-    G_TYPED_KERNEL(FluidFooI, <cv::GMat(cv::GMat)>, "test.kernels.fluid_foo")
+    G_TYPED_KERNEL(FluidFooI, <ncvslideio::GMat(ncvslideio::GMat)>, "test.kernels.fluid_foo")
     {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in) { return in; }
     };
 
-    G_TYPED_KERNEL(FluidBarI, <cv::GMat(cv::GMat,cv::GMat)>, "test.kernels.fluid_bar")
+    G_TYPED_KERNEL(FluidBarI, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GMat)>, "test.kernels.fluid_bar")
     {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in, const cv::GMatDesc &) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in, const ncvslideio::GMatDesc &) { return in; }
     };
 
     GAPI_FLUID_KERNEL(FluidFoo, FluidFooI, false)
     {
         static const int Window = 1;
 
-        static void run(const cv::gapi::fluid::View   &in,
-                              cv::gapi::fluid::Buffer &out)
+        static void run(const ncvslideio::gapi::fluid::View   &in,
+                              ncvslideio::gapi::fluid::Buffer &out)
         {
             FluidFooRow(in.InLineB(0), out.OutLineB(), in.length());
         }
@@ -95,9 +95,9 @@ namespace
     {
         static const int Window = 1;
 
-        static void run(const cv::gapi::fluid::View   &in1,
-                        const cv::gapi::fluid::View   &in2,
-                              cv::gapi::fluid::Buffer &out)
+        static void run(const ncvslideio::gapi::fluid::View   &in1,
+                        const ncvslideio::gapi::fluid::View   &in2,
+                              ncvslideio::gapi::fluid::Buffer &out)
         {
             FluidBarRow(in1.InLineB(0), in2.InLineB(0), out.OutLineB(), in1.length());
         }
@@ -108,8 +108,8 @@ namespace
         static const int Window = 1;
         static const int LPI    = 2;
 
-        static void run(const cv::gapi::fluid::View   &in,
-                              cv::gapi::fluid::Buffer &out)
+        static void run(const ncvslideio::gapi::fluid::View   &in,
+                              ncvslideio::gapi::fluid::Buffer &out)
         {
             for (int l = 0; l < out.lpi(); l++)
             {
@@ -118,30 +118,30 @@ namespace
         }
     };
 
-    cv::Mat ocvFoo(const cv::Mat &in)
+    ncvslideio::Mat ocvFoo(const ncvslideio::Mat &in)
     {
-        cv::Mat out;
+        ncvslideio::Mat out;
         OCVFoo::run(in, out);
         return out;
     }
-    cv::Mat ocvBar(const cv::Mat &in1, const cv::Mat &in2)
+    ncvslideio::Mat ocvBar(const ncvslideio::Mat &in1, const ncvslideio::Mat &in2)
     {
-        cv::Mat out;
+        ncvslideio::Mat out;
         OCVBar::run(in1, in2, out);
         return out;
     }
-    cv::Mat fluidFoo(const cv::Mat &in)
+    ncvslideio::Mat fluidFoo(const ncvslideio::Mat &in)
     {
-        cv::Mat out(in.rows, in.cols, in.type());
+        ncvslideio::Mat out(in.rows, in.cols, in.type());
         for (int y = 0; y < in.rows; y++)
         {
             FluidFooRow(in.ptr(y), out.ptr(y), in.cols);
         }
         return out;
     }
-    cv::Mat fluidBar(const cv::Mat &in1, const cv::Mat &in2)
+    ncvslideio::Mat fluidBar(const ncvslideio::Mat &in1, const ncvslideio::Mat &in2)
     {
-        cv::Mat out(in1.rows, in1.cols, in1.type());
+        ncvslideio::Mat out(in1.rows, in1.cols, in1.type());
         for (int y = 0; y < in1.rows; y++)
         {
             FluidBarRow(in1.ptr(y), in2.ptr(y), out.ptr(y), in1.cols);
@@ -152,72 +152,72 @@ namespace
 
 struct GAPIHeteroTest: public ::testing::Test
 {
-    cv::GComputation m_comp;
-    cv::GKernelPackage m_ocv_kernels;
-    cv::GKernelPackage m_fluid_kernels;
-    cv::GKernelPackage m_hetero_kernels;
+    ncvslideio::GComputation m_comp;
+    ncvslideio::GKernelPackage m_ocv_kernels;
+    ncvslideio::GKernelPackage m_fluid_kernels;
+    ncvslideio::GKernelPackage m_hetero_kernels;
 
-    cv::Mat m_in_mat;
-    cv::Mat m_out_mat;
+    ncvslideio::Mat m_in_mat;
+    ncvslideio::Mat m_out_mat;
 
     GAPIHeteroTest();
 };
 
 GAPIHeteroTest::GAPIHeteroTest()
     : m_comp([](){
-            cv::GMat in;
-            cv::GMat out = I::Bar::on(I::Foo::on(in),
+            ncvslideio::GMat in;
+            ncvslideio::GMat out = I::Bar::on(I::Foo::on(in),
                                       I::Foo::on(in));
-            return cv::GComputation(in, out);
+            return ncvslideio::GComputation(in, out);
         })
-    , m_ocv_kernels(cv::gapi::kernels<OCVFoo, OCVBar>())
-    , m_fluid_kernels(cv::gapi::kernels<FFoo, FBar>())
-    , m_hetero_kernels(cv::gapi::kernels<OCVFoo, FBar>())
-    , m_in_mat(cv::Mat::eye(cv::Size(64, 64), CV_8UC1))
+    , m_ocv_kernels(ncvslideio::gapi::kernels<OCVFoo, OCVBar>())
+    , m_fluid_kernels(ncvslideio::gapi::kernels<FFoo, FBar>())
+    , m_hetero_kernels(ncvslideio::gapi::kernels<OCVFoo, FBar>())
+    , m_in_mat(ncvslideio::Mat::eye(ncvslideio::Size(64, 64), CV_8UC1))
 {
 }
 
 TEST_F(GAPIHeteroTest, TestOCV)
 {
-    EXPECT_TRUE(cv::gapi::cpu::backend() == m_ocv_kernels.lookup<I::Foo>());
-    EXPECT_TRUE(cv::gapi::cpu::backend() == m_ocv_kernels.lookup<I::Bar>());
+    EXPECT_TRUE(ncvslideio::gapi::cpu::backend() == m_ocv_kernels.lookup<I::Foo>());
+    EXPECT_TRUE(ncvslideio::gapi::cpu::backend() == m_ocv_kernels.lookup<I::Bar>());
 
-    cv::Mat ref = ocvBar(ocvFoo(m_in_mat), ocvFoo(m_in_mat));
-    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, cv::compile_args(m_ocv_kernels)));
+    ncvslideio::Mat ref = ocvBar(ocvFoo(m_in_mat), ocvFoo(m_in_mat));
+    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, ncvslideio::compile_args(m_ocv_kernels)));
     EXPECT_EQ(0, cvtest::norm(ref, m_out_mat, NORM_INF));
 }
 
 TEST_F(GAPIHeteroTest, TestFluid)
 {
-    EXPECT_TRUE(cv::gapi::fluid::backend() == m_fluid_kernels.lookup<I::Foo>());
-    EXPECT_TRUE(cv::gapi::fluid::backend() == m_fluid_kernels.lookup<I::Bar>());
+    EXPECT_TRUE(ncvslideio::gapi::fluid::backend() == m_fluid_kernels.lookup<I::Foo>());
+    EXPECT_TRUE(ncvslideio::gapi::fluid::backend() == m_fluid_kernels.lookup<I::Bar>());
 
-    cv::Mat ref = fluidBar(fluidFoo(m_in_mat), fluidFoo(m_in_mat));
-    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, cv::compile_args(m_fluid_kernels)));
+    ncvslideio::Mat ref = fluidBar(fluidFoo(m_in_mat), fluidFoo(m_in_mat));
+    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, ncvslideio::compile_args(m_fluid_kernels)));
     EXPECT_EQ(0, cvtest::norm(ref, m_out_mat, NORM_INF));
 }
 
 TEST_F(GAPIHeteroTest, TestBoth)
 {
-    EXPECT_TRUE(cv::gapi::cpu::backend()   == m_hetero_kernels.lookup<I::Foo>());
-    EXPECT_TRUE(cv::gapi::fluid::backend() == m_hetero_kernels.lookup<I::Bar>());
+    EXPECT_TRUE(ncvslideio::gapi::cpu::backend()   == m_hetero_kernels.lookup<I::Foo>());
+    EXPECT_TRUE(ncvslideio::gapi::fluid::backend() == m_hetero_kernels.lookup<I::Bar>());
 
-    cv::Mat ref = fluidBar(ocvFoo(m_in_mat), ocvFoo(m_in_mat));
-    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, cv::compile_args(m_hetero_kernels)));
+    ncvslideio::Mat ref = fluidBar(ocvFoo(m_in_mat), ocvFoo(m_in_mat));
+    EXPECT_NO_THROW(m_comp.apply(m_in_mat, m_out_mat, ncvslideio::compile_args(m_hetero_kernels)));
     EXPECT_EQ(0, cvtest::norm(ref, m_out_mat, NORM_INF));
 }
 
 struct GAPIBigHeteroTest : public ::testing::TestWithParam<std::array<int, 9>>
 {
-    cv::GComputation m_comp;
-    cv::GKernelPackage m_kernels;
+    ncvslideio::GComputation m_comp;
+    ncvslideio::GKernelPackage m_kernels;
 
-    cv::Mat m_in_mat;
-    cv::Mat m_out_mat1;
-    cv::Mat m_out_mat2;
+    ncvslideio::Mat m_in_mat;
+    ncvslideio::Mat m_out_mat1;
+    ncvslideio::Mat m_out_mat2;
 
-    cv::Mat m_ref_mat1;
-    cv::Mat m_ref_mat2;
+    ncvslideio::Mat m_ref_mat1;
+    ncvslideio::Mat m_ref_mat2;
 
     GAPIBigHeteroTest();
 };
@@ -230,7 +230,7 @@ struct GAPIBigHeteroTest : public ::testing::TestWithParam<std::array<int, 9>>
 GAPIBigHeteroTest::GAPIBigHeteroTest()
     : m_comp([&](){
         auto flags = GetParam();
-        std::array<std::function<cv::GMat(cv::GMat)>, 8> foos;
+        std::array<std::function<ncvslideio::GMat(ncvslideio::GMat)>, 8> foos;
 
         for (int i = 0; i < 8; i++)
         {
@@ -238,20 +238,20 @@ GAPIBigHeteroTest::GAPIBigHeteroTest()
         }
         auto bar = flags[8] ? &I::Bar::on : &FluidBarI::on;
 
-        cv::GMat in;
+        ncvslideio::GMat in;
         auto foo1Out = foos[1](foos[0](in));
         auto foo3Out = foos[3](foos[2](foo1Out));
         auto foo6Out = foos[6](bar(foo3Out,
                                foos[5](foos[4](foo1Out))));
         auto foo7Out = foos[7](foo3Out);
 
-        return cv::GComputation(GIn(in), GOut(foo6Out, foo7Out));
+        return ncvslideio::GComputation(GIn(in), GOut(foo6Out, foo7Out));
     })
-    , m_kernels(cv::gapi::kernels<OCVFoo, OCVBar, FluidFoo, FluidBar>())
-    , m_in_mat(cv::Mat::eye(cv::Size(64, 64), CV_8UC1))
+    , m_kernels(ncvslideio::gapi::kernels<OCVFoo, OCVBar, FluidFoo, FluidBar>())
+    , m_in_mat(ncvslideio::Mat::eye(ncvslideio::Size(64, 64), CV_8UC1))
 {
     auto flags = GetParam();
-    std::array<std::function<cv::Mat(cv::Mat)>, 8> foos;
+    std::array<std::function<ncvslideio::Mat(ncvslideio::Mat)>, 8> foos;
 
     for (int i = 0; i < 8; i++)
     {
@@ -259,8 +259,8 @@ GAPIBigHeteroTest::GAPIBigHeteroTest()
     }
     auto bar = flags[8] ? ocvBar : fluidBar;
 
-    cv::Mat foo1OutMat = foos[1](foos[0](m_in_mat));
-    cv::Mat foo3OutMat = foos[3](foos[2](foo1OutMat));
+    ncvslideio::Mat foo1OutMat = foos[1](foos[0](m_in_mat));
+    ncvslideio::Mat foo3OutMat = foos[3](foos[2](foo1OutMat));
 
     m_ref_mat1 = foos[6](bar(foo3OutMat,
                              foos[5](foos[4](foo1OutMat))));
@@ -270,7 +270,7 @@ GAPIBigHeteroTest::GAPIBigHeteroTest()
 
 TEST_P(GAPIBigHeteroTest, Test)
 {
-    EXPECT_NO_THROW(m_comp.apply(gin(m_in_mat), gout(m_out_mat1, m_out_mat2), cv::compile_args(m_kernels)));
+    EXPECT_NO_THROW(m_comp.apply(gin(m_in_mat), gout(m_out_mat1, m_out_mat2), ncvslideio::compile_args(m_kernels)));
     EXPECT_EQ(0, cvtest::norm(m_ref_mat1, m_out_mat1, NORM_INF));
     EXPECT_EQ(0, cvtest::norm(m_ref_mat2 != m_out_mat2, NORM_INF));
 }
@@ -295,17 +295,17 @@ INSTANTIATE_TEST_CASE_P(GAPIBigHeteroTest, GAPIBigHeteroTest,
 
 TEST(GAPIHeteroTestLPI, Test)
 {
-    cv::GMat in;
+    ncvslideio::GMat in;
     auto mid = FluidFooI::on(in);
     auto out = FluidFooI::on(mid);
-    cv::gapi::island("isl0", GIn(in),  GOut(mid));
-    cv::gapi::island("isl1", GIn(mid), GOut(out));
-    cv::GComputation c(in, out);
+    ncvslideio::gapi::island("isl0", GIn(in),  GOut(mid));
+    ncvslideio::gapi::island("isl1", GIn(mid), GOut(out));
+    ncvslideio::GComputation c(in, out);
 
-    cv::Mat in_mat = cv::Mat::eye(cv::Size(64, 64), CV_8UC1);
-    cv::Mat out_mat;
-    EXPECT_NO_THROW(c.apply(in_mat, out_mat, cv::compile_args(cv::gapi::kernels<FluidFoo2lpi>())));
-    cv::Mat ref = fluidFoo(fluidFoo(in_mat));
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(ncvslideio::Size(64, 64), CV_8UC1);
+    ncvslideio::Mat out_mat;
+    EXPECT_NO_THROW(c.apply(in_mat, out_mat, ncvslideio::compile_args(ncvslideio::gapi::kernels<FluidFoo2lpi>())));
+    ncvslideio::Mat ref = fluidFoo(fluidFoo(in_mat));
     EXPECT_EQ(0, cvtest::norm(ref, out_mat, NORM_INF));
 }
 

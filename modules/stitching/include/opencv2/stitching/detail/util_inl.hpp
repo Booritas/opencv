@@ -49,7 +49,7 @@
 
 //! @cond IGNORED
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 template <typename B>
@@ -124,7 +124,7 @@ static inline float sqr(float x) { return x * x; }
 static inline double sqr(double x) { return x * x; }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 //! @endcond
 

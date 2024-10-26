@@ -59,10 +59,10 @@ OCL_PERF_TEST_P(PyrLKOpticalFlowFixture, PyrLKOpticalFlow,
                 ::testing::Values(1000, 2000, 4000)
                 )
 {
-    Mat frame0 = imread(getDataPath("gpu/opticalflow/rubberwhale1.png"), cv::IMREAD_GRAYSCALE);
+    Mat frame0 = imread(getDataPath("gpu/opticalflow/rubberwhale1.png"), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame0.empty()) << "can't load rubberwhale1.png";
 
-    Mat frame1 = imread(getDataPath("gpu/opticalflow/rubberwhale2.png"), cv::IMREAD_GRAYSCALE);
+    Mat frame1 = imread(getDataPath("gpu/opticalflow/rubberwhale2.png"), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame1.empty()) << "can't load rubberwhale2.png";
 
     UMat uFrame0; frame0.copyTo(uFrame0);
@@ -94,7 +94,7 @@ OCL_PERF_TEST_P(PyrLKOpticalFlowFixture, PyrLKOpticalFlow,
     declare.in(uFrame0, uFrame1, WARMUP_READ);
     UMat uNextPts, uStatus, uErr;
     OCL_TEST_CYCLE()
-        cv::calcOpticalFlowPyrLK(uFrame0, uFrame1, pts, uNextPts, uStatus, uErr, winSize, maxLevel, criteria, flags, minEigThreshold);
+        ncvslideio::calcOpticalFlowPyrLK(uFrame0, uFrame1, pts, uNextPts, uStatus, uErr, winSize, maxLevel, criteria, flags, minEigThreshold);
 
     SANITY_CHECK(uNextPts, eps);
 }

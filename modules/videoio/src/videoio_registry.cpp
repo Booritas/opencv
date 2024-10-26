@@ -30,9 +30,9 @@
 #pragma warning(disable: 4748)
 #endif
 
-using namespace cv;
+using namespace ncvslideio;
 
-namespace cv {
+namespace ncvslideio {
 
 namespace {
 
@@ -226,7 +226,7 @@ protected:
             VideoBackendInfo& info = enabledBackends[enabled];
             if (enabled != i)
                 info = enabledBackends[i];
-            size_t param_priority = utils::getConfigurationParameterSizeT(cv::format("OPENCV_VIDEOIO_PRIORITY_%s", info.name).c_str(), (size_t)info.priority);
+            size_t param_priority = utils::getConfigurationParameterSizeT(ncvslideio::format("OPENCV_VIDEOIO_PRIORITY_%s", info.name).c_str(), (size_t)info.priority);
             CV_Assert(param_priority == (size_t)(int)param_priority); // overflow check
             if (param_priority > 0)
             {
@@ -259,7 +259,7 @@ protected:
     bool readPrioritySettings()
     {
         bool hasChanges = false;
-        cv::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_VIDEOIO_PRIORITY_LIST", NULL);
+        ncvslideio::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_VIDEOIO_PRIORITY_LIST", NULL);
         if (prioritized_backends.empty())
             return hasChanges;
         CV_LOG_INFO(NULL, "VIDEOIO: Configured priority list (OPENCV_VIDEOIO_PRIORITY_LIST): " << prioritized_backends);
@@ -373,7 +373,7 @@ bool checkDeprecatedBackend(int api) {
     return false;
 }
 
-cv::String getBackendName(VideoCaptureAPIs api)
+ncvslideio::String getBackendName(VideoCaptureAPIs api)
 {
     if (api == CAP_ANY)
         return "CAP_ANY";  // special case, not a part of backends list
@@ -392,7 +392,7 @@ cv::String getBackendName(VideoCaptureAPIs api)
             return deprecated_backends[i].name;
     }
 
-    return cv::format("UnknownVideoAPI(%d)", (int)api);
+    return ncvslideio::format("UnknownVideoAPI(%d)", (int)api);
 }
 
 std::vector<VideoCaptureAPIs> getBackends()

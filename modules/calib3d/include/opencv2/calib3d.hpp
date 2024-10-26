@@ -437,7 +437,7 @@ R & t \\
   @}
  */
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup calib3d
@@ -937,7 +937,7 @@ More information about Perspective-n-Points is described in @ref calib3d_solvePn
         opencv_source_code/samples/python/plane_ar.py
    -   If you are using Python:
         - Numpy array slices won't work as input because solvePnP requires contiguous
-        arrays (enforced by the assertion using cv::Mat::checkVector() around line 55 of
+        arrays (enforced by the assertion using ncvslideio::Mat::checkVector() around line 55 of
         modules/calib3d/src/solvepnp.cpp version 2.4.9)
         - The P3P algorithm requires image points to be in an array of shape (N,1,2) due
         to its calling of #undistortPoints (around line 75 of modules/calib3d/src/solvepnp.cpp version 2.4.9)
@@ -1168,7 +1168,7 @@ More information is described in @ref calib3d_solvePnP
         opencv_source_code/samples/python/plane_ar.py
    -   If you are using Python:
         - Numpy array slices won't work as input because solvePnP requires contiguous
-        arrays (enforced by the assertion using cv::Mat::checkVector() around line 55 of
+        arrays (enforced by the assertion using ncvslideio::Mat::checkVector() around line 55 of
         modules/calib3d/src/solvepnp.cpp version 2.4.9)
         - The P3P algorithm requires image points to be in an array of shape (N,1,2) due
         to its calling of #undistortPoints (around line 75 of modules/calib3d/src/solvepnp.cpp version 2.4.9)
@@ -1223,7 +1223,7 @@ CV_EXPORTS_W Mat initCameraMatrix2D( InputArrayOfArrays objectPoints,
 
 @param image Source chessboard view. It must be an 8-bit grayscale or color image.
 @param patternSize Number of inner corners per a chessboard row and column
-( patternSize = cv::Size(points_per_row,points_per_colum) = cv::Size(columns,rows) ).
+( patternSize = ncvslideio::Size(points_per_row,points_per_colum) = ncvslideio::Size(columns,rows) ).
 @param corners Output array of detected corners.
 @param flags Various operation flags that can be zero or a combination of the following values:
 -   @ref CALIB_CB_ADAPTIVE_THRESH Use adaptive thresholding to convert the image to black
@@ -1287,7 +1287,7 @@ CV_EXPORTS_W bool checkChessboard(InputArray img, Size size);
 
 @param image Source chessboard view. It must be an 8-bit grayscale or color image.
 @param patternSize Number of inner corners per a chessboard row and column
-( patternSize = cv::Size(points_per_row,points_per_colum) = cv::Size(columns,rows) ).
+( patternSize = ncvslideio::Size(points_per_row,points_per_colum) = ncvslideio::Size(columns,rows) ).
 @param corners Output array of detected corners.
 @param flags Various operation flags that can be zero or a combination of the following values:
 -   @ref CALIB_CB_NORMALIZE_IMAGE Normalize the image gamma with equalizeHist before detection.
@@ -1296,7 +1296,7 @@ CV_EXPORTS_W bool checkChessboard(InputArray img, Size size);
 -   @ref CALIB_CB_LARGER The detected pattern is allowed to be larger than patternSize (see description).
 -   @ref CALIB_CB_MARKER The detected pattern must have a marker (see description).
 This should be used if an accurate camera calibration is required.
-@param meta Optional output arrray of detected corners (CV_8UC1 and size = cv::Size(columns,rows)).
+@param meta Optional output arrray of detected corners (CV_8UC1 and size = ncvslideio::Size(columns,rows)).
 Each entry stands for one corner of the pattern and can have one of the following values:
 -   0 = no meta data attached
 -   1 = left-top corner of a black cell
@@ -1383,7 +1383,7 @@ CV_EXPORTS_W bool find4QuadCornerSubpix( InputArray img, InputOutputArray corner
 
 @param image Destination image. It must be an 8-bit color image.
 @param patternSize Number of inner corners per a chessboard row and column
-(patternSize = cv::Size(points_per_row,points_per_column)).
+(patternSize = ncvslideio::Size(points_per_row,points_per_column)).
 @param corners Array of detected corners, the output of #findChessboardCorners.
 @param patternWasFound Parameter indicating whether the complete board was found or not. The
 return value of #findChessboardCorners should be passed here.
@@ -1416,7 +1416,7 @@ CV_EXPORTS_W void drawFrameAxes(InputOutputArray image, InputArray cameraMatrix,
 struct CV_EXPORTS_W_SIMPLE CirclesGridFinderParameters
 {
     CV_WRAP CirclesGridFinderParameters();
-    CV_PROP_RW cv::Size2f densityNeighborhoodSize;
+    CV_PROP_RW ncvslideio::Size2f densityNeighborhoodSize;
     CV_PROP_RW float minDensity;
     CV_PROP_RW int kmeansAttempts;
     CV_PROP_RW int minDistanceToAddKeypoint;
@@ -1491,7 +1491,7 @@ CV_EXPORTS_W bool findCirclesGrid( InputArray image, Size patternSize,
 pattern.
 
 @param objectPoints In the new interface it is a vector of vectors of calibration pattern points in
-the calibration pattern coordinate space (e.g. std::vector<std::vector<cv::Vec3f>>). The outer
+the calibration pattern coordinate space (e.g. std::vector<std::vector<ncvslideio::Vec3f>>). The outer
 vector contains as many elements as the number of pattern views. If the same calibration pattern
 is shown in each view and it is fully visible, all the vectors will be the same. Although, it is
 possible to use partially occluded patterns or even different patterns in different views. Then,
@@ -1500,7 +1500,7 @@ XY coordinate plane (thus 0 in the Z-coordinate), if the used calibration patter
 In the old interface all the vectors of object points from different views are concatenated
 together.
 @param imagePoints In the new interface it is a vector of vectors of the projections of calibration
-pattern points (e.g. std::vector<std::vector<cv::Vec2f>>). imagePoints.size() and
+pattern points (e.g. std::vector<std::vector<ncvslideio::Vec2f>>). imagePoints.size() and
 objectPoints.size(), and imagePoints[i].size() and objectPoints[i].size() for each i, must be equal,
 respectively. In the old interface all the vectors of object points from different views are
 concatenated together.
@@ -1512,7 +1512,7 @@ are specified, some or all of fx, fy, cx, cy must be initialized before calling 
 @param distCoeffs Input/output vector of distortion coefficients
 \f$\distcoeffs\f$.
 @param rvecs Output vector of rotation vectors (@ref Rodrigues ) estimated for each pattern view
-(e.g. std::vector<cv::Mat>>). That is, each i-th rotation vector together with the corresponding
+(e.g. std::vector<ncvslideio::Mat>>). That is, each i-th rotation vector together with the corresponding
 i-th translation vector (see the next output parameter description) brings the calibration pattern
 from the object coordinate space (in which object points are specified) to the camera coordinate
 space. In more technical terms, the tuple of the i-th rotation and translation vector performs
@@ -1760,7 +1760,7 @@ second camera coordinate system.
 @param E Output essential matrix.
 @param F Output fundamental matrix.
 @param rvecs Output vector of rotation vectors ( @ref Rodrigues ) estimated for each pattern view in the
-coordinate system of the first camera of the stereo pair (e.g. std::vector<cv::Mat>). More in detail, each
+coordinate system of the first camera of the stereo pair (e.g. std::vector<ncvslideio::Mat>). More in detail, each
 i-th rotation vector together with the corresponding i-th translation vector (see the next output parameter
 description) brings the calibration pattern from the object coordinate space (in which object points are
 specified) to the camera coordinate space of the first camera of the stereo pair. In more technical terms,
@@ -2113,7 +2113,7 @@ from calibration target frame to camera frame.
 expressed in the camera frame to the gripper frame (\f$_{}^{g}\textrm{T}_c\f$).
 @param[out] t_cam2gripper Estimated `(3x1)` translation part extracted from the homogeneous matrix that transforms a point
 expressed in the camera frame to the gripper frame (\f$_{}^{g}\textrm{T}_c\f$).
-@param[in] method One of the implemented Hand-Eye calibration method, see cv::HandEyeCalibrationMethod
+@param[in] method One of the implemented Hand-Eye calibration method, see ncvslideio::HandEyeCalibrationMethod
 
 The function performs the Hand-Eye calibration using various methods. One approach consists in estimating the
 rotation then the translation (separable solutions) and the following methods are implemented:
@@ -2268,7 +2268,7 @@ expressed in the robot base frame to the world frame (\f$_{}^{w}\textrm{T}_b\f$)
 expressed in the gripper frame to the camera frame (\f$_{}^{c}\textrm{T}_g\f$).
 @param[out] t_gripper2cam Estimated `(3x1)` translation part extracted from the homogeneous matrix that transforms a point
 expressed in the gripper frame to the camera frame (\f$_{}^{c}\textrm{T}_g\f$).
-@param[in] method One of the implemented Robot-World/Hand-Eye calibration method, see cv::RobotWorldHandEyeCalibrationMethod
+@param[in] method One of the implemented Robot-World/Hand-Eye calibration method, see ncvslideio::RobotWorldHandEyeCalibrationMethod
 
 The function performs the Robot-World/Hand-Eye calibration using various methods. One approach consists in estimating the
 rotation then the translation (separable solutions):
@@ -2497,7 +2497,7 @@ be floating-point (single or double precision).
 @param cameraMatrix Camera intrinsic matrix \f$\cameramatrix{A}\f$ .
 Note that this function assumes that points1 and points2 are feature points from cameras with the
 same camera intrinsic matrix. If this assumption does not hold for your use case, use another
-function overload or #undistortPoints with `P = cv::NoArray()` for both cameras to transform image
+function overload or #undistortPoints with `P = ncvslideio::NoArray()` for both cameras to transform image
 points to normalized image coordinates, which are valid for the identity camera intrinsic matrix.
 When passing these coordinates, pass the identity matrix for this parameter.
 @param method Method for computing an essential matrix.
@@ -2721,7 +2721,7 @@ CV_EXPORTS_W int recoverPose( InputArray points1, InputArray points2,
                             InputArray cameraMatrix1, InputArray distCoeffs1,
                             InputArray cameraMatrix2, InputArray distCoeffs2,
                             OutputArray E, OutputArray R, OutputArray t,
-                            int method = cv::RANSAC, double prob = 0.999, double threshold = 1.0,
+                            int method = ncvslideio::RANSAC, double prob = 0.999, double threshold = 1.0,
                             InputOutputArray mask = noArray());
 
 /** @brief Recovers the relative camera rotation and the translation from an estimated essential
@@ -2985,7 +2985,7 @@ CV_EXPORTS_W void reprojectImageTo3D( InputArray disparity,
 
 /** @brief Calculates the Sampson Distance between two points.
 
-The function cv::sampsonDistance calculates and returns the first order approximation of the geometric error as:
+The function ncvslideio::sampsonDistance calculates and returns the first order approximation of the geometric error as:
 \f[
 sd( \texttt{pt1} , \texttt{pt2} )=
 \frac{(\texttt{pt2}^t \cdot \texttt{F} \cdot \texttt{pt1})^2}
@@ -3078,7 +3078,7 @@ R & t\\
 \f]
 
  */
-CV_EXPORTS_W   cv::Mat estimateAffine3D(InputArray src, InputArray dst,
+CV_EXPORTS_W   ncvslideio::Mat estimateAffine3D(InputArray src, InputArray dst,
                                         CV_OUT double* scale = nullptr, bool force_rotation = true);
 
 /** @brief Computes an optimal translation between two 3D point sets.
@@ -3190,13 +3190,13 @@ correctly only when there are more than 50% of inliers.
 
 @sa estimateAffinePartial2D, getAffineTransform
 */
-CV_EXPORTS_W cv::Mat estimateAffine2D(InputArray from, InputArray to, OutputArray inliers = noArray(),
+CV_EXPORTS_W ncvslideio::Mat estimateAffine2D(InputArray from, InputArray to, OutputArray inliers = noArray(),
                                   int method = RANSAC, double ransacReprojThreshold = 3,
                                   size_t maxIters = 2000, double confidence = 0.99,
                                   size_t refineIters = 10);
 
 
-CV_EXPORTS_W cv::Mat estimateAffine2D(InputArray pts1, InputArray pts2, OutputArray inliers,
+CV_EXPORTS_W ncvslideio::Mat estimateAffine2D(InputArray pts1, InputArray pts2, OutputArray inliers,
                      const UsacParams &params);
 
 /** @brief Computes an optimal limited affine transformation with 4 degrees of freedom between
@@ -3242,7 +3242,7 @@ correctly only when there are more than 50% of inliers.
 
 @sa estimateAffine2D, getAffineTransform
 */
-CV_EXPORTS_W cv::Mat estimateAffinePartial2D(InputArray from, InputArray to, OutputArray inliers = noArray(),
+CV_EXPORTS_W ncvslideio::Mat estimateAffinePartial2D(InputArray from, InputArray to, OutputArray inliers = noArray(),
                                   int method = RANSAC, double ransacReprojThreshold = 3,
                                   size_t maxIters = 2000, double confidence = 0.99,
                                   size_t refineIters = 10);
@@ -3485,7 +3485,7 @@ public:
 };
 
 
-//! cv::undistort mode
+//! ncvslideio::undistort mode
 enum UndistortTypes
 {
     PROJ_SPHERICAL_ORTHO  = 0,
@@ -3618,7 +3618,7 @@ x  \leftarrow (u - {c'}_x)/{f'}_x  \\
 y  \leftarrow (v - {c'}_y)/{f'}_y  \\
 
 \\\text{Undistortion}
-\\\scriptsize{\textit{though equation shown is for radial undistortion, function implements cv::undistortPoints()}}\\
+\\\scriptsize{\textit{though equation shown is for radial undistortion, function implements ncvslideio::undistortPoints()}}\\
 r^2  \leftarrow x^2 + y^2 \\
 \theta \leftarrow \frac{1 + k_1 r^2 + k_2 r^4 + k_3 r^6}{1 + k_4 r^2 + k_5 r^4 + k_6 r^6}\\
 x' \leftarrow \frac{x}{\theta} \\
@@ -3885,7 +3885,7 @@ namespace fisheye
     @param map2 The second output map.
      */
     CV_EXPORTS_W void initUndistortRectifyMap(InputArray K, InputArray D, InputArray R, InputArray P,
-        const cv::Size& size, int m1type, OutputArray map1, OutputArray map2);
+        const ncvslideio::Size& size, int m1type, OutputArray map1, OutputArray map2);
 
     /** @brief Transforms an image to compensate for fisheye lens distortion.
 
@@ -3916,7 +3916,7 @@ namespace fisheye
     ![image](pics/fisheye_undistorted.jpg)
      */
     CV_EXPORTS_W void undistortImage(InputArray distorted, OutputArray undistorted,
-        InputArray K, InputArray D, InputArray Knew = cv::noArray(), const Size& new_size = Size());
+        InputArray K, InputArray D, InputArray Knew = ncvslideio::noArray(), const Size& new_size = Size());
 
     /** @brief Estimates new camera intrinsic matrix for undistortion or rectification.
 
@@ -4026,7 +4026,7 @@ optimization. It is the \f$max(width,height)/\pi\f$ or the provided \f$f_x\f$, \
     @param R Output rotation matrix between the 1st and the 2nd camera coordinate systems.
     @param T Output translation vector between the coordinate systems of the cameras.
     @param rvecs Output vector of rotation vectors ( @ref Rodrigues ) estimated for each pattern view in the
-    coordinate system of the first camera of the stereo pair (e.g. std::vector<cv::Mat>). More in detail, each
+    coordinate system of the first camera of the stereo pair (e.g. std::vector<ncvslideio::Mat>). More in detail, each
     i-th rotation vector together with the corresponding i-th translation vector (see the next output parameter
     description) brings the calibration pattern from the object coordinate space (in which object points are
     specified) to the camera coordinate space of the first camera of the stereo pair. In more technical terms,
@@ -4087,7 +4087,7 @@ optimization. It is the \f$max(width,height)/\pi\f$ or the provided \f$f_x\f$, \
     - point 3: [-squareLength / 2, -squareLength / 2, 0]
     - for all the other flags, number of input points must be >= 4 and object points can be in any configuration.
     @param criteria Termination criteria for internal undistortPoints call.
-    The function interally undistorts points with @ref undistortPoints and call @ref cv::solvePnP,
+    The function interally undistorts points with @ref undistortPoints and call @ref ncvslideio::solvePnP,
     thus the input are very similar. More information about Perspective-n-Points is described in @ref calib3d_solvePnP
     for more information.
     */
@@ -4101,7 +4101,7 @@ optimization. It is the \f$max(width,height)/\pi\f$ or the provided \f$f_x\f$, \
 //! @} calib3d_fisheye
 } // end namespace fisheye
 
-} //end namespace cv
+} //end namespace ncvslideio
 
 #if 0 //def __cplusplus
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4123,16 +4123,16 @@ public:
     void step();
     enum { DONE=0, STARTED=1, CALC_J=2, CHECK_ERR=3 };
 
-    cv::Ptr<CvMat> mask;
-    cv::Ptr<CvMat> prevParam;
-    cv::Ptr<CvMat> param;
-    cv::Ptr<CvMat> J;
-    cv::Ptr<CvMat> err;
-    cv::Ptr<CvMat> JtJ;
-    cv::Ptr<CvMat> JtJN;
-    cv::Ptr<CvMat> JtErr;
-    cv::Ptr<CvMat> JtJV;
-    cv::Ptr<CvMat> JtJW;
+    ncvslideio::Ptr<CvMat> mask;
+    ncvslideio::Ptr<CvMat> prevParam;
+    ncvslideio::Ptr<CvMat> param;
+    ncvslideio::Ptr<CvMat> J;
+    ncvslideio::Ptr<CvMat> err;
+    ncvslideio::Ptr<CvMat> JtJ;
+    ncvslideio::Ptr<CvMat> JtJN;
+    ncvslideio::Ptr<CvMat> JtErr;
+    ncvslideio::Ptr<CvMat> JtJV;
+    ncvslideio::Ptr<CvMat> JtJW;
     double prevErrNorm, errNorm;
     int lambdaLg10;
     CvTermCriteria criteria;

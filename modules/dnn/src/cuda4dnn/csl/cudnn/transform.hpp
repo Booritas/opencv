@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <iterator>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
 
     /** describes a tensor transform operation
      *
@@ -137,6 +137,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
         );
     }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::cudnn */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::cudnn */
 
 #endif /* OPENCV_DNN_CUDA4DNN_CSL_CUDNN_TRANSFORM_HPP */

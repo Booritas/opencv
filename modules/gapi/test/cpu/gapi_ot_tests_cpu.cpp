@@ -14,18 +14,18 @@
 #include "opencv2/gapi/streaming/cap.hpp"
 
 namespace {
-cv::gapi::ot::TrackingStatus from_string(const std::string& status) {
+ncvslideio::gapi::ot::TrackingStatus from_string(const std::string& status) {
     if (status == "NEW") {
-        return cv::gapi::ot::TrackingStatus::NEW;
+        return ncvslideio::gapi::ot::TrackingStatus::NEW;
     }
     else if (status == "TRACKED") {
-        return cv::gapi::ot::TrackingStatus::TRACKED;
+        return ncvslideio::gapi::ot::TrackingStatus::TRACKED;
     }
     else if (status == "LOST") {
-        return cv::gapi::ot::TrackingStatus::LOST;
+        return ncvslideio::gapi::ot::TrackingStatus::LOST;
     }
 
-    throw std::runtime_error("String representation for cv::gapi::ot::TrackingStatus: \""
+    throw std::runtime_error("String representation for ncvslideio::gapi::ot::TrackingStatus: \""
         + status + "\" contains incorrect value!");
 }
 } // anonymous namespace
@@ -33,10 +33,10 @@ cv::gapi::ot::TrackingStatus from_string(const std::string& status) {
 namespace opencv_test {
 struct FrameDetections {
     std::size_t frame_no{};
-    std::vector<std::vector<cv::Rect>> boxes;
+    std::vector<std::vector<ncvslideio::Rect>> boxes;
     std::vector<std::vector<int32_t>> box_ids;
     FrameDetections() {}
-    FrameDetections(std::size_t in_frame_no, const std::vector<std::vector<cv::Rect>>& in_boxes,
+    FrameDetections(std::size_t in_frame_no, const std::vector<std::vector<ncvslideio::Rect>>& in_boxes,
                     const std::vector<std::vector<int32_t>>& in_box_ids) :
         frame_no(in_frame_no),
         boxes(in_boxes),
@@ -45,16 +45,16 @@ struct FrameDetections {
 
 struct TrackerReference {
     std::size_t frame_no{};
-    std::vector<std::vector<cv::Rect>> tracked_boxes;
+    std::vector<std::vector<ncvslideio::Rect>> tracked_boxes;
     std::vector<std::vector<int32_t>> tracked_box_ids;
     std::vector<std::vector<uint64_t>> tracking_ids;
-    std::vector<std::vector<cv::gapi::ot::TrackingStatus>> tracking_statuses;
+    std::vector<std::vector<ncvslideio::gapi::ot::TrackingStatus>> tracking_statuses;
     TrackerReference() {}
     TrackerReference(std::size_t in_frame_no,
-                     const std::vector<std::vector<cv::Rect>>& in_tracked_boxes,
+                     const std::vector<std::vector<ncvslideio::Rect>>& in_tracked_boxes,
                      const std::vector<std::vector<int32_t>>& in_tracked_box_ids,
                      const std::vector<std::vector<uint64_t>>& in_tracking_ids,
-                     const std::vector<std::vector<cv::gapi::ot::TrackingStatus>>&
+                     const std::vector<std::vector<ncvslideio::gapi::ot::TrackingStatus>>&
                          in_tracking_statuses) :
         frame_no(in_frame_no),
         tracked_boxes(in_tracked_boxes),
@@ -72,7 +72,7 @@ struct TrackerReferenceParams {
 };
 } // namespace opencv_test
 
-namespace cv {
+namespace ncvslideio {
     namespace detail {
         template<> struct CompileArgTag<opencv_test::FrameDetectionsParams> {
             static const char* tag() {
@@ -88,27 +88,27 @@ namespace cv {
             }
         };
     } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 namespace opencv_test {
-G_API_OP(CvVideo768x576_Detect, <std::tuple<cv::GArray<cv::Rect>, cv::GArray<int32_t>>(cv::GMat)>,
+G_API_OP(CvVideo768x576_Detect, <std::tuple<ncvslideio::GArray<ncvslideio::Rect>, ncvslideio::GArray<int32_t>>(ncvslideio::GMat)>,
     "test.custom.cv_video_768x576_detect") {
-    static std::tuple<cv::GArrayDesc, cv::GArrayDesc> outMeta(cv::GMatDesc) {
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc());
+    static std::tuple<ncvslideio::GArrayDesc, ncvslideio::GArrayDesc> outMeta(ncvslideio::GMatDesc) {
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
 GAPI_OCV_KERNEL_ST(OCV_CvVideo768x576_Detect, CvVideo768x576_Detect, FrameDetections) {
-    static void setup(cv::GMatDesc,
+    static void setup(ncvslideio::GMatDesc,
                       std::shared_ptr<FrameDetections> &state,
-                      const cv::GCompileArgs &compileArgs) {
-        auto params = cv::gapi::getCompileArg<opencv_test::FrameDetectionsParams>(compileArgs)
+                      const ncvslideio::GCompileArgs &compileArgs) {
+        auto params = ncvslideio::gapi::getCompileArg<opencv_test::FrameDetectionsParams>(compileArgs)
             .value_or(opencv_test::FrameDetectionsParams{ });
         state = std::make_shared<FrameDetections>(params.value);
     }
 
-    static void run(const cv::Mat&,
-                    std::vector<cv::Rect> &out_boxes,
+    static void run(const ncvslideio::Mat&,
+                    std::vector<ncvslideio::Rect> &out_boxes,
                     std::vector<int32_t> &out_box_ids,
                     FrameDetections &state) {
         if (state.frame_no < state.boxes.size()) {
@@ -119,25 +119,25 @@ GAPI_OCV_KERNEL_ST(OCV_CvVideo768x576_Detect, CvVideo768x576_Detect, FrameDetect
     }
 };
 
-G_API_OP(CheckTrackerResults, <cv::GOpaque<bool>(cv::GArray<cv::Rect>, cv::GArray<int32_t>,
-                                                 cv::GArray<uint64_t>, cv::GArray<int>)>,
+G_API_OP(CheckTrackerResults, <ncvslideio::GOpaque<bool>(ncvslideio::GArray<ncvslideio::Rect>, ncvslideio::GArray<int32_t>,
+                                                 ncvslideio::GArray<uint64_t>, ncvslideio::GArray<int>)>,
     "test.custom.check_tracker_results") {
-    static cv::GOpaqueDesc outMeta(cv::GArrayDesc, cv::GArrayDesc, cv::GArrayDesc, cv::GArrayDesc) {
-        return cv::empty_gopaque_desc();
+    static ncvslideio::GOpaqueDesc outMeta(ncvslideio::GArrayDesc, ncvslideio::GArrayDesc, ncvslideio::GArrayDesc, ncvslideio::GArrayDesc) {
+        return ncvslideio::empty_gopaque_desc();
     }
 };
 
 GAPI_OCV_KERNEL_ST(OCVCheckTrackerResults, CheckTrackerResults, TrackerReference) {
-    static void setup(cv::GArrayDesc, cv::GArrayDesc,
-                      cv::GArrayDesc, cv::GArrayDesc,
+    static void setup(ncvslideio::GArrayDesc, ncvslideio::GArrayDesc,
+                      ncvslideio::GArrayDesc, ncvslideio::GArrayDesc,
                       std::shared_ptr<TrackerReference> &state,
-                      const cv::GCompileArgs &compileArgs) {
-        auto params = cv::gapi::getCompileArg<opencv_test::TrackerReferenceParams>(compileArgs)
+                      const ncvslideio::GCompileArgs &compileArgs) {
+        auto params = ncvslideio::gapi::getCompileArg<opencv_test::TrackerReferenceParams>(compileArgs)
             .value_or(opencv_test::TrackerReferenceParams{ });
         state = std::make_shared<TrackerReference>(params.value);
     }
 
-    static void run(const std::vector<cv::Rect> &in_tr_rcts,
+    static void run(const std::vector<ncvslideio::Rect> &in_tr_rcts,
                     const std::vector<int32_t> &in_det_ids,
                     const std::vector<uint64_t> &in_tr_ids,
                     const std::vector<int> &in_tr_statuses,
@@ -156,8 +156,8 @@ GAPI_OCV_KERNEL_ST(OCVCheckTrackerResults, CheckTrackerResults, TrackerReference
             GAPI_Assert(in_tr_ids.size() == reference_tr_ids.size());
             GAPI_Assert(in_tr_statuses.size() == reference_tr_statuses.size());
             for (uint32_t i = 0; (i < in_tr_rcts.size() && success); ++i) {
-                const cv::Rect& reference_rc = reference_boxes[i];
-                const cv::Rect& in_rc = in_tr_rcts[i];
+                const ncvslideio::Rect& reference_rc = reference_boxes[i];
+                const ncvslideio::Rect& in_rc = in_tr_rcts[i];
 
                 success &= (reference_rc == in_rc);
                 success &= (reference_box_ids[i] == in_det_ids[i]);
@@ -176,48 +176,48 @@ GAPI_OCV_KERNEL_ST(OCVCheckTrackerResults, CheckTrackerResults, TrackerReference
 TEST(VASObjectTracker, PipelineTest)
 {
     constexpr int32_t frames_to_handle = 30;
-    std::string pathToVideo = opencv_test::findDataFile("cv/video/768x576.avi");
+    std::string pathToVideo = opencv_test::findDataFile("ncvslideio/video/768x576.avi");
 
-    std::vector<std::vector<cv::Rect>> input_boxes(frames_to_handle);
+    std::vector<std::vector<ncvslideio::Rect>> input_boxes(frames_to_handle);
     std::vector<std::vector<int32_t>> input_det_ids(frames_to_handle);
 
-    std::string path_to_boxes = opencv_test::findDataFile("cv/video/vas_object_tracking/detections_30_frames.yml");
+    std::string path_to_boxes = opencv_test::findDataFile("ncvslideio/video/vas_object_tracking/detections_30_frames.yml");
 
-    cv::FileStorage fs_input_boxes(path_to_boxes, cv::FileStorage::READ);
-    cv::FileNode fn_input_boxes = fs_input_boxes.root();
+    ncvslideio::FileStorage fs_input_boxes(path_to_boxes, ncvslideio::FileStorage::READ);
+    ncvslideio::FileNode fn_input_boxes = fs_input_boxes.root();
     for (auto it = fn_input_boxes.begin(); it != fn_input_boxes.end(); ++it) {
-        cv::FileNode fn_frame = *it;
+        ncvslideio::FileNode fn_frame = *it;
         std::string frame_name = fn_frame.name();
         int frame_no = std::stoi(frame_name.substr(frame_name.find("_") + 1));
 
         for (auto fit = fn_frame.begin(); fit != fn_frame.end(); ++fit) {
-            cv::FileNode fn_box = *fit;
+            ncvslideio::FileNode fn_box = *fit;
 
-            cv::Rect box((int)fn_box["x"], (int)fn_box["y"],
+            ncvslideio::Rect box((int)fn_box["x"], (int)fn_box["y"],
                 (int)fn_box["width"], (int)fn_box["height"]);
             input_boxes[frame_no].push_back(box);
             input_det_ids[frame_no].push_back(fn_box["id"]);
         }
     }
 
-    std::vector<std::vector<cv::Rect>> reference_trackings(frames_to_handle);
+    std::vector<std::vector<ncvslideio::Rect>> reference_trackings(frames_to_handle);
     std::vector<std::vector<int32_t>> reference_trackings_det_ids(frames_to_handle);
     std::vector<std::vector<uint64_t>> reference_trackings_tr_ids(frames_to_handle);
-    std::vector<std::vector<cv::gapi::ot::TrackingStatus>> reference_trackings_tr_statuses(frames_to_handle);
+    std::vector<std::vector<ncvslideio::gapi::ot::TrackingStatus>> reference_trackings_tr_statuses(frames_to_handle);
 
-    std::string path_to_trackings = opencv_test::findDataFile("cv/video/vas_object_tracking/trackings_30_frames.yml");
+    std::string path_to_trackings = opencv_test::findDataFile("ncvslideio/video/vas_object_tracking/trackings_30_frames.yml");
 
-    cv::FileStorage fs_reference_trackings(path_to_trackings, cv::FileStorage::READ);
-    cv::FileNode fn_reference_trackings = fs_reference_trackings.root();
+    ncvslideio::FileStorage fs_reference_trackings(path_to_trackings, ncvslideio::FileStorage::READ);
+    ncvslideio::FileNode fn_reference_trackings = fs_reference_trackings.root();
     for (auto it =  fn_reference_trackings.begin(); it != fn_reference_trackings.end(); ++it) {
-        cv::FileNode fn_frame = *it;
+        ncvslideio::FileNode fn_frame = *it;
         std::string frame_name = fn_frame.name();
         int frame_no = std::stoi(frame_name.substr(frame_name.find("_") + 1));
 
         for (auto fit = fn_frame.begin(); fit != fn_frame.end(); ++fit) {
-            cv::FileNode fn_tracked_box = *fit;
+            ncvslideio::FileNode fn_tracked_box = *fit;
 
-            cv::Rect tracked_box((int)fn_tracked_box["x"], (int)fn_tracked_box["y"],
+            ncvslideio::Rect tracked_box((int)fn_tracked_box["x"], (int)fn_tracked_box["y"],
                 (int)fn_tracked_box["width"], (int)fn_tracked_box["height"]);
             reference_trackings[frame_no].push_back(tracked_box);
             reference_trackings_det_ids[frame_no].push_back(fn_tracked_box["id"]);
@@ -227,24 +227,24 @@ TEST(VASObjectTracker, PipelineTest)
         }
     }
 
-    cv::GMat in;
+    ncvslideio::GMat in;
 
-    cv::GArray<cv::Rect> detections;
-    cv::GArray<int> det_ids;
+    ncvslideio::GArray<ncvslideio::Rect> detections;
+    ncvslideio::GArray<int> det_ids;
     std::tie(detections, det_ids) = CvVideo768x576_Detect::on(in);
 
     constexpr float delta_time = 0.055f;
-    cv::GArray<cv::Rect> tracking_rects;
-    cv::GArray<int32_t> tracking_det_ids;
-    cv::GArray<uint64_t> tracking_ids;
-    cv::GArray<int> tracking_statuses;
+    ncvslideio::GArray<ncvslideio::Rect> tracking_rects;
+    ncvslideio::GArray<int32_t> tracking_det_ids;
+    ncvslideio::GArray<uint64_t> tracking_ids;
+    ncvslideio::GArray<int> tracking_statuses;
     std::tie(tracking_rects, tracking_det_ids, tracking_ids, tracking_statuses) =
-        cv::gapi::ot::track(in, detections, det_ids, delta_time);
+        ncvslideio::gapi::ot::track(in, detections, det_ids, delta_time);
 
-    cv::GOpaque<bool> check_result =
+    ncvslideio::GOpaque<bool> check_result =
         CheckTrackerResults::on(tracking_rects, tracking_det_ids, tracking_ids, tracking_statuses);
 
-    cv::GComputation ccomp(cv::GIn(in), cv::GOut(check_result));
+    ncvslideio::GComputation ccomp(ncvslideio::GIn(in), ncvslideio::GOut(check_result));
 
 
     opencv_test::FrameDetections fds { 0, input_boxes, input_det_ids };
@@ -255,17 +255,17 @@ TEST(VASObjectTracker, PipelineTest)
 
     // Graph compilation for streaming mode:
     auto compiled =
-        ccomp.compileStreaming(cv::compile_args(
-            cv::gapi::combine(cv::gapi::kernels<OCV_CvVideo768x576_Detect,
+        ccomp.compileStreaming(ncvslideio::compile_args(
+            ncvslideio::gapi::combine(ncvslideio::gapi::kernels<OCV_CvVideo768x576_Detect,
                                                 OCVCheckTrackerResults>(),
-                              cv::gapi::ot::cpu::kernels()),
+                              ncvslideio::gapi::ot::cpu::kernels()),
             opencv_test::FrameDetectionsParams{ fds },
             opencv_test::TrackerReferenceParams{ tr }));
 
     EXPECT_TRUE(compiled);
     EXPECT_FALSE(compiled.running());
 
-    compiled.setSource<cv::gapi::wip::GCaptureSource>(pathToVideo);
+    compiled.setSource<ncvslideio::gapi::wip::GCaptureSource>(pathToVideo);
 
     // Start of streaming:
     compiled.start();
@@ -275,7 +275,7 @@ TEST(VASObjectTracker, PipelineTest)
     bool success;
 
     std::size_t counter { }, limit { 30 };
-    while(compiled.pull(cv::gout(success)) && (counter < limit)) {
+    while(compiled.pull(ncvslideio::gout(success)) && (counter < limit)) {
          ++counter;
      }
 

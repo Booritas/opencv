@@ -9,12 +9,12 @@
 #import "Rect2i.h"
 #import "CVObjcUtil.h"
 
-class CascadeDetectorAdapter: public cv::DetectionBasedTracker::IDetector
+class CascadeDetectorAdapter: public ncvslideio::DetectionBasedTracker::IDetector
 {
 public:
-    CascadeDetectorAdapter(cv::Ptr<cv::CascadeClassifier> detector):IDetector(), Detector(detector) {}
+    CascadeDetectorAdapter(ncvslideio::Ptr<ncvslideio::CascadeClassifier> detector):IDetector(), Detector(detector) {}
 
-    void detect(const cv::Mat &Image, std::vector<cv::Rect> &objects)
+    void detect(const ncvslideio::Mat &Image, std::vector<ncvslideio::Rect> &objects)
     {
         Detector->detectMultiScale(Image, objects, scaleFactor, minNeighbours, 0, minObjSize, maxObjSize);
     }
@@ -23,20 +23,20 @@ public:
 
 private:
     CascadeDetectorAdapter();
-    cv::Ptr<cv::CascadeClassifier> Detector;
+    ncvslideio::Ptr<ncvslideio::CascadeClassifier> Detector;
 };
 
 
 struct DetectorAgregator
 {
-    cv::Ptr<CascadeDetectorAdapter> mainDetector;
-    cv::Ptr<CascadeDetectorAdapter> trackingDetector;
-    cv::Ptr<cv::DetectionBasedTracker> tracker;
-    DetectorAgregator(cv::Ptr<CascadeDetectorAdapter>& _mainDetector, cv::Ptr<CascadeDetectorAdapter>& _trackingDetector):mainDetector(_mainDetector), trackingDetector(_trackingDetector) {
+    ncvslideio::Ptr<CascadeDetectorAdapter> mainDetector;
+    ncvslideio::Ptr<CascadeDetectorAdapter> trackingDetector;
+    ncvslideio::Ptr<ncvslideio::DetectionBasedTracker> tracker;
+    DetectorAgregator(ncvslideio::Ptr<CascadeDetectorAdapter>& _mainDetector, ncvslideio::Ptr<CascadeDetectorAdapter>& _trackingDetector):mainDetector(_mainDetector), trackingDetector(_trackingDetector) {
         CV_Assert(_mainDetector);
         CV_Assert(_trackingDetector);
-        cv::DetectionBasedTracker::Parameters DetectorParams;
-        tracker = cv::makePtr<cv::DetectionBasedTracker>(mainDetector, trackingDetector, DetectorParams);
+        ncvslideio::DetectionBasedTracker::Parameters DetectorParams;
+        tracker = ncvslideio::makePtr<ncvslideio::DetectionBasedTracker>(mainDetector, trackingDetector, DetectorParams);
     }
 };
 
@@ -47,12 +47,12 @@ struct DetectorAgregator
 - (instancetype)initWithCascadeName:(NSString*)cascadeName minFaceSize:(int)faceSize {
     self = [super init];
     if (self) {
-        auto mainDetector = cv::makePtr<CascadeDetectorAdapter>(cv::makePtr<cv::CascadeClassifier>(cascadeName.UTF8String));
-        auto trackingDetector = cv::makePtr<CascadeDetectorAdapter>(
-            cv::makePtr<cv::CascadeClassifier>(cascadeName.UTF8String));
+        auto mainDetector = ncvslideio::makePtr<CascadeDetectorAdapter>(ncvslideio::makePtr<ncvslideio::CascadeClassifier>(cascadeName.UTF8String));
+        auto trackingDetector = ncvslideio::makePtr<CascadeDetectorAdapter>(
+            ncvslideio::makePtr<ncvslideio::CascadeClassifier>(cascadeName.UTF8String));
         agregator = new DetectorAgregator(mainDetector, trackingDetector);
         if (faceSize > 0) {
-            agregator->mainDetector->setMinObjectSize(cv::Size(faceSize, faceSize));
+            agregator->mainDetector->setMinObjectSize(ncvslideio::Size(faceSize, faceSize));
         }
     }
     return self;
@@ -72,14 +72,14 @@ struct DetectorAgregator
 }
 
 - (void)setFaceSize:(int)size {
-    agregator->mainDetector->setMinObjectSize(cv::Size(size, size));
+    agregator->mainDetector->setMinObjectSize(ncvslideio::Size(size, size));
 }
 
 - (void)detect:(Mat*)imageGray faces:(NSMutableArray<Rect2i*>*)faces {
-    std::vector<cv::Rect> rectFaces;
-    agregator->tracker->process(*((cv::Mat*)imageGray.nativePtr));
+    std::vector<ncvslideio::Rect> rectFaces;
+    agregator->tracker->process(*((ncvslideio::Mat*)imageGray.nativePtr));
     agregator->tracker->getObjects(rectFaces);
-    CV2OBJC(cv::Rect, Rect2i, rectFaces, faces);
+    CV2OBJC(ncvslideio::Rect, Rect2i, rectFaces, faces);
 }
 
 @end

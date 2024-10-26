@@ -29,7 +29,7 @@ CV_EXPORTS @interface Point3d : NSObject
 @property double y;
 @property double z;
 #ifdef __cplusplus
-@property(readonly) cv::Point3d& nativeRef;
+@property(readonly) ncvslideio::Point3d& nativeRef;
 #endif
 
 # pragma mark - Constructors
@@ -40,8 +40,8 @@ CV_EXPORTS @interface Point3d : NSObject
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Point3d&)point;
-- (void)update:(cv::Point3d&)point;
++ (instancetype)fromNative:(ncvslideio::Point3d&)point;
+- (void)update:(ncvslideio::Point3d&)point;
 #endif
 
 # pragma mark - Methods

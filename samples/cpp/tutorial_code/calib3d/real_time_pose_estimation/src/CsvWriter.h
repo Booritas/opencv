@@ -7,7 +7,7 @@
 #include "Utils.h"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 class CsvWriter {
 public:

@@ -160,7 +160,7 @@ PERF_TEST_P(Size_MatType, Mat_Transform,
 
     TEST_CYCLE()
     {
-        cv::transform(src, dst, mtx);
+        ncvslideio::transform(src, dst, mtx);
     }
 
     SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);

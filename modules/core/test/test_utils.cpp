@@ -27,7 +27,7 @@ TEST(CommandLineParser, testFailure)
 {
     const char* argv[] = {"<bin>", "-q"};
     const int argc = 2;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_ANY_THROW(parser.has("q"));
     EXPECT_ANY_THROW(parser.get<bool>("q"));
     EXPECT_ANY_THROW(parser.get<bool>(0));
@@ -40,7 +40,7 @@ TEST(CommandLineParser, testHas_noValues)
 {
     const char* argv[] = {"<bin>", "-h", "--info"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.has("help"));
     EXPECT_TRUE(parser.has("h"));
     EXPECT_TRUE(parser.get<bool>("help"));
@@ -58,7 +58,7 @@ TEST(CommandLineParser, testHas_TrueValues)
 {
     const char* argv[] = {"<bin>", "-h=TRUE", "--info=true"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.has("help"));
     EXPECT_TRUE(parser.has("h"));
     EXPECT_TRUE(parser.get<bool>("help"));
@@ -76,7 +76,7 @@ TEST(CommandLineParser, testHas_TrueValues1)
 {
     const char* argv[] = {"<bin>", "-h=1", "--info=1"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.has("help"));
     EXPECT_TRUE(parser.has("h"));
     EXPECT_TRUE(parser.get<bool>("help"));
@@ -94,7 +94,7 @@ TEST(CommandLineParser, testHas_FalseValues0)
 {
     const char* argv[] = {"<bin>", "-h=0", "--info=0"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.has("help"));
     EXPECT_TRUE(parser.has("h"));
     EXPECT_FALSE(parser.get<bool>("help"));
@@ -113,7 +113,7 @@ TEST(CommandLineParser, testBoolOption_noArgs)
 {
     const char* argv[] = {"<bin>"};
     const int argc = 1;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_FALSE(parser.get<bool>("help"));
     EXPECT_FALSE(parser.get<bool>("h"));
     EXPECT_FALSE(parser.get<bool>("info"));
@@ -126,7 +126,7 @@ TEST(CommandLineParser, testBoolOption_noValues)
 {
     const char* argv[] = {"<bin>", "-h", "--info"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.get<bool>("help"));
     EXPECT_TRUE(parser.get<bool>("h"));
     EXPECT_TRUE(parser.get<bool>("info"));
@@ -139,7 +139,7 @@ TEST(CommandLineParser, testBoolOption_TrueValues)
 {
     const char* argv[] = {"<bin>", "-h=TrUe", "-t=1", "--info=true", "-n=truE"};
     const int argc = 5;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_TRUE(parser.get<bool>("help"));
     EXPECT_TRUE(parser.get<bool>("h"));
     EXPECT_TRUE(parser.get<bool>("info"));
@@ -154,7 +154,7 @@ TEST(CommandLineParser, testBoolOption_FalseValues)
 {
     const char* argv[] = {"<bin>", "--help=FALSE", "-t=FaLsE", "-i=false", "-n=0"};
     const int argc = 5;
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     EXPECT_FALSE(parser.get<bool>("help"));
     EXPECT_FALSE(parser.get<bool>("h"));
     EXPECT_FALSE(parser.get<bool>("info"));
@@ -177,7 +177,7 @@ TEST(CommandLineParser, testPositional_noArgs)
 {
     const char* argv[] = {"<bin>"};
     const int argc = 1;
-    cv::CommandLineParser parser(argc, argv, keys2);
+    ncvslideio::CommandLineParser parser(argc, argv, keys2);
     EXPECT_TRUE(parser.has("@arg1"));
     EXPECT_FALSE(parser.has("@arg2"));
     EXPECT_EQ("default1", parser.get<String>("@arg1"));
@@ -191,7 +191,7 @@ TEST(CommandLineParser, testPositional_default)
 {
     const char* argv[] = {"<bin>", "test1", "test2"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys2);
+    ncvslideio::CommandLineParser parser(argc, argv, keys2);
     EXPECT_TRUE(parser.has("@arg1"));
     EXPECT_TRUE(parser.has("@arg2"));
     EXPECT_EQ("test1", parser.get<String>("@arg1"));
@@ -204,7 +204,7 @@ TEST(CommandLineParser, testPositional_withFlagsBefore)
 {
     const char* argv[] = {"<bin>", "-h", "test1", "test2"};
     const int argc = 4;
-    cv::CommandLineParser parser(argc, argv, keys2);
+    ncvslideio::CommandLineParser parser(argc, argv, keys2);
     EXPECT_TRUE(parser.has("@arg1"));
     EXPECT_TRUE(parser.has("@arg2"));
     EXPECT_EQ("test1", parser.get<String>("@arg1"));
@@ -217,7 +217,7 @@ TEST(CommandLineParser, testPositional_withFlagsAfter)
 {
     const char* argv[] = {"<bin>", "test1", "test2", "-h"};
     const int argc = 4;
-    cv::CommandLineParser parser(argc, argv, keys2);
+    ncvslideio::CommandLineParser parser(argc, argv, keys2);
     EXPECT_TRUE(parser.has("@arg1"));
     EXPECT_TRUE(parser.has("@arg2"));
     EXPECT_EQ("test1", parser.get<String>("@arg1"));
@@ -234,7 +234,7 @@ TEST(CommandLineParser, testEmptyStringValue)
 
     const char* argv[] = {"<bin>"};
     const int argc = 1;
-    cv::CommandLineParser parser(argc, argv, keys3);
+    ncvslideio::CommandLineParser parser(argc, argv, keys3);
     // EXPECT_TRUE(parser.has("@pos0"));
     EXPECT_EQ("", parser.get<String>("@pos0"));
     EXPECT_TRUE(parser.check());
@@ -252,7 +252,7 @@ TEST(CommandLineParser, positional_regression_5074_equal_sign)
 
     const char* argv[] = {"<bin>", "1=0", "--eq1=1=0"};
     const int argc = 3;
-    cv::CommandLineParser parser(argc, argv, keys3);
+    ncvslideio::CommandLineParser parser(argc, argv, keys3);
     EXPECT_EQ("1=0", parser.get<String>("@eq0"));
     EXPECT_EQ("1=0", parser.get<String>(0));
     EXPECT_EQ("1=0", parser.get<String>("eq1"));
@@ -343,19 +343,19 @@ TEST(Logger, DISABLED_message_if)
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
 TEST(Samples, findFile)
 {
-    cv::utils::logging::LogLevel prev = cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
-    cv::String path;
+    ncvslideio::utils::logging::LogLevel prev = ncvslideio::utils::logging::setLogLevel(ncvslideio::utils::logging::LOG_LEVEL_VERBOSE);
+    ncvslideio::String path;
     ASSERT_NO_THROW(path = samples::findFile("HappyFish.jpg", false));
     EXPECT_NE(std::string(), path.c_str());
-    cv::utils::logging::setLogLevel(prev);
+    ncvslideio::utils::logging::setLogLevel(prev);
 }
 
 TEST(Samples, findFile_missing)
 {
-    cv::utils::logging::LogLevel prev = cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
-    cv::String path;
+    ncvslideio::utils::logging::LogLevel prev = ncvslideio::utils::logging::setLogLevel(ncvslideio::utils::logging::LOG_LEVEL_VERBOSE);
+    ncvslideio::String path;
     ASSERT_ANY_THROW(path = samples::findFile("non-existed.file", true));
-    cv::utils::logging::setLogLevel(prev);
+    ncvslideio::utils::logging::setLogLevel(prev);
 }
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
@@ -382,7 +382,7 @@ TEST_P(BufferArea, basic)
     uchar * uchar_ptr = NULL;
     double * dbl_ptr = NULL;
     {
-        cv::utils::BufferArea area(safe);
+        ncvslideio::utils::BufferArea area(safe);
         area.allocate(int_ptr, SZ);
         area.allocate(uchar_ptr, SZ);
         area.allocate(dbl_ptr, SZ);
@@ -418,7 +418,7 @@ TEST_P(BufferArea, align)
     typedef int T;
     T * buffers[CNT] = {0};
     {
-        cv::utils::BufferArea area(safe);
+        ncvslideio::utils::BufferArea area(safe);
         // allocate buffers with 3 elements with growing alignment (power of two)
         for (size_t i = 0; i < CNT; ++i)
         {
@@ -454,7 +454,7 @@ TEST_P(BufferArea, default_align)
     typedef int T;
     T * buffers[CNT] = {0};
     {
-        cv::utils::BufferArea area(safe);
+        ncvslideio::utils::BufferArea area(safe);
         // allocate buffers with 1-99 elements with default alignment
         for (size_t i = 0; i < CNT; ++ i)
         {
@@ -484,7 +484,7 @@ TEST_P(BufferArea, bad)
 {
     const bool safe = GetParam();
     int * ptr = 0;
-    cv::utils::BufferArea area(safe);
+    ncvslideio::utils::BufferArea area(safe);
     EXPECT_ANY_THROW(area.allocate(ptr, 0)); // bad size
     EXPECT_ANY_THROW(area.allocate(ptr, 1, 0)); // bad alignment
     EXPECT_ANY_THROW(area.allocate(ptr, 1, 3)); // bad alignment

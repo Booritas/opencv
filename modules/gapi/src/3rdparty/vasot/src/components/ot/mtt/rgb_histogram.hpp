@@ -18,22 +18,22 @@ class RgbHistogram {
     explicit RgbHistogram(int32_t rgb_bin_size);
     virtual ~RgbHistogram(void);
 
-    virtual void Compute(const cv::Mat &image, cv::Mat *hist);
-    virtual void ComputeFromBgra32(const cv::Mat &image, cv::Mat *hist);
+    virtual void Compute(const ncvslideio::Mat &image, ncvslideio::Mat *hist);
+    virtual void ComputeFromBgra32(const ncvslideio::Mat &image, ncvslideio::Mat *hist);
     virtual int32_t FeatureSize(void) const; // currently 512 * float32
 
-    static float ComputeSimilarity(const cv::Mat &hist1, const cv::Mat &hist2);
+    static float ComputeSimilarity(const ncvslideio::Mat &hist1, const ncvslideio::Mat &hist2);
 
   protected:
     int32_t rgb_bin_size_;
     int32_t rgb_num_bins_;
     int32_t rgb_hist_size_;
 
-    void AccumulateRgbHistogram(const cv::Mat &patch, float *rgb_hist) const;
-    void AccumulateRgbHistogram(const cv::Mat &patch, const cv::Mat &weight, float *rgb_hist) const;
+    void AccumulateRgbHistogram(const ncvslideio::Mat &patch, float *rgb_hist) const;
+    void AccumulateRgbHistogram(const ncvslideio::Mat &patch, const ncvslideio::Mat &weight, float *rgb_hist) const;
 
-    void AccumulateRgbHistogramFromBgra32(const cv::Mat &patch, float *rgb_hist) const;
-    void AccumulateRgbHistogramFromBgra32(const cv::Mat &patch, const cv::Mat &weight, float *rgb_hist) const;
+    void AccumulateRgbHistogramFromBgra32(const ncvslideio::Mat &patch, float *rgb_hist) const;
+    void AccumulateRgbHistogramFromBgra32(const ncvslideio::Mat &patch, const ncvslideio::Mat &weight, float *rgb_hist) const;
 };
 
 }; // namespace ot

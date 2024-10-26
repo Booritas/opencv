@@ -47,7 +47,7 @@ TEST(Optional, EmptyThrows)
 
     EXPECT_THROW(dummy = om->bar,    util::bad_optional_access);
     EXPECT_THROW(dummy = oc->bar,    util::bad_optional_access);
-    cv::util::suppress_unused_warning(dummy);
+    ncvslideio::util::suppress_unused_warning(dummy);
     EXPECT_THROW(*om,        util::bad_optional_access);
     EXPECT_THROW(*oc,        util::bad_optional_access);
     EXPECT_THROW(om.value(), util::bad_optional_access);
@@ -63,7 +63,7 @@ TEST(Optional, ValueNoThrow)
     int dummy;
     EXPECT_NO_THROW(dummy = om->bar);
     EXPECT_NO_THROW(dummy = oc->bar);
-    cv::util::suppress_unused_warning(dummy);
+    ncvslideio::util::suppress_unused_warning(dummy);
     EXPECT_NO_THROW(*om);
     EXPECT_NO_THROW(*oc);
     EXPECT_NO_THROW(om.value());

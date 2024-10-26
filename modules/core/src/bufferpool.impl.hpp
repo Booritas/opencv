@@ -9,7 +9,7 @@
 
 #include "opencv2/core/bufferpool.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 class DummyBufferPoolController : public BufferPoolController
 {

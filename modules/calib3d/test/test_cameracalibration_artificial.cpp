@@ -66,7 +66,7 @@ Mat calcRvec(const vector<Point3f>& points, const Size& cornerSize)
     Mat rot(3, 3, CV_64F);
     *rot.ptr<Vec3d>(0) = ex;
     *rot.ptr<Vec3d>(1) = ey;
-    *rot.ptr<Vec3d>(2) = ez * (1.0/cv::norm(ez)); // TODO cvtest
+    *rot.ptr<Vec3d>(2) = ez * (1.0/ncvslideio::norm(ez)); // TODO cvtest
 
     Mat res;
     cvtest::Rodrigues(rot.t(), res);
@@ -165,8 +165,8 @@ protected:
             const Point3d& tvec = *tvecs[i].ptr<Point3d>();
             const Point3d& tvec_est = *tvecs_est[i].ptr<Point3d>();
 
-            double n1 = cv::norm(tvec_est - tvec); // TODO cvtest
-            double n2 = cv::norm(tvec); // TODO cvtest
+            double n1 = ncvslideio::norm(tvec_est - tvec); // TODO cvtest
+            double n2 = ncvslideio::norm(tvec); // TODO cvtest
             if (n1 > eps* (n2 + dlt))
             {
                 if (err_count++ < errMsgNum)
@@ -230,7 +230,7 @@ protected:
             projectPoints(_chessboard3D, _rvecs_exp[i], _tvecs_exp[i], eye33, zero15, uv_exp);
             projectPoints(_chessboard3D, rvecs_est[i], tvecs_est[i], eye33, zero15, uv_est);
             for(size_t j = 0; j < cb3d.size(); ++j)
-                res += cv::norm(uv_exp[i] - uv_est[i]); // TODO cvtest
+                res += ncvslideio::norm(uv_exp[i] - uv_est[i]); // TODO cvtest
         }
         return res;
     }
@@ -272,7 +272,7 @@ protected:
                     break;
             }
 
-            //cv::namedWindow("CB"); imshow("CB", boards[i]); cv::waitKey();
+            //ncvslideio::namedWindow("CB"); imshow("CB", boards[i]); ncvslideio::waitKey();
 
             imagePoints_art.push_back(corners_art);
             imagePoints_findCb.push_back(corners_fcb);

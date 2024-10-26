@@ -17,13 +17,13 @@
 // CUDA backend
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/matmul_broadcast.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 // CANN backend
 #include "../op_cann.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class MatMulLayerImpl CV_FINAL : public MatMulLayer {
 #ifdef HAVE_OPENCL
@@ -316,7 +316,7 @@ class MatMulLayerImpl CV_FINAL : public MatMulLayer {
                 B_fp32 = B;
                 C_fp32 = C;
             }
-            cv::gemm(A_fp32, B_fp32, 1.f, noArray(), 0.f, C_fp32);
+            ncvslideio::gemm(A_fp32, B_fp32, 1.f, noArray(), 0.f, C_fp32);
             if (use_half) {
                 A_fp32.convertTo(A, CV_16F);
                 B_fp32.convertTo(B, CV_16F);
@@ -326,7 +326,7 @@ class MatMulLayerImpl CV_FINAL : public MatMulLayer {
 
         // add bias
         if (!bias_umat.empty()) {
-            cv::add(output, bias_umat, output);
+            ncvslideio::add(output, bias_umat, output);
         }
 
         return true;
@@ -438,7 +438,7 @@ class MatMulLayerImpl CV_FINAL : public MatMulLayer {
             }
         } else { // constant input B
             auto B = blobs[0];
-            auto const_B_node = std::make_shared<CannConstOp>(B.data, B.type(), shape(B), cv::format("%s_B", name.c_str()));
+            auto const_B_node = std::make_shared<CannConstOp>(B.data, B.type(), shape(B), ncvslideio::format("%s_B", name.c_str()));
             op->set_input_x2_by_name(*(const_B_node->getOp()), "y");
             op->update_input_desc_x2(*(const_B_node->getTensorDesc()));
             if ((inputs.size() + blobs.size()) >= 3) { // does not support broadcast bias
@@ -450,7 +450,7 @@ class MatMulLayerImpl CV_FINAL : public MatMulLayer {
                     bias_shape = std::vector<int>{bias_shape.front()};
                 }
 
-                auto const_bias_node = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), bias_shape, cv::format("%s_bias", name.c_str()));
+                auto const_bias_node = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), bias_shape, ncvslideio::format("%s_bias", name.c_str()));
                 op->set_input_bias_by_name(*(const_bias_node->getOp()), "y");
                 op->update_input_desc_bias(*(const_bias_node->getTensorDesc()));
             }
@@ -483,4 +483,4 @@ Ptr<MatMulLayer> MatMulLayer::create(const LayerParams& params)
     return makePtr<MatMulLayerImpl>(params);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

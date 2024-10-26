@@ -18,10 +18,10 @@
 
 #include <opencv2/core.hpp>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     namespace raw {
 
@@ -178,4 +178,4 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
 #endif
     template void roi_pooling(const Stream& stream, TensorSpan<float> output, TensorView<float> input, View<float> rois, float spatial_scale);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

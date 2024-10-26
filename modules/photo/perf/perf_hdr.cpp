@@ -35,7 +35,7 @@ ExposureSeq loadExposureSeq(const std::string& list_filename)
 
 PERF_TEST(HDR, Mertens)
 {
-    const ExposureSeq seq = loadExposureSeq(getDataPath("cv/hdr/exposures/list.txt"));
+    const ExposureSeq seq = loadExposureSeq(getDataPath("ncvslideio/hdr/exposures/list.txt"));
     Ptr<MergeMertens> merge = createMergeMertens();
     Mat result(seq.images.front().size(), seq.images.front().type());
     TEST_CYCLE() merge->process(seq.images, result);
@@ -44,7 +44,7 @@ PERF_TEST(HDR, Mertens)
 
 PERF_TEST(HDR, Debevec)
 {
-    const ExposureSeq seq = loadExposureSeq(getDataPath("cv/hdr/exposures/list.txt"));
+    const ExposureSeq seq = loadExposureSeq(getDataPath("ncvslideio/hdr/exposures/list.txt"));
     Ptr<MergeDebevec> merge = createMergeDebevec();
     Mat result(seq.images.front().size(), seq.images.front().type());
     TEST_CYCLE() merge->process(seq.images, result, seq.times);
@@ -53,7 +53,7 @@ PERF_TEST(HDR, Debevec)
 
 PERF_TEST(HDR, Robertson)
 {
-    const ExposureSeq seq = loadExposureSeq(getDataPath("cv/hdr/exposures/list.txt"));
+    const ExposureSeq seq = loadExposureSeq(getDataPath("ncvslideio/hdr/exposures/list.txt"));
     Ptr<MergeRobertson> merge = createMergeRobertson();
     Mat result(seq.images.front().size(), seq.images.front().type());
     TEST_CYCLE() merge->process(seq.images, result, seq.times);

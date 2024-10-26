@@ -18,7 +18,7 @@
 #include <opencv2/gapi/util/compiler_hints.hpp>
 #include <opencv2/gapi/gcomputation.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 struct GAPI_EXPORTS GTransform
@@ -48,8 +48,8 @@ struct TransHelper<K, std::tuple<Ins...>, Out>
     {
         const std::tuple<Ins...> ins;
         const auto r = tuple_wrap_helper<Out>::get(f(std::get<IIs>(ins)...));
-        return GComputation(cv::GIn(std::get<IIs>(ins)...),
-                            cv::GOut(std::get<OIs>(r)...));
+        return GComputation(ncvslideio::GIn(std::get<IIs>(ins)...),
+                            ncvslideio::GOut(std::get<OIs>(r)...));
     }
 
     static GComputation get_pattern()
@@ -69,8 +69,8 @@ template <typename, typename>
 class GTransformImpl;
 
 template <typename K, typename R, typename... Args>
-class GTransformImpl<K, std::function<R(Args...)>> : public cv::detail::TransHelper<K, std::tuple<Args...>, R>,
-                                                     public cv::detail::TransformTag
+class GTransformImpl<K, std::function<R(Args...)>> : public ncvslideio::detail::TransHelper<K, std::tuple<Args...>, R>,
+                                                     public ncvslideio::detail::TransformTag
 {
 public:
     // FIXME: currently there is no check that transformations' signatures are unique
@@ -82,7 +82,7 @@ public:
         return GTransform(K::descr(), &K::get_pattern, &K::get_substitute);
     }
 };
-} // namespace cv
+} // namespace ncvslideio
 
 #define G_DESCR_HELPER_CLASS(Class) Class##DescrHelper
 
@@ -97,7 +97,7 @@ public:
 
 #define GAPI_TRANSFORM(Class, API, Descr)                                     \
     G_DESCR_HELPER_BODY(Class, Descr)                                         \
-    struct Class final : public cv::GTransformImpl<Class, std::function API>, \
+    struct Class final : public ncvslideio::GTransformImpl<Class, std::function API>, \
                          public detail::G_DESCR_HELPER_CLASS(Class)
 
 #endif // OPENCV_GAPI_GTRANSFORM_HPP

@@ -42,7 +42,7 @@
 #ifndef __OPENCV_FAST_NLMEANS_DENOISING_INVOKER_COMMONS_HPP__
 #define __OPENCV_FAST_NLMEANS_DENOISING_INVOKER_COMMONS_HPP__
 
-using namespace cv;
+using namespace ncvslideio;
 
 // std::isnan is a part of C++11 and it is not supported in MSVS2010/2012
 #if defined _MSC_VER && _MSC_VER < 1800 /* MSVC 2013 */

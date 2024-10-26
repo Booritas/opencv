@@ -55,7 +55,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include "opencv2/core/utils/buffer_area.private.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 typedef uchar PixType;
@@ -1782,14 +1782,14 @@ void SGBM3WayMainLoop::accumulateCostsLeftTop(const BufferSGBM3Way &mem, int x, 
     CostType& topMinCost = mem.vertPassMin[x/Da];
     int i = 0;
 #if (CV_SIMD || CV_SIMD_SCALABLE)
-    v_int16 P1_reg = vx_setall_s16(cv::saturate_cast<CostType>(P1));
+    v_int16 P1_reg = vx_setall_s16(ncvslideio::saturate_cast<CostType>(P1));
 
-    v_int16 leftMinCostP2_reg   = vx_setall_s16(cv::saturate_cast<CostType>(leftMinCost+P2));
+    v_int16 leftMinCostP2_reg   = vx_setall_s16(ncvslideio::saturate_cast<CostType>(leftMinCost+P2));
     v_int16 leftMinCost_new_reg = vx_setall_s16(SHRT_MAX);
     v_int16 src0_leftBuf        = vx_setall_s16(SHRT_MAX);
     v_int16 src1_leftBuf        = vx_load_aligned(leftBuf_prev);
 
-    v_int16 topMinCostP2_reg   = vx_setall_s16(cv::saturate_cast<CostType>(topMinCost+P2));
+    v_int16 topMinCostP2_reg   = vx_setall_s16(ncvslideio::saturate_cast<CostType>(topMinCost+P2));
     v_int16 topMinCost_new_reg = vx_setall_s16(SHRT_MAX);
     v_int16 src0_topBuf        = vx_setall_s16(SHRT_MAX);
     v_int16 src1_topBuf        = vx_load_aligned(topBuf);
@@ -1873,20 +1873,20 @@ void SGBM3WayMainLoop::accumulateCostsLeftTop(const BufferSGBM3Way &mem, int x, 
         CostType tmp;
         for(;i<D-1;i++)
         {
-            leftBuf[i] = cv::saturate_cast<CostType>(costs[i] + std::min(std::min(leftBuf_prev_i_minus_1+P1,leftBuf_prev[i+1]+P1),std::min((int)leftBuf_prev[i],leftMinCost_P2))-leftMinCost_P2);
+            leftBuf[i] = ncvslideio::saturate_cast<CostType>(costs[i] + std::min(std::min(leftBuf_prev_i_minus_1+P1,leftBuf_prev[i+1]+P1),std::min((int)leftBuf_prev[i],leftMinCost_P2))-leftMinCost_P2);
             leftBuf_prev_i_minus_1 = leftBuf_prev[i];
             leftMinCost_new = std::min(leftMinCost_new,leftBuf[i]);
 
             tmp = topBuf[i];
-            topBuf[i]  = cv::saturate_cast<CostType>(costs[i] + std::min(std::min(topBuf_i_minus_1+P1,topBuf[i+1]+P1),std::min((int)topBuf[i],topMinCost_P2))-topMinCost_P2);
+            topBuf[i]  = ncvslideio::saturate_cast<CostType>(costs[i] + std::min(std::min(topBuf_i_minus_1+P1,topBuf[i+1]+P1),std::min((int)topBuf[i],topMinCost_P2))-topMinCost_P2);
             topBuf_i_minus_1 = tmp;
             topMinCost_new  = std::min(topMinCost_new,topBuf[i]);
         }
 
-        leftBuf[D-1] = cv::saturate_cast<CostType>(costs[D-1] + std::min(leftBuf_prev_i_minus_1+P1,std::min((int)leftBuf_prev[D-1],leftMinCost_P2))-leftMinCost_P2);
+        leftBuf[D-1] = ncvslideio::saturate_cast<CostType>(costs[D-1] + std::min(leftBuf_prev_i_minus_1+P1,std::min((int)leftBuf_prev[D-1],leftMinCost_P2))-leftMinCost_P2);
         leftMinCost = std::min(leftMinCost_new,leftBuf[D-1]);
 
-        topBuf[D-1]  = cv::saturate_cast<CostType>(costs[D-1] + std::min(topBuf_i_minus_1+P1,std::min((int)topBuf[D-1],topMinCost_P2))-topMinCost_P2);
+        topBuf[D-1]  = ncvslideio::saturate_cast<CostType>(costs[D-1] + std::min(topBuf_i_minus_1+P1,std::min((int)topBuf[D-1],topMinCost_P2))-topMinCost_P2);
         topMinCost  = std::min(topMinCost_new,topBuf[D-1]);
     }
 }
@@ -1905,9 +1905,9 @@ void SGBM3WayMainLoop::accumulateCostsRight(const BufferSGBM3Way &mem, int x,
 
     int i = 0;
 #if (CV_SIMD || CV_SIMD_SCALABLE)
-    v_int16 P1_reg = vx_setall_s16(cv::saturate_cast<CostType>(P1));
+    v_int16 P1_reg = vx_setall_s16(ncvslideio::saturate_cast<CostType>(P1));
 
-    v_int16 rightMinCostP2_reg   = vx_setall_s16(cv::saturate_cast<CostType>(rightMinCost+P2));
+    v_int16 rightMinCostP2_reg   = vx_setall_s16(ncvslideio::saturate_cast<CostType>(rightMinCost+P2));
     v_int16 rightMinCost_new_reg = vx_setall_s16(SHRT_MAX);
     v_int16 src0_rightBuf        = vx_setall_s16(SHRT_MAX);
     v_int16 src1_rightBuf        = vx_load(rightBuf);
@@ -1980,10 +1980,10 @@ void SGBM3WayMainLoop::accumulateCostsRight(const BufferSGBM3Way &mem, int x,
         for(;i<D-1;i++)
         {
             tmp = rightBuf[i];
-            rightBuf[i]  = cv::saturate_cast<CostType>(costs[i] + std::min(std::min(rightBuf_i_minus_1+P1,rightBuf[i+1]+P1),std::min((int)rightBuf[i],rightMinCost_P2))-rightMinCost_P2);
+            rightBuf[i]  = ncvslideio::saturate_cast<CostType>(costs[i] + std::min(std::min(rightBuf_i_minus_1+P1,rightBuf[i+1]+P1),std::min((int)rightBuf[i],rightMinCost_P2))-rightMinCost_P2);
             rightBuf_i_minus_1 = tmp;
             rightMinCost_new  = std::min(rightMinCost_new,rightBuf[i]);
-            leftBuf[i] = cv::saturate_cast<CostType>((int)leftBuf[i]+rightBuf[i]+topBuf[i]);
+            leftBuf[i] = ncvslideio::saturate_cast<CostType>((int)leftBuf[i]+rightBuf[i]+topBuf[i]);
             if(leftBuf[i]<min_cost)
             {
                 optimal_disp = (short)i;
@@ -1991,9 +1991,9 @@ void SGBM3WayMainLoop::accumulateCostsRight(const BufferSGBM3Way &mem, int x,
             }
         }
 
-        rightBuf[D-1]  = cv::saturate_cast<CostType>(costs[D-1] + std::min(rightBuf_i_minus_1+P1,std::min((int)rightBuf[D-1],rightMinCost_P2))-rightMinCost_P2);
+        rightBuf[D-1]  = ncvslideio::saturate_cast<CostType>(costs[D-1] + std::min(rightBuf_i_minus_1+P1,std::min((int)rightBuf[D-1],rightMinCost_P2))-rightMinCost_P2);
         rightMinCost  = std::min(rightMinCost_new,rightBuf[D-1]);
-        leftBuf[D-1] = cv::saturate_cast<CostType>((int)leftBuf[D-1]+rightBuf[D-1]+topBuf[D-1]);
+        leftBuf[D-1] = ncvslideio::saturate_cast<CostType>((int)leftBuf[D-1]+rightBuf[D-1]+topBuf[D-1]);
         if(leftBuf[D-1]<min_cost)
         {
             optimal_disp = (short)D-1;
@@ -2337,12 +2337,12 @@ Rect getValidDisparityROI( Rect roi1, Rect roi2,
     return r.width > 0 && r.height > 0 ? r : Rect();
 }
 
-typedef cv::Point_<short> Point2s;
+typedef ncvslideio::Point_<short> Point2s;
 
 template <typename T>
-void filterSpecklesImpl(cv::Mat& img, int newVal, int maxSpeckleSize, int maxDiff, cv::Mat& _buf)
+void filterSpecklesImpl(ncvslideio::Mat& img, int newVal, int maxSpeckleSize, int maxDiff, ncvslideio::Mat& _buf)
 {
-    using namespace cv;
+    using namespace ncvslideio;
 
     int width = img.cols, height = img.rows, npixels = width*height;
     size_t bufSize = npixels*(int)(sizeof(Point2s) + sizeof(int) + sizeof(uchar));
@@ -2473,7 +2473,7 @@ static bool ipp_filterSpeckles(Mat &img, int maxSpeckleSize, int newVal, int max
 
 }
 
-void cv::filterSpeckles( InputOutputArray _img, double _newval, int maxSpeckleSize,
+void ncvslideio::filterSpeckles( InputOutputArray _img, double _newval, int maxSpeckleSize,
                          double _maxDiff, InputOutputArray __buf )
 {
     CV_INSTRUMENT_REGION();
@@ -2493,7 +2493,7 @@ void cv::filterSpeckles( InputOutputArray _img, double _newval, int maxSpeckleSi
         filterSpecklesImpl<short>(img, newVal, maxSpeckleSize, maxDiff, _buf);
 }
 
-void cv::validateDisparity( InputOutputArray _disp, InputArray _cost, int minDisparity,
+void ncvslideio::validateDisparity( InputOutputArray _disp, InputArray _cost, int minDisparity,
                             int numberOfDisparities, int disp12MaxDiff )
 {
     CV_INSTRUMENT_REGION();

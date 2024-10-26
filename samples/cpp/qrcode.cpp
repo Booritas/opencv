@@ -7,7 +7,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static int liveQRCodeDetect();
 static int imageQRCodeDetect(const string& in_file);
@@ -121,12 +121,12 @@ static
 void drawFPS(Mat &color_image, double fps)
 {
     ostringstream convert;
-    convert << cv::format("%.2f", fps) << " FPS (" << getQRModeString() << ")";
+    convert << ncvslideio::format("%.2f", fps) << " FPS (" << getQRModeString() << ")";
     putText(color_image, convert.str(), Point(25, 25), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 0, 255), 2);
 }
 
 static
-void drawQRCodeResults(Mat& frame, const vector<Point>& corners, const vector<cv::String>& decode_info, double fps)
+void drawQRCodeResults(Mat& frame, const vector<Point>& corners, const vector<ncvslideio::String>& decode_info, double fps)
 {
     if (!corners.empty())
     {
@@ -161,7 +161,7 @@ void drawQRCodeResults(Mat& frame, const vector<Point>& corners, const vector<cv
 static
 void runQR(
     const GraphicalCodeDetector& qrcode, const Mat& input,
-    vector<Point>& corners, vector<cv::String>& decode_info
+    vector<Point>& corners, vector<ncvslideio::String>& decode_info
     // +global: bool g_modeMultiQR, bool g_detectOnly
 )
 {
@@ -207,7 +207,7 @@ double processQRCodeDetection(const GraphicalCodeDetector& qrcode, const Mat& in
 
     TickMeter timer;
 
-    vector<cv::String> decode_info;
+    vector<ncvslideio::String> decode_info;
     timer.start();
     runQR(qrcode, input, corners, decode_info);
     timer.stop();
@@ -258,7 +258,7 @@ int liveQRCodeDetect()
             forceSave |= (g_saveDetections && !corners.empty());
             //forceSave |= fps < 1.0;
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             cerr << "ERROR exception: " << e.what() << endl;
             forceSave = true;
@@ -273,7 +273,7 @@ int liveQRCodeDetect()
         char c = (char)code;
         if (c == ' ' || forceSave)
         {
-            string fsuffix = cv::format("-%05d", g_save_idx++);
+            string fsuffix = ncvslideio::format("-%05d", g_save_idx++);
 
             string fname_input = g_out_file_name + fsuffix + "_input.png";
             cout << "Saving QR code detection input: '" << fname_input << "' ..." << endl;
@@ -320,7 +320,7 @@ int imageQRCodeDetect(const string& in_file)
         qrcode = QRCodeDetectorAruco();
 
     vector<Point> corners;
-    vector<cv::String> decode_info;
+    vector<ncvslideio::String> decode_info;
 
     TickMeter timer;
     for (size_t i = 0; i < count_experiments; i++)

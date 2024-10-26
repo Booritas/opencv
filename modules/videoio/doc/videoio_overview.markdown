@@ -12,7 +12,7 @@ General Information
 
 The OpenCV @ref videoio module is a set of classes and functions to read and write video or images sequence.
 
-Basically, the module provides the cv::VideoCapture and cv::VideoWriter classes as 2-layer interface to many video
+Basically, the module provides the ncvslideio::VideoCapture and ncvslideio::VideoWriter classes as 2-layer interface to many video
 I/O APIs used as backend.
 
 ![Video I/O with OpenCV](pics/videoio_overview.svg)
@@ -23,16 +23,16 @@ Video 4 Linux (V4L), etc... are interfaces to the video I/O library provided by 
 Some others backends like OpenNI2 for Kinect, Intel Perceptual Computing SDK, GStreamer,
 XIMEA Camera API, etc...  are interfaces to proprietary drivers or to external library.
 
-See the list of supported backends here: cv::VideoCaptureAPIs
+See the list of supported backends here: ncvslideio::VideoCaptureAPIs
 
 @warning Some backends are experimental use them at your own risk
-@note Each backend supports devices properties (cv::VideoCaptureProperties) in a different way or might not support any property at all.
+@note Each backend supports devices properties (ncvslideio::VideoCaptureProperties) in a different way or might not support any property at all.
 
 
 Select the backend at runtime
 -----------------------------
 
-OpenCV automatically selects and uses first available backend (`apiPreference=cv::CAP_ANY`).
+OpenCV automatically selects and uses first available backend (`apiPreference=ncvslideio::CAP_ANY`).
 
 As advanced usage you can select the backend to use at runtime.
 
@@ -40,28 +40,28 @@ For example to grab from default camera using Microsoft Media Foundation (MSMF) 
 
 ```cpp
 //declare a capture object
-cv::VideoCapture cap(0, cv::CAP_MSMF);
+cv::VideoCapture cap(0, ncvslideio::CAP_MSMF);
 
 //or specify the apiPreference with open
-cap.open(0, cv::CAP_MSMF);
+cap.open(0, ncvslideio::CAP_MSMF);
 ```
 
 If you want to grab from a file using the Microsoft Media Foundation (MSMF) as backend:
 
 ```cpp
 //declare a capture object
-cv::VideoCapture cap(filename, cv::CAP_MSMF);
+cv::VideoCapture cap(filename, ncvslideio::CAP_MSMF);
 
 //or specify the apiPreference with open
-cap.open(filename, cv::CAP_MSMF);
+cap.open(filename, ncvslideio::CAP_MSMF);
 ```
-@sa cv::VideoCapture::open() , cv::VideoCapture::VideoCapture()
+@sa ncvslideio::VideoCapture::open() , ncvslideio::VideoCapture::VideoCapture()
 
 
 How to enable backends
 ----------------------
 
-There are two kinds of videoio backends: built-in backends and plugins which will be loaded at runtime (since OpenCV 4.1.0). Use functions cv::videoio_registry::getBackends, cv::videoio_registry::hasBackend and cv::videoio_registry::getBackendName to check actual presence of backend during runtime.
+There are two kinds of videoio backends: built-in backends and plugins which will be loaded at runtime (since OpenCV 4.1.0). Use functions ncvslideio::videoio_registry::getBackends, ncvslideio::videoio_registry::hasBackend and ncvslideio::videoio_registry::getBackendName to check actual presence of backend during runtime.
 
 To enable built-in videoio backends:
   1. Enable corresponding CMake option, e.g. `-DWITH_GSTREAMER=ON`
@@ -86,7 +86,7 @@ include and link with your OpenCV application.
 
 It is a common case that these libraries read/write images from/to a memory buffer. If it so, it is
 possible to make a `Mat` header for memory buffer (user-allocated data) and process it
-in-place using OpenCV functions. See cv::Mat::Mat() for more details.
+in-place using OpenCV functions. See ncvslideio::Mat::Mat() for more details.
 
 
 The FFmpeg library

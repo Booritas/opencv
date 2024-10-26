@@ -7,7 +7,7 @@
 
 #include <opencv2/core/cvdef.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace trace {
 
@@ -33,7 +33,7 @@ namespace trace {
 #define CV_TRACE_ARG_VALUE(arg_id, arg_name, value)
 
 //! @cond IGNORED
-#define CV_TRACE_NS cv::utils::trace
+#define CV_TRACE_NS ncvslideio::utils::trace
 
 #if !defined(OPENCV_DISABLE_TRACE) && defined(__EMSCRIPTEN__)
 #define OPENCV_DISABLE_TRACE 1

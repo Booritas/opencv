@@ -14,7 +14,7 @@
 
 #define OPENCV_MODULE_S "@the_module@"
 
-namespace cv {
+namespace ncvslideio {
 extern __declspec(dllimport) bool __termination;  // Details: #12750
 }
 
@@ -35,7 +35,7 @@ BOOL WINAPI DllMain(DLL_MAIN_ARG0, DWORD fdwReason, LPVOID lpReserved)
         if (lpReserved != NULL) // called after ExitProcess() call
         {
             //printf("OpenCV: terminating: " OPENCV_MODULE_S "\n");
-            cv::__termination = true;
+            ncvslideio::__termination = true;
         }
     }
     return TRUE;

@@ -87,7 +87,7 @@ static void* AppleCLGetProcAddress(const char* name)
     static void* handle = NULL;
     if (!handle && !initialized)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (!initialized)
         {
             const char* defaultPath = "/System/Library/Frameworks/OpenCL.framework/Versions/Current/OpenCL";
@@ -123,7 +123,7 @@ static void* WinGetProcAddress(const char* name)
     static HMODULE handle = NULL;
     if (!handle && !initialized)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (!initialized)
         {
             handle = GetModuleHandleA("OpenCL.dll");
@@ -199,7 +199,7 @@ static void* GetProcAddress(const char* name)
     static void* handle = NULL;
     if (!handle && !initialized)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (!initialized)
         {
             bool foundOpenCL = false;
@@ -232,7 +232,7 @@ static void* GetProcAddress(const char* name)
     static void* handle = NULL;
     if (!handle && !initialized)
     {
-        cv::AutoLock lock(cv::getInitializationMutex());
+        ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
         if (!initialized)
         {
             const char* defaultPath = "libOpenCL.so";
@@ -368,13 +368,13 @@ static void* opencl_check_fn(int ID)
 #endif
     else
     {
-        CV_Error(cv::Error::StsBadArg, "Invalid function ID");
+        CV_Error(ncvslideio::Error::StsBadArg, "Invalid function ID");
     }
     void* func = CV_CL_GET_PROC_ADDRESS(e->fnName);
     if (!func)
     {
-        throw cv::Exception(cv::Error::OpenCLApiCallError,
-                cv::format("OpenCL function is not available: [%s]", e->fnName),
+        throw ncvslideio::Exception(ncvslideio::Error::OpenCLApiCallError,
+                ncvslideio::format("OpenCL function is not available: [%s]", e->fnName),
                 CV_Func, __FILE__, __LINE__);
     }
     *(e->ppFn) = func;
@@ -416,8 +416,8 @@ static void* opencl_gl_check_fn(int ID)
     void* func = CV_CL_GET_PROC_ADDRESS(e->fnName);
     if (!func)
     {
-        throw cv::Exception(cv::Error::OpenCLApiCallError,
-                cv::format("OpenCL function is not available: [%s]", e->fnName),
+        throw ncvslideio::Exception(ncvslideio::Error::OpenCLApiCallError,
+                ncvslideio::format("OpenCL function is not available: [%s]", e->fnName),
                 CV_Func, __FILE__, __LINE__);
     }
     *(e->ppFn) = func;

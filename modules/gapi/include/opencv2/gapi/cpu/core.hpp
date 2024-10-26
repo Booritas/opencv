@@ -11,17 +11,17 @@
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 #include <opencv2/gapi/own/exports.hpp> // GAPI_EXPORTS
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace core {
 namespace cpu {
 
-GAPI_EXPORTS_W cv::GKernelPackage kernels();
+GAPI_EXPORTS_W ncvslideio::GKernelPackage kernels();
 
 } // namespace cpu
 } // namespace core
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 
 #endif // OPENCV_GAPI_CPU_CORE_API_HPP

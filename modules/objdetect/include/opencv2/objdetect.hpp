@@ -135,7 +135,7 @@
 
 typedef struct CvHaarClassifierCascade CvHaarClassifierCascade;
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup objdetect_common
@@ -145,7 +145,7 @@ namespace cv
 
 /** @brief This class is used for grouping object candidates detected by Cascade Classifier, HOG etc.
 
-instance of the class is to be passed to cv::partition
+instance of the class is to be passed to ncvslideio::partition
  */
 class CV_EXPORTS SimilarRects
 {
@@ -377,7 +377,7 @@ struct DetectionROI
    //! scale(size) of the bounding box
    double scale;
    //! set of requested locations to be evaluated
-   std::vector<cv::Point> locations;
+   std::vector<ncvslideio::Point> locations;
    //! vector that will contain confidence values for each location
    std::vector<double> confidences;
 };
@@ -673,10 +673,10 @@ public:
     @param winStride winStride
     @param padding padding
     */
-    virtual void detectROI(InputArray img, const std::vector<cv::Point> &locations,
-                                   CV_OUT std::vector<cv::Point>& foundLocations, CV_OUT std::vector<double>& confidences,
-                                   double hitThreshold = 0, cv::Size winStride = Size(),
-                                   cv::Size padding = Size()) const;
+    virtual void detectROI(InputArray img, const std::vector<ncvslideio::Point> &locations,
+                                   CV_OUT std::vector<ncvslideio::Point>& foundLocations, CV_OUT std::vector<double>& confidences,
+                                   double hitThreshold = 0, ncvslideio::Size winStride = Size(),
+                                   ncvslideio::Size padding = Size()) const;
 
     /** @brief evaluate specified ROI and return confidence value for each location in multiple scales
     @param img Matrix of the type CV_8U or CV_8UC3 containing an image where objects are detected.
@@ -687,7 +687,7 @@ public:
     @param groupThreshold Minimum possible number of rectangles minus 1. The threshold is used in a group of rectangles to retain it.
     */
     virtual void detectMultiScaleROI(InputArray img,
-                                     CV_OUT std::vector<cv::Rect>& foundLocations,
+                                     CV_OUT std::vector<ncvslideio::Rect>& foundLocations,
                                      std::vector<DetectionROI>& locations,
                                      double hitThreshold = 0,
                                      int groupThreshold = 0) const;
@@ -698,7 +698,7 @@ public:
     @param groupThreshold Minimum possible number of rectangles minus 1. The threshold is used in a group of rectangles to retain it.
     @param eps Relative difference between sides of the rectangles to merge them into a group.
     */
-    void groupRectangles(std::vector<cv::Rect>& rectList, std::vector<double>& weights, int groupThreshold, double eps) const;
+    void groupRectangles(std::vector<ncvslideio::Rect>& rectList, std::vector<double>& weights, int groupThreshold, double eps) const;
 };
 //! @}
 
@@ -798,7 +798,7 @@ public:
      @param points Quadrangle vertices found by detect() method (or some other algorithm).
      @param straight_qrcode The optional output image containing rectified and binarized QR code
      */
-    CV_WRAP cv::String decodeCurved(InputArray img, InputArray points, OutputArray straight_qrcode = noArray());
+    CV_WRAP ncvslideio::String decodeCurved(InputArray img, InputArray points, OutputArray straight_qrcode = noArray());
 
     /** @brief Both detects and decodes QR code on a curved surface
 
@@ -846,13 +846,13 @@ public:
         CV_PROP_RW float scaleTimingPatternScore;
     };
 
-    /** @brief QR code detector constructor for Aruco-based algorithm. See cv::QRCodeDetectorAruco::Params */
+    /** @brief QR code detector constructor for Aruco-based algorithm. See ncvslideio::QRCodeDetectorAruco::Params */
     CV_WRAP explicit QRCodeDetectorAruco(const QRCodeDetectorAruco::Params& params);
 
-    /** @brief Detector parameters getter. See cv::QRCodeDetectorAruco::Params */
+    /** @brief Detector parameters getter. See ncvslideio::QRCodeDetectorAruco::Params */
     CV_WRAP const QRCodeDetectorAruco::Params& getDetectorParameters() const;
 
-    /** @brief Detector parameters setter. See cv::QRCodeDetectorAruco::Params */
+    /** @brief Detector parameters setter. See ncvslideio::QRCodeDetectorAruco::Params */
     CV_WRAP QRCodeDetectorAruco& setDetectorParameters(const QRCodeDetectorAruco::Params& params);
 
     /** @brief Aruco detector parameters are used to search for the finder patterns. */

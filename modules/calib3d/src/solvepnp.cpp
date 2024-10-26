@@ -54,7 +54,7 @@
 
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 #if defined _DEBUG || defined CV_STATIC_ANALYSIS
 static bool isPlanarObjectPoints(InputArray _objectPoints, double threshold)
@@ -332,7 +332,7 @@ bool solvePnPRansac(InputArray _opoints, InputArray _ipoints,
                           distCoeffs, rvec, tvec, useExtrinsicGuess,
                           (flags == SOLVEPNP_P3P || flags == SOLVEPNP_AP3P) ? SOLVEPNP_EPNP : flags) ? 1 : -1;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         if (flags == SOLVEPNP_ITERATIVE &&
             npoints1 == 5 &&
@@ -770,7 +770,7 @@ static void solvePnPRefine(InputArray _objectPoints, InputArray _imagePoints,
             computeInteractionMatrixAndResiduals(objectPoints0, R, tvec, L, s);
             err = s - sd;
 
-            Mat Lp = L.inv(cv::DECOMP_SVD);
+            Mat Lp = L.inv(ncvslideio::DECOMP_SVD);
             Mat dq = -_vvslambda * Lp * err;
 
             Mat R1, t1;
@@ -1041,7 +1041,7 @@ int solvePnPGeneric( InputArray _opoints, InputArray _ipoints,
         vec_tvecs.push_back(tvec);
     }*/
     else
-        CV_Error(cv::Error::StsBadArg, "The flags argument must be one of SOLVEPNP_ITERATIVE, SOLVEPNP_P3P, "
+        CV_Error(ncvslideio::Error::StsBadArg, "The flags argument must be one of SOLVEPNP_ITERATIVE, SOLVEPNP_P3P, "
             "SOLVEPNP_EPNP, SOLVEPNP_DLS, SOLVEPNP_UPNP, SOLVEPNP_AP3P, SOLVEPNP_IPPE, SOLVEPNP_IPPE_SQUARE or SOLVEPNP_SQPNP");
 
     CV_Assert(vec_rvecs.size() == vec_tvecs.size());

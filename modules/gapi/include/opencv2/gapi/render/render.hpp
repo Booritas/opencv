@@ -29,10 +29,10 @@
  *  primitives are interpreted and applied to the image.
  *
  *  For example, in a complex pipeline a list of detected objects
- *  can be translated in-graph to a list of cv::gapi::wip::draw::Rect
+ *  can be translated in-graph to a list of ncvslideio::gapi::wip::draw::Rect
  *  primitives to highlight those with bounding boxes, or a list of
  *  detected faces can be translated in-graph to a list of
- *  cv::gapi::wip::draw::Mosaic primitives to hide sensitive content
+ *  ncvslideio::gapi::wip::draw::Mosaic primitives to hide sensitive content
  *  or protect privacy.
  *
  *  Like any other operations, rendering in G-API can be reimplemented
@@ -41,7 +41,7 @@
  *
  *  In addition to the graph-level operations, there are also regular
  *  (immediate) OpenCV-like functions are available -- see
- *  cv::gapi::wip::draw::render(). These functions are just wrappers
+ *  ncvslideio::gapi::wip::draw::render(). These functions are just wrappers
  *  over regular G-API and build the rendering graphs on the fly, so
  *  take compilation arguments as parameters.
  *
@@ -61,7 +61,7 @@
  *  @}
  */
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -70,8 +70,8 @@ namespace wip
 namespace draw
 {
 
-using GMat2     = std::tuple<cv::GMat,cv::GMat>;
-using GMatDesc2 = std::tuple<cv::GMatDesc,cv::GMatDesc>;
+using GMat2     = std::tuple<ncvslideio::GMat,ncvslideio::GMat>;
+using GMatDesc2 = std::tuple<ncvslideio::GMatDesc,ncvslideio::GMatDesc>;
 
 //! @addtogroup gapi_draw_api
 //! @{
@@ -81,9 +81,9 @@ using GMatDesc2 = std::tuple<cv::GMatDesc,cv::GMatDesc>;
 @param prims vector of drawing primitivies
 @param args graph compile time parameters
 */
-void GAPI_EXPORTS_W render(cv::Mat& bgr,
+void GAPI_EXPORTS_W render(ncvslideio::Mat& bgr,
                            const Prims& prims,
-                           cv::GCompileArgs&& args = {});
+                           ncvslideio::GCompileArgs&& args = {});
 
 /** @brief The function renders on two NV12 planes passed drawing primitivies
 
@@ -92,23 +92,23 @@ void GAPI_EXPORTS_W render(cv::Mat& bgr,
 @param prims vector of drawing primitivies
 @param args graph compile time parameters
 */
-void GAPI_EXPORTS_W render(cv::Mat& y_plane,
-                           cv::Mat& uv_plane,
+void GAPI_EXPORTS_W render(ncvslideio::Mat& y_plane,
+                           ncvslideio::Mat& uv_plane,
                            const Prims& prims,
-                           cv::GCompileArgs&& args = {});
+                           ncvslideio::GCompileArgs&& args = {});
 
 /** @brief The function renders on the input media frame passed drawing primitivies
 
-@param frame input Media Frame :  @ref cv::MediaFrame.
+@param frame input Media Frame :  @ref ncvslideio::MediaFrame.
 @param prims vector of drawing primitivies
 @param args graph compile time parameters
 */
-void GAPI_EXPORTS render(cv::MediaFrame& frame,
+void GAPI_EXPORTS render(ncvslideio::MediaFrame& frame,
                          const Prims& prims,
-                         cv::GCompileArgs&& args = {});
+                         ncvslideio::GCompileArgs&& args = {});
 
 
-G_TYPED_KERNEL_M(GRenderNV12, <GMat2(cv::GMat,cv::GMat,cv::GArray<wip::draw::Prim>)>, "org.opencv.render.nv12")
+G_TYPED_KERNEL_M(GRenderNV12, <GMat2(ncvslideio::GMat,ncvslideio::GMat,ncvslideio::GArray<wip::draw::Prim>)>, "org.opencv.render.nv12")
 {
      static GMatDesc2 outMeta(GMatDesc y_plane, GMatDesc uv_plane, GArrayDesc)
      {
@@ -116,7 +116,7 @@ G_TYPED_KERNEL_M(GRenderNV12, <GMat2(cv::GMat,cv::GMat,cv::GArray<wip::draw::Pri
      }
 };
 
-G_TYPED_KERNEL(GRenderBGR, <cv::GMat(cv::GMat,cv::GArray<wip::draw::Prim>)>, "org.opencv.render.bgr")
+G_TYPED_KERNEL(GRenderBGR, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GArray<wip::draw::Prim>)>, "org.opencv.render.bgr")
 {
      static GMatDesc outMeta(GMatDesc bgr, GArrayDesc)
      {
@@ -124,7 +124,7 @@ G_TYPED_KERNEL(GRenderBGR, <cv::GMat(cv::GMat,cv::GArray<wip::draw::Prim>)>, "or
      }
 };
 
-G_TYPED_KERNEL(GRenderFrame, <cv::GFrame(cv::GFrame, cv::GArray<wip::draw::Prim>)>, "org.opencv.render.frame")
+G_TYPED_KERNEL(GRenderFrame, <ncvslideio::GFrame(ncvslideio::GFrame, ncvslideio::GArray<wip::draw::Prim>)>, "org.opencv.render.frame")
 {
     static GFrameDesc outMeta(GFrameDesc desc, GArrayDesc)
     {
@@ -156,9 +156,9 @@ GAPI_EXPORTS_W GMat2 renderNV12(const GMat& y,
 
 /** @brief Renders Media Frame
 
-Output media frame frame cv::MediaFrame
+Output media frame frame ncvslideio::MediaFrame
 
-@param m_frame input image: cv::MediaFrame @ref cv::MediaFrame
+@param m_frame input image: ncvslideio::MediaFrame @ref ncvslideio::MediaFrame
 @param prims draw primitives
 */
 GAPI_EXPORTS GFrame renderFrame(const GFrame& m_frame,
@@ -177,7 +177,7 @@ namespace render
 {
 namespace ocv
 {
-    GAPI_EXPORTS_W cv::GKernelPackage kernels();
+    GAPI_EXPORTS_W ncvslideio::GKernelPackage kernels();
 
 } // namespace ocv
 } // namespace render
@@ -185,12 +185,12 @@ namespace ocv
 
 namespace detail
 {
-    template<> struct CompileArgTag<cv::gapi::wip::draw::freetype_font>
+    template<> struct CompileArgTag<ncvslideio::gapi::wip::draw::freetype_font>
     {
         static const char* tag() { return "gapi.freetype_font"; }
     };
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_RENDER_HPP

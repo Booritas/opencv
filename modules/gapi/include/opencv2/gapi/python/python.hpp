@@ -11,7 +11,7 @@
 #include <opencv2/gapi/gkernel.hpp>     // GKernelPackage
 #include <opencv2/gapi/own/exports.hpp> // GAPI_EXPORTS
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /**
@@ -24,19 +24,19 @@ namespace gapi {
  */
 namespace python {
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 struct GPythonContext
 {
-    const cv::GArgs      &ins;
-    const cv::GMetaArgs  &in_metas;
-    const cv::GTypesInfo &out_info;
+    const ncvslideio::GArgs      &ins;
+    const ncvslideio::GMetaArgs  &in_metas;
+    const ncvslideio::GTypesInfo &out_info;
 
-    cv::optional<cv::GArg> m_state;
+    ncvslideio::optional<ncvslideio::GArg> m_state;
 };
 
-using Impl = std::function<cv::GRunArgs(const GPythonContext&)>;
-using Setup = std::function<cv::GArg(const GMetaArgs&, const GArgs&)>;
+using Impl = std::function<ncvslideio::GRunArgs(const GPythonContext&)>;
+using Setup = std::function<ncvslideio::GArg(const GMetaArgs&, const GArgs&)>;
 
 class GAPI_EXPORTS GPythonKernel
 {
@@ -49,10 +49,10 @@ public:
     bool  is_stateful = false;
 };
 
-class GAPI_EXPORTS GPythonFunctor : public cv::gapi::GFunctor
+class GAPI_EXPORTS GPythonFunctor : public ncvslideio::gapi::GFunctor
 {
 public:
-    using Meta = cv::GKernel::M;
+    using Meta = ncvslideio::GKernel::M;
 
     GPythonFunctor(const char* id, const Meta& meta, const Impl& impl,
                    const Setup& setup = nullptr);
@@ -66,6 +66,6 @@ private:
 
 } // namespace python
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_PYTHON_API_HPP

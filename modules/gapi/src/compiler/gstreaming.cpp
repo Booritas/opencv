@@ -17,31 +17,31 @@
 #include "backends/common/gbackend.hpp"
 
 // GStreamingCompiled private implementation ///////////////////////////////////
-void cv::GStreamingCompiled::Priv::setup(const GMetaArgs &_metaArgs,
+void ncvslideio::GStreamingCompiled::Priv::setup(const GMetaArgs &_metaArgs,
                                          const GMetaArgs &_outMetas,
-                                         std::unique_ptr<cv::gimpl::GAbstractStreamingExecutor> &&_pE)
+                                         std::unique_ptr<ncvslideio::gimpl::GAbstractStreamingExecutor> &&_pE)
 {
     m_metas    = _metaArgs;
     m_outMetas = _outMetas;
     m_exec     = std::move(_pE);
 }
 
-void cv::GStreamingCompiled::Priv::setup(std::unique_ptr<cv::gimpl::GAbstractStreamingExecutor> &&_pE)
+void ncvslideio::GStreamingCompiled::Priv::setup(std::unique_ptr<ncvslideio::gimpl::GAbstractStreamingExecutor> &&_pE)
 {
     m_exec = std::move(_pE);
 }
 
-bool cv::GStreamingCompiled::Priv::isEmpty() const
+bool ncvslideio::GStreamingCompiled::Priv::isEmpty() const
 {
     return !m_exec;
 }
 
-const cv::GMetaArgs& cv::GStreamingCompiled::Priv::metas() const
+const ncvslideio::GMetaArgs& ncvslideio::GStreamingCompiled::Priv::metas() const
 {
     return m_metas;
 }
 
-const cv::GMetaArgs& cv::GStreamingCompiled::Priv::outMetas() const
+const ncvslideio::GMetaArgs& ncvslideio::GStreamingCompiled::Priv::outMetas() const
 {
     return m_outMetas;
 }
@@ -49,7 +49,7 @@ const cv::GMetaArgs& cv::GStreamingCompiled::Priv::outMetas() const
 // FIXME: What is the reason in having Priv here if Priv actually dispatches
 // everything to the underlying executable?? May be this executable may become
 // the G*Compiled's priv?
-void cv::GStreamingCompiled::Priv::setSource(cv::GRunArgs &&args)
+void ncvslideio::GStreamingCompiled::Priv::setSource(ncvslideio::GRunArgs &&args)
 {
     if (!m_metas.empty() && !can_describe(m_metas, args))
     {
@@ -60,115 +60,115 @@ void cv::GStreamingCompiled::Priv::setSource(cv::GRunArgs &&args)
     m_exec->setSource(std::move(args));
 }
 
-void cv::GStreamingCompiled::Priv::start()
+void ncvslideio::GStreamingCompiled::Priv::start()
 {
     m_exec->start();
 }
 
-bool cv::GStreamingCompiled::Priv::pull(cv::GRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::Priv::pull(ncvslideio::GRunArgsP &&outs)
 {
     return m_exec->pull(std::move(outs));
 }
 
-bool cv::GStreamingCompiled::Priv::pull(cv::GOptRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::Priv::pull(ncvslideio::GOptRunArgsP &&outs)
 {
     return m_exec->pull(std::move(outs));
 }
 
-std::tuple<bool, cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>> cv::GStreamingCompiled::Priv::pull()
+std::tuple<bool, ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>> ncvslideio::GStreamingCompiled::Priv::pull()
 {
     return m_exec->pull();
 }
 
-bool cv::GStreamingCompiled::Priv::try_pull(cv::GRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::Priv::try_pull(ncvslideio::GRunArgsP &&outs)
 {
     return m_exec->try_pull(std::move(outs));
 }
 
-void cv::GStreamingCompiled::Priv::stop()
+void ncvslideio::GStreamingCompiled::Priv::stop()
 {
     m_exec->stop();
 }
 
-bool cv::GStreamingCompiled::Priv::running() const
+bool ncvslideio::GStreamingCompiled::Priv::running() const
 {
     return m_exec->running();
 }
 
 // GStreamingCompiled public implementation ////////////////////////////////////
-cv::GStreamingCompiled::GStreamingCompiled()
+ncvslideio::GStreamingCompiled::GStreamingCompiled()
     : m_priv(new Priv())
 {
 }
 
 // NB: This overload is called from python code
-void cv::GStreamingCompiled::setSource(const cv::detail::ExtractArgsCallback& callback)
+void ncvslideio::GStreamingCompiled::setSource(const ncvslideio::detail::ExtractArgsCallback& callback)
 {
     setSource(callback(m_priv->inInfo()));
 }
 
-void cv::GStreamingCompiled::setSource(GRunArgs &&ins)
+void ncvslideio::GStreamingCompiled::setSource(GRunArgs &&ins)
 {
     // FIXME: verify these input parameters according to the graph input meta
     m_priv->setSource(std::move(ins));
 }
 
-void cv::GStreamingCompiled::setSource(const cv::gapi::wip::IStreamSource::Ptr &s)
+void ncvslideio::GStreamingCompiled::setSource(const ncvslideio::gapi::wip::IStreamSource::Ptr &s)
 {
-    setSource(cv::gin(s));
+    setSource(ncvslideio::gin(s));
 }
 
-void cv::GStreamingCompiled::start()
+void ncvslideio::GStreamingCompiled::start()
 {
     m_priv->start();
 }
 
-bool cv::GStreamingCompiled::pull(cv::GRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::pull(ncvslideio::GRunArgsP &&outs)
 {
     return m_priv->pull(std::move(outs));
 }
 
-std::tuple<bool, cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>> cv::GStreamingCompiled::pull()
+std::tuple<bool, ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>> ncvslideio::GStreamingCompiled::pull()
 {
     return m_priv->pull();
 }
 
-bool cv::GStreamingCompiled::pull(cv::GOptRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::pull(ncvslideio::GOptRunArgsP &&outs)
 {
     return m_priv->pull(std::move(outs));
 }
 
-bool cv::GStreamingCompiled::try_pull(cv::GRunArgsP &&outs)
+bool ncvslideio::GStreamingCompiled::try_pull(ncvslideio::GRunArgsP &&outs)
 {
     return m_priv->try_pull(std::move(outs));
 }
 
-void cv::GStreamingCompiled::stop()
+void ncvslideio::GStreamingCompiled::stop()
 {
     m_priv->stop();
 }
 
-bool cv::GStreamingCompiled::running() const
+bool ncvslideio::GStreamingCompiled::running() const
 {
     return m_priv->running();
 }
 
-cv::GStreamingCompiled::operator bool() const
+ncvslideio::GStreamingCompiled::operator bool() const
 {
     return !m_priv->isEmpty();
 }
 
-const cv::GMetaArgs& cv::GStreamingCompiled::metas() const
+const ncvslideio::GMetaArgs& ncvslideio::GStreamingCompiled::metas() const
 {
     return m_priv->metas();
 }
 
-const cv::GMetaArgs& cv::GStreamingCompiled::outMetas() const
+const ncvslideio::GMetaArgs& ncvslideio::GStreamingCompiled::outMetas() const
 {
     return m_priv->outMetas();
 }
 
-cv::GStreamingCompiled::Priv& cv::GStreamingCompiled::priv()
+ncvslideio::GStreamingCompiled::Priv& ncvslideio::GStreamingCompiled::priv()
 {
     return *m_priv;
 }

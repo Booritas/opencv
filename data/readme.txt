@@ -1,4 +1,4 @@
-This folder contains various data that is used by cv libraries and/or demo applications.
+This folder contains various data that is used by ncvslideio libraries and/or demo applications.
 ----------------------------------------------------------------------------------------
 
 haarcascades - the folder contains trained classifiers for detecting objects

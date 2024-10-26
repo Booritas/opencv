@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 void loadExposureSeq(String, vector<Mat>&, vector<float>&);

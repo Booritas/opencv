@@ -9,7 +9,7 @@
 #include <opencv2/gapi/own/assert.hpp>
 
 #ifdef HAVE_GSTREAMER
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gstreamer_utils {
@@ -23,5 +23,5 @@ void mapBufferToFrame(GstBuffer& buffer, GstVideoInfo& info, GstVideoFrame& fram
 } // namespace gstreamer_utils
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER

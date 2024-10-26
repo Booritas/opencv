@@ -11,14 +11,14 @@
 #include "api/gcall_priv.hpp"
 
 // GCall private implementation ////////////////////////////////////////////////
-cv::GCall::Priv::Priv(const cv::GKernel &k)
+ncvslideio::GCall::Priv::Priv(const ncvslideio::GKernel &k)
     : m_k(k)
 {
 }
 
 // GCall public implementation /////////////////////////////////////////////////
 
-cv::GCall::GCall(const cv::GKernel &k)
+ncvslideio::GCall::GCall(const ncvslideio::GKernel &k)
     : m_priv(new Priv(k))
 {
     // Here we have a reference to GNode,
@@ -26,7 +26,7 @@ cv::GCall::GCall(const cv::GKernel &k)
     m_priv->m_node = GNode::Call(*this);
 }
 
-cv::GCall::~GCall()
+ncvslideio::GCall::~GCall()
 {
     // FIXME: current behavior of the destructor can cause troubles in a threaded environment. GCall
     // is not supposed to be accessed for modification within multiple threads. There should be a
@@ -38,58 +38,58 @@ cv::GCall::~GCall()
     m_priv->m_node = GNode();
 }
 
-void cv::GCall::setArgs(std::vector<GArg> &&args)
+void ncvslideio::GCall::setArgs(std::vector<GArg> &&args)
 {
     // FIXME: Check if argument number is matching kernel prototype
     m_priv->m_args = std::move(args);
 }
 
-cv::GMat cv::GCall::yield(int output)
+ncvslideio::GMat ncvslideio::GCall::yield(int output)
 {
-    return cv::GMat(m_priv->m_node, output);
+    return ncvslideio::GMat(m_priv->m_node, output);
 }
 
-cv::GMatP cv::GCall::yieldP(int output)
+ncvslideio::GMatP ncvslideio::GCall::yieldP(int output)
 {
-    return cv::GMatP(m_priv->m_node, output);
+    return ncvslideio::GMatP(m_priv->m_node, output);
 }
 
-cv::GScalar cv::GCall::yieldScalar(int output)
+ncvslideio::GScalar ncvslideio::GCall::yieldScalar(int output)
 {
-    return cv::GScalar(m_priv->m_node, output);
+    return ncvslideio::GScalar(m_priv->m_node, output);
 }
 
-cv::detail::GArrayU cv::GCall::yieldArray(int output)
+ncvslideio::detail::GArrayU ncvslideio::GCall::yieldArray(int output)
 {
-    return cv::detail::GArrayU(m_priv->m_node, output);
+    return ncvslideio::detail::GArrayU(m_priv->m_node, output);
 }
 
-cv::detail::GOpaqueU cv::GCall::yieldOpaque(int output)
+ncvslideio::detail::GOpaqueU ncvslideio::GCall::yieldOpaque(int output)
 {
-    return cv::detail::GOpaqueU(m_priv->m_node, output);
+    return ncvslideio::detail::GOpaqueU(m_priv->m_node, output);
 }
 
-cv::GFrame cv::GCall::yieldFrame(int output)
+ncvslideio::GFrame ncvslideio::GCall::yieldFrame(int output)
 {
-    return cv::GFrame(m_priv->m_node, output);
+    return ncvslideio::GFrame(m_priv->m_node, output);
 }
 
-cv::GCall::Priv& cv::GCall::priv()
-{
-    return *m_priv;
-}
-
-const cv::GCall::Priv& cv::GCall::priv() const
+ncvslideio::GCall::Priv& ncvslideio::GCall::priv()
 {
     return *m_priv;
 }
 
-cv::GKernel& cv::GCall::kernel()
+const ncvslideio::GCall::Priv& ncvslideio::GCall::priv() const
+{
+    return *m_priv;
+}
+
+ncvslideio::GKernel& ncvslideio::GCall::kernel()
 {
     return m_priv->m_k;
 }
 
-cv::util::any& cv::GCall::params()
+ncvslideio::util::any& ncvslideio::GCall::params()
 {
     return m_priv->m_params;
 }

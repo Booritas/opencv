@@ -47,8 +47,8 @@ if __name__ == '__main__':
     labels = open('./data/labels.txt').read().strip().split('\n')
     model = export_onnx_resnet50(save_path)
 
-    # load resnet50 use cv.dnn
-    net = cv.dnn.readNetFromONNX(save_path + '.onnx')
+    # load resnet50 use ncvslideio.dnn
+    net = ncvslideio.dnn.readNetFromONNX(save_path + '.onnx')
     # read and preprocess image file
     im = preprocess(image_file)
     # inference

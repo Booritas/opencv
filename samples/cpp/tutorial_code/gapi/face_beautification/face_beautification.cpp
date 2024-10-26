@@ -39,13 +39,13 @@ constexpr char       kParserOptions[]         =
 "{ streaming    s |true|  set false to disable stream pipelining.}"
 "{ performance  p |false| set true to disable output displaying.}";
 
-const     cv::Scalar kClrWhite (255, 255, 255);
-const     cv::Scalar kClrGreen (  0, 255,   0);
-const     cv::Scalar kClrYellow(  0, 255, 255);
+const     ncvslideio::Scalar kClrWhite (255, 255, 255);
+const     ncvslideio::Scalar kClrGreen (  0, 255,   0);
+const     ncvslideio::Scalar kClrYellow(  0, 255, 255);
 
 constexpr float      kConfThresh   = 0.7f;
 
-const     cv::Size   kGKernelSize(5, 5);
+const     ncvslideio::Size   kGKernelSize(5, 5);
 constexpr double     kGSigma       = 0.0;
 constexpr int        kBSize        = 9;
 constexpr double     kBSigmaCol    = 30.0;
@@ -59,11 +59,11 @@ constexpr bool       kClosedLine   = true;
 namespace
 {
 //! [vec_ROI]
-using VectorROI = std::vector<cv::Rect>;
+using VectorROI = std::vector<ncvslideio::Rect>;
 //! [vec_ROI]
-using GArrayROI = cv::GArray<cv::Rect>;
-using Contour   = std::vector<cv::Point>;
-using Landmarks = std::vector<cv::Point>;
+using GArrayROI = ncvslideio::GArray<ncvslideio::Rect>;
+using Contour   = std::vector<ncvslideio::Point>;
+using Landmarks = std::vector<ncvslideio::Point>;
 
 
 // Wrapper function
@@ -118,103 +118,103 @@ std::string getWeightsPath(const std::string &mdlXMLPath) // mdlXMLPath =
 
 namespace custom
 {
-using TplPtsFaceElements_Jaw = std::tuple<cv::GArray<Landmarks>,
-                                          cv::GArray<Contour>>;
+using TplPtsFaceElements_Jaw = std::tuple<ncvslideio::GArray<Landmarks>,
+                                          ncvslideio::GArray<Contour>>;
 
 // Wrapper-functions
-inline int getLineInclinationAngleDegrees(const cv::Point &ptLeft,
-                                          const cv::Point &ptRight);
-inline Contour getForeheadEllipse(const cv::Point &ptJawLeft,
-                                  const cv::Point &ptJawRight,
-                                  const cv::Point &ptJawMiddle);
-inline Contour getEyeEllipse(const cv::Point &ptLeft,
-                             const cv::Point &ptRight);
-inline Contour getPatchedEllipse(const cv::Point &ptLeft,
-                                 const cv::Point &ptRight,
-                                 const cv::Point &ptUp,
-                                 const cv::Point &ptDown);
+inline int getLineInclinationAngleDegrees(const ncvslideio::Point &ptLeft,
+                                          const ncvslideio::Point &ptRight);
+inline Contour getForeheadEllipse(const ncvslideio::Point &ptJawLeft,
+                                  const ncvslideio::Point &ptJawRight,
+                                  const ncvslideio::Point &ptJawMiddle);
+inline Contour getEyeEllipse(const ncvslideio::Point &ptLeft,
+                             const ncvslideio::Point &ptRight);
+inline Contour getPatchedEllipse(const ncvslideio::Point &ptLeft,
+                                 const ncvslideio::Point &ptRight,
+                                 const ncvslideio::Point &ptUp,
+                                 const ncvslideio::Point &ptDown);
 
 // Networks
 //! [net_decl]
-G_API_NET(FaceDetector,  <cv::GMat(cv::GMat)>, "face_detector");
-G_API_NET(LandmDetector, <cv::GMat(cv::GMat)>, "landm_detector");
+G_API_NET(FaceDetector,  <ncvslideio::GMat(ncvslideio::GMat)>, "face_detector");
+G_API_NET(LandmDetector, <ncvslideio::GMat(ncvslideio::GMat)>, "landm_detector");
 //! [net_decl]
 
 // Function kernels
-G_TYPED_KERNEL(GBilatFilter, <cv::GMat(cv::GMat,int,double,double)>,
+G_TYPED_KERNEL(GBilatFilter, <ncvslideio::GMat(ncvslideio::GMat,int,double,double)>,
                "custom.faceb12n.bilateralFilter")
 {
-    static cv::GMatDesc outMeta(cv::GMatDesc in, int,double,double)
+    static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in, int,double,double)
     {
         return in;
     }
 };
 
-G_TYPED_KERNEL(GLaplacian, <cv::GMat(cv::GMat,int)>,
+G_TYPED_KERNEL(GLaplacian, <ncvslideio::GMat(ncvslideio::GMat,int)>,
                "custom.faceb12n.Laplacian")
 {
-    static cv::GMatDesc outMeta(cv::GMatDesc in, int)
+    static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in, int)
     {
         return in;
     }
 };
 
-G_TYPED_KERNEL(GFillPolyGContours, <cv::GMat(cv::GMat,cv::GArray<Contour>)>,
+G_TYPED_KERNEL(GFillPolyGContours, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GArray<Contour>)>,
                "custom.faceb12n.fillPolyGContours")
 {
-    static cv::GMatDesc outMeta(cv::GMatDesc in, cv::GArrayDesc)
+    static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in, ncvslideio::GArrayDesc)
     {
         return in.withType(CV_8U, 1);
     }
 };
 
-G_TYPED_KERNEL(GPolyLines, <cv::GMat(cv::GMat,cv::GArray<Contour>,bool,
-                                     cv::Scalar)>,
+G_TYPED_KERNEL(GPolyLines, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GArray<Contour>,bool,
+                                     ncvslideio::Scalar)>,
                "custom.faceb12n.polyLines")
 {
-    static cv::GMatDesc outMeta(cv::GMatDesc in, cv::GArrayDesc,bool,cv::Scalar)
+    static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in, ncvslideio::GArrayDesc,bool,ncvslideio::Scalar)
     {
         return in;
     }
 };
 
-G_TYPED_KERNEL(GRectangle, <cv::GMat(cv::GMat,GArrayROI,cv::Scalar)>,
+G_TYPED_KERNEL(GRectangle, <ncvslideio::GMat(ncvslideio::GMat,GArrayROI,ncvslideio::Scalar)>,
                "custom.faceb12n.rectangle")
 {
-    static cv::GMatDesc outMeta(cv::GMatDesc in, cv::GArrayDesc,cv::Scalar)
+    static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in, ncvslideio::GArrayDesc,ncvslideio::Scalar)
     {
         return in;
     }
 };
 
-G_TYPED_KERNEL(GFacePostProc, <GArrayROI(cv::GMat,cv::GMat,float)>,
+G_TYPED_KERNEL(GFacePostProc, <GArrayROI(ncvslideio::GMat,ncvslideio::GMat,float)>,
                "custom.faceb12n.faceDetectPostProc")
 {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc&,const cv::GMatDesc&,float)
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc&,const ncvslideio::GMatDesc&,float)
     {
-        return cv::empty_array_desc();
+        return ncvslideio::empty_array_desc();
     }
 };
 
-G_TYPED_KERNEL_M(GLandmPostProc, <TplPtsFaceElements_Jaw(cv::GArray<cv::GMat>,
+G_TYPED_KERNEL_M(GLandmPostProc, <TplPtsFaceElements_Jaw(ncvslideio::GArray<ncvslideio::GMat>,
                                                          GArrayROI)>,
                  "custom.faceb12n.landmDetectPostProc")
 {
-    static std::tuple<cv::GArrayDesc,cv::GArrayDesc> outMeta(
-                const cv::GArrayDesc&,const cv::GArrayDesc&)
+    static std::tuple<ncvslideio::GArrayDesc,ncvslideio::GArrayDesc> outMeta(
+                const ncvslideio::GArrayDesc&,const ncvslideio::GArrayDesc&)
     {
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc());
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
 //! [kern_m_decl]
-using TplFaces_FaceElements  = std::tuple<cv::GArray<Contour>, cv::GArray<Contour>>;
-G_TYPED_KERNEL_M(GGetContours, <TplFaces_FaceElements (cv::GArray<Landmarks>, cv::GArray<Contour>)>,
+using TplFaces_FaceElements  = std::tuple<ncvslideio::GArray<Contour>, ncvslideio::GArray<Contour>>;
+G_TYPED_KERNEL_M(GGetContours, <TplFaces_FaceElements (ncvslideio::GArray<Landmarks>, ncvslideio::GArray<Contour>)>,
                  "custom.faceb12n.getContours")
 {
-    static std::tuple<cv::GArrayDesc,cv::GArrayDesc> outMeta(const cv::GArrayDesc&,const cv::GArrayDesc&)
+    static std::tuple<ncvslideio::GArrayDesc,ncvslideio::GArrayDesc> outMeta(const ncvslideio::GArrayDesc&,const ncvslideio::GArrayDesc&)
     {
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc());
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 //! [kern_m_decl]
@@ -222,75 +222,75 @@ G_TYPED_KERNEL_M(GGetContours, <TplFaces_FaceElements (cv::GArray<Landmarks>, cv
 
 // OCV_Kernels
 // This kernel applies Bilateral filter to an input src with default
-//  "cv::bilateralFilter" border argument
+//  "ncvslideio::bilateralFilter" border argument
 GAPI_OCV_KERNEL(GCPUBilateralFilter, custom::GBilatFilter)
 {
-    static void run(const cv::Mat &src,
+    static void run(const ncvslideio::Mat &src,
                     const int      diameter,
                     const double   sigmaColor,
                     const double   sigmaSpace,
-                          cv::Mat &out)
+                          ncvslideio::Mat &out)
     {
-        cv::bilateralFilter(src, out, diameter, sigmaColor, sigmaSpace);
+        ncvslideio::bilateralFilter(src, out, diameter, sigmaColor, sigmaSpace);
     }
 };
 
 // This kernel applies Laplace operator to an input src with default
-//  "cv::Laplacian" arguments
+//  "ncvslideio::Laplacian" arguments
 GAPI_OCV_KERNEL(GCPULaplacian, custom::GLaplacian)
 {
-    static void run(const cv::Mat &src,
+    static void run(const ncvslideio::Mat &src,
                     const int      ddepth,
-                          cv::Mat &out)
+                          ncvslideio::Mat &out)
     {
-        cv::Laplacian(src, out, ddepth);
+        ncvslideio::Laplacian(src, out, ddepth);
     }
 };
 
 // This kernel draws given white filled contours "cnts" on a clear Mat "out"
-//  (defined by a Scalar(0)) with standard "cv::fillPoly" arguments.
+//  (defined by a Scalar(0)) with standard "ncvslideio::fillPoly" arguments.
 //  It should be used to create a mask.
 // The input Mat seems unused inside the function "run", but it is used deeper
 //  in the kernel to define an output size.
 GAPI_OCV_KERNEL(GCPUFillPolyGContours, custom::GFillPolyGContours)
 {
-    static void run(const cv::Mat              &,
+    static void run(const ncvslideio::Mat              &,
                     const std::vector<Contour> &cnts,
-                          cv::Mat              &out)
+                          ncvslideio::Mat              &out)
     {
-        out = cv::Scalar(0);
-        cv::fillPoly(out, cnts, config::kClrWhite);
+        out = ncvslideio::Scalar(0);
+        ncvslideio::fillPoly(out, cnts, config::kClrWhite);
     }
 };
 
-// This kernel draws given contours on an input src with default "cv::polylines"
+// This kernel draws given contours on an input src with default "ncvslideio::polylines"
 //  arguments
 GAPI_OCV_KERNEL(GCPUPolyLines, custom::GPolyLines)
 {
-    static void run(const cv::Mat              &src,
+    static void run(const ncvslideio::Mat              &src,
                     const std::vector<Contour> &cnts,
                     const bool                  isClosed,
-                    const cv::Scalar           &color,
-                          cv::Mat              &out)
+                    const ncvslideio::Scalar           &color,
+                          ncvslideio::Mat              &out)
     {
         src.copyTo(out);
-        cv::polylines(out, cnts, isClosed, color);
+        ncvslideio::polylines(out, cnts, isClosed, color);
     }
 };
 
 // This kernel draws given rectangles on an input src with default
-//  "cv::rectangle" arguments
+//  "ncvslideio::rectangle" arguments
 GAPI_OCV_KERNEL(GCPURectangle, custom::GRectangle)
 {
-    static void run(const cv::Mat    &src,
+    static void run(const ncvslideio::Mat    &src,
                     const VectorROI  &vctFaceBoxes,
-                    const cv::Scalar &color,
-                          cv::Mat    &out)
+                    const ncvslideio::Scalar &color,
+                          ncvslideio::Mat    &out)
     {
         src.copyTo(out);
-        for (const cv::Rect &box : vctFaceBoxes)
+        for (const ncvslideio::Rect &box : vctFaceBoxes)
         {
-            cv::rectangle(out, box, color);
+            ncvslideio::rectangle(out, box, color);
         }
     }
 };
@@ -306,15 +306,15 @@ GAPI_OCV_KERNEL(GCPURectangle, custom::GRectangle)
 //! [fd_pp]
 GAPI_OCV_KERNEL(GCPUFacePostProc, GFacePostProc)
 {
-    static void run(const cv::Mat   &inDetectResult,
-                    const cv::Mat   &inFrame,
+    static void run(const ncvslideio::Mat   &inDetectResult,
+                    const ncvslideio::Mat   &inFrame,
                     const float      faceConfThreshold,
                           VectorROI &outFaces)
     {
         const int kObjectSize  = 7;
         const int imgCols = inFrame.size().width;
         const int imgRows = inFrame.size().height;
-        const cv::Rect borders({0, 0}, inFrame.size());
+        const ncvslideio::Rect borders({0, 0}, inFrame.size());
         outFaces.clear();
         const int    numOfDetections = inDetectResult.size[2];
         const float *data            = inDetectResult.ptr<float>();
@@ -337,11 +337,11 @@ GAPI_OCV_KERNEL(GCPUFacePostProc, GFacePostProc)
                 // These are normalized coordinates and are between 0 and 1;
                 //  to get the real pixel coordinates we should multiply it by
                 //  the image sizes respectively to the directions:
-                cv::Point tl(toIntRounded(left   * imgCols),
+                ncvslideio::Point tl(toIntRounded(left   * imgCols),
                              toIntRounded(top    * imgRows));
-                cv::Point br(toIntRounded(right  * imgCols),
+                ncvslideio::Point br(toIntRounded(right  * imgCols),
                              toIntRounded(bottom * imgRows));
-                outFaces.push_back(cv::Rect(tl, br) & borders);
+                outFaces.push_back(ncvslideio::Rect(tl, br) & borders);
             }
         }
     }
@@ -360,7 +360,7 @@ GAPI_OCV_KERNEL(GCPUFacePostProc, GFacePostProc)
 // https://github.com/opencv/open_model_zoo/blob/master/intel_models/facial-landmarks-35-adas-0002
 GAPI_OCV_KERNEL(GCPULandmPostProc, GLandmPostProc)
 {
-    static void run(const std::vector<cv::Mat>   &vctDetectResults,
+    static void run(const std::vector<ncvslideio::Mat>   &vctDetectResults,
                     const VectorROI              &vctRects,
                           std::vector<Landmarks> &vctPtsFaceElems,
                           std::vector<Contour>   &vctCntJaw)
@@ -385,7 +385,7 @@ GAPI_OCV_KERNEL(GCPULandmPostProc, GLandmPostProc)
             ptsFaceElems.clear();
             for (int j = 0; j < kNumFaceElems * 2; j += 2)
             {
-                cv::Point pt = cv::Point(toIntRounded(data[j]   * vctRects[i].width),
+                ncvslideio::Point pt = ncvslideio::Point(toIntRounded(data[j]   * vctRects[i].width),
                                          toIntRounded(data[j+1] * vctRects[i].height)) + vctRects[i].tl();
                 ptsFaceElems.push_back(pt);
             }
@@ -395,7 +395,7 @@ GAPI_OCV_KERNEL(GCPULandmPostProc, GLandmPostProc)
             cntJaw.clear();
             for(int j = kNumFaceElems * 2; j < kNumTotal * 2; j += 2)
             {
-                cv::Point pt = cv::Point(toIntRounded(data[j]   * vctRects[i].width),
+                ncvslideio::Point pt = ncvslideio::Point(toIntRounded(data[j]   * vctRects[i].width),
                                          toIntRounded(data[j+1] * vctRects[i].height)) + vctRects[i].tl();
                 cntJaw.push_back(pt);
             }
@@ -476,11 +476,11 @@ GAPI_OCV_KERNEL(GCPUGetContours, GGetContours)
 //! [ld_pp_cnts]
 
 // GAPI subgraph functions
-inline cv::GMat unsharpMask(const cv::GMat &src,
+inline ncvslideio::GMat unsharpMask(const ncvslideio::GMat &src,
                             const int       sigma,
                             const float     strength);
-inline cv::GMat mask3C(const cv::GMat &src,
-                       const cv::GMat &mask);
+inline ncvslideio::GMat mask3C(const ncvslideio::GMat &src,
+                       const ncvslideio::GMat &mask);
 } // namespace custom
 
 
@@ -488,9 +488,9 @@ inline cv::GMat mask3C(const cv::GMat &src,
 // Returns an angle (in degrees) between a line given by two Points and
 //  the horison. Note that the result depends on the arguments order:
 //! [ld_pp_incl]
-inline int custom::getLineInclinationAngleDegrees(const cv::Point &ptLeft, const cv::Point &ptRight)
+inline int custom::getLineInclinationAngleDegrees(const ncvslideio::Point &ptLeft, const ncvslideio::Point &ptRight)
 {
-    const cv::Point residual = ptRight - ptLeft;
+    const ncvslideio::Point residual = ptRight - ptLeft;
     if (residual.y == 0 && residual.x == 0)
         return 0;
     else
@@ -502,13 +502,13 @@ inline int custom::getLineInclinationAngleDegrees(const cv::Point &ptLeft, const
 //  and then returns points of the contour; "capacity" is used to reserve enough
 //  memory as there will be other points inserted.
 //! [ld_pp_fhd]
-inline Contour custom::getForeheadEllipse(const cv::Point &ptJawLeft,
-                                          const cv::Point &ptJawRight,
-                                          const cv::Point &ptJawLower)
+inline Contour custom::getForeheadEllipse(const ncvslideio::Point &ptJawLeft,
+                                          const ncvslideio::Point &ptJawRight,
+                                          const ncvslideio::Point &ptJawLower)
 {
     Contour cntForehead;
     // The point amid the top two points of a jaw:
-    const cv::Point ptFaceCenter((ptJawLeft + ptJawRight) / 2);
+    const ncvslideio::Point ptFaceCenter((ptJawLeft + ptJawRight) / 2);
     // This will be the center of the ellipse.
 
     // The angle between the jaw and the vertical:
@@ -516,11 +516,11 @@ inline Contour custom::getForeheadEllipse(const cv::Point &ptJawLeft,
     // This will be the inclination of the ellipse
 
     // Counting the half-axis of the ellipse:
-    const double jawWidth  = cv::norm(ptJawLeft - ptJawRight);
+    const double jawWidth  = ncvslideio::norm(ptJawLeft - ptJawRight);
     // A forehead width equals the jaw width, and we need a half-axis:
     const int axisX        = toIntRounded(jawWidth / 2.0);
 
-    const double jawHeight = cv::norm(ptFaceCenter - ptJawLower);
+    const double jawHeight = ncvslideio::norm(ptFaceCenter - ptJawLower);
     // According to research, in average a forehead is approximately 2/3 of
     //  a jaw:
     const int axisY        = toIntRounded(jawHeight * 2 / 3.0);
@@ -528,7 +528,7 @@ inline Contour custom::getForeheadEllipse(const cv::Point &ptJawLeft,
     // We need the upper part of an ellipse:
     static constexpr int kAngForeheadStart = 180;
     static constexpr int kAngForeheadEnd   = 360;
-    cv::ellipse2Poly(ptFaceCenter, cv::Size(axisX, axisY), angFace, kAngForeheadStart, kAngForeheadEnd,
+    ncvslideio::ellipse2Poly(ptFaceCenter, ncvslideio::Size(axisX, axisY), angFace, kAngForeheadStart, kAngForeheadEnd,
                      config::kAngDelta, cntForehead);
     return cntForehead;
 }
@@ -537,19 +537,19 @@ inline Contour custom::getForeheadEllipse(const cv::Point &ptJawLeft,
 // Approximates the lower eye contour by half-ellipse using eye points and some
 //  geometry and then returns points of the contour.
 //! [ld_pp_eye]
-inline Contour custom::getEyeEllipse(const cv::Point &ptLeft, const cv::Point &ptRight)
+inline Contour custom::getEyeEllipse(const ncvslideio::Point &ptLeft, const ncvslideio::Point &ptRight)
 {
     Contour cntEyeBottom;
-    const cv::Point ptEyeCenter((ptRight + ptLeft) / 2);
+    const ncvslideio::Point ptEyeCenter((ptRight + ptLeft) / 2);
     const int angle = getLineInclinationAngleDegrees(ptLeft, ptRight);
-    const int axisX = toIntRounded(cv::norm(ptRight - ptLeft) / 2.0);
+    const int axisX = toIntRounded(ncvslideio::norm(ptRight - ptLeft) / 2.0);
     // According to research, in average a Y axis of an eye is approximately
     //  1/3 of an X one.
     const int axisY = axisX / 3;
     // We need the lower part of an ellipse:
     static constexpr int kAngEyeStart = 0;
     static constexpr int kAngEyeEnd   = 180;
-    cv::ellipse2Poly(ptEyeCenter, cv::Size(axisX, axisY), angle, kAngEyeStart, kAngEyeEnd, config::kAngDelta,
+    ncvslideio::ellipse2Poly(ptEyeCenter, ncvslideio::Size(axisX, axisY), angle, kAngEyeStart, kAngEyeEnd, config::kAngDelta,
                      cntEyeBottom);
     return cntEyeBottom;
 }
@@ -557,31 +557,31 @@ inline Contour custom::getEyeEllipse(const cv::Point &ptLeft, const cv::Point &p
 
 //This function approximates an object (a mouth) by two half-ellipses using
 //  4 points of the axes' ends and then returns points of the contour:
-inline Contour custom::getPatchedEllipse(const cv::Point &ptLeft,
-                                         const cv::Point &ptRight,
-                                         const cv::Point &ptUp,
-                                         const cv::Point &ptDown)
+inline Contour custom::getPatchedEllipse(const ncvslideio::Point &ptLeft,
+                                         const ncvslideio::Point &ptRight,
+                                         const ncvslideio::Point &ptUp,
+                                         const ncvslideio::Point &ptDown)
 {
     // Shared characteristics for both half-ellipses:
-    const cv::Point ptMouthCenter((ptLeft + ptRight) / 2);
+    const ncvslideio::Point ptMouthCenter((ptLeft + ptRight) / 2);
     const int angMouth = getLineInclinationAngleDegrees(ptLeft, ptRight);
-    const int axisX    = toIntRounded(cv::norm(ptRight - ptLeft) / 2.0);
+    const int axisX    = toIntRounded(ncvslideio::norm(ptRight - ptLeft) / 2.0);
 
     // The top half-ellipse:
     Contour cntMouthTop;
-    const int axisYTop = toIntRounded(cv::norm(ptMouthCenter - ptUp));
+    const int axisYTop = toIntRounded(ncvslideio::norm(ptMouthCenter - ptUp));
     // We need the upper part of an ellipse:
     static constexpr int angTopStart = 180;
     static constexpr int angTopEnd   = 360;
-    cv::ellipse2Poly(ptMouthCenter, cv::Size(axisX, axisYTop), angMouth, angTopStart, angTopEnd, config::kAngDelta, cntMouthTop);
+    ncvslideio::ellipse2Poly(ptMouthCenter, ncvslideio::Size(axisX, axisYTop), angMouth, angTopStart, angTopEnd, config::kAngDelta, cntMouthTop);
 
     // The bottom half-ellipse:
     Contour cntMouth;
-    const int axisYBot = toIntRounded(cv::norm(ptMouthCenter - ptDown));
+    const int axisYBot = toIntRounded(ncvslideio::norm(ptMouthCenter - ptDown));
     // We need the lower part of an ellipse:
     static constexpr int angBotStart = 0;
     static constexpr int angBotEnd   = 180;
-    cv::ellipse2Poly(ptMouthCenter, cv::Size(axisX, axisYBot), angMouth, angBotStart, angBotEnd, config::kAngDelta, cntMouth);
+    ncvslideio::ellipse2Poly(ptMouthCenter, ncvslideio::Size(axisX, axisYBot), angMouth, angBotStart, angBotEnd, config::kAngDelta, cntMouth);
 
     // Pushing the upper part to vctOut
     std::copy(cntMouthTop.cbegin(), cntMouthTop.cend(), std::back_inserter(cntMouth));
@@ -589,33 +589,33 @@ inline Contour custom::getPatchedEllipse(const cv::Point &ptLeft,
 }
 
 //! [unsh]
-inline cv::GMat custom::unsharpMask(const cv::GMat &src,
+inline ncvslideio::GMat custom::unsharpMask(const ncvslideio::GMat &src,
                                     const int       sigma,
                                     const float     strength)
 {
-    cv::GMat blurred   = cv::gapi::medianBlur(src, sigma);
-    cv::GMat laplacian = custom::GLaplacian::on(blurred, CV_8U);
+    ncvslideio::GMat blurred   = ncvslideio::gapi::medianBlur(src, sigma);
+    ncvslideio::GMat laplacian = custom::GLaplacian::on(blurred, CV_8U);
     return (src - (laplacian * strength));
 }
 //! [unsh]
 
-inline cv::GMat custom::mask3C(const cv::GMat &src,
-                               const cv::GMat &mask)
+inline ncvslideio::GMat custom::mask3C(const ncvslideio::GMat &src,
+                               const ncvslideio::GMat &mask)
 {
-    std::tuple<cv::GMat,cv::GMat,cv::GMat> tplIn = cv::gapi::split3(src);
-    cv::GMat masked0 = cv::gapi::mask(std::get<0>(tplIn), mask);
-    cv::GMat masked1 = cv::gapi::mask(std::get<1>(tplIn), mask);
-    cv::GMat masked2 = cv::gapi::mask(std::get<2>(tplIn), mask);
-    return cv::gapi::merge3(masked0, masked1, masked2);
+    std::tuple<ncvslideio::GMat,ncvslideio::GMat,ncvslideio::GMat> tplIn = ncvslideio::gapi::split3(src);
+    ncvslideio::GMat masked0 = ncvslideio::gapi::mask(std::get<0>(tplIn), mask);
+    ncvslideio::GMat masked1 = ncvslideio::gapi::mask(std::get<1>(tplIn), mask);
+    ncvslideio::GMat masked2 = ncvslideio::gapi::mask(std::get<2>(tplIn), mask);
+    return ncvslideio::gapi::merge3(masked0, masked1, masked2);
 }
 
 
 int main(int argc, char** argv)
 {
-    cv::namedWindow(config::kWinFaceBeautification, cv::WINDOW_NORMAL);
-    cv::namedWindow(config::kWinInput,              cv::WINDOW_NORMAL);
+    ncvslideio::namedWindow(config::kWinFaceBeautification, ncvslideio::WINDOW_NORMAL);
+    ncvslideio::namedWindow(config::kWinInput,              ncvslideio::WINDOW_NORMAL);
 
-    cv::CommandLineParser parser(argc, argv, config::kParserOptions);
+    ncvslideio::CommandLineParser parser(argc, argv, config::kParserOptions);
     parser.about(config::kParserAbout);
     if (argc == 1 || parser.has("help"))
     {
@@ -636,53 +636,53 @@ int main(int argc, char** argv)
     // The version of a pipeline expression with a lambda-based
     //  constructor is used to keep all temporary objects in a dedicated scope.
 //! [ppl]
-    cv::GComputation pipeline([=]()
+    ncvslideio::GComputation pipeline([=]()
     {
 //! [net_usg_fd]
-        cv::GMat  gimgIn;                                                                           // input
+        ncvslideio::GMat  gimgIn;                                                                           // input
 
-        cv::GMat  faceOut  = cv::gapi::infer<custom::FaceDetector>(gimgIn);
+        ncvslideio::GMat  faceOut  = ncvslideio::gapi::infer<custom::FaceDetector>(gimgIn);
 //! [net_usg_fd]
         GArrayROI garRects = custom::GFacePostProc::on(faceOut, gimgIn, config::kConfThresh);       // post-proc
 
 //! [net_usg_ld]
-        cv::GArray<cv::GMat> landmOut  = cv::gapi::infer<custom::LandmDetector>(garRects, gimgIn);
+        ncvslideio::GArray<ncvslideio::GMat> landmOut  = ncvslideio::gapi::infer<custom::LandmDetector>(garRects, gimgIn);
 //! [net_usg_ld]
-        cv::GArray<Landmarks> garElems;                                                             // |
-        cv::GArray<Contour>   garJaws;                                                              // |output arrays
+        ncvslideio::GArray<Landmarks> garElems;                                                             // |
+        ncvslideio::GArray<Contour>   garJaws;                                                              // |output arrays
         std::tie(garElems, garJaws)    = custom::GLandmPostProc::on(landmOut, garRects);            // post-proc
-        cv::GArray<Contour> garElsConts;                                                            // face elements
-        cv::GArray<Contour> garFaceConts;                                                           // whole faces
+        ncvslideio::GArray<Contour> garElsConts;                                                            // face elements
+        ncvslideio::GArray<Contour> garFaceConts;                                                           // whole faces
         std::tie(garElsConts, garFaceConts) = custom::GGetContours::on(garElems, garJaws);          // interpolation
 
 //! [msk_ppline]
-        cv::GMat mskSharp        = custom::GFillPolyGContours::on(gimgIn, garElsConts);             // |
-        cv::GMat mskSharpG       = cv::gapi::gaussianBlur(mskSharp, config::kGKernelSize,           // |
+        ncvslideio::GMat mskSharp        = custom::GFillPolyGContours::on(gimgIn, garElsConts);             // |
+        ncvslideio::GMat mskSharpG       = ncvslideio::gapi::gaussianBlur(mskSharp, config::kGKernelSize,           // |
                                                           config::kGSigma);                         // |
-        cv::GMat mskBlur         = custom::GFillPolyGContours::on(gimgIn, garFaceConts);            // |
-        cv::GMat mskBlurG        = cv::gapi::gaussianBlur(mskBlur, config::kGKernelSize,            // |
+        ncvslideio::GMat mskBlur         = custom::GFillPolyGContours::on(gimgIn, garFaceConts);            // |
+        ncvslideio::GMat mskBlurG        = ncvslideio::gapi::gaussianBlur(mskBlur, config::kGKernelSize,            // |
                                                           config::kGSigma);                         // |draw masks
         // The first argument in mask() is Blur as we want to subtract from                         // |
         // BlurG the next step:                                                                     // |
-        cv::GMat mskBlurFinal    = mskBlurG - cv::gapi::mask(mskBlurG, mskSharpG);                  // |
-        cv::GMat mskFacesGaussed = mskBlurFinal + mskSharpG;                                        // |
-        cv::GMat mskFacesWhite   = cv::gapi::threshold(mskFacesGaussed, 0, 255, cv::THRESH_BINARY); // |
-        cv::GMat mskNoFaces      = cv::gapi::bitwise_not(mskFacesWhite);                            // |
+        ncvslideio::GMat mskBlurFinal    = mskBlurG - ncvslideio::gapi::mask(mskBlurG, mskSharpG);                  // |
+        ncvslideio::GMat mskFacesGaussed = mskBlurFinal + mskSharpG;                                        // |
+        ncvslideio::GMat mskFacesWhite   = ncvslideio::gapi::threshold(mskFacesGaussed, 0, 255, ncvslideio::THRESH_BINARY); // |
+        ncvslideio::GMat mskNoFaces      = ncvslideio::gapi::bitwise_not(mskFacesWhite);                            // |
 //! [msk_ppline]
 
-        cv::GMat gimgBilat       = custom::GBilatFilter::on(gimgIn, config::kBSize,
+        ncvslideio::GMat gimgBilat       = custom::GBilatFilter::on(gimgIn, config::kBSize,
                                                             config::kBSigmaCol, config::kBSigmaSp);
-        cv::GMat gimgSharp       = custom::unsharpMask(gimgIn, config::kUnshSigma,
+        ncvslideio::GMat gimgSharp       = custom::unsharpMask(gimgIn, config::kUnshSigma,
                                                        config::kUnshStrength);
         // Applying the masks
         // Custom function mask3C() should be used instead of just gapi::mask()
         //  as mask() provides CV_8UC1 source only (and we have CV_8U3C)
-        cv::GMat gimgBilatMasked = custom::mask3C(gimgBilat, mskBlurFinal);
-        cv::GMat gimgSharpMasked = custom::mask3C(gimgSharp, mskSharpG);
-        cv::GMat gimgInMasked    = custom::mask3C(gimgIn,    mskNoFaces);
-        cv::GMat gimgBeautif = gimgBilatMasked + gimgSharpMasked + gimgInMasked;
-        return cv::GComputation(cv::GIn(gimgIn), cv::GOut(gimgBeautif,
-                                                          cv::gapi::copy(gimgIn),
+        ncvslideio::GMat gimgBilatMasked = custom::mask3C(gimgBilat, mskBlurFinal);
+        ncvslideio::GMat gimgSharpMasked = custom::mask3C(gimgSharp, mskSharpG);
+        ncvslideio::GMat gimgInMasked    = custom::mask3C(gimgIn,    mskNoFaces);
+        ncvslideio::GMat gimgBeautif = gimgBilatMasked + gimgSharpMasked + gimgInMasked;
+        return ncvslideio::GComputation(ncvslideio::GIn(gimgIn), ncvslideio::GOut(gimgBeautif,
+                                                          ncvslideio::gapi::copy(gimgIn),
                                                           garFaceConts,
                                                           garElsConts,
                                                           garRects));
@@ -690,13 +690,13 @@ int main(int argc, char** argv)
 //! [ppl]
     // Declaring IE params for networks
 //! [net_param]
-    auto faceParams  = cv::gapi::ie::Params<custom::FaceDetector>
+    auto faceParams  = ncvslideio::gapi::ie::Params<custom::FaceDetector>
     {
         /*std::string*/ faceXmlPath,
         /*std::string*/ faceBinPath,
         /*std::string*/ faceDevice
     };
-    auto landmParams = cv::gapi::ie::Params<custom::LandmDetector>
+    auto landmParams = ncvslideio::gapi::ie::Params<custom::LandmDetector>
     {
         /*std::string*/ landmXmlPath,
         /*std::string*/ landmBinPath,
@@ -704,11 +704,11 @@ int main(int argc, char** argv)
     };
 //! [net_param]
 //! [netw]
-    auto networks      = cv::gapi::networks(faceParams, landmParams);
+    auto networks      = ncvslideio::gapi::networks(faceParams, landmParams);
 //! [netw]
     // Declaring custom and fluid kernels have been used:
 //! [kern_pass_1]
-    auto customKernels = cv::gapi::kernels<custom::GCPUBilateralFilter,
+    auto customKernels = ncvslideio::gapi::kernels<custom::GCPUBilateralFilter,
                                            custom::GCPULaplacian,
                                            custom::GCPUFillPolyGContours,
                                            custom::GCPUPolyLines,
@@ -716,7 +716,7 @@ int main(int argc, char** argv)
                                            custom::GCPUFacePostProc,
                                            custom::GCPULandmPostProc,
                                            custom::GCPUGetContours>();
-    auto kernels       = cv::gapi::combine(cv::gapi::core::fluid::kernels(),
+    auto kernels       = ncvslideio::gapi::combine(ncvslideio::gapi::core::fluid::kernels(),
                                            customKernels);
 //! [kern_pass_1]
 
@@ -736,28 +736,28 @@ int main(int argc, char** argv)
     if (flgStreaming == true)
     {
 //! [str_comp]
-        cv::GStreamingCompiled stream = pipeline.compileStreaming(cv::compile_args(kernels, networks));
+        ncvslideio::GStreamingCompiled stream = pipeline.compileStreaming(ncvslideio::compile_args(kernels, networks));
 //! [str_comp]
         // Setting the source for the stream:
 //! [str_src]
         if (parser.has("input"))
         {
-            stream.setSource(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(parser.get<cv::String>("input")));
+            stream.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(parser.get<ncvslideio::String>("input")));
         }
 //! [str_src]
         else
         {
-            stream.setSource(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(0));
+            stream.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(0));
         }
         // Declaring output variables
         // Streaming:
-        cv::Mat imgShow;
-        cv::Mat imgBeautif;
+        ncvslideio::Mat imgShow;
+        ncvslideio::Mat imgBeautif;
         std::vector<Contour> vctFaceConts, vctElsConts;
         VectorROI vctRects;
         if (flgPerformance == true)
         {
-            auto out_vector = cv::gout(imgBeautif, imgShow, vctFaceConts,
+            auto out_vector = ncvslideio::gout(imgBeautif, imgShow, vctFaceConts,
                                        vctElsConts, vctRects);
             stream.start();
             avg.start();
@@ -770,7 +770,7 @@ int main(int argc, char** argv)
         else // flgPerformance == false
         {
 //! [str_loop]
-            auto out_vector = cv::gout(imgBeautif, imgShow, vctFaceConts,
+            auto out_vector = ncvslideio::gout(imgBeautif, imgShow, vctFaceConts,
                                        vctElsConts, vctRects);
             stream.start();
             avg.start();
@@ -780,23 +780,23 @@ int main(int argc, char** argv)
                 {
                     // Use a try_pull() to obtain data.
                     // If there's no data, let UI refresh (and handle keypress)
-                    if (cv::waitKey(1) >= 0) break;
+                    if (ncvslideio::waitKey(1) >= 0) break;
                     else continue;
                 }
                 frames++;
                 // Drawing face boxes and landmarks if necessary:
                 if (flgLandmarks == true)
                 {
-                    cv::polylines(imgShow, vctFaceConts, config::kClosedLine,
+                    ncvslideio::polylines(imgShow, vctFaceConts, config::kClosedLine,
                                   config::kClrYellow);
-                    cv::polylines(imgShow, vctElsConts, config::kClosedLine,
+                    ncvslideio::polylines(imgShow, vctElsConts, config::kClosedLine,
                                   config::kClrYellow);
                 }
                 if (flgBoxes == true)
                     for (auto rect : vctRects)
-                        cv::rectangle(imgShow, rect, config::kClrGreen);
-                cv::imshow(config::kWinInput,              imgShow);
-                cv::imshow(config::kWinFaceBeautification, imgBeautif);
+                        ncvslideio::rectangle(imgShow, rect, config::kClrGreen);
+                ncvslideio::imshow(config::kWinInput,              imgShow);
+                ncvslideio::imshow(config::kWinFaceBeautification, imgBeautif);
             }
 //! [str_loop]
         }
@@ -807,11 +807,11 @@ int main(int argc, char** argv)
     {
 //! [bef_cap]
 #include <opencv2/videoio.hpp>
-        cv::GCompiled cc;
-        cv::VideoCapture cap;
+        ncvslideio::GCompiled cc;
+        ncvslideio::VideoCapture cap;
         if (parser.has("input"))
         {
-            cap.open(parser.get<cv::String>("input"));
+            cap.open(parser.get<ncvslideio::String>("input"));
         }
 //! [bef_cap]
         else if (!cap.open(0))
@@ -823,9 +823,9 @@ int main(int argc, char** argv)
         {
             while (true)
             {
-                cv::Mat img;
-                cv::Mat imgShow;
-                cv::Mat imgBeautif;
+                ncvslideio::Mat img;
+                ncvslideio::Mat imgShow;
+                ncvslideio::Mat imgBeautif;
                 std::vector<Contour> vctFaceConts, vctElsConts;
                 VectorROI vctRects;
                 cap >> img;
@@ -836,35 +836,35 @@ int main(int argc, char** argv)
                 frames++;
                 if (!cc)
                 {
-                    cc = pipeline.compile(cv::descr_of(img), cv::compile_args(kernels, networks));
+                    cc = pipeline.compile(ncvslideio::descr_of(img), ncvslideio::compile_args(kernels, networks));
                     avg.start();
                 }
-                cc(cv::gin(img), cv::gout(imgBeautif, imgShow, vctFaceConts,
+                cc(ncvslideio::gin(img), ncvslideio::gout(imgBeautif, imgShow, vctFaceConts,
                                           vctElsConts, vctRects));
             }
         }
         else // flgPerformance == false
         {
 //! [bef_loop]
-            while (cv::waitKey(1) < 0)
+            while (ncvslideio::waitKey(1) < 0)
             {
-                cv::Mat img;
-                cv::Mat imgShow;
-                cv::Mat imgBeautif;
+                ncvslideio::Mat img;
+                ncvslideio::Mat imgShow;
+                ncvslideio::Mat imgBeautif;
                 std::vector<Contour> vctFaceConts, vctElsConts;
                 VectorROI vctRects;
                 cap >> img;
                 if (img.empty())
                 {
-                   cv::waitKey();
+                   ncvslideio::waitKey();
                    break;
                 }
                 frames++;
 //! [apply]
-                pipeline.apply(cv::gin(img), cv::gout(imgBeautif, imgShow,
+                pipeline.apply(ncvslideio::gin(img), ncvslideio::gout(imgBeautif, imgShow,
                                                       vctFaceConts,
                                                       vctElsConts, vctRects),
-                               cv::compile_args(kernels, networks));
+                               ncvslideio::compile_args(kernels, networks));
 //! [apply]
                 if (frames == 1)
                 {
@@ -875,16 +875,16 @@ int main(int argc, char** argv)
                 // Drawing face boxes and landmarks if necessary:
                 if (flgLandmarks == true)
                 {
-                    cv::polylines(imgShow, vctFaceConts, config::kClosedLine,
+                    ncvslideio::polylines(imgShow, vctFaceConts, config::kClosedLine,
                                   config::kClrYellow);
-                    cv::polylines(imgShow, vctElsConts, config::kClosedLine,
+                    ncvslideio::polylines(imgShow, vctElsConts, config::kClosedLine,
                                   config::kClrYellow);
                 }
                 if (flgBoxes == true)
                     for (auto rect : vctRects)
-                        cv::rectangle(imgShow, rect, config::kClrGreen);
-                cv::imshow(config::kWinInput,              imgShow);
-                cv::imshow(config::kWinFaceBeautification, imgBeautif);
+                        ncvslideio::rectangle(imgShow, rect, config::kClrGreen);
+                ncvslideio::imshow(config::kWinInput,              imgShow);
+                ncvslideio::imshow(config::kWinFaceBeautification, imgBeautif);
             }
         }
 //! [bef_loop]

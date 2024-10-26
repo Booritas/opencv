@@ -32,7 +32,7 @@ PERF_TEST_P(Size_MatType_ThreshType, threshold,
     declare.in(src, WARMUP_RNG).out(dst);
 
     int runs = (sz.width <= 640) ? 40 : 1;
-    TEST_CYCLE_MULTIRUN(runs) cv::threshold(src, dst, thresh, maxval, threshType);
+    TEST_CYCLE_MULTIRUN(runs) ncvslideio::threshold(src, dst, thresh, maxval, threshType);
 
     SANITY_CHECK(dst);
 }
@@ -51,7 +51,7 @@ PERF_TEST_P(Size_Only, threshold_otsu, testing::Values(TYPICAL_MAT_SIZES))
     declare.in(src, WARMUP_RNG).out(dst);
 
     int runs = 15;
-    TEST_CYCLE_MULTIRUN(runs) cv::threshold(src, dst, 0, maxval, THRESH_BINARY|THRESH_OTSU);
+    TEST_CYCLE_MULTIRUN(runs) ncvslideio::threshold(src, dst, 0, maxval, THRESH_BINARY|THRESH_OTSU);
 
     SANITY_CHECK(dst);
 }
@@ -82,13 +82,13 @@ PERF_TEST_P(Size_AdaptThreshType_AdaptThreshMethod_BlockSize_Delta, adaptiveThre
 
     int type = CV_8UC1;
 
-    Mat src_full(cv::Size(sz.width + 2, sz.height + 2), type);
-    Mat src = src_full(cv::Rect(1, 1, sz.width, sz.height));
+    Mat src_full(ncvslideio::Size(sz.width + 2, sz.height + 2), type);
+    Mat src = src_full(ncvslideio::Rect(1, 1, sz.width, sz.height));
     Mat dst(sz, type);
 
     declare.in(src, WARMUP_RNG).out(dst);
 
-    TEST_CYCLE() cv::adaptiveThreshold(src, dst, maxValue, adaptThreshMethod, adaptThreshType, blockSize, C);
+    TEST_CYCLE() ncvslideio::adaptiveThreshold(src, dst, maxValue, adaptThreshMethod, adaptThreshType, blockSize, C);
 
     SANITY_CHECK(dst);
 }

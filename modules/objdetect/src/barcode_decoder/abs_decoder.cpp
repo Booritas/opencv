@@ -6,7 +6,7 @@
 #include "../precomp.hpp"
 #include "abs_decoder.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 void cropROI(const Mat &src, Mat &dst, const std::vector<Point2f> &rects)
@@ -26,7 +26,7 @@ void cropROI(const Mat &src, Mat &dst, const std::vector<Point2f> &rects)
             Point2f((float) (width - 1), (float) (height - 1))};
     dst.create(Size(width, height), CV_8UC1);
     Mat M = getPerspectiveTransform(vertices, dst_vertices);
-    warpPerspective(src, dst, M, dst.size(), cv::INTER_LINEAR, BORDER_CONSTANT, Scalar(255));
+    warpPerspective(src, dst, M, dst.size(), ncvslideio::INTER_LINEAR, BORDER_CONSTANT, Scalar(255));
 }
 
 void fillCounter(const std::vector<uchar> &row, uint start, Counter &counter)

@@ -101,7 +101,7 @@ void CV_ChessboardDetectorBadArgTest::run( int /*start_from */)
     cb.convertTo(img, CV_32F);
     errors += run_test_case( Error::StsUnsupportedFormat, "Not 8-bit image" );
 
-    cv::merge(vector<Mat>(2, cb), img);
+    ncvslideio::merge(vector<Mat>(2, cb), img);
     errors += run_test_case( Error::StsUnsupportedFormat, "2 channel image" );
 
     if (errors)

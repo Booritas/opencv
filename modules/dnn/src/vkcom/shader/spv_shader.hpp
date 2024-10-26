@@ -6,7 +6,7 @@
 #define OPENCV_DNN_SPV_SHADER_HPP
 
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 extern const unsigned int conv_1x1_fast_spv[3134];
 extern const unsigned int conv_depthwise_spv[2092];
@@ -19,6 +19,6 @@ extern std::map<std::string, std::pair<const unsigned int *, size_t> > SPVMaps;
 
 void initSPVMaps();
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #endif /* OPENCV_DNN_SPV_SHADER_HPP */

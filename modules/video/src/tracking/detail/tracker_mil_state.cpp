@@ -6,7 +6,7 @@
 #include "opencv2/video/detail/tracking.detail.hpp"
 #include "tracker_mil_state.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -156,4 +156,4 @@ void TrackerStateEstimatorMILBoosting::updateImpl(std::vector<ConfidenceMap>& co
     boostMILModel.update(positiveStates, negativeStates);
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

@@ -58,7 +58,7 @@
 #define GET_OPTIMIZED(func) (func)
 
 
-namespace cv
+namespace ncvslideio
 {
 
 /**
@@ -137,8 +137,8 @@ static inline bool haveCollinearPoints( const Mat& m, int count )
     return false;
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
-int checkChessboardBinary(const cv::Mat & img, const cv::Size & size);
+int checkChessboardBinary(const ncvslideio::Mat & img, const ncvslideio::Size & size);
 
 #endif

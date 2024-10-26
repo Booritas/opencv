@@ -72,7 +72,7 @@ bool SimilarWith<Vec3f>::operator()(const Vec3f& other)
 template<>
 bool SimilarWith<Vec4i>::operator()(const Vec4i& other)
 {
-    return cv::norm(value, other) < theta_eps;
+    return ncvslideio::norm(value, other) < theta_eps;
 }
 
 template <typename T>

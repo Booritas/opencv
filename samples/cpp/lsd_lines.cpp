@@ -4,11 +4,11 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
                                  "{input   i|building.jpg|input image}"
                                  "{refine  r|false|if true use LSD_REFINE_STD method, if false use LSD_REFINE_NONE method}"
                                  "{canny   c|false|use Canny edge detector}"

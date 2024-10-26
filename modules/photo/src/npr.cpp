@@ -47,9 +47,9 @@
 #include "npr.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
-void cv::edgePreservingFilter(InputArray _src, OutputArray dst, int flags, float sigma_s, float sigma_r)
+void ncvslideio::edgePreservingFilter(InputArray _src, OutputArray dst, int flags, float sigma_s, float sigma_r)
 {
     CV_INSTRUMENT_REGION();
 
@@ -66,7 +66,7 @@ void cv::edgePreservingFilter(InputArray _src, OutputArray dst, int flags, float
     convertScaleAbs(res, dst, 255,0);
 }
 
-void cv::detailEnhance(InputArray _src, OutputArray dst, float sigma_s, float sigma_r)
+void ncvslideio::detailEnhance(InputArray _src, OutputArray dst, float sigma_s, float sigma_r)
 {
     CV_INSTRUMENT_REGION();
 
@@ -102,7 +102,7 @@ void cv::detailEnhance(InputArray _src, OutputArray dst, float sigma_s, float si
     res.convertTo(dst,CV_8UC3,255);
 }
 
-void cv::pencilSketch(InputArray _src, OutputArray _dst1, OutputArray _dst2, float sigma_s, float sigma_r, float shade_factor)
+void ncvslideio::pencilSketch(InputArray _src, OutputArray _dst1, OutputArray _dst2, float sigma_s, float sigma_r, float shade_factor)
 {
     CV_INSTRUMENT_REGION();
 
@@ -128,7 +128,7 @@ void cv::pencilSketch(InputArray _src, OutputArray _dst1, OutputArray _dst2, flo
 
 }
 
-void cv::stylization(InputArray _src, OutputArray _dst, float sigma_s, float sigma_r)
+void ncvslideio::stylization(InputArray _src, OutputArray _dst, float sigma_s, float sigma_r)
 {
     CV_INSTRUMENT_REGION();
 

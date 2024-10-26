@@ -8,7 +8,7 @@
 
 #include "upcean_decoder.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 using std::string;

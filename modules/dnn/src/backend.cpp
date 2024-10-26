@@ -21,11 +21,11 @@
 #include "plugin_wrapper.impl.hpp"
 
 
-namespace cv { namespace dnn_backend {
+namespace ncvslideio { namespace dnn_backend {
 
 NetworkBackend::~NetworkBackend()
 {
     // nothing
 }
 
-}}  // namespace cv::dnn_backend
+}}  // namespace ncvslideio::dnn_backend

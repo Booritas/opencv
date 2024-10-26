@@ -20,7 +20,7 @@ Below is the original copyright:
 #include "internal.hpp"
 #include "../include/command.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -75,7 +75,7 @@ void CommandBuffer::barrierSource(VkBuffer source, size_t start, size_t size, Ba
 
 void CommandBuffer::beginRecord(VkCommandBufferUsageFlags flag)
 {
-    cv::AutoLock lock(kContextMtx);
+    ncvslideio::AutoLock lock(kContextMtx);
     VkCommandBufferBeginInfo cmdBufferBeginInfo{
             /* .sType            = */ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
             /* .pNext            = */ nullptr,
@@ -108,7 +108,7 @@ CommandBuffer::~CommandBuffer()
 // *********************** CommandPool ********************
 Ptr<CommandPool> CommandPool::create(const VkQueue &q, uint32_t _queueFamilyIndex)
 {
-    cv::AutoLock lock(kContextMtx);
+    ncvslideio::AutoLock lock(kContextMtx);
     Ptr<CommandPool> cmdPoolInstance = Ptr<CommandPool>(new CommandPool(q, _queueFamilyIndex));
 
     return cmdPoolInstance;
@@ -116,7 +116,7 @@ Ptr<CommandPool> CommandPool::create(const VkQueue &q, uint32_t _queueFamilyInde
 
 CommandPool::CommandPool(const VkQueue& q, uint32_t _queueFamilyIndex) : queue(q), cmdPool(VK_NULL_HANDLE), queueFamilyIndex(_queueFamilyIndex)
 {
-    cv::AutoLock lock(kContextMtx);
+    ncvslideio::AutoLock lock(kContextMtx);
     VkCommandPoolCreateInfo cmdPoolCreateInfo{
         /* .sType            = */ VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         /* .pNext            = */ nullptr,
@@ -179,4 +179,4 @@ void CommandPool::submitAndWait(VkCommandBuffer& _buffer) const
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

@@ -4,7 +4,7 @@
 namespace opencv_test
 {
 
-struct SobelEdgeDetector:  public TestPerfParams<cv::Size> {};
+struct SobelEdgeDetector:  public TestPerfParams<ncvslideio::Size> {};
 PERF_TEST_P_(SobelEdgeDetector, Fluid)
 {
     Size sz = GetParam();
@@ -18,8 +18,8 @@ PERF_TEST_P_(SobelEdgeDetector, Fluid)
     GComputation sobel(in, out);
     auto pkg = gapi::combine(gapi::core::fluid::kernels(),
                              gapi::imgproc::fluid::kernels());
-    auto cc = sobel.compile(cv::descr_of(in_mat1),
-                            cv::compile_args(cv::gapi::use_only{pkg}));
+    auto cc = sobel.compile(ncvslideio::descr_of(in_mat1),
+                            ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg}));
     cc(in_mat1, out_mat_gapi);
 
     TEST_CYCLE()
@@ -35,8 +35,8 @@ PERF_TEST_P_(SobelEdgeDetector, OpenCV)
 
     Mat gx, gy;
     Mat mag;
-    auto cc = [&](const cv::Mat &in_mat, cv::Mat &out_mat) {
-        using namespace cv;
+    auto cc = [&](const ncvslideio::Mat &in_mat, ncvslideio::Mat &out_mat) {
+        using namespace ncvslideio;
 
         Sobel(in_mat, gx, CV_32F, 1, 0);
         Sobel(in_mat, gy, CV_32F, 0, 1);
@@ -61,13 +61,13 @@ PERF_TEST_P_(SobelEdgeDetector, OpenCV_Smarter)
     Mat sum;
     Mat mag;
 
-    auto cc = [&](const cv::Mat &in_mat, cv::Mat &out_mat) {
-        cv::Sobel(in_mat, gx, CV_32F, 1, 0);
-        cv::Sobel(in_mat, gy, CV_32F, 0, 1);
-        cv::multiply(gx, gx, ggx);
-        cv::multiply(gy, gy, ggy);
-        cv::add(ggx, ggy, sum);
-        cv::sqrt(sum, mag);
+    auto cc = [&](const ncvslideio::Mat &in_mat, ncvslideio::Mat &out_mat) {
+        ncvslideio::Sobel(in_mat, gx, CV_32F, 1, 0);
+        ncvslideio::Sobel(in_mat, gy, CV_32F, 0, 1);
+        ncvslideio::multiply(gx, gx, ggx);
+        ncvslideio::multiply(gy, gy, ggy);
+        ncvslideio::add(ggx, ggy, sum);
+        ncvslideio::sqrt(sum, mag);
         mag.convertTo(out_mat, CV_8U);
     };
     cc(in_mat1, out_mat_gapi);
@@ -79,10 +79,10 @@ PERF_TEST_P_(SobelEdgeDetector, OpenCV_Smarter)
     SANITY_CHECK_NOTHING();
 }
 INSTANTIATE_TEST_CASE_P(Benchmark, SobelEdgeDetector,
-                        Values(cv::Size(320, 240),
-                               cv::Size(640, 480),
-                               cv::Size(1280, 720),
-                               cv::Size(1920, 1080),
-                               cv::Size(3840, 2170)));
+                        Values(ncvslideio::Size(320, 240),
+                               ncvslideio::Size(640, 480),
+                               ncvslideio::Size(1280, 720),
+                               ncvslideio::Size(1920, 1080),
+                               ncvslideio::Size(3840, 2170)));
 
 } // opencv_test

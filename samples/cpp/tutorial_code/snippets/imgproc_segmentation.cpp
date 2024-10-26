@@ -1,7 +1,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc/segmentation.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 static
 void usage_example_intelligent_scissors()

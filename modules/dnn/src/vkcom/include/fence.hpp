@@ -11,7 +11,7 @@
 #include <vulkan/vulkan.h>
 #endif // HAVE_VULKAN
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 #ifdef HAVE_VULKAN
 // Used for synchronize and wait
 class Fence
@@ -28,6 +28,6 @@ private:
     VkFence fence;
 };
 #endif // HAVE_VULKAN
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #endif //OPENCV_FENCE_HPP

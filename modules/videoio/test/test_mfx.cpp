@@ -24,7 +24,7 @@ TEST(videoio_mfx, write_invalid)
     if (!videoio_registry::hasBackend(CAP_INTEL_MFX))
         throw SkipTestException("MediaSDK backend was not found");
 
-    const string filename = cv::tempfile(".264");
+    const string filename = ncvslideio::tempfile(".264");
     VideoWriter writer;
     bool res = true;
     ASSERT_NO_THROW(res = writer.open(filename, CAP_INTEL_MFX, VideoWriter::fourcc('H', '2', '6', '4'), 1, Size(641, 480), true));
@@ -94,7 +94,7 @@ TEST_P(videoio_mfx, read_write_raw)
     const Size FRAME_SIZE = get<0>(GetParam());
     const double FPS = get<1>(GetParam());
     const char *ext = get<2>(GetParam());
-    const String filename = cv::tempfile(ext);
+    const String filename = ncvslideio::tempfile(ext);
     const int fourcc = fourccByExt(ext);
 
     // For some reason MPEG2 codec does not work well with this particular videostream at 1 FPS

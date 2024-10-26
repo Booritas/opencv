@@ -12,7 +12,7 @@
 
 #include <plaidml2/core/ffi.h>
 
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {

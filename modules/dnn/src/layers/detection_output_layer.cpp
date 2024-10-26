@@ -60,10 +60,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/detection_output.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -114,7 +114,7 @@ public:
 
     int _backgroundLabelId;
 
-    cv::String _codeType;
+    ncvslideio::String _codeType;
 
     bool _varianceEncodedInTarget;
     int _keepTopK;
@@ -249,7 +249,7 @@ public:
     bool ocl_DecodeBBoxesAll(UMat& loc_mat, UMat& prior_mat,
                              const int num, const int numPriors, const bool share_location,
                              const int num_loc_classes, const int background_label_id,
-                             const cv::String& code_type, const bool variance_encoded_in_target,
+                             const ncvslideio::String& code_type, const bool variance_encoded_in_target,
                              const bool clip, std::vector<LabelBBox>& all_decode_bboxes)
     {
         UMat outmat = UMat(loc_mat.dims, loc_mat.size, CV_32F);
@@ -522,7 +522,7 @@ public:
         {
             int label = it->first;
             if (confidenceScores.rows <= label)
-                CV_Error_(cv::Error::StsError, ("Could not find confidence predictions for label %d", label));
+                CV_Error_(ncvslideio::Error::StsError, ("Could not find confidence predictions for label %d", label));
             const std::vector<float>& scores = confidenceScores.row(label);
             const std::vector<int>& indices = it->second;
 
@@ -547,12 +547,12 @@ public:
         {
             int label = it->first;
             if (confidenceScores.rows <= label)
-                CV_Error_(cv::Error::StsError, ("Could not find confidence predictions for label %d", label));
+                CV_Error_(ncvslideio::Error::StsError, ("Could not find confidence predictions for label %d", label));
             const std::vector<float>& scores = confidenceScores.row(label);
             int locLabel = _shareLocation ? -1 : label;
             LabelBBox::const_iterator label_bboxes = decodeBBoxes.find(locLabel);
             if (label_bboxes == decodeBBoxes.end())
-                CV_Error_(cv::Error::StsError, ("Could not find location predictions for label %d", locLabel));
+                CV_Error_(ncvslideio::Error::StsError, ("Could not find location predictions for label %d", locLabel));
             const std::vector<int>& indices = it->second;
 
             for (size_t j = 0; j < indices.size(); ++j, ++count)
@@ -584,14 +584,14 @@ public:
             if (c == _backgroundLabelId)
                 continue; // Ignore background class.
             if (c >= confidenceScores.rows)
-                CV_Error_(cv::Error::StsError, ("Could not find confidence predictions for label %d", c));
+                CV_Error_(ncvslideio::Error::StsError, ("Could not find confidence predictions for label %d", c));
 
             const std::vector<float> scores = confidenceScores.row(c);
             int label = _shareLocation ? -1 : c;
 
             LabelBBox::const_iterator label_bboxes = decodeBBoxes.find(label);
             if (label_bboxes == decodeBBoxes.end())
-                CV_Error_(cv::Error::StsError, ("Could not find location predictions for label %d", label));
+                CV_Error_(ncvslideio::Error::StsError, ("Could not find location predictions for label %d", label));
             int limit = (getNumOfTargetClasses() == 1) ? _keepTopK : std::numeric_limits<int>::max();
             if (_bboxesNormalized)
                 NMSFast_(label_bboxes->second, scores, _confidenceThreshold, _nmsThreshold, 1.0, _topK,
@@ -610,7 +610,7 @@ public:
                 int label = it->first;
                 const std::vector<int>& labelIndices = it->second;
                 if (label >= confidenceScores.rows)
-                    CV_Error_(cv::Error::StsError, ("Could not find location predictions for label %d", label));
+                    CV_Error_(ncvslideio::Error::StsError, ("Could not find location predictions for label %d", label));
                 const std::vector<float>& scores = confidenceScores.row(label);
                 for (size_t j = 0; j < labelIndices.size(); ++j)
                 {
@@ -686,7 +686,7 @@ public:
     template<bool variance_encoded_in_target>
     static void DecodeBBox(
         const util::NormalizedBBox& prior_bbox, const std::vector<float>& prior_variance,
-        const cv::String& code_type,
+        const ncvslideio::String& code_type,
         const bool clip_bbox, const util::NormalizedBBox& clip_bounds,
         const bool normalized_bbox, const util::NormalizedBBox& bbox,
         util::NormalizedBBox& decode_bbox)
@@ -744,7 +744,7 @@ public:
     static void DecodeBBoxes(
         const std::vector<util::NormalizedBBox>& prior_bboxes,
         const std::vector<std::vector<float> >& prior_variances,
-        const cv::String& code_type, const bool variance_encoded_in_target,
+        const ncvslideio::String& code_type, const bool variance_encoded_in_target,
         const bool clip_bbox, const util::NormalizedBBox& clip_bounds,
         const bool normalized_bbox, const std::vector<util::NormalizedBBox>& bboxes,
         std::vector<util::NormalizedBBox>& decode_bboxes)
@@ -776,7 +776,7 @@ public:
         const std::vector<std::vector<float> >& prior_variances,
         const int num, const bool share_location,
         const int num_loc_classes, const int background_label_id,
-        const cv::String& code_type, const bool variance_encoded_in_target,
+        const ncvslideio::String& code_type, const bool variance_encoded_in_target,
         const bool clip, const util::NormalizedBBox& clip_bounds,
         const bool normalized_bbox, std::vector<LabelBBox>& all_decode_bboxes)
     {
@@ -795,7 +795,7 @@ public:
                     continue; // Ignore background class.
                 LabelBBox::const_iterator label_loc_preds = loc_preds.find(label);
                 if (label_loc_preds == loc_preds.end())
-                    CV_Error_(cv::Error::StsError, ("Could not find location predictions for label %d", label));
+                    CV_Error_(ncvslideio::Error::StsError, ("Could not find location predictions for label %d", label));
                 DecodeBBoxes(prior_bboxes, prior_variances,
                              code_type, variance_encoded_in_target, clip, clip_bounds,
                              normalized_bbox, label_loc_preds->second, decode_bboxes[label]);

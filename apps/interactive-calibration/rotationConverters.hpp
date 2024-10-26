@@ -12,9 +12,9 @@ namespace calib
 #define CALIB_RADIANS 0
 #define CALIB_DEGREES 1
 
-    void Euler(const cv::Mat& src, cv::Mat& dst, int argType = CALIB_RADIANS);
-    void RodriguesToEuler(const cv::Mat& src, cv::Mat& dst, int argType = CALIB_RADIANS);
-    void EulerToRodrigues(const cv::Mat& src, cv::Mat& dst, int argType = CALIB_RADIANS);
+    void Euler(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType = CALIB_RADIANS);
+    void RodriguesToEuler(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType = CALIB_RADIANS);
+    void EulerToRodrigues(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType = CALIB_RADIANS);
 
 }
 #endif

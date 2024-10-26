@@ -29,13 +29,13 @@ public:
     CV_ALWAYS_INLINE fixedpoint64(const int16_t& _val) { val = ((int64_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE fixedpoint64(const uint16_t& _val) { val = ((int64_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE fixedpoint64(const int32_t& _val) { val = ((int64_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE fixedpoint64(const cv::softdouble& _val) { val = cvRound64(_val * cv::softdouble((int64_t)(1LL << fixedShift))); }
+    CV_ALWAYS_INLINE fixedpoint64(const ncvslideio::softdouble& _val) { val = cvRound64(_val * ncvslideio::softdouble((int64_t)(1LL << fixedShift))); }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const int8_t& _val) { val = ((int64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const uint8_t& _val) { val = ((int64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const int16_t& _val) { val = ((int64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const uint16_t& _val) { val = ((int64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const int32_t& _val) { val = ((int64_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE fixedpoint64& operator = (const cv::softdouble& _val) { val = cvRound64(_val * cv::softdouble((int64_t)(1LL << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE fixedpoint64& operator = (const ncvslideio::softdouble& _val) { val = cvRound64(_val * ncvslideio::softdouble((int64_t)(1LL << fixedShift))); return *this; }
     CV_ALWAYS_INLINE fixedpoint64& operator = (const fixedpoint64& _val) { val = _val.val; return *this; }
     CV_ALWAYS_INLINE fixedpoint64 operator * (const int8_t& val2) const { return operator *(fixedpoint64(val2)); }
     CV_ALWAYS_INLINE fixedpoint64 operator * (const uint8_t& val2) const { return operator *(fixedpoint64(val2)); }
@@ -81,7 +81,7 @@ public:
     CV_ALWAYS_INLINE fixedpoint64 operator << (int n) const { return fixedpoint64(val << n); }
     CV_ALWAYS_INLINE bool operator == (const fixedpoint64& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>((int64_t)fixedround((uint64_t)val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>((int64_t)fixedround((uint64_t)val) >> fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1LL << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1LL << fixedShift); }
     CV_ALWAYS_INLINE operator uint8_t() const { return saturate_cast<uint8_t>(); }
@@ -111,11 +111,11 @@ public:
     CV_ALWAYS_INLINE ufixedpoint64(const uint8_t& _val) { val = ((uint64_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE ufixedpoint64(const uint16_t& _val) { val = ((uint64_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE ufixedpoint64(const uint32_t& _val) { val = ((uint64_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE ufixedpoint64(const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint64_t)cvRound64(_val * cv::softdouble((int64_t)(1LL << fixedShift))); }
+    CV_ALWAYS_INLINE ufixedpoint64(const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint64_t)cvRound64(_val * ncvslideio::softdouble((int64_t)(1LL << fixedShift))); }
     CV_ALWAYS_INLINE ufixedpoint64& operator = (const uint8_t& _val) { val = ((uint64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE ufixedpoint64& operator = (const uint16_t& _val) { val = ((uint64_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE ufixedpoint64& operator = (const uint32_t& _val) { val = ((uint64_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE ufixedpoint64& operator = (const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint64_t)cvRound64(_val * cv::softdouble((int64_t)(1LL << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE ufixedpoint64& operator = (const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint64_t)cvRound64(_val * ncvslideio::softdouble((int64_t)(1LL << fixedShift))); return *this; }
     CV_ALWAYS_INLINE ufixedpoint64& operator = (const ufixedpoint64& _val) { val = _val.val; return *this; }
     CV_ALWAYS_INLINE ufixedpoint64 operator * (const uint8_t& val2) const { return operator *(ufixedpoint64(val2)); }
     CV_ALWAYS_INLINE ufixedpoint64 operator * (const uint16_t& val2) const { return operator *(ufixedpoint64(val2)); }
@@ -148,7 +148,7 @@ public:
     CV_ALWAYS_INLINE ufixedpoint64 operator << (int n) const { return ufixedpoint64(val << n); }
     CV_ALWAYS_INLINE bool operator == (const ufixedpoint64& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>(fixedround(val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>(fixedround(val) >> fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1LL << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1LL << fixedShift); }
     CV_ALWAYS_INLINE operator uint8_t() const { return saturate_cast<uint8_t>(); }
@@ -162,7 +162,7 @@ public:
 
     static CV_ALWAYS_INLINE ufixedpoint64 fromRaw(uint64_t v) { return ufixedpoint64(v); }
     CV_ALWAYS_INLINE uint64_t raw() { return val; }
-    CV_ALWAYS_INLINE uint32_t cvFloor() const { return cv::saturate_cast<uint32_t>(val >> fixedShift); }
+    CV_ALWAYS_INLINE uint32_t cvFloor() const { return ncvslideio::saturate_cast<uint32_t>(val >> fixedShift); }
     friend class ufixedpoint32;
 };
 
@@ -182,15 +182,15 @@ public:
     CV_ALWAYS_INLINE fixedpoint32(const int8_t& _val) { val = ((int32_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE fixedpoint32(const uint8_t& _val) { val = ((int32_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE fixedpoint32(const int16_t& _val) { val = ((int32_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE fixedpoint32(const cv::softdouble& _val) { val = (int32_t)cvRound(_val * cv::softdouble((1 << fixedShift))); }
+    CV_ALWAYS_INLINE fixedpoint32(const ncvslideio::softdouble& _val) { val = (int32_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); }
     CV_ALWAYS_INLINE fixedpoint32& operator = (const int8_t& _val) { val = ((int32_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint32& operator = (const uint8_t& _val) { val = ((int32_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE fixedpoint32& operator = (const int16_t& _val) { val = ((int32_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE fixedpoint32& operator = (const cv::softdouble& _val) { val = (int32_t)cvRound(_val * cv::softdouble((1 << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE fixedpoint32& operator = (const ncvslideio::softdouble& _val) { val = (int32_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); return *this; }
     CV_ALWAYS_INLINE fixedpoint32& operator = (const fixedpoint32& _val) { val = _val.val; return *this; }
-    CV_ALWAYS_INLINE fixedpoint32 operator * (const int8_t& val2) const { return cv::saturate_cast<int32_t>((int64_t)val * val2); }
-    CV_ALWAYS_INLINE fixedpoint32 operator * (const uint8_t& val2) const { return cv::saturate_cast<int32_t>((int64_t)val * val2); }
-    CV_ALWAYS_INLINE fixedpoint32 operator * (const int16_t& val2) const { return cv::saturate_cast<int32_t>((int64_t)val * val2); }
+    CV_ALWAYS_INLINE fixedpoint32 operator * (const int8_t& val2) const { return ncvslideio::saturate_cast<int32_t>((int64_t)val * val2); }
+    CV_ALWAYS_INLINE fixedpoint32 operator * (const uint8_t& val2) const { return ncvslideio::saturate_cast<int32_t>((int64_t)val * val2); }
+    CV_ALWAYS_INLINE fixedpoint32 operator * (const int16_t& val2) const { return ncvslideio::saturate_cast<int32_t>((int64_t)val * val2); }
     CV_ALWAYS_INLINE fixedpoint64 operator * (const fixedpoint32& val2) const { return (int64_t)val * (int64_t)(val2.val); }
     CV_ALWAYS_INLINE fixedpoint32 operator + (const fixedpoint32& val2) const
     {
@@ -206,7 +206,7 @@ public:
     CV_ALWAYS_INLINE fixedpoint32 operator << (int n) const { return fixedpoint32(val << n); }
     CV_ALWAYS_INLINE bool operator == (const fixedpoint32& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>((int32_t)fixedround((uint32_t)val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>((int32_t)fixedround((uint32_t)val) >> fixedShift); }
     CV_ALWAYS_INLINE operator fixedpoint64() const { return (int64_t)val << (fixedpoint64::fixedShift - fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1 << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1 << fixedShift); }
@@ -236,13 +236,13 @@ public:
     CV_ALWAYS_INLINE ufixedpoint32(const ufixedpoint32& v) { val = v.val; }
     CV_ALWAYS_INLINE ufixedpoint32(const uint8_t& _val) { val = ((uint32_t)_val) << fixedShift; }
     CV_ALWAYS_INLINE ufixedpoint32(const uint16_t& _val) { val = ((uint32_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE ufixedpoint32(const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint32_t)cvRound(_val * cv::softdouble((1 << fixedShift))); }
+    CV_ALWAYS_INLINE ufixedpoint32(const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint32_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); }
     CV_ALWAYS_INLINE ufixedpoint32& operator = (const uint8_t& _val) { val = ((uint32_t)_val) << fixedShift; return *this; }
     CV_ALWAYS_INLINE ufixedpoint32& operator = (const uint16_t& _val) { val = ((uint32_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE ufixedpoint32& operator = (const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint32_t)cvRound(_val * cv::softdouble((1 << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE ufixedpoint32& operator = (const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint32_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); return *this; }
     CV_ALWAYS_INLINE ufixedpoint32& operator = (const ufixedpoint32& _val) { val = _val.val; return *this; }
-    CV_ALWAYS_INLINE ufixedpoint32 operator * (const uint8_t& val2) const { return cv::saturate_cast<uint32_t>((uint64_t)val * val2); }
-    CV_ALWAYS_INLINE ufixedpoint32 operator * (const uint16_t& val2) const { return cv::saturate_cast<uint32_t>((uint64_t)val * val2); }
+    CV_ALWAYS_INLINE ufixedpoint32 operator * (const uint8_t& val2) const { return ncvslideio::saturate_cast<uint32_t>((uint64_t)val * val2); }
+    CV_ALWAYS_INLINE ufixedpoint32 operator * (const uint16_t& val2) const { return ncvslideio::saturate_cast<uint32_t>((uint64_t)val * val2); }
     CV_ALWAYS_INLINE ufixedpoint64 operator * (const ufixedpoint32& val2) const { return (uint64_t)val * (uint64_t)(val2.val); }
     CV_ALWAYS_INLINE ufixedpoint32 operator + (const ufixedpoint32& val2) const
     {
@@ -257,7 +257,7 @@ public:
     CV_ALWAYS_INLINE ufixedpoint32 operator << (int n) const { return ufixedpoint32(val << n); }
     CV_ALWAYS_INLINE bool operator == (const ufixedpoint32& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>(fixedround(val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>(fixedround(val) >> fixedShift); }
     CV_ALWAYS_INLINE operator ufixedpoint64() const { return (uint64_t)val << (ufixedpoint64::fixedShift - fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1 << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1 << fixedShift); }
@@ -289,11 +289,11 @@ public:
     CV_ALWAYS_INLINE fixedpoint16() { val = 0; }
     CV_ALWAYS_INLINE fixedpoint16(const fixedpoint16& v) { val = v.val; }
     CV_ALWAYS_INLINE fixedpoint16(const int8_t& _val) { val = ((int16_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE fixedpoint16(const cv::softdouble& _val) { val = (int16_t)cvRound(_val * cv::softdouble((1 << fixedShift))); }
+    CV_ALWAYS_INLINE fixedpoint16(const ncvslideio::softdouble& _val) { val = (int16_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); }
     CV_ALWAYS_INLINE fixedpoint16& operator = (const int8_t& _val) { val = ((int16_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE fixedpoint16& operator = (const cv::softdouble& _val) { val = (int16_t)cvRound(_val * cv::softdouble((1 << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE fixedpoint16& operator = (const ncvslideio::softdouble& _val) { val = (int16_t)cvRound(_val * ncvslideio::softdouble((1 << fixedShift))); return *this; }
     CV_ALWAYS_INLINE fixedpoint16& operator = (const fixedpoint16& _val) { val = _val.val; return *this; }
-    CV_ALWAYS_INLINE fixedpoint16 operator * (const int8_t& val2) const { return cv::saturate_cast<int16_t>((int32_t)val * val2); }
+    CV_ALWAYS_INLINE fixedpoint16 operator * (const int8_t& val2) const { return ncvslideio::saturate_cast<int16_t>((int32_t)val * val2); }
     CV_ALWAYS_INLINE fixedpoint32 operator * (const fixedpoint16& val2) const { return (int32_t)val * (int32_t)(val2.val); }
     CV_ALWAYS_INLINE fixedpoint16 operator + (const fixedpoint16& val2) const
     {
@@ -309,7 +309,7 @@ public:
     CV_ALWAYS_INLINE fixedpoint16 operator << (int n) const { return fixedpoint16((int16_t)(val << n)); }
     CV_ALWAYS_INLINE bool operator == (const fixedpoint16& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>((int16_t)fixedround((uint16_t)val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>((int16_t)fixedround((uint16_t)val) >> fixedShift); }
     CV_ALWAYS_INLINE operator fixedpoint32() const { return (int32_t)val << (fixedpoint32::fixedShift - fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1 << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1 << fixedShift); }
@@ -337,11 +337,11 @@ public:
     CV_ALWAYS_INLINE ufixedpoint16() { val = 0; }
     CV_ALWAYS_INLINE ufixedpoint16(const ufixedpoint16& v) { val = v.val; }
     CV_ALWAYS_INLINE ufixedpoint16(const uint8_t& _val) { val = ((uint16_t)_val) << fixedShift; }
-    CV_ALWAYS_INLINE ufixedpoint16(const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint16_t)cvRound(_val * cv::softdouble((int32_t)(1 << fixedShift))); }
+    CV_ALWAYS_INLINE ufixedpoint16(const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint16_t)cvRound(_val * ncvslideio::softdouble((int32_t)(1 << fixedShift))); }
     CV_ALWAYS_INLINE ufixedpoint16& operator = (const uint8_t& _val) { val = ((uint16_t)_val) << fixedShift; return *this; }
-    CV_ALWAYS_INLINE ufixedpoint16& operator = (const cv::softdouble& _val) { val = _val.getSign() ? 0 : (uint16_t)cvRound(_val * cv::softdouble((int32_t)(1 << fixedShift))); return *this; }
+    CV_ALWAYS_INLINE ufixedpoint16& operator = (const ncvslideio::softdouble& _val) { val = _val.getSign() ? 0 : (uint16_t)cvRound(_val * ncvslideio::softdouble((int32_t)(1 << fixedShift))); return *this; }
     CV_ALWAYS_INLINE ufixedpoint16& operator = (const ufixedpoint16& _val) { val = _val.val; return *this; }
-    CV_ALWAYS_INLINE ufixedpoint16 operator * (const uint8_t& val2) const { return cv::saturate_cast<uint16_t>((uint32_t)val * val2); }
+    CV_ALWAYS_INLINE ufixedpoint16 operator * (const uint8_t& val2) const { return ncvslideio::saturate_cast<uint16_t>((uint32_t)val * val2); }
     CV_ALWAYS_INLINE ufixedpoint32 operator * (const ufixedpoint16& val2) const { return ((uint32_t)val * (uint32_t)(val2.val)); }
     CV_ALWAYS_INLINE ufixedpoint16 operator + (const ufixedpoint16& val2) const
     {
@@ -356,7 +356,7 @@ public:
     CV_ALWAYS_INLINE ufixedpoint16 operator << (int n) const { return ufixedpoint16((uint16_t)(val << n)); }
     CV_ALWAYS_INLINE bool operator == (const ufixedpoint16& val2) const { return val == val2.val; }
     template <typename ET>
-    CV_ALWAYS_INLINE ET saturate_cast() const { return cv::saturate_cast<ET>(fixedround(val) >> fixedShift); }
+    CV_ALWAYS_INLINE ET saturate_cast() const { return ncvslideio::saturate_cast<ET>(fixedround(val) >> fixedShift); }
     CV_ALWAYS_INLINE operator ufixedpoint32() const { return (uint32_t)val << (ufixedpoint32::fixedShift - fixedShift); }
     CV_ALWAYS_INLINE operator double() const { return (double)val / (1 << fixedShift); }
     CV_ALWAYS_INLINE operator float() const { return (float)val / (1 << fixedShift); }

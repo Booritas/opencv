@@ -146,7 +146,7 @@ int Core_ReduceTest::checkOp( const Mat& src, int dstType, int opType, const Mat
 
     CV_Assert( opRes.type() == CV_64FC1 );
     Mat _dst, dst, diff;
-    cv::reduce( src, _dst, dim, opType, dstType );
+    ncvslideio::reduce( src, _dst, dim, opType, dstType );
     _dst.convertTo( dst, CV_64FC1 );
 
     absdiff( opRes,dst,diff );
@@ -328,7 +328,7 @@ TEST(Core_PCA, accuracy)
     Mat rBackPrjTestPoints = rPCA.backProject( rPrjTestPoints );
 
     Mat avg(1, sz.width, CV_32FC1 );
-    cv::reduce( rPoints, avg, 0, REDUCE_AVG );
+    ncvslideio::reduce( rPoints, avg, 0, REDUCE_AVG );
     Mat Q = rPoints - repeat( avg, rPoints.rows, 1 ), Qt = Q.t(), eval, evec;
     Q = Qt * Q;
     Q = Q /(float)rPoints.rows;
@@ -379,7 +379,7 @@ TEST(Core_PCA, accuracy)
             minMaxLoc(tmp, 0, &mval, 0, &mloc);
 
             EXPECT_LE(err, evecEps) << "pca.eigenvectors is incorrect (CV_PCA_DATA_AS_ROW) at " << i << " "
-                << cv::format("max diff is %g at (i=%d, j=%d) (%g vs %g)\n",
+                << ncvslideio::format("max diff is %g at (i=%d, j=%d) (%g vs %g)\n",
                         mval, mloc.y, mloc.x, rPCA.eigenvectors.at<float>(mloc.y, mloc.x),
                         subEvec.at<float>(mloc.y, mloc.x))
                 << "r0=" << r0 << std::endl
@@ -415,7 +415,7 @@ TEST(Core_PCA, accuracy)
     cPCA( rPoints.t(), Mat(), CV_PCA_DATA_AS_COL, maxComponents );
     diffPrjEps = 1, diffBackPrjEps = 1;
     Mat ocvPrjTestPoints = cPCA.project(rTestPoints.t());
-    err = cvtest::norm(cv::abs(ocvPrjTestPoints), cv::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
+    err = cvtest::norm(ncvslideio::abs(ocvPrjTestPoints), ncvslideio::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
     ASSERT_LE(err, diffPrjEps) << "bad accuracy of project() (CV_PCA_DATA_AS_COL)";
     err = cvtest::norm(cPCA.backProject(ocvPrjTestPoints), rBackPrjTestPoints.t(), NORM_L2 | NORM_RELATIVE);
     ASSERT_LE(err, diffBackPrjEps) << "bad accuracy of backProject() (CV_PCA_DATA_AS_COL)";
@@ -426,9 +426,9 @@ TEST(Core_PCA, accuracy)
     Mat rvPrjTestPoints = cPCA.project(rTestPoints.t());
 
     if( cPCA.eigenvectors.rows > maxComponents)
-        err = cvtest::norm(cv::abs(rvPrjTestPoints.rowRange(0,maxComponents)), cv::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
+        err = cvtest::norm(ncvslideio::abs(rvPrjTestPoints.rowRange(0,maxComponents)), ncvslideio::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
     else
-        err = cvtest::norm(cv::abs(rvPrjTestPoints), cv::abs(rPrjTestPoints.colRange(0,cPCA.eigenvectors.rows).t()), NORM_L2 | NORM_RELATIVE);
+        err = cvtest::norm(ncvslideio::abs(rvPrjTestPoints), ncvslideio::abs(rPrjTestPoints.colRange(0,cPCA.eigenvectors.rows).t()), NORM_L2 | NORM_RELATIVE);
 
     ASSERT_LE(err, diffPrjEps) << "bad accuracy of project() (CV_PCA_DATA_AS_COL); retainedVariance=" << retainedVariance;
     err = cvtest::norm(cPCA.backProject(rvPrjTestPoints), rBackPrjTestPoints.t(), NORM_L2 | NORM_RELATIVE);
@@ -468,13 +468,13 @@ TEST(Core_PCA, accuracy)
     cvProjectPCA( &_testPoints, &_avg, &_evec, &_prjTestPoints );
     cvBackProjectPCA( &_prjTestPoints, &_avg, &_evec, &_backPrjTestPoints );
 
-    err = cvtest::norm(cv::abs(prjTestPoints), cv::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
+    err = cvtest::norm(ncvslideio::abs(prjTestPoints), ncvslideio::abs(rPrjTestPoints.t()), NORM_L2 | NORM_RELATIVE);
     ASSERT_LE(err, diffPrjEps) << "bad accuracy of cvProjectPCA() (CV_PCA_DATA_AS_COL)";
     err = cvtest::norm(backPrjTestPoints, rBackPrjTestPoints.t(), NORM_L2 | NORM_RELATIVE);
     ASSERT_LE(err, diffBackPrjEps) << "bad accuracy of cvBackProjectPCA() (CV_PCA_DATA_AS_COL)";
 #endif
     // Test read and write
-    const std::string filename = cv::tempfile("PCA_store.yml");
+    const std::string filename = ncvslideio::tempfile("PCA_store.yml");
     FileStorage fs( filename, FileStorage::WRITE );
     rPCA.write( fs );
     fs.release();
@@ -598,7 +598,7 @@ static void setValue(SparseMat& M, const int* idx, double value, RNG& rng)
     else if( M.type() == CV_64F )
         *(double*)ptr = value;
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 }
 
 #if defined(__GNUC__) && (__GNUC__ >= 11)
@@ -608,7 +608,7 @@ static void setValue(SparseMat& M, const int* idx, double value, RNG& rng)
 
 template<typename Pixel>
 struct InitializerFunctor{
-    /// Initializer for cv::Mat::forEach test
+    /// Initializer for ncvslideio::Mat::forEach test
     void operator()(Pixel & pixel, const int * idx) const {
         pixel.x = idx[0];
         pixel.y = idx[1];
@@ -618,7 +618,7 @@ struct InitializerFunctor{
 
 template<typename Pixel>
 struct InitializerFunctor5D{
-    /// Initializer for cv::Mat::forEach test (5 dimensional case)
+    /// Initializer for ncvslideio::Mat::forEach test (5 dimensional case)
     void operator()(Pixel & pixel, const int * idx) const {
         pixel[0] = idx[0];
         pixel[1] = idx[1];
@@ -677,12 +677,12 @@ void Core_ArrayOpTest::run( int /* start_from */)
             errcount++;
         }
     }
-    // test cv::Mat::forEach
+    // test ncvslideio::Mat::forEach
     {
         const int dims[3] = { 101, 107, 7 };
-        typedef cv::Point3i Pixel;
+        typedef ncvslideio::Point3i Pixel;
 
-        cv::Mat a = cv::Mat::zeros(3, dims, CV_32SC3);
+        ncvslideio::Mat a = ncvslideio::Mat::zeros(3, dims, CV_32SC3);
         InitializerFunctor<Pixel> initializer;
 
         a.forEach<Pixel>(initializer);
@@ -717,14 +717,14 @@ void Core_ArrayOpTest::run( int /* start_from */)
         }
     }
 
-    // test cv::Mat::forEach
+    // test ncvslideio::Mat::forEach
     // with a matrix that has more dimensions than columns
     // See https://github.com/opencv/opencv/issues/8447
     {
         const int dims[5] = { 2, 2, 2, 2, 2 };
-        typedef cv::Vec<int, 5> Pixel;
+        typedef ncvslideio::Vec<int, 5> Pixel;
 
-        cv::Mat a = cv::Mat::zeros(5, dims, CV_32SC(5));
+        ncvslideio::Mat a = ncvslideio::Mat::zeros(5, dims, CV_32SC(5));
         InitializerFunctor5D<Pixel> initializer;
 
         a.forEach<Pixel>(initializer);
@@ -768,7 +768,7 @@ void Core_ArrayOpTest::run( int /* start_from */)
         }
     }
 
-    // test const cv::Mat::forEach
+    // test const ncvslideio::Mat::forEach
     {
         const Mat a(10, 10, CV_32SC3);
         Mat b(10, 10, CV_32SC3);
@@ -823,9 +823,9 @@ void Core_ArrayOpTest::run( int /* start_from */)
         }
 
         minMaxLoc(_all_vals, &min_val, &max_val);
-        double _norm0 = cv/*test*/::norm(_all_vals, CV_C);
-        double _norm1 = cv/*test*/::norm(_all_vals, CV_L1);
-        double _norm2 = cv/*test*/::norm(_all_vals, CV_L2);
+        double _norm0 = ncvslideio/*test*/::norm(_all_vals, CV_C);
+        double _norm1 = ncvslideio/*test*/::norm(_all_vals, CV_L1);
+        double _norm2 = ncvslideio/*test*/::norm(_all_vals, CV_L2);
 
         for( i = 0; i < nz0; i++ )
         {
@@ -860,9 +860,9 @@ void Core_ArrayOpTest::run( int /* start_from */)
         SparseMat M3; SparseMat(Md).convertTo(M3, Md.type(), 2);
 
         int nz1 = (int)M.nzcount(), nz2 = (int)M3.nzcount();
-        double norm0 = cv/*test*/::norm(M, CV_C);
-        double norm1 = cv/*test*/::norm(M, CV_L1);
-        double norm2 = cv/*test*/::norm(M, CV_L2);
+        double norm0 = ncvslideio/*test*/::norm(M, CV_C);
+        double norm1 = ncvslideio/*test*/::norm(M, CV_L1);
+        double norm2 = ncvslideio/*test*/::norm(M, CV_L2);
         double eps = depth == CV_32F ? FLT_EPSILON*100 : DBL_EPSILON*1000;
 
         if( nz1 != nz0 || nz2 != nz0)
@@ -951,7 +951,7 @@ void Core_ArrayOpTest::run( int /* start_from */)
         int idx1[MAX_DIM], idx2[MAX_DIM];
         double val1 = 0, val2 = 0;
         M3 = SparseMat(Md);
-        cv::minMaxLoc(M3, &val1, &val2, idx1, idx2);
+        ncvslideio::minMaxLoc(M3, &val1, &val2, idx1, idx2);
         string s1 = idx2string(idx1, dims), s2 = idx2string(idx2, dims);
         if( val1 != min_val || val2 != max_val || s1 != min_sidx || s2 != max_sidx )
         {
@@ -962,7 +962,7 @@ void Core_ArrayOpTest::run( int /* start_from */)
             break;
         }
 
-        cv::minMaxIdx(Md, &val1, &val2, idx1, idx2);
+        ncvslideio::minMaxIdx(Md, &val1, &val2, idx1, idx2);
         s1 = idx2string(idx1, dims), s2 = idx2string(idx2, dims);
         if( (min_val < 0 && (val1 != min_val || s1 != min_sidx)) ||
            (max_val > 0 && (val2 != max_val || s2 != max_sidx)) )
@@ -1201,7 +1201,7 @@ TEST(Core_IOArray, submat_assignment)
     Mat1f A = Mat1f::zeros(2,2);
     Mat1f B = Mat1f::ones(1,3);
 
-    EXPECT_THROW( B.colRange(0,3).copyTo(A.row(0)), cv::Exception );
+    EXPECT_THROW( B.colRange(0,3).copyTo(A.row(0)), ncvslideio::Exception );
 
     EXPECT_NO_THROW( B.colRange(0,2).copyTo(A.row(0)) );
 
@@ -1216,27 +1216,27 @@ TEST(Core_IOArray, submat_create)
 {
     Mat1f A = Mat1f::zeros(2,2);
 
-    EXPECT_THROW( OutputArray_create1(A.row(0)), cv::Exception );
-    EXPECT_THROW( OutputArray_create2(A.row(0)), cv::Exception );
+    EXPECT_THROW( OutputArray_create1(A.row(0)), ncvslideio::Exception );
+    EXPECT_THROW( OutputArray_create2(A.row(0)), ncvslideio::Exception );
 }
 
 TEST(Core_Mat, issue4457_pass_null_ptr)
 {
-    ASSERT_ANY_THROW(cv::Mat mask(45, 45, CV_32F, 0));
+    ASSERT_ANY_THROW(ncvslideio::Mat mask(45, 45, CV_32F, 0));
 }
 
 TEST(Core_Mat, reshape_1942)
 {
-    cv::Mat A = (cv::Mat_<float>(2,3) << 3.4884074, 1.4159607, 0.78737736,  2.3456569, -0.88010466, 0.3009364);
+    ncvslideio::Mat A = (ncvslideio::Mat_<float>(2,3) << 3.4884074, 1.4159607, 0.78737736,  2.3456569, -0.88010466, 0.3009364);
     int cn = 0;
     ASSERT_NO_THROW(
-        cv::Mat_<float> M = A.reshape(3);
+        ncvslideio::Mat_<float> M = A.reshape(3);
         cn = M.channels();
     );
     ASSERT_EQ(1, cn);
 }
 
-static void check_ndim_shape(const cv::Mat &mat, int cn, int ndims, const int *sizes)
+static void check_ndim_shape(const ncvslideio::Mat &mat, int cn, int ndims, const int *sizes)
 {
     EXPECT_EQ(mat.channels(), cn);
     EXPECT_EQ(mat.dims, ndims);
@@ -1250,8 +1250,8 @@ static void check_ndim_shape(const cv::Mat &mat, int cn, int ndims, const int *s
 
 TEST(Core_Mat, reshape_ndims_2)
 {
-    const cv::Mat A(8, 16, CV_8UC3);
-    cv::Mat B;
+    const ncvslideio::Mat A(8, 16, CV_8UC3);
+    ncvslideio::Mat B;
 
     {
         int new_sizes_mask[] = { 0, 3, 4, 4 };
@@ -1268,7 +1268,7 @@ TEST(Core_Mat, reshape_ndims_2)
     }
     {
         int new_sizes[] = { 2, 5, 1, 3 };
-        cv::Mat A_sliced = A(cv::Range::all(), cv::Range(0, 15));
+        ncvslideio::Mat A_sliced = A(ncvslideio::Range::all(), ncvslideio::Range(0, 15));
         ASSERT_ANY_THROW(A_sliced.reshape(4, 4, new_sizes));
     }
 }
@@ -1276,8 +1276,8 @@ TEST(Core_Mat, reshape_ndims_2)
 TEST(Core_Mat, reshape_ndims_4)
 {
     const int sizes[] = { 2, 6, 4, 12 };
-    const cv::Mat A(4, sizes, CV_8UC3);
-    cv::Mat B;
+    const ncvslideio::Mat A(4, sizes, CV_8UC3);
+    ncvslideio::Mat B;
 
     {
         int new_sizes_mask[] = { 0, 864 };
@@ -1351,9 +1351,9 @@ TEST(Core_Mat, push_back)
 
 TEST(Core_Mat, copyNx1ToVector)
 {
-    cv::Mat_<uchar> src(5, 1);
-    cv::Mat_<uchar> ref_dst8;
-    cv::Mat_<ushort> ref_dst16;
+    ncvslideio::Mat_<uchar> src(5, 1);
+    ncvslideio::Mat_<uchar> ref_dst8;
+    ncvslideio::Mat_<ushort> ref_dst16;
     std::vector<uchar> dst8;
     std::vector<ushort> dst16;
 
@@ -1362,12 +1362,12 @@ TEST(Core_Mat, copyNx1ToVector)
     src.copyTo(ref_dst8);
     src.copyTo(dst8);
 
-    ASSERT_PRED_FORMAT2(cvtest::MatComparator(0, 0), ref_dst8, cv::Mat_<uchar>(dst8));
+    ASSERT_PRED_FORMAT2(cvtest::MatComparator(0, 0), ref_dst8, ncvslideio::Mat_<uchar>(dst8));
 
     src.convertTo(ref_dst16, CV_16U);
     src.convertTo(dst16, CV_16U);
 
-    ASSERT_PRED_FORMAT2(cvtest::MatComparator(0, 0), ref_dst16, cv::Mat_<ushort>(dst16));
+    ASSERT_PRED_FORMAT2(cvtest::MatComparator(0, 0), ref_dst16, ncvslideio::Mat_<ushort>(dst16));
 }
 
 TEST(Core_Mat, copyMakeBoderUndefinedBehavior)
@@ -1375,11 +1375,11 @@ TEST(Core_Mat, copyMakeBoderUndefinedBehavior)
     Mat1b src(4, 4), dst;
     randu(src, Scalar(10), Scalar(100));
     // This could trigger a (signed int)*size_t operation which is undefined behavior.
-    cv::copyMakeBorder(src, dst, 1, 1, 1, 1, cv::BORDER_REFLECT_101);
-    EXPECT_EQ(0, cv::norm(src.row(1), dst(Rect(1,0,4,1))));
-    EXPECT_EQ(0, cv::norm(src.row(2), dst(Rect(1,5,4,1))));
-    EXPECT_EQ(0, cv::norm(src.col(1), dst(Rect(0,1,1,4))));
-    EXPECT_EQ(0, cv::norm(src.col(2), dst(Rect(5,1,1,4))));
+    ncvslideio::copyMakeBorder(src, dst, 1, 1, 1, 1, ncvslideio::BORDER_REFLECT_101);
+    EXPECT_EQ(0, ncvslideio::norm(src.row(1), dst(Rect(1,0,4,1))));
+    EXPECT_EQ(0, ncvslideio::norm(src.row(2), dst(Rect(1,5,4,1))));
+    EXPECT_EQ(0, ncvslideio::norm(src.col(1), dst(Rect(0,1,1,4))));
+    EXPECT_EQ(0, ncvslideio::norm(src.col(2), dst(Rect(5,1,1,4))));
 }
 
 TEST(Core_Matx, fromMat_)
@@ -1398,8 +1398,8 @@ TEST(Core_Matx, from_initializer_list)
 
 TEST(Core_Mat, regression_9507)
 {
-    cv::Mat m = Mat::zeros(5, 5, CV_8UC3);
-    cv::Mat m2{m};
+    ncvslideio::Mat m = Mat::zeros(5, 5, CV_8UC3);
+    ncvslideio::Mat m2{m};
     EXPECT_EQ(25u, m2.total());
 }
 
@@ -1463,7 +1463,7 @@ TEST(Core_SparseMat, footprint)
 // Can't fix without dirty hacks or broken user code (PR #4159)
 TEST(Core_Mat_vector, DISABLED_OutputArray_create_getMat)
 {
-    cv::Mat_<uchar> src_base(5, 1);
+    ncvslideio::Mat_<uchar> src_base(5, 1);
     std::vector<uchar> dst8;
 
     src_base << 1, 2, 3, 4, 5;
@@ -1481,7 +1481,7 @@ TEST(Core_Mat_vector, DISABLED_OutputArray_create_getMat)
 
 TEST(Core_Mat_vector, copyTo_roi_column)
 {
-    cv::Mat_<uchar> src_base(5, 2);
+    ncvslideio::Mat_<uchar> src_base(5, 2);
     std::vector<uchar> dst1;
 
     src_base << 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
@@ -1513,7 +1513,7 @@ TEST(Core_Mat_vector, copyTo_roi_column)
 
 TEST(Core_Mat_vector, copyTo_roi_row)
 {
-    cv::Mat_<uchar> src_base(2, 5);
+    ncvslideio::Mat_<uchar> src_base(2, 5);
     std::vector<uchar> dst1;
 
     src_base << 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
@@ -1593,30 +1593,30 @@ TEST(Mat, regression_6696_BigData_8Gb)
 
 TEST(Reduce, regression_should_fail_bug_4594)
 {
-    cv::Mat src = cv::Mat::eye(4, 4, CV_8U);
+    ncvslideio::Mat src = ncvslideio::Mat::eye(4, 4, CV_8U);
     std::vector<int> dst;
 
-    EXPECT_THROW(cv::reduce(src, dst, 0, REDUCE_MIN, CV_32S), cv::Exception);
-    EXPECT_THROW(cv::reduce(src, dst, 0, REDUCE_MAX, CV_32S), cv::Exception);
-    EXPECT_NO_THROW(cv::reduce(src, dst, 0, REDUCE_SUM, CV_32S));
-    EXPECT_NO_THROW(cv::reduce(src, dst, 0, REDUCE_AVG, CV_32S));
-    EXPECT_NO_THROW(cv::reduce(src, dst, 0, REDUCE_SUM2, CV_32S));
+    EXPECT_THROW(ncvslideio::reduce(src, dst, 0, REDUCE_MIN, CV_32S), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::reduce(src, dst, 0, REDUCE_MAX, CV_32S), ncvslideio::Exception);
+    EXPECT_NO_THROW(ncvslideio::reduce(src, dst, 0, REDUCE_SUM, CV_32S));
+    EXPECT_NO_THROW(ncvslideio::reduce(src, dst, 0, REDUCE_AVG, CV_32S));
+    EXPECT_NO_THROW(ncvslideio::reduce(src, dst, 0, REDUCE_SUM2, CV_32S));
 }
 
 TEST(Mat, push_back_vector)
 {
-    cv::Mat result(1, 5, CV_32FC1);
+    ncvslideio::Mat result(1, 5, CV_32FC1);
 
     std::vector<float> vec1(result.cols + 1);
     std::vector<int> vec2(result.cols);
 
-    EXPECT_THROW(result.push_back(vec1), cv::Exception);
-    EXPECT_THROW(result.push_back(vec2), cv::Exception);
+    EXPECT_THROW(result.push_back(vec1), ncvslideio::Exception);
+    EXPECT_THROW(result.push_back(vec2), ncvslideio::Exception);
 
     vec1.resize(result.cols);
 
     for (int i = 0; i < 5; ++i)
-        result.push_back(cv::Mat(vec1).reshape(1, 1));
+        result.push_back(ncvslideio::Mat(vec1).reshape(1, 1));
 
     ASSERT_EQ(6, result.rows);
 }
@@ -1635,7 +1635,7 @@ TEST(Mat, regression_7873_mat_vector_initialize)
     dims.push_back(12);
     dims.push_back(3);
     dims.push_back(2);
-    Mat multi_mat(dims, CV_32FC1, cv::Scalar(0));
+    Mat multi_mat(dims, CV_32FC1, ncvslideio::Scalar(0));
 
     ASSERT_EQ(3, multi_mat.dims);
     ASSERT_EQ(12, multi_mat.size[0]);
@@ -1657,13 +1657,13 @@ TEST(Mat, regression_7873_mat_vector_initialize)
 TEST(Mat, regression_10507_mat_setTo)
 {
     Size sz(6, 4);
-    Mat test_mask(sz, CV_8UC1, cv::Scalar::all(255));
+    Mat test_mask(sz, CV_8UC1, ncvslideio::Scalar::all(255));
     test_mask.at<uchar>(1,0) = 0;
     test_mask.at<uchar>(0,1) = 0;
     for (int cn = 1; cn <= 4; cn++)
     {
-        cv::Mat A(sz, CV_MAKE_TYPE(CV_32F, cn), cv::Scalar::all(5));
-        A.setTo(cv::Scalar::all(std::numeric_limits<float>::quiet_NaN()), test_mask);
+        ncvslideio::Mat A(sz, CV_MAKE_TYPE(CV_32F, cn), ncvslideio::Scalar::all(5));
+        A.setTo(ncvslideio::Scalar::all(std::numeric_limits<float>::quiet_NaN()), test_mask);
         int nans = 0;
         for (int y = 0; y < A.rows; y++)
         {
@@ -1682,7 +1682,7 @@ TEST(Mat, regression_10507_mat_setTo)
 
 TEST(Core_Mat_array, outputArray_create_getMat)
 {
-    cv::Mat_<uchar> src_base(5, 1);
+    ncvslideio::Mat_<uchar> src_base(5, 1);
     std::array<uchar, 5> dst8;
 
     src_base << 1, 2, 3, 4, 5;
@@ -1701,7 +1701,7 @@ TEST(Core_Mat_array, outputArray_create_getMat)
 
 TEST(Core_Mat_array, copyTo_roi_column)
 {
-    cv::Mat_<uchar> src_base(5, 2);
+    ncvslideio::Mat_<uchar> src_base(5, 2);
 
     src_base << 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
 
@@ -1722,7 +1722,7 @@ TEST(Core_Mat_array, copyTo_roi_column)
 
 TEST(Core_Mat_array, copyTo_roi_row)
 {
-    cv::Mat_<uchar> src_base(2, 5);
+    ncvslideio::Mat_<uchar> src_base(2, 5);
     std::array<uchar, 5> dst1;
 
     src_base << 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
@@ -1751,7 +1751,7 @@ TEST(Core_Mat_array, copyTo_roi_row)
 
 TEST(Core_Mat_array, SplitMerge)
 {
-    std::array<cv::Mat, 3> src;
+    std::array<ncvslideio::Mat, 3> src;
     for (size_t i = 0; i < src.size(); ++i)
     {
         src[i] = Mat(10, 10, CV_8U, Scalar((double)(16 * (i + 1))));
@@ -1760,7 +1760,7 @@ TEST(Core_Mat_array, SplitMerge)
     Mat merged;
     merge(src, merged);
 
-    std::array<cv::Mat, 3> dst;
+    std::array<ncvslideio::Mat, 3> dst;
     split(merged, dst);
 
     for (size_t i = 0; i < dst.size(); ++i)
@@ -1869,7 +1869,7 @@ TEST(Core_Merge, hang_12171)
     Mat src_channels[2] = { src1(src_roi), src2(src_roi) };
     Mat dst(4, 24, CV_8UC2, Scalar::all(5));
     Rect dst_roi(1, 0, 23, 4);
-    cv::merge(src_channels, 2, dst(dst_roi));
+    ncvslideio::merge(src_channels, 2, dst(dst_roi));
     EXPECT_EQ(5, dst.ptr<uchar>()[0]);
     EXPECT_EQ(5, dst.ptr<uchar>()[1]);
     EXPECT_EQ(1, dst.ptr<uchar>()[2]);
@@ -1888,7 +1888,7 @@ TEST(Core_Split, hang_12171)
     Mat dst2(4, 24, CV_8UC1, Scalar::all(10));
     Rect dst_roi(0, 0, 23, 4);
     Mat dst[2] = { dst1(dst_roi), dst2(dst_roi) };
-    cv::split(src(src_roi), dst);
+    ncvslideio::split(src(src_roi), dst);
     EXPECT_EQ(1, dst1.ptr<uchar>()[0]);
     EXPECT_EQ(1, dst1.ptr<uchar>()[1]);
     EXPECT_EQ(2, dst2.ptr<uchar>()[0]);
@@ -1907,7 +1907,7 @@ TEST(Core_Split, crash_12171)
     Mat dst2(4, 40, CV_8UC1, Scalar::all(10));
     Rect dst_roi(0, 0, 39, 4);
     Mat dst[2] = { dst1(dst_roi), dst2(dst_roi) };
-    cv::split(src(src_roi), dst);
+    ncvslideio::split(src(src_roi), dst);
     EXPECT_EQ(1, dst1.ptr<uchar>()[0]);
     EXPECT_EQ(1, dst1.ptr<uchar>()[1]);
     EXPECT_EQ(2, dst2.ptr<uchar>()[0]);
@@ -1941,7 +1941,7 @@ TEST(Core_Merge, bug_13544)
     EXPECT_EQ(3, (int)dst.ptr<uchar>(1)[8]);
 }
 
-struct CustomType  // like cv::Keypoint
+struct CustomType  // like ncvslideio::Keypoint
 {
     Point2f pt;
     float size;
@@ -2006,7 +2006,7 @@ TEST(Core_InputArray, fetch_MatExpr)
     Mat b(Size(10, 5), CV_32FC1, 2);
     MatExpr expr = a * b.t();                    // gemm expression
     Mat dst;
-    cv::add(expr, Scalar(1), dst);               // invoke gemm() here
+    ncvslideio::add(expr, Scalar(1), dst);               // invoke gemm() here
     void* expr_data = expr.a.data;
     Mat result = expr;                           // should not call gemm() here again
     EXPECT_EQ(expr_data, result.data);           // expr data is reused
@@ -2015,11 +2015,11 @@ TEST(Core_InputArray, fetch_MatExpr)
 
 
 class TestInputArrayRangeChecking {
-    static const char *kind2str(cv::_InputArray ia)
+    static const char *kind2str(ncvslideio::_InputArray ia)
     {
         switch (ia.kind())
         {
-        #define C(x) case cv::_InputArray::x: return #x
+        #define C(x) case ncvslideio::_InputArray::x: return #x
         C(MAT);
         C(UMAT);
         C(EXPR);
@@ -2039,7 +2039,7 @@ class TestInputArrayRangeChecking {
         }
     }
 
-    static void banner(cv::_InputArray ia, const char *label, const char *name)
+    static void banner(ncvslideio::_InputArray ia, const char *label, const char *name)
     {
         std::cout << std::endl
                   << label << " = " << name << ", Kind: " << kind2str(ia)
@@ -2050,42 +2050,42 @@ class TestInputArrayRangeChecking {
     static void testA(I ia, F f, const char *mfname)
     {
         banner(ia, "f", mfname);
-        EXPECT_THROW(f(ia, -1), cv::Exception)
-            << "f(ia, " << -1 << ") should throw cv::Exception";
+        EXPECT_THROW(f(ia, -1), ncvslideio::Exception)
+            << "f(ia, " << -1 << ") should throw ncvslideio::Exception";
         for (int i = 0; i < int(ia.size()); i++)
         {
             EXPECT_NO_THROW(f(ia, i))
                 << "f(ia, " << i << ") should not throw an exception";
         }
-        EXPECT_THROW(f(ia, int(ia.size())), cv::Exception)
-            << "f(ia, " << ia.size() << ") should throw cv::Exception";
+        EXPECT_THROW(f(ia, int(ia.size())), ncvslideio::Exception)
+            << "f(ia, " << ia.size() << ") should throw ncvslideio::Exception";
     }
 
     template<typename I, typename F>
     static void testB(I ia, F f, const char *mfname)
     {
         banner(ia, "f", mfname);
-        EXPECT_THROW(f(ia, -1), cv::Exception)
-            << "f(ia, " << -1 << ") should throw cv::Exception";
+        EXPECT_THROW(f(ia, -1), ncvslideio::Exception)
+            << "f(ia, " << -1 << ") should throw ncvslideio::Exception";
         for (int i = 0; i < int(ia.size()); i++)
         {
             EXPECT_NO_THROW(f(ia, i))
                 << "f(ia, " << i << ") should not throw an exception";
         }
-        EXPECT_THROW(f(ia, int(ia.size())), cv::Exception)
-            << "f(ia, " << ia.size() << ") should throw cv::Exception";
+        EXPECT_THROW(f(ia, int(ia.size())), ncvslideio::Exception)
+            << "f(ia, " << ia.size() << ") should throw ncvslideio::Exception";
     }
 
     static void test_isContinuous()
     {
-        auto f = [](cv::_InputArray ia, int i) { (void)ia.isContinuous(i); };
+        auto f = [](ncvslideio::_InputArray ia, int i) { (void)ia.isContinuous(i); };
 
-        cv::Mat M;
-        cv::UMat uM;
+        ncvslideio::Mat M;
+        ncvslideio::UMat uM;
 
-        std::vector<cv::Mat> vec = {M, M};
-        std::array<cv::Mat, 2> arr = {M, M};
-        std::vector<cv::UMat> uvec = {uM, uM};
+        std::vector<ncvslideio::Mat> vec = {M, M};
+        std::array<ncvslideio::Mat, 2> arr = {M, M};
+        std::vector<ncvslideio::UMat> uvec = {uM, uM};
 
         testA(vec, f, "isContinuous");
         testA(arr, f, "isContinuous");
@@ -2094,14 +2094,14 @@ class TestInputArrayRangeChecking {
 
     static void test_isSubmatrix()
     {
-        auto f = [](cv::_InputArray ia, int i) { (void)ia.isSubmatrix(i); };
+        auto f = [](ncvslideio::_InputArray ia, int i) { (void)ia.isSubmatrix(i); };
 
-        cv::Mat M;
-        cv::UMat uM;
+        ncvslideio::Mat M;
+        ncvslideio::UMat uM;
 
-        std::vector<cv::Mat> vec = {M, M};
-        std::array<cv::Mat, 2> arr = {M, M};
-        std::vector<cv::UMat> uvec = {uM, uM};
+        std::vector<ncvslideio::Mat> vec = {M, M};
+        std::array<ncvslideio::Mat, 2> arr = {M, M};
+        std::vector<ncvslideio::UMat> uvec = {uM, uM};
 
         testA(vec, f, "isSubmatrix");
         testA(arr, f, "isSubmatrix");
@@ -2110,16 +2110,16 @@ class TestInputArrayRangeChecking {
 
     static void test_offset()
     {
-        auto f = [](cv::_InputArray ia, int i) { return ia.offset(i); };
+        auto f = [](ncvslideio::_InputArray ia, int i) { return ia.offset(i); };
 
-        cv::Mat M;
-        cv::UMat uM;
-        cv::cuda::GpuMat gM;
+        ncvslideio::Mat M;
+        ncvslideio::UMat uM;
+        ncvslideio::cuda::GpuMat gM;
 
-        std::vector<cv::Mat> vec = {M, M};
-        std::array<cv::Mat, 2> arr = {M, M};
-        std::vector<cv::UMat> uvec = {uM, uM};
-        std::vector<cv::cuda::GpuMat> gvec = {gM, gM};
+        std::vector<ncvslideio::Mat> vec = {M, M};
+        std::array<ncvslideio::Mat, 2> arr = {M, M};
+        std::vector<ncvslideio::UMat> uvec = {uM, uM};
+        std::vector<ncvslideio::cuda::GpuMat> gvec = {gM, gM};
 
         testB(vec, f, "offset");
         testB(arr, f, "offset");
@@ -2129,16 +2129,16 @@ class TestInputArrayRangeChecking {
 
     static void test_step()
     {
-        auto f = [](cv::_InputArray ia, int i) { return ia.step(i); };
+        auto f = [](ncvslideio::_InputArray ia, int i) { return ia.step(i); };
 
-        cv::Mat M;
-        cv::UMat uM;
-        cv::cuda::GpuMat gM;
+        ncvslideio::Mat M;
+        ncvslideio::UMat uM;
+        ncvslideio::cuda::GpuMat gM;
 
-        std::vector<cv::Mat> vec = {M, M};
-        std::array<cv::Mat, 2> arr = {M, M};
-        std::vector<cv::UMat> uvec = {uM, uM};
-        std::vector<cv::cuda::GpuMat> gvec = {gM, gM};
+        std::vector<ncvslideio::Mat> vec = {M, M};
+        std::array<ncvslideio::Mat, 2> arr = {M, M};
+        std::vector<ncvslideio::UMat> uvec = {uM, uM};
+        std::vector<ncvslideio::cuda::GpuMat> gvec = {gM, gM};
 
         testB(vec, f, "step");
         testB(arr, f, "step");
@@ -2369,15 +2369,15 @@ TEST(Mat, regression_12943)  // memory usage: ~4.5 Gb
     const int width = 0x8000;
     const int height = 0x10001;
 
-    cv::Mat src(height, width, CV_8UC1, Scalar::all(128));
+    ncvslideio::Mat src(height, width, CV_8UC1, Scalar::all(128));
 
-    cv::Mat dst;
-    cv::flip(src, dst, 0);
+    ncvslideio::Mat dst;
+    ncvslideio::flip(src, dst, 0);
 }
 
 TEST(Mat, empty_iterator_16855)
 {
-    cv::Mat m;
+    ncvslideio::Mat m;
     EXPECT_NO_THROW(m.begin<uchar>());
     EXPECT_NO_THROW(m.end<uchar>());
     EXPECT_TRUE(m.begin<uchar>() == m.end<uchar>());
@@ -2521,18 +2521,18 @@ TEST(Mat, ptrVecni_20044)
 TEST(Mat, VecMatx_4650)
 {
   // Makes sure the following compiles.
-  cv::Vec3b a;
-  a = cv::Vec3b::ones();
-  a = cv::Vec3b::zeros();
-  a = cv::Vec3b::randn(0, 10);
-  a = cv::Vec3b::randu(0, 10);
+  ncvslideio::Vec3b a;
+  a = ncvslideio::Vec3b::ones();
+  a = ncvslideio::Vec3b::zeros();
+  a = ncvslideio::Vec3b::randn(0, 10);
+  a = ncvslideio::Vec3b::randu(0, 10);
 }
 
 
 TEST(Mat, reverse_iterator_19967)
 {
     // empty iterator (#16855)
-    cv::Mat m_empty;
+    ncvslideio::Mat m_empty;
     EXPECT_NO_THROW(m_empty.rbegin<uchar>());
     EXPECT_NO_THROW(m_empty.rend<uchar>());
     EXPECT_TRUE(m_empty.rbegin<uchar>() == m_empty.rend<uchar>());
@@ -2542,13 +2542,13 @@ TEST(Mat, reverse_iterator_19967)
     const std::vector<int> sizes_1d{4};
 
     //Base class
-    cv::Mat m_1d(sizes_1d, CV_8U, data.data());
+    ncvslideio::Mat m_1d(sizes_1d, CV_8U, data.data());
     auto mismatch_it_pair_1d = std::mismatch(data.rbegin(), data.rend(), m_1d.rbegin<uchar>());
     EXPECT_EQ(mismatch_it_pair_1d.first, data.rend());  // expect no mismatch
     EXPECT_EQ(mismatch_it_pair_1d.second, m_1d.rend<uchar>());
 
     //Templated derived class
-    cv::Mat_<uchar> m_1d_t(static_cast<int>(sizes_1d.size()), sizes_1d.data(), data.data());
+    ncvslideio::Mat_<uchar> m_1d_t(static_cast<int>(sizes_1d.size()), sizes_1d.data(), data.data());
     auto mismatch_it_pair_1d_t = std::mismatch(data.rbegin(), data.rend(), m_1d_t.rbegin());
     EXPECT_EQ(mismatch_it_pair_1d_t.first, data.rend());  // expect no mismatch
     EXPECT_EQ(mismatch_it_pair_1d_t.second, m_1d_t.rend());
@@ -2558,13 +2558,13 @@ TEST(Mat, reverse_iterator_19967)
     const std::vector<int> sizes_2d{2, 2};
 
     //Base class
-    cv::Mat m_2d(sizes_2d, CV_8U, data.data());
+    ncvslideio::Mat m_2d(sizes_2d, CV_8U, data.data());
     auto mismatch_it_pair_2d = std::mismatch(data.rbegin(), data.rend(), m_2d.rbegin<uchar>());
     EXPECT_EQ(mismatch_it_pair_2d.first, data.rend());
     EXPECT_EQ(mismatch_it_pair_2d.second, m_2d.rend<uchar>());
 
     //Templated derived class
-    cv::Mat_<uchar> m_2d_t(static_cast<int>(sizes_2d.size()),sizes_2d.data(), data.data());
+    ncvslideio::Mat_<uchar> m_2d_t(static_cast<int>(sizes_2d.size()),sizes_2d.data(), data.data());
     auto mismatch_it_pair_2d_t = std::mismatch(data.rbegin(), data.rend(), m_2d_t.rbegin());
     EXPECT_EQ(mismatch_it_pair_2d_t.first, data.rend());
     EXPECT_EQ(mismatch_it_pair_2d_t.second, m_2d_t.rend());
@@ -2574,19 +2574,19 @@ TEST(Mat, reverse_iterator_19967)
     const std::vector<int> sizes_3d{2, 2, 2};
 
     //Base class
-    cv::Mat m_3d(sizes_3d, CV_8U, data_3d.data());
+    ncvslideio::Mat m_3d(sizes_3d, CV_8U, data_3d.data());
     auto mismatch_it_pair_3d = std::mismatch(data_3d.rbegin(), data_3d.rend(), m_3d.rbegin<uchar>());
     EXPECT_EQ(mismatch_it_pair_3d.first, data_3d.rend());
     EXPECT_EQ(mismatch_it_pair_3d.second, m_3d.rend<uchar>());
 
     //Templated derived class
-    cv::Mat_<uchar> m_3d_t(static_cast<int>(sizes_3d.size()),sizes_3d.data(), data_3d.data());
+    ncvslideio::Mat_<uchar> m_3d_t(static_cast<int>(sizes_3d.size()),sizes_3d.data(), data_3d.data());
     auto mismatch_it_pair_3d_t = std::mismatch(data_3d.rbegin(), data_3d.rend(), m_3d_t.rbegin());
     EXPECT_EQ(mismatch_it_pair_3d_t.first, data_3d.rend());
     EXPECT_EQ(mismatch_it_pair_3d_t.second, m_3d_t.rend());
 
     // const test base class
-    const cv::Mat m_1d_const(sizes_1d, CV_8U, data.data());
+    const ncvslideio::Mat m_1d_const(sizes_1d, CV_8U, data.data());
 
     auto mismatch_it_pair_1d_const = std::mismatch(data.rbegin(), data.rend(), m_1d_const.rbegin<uchar>());
     EXPECT_EQ(mismatch_it_pair_1d_const.first, data.rend());  // expect no mismatch
@@ -2596,7 +2596,7 @@ TEST(Mat, reverse_iterator_19967)
     EXPECT_FALSE((std::is_assignable<decltype(m_1d_const.rbegin<uchar>()), uchar>::value)) << "Constness of const iterator violated.";
 
     // const test templated dervied class
-    const cv::Mat_<uchar> m_1d_const_t(static_cast<int>(sizes_1d.size()), sizes_1d.data(), data.data());
+    const ncvslideio::Mat_<uchar> m_1d_const_t(static_cast<int>(sizes_1d.size()), sizes_1d.data(), data.data());
 
     auto mismatch_it_pair_1d_const_t = std::mismatch(data.rbegin(), data.rend(), m_1d_const_t.rbegin());
     EXPECT_EQ(mismatch_it_pair_1d_const_t.first, data.rend());  // expect no mismatch
@@ -2611,7 +2611,7 @@ TEST(Mat, Recreate1DMatWithSameMeta)
 {
     std::vector<int> dims = {100};
     auto depth = CV_8U;
-    cv::Mat m(dims, depth);
+    ncvslideio::Mat m(dims, depth);
 
     // By default m has dims: [1, 100]
     m.dims = 1;

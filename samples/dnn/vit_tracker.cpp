@@ -9,8 +9,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 const char *keys =
         "{ help     h  |   | Print help message }"
@@ -62,7 +62,7 @@ int run(int argc, char** argv)
         params.tracking_score_threshold = tracking_score_threshold;
         tracker = TrackerVit::create(params);
     }
-    catch (const cv::Exception& ee)
+    catch (const ncvslideio::Exception& ee)
     {
         std::cerr << "Exception: " << ee.what() << std::endl;
         std::cout << "Can't load the network by using the following files:" << std::endl;

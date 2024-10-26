@@ -23,7 +23,7 @@ def sharpen(my_image):
     if is_grayscale(my_image):
         height, width = my_image.shape
     else:
-        my_image = cv.cvtColor(my_image, cv.CV_8U)
+        my_image = ncvslideio.cvtColor(my_image, ncvslideio.CV_8U)
         height, width, n_channels = my_image.shape
 
     result = np.zeros(my_image.shape, my_image.dtype)
@@ -47,13 +47,13 @@ def sharpen(my_image):
 def main(argv):
     filename = 'lena.jpg'
 
-    img_codec = cv.IMREAD_COLOR
+    img_codec = ncvslideio.IMREAD_COLOR
     if argv:
         filename = sys.argv[1]
         if len(argv) >= 2 and sys.argv[2] == "G":
-            img_codec = cv.IMREAD_GRAYSCALE
+            img_codec = ncvslideio.IMREAD_GRAYSCALE
 
-    src = cv.imread(cv.samples.findFile(filename), img_codec)
+    src = ncvslideio.imread(ncvslideio.samples.findFile(filename), img_codec)
 
     if src is None:
         print("Can't open image [" + filename + "]")
@@ -61,10 +61,10 @@ def main(argv):
         print("mat_mask_operations.py [image_path -- default lena.jpg] [G -- grayscale]")
         return -1
 
-    cv.namedWindow("Input", cv.WINDOW_AUTOSIZE)
-    cv.namedWindow("Output", cv.WINDOW_AUTOSIZE)
+    ncvslideio.namedWindow("Input", ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.namedWindow("Output", ncvslideio.WINDOW_AUTOSIZE)
 
-    cv.imshow("Input", src)
+    ncvslideio.imshow("Input", src)
     t = round(time.time())
 
     dst0 = sharpen(src)
@@ -72,8 +72,8 @@ def main(argv):
     t = (time.time() - t)
     print("Hand written function time passed in seconds: %s" % t)
 
-    cv.imshow("Output", dst0)
-    cv.waitKey()
+    ncvslideio.imshow("Output", dst0)
+    ncvslideio.waitKey()
 
     t = time.time()
     ## [kern]
@@ -82,17 +82,17 @@ def main(argv):
                        [0, -1, 0]], np.float32)  # kernel should be floating point type
     ## [kern]
     ## [filter2D]
-    dst1 = cv.filter2D(src, -1, kernel)
+    dst1 = ncvslideio.filter2D(src, -1, kernel)
     # ddepth = -1, means destination image has depth same as input image
     ## [filter2D]
 
     t = (time.time() - t)
     print("Built-in filter2D time passed in seconds:     %s" % t)
 
-    cv.imshow("Output", dst1)
+    ncvslideio.imshow("Output", dst1)
 
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    ncvslideio.waitKey(0)
+    ncvslideio.destroyAllWindows()
     return 0
 
 

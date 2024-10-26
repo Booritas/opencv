@@ -9,44 +9,44 @@
 #include <opencv2/gapi/garray.hpp>
 #include "api/gorigin.hpp"
 
-// cv::detail::GArrayU public implementation ///////////////////////////////////
-cv::detail::GArrayU::GArrayU()
-    : m_priv(new GOrigin(GShape::GARRAY, cv::GNode::Param()))
+// ncvslideio::detail::GArrayU public implementation ///////////////////////////////////
+ncvslideio::detail::GArrayU::GArrayU()
+    : m_priv(new GOrigin(GShape::GARRAY, ncvslideio::GNode::Param()))
 {
 }
 
-cv::detail::GArrayU::GArrayU(const GNode &n, std::size_t out)
+ncvslideio::detail::GArrayU::GArrayU(const GNode &n, std::size_t out)
     : m_priv(new GOrigin(GShape::GARRAY, n, out))
 {
 }
 
-cv::detail::GArrayU::GArrayU(const detail::VectorRef& vref)
-    : m_priv(new GOrigin(GShape::GARRAY, cv::gimpl::ConstVal(vref)))
+ncvslideio::detail::GArrayU::GArrayU(const detail::VectorRef& vref)
+    : m_priv(new GOrigin(GShape::GARRAY, ncvslideio::gimpl::ConstVal(vref)))
 {
 }
 
-cv::GOrigin& cv::detail::GArrayU::priv()
-{
-    return *m_priv;
-}
-
-const cv::GOrigin& cv::detail::GArrayU::priv() const
+ncvslideio::GOrigin& ncvslideio::detail::GArrayU::priv()
 {
     return *m_priv;
 }
 
-void cv::detail::GArrayU::setConstructFcn(ConstructVec &&cv)
+const ncvslideio::GOrigin& ncvslideio::detail::GArrayU::priv() const
 {
-    m_priv->ctor = std::move(cv);
+    return *m_priv;
 }
 
-void cv::detail::GArrayU::setKind(cv::detail::OpaqueKind kind)
+void ncvslideio::detail::GArrayU::setConstructFcn(ConstructVec &&ncvslideio)
+{
+    m_priv->ctor = std::move(ncvslideio);
+}
+
+void ncvslideio::detail::GArrayU::setKind(ncvslideio::detail::OpaqueKind kind)
 {
     m_priv->kind = kind;
 }
 
-namespace cv {
-std::ostream& operator<<(std::ostream& os, const cv::GArrayDesc &)
+namespace ncvslideio {
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GArrayDesc &)
 {
     // FIXME: add type information here
     os << "(array)";

@@ -6,7 +6,7 @@
 #include "layers_common.hpp"
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ArgLayerImpl CV_FINAL : public ArgLayer
 {
@@ -88,10 +88,10 @@ public:
         switch (op)
         {
         case ArgOp::MIN:
-            cv::reduceArgMin(inputs[0], output, axis, select_last_index);
+            ncvslideio::reduceArgMin(inputs[0], output, axis, select_last_index);
             break;
         case ArgOp::MAX:
-            cv::reduceArgMax(inputs[0], output, axis, select_last_index);
+            ncvslideio::reduceArgMax(inputs[0], output, axis, select_last_index);
             break;
         default:
             CV_Error(Error::StsBadArg, "Unsupported operation.");
@@ -117,4 +117,4 @@ Ptr<ArgLayer> ArgLayer::create(const LayerParams& params)
     return Ptr<ArgLayer>(new ArgLayerImpl(params));
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

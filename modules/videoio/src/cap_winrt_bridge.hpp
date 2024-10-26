@@ -55,8 +55,8 @@ public:
     // to be called from cvMain via cap_winrt on bg thread - non-blocking (async)
     void    requestForUIthreadAsync(int action);
 
-    // TODO: modify in window.cpp: void cv::imshow( const String& winname, InputArray _img )
-    void    imshow(/*cv::InputArray matToShow*/);   // shows Mat in the cvImage element
+    // TODO: modify in window.cpp: void ncvslideio::imshow( const String& winname, InputArray _img )
+    void    imshow(/*ncvslideio::InputArray matToShow*/);   // shows Mat in the cvImage element
     void    swapInputBuffers();
     void    allocateOutputBuffers();
     void    swapOutputBuffers();
@@ -110,8 +110,8 @@ private:
     // even though buffer address was good).
     // Therefore allocation of Mats is also done on the UI thread before the video
     // device is initialized.
-    cv::Mat frontInputMat;
-    cv::Mat backInputMat;
+    ncvslideio::Mat frontInputMat;
+    ncvslideio::Mat backInputMat;
 
     int deviceIndex, width, height;
 };

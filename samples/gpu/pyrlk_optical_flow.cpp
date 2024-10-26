@@ -11,8 +11,8 @@
 #include <opencv2/cudaarithm.hpp>
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 static void download(const GpuMat& d_mat, vector<Point2f>& vec)
 {
@@ -274,9 +274,9 @@ int main(int argc, const char* argv[])
     cout << endl;
 
     Mat frame0Gray;
-    cv::cvtColor(frame0, frame0Gray, COLOR_BGR2GRAY);
+    ncvslideio::cvtColor(frame0, frame0Gray, COLOR_BGR2GRAY);
     Mat frame1Gray;
-    cv::cvtColor(frame1, frame1Gray, COLOR_BGR2GRAY);
+    ncvslideio::cvtColor(frame1, frame1Gray, COLOR_BGR2GRAY);
 
     // goodFeaturesToTrack
     GpuMat d_frame0Gray(frame0Gray);

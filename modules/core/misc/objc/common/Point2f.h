@@ -28,7 +28,7 @@ CV_EXPORTS @interface Point2f : NSObject
 @property float x;
 @property float y;
 #ifdef __cplusplus
-@property(readonly) cv::Point2f& nativeRef;
+@property(readonly) ncvslideio::Point2f& nativeRef;
 #endif
 
 # pragma mark - Constructors
@@ -38,8 +38,8 @@ CV_EXPORTS @interface Point2f : NSObject
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Point2f&)point;
-- (void)update:(cv::Point2f&)point;
++ (instancetype)fromNative:(ncvslideio::Point2f&)point;
+- (void)update:(ncvslideio::Point2f&)point;
 #endif
 
 # pragma mark - Methods

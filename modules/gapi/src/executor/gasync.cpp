@@ -21,7 +21,7 @@
 #include <queue>
 
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip  {
 
@@ -30,7 +30,7 @@ namespace impl{
 class async_service {
 
     std::mutex mtx;
-    std::condition_variable cv;
+    std::condition_variable ncvslideio;
     std::queue<std::function<void()>> q;
     std::atomic<bool> exiting           = {false};
     std::atomic<bool> thread_started    = {false};
@@ -65,7 +65,7 @@ public:
                         if (q.empty())
                         {
                             //block current thread until arrival of exit request or new elements
-                            cv.wait(lck, [&](){ return exiting || !q.empty();});
+                            ncvslideio.wait(lck, [&](){ return exiting || !q.empty();});
                         }
                         //usually swap for std::queue is plain pointers exchange, so relatively cheap
                         q.swap(second_q);
@@ -91,7 +91,7 @@ public:
         {
             //as the queue was empty before adding the task,
             //the thread might be sleeping, so wake it up
-            cv.notify_one();
+            ncvslideio.notify_one();
         }
     }
 
@@ -102,7 +102,7 @@ protected:
             exiting = true;
             mtx.lock();
             mtx.unlock();
-            cv.notify_one();
+            ncvslideio.notify_one();
             thrd.join();
         }
     }
@@ -277,4 +277,4 @@ std::future<void> async(GCompiled& gcmpld, GRunArgs &&ins, GRunArgsP &&outs, GAs
     return f;
 
 }
-}}} //namespace wip namespace gapi namespace cv
+}}} //namespace wip namespace gapi namespace ncvslideio

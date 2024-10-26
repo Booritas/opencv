@@ -6,7 +6,7 @@
 
 #include "net_impl.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -25,7 +25,7 @@ detail::NetImplBase::NetImplBase()
 
 std::string detail::NetImplBase::getDumpFileNameBase() const
 {
-    std::string dumpFileNameBase = cv::format("ocv_dnn_net_%05d_%02d", networkId, networkDumpCounter++);
+    std::string dumpFileNameBase = ncvslideio::format("ocv_dnn_net_%05d_%02d", networkId, networkDumpCounter++);
     return dumpFileNameBase;
 }
 
@@ -683,7 +683,7 @@ void Net::Impl::forwardLayer(LayerData& ld)
                                 u.convertTo(m, CV_32F);
                             else
                                 m = u.getMat(ACCESS_READ);
-                            std::cout << "INPUT " << i << " " << cv::typeToString(u.type()) << " " << shape(m) << std::endl;
+                            std::cout << "INPUT " << i << " " << ncvslideio::typeToString(u.type()) << " " << shape(m) << std::endl;
                             if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << m.reshape(1, 1) << std::endl;
                         }
                         for (size_t i = 0; i < umat_outputBlobs.size(); ++i)
@@ -694,7 +694,7 @@ void Net::Impl::forwardLayer(LayerData& ld)
                                 u.convertTo(m, CV_32F);
                             else
                                 m = u.getMat(ACCESS_READ);
-                            std::cout << "OUTPUT " << i << " " << cv::typeToString(u.type()) << " " << shape(m) << std::endl;
+                            std::cout << "OUTPUT " << i << " " << ncvslideio::typeToString(u.type()) << " " << shape(m) << std::endl;
                             if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << m.reshape(1, 1) << std::endl;
                         }
                         for (size_t i = 0; i < umat_internalBlobs.size(); ++i)
@@ -706,7 +706,7 @@ void Net::Impl::forwardLayer(LayerData& ld)
                             else
                                 m = u.getMat(ACCESS_READ);
                             std::cout << "INTERNAL " << i << " " << shape(m) << std::endl;
-                            if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << cv::typeToString(u.type()) << " " << m.reshape(1, 1) << std::endl;
+                            if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << ncvslideio::typeToString(u.type()) << " " << m.reshape(1, 1) << std::endl;
                         }
                         if (getParam_DNN_CHECK_NAN_INF_RAISE_ERROR())
                             CV_Assert(!fail);
@@ -739,13 +739,13 @@ void Net::Impl::forwardLayer(LayerData& ld)
                         if (!checkRange(m))
                         {
                             CV_LOG_WARNING(NULL, "NaN detected in layer output: "
-                                << cv::format("id=%d name=%s output id=%zu output shape=", ld.id, layer->name.c_str(), i) << shape(m));
+                                << ncvslideio::format("id=%d name=%s output id=%zu output shape=", ld.id, layer->name.c_str(), i) << shape(m));
                             fail = true;
                         }
                         else if (!checkRange(m, true, NULL, -1e6, 1e6))
                         {
                             CV_LOG_WARNING(NULL, "Inf detected in layer output: "
-                                << cv::format("id=%d name=%s output id=%zu output shape=", ld.id, layer->name.c_str(), i) << shape(m));
+                                << ncvslideio::format("id=%d name=%s output id=%zu output shape=", ld.id, layer->name.c_str(), i) << shape(m));
                             fail = true;
                         }
                     }
@@ -760,19 +760,19 @@ void Net::Impl::forwardLayer(LayerData& ld)
                                 continue;
                             }
                             const Mat& m = *pM;
-                            std::cout << "INPUT " << i << " " << cv::typeToString(m.type()) << " " << shape(m) << std::endl;
+                            std::cout << "INPUT " << i << " " << ncvslideio::typeToString(m.type()) << " " << shape(m) << std::endl;
                             if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << m.reshape(1, 1) << std::endl;
                         }
                         for (size_t i = 0; i < ld.outputBlobs.size(); ++i)
                         {
                             const Mat& m = ld.outputBlobs[i];
-                            std::cout << "OUTPUT " << i << " " << cv::typeToString(m.type()) << " " << shape(m) << std::endl;
+                            std::cout << "OUTPUT " << i << " " << ncvslideio::typeToString(m.type()) << " " << shape(m) << std::endl;
                             if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << m.reshape(1, 1) << std::endl;
                         }
                         for (size_t i = 0; i < ld.internals.size(); ++i)
                         {
                             const Mat& m = ld.internals[i];
-                            std::cout << "INTERNAL " << i << " " << cv::typeToString(m.type()) << " " << shape(m) << std::endl;
+                            std::cout << "INTERNAL " << i << " " << ncvslideio::typeToString(m.type()) << " " << shape(m) << std::endl;
                             if (getParam_DNN_CHECK_NAN_INF_DUMP()) std::cout << m.reshape(1, 1) << std::endl;
                         }
                         if (getParam_DNN_CHECK_NAN_INF_RAISE_ERROR())
@@ -831,7 +831,7 @@ void Net::Impl::forwardLayer(LayerData& ld)
                 {
                     forwardVkCom(ld.outputBlobsWrappers, node);
                 }
-                catch (const cv::Exception& e)
+                catch (const ncvslideio::Exception& e)
                 {
                     CV_LOG_ERROR(NULL, "forwardVkCom failed, fallback to CPU implementation. " << e.what());
                     it->second = Ptr<BackendNode>();
@@ -841,7 +841,7 @@ void Net::Impl::forwardLayer(LayerData& ld)
 #endif
             else
             {
-                CV_Error(Error::StsNotImplemented, cv::format("Unknown backend identifier: %d", preferableBackend));
+                CV_Error(Error::StsNotImplemented, ncvslideio::format("Unknown backend identifier: %d", preferableBackend));
             }
         }
 
@@ -1157,7 +1157,7 @@ void Net::Impl::getLayerShapesRecursively(int id, LayersShapesMap& inOutShapes)
     {
         layerSupportInPlace = l->getMemoryShapes(is, requiredOutputs, os, ints);
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "OPENCV/DNN: [" << l->type << "]:(" << l->name << "): getMemoryShapes() throws exception." <<
                 " inputs=" << is.size() <<
@@ -1188,7 +1188,7 @@ void Net::Impl::getLayerShapesRecursively(int id, LayersShapesMap& inOutShapes)
         for (int i = 0; i < os.size(); i++)
             CV_CheckGT(total(os[i]), 0, "");
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "OPENCV/DNN: [" << l->type << "]:(" << l->name << "): getMemoryShapes() post validation failed." <<
                 " inputs=" << is.size() <<
@@ -2013,7 +2013,7 @@ string Net::Impl::dumpToPbtxt(bool forceAllocation) const {
         auto &ld = iter->second;
         if (ld.id == 0) {
             for (int i = 0; i < ld.outputBlobs.size(); i++) {
-                const auto &name = netInputLayer->outNames.empty() ? cv::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
+                const auto &name = netInputLayer->outNames.empty() ? ncvslideio::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
                 out << indent_spaces << "input {\n"
                     << indent_spaces << format("  name: \"%s\"\n", name.c_str());
                 // Add shape
@@ -2033,7 +2033,7 @@ string Net::Impl::dumpToPbtxt(bool forceAllocation) const {
         } else {
             out << indent_spaces << "node {\n";
             const auto &name = ld.name;
-            const auto &op_type = "cv::dnn::" + ld.type;
+            const auto &op_type = "ncvslideio::dnn::" + ld.type;
             std::vector<std::string> inputs, outputs;
             // Collect names of inputs
             for (size_t i = 0; i < ld.inputBlobsId.size(); i++) {
@@ -2041,7 +2041,7 @@ string Net::Impl::dumpToPbtxt(bool forceAllocation) const {
                 int oid = ld.inputBlobsId[i].oid;
                 std::string name;
                 if (lid == 0) {
-                    name = netInputLayer->outNames.empty() ? cv::format("%s_%d", ld.name.c_str(), oid) : netInputLayer->outNames[oid];
+                    name = netInputLayer->outNames.empty() ? ncvslideio::format("%s_%d", ld.name.c_str(), oid) : netInputLayer->outNames[oid];
                 } else {
                     name = format("%s_output%d", map.find(lid)->second.name.c_str(), oid);
                     if (!ld.inputBlobs.empty()) {
@@ -2379,4 +2379,4 @@ int Net::Impl::getLayersCount(const String& layerType) const
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

@@ -25,7 +25,7 @@ def main():
         param = ""
 
     if "--build" == param:
-        print(cv.getBuildInformation())
+        print(ncvslideio.getBuildInformation())
     elif "--help" == param:
         print("\t--build\n\t\tprint complete build info")
         print("\t--help\n\t\tprint this help")
@@ -38,4 +38,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -48,7 +48,7 @@
 #include <limits>
 #include "../3rdparty/mscr/chi_table.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 using std::vector;

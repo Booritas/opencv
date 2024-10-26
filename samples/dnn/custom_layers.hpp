@@ -5,18 +5,18 @@
 #include <opencv2/dnn/shape_utils.hpp>    // getPlane
 
 //! [InterpLayer]
-class InterpLayer : public cv::dnn::Layer
+class InterpLayer : public ncvslideio::dnn::Layer
 {
 public:
-    InterpLayer(const cv::dnn::LayerParams &params) : Layer(params)
+    InterpLayer(const ncvslideio::dnn::LayerParams &params) : Layer(params)
     {
         outWidth = params.get<int>("width", 0);
         outHeight = params.get<int>("height", 0);
     }
 
-    static cv::Ptr<cv::dnn::Layer> create(cv::dnn::LayerParams& params)
+    static ncvslideio::Ptr<ncvslideio::dnn::Layer> create(ncvslideio::dnn::LayerParams& params)
     {
-        return cv::Ptr<cv::dnn::Layer>(new InterpLayer(params));
+        return ncvslideio::Ptr<ncvslideio::dnn::Layer>(new InterpLayer(params));
     }
 
     virtual bool getMemoryShapes(const std::vector<std::vector<int> > &inputs,
@@ -35,9 +35,9 @@ public:
     }
 
     // Implementation of this custom layer is based on https://github.com/cdmh/deeplab-public/blob/master/src/caffe/layers/interp_layer.cpp
-    virtual void forward(cv::InputArrayOfArrays inputs_arr,
-                         cv::OutputArrayOfArrays outputs_arr,
-                         cv::OutputArrayOfArrays internals_arr) CV_OVERRIDE
+    virtual void forward(ncvslideio::InputArrayOfArrays inputs_arr,
+                         ncvslideio::OutputArrayOfArrays outputs_arr,
+                         ncvslideio::OutputArrayOfArrays internals_arr) CV_OVERRIDE
     {
         if (inputs_arr.depth() == CV_16S)
         {
@@ -47,12 +47,12 @@ public:
             return;
         }
 
-        std::vector<cv::Mat> inputs, outputs;
+        std::vector<ncvslideio::Mat> inputs, outputs;
         inputs_arr.getMatVector(inputs);
         outputs_arr.getMatVector(outputs);
 
-        cv::Mat& inp = inputs[0];
-        cv::Mat& out = outputs[0];
+        ncvslideio::Mat& inp = inputs[0];
+        ncvslideio::Mat& out = outputs[0];
         const float* inpData = (float*)inp.data;
         float* outData = (float*)out.data;
 
@@ -97,10 +97,10 @@ private:
 //! [InterpLayer]
 
 //! [ResizeBilinearLayer]
-class ResizeBilinearLayer CV_FINAL : public cv::dnn::Layer
+class ResizeBilinearLayer CV_FINAL : public ncvslideio::dnn::Layer
 {
 public:
-    ResizeBilinearLayer(const cv::dnn::LayerParams &params) : Layer(params)
+    ResizeBilinearLayer(const ncvslideio::dnn::LayerParams &params) : Layer(params)
     {
         CV_Assert(!params.get<bool>("align_corners", false));
         CV_Assert(!blobs.empty());
@@ -126,9 +126,9 @@ public:
         }
     }
 
-    static cv::Ptr<cv::dnn::Layer> create(cv::dnn::LayerParams& params)
+    static ncvslideio::Ptr<ncvslideio::dnn::Layer> create(ncvslideio::dnn::LayerParams& params)
     {
-        return cv::Ptr<cv::dnn::Layer>(new ResizeBilinearLayer(params));
+        return ncvslideio::Ptr<ncvslideio::dnn::Layer>(new ResizeBilinearLayer(params));
     }
 
     virtual bool getMemoryShapes(const std::vector<std::vector<int> > &inputs,
@@ -145,9 +145,9 @@ public:
         return false;
     }
 
-    virtual void finalize(cv::InputArrayOfArrays, cv::OutputArrayOfArrays outputs_arr) CV_OVERRIDE
+    virtual void finalize(ncvslideio::InputArrayOfArrays, ncvslideio::OutputArrayOfArrays outputs_arr) CV_OVERRIDE
     {
-        std::vector<cv::Mat> outputs;
+        std::vector<ncvslideio::Mat> outputs;
         outputs_arr.getMatVector(outputs);
         if (!outWidth && !outHeight)
         {
@@ -158,9 +158,9 @@ public:
 
     // This implementation is based on a reference implementation from
     // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/lite/kernels/internal/reference/reference_ops.h
-    virtual void forward(cv::InputArrayOfArrays inputs_arr,
-                         cv::OutputArrayOfArrays outputs_arr,
-                         cv::OutputArrayOfArrays internals_arr) CV_OVERRIDE
+    virtual void forward(ncvslideio::InputArrayOfArrays inputs_arr,
+                         ncvslideio::OutputArrayOfArrays outputs_arr,
+                         ncvslideio::OutputArrayOfArrays internals_arr) CV_OVERRIDE
     {
         if (inputs_arr.depth() == CV_16S)
         {
@@ -170,12 +170,12 @@ public:
             return;
         }
 
-        std::vector<cv::Mat> inputs, outputs;
+        std::vector<ncvslideio::Mat> inputs, outputs;
         inputs_arr.getMatVector(inputs);
         outputs_arr.getMatVector(outputs);
 
-        cv::Mat& inp = inputs[0];
-        cv::Mat& out = outputs[0];
+        ncvslideio::Mat& inp = inputs[0];
+        ncvslideio::Mat& out = outputs[0];
         const float* inpData = (float*)inp.data;
         float* outData = (float*)out.data;
 
@@ -213,7 +213,7 @@ public:
     }
 
 private:
-    static inline int offset(const cv::MatSize& size, int c, int x, int y, int b)
+    static inline int offset(const ncvslideio::MatSize& size, int c, int x, int y, int b)
     {
         return x + size[3] * (y + size[2] * (c + size[1] * b));
     }
@@ -227,15 +227,15 @@ private:
 //
 
 //! [A custom layer interface]
-class MyLayer : public cv::dnn::Layer
+class MyLayer : public ncvslideio::dnn::Layer
 {
 public:
     //! [MyLayer::MyLayer]
-    MyLayer(const cv::dnn::LayerParams &params);
+    MyLayer(const ncvslideio::dnn::LayerParams &params);
     //! [MyLayer::MyLayer]
 
     //! [MyLayer::create]
-    static cv::Ptr<cv::dnn::Layer> create(cv::dnn::LayerParams& params);
+    static ncvslideio::Ptr<ncvslideio::dnn::Layer> create(ncvslideio::dnn::LayerParams& params);
     //! [MyLayer::create]
 
     //! [MyLayer::getMemoryShapes]
@@ -246,14 +246,14 @@ public:
     //! [MyLayer::getMemoryShapes]
 
     //! [MyLayer::forward]
-    virtual void forward(cv::InputArrayOfArrays inputs,
-                         cv::OutputArrayOfArrays outputs,
-                         cv::OutputArrayOfArrays internals) CV_OVERRIDE;
+    virtual void forward(ncvslideio::InputArrayOfArrays inputs,
+                         ncvslideio::OutputArrayOfArrays outputs,
+                         ncvslideio::OutputArrayOfArrays internals) CV_OVERRIDE;
     //! [MyLayer::forward]
 
     //! [MyLayer::finalize]
-    virtual void finalize(cv::InputArrayOfArrays inputs,
-                          cv::OutputArrayOfArrays outputs) CV_OVERRIDE;
+    virtual void finalize(ncvslideio::InputArrayOfArrays inputs,
+                          ncvslideio::OutputArrayOfArrays outputs) CV_OVERRIDE;
     //! [MyLayer::finalize]
 };
 //! [A custom layer interface]
@@ -269,12 +269,12 @@ static inline void loadNet()
 
     //! [Register InterpLayer]
     CV_DNN_REGISTER_LAYER_CLASS(Interp, InterpLayer);
-    cv::dnn::Net caffeNet = cv::dnn::readNet("/path/to/config.prototxt", "/path/to/weights.caffemodel");
+    ncvslideio::dnn::Net caffeNet = ncvslideio::dnn::readNet("/path/to/config.prototxt", "/path/to/weights.caffemodel");
     //! [Register InterpLayer]
 
     //! [Register ResizeBilinearLayer]
     CV_DNN_REGISTER_LAYER_CLASS(ResizeBilinear, ResizeBilinearLayer);
-    cv::dnn::Net tfNet = cv::dnn::readNet("/path/to/graph.pb");
+    ncvslideio::dnn::Net tfNet = ncvslideio::dnn::readNet("/path/to/graph.pb");
     //! [Register ResizeBilinearLayer]
 
     if (false) loadNet();  // To prevent unused function warning.

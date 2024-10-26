@@ -8,7 +8,7 @@
 #include "opencv2/xfeatures2d/nonfree.hpp"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 static inline Ptr<Feature2D> getFeatureFinder(const std::string& name)
@@ -25,6 +25,6 @@ static inline Ptr<Feature2D> getFeatureFinder(const std::string& name)
         return Ptr<Feature2D>();
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif

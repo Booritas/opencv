@@ -7,7 +7,7 @@
 
 #ifdef HAVE_IMGCODEC_SUNRASTER
 
-namespace cv
+namespace ncvslideio
 {
 
 static const char* fmtSignSunRas = "\x59\xA6\x6A\x95";

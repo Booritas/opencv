@@ -12,7 +12,7 @@ def main(argv):
     window_name = ('Sobel Demo - Simple Edge Detector')
     scale = 1
     delta = 0
-    ddepth = cv.CV_16S
+    ddepth = ncvslideio.CV_16S
     ## [variables]
 
     ## [load]
@@ -24,7 +24,7 @@ def main(argv):
         return -1
 
     # Load the image
-    src = cv.imread(argv[0], cv.IMREAD_COLOR)
+    src = ncvslideio.imread(argv[0], ncvslideio.IMREAD_COLOR)
 
     # Check if image is loaded fine
     if src is None:
@@ -34,38 +34,38 @@ def main(argv):
 
     ## [reduce_noise]
     # Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
-    src = cv.GaussianBlur(src, (3, 3), 0)
+    src = ncvslideio.GaussianBlur(src, (3, 3), 0)
     ## [reduce_noise]
 
     ## [convert_to_gray]
     # Convert the image to grayscale
-    gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+    gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
     ## [convert_to_gray]
 
     ## [sobel]
     # Gradient-X
-    # grad_x = cv.Scharr(gray,ddepth,1,0)
-    grad_x = cv.Sobel(gray, ddepth, 1, 0, ksize=3, scale=scale, delta=delta, borderType=cv.BORDER_DEFAULT)
+    # grad_x = ncvslideio.Scharr(gray,ddepth,1,0)
+    grad_x = ncvslideio.Sobel(gray, ddepth, 1, 0, ksize=3, scale=scale, delta=delta, borderType=ncvslideio.BORDER_DEFAULT)
 
     # Gradient-Y
-    # grad_y = cv.Scharr(gray,ddepth,0,1)
-    grad_y = cv.Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale, delta=delta, borderType=cv.BORDER_DEFAULT)
+    # grad_y = ncvslideio.Scharr(gray,ddepth,0,1)
+    grad_y = ncvslideio.Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale, delta=delta, borderType=ncvslideio.BORDER_DEFAULT)
     ## [sobel]
 
     ## [convert]
     # converting back to uint8
-    abs_grad_x = cv.convertScaleAbs(grad_x)
-    abs_grad_y = cv.convertScaleAbs(grad_y)
+    abs_grad_x = ncvslideio.convertScaleAbs(grad_x)
+    abs_grad_y = ncvslideio.convertScaleAbs(grad_y)
     ## [convert]
 
     ## [blend]
     ## Total Gradient (approximate)
-    grad = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
+    grad = ncvslideio.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
     ## [blend]
 
     ## [display]
-    cv.imshow(window_name, grad)
-    cv.waitKey(0)
+    ncvslideio.imshow(window_name, grad)
+    ncvslideio.waitKey(0)
     ## [display]
 
     return 0

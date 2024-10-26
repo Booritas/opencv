@@ -61,7 +61,7 @@ extern "C" {
 
 /** @brief "black box" capture structure
 
-In C++ use cv::VideoCapture
+In C++ use ncvslideio::VideoCapture
 */
 typedef struct CvCapture CvCapture;
 
@@ -116,7 +116,7 @@ CVAPI(int)    cvGetCaptureDomain( CvCapture* capture);
 
 /** @brief "black box" video file writer structure
 
-In C++ use cv::VideoWriter
+In C++ use ncvslideio::VideoWriter
 */
 typedef struct CvVideoWriter CvVideoWriter;
 

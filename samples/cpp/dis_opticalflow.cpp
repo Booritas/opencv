@@ -6,7 +6,7 @@
 #include "opencv2/video.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char **argv)
 {

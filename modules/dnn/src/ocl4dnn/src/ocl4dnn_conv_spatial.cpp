@@ -63,8 +63,8 @@
 #undef max
 #endif
 
-namespace cv { namespace dnn { namespace ocl4dnn {
-static cv::Mutex kernelConfigMutex;
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
+static ncvslideio::Mutex kernelConfigMutex;
 typedef std::map<std::string, std::string> kernel_hash_t;
 static kernel_hash_t kernelConfigMap;
 static bool defaultConfigLoaded = false;
@@ -105,7 +105,7 @@ static std::string sanitize(const std::string& s)
         }
     }
     // TODO add hash?
-    // s_ = s_ + cv::format("_%08llx", crc64((uchar*)s.c_str(), s.size()));
+    // s_ = s_ + ncvslideio::format("_%08llx", crc64((uchar*)s.c_str(), s.size()));
     return s_;
 }
 
@@ -389,7 +389,7 @@ void OCL4DNNConvSpatial<Dtype>::setupKernelDetails(int32_t kernelType,
 
         setFusionDefine(fused_activ_, fused_eltwise_);
 
-        src_ = cv::ocl::dnn::conv_layer_spatial_oclsrc;
+        src_ = ncvslideio::ocl::dnn::conv_layer_spatial_oclsrc;
     }
     else if (kernelType == KERNEL_TYPE_BASIC)
     {
@@ -410,7 +410,7 @@ void OCL4DNNConvSpatial<Dtype>::setupKernelDetails(int32_t kernelType,
         addDef("OUTPUT_Z", M_);
         setFusionDefine(fused_activ_, fused_eltwise_);
 
-        src_ = cv::ocl::dnn::conv_layer_spatial_oclsrc;
+        src_ = ncvslideio::ocl::dnn::conv_layer_spatial_oclsrc;
     }
     else if (kernelType == KERNEL_TYPE_GEMM_LIKE)
     {
@@ -469,7 +469,7 @@ void OCL4DNNConvSpatial<Dtype>::setupKernelDetails(int32_t kernelType,
         setFusionDefine(fused_activ_, fused_eltwise_);
 
         options_ << " -D DWCONV=" << kernel_name_;
-        src_ = cv::ocl::dnn::conv_layer_spatial_oclsrc;
+        src_ = ncvslideio::ocl::dnn::conv_layer_spatial_oclsrc;
     }
 }
 
@@ -637,7 +637,7 @@ void OCL4DNNConvSpatial<Dtype>::generateKey()
                << precision;
 
 
-    key_ = ocl::Device::getDefault().vendorName() + "_EU" + cv::format("%d", ocl::Device::getDefault().maxComputeUnits()) + "_" + keyBuilder.str();
+    key_ = ocl::Device::getDefault().vendorName() + "_EU" + ncvslideio::format("%d", ocl::Device::getDefault().maxComputeUnits()) + "_" + keyBuilder.str();
     key_sanitized_ = sanitize(key_);
     short_key_ = keyBuilder.str();
 }
@@ -747,7 +747,7 @@ bool OCL4DNNConvSpatial<Dtype>::swizzleWeight(const UMat &weight,
 
         ocl::Kernel oclk_copy_weight(
             use_half_ ? "copyWeightsSwizzled_half" : "copyWeightsSwizzled_float",
-            cv::ocl::dnn::conv_spatial_helper_oclsrc,
+            ncvslideio::ocl::dnn::conv_spatial_helper_oclsrc,
             use_half_ ? "-DHALF_SUPPORT=1 -DDtype=half" : "-DDtype=float"
         );
         if (oclk_copy_weight.empty())
@@ -797,7 +797,7 @@ bool OCL4DNNConvSpatial<Dtype>::swizzleWeight(const UMat &weight,
         int blockWidth = swizzled_factor;  // should equal to simd size.
         int rowAlignment = 32;
         size_t interleaved_filter_size = M_ * kernel_w_ * kernel_h_ * channels_ * sizeof(Dtype);
-        cv::AutoBuffer<Dtype, 0> tmpSwizzledWeight(interleaved_filter_size);
+        ncvslideio::AutoBuffer<Dtype, 0> tmpSwizzledWeight(interleaved_filter_size);
         for (int od = 0; od < M_; od++)
             for (int id = 0; id < channels_; id++)
                 for (int r = 0; r < kernel_h_; r++)
@@ -1076,10 +1076,10 @@ float OCL4DNNConvSpatial<float>::timedConvolve(const UMat &bottom, UMat &top,
                                                const UMat &weight, const UMat &bias,
                                                int32_t numImages, kernelConfig* config)
 {
-    cv::ocl::Queue queue;
+    ncvslideio::ocl::Queue queue;
     try
     {
-        queue = cv::ocl::Queue::getDefault();
+        queue = ncvslideio::ocl::Queue::getDefault();
     }
     catch (const std::exception& e)
     {
@@ -1092,7 +1092,7 @@ float OCL4DNNConvSpatial<float>::timedConvolve(const UMat &bottom, UMat &top,
     tuned_ = false;
     convolve(bottom, top, weight, bias, numImages, config);
 
-    cv::ocl::Timer timer(queue);
+    ncvslideio::ocl::Timer timer(queue);
     timer.start();
     bool res = true;;
     CV_LOG_INFO(NULL, "Benchmarking kernel: " << config->kernelName);
@@ -1439,7 +1439,7 @@ bool OCL4DNNConvSpatial<float>::createConvolutionKernel(int32_t kernelType,
 }
 
 template<>
-void OCL4DNNConvSpatial<float>::generate_gemmlike_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+void OCL4DNNConvSpatial<float>::generate_gemmlike_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                                              int blockM, int blockK, int blockN)
 {
     if (group_ != 1 || ((M_ % 8 != 0) || (M_ % 32 == 24)))
@@ -1476,7 +1476,7 @@ void OCL4DNNConvSpatial<float>::generate_gemmlike_tuneritems(std::vector< cv::Pt
 }
 
 template<>
-void OCL4DNNConvSpatial<float>::generate_idlf_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+void OCL4DNNConvSpatial<float>::generate_idlf_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                                          int blockM, int blockK, int simd_size)
 {
     int max_compute_units = ocl::Device::getDefault().maxComputeUnits();
@@ -1525,7 +1525,7 @@ void OCL4DNNConvSpatial<float>::generate_idlf_tuneritems(std::vector< cv::Ptr<tu
 }
 
 template<>
-void OCL4DNNConvSpatial<float>::generate_dwconv_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+void OCL4DNNConvSpatial<float>::generate_dwconv_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                                            int blockM, int blockK, int blockN)
 {
     if (!dwconv_)
@@ -1535,7 +1535,7 @@ void OCL4DNNConvSpatial<float>::generate_dwconv_tuneritems(std::vector< cv::Ptr<
 }
 
 template<>
-void OCL4DNNConvSpatial<float>::generateTunerItems(std::vector< cv::Ptr<tunerParam> > &tunerItems)
+void OCL4DNNConvSpatial<float>::generateTunerItems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems)
 {
     if (ocl::Device::getDefault().intelSubgroupsSupport())
     {
@@ -1575,7 +1575,7 @@ void OCL4DNNConvSpatial<float>::useFirstAvailable(const UMat &bottom,
                                                   int32_t numImages,
                                                   UMat &verifyTop)
 {
-    std::vector< cv::Ptr<tunerParam> > tunerItems;
+    std::vector< ncvslideio::Ptr<tunerParam> > tunerItems;
     generateTunerItems(tunerItems);
     tunerItems.push_back(makePtr<tunerParam>(KERNEL_TYPE_BASIC, 1, 1, 1));
 
@@ -1635,7 +1635,7 @@ void OCL4DNNConvSpatial<float>::cacheTunedConfig()
 {
     if (tuned_)
     {
-        cv::AutoLock lock(kernelConfigMutex);
+        ncvslideio::AutoLock lock(kernelConfigMutex);
         std::stringstream outputKernel;
         outputKernel << bestKernelConfig->workItem_output[0] << " "
                      << bestKernelConfig->workItem_output[1] << " "
@@ -1658,7 +1658,7 @@ void OCL4DNNConvSpatial<float>::setupConvolution(const UMat &bottom,
                                                  int32_t numImages,
                                                  UMat &verifyTop)
 {
-    std::vector< cv::Ptr<tunerParam> > tunerItems;
+    std::vector< ncvslideio::Ptr<tunerParam> > tunerItems;
 
     generateTunerItems(tunerItems);
     for (int i = 0; i < tunerItems.size(); i++)
@@ -1845,7 +1845,7 @@ void OCL4DNNConvSpatial<Dtype>::prepareKernel(const UMat &bottom, UMat &top,
 template<typename Dtype>
 bool OCL4DNNConvSpatial<Dtype>::loadCachedConfig()
 {
-    cv::AutoLock lock(kernelConfigMutex);
+    ncvslideio::AutoLock lock(kernelConfigMutex);
     if (!defaultConfigLoaded && !force_auto_tuning_)
         initializeGlobalBuiltinConfigurations((use_cache_path_ && !cache_path_.empty()) ? (cache_path_ + '/') : std::string());
 
@@ -1962,4 +1962,4 @@ bool OCL4DNNConvSpatial<Dtype>::loadTunedConfig()
 
 template class OCL4DNNConvSpatial<float>;
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn

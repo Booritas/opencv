@@ -44,7 +44,7 @@
 const int draw_shift_bits = 4;
 const int draw_multiplier = 1 << draw_shift_bits;
 
-namespace cv
+namespace ncvslideio
 {
 
 /*

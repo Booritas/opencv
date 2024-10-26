@@ -67,10 +67,10 @@ namespace opencv_test { namespace {
 #define COUNT_NORM_TYPES 3
 #define METHODS_COUNT 4
 
-int NORM_TYPE[COUNT_NORM_TYPES] = {cv::NORM_L1, cv::NORM_L2, cv::NORM_INF};
-int METHOD[METHODS_COUNT] = {0, cv::RANSAC, cv::LMEDS, cv::RHO};
+int NORM_TYPE[COUNT_NORM_TYPES] = {ncvslideio::NORM_L1, ncvslideio::NORM_L2, ncvslideio::NORM_INF};
+int METHOD[METHODS_COUNT] = {0, ncvslideio::RANSAC, ncvslideio::LMEDS, ncvslideio::RHO};
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 
@@ -82,12 +82,12 @@ static const int image_size = 100;
 static const double reproj_threshold = 3.0;
 static const double sigma = 0.01;
 
-static bool check_matrix_size(const cv::Mat& H)
+static bool check_matrix_size(const ncvslideio::Mat& H)
 {
     return (H.rows == 3) && (H.cols == 3);
 }
 
-static bool check_matrix_diff(const cv::Mat& original, const cv::Mat& found, const int norm_type, double &diff)
+static bool check_matrix_diff(const ncvslideio::Mat& original, const ncvslideio::Mat& found, const int norm_type, double &diff)
 {
     diff = cvtest::norm(original, found, norm_type);
     return diff <= max_diff;
@@ -114,7 +114,7 @@ static void print_information_1(int j, int N, int _method, const Mat& H)
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
     cout << "Count of points: " << N << endl; cout << endl;
-    cout << "Method: "; if (_method == 0) cout << 0; else if (_method == 8) cout << "RANSAC"; else if (_method == cv::RHO) cout << "RHO"; else cout << "LMEDS"; cout << endl;
+    cout << "Method: "; if (_method == 0) cout << 0; else if (_method == 8) cout << "RANSAC"; else if (_method == ncvslideio::RHO) cout << "RHO"; else cout << "LMEDS"; cout << endl;
     cout << "Homography matrix:" << endl; cout << endl;
     cout << H << endl; cout << endl;
     cout << "Number of rows: " << H.rows << "   Number of cols: " << H.cols << endl; cout << endl;
@@ -126,7 +126,7 @@ static void print_information_2(int j, int N, int _method, const Mat& H, const M
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
     cout << "Count of points: " << N << endl; cout << endl;
-    cout << "Method: "; if (_method == 0) cout << 0; else if (_method == 8) cout << "RANSAC"; else if (_method == cv::RHO) cout << "RHO"; else cout << "LMEDS"; cout << endl;
+    cout << "Method: "; if (_method == 0) cout << 0; else if (_method == 8) cout << "RANSAC"; else if (_method == ncvslideio::RHO) cout << "RHO"; else cout << "LMEDS"; cout << endl;
     cout << "Original matrix:" << endl; cout << endl;
     cout << H << endl; cout << endl;
     cout << "Found matrix:" << endl; cout << endl;
@@ -142,7 +142,7 @@ static void print_information_3(int _method, int j, int N, const Mat& mask)
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
     cout << "Count of points: " << N << endl; cout << endl;
-    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == cv::RHO) cout << "RHO" << endl; else cout << _method << endl;
+    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == ncvslideio::RHO) cout << "RHO" << endl; else cout << _method << endl;
     cout << "Found mask:" << endl; cout << endl;
     cout << mask << endl; cout << endl;
     cout << "Number of rows: " << mask.rows << "   Number of cols: " << mask.cols << endl; cout << endl;
@@ -178,7 +178,7 @@ static void print_information_5(int _method, int j, int N, int l, double diff)
 static void print_information_6(int _method, int j, int N, int k, double diff, bool value)
 {
     cout << endl; cout << "Checking for inliers/outliers mask..." << endl; cout << endl;
-    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == cv::RHO) cout << "RHO" << endl; else cout << _method << endl;
+    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == ncvslideio::RHO) cout << "RHO" << endl; else cout << _method << endl;
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
     cout << "Count of points: " << N << "   " << endl;
@@ -191,7 +191,7 @@ static void print_information_6(int _method, int j, int N, int k, double diff, b
 static void print_information_7(int _method, int j, int N, int k, double diff, bool original_value, bool found_value)
 {
     cout << endl; cout << "Checking for inliers/outliers mask..." << endl; cout << endl;
-    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == cv::RHO) cout << "RHO" << endl; else cout << _method << endl;
+    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == ncvslideio::RHO) cout << "RHO" << endl; else cout << _method << endl;
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
     cout << "Count of points: " << N << "   " << endl;
@@ -204,7 +204,7 @@ static void print_information_7(int _method, int j, int N, int k, double diff, b
 static void print_information_8(int _method, int j, int N, int k, int l, double diff)
 {
     cout << endl; cout << "Checking for reprojection error of inlier..." << endl; cout << endl;
-    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == cv::RHO) cout << "RHO" << endl; else cout << _method << endl;
+    cout << "Method: "; if (_method == RANSAC) cout << "RANSAC" << endl; else if (_method == ncvslideio::RHO) cout << "RHO" << endl; else cout << _method << endl;
     cout << "Sigma of normal noise: " << sigma << endl;
     cout << "Type of srcPoints: "; if ((j>-1) && (j<2)) cout << "Mat of CV_32FC2"; else  cout << "vector <Point2f>";
     cout << "   Type of dstPoints: "; if (j % 2 == 0) cout << "Mat of CV_32FC2"; else cout << "vector <Point2f>"; cout << endl;
@@ -223,7 +223,7 @@ TEST(Calib3d_Homography, accuracy)
     using namespace HomographyTestUtils;
     for (int N = MIN_COUNT_OF_POINTS; N <= MAX_COUNT_OF_POINTS; ++N)
     {
-        RNG& rng = cv::theRNG();
+        RNG& rng = ncvslideio::theRNG();
 
         float *src_data = new float [2*N];
 
@@ -233,10 +233,10 @@ TEST(Calib3d_Homography, accuracy)
             src_data[2*i+1] = (float)cvtest::randReal(rng)*image_size;
         }
 
-        cv::Mat src_mat_2f(1, N, CV_32FC2, src_data),
+        ncvslideio::Mat src_mat_2f(1, N, CV_32FC2, src_data),
         src_mat_2d(2, N, CV_32F, src_data),
         src_mat_3d(3, N, CV_32F);
-        cv::Mat dst_mat_2f, dst_mat_2d, dst_mat_3d;
+        ncvslideio::Mat dst_mat_2f, dst_mat_2d, dst_mat_3d;
 
         vector <Point2f> src_vec, dst_vec;
 
@@ -259,7 +259,7 @@ TEST(Calib3d_Homography, accuracy)
                             sin(fi),  cos(fi), t_y,
                             0.0f,     0.0f, 1.0f };
 
-        cv::Mat H_64(3, 3, CV_64F, Hdata), H_32;
+        ncvslideio::Mat H_64(3, 3, CV_64F, Hdata), H_32;
 
         H_64.convertTo(H_32, CV_32F);
 
@@ -285,10 +285,10 @@ TEST(Calib3d_Homography, accuracy)
             case 0:
             case LMEDS:
                 {
-                    Mat H_res_64 [4] = { cv::findHomography(src_mat_2f, dst_mat_2f, method),
-                                         cv::findHomography(src_mat_2f, dst_vec, method),
-                                         cv::findHomography(src_vec, dst_mat_2f, method),
-                                         cv::findHomography(src_vec, dst_vec, method) };
+                    Mat H_res_64 [4] = { ncvslideio::findHomography(src_mat_2f, dst_mat_2f, method),
+                                         ncvslideio::findHomography(src_mat_2f, dst_vec, method),
+                                         ncvslideio::findHomography(src_vec, dst_mat_2f, method),
+                                         ncvslideio::findHomography(src_vec, dst_vec, method) };
 
                     for (int j = 0; j < 4; ++j)
                     {
@@ -313,15 +313,15 @@ TEST(Calib3d_Homography, accuracy)
 
                     continue;
                 }
-            case cv::RHO:
+            case ncvslideio::RHO:
             case RANSAC:
                 {
-                    cv::Mat mask [4]; double diff;
+                    ncvslideio::Mat mask [4]; double diff;
 
-                    Mat H_res_64 [4] = { cv::findHomography(src_mat_2f, dst_mat_2f, method, reproj_threshold, mask[0]),
-                                         cv::findHomography(src_mat_2f, dst_vec, method, reproj_threshold, mask[1]),
-                                         cv::findHomography(src_vec, dst_mat_2f, method, reproj_threshold, mask[2]),
-                                         cv::findHomography(src_vec, dst_vec, method, reproj_threshold, mask[3]) };
+                    Mat H_res_64 [4] = { ncvslideio::findHomography(src_mat_2f, dst_mat_2f, method, reproj_threshold, mask[0]),
+                                         ncvslideio::findHomography(src_mat_2f, dst_vec, method, reproj_threshold, mask[1]),
+                                         ncvslideio::findHomography(src_vec, dst_mat_2f, method, reproj_threshold, mask[2]),
+                                         ncvslideio::findHomography(src_vec, dst_vec, method, reproj_threshold, mask[3]) };
 
                     for (int j = 0; j < 4; ++j)
                     {
@@ -371,7 +371,7 @@ TEST(Calib3d_Homography, accuracy)
         Mat noise_2f(1, N, CV_32FC2);
         rng.fill(noise_2f, RNG::NORMAL, Scalar::all(0), Scalar::all(sigma));
 
-        cv::Mat mask(N, 1, CV_8UC1);
+        ncvslideio::Mat mask(N, 1, CV_8UC1);
 
         for (int i = 0; i < N; ++i)
         {
@@ -388,10 +388,10 @@ TEST(Calib3d_Homography, accuracy)
             case 0:
             case LMEDS:
                 {
-                    Mat H_res_64 [4] = { cv::findHomography(src_mat_2f, dst_mat_2f),
-                                         cv::findHomography(src_mat_2f, dst_vec),
-                                         cv::findHomography(src_vec, dst_mat_2f),
-                                         cv::findHomography(src_vec, dst_vec) };
+                    Mat H_res_64 [4] = { ncvslideio::findHomography(src_mat_2f, dst_mat_2f),
+                                         ncvslideio::findHomography(src_mat_2f, dst_vec),
+                                         ncvslideio::findHomography(src_vec, dst_mat_2f),
+                                         ncvslideio::findHomography(src_vec, dst_vec) };
 
                     for (int j = 0; j < 4; ++j)
                     {
@@ -405,7 +405,7 @@ TEST(Calib3d_Homography, accuracy)
 
                         Mat H_res_32; H_res_64[j].convertTo(H_res_32, CV_32F);
 
-                        cv::Mat dst_res_3d(3, N, CV_32F), noise_2d(2, N, CV_32F);
+                        ncvslideio::Mat dst_res_3d(3, N, CV_32F), noise_2d(2, N, CV_32F);
 
                         for (int k = 0; k < N; ++k)
                         {
@@ -420,9 +420,9 @@ TEST(Calib3d_Homography, accuracy)
                             noise_2d.at<float>(0, k) = a[0]; noise_2d.at<float>(1, k) = a[1];
 
                             for (int l = 0; l < COUNT_NORM_TYPES; ++l)
-                                if (cv::norm(tmp_mat_3d, dst_mat_3d.col(k), NORM_TYPE[l]) - cv::norm(noise_2d.col(k), NORM_TYPE[l]) > max_2diff)
+                                if (ncvslideio::norm(tmp_mat_3d, dst_mat_3d.col(k), NORM_TYPE[l]) - ncvslideio::norm(noise_2d.col(k), NORM_TYPE[l]) > max_2diff)
                                 {
-                                print_information_4(method, j, N, k, l, cv::norm(tmp_mat_3d, dst_mat_3d.col(k), NORM_TYPE[l]) - cv::norm(noise_2d.col(k), NORM_TYPE[l]));
+                                print_information_4(method, j, N, k, l, ncvslideio::norm(tmp_mat_3d, dst_mat_3d.col(k), NORM_TYPE[l]) - ncvslideio::norm(noise_2d.col(k), NORM_TYPE[l]));
                                 CV_Error(CALIB3D_HOMOGRAPHY_ERROR_REPROJ_DIFF, MESSAGE_REPROJ_DIFF_1);
                                 return;
                             }
@@ -430,9 +430,9 @@ TEST(Calib3d_Homography, accuracy)
                         }
 
                         for (int l = 0; l < COUNT_NORM_TYPES; ++l)
-                            if (cv::norm(dst_res_3d, dst_mat_3d, NORM_TYPE[l]) - cv::norm(noise_2d, NORM_TYPE[l]) > max_diff)
+                            if (ncvslideio::norm(dst_res_3d, dst_mat_3d, NORM_TYPE[l]) - ncvslideio::norm(noise_2d, NORM_TYPE[l]) > max_diff)
                             {
-                            print_information_5(method, j, N, l, cv::norm(dst_res_3d, dst_mat_3d, NORM_TYPE[l]) - cv::norm(noise_2d, NORM_TYPE[l]));
+                            print_information_5(method, j, N, l, ncvslideio::norm(dst_res_3d, dst_mat_3d, NORM_TYPE[l]) - ncvslideio::norm(noise_2d, NORM_TYPE[l]));
                             CV_Error(CALIB3D_HOMOGRAPHY_ERROR_REPROJ_DIFF, MESSAGE_REPROJ_DIFF_2);
                             return;
                         }
@@ -441,15 +441,15 @@ TEST(Calib3d_Homography, accuracy)
 
                     continue;
                 }
-            case cv::RHO:
+            case ncvslideio::RHO:
             case RANSAC:
                 {
-                    cv::Mat mask_res [4];
+                    ncvslideio::Mat mask_res [4];
 
-                    Mat H_res_64 [4] = { cv::findHomography(src_mat_2f, dst_mat_2f, method, reproj_threshold, mask_res[0]),
-                                         cv::findHomography(src_mat_2f, dst_vec, method, reproj_threshold, mask_res[1]),
-                                         cv::findHomography(src_vec, dst_mat_2f, method, reproj_threshold, mask_res[2]),
-                                         cv::findHomography(src_vec, dst_vec, method, reproj_threshold, mask_res[3]) };
+                    Mat H_res_64 [4] = { ncvslideio::findHomography(src_mat_2f, dst_mat_2f, method, reproj_threshold, mask_res[0]),
+                                         ncvslideio::findHomography(src_mat_2f, dst_vec, method, reproj_threshold, mask_res[1]),
+                                         ncvslideio::findHomography(src_vec, dst_mat_2f, method, reproj_threshold, mask_res[2]),
+                                         ncvslideio::findHomography(src_vec, dst_vec, method, reproj_threshold, mask_res[3]) };
 
                     for (int j = 0; j < 4; ++j)
                     {
@@ -477,9 +477,9 @@ TEST(Calib3d_Homography, accuracy)
                             return;
                         }
 
-                        cv::Mat H_res_32; H_res_64[j].convertTo(H_res_32, CV_32F);
+                        ncvslideio::Mat H_res_32; H_res_64[j].convertTo(H_res_32, CV_32F);
 
-                        cv::Mat dst_res_3d = H_res_32*src_mat_3d;
+                        ncvslideio::Mat dst_res_3d = H_res_32*src_mat_3d;
 
                         for (int k = 0; k < N; ++k)
                         {
@@ -492,7 +492,7 @@ TEST(Calib3d_Homography, accuracy)
                             dst_mat_3d.at<float>(0, k) = p[0];
                             dst_mat_3d.at<float>(1, k) = p[1];
 
-                            double diff = cv::norm(dst_res_3d.col(k), dst_mat_3d.col(k), NORM_L2);
+                            double diff = ncvslideio::norm(dst_res_3d.col(k), dst_mat_3d.col(k), NORM_L2);
 
                             if (mask_res[j].at<bool>(k, 0) != (diff <= reproj_threshold))
                             {
@@ -514,16 +514,16 @@ TEST(Calib3d_Homography, accuracy)
                                 dst_mat_3d.at<float>(0, k) -= a[0];
                                 dst_mat_3d.at<float>(1, k) -= a[1];
 
-                                cv::Mat noise_2d(2, 1, CV_32F);
+                                ncvslideio::Mat noise_2d(2, 1, CV_32F);
                                 noise_2d.at<float>(0, 0) = a[0]; noise_2d.at<float>(1, 0) = a[1];
 
                                 for (int l = 0; l < COUNT_NORM_TYPES; ++l)
                                 {
-                                    diff = cv::norm(dst_res_3d.col(k), dst_mat_3d.col(k), NORM_TYPE[l]);
+                                    diff = ncvslideio::norm(dst_res_3d.col(k), dst_mat_3d.col(k), NORM_TYPE[l]);
 
-                                    if (diff - cv::norm(noise_2d, NORM_TYPE[l]) > max_2diff)
+                                    if (diff - ncvslideio::norm(noise_2d, NORM_TYPE[l]) > max_2diff)
                                     {
-                                        print_information_8(method, j, N, k, l, diff - cv::norm(noise_2d, NORM_TYPE[l]));
+                                        print_information_8(method, j, N, k, l, diff - ncvslideio::norm(noise_2d, NORM_TYPE[l]));
                                         CV_Error(CALIB3D_HOMOGRAPHY_ERROR_RANSAC_DIFF, MESSAGE_RANSAC_DIFF);
                                         return;
                                     }
@@ -593,7 +593,7 @@ TEST(Calib3d_Homography, EKcase)
     Mat h = findHomography(p1, p2, RANSAC, 0.01, mask);
     ASSERT_TRUE(!h.empty());
 
-    cv::transpose(mask, mask);
+    ncvslideio::transpose(mask, mask);
     Mat p3, mask2;
     int ninliers = countNonZero(mask);
     Mat nmask[] = { mask, mask };
@@ -701,7 +701,7 @@ TEST(Calib3d_Homography, minPoints)
     Mat mask;
 
     // findHomography should raise an error since npoints < MIN_COUNT_OF_POINTS
-    EXPECT_THROW(findHomography(p1, p2, RANSAC, 0.01, mask), cv::Exception);
+    EXPECT_THROW(findHomography(p1, p2, RANSAC, 0.01, mask), ncvslideio::Exception);
 }
 
 TEST(Calib3d_Homography, not_normalized)
@@ -718,12 +718,12 @@ TEST(Calib3d_Homography, not_normalized)
     {
         Mat h = findHomography(p1, p2, method);
         for (auto it = h.begin<double>(); it != h.end<double>(); ++it) {
-            ASSERT_FALSE(cvIsNaN(*it)) << cv::format("method %d\nResult:\n", method) << h;
+            ASSERT_FALSE(cvIsNaN(*it)) << ncvslideio::format("method %d\nResult:\n", method) << h;
         }
         if (h.at<double>(0, 0) * ref.at<double>(0, 0) < 0) {
             h *= -1;
         }
-        ASSERT_LE(cv::norm(h, ref, NORM_INF), 1e-8) << cv::format("method %d\nResult:\n", method) << h;
+        ASSERT_LE(ncvslideio::norm(h, ref, NORM_INF), 1e-8) << ncvslideio::format("method %d\nResult:\n", method) << h;
     }
 }
 
@@ -756,9 +756,9 @@ TEST(Calib3d_Homography, Refine)
         proj.col(1) /= proj.col(2);
 
         Mat error;
-        cv::pow(p2.colRange(0, 2) - proj.colRange(0, 2), 2, error);
-        cv::reduce(error, error, 1, REDUCE_SUM);
-        cv::reduce(error, error, 0, REDUCE_AVG);
+        ncvslideio::pow(p2.colRange(0, 2) - proj.colRange(0, 2), 2, error);
+        ncvslideio::reduce(error, error, 1, REDUCE_SUM);
+        ncvslideio::reduce(error, error, 0, REDUCE_AVG);
         EXPECT_LE(sqrt(error.at<double>(0, 0)), method == LMEDS ? 7e-4 : 7e-5);
     }
 }

@@ -7,7 +7,7 @@
 #include "bardetect.hpp"
 
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 static constexpr float PI = static_cast<float>(CV_PI);
 static constexpr float HALF_PI = static_cast<float>(CV_PI / 2);

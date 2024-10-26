@@ -102,7 +102,7 @@
 
 namespace caffe { using namespace opencv_caffe; } // avoid massive renames from caffe proto package
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 // Read parameters from a file into a NetParameter proto message.

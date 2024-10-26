@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {
@@ -25,7 +25,7 @@ namespace util
     template<class T, class U, class V = void>
     using are_different_t = enable_if_t< !std::is_same<decay_t<T>, decay_t<U>>::value, V>;
 
-} // namespace cv
+} // namespace ncvslideio
 } // namespace util
 
 #endif // OPENCV_GAPI_UTIL_TYPE_TRAITS_HPP

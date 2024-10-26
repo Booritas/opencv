@@ -7,13 +7,13 @@
 
 #include "backend.hpp"
 
-namespace cv { namespace dnn_backend {
+namespace ncvslideio { namespace dnn_backend {
 
 class IDNNBackendFactory
 {
 public:
     virtual ~IDNNBackendFactory() {}
-    virtual std::shared_ptr<cv::dnn_backend::NetworkBackend> createNetworkBackend() const = 0;
+    virtual std::shared_ptr<ncvslideio::dnn_backend::NetworkBackend> createNetworkBackend() const = 0;
 };
 
 //
@@ -23,7 +23,7 @@ public:
 std::shared_ptr<IDNNBackendFactory> createPluginDNNBackendFactory(const std::string& baseName);
 
 /// @brief Returns createPluginDNNBackendFactory()->createNetworkBackend()
-cv::dnn_backend::NetworkBackend& createPluginDNNNetworkBackend(const std::string& baseName);
+ncvslideio::dnn_backend::NetworkBackend& createPluginDNNNetworkBackend(const std::string& baseName);
 
 }}  // namespace
 

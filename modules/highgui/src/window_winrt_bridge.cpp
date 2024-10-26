@@ -69,7 +69,7 @@ void HighguiBridge::setContainer(Windows::UI::Xaml::Controls::Panel^ container)
     this->container = container;
 }
 
-CvWindow* HighguiBridge::findWindowByName(cv::String name)
+CvWindow* HighguiBridge::findWindowByName(ncvslideio::String name)
 {
     auto search = windowsMap->find(name);
     if (search != windowsMap->end()) {
@@ -79,7 +79,7 @@ CvWindow* HighguiBridge::findWindowByName(cv::String name)
     return nullptr;
 }
 
-CvTrackbar* HighguiBridge::findTrackbarByName(cv::String trackbar_name, cv::String window_name)
+CvTrackbar* HighguiBridge::findTrackbarByName(ncvslideio::String trackbar_name, ncvslideio::String window_name)
 {
     CvWindow* window = findWindowByName(window_name);
 
@@ -89,7 +89,7 @@ CvTrackbar* HighguiBridge::findTrackbarByName(cv::String trackbar_name, cv::Stri
     return nullptr;
 }
 
-Platform::String^ HighguiBridge::convertString(cv::String name)
+Platform::String^ HighguiBridge::convertString(ncvslideio::String name)
 {
     auto data = name.c_str();
     int bufferSize = MultiByteToWideChar(CP_UTF8, 0, data, -1, nullptr, 0);
@@ -113,7 +113,7 @@ void HighguiBridge::showWindow(CvWindow* window)
     HighguiBridge::getInstance().container->Children->Append(window->getPage());
 }
 
-CvWindow* HighguiBridge::namedWindow(cv::String name) {
+CvWindow* HighguiBridge::namedWindow(ncvslideio::String name) {
 
     CvWindow* window = HighguiBridge::getInstance().findWindowByName(name.c_str());
     if (!window)
@@ -124,7 +124,7 @@ CvWindow* HighguiBridge::namedWindow(cv::String name) {
     return window;
 }
 
-void HighguiBridge::destroyWindow(cv::String name)
+void HighguiBridge::destroyWindow(ncvslideio::String name)
 {
     auto window = windowsMap->find(name);
     if (window != windowsMap->end())
@@ -146,17 +146,17 @@ void HighguiBridge::destroyAllWindows()
     windowsMap->clear();
 }
 
-CvWindow* HighguiBridge::createWindow(cv::String name)
+CvWindow* HighguiBridge::createWindow(ncvslideio::String name)
 {
     CvWindow* window = new CvWindow(name);
-    windowsMap->insert(std::pair<cv::String, CvWindow*>(name, window));
+    windowsMap->insert(std::pair<ncvslideio::String, CvWindow*>(name, window));
 
     return window;
 }
 
 /***************************** CvTrackbar class *********************************/
 
-CvTrackbar::CvTrackbar(cv::String name, Slider^ slider, CvWindow* parent) : name(name), slider(slider), parent(parent) {}
+CvTrackbar::CvTrackbar(ncvslideio::String name, Slider^ slider, CvWindow* parent) : name(name), slider(slider), parent(parent) {}
 
 CvTrackbar::~CvTrackbar() {}
 
@@ -217,10 +217,10 @@ Slider^ CvTrackbar::getSlider()
 
 /***************************** CvWindow class ***********************************/
 
-CvWindow::CvWindow(cv::String name, int flags) : name(name)
+CvWindow::CvWindow(ncvslideio::String name, int flags) : name(name)
 {
     this->page = (Page^)Windows::UI::Xaml::Markup::XamlReader::Load(const_cast<Platform::String^>(markupContent));
-    this->sliderMap = new std::map<cv::String, CvTrackbar*>();
+    this->sliderMap = new std::map<ncvslideio::String, CvTrackbar*>();
 
     sliderPanel = (Panel^)page->FindName("cvTrackbar");
     imageControl = (Image^)page->FindName("cvImage");
@@ -246,7 +246,7 @@ CvWindow::CvWindow(cv::String name, int flags) : name(name)
 
 CvWindow::~CvWindow() {}
 
-void CvWindow::createSlider(cv::String name, int* val, int count, CvTrackbarCallback2 on_notify, void* userdata)
+void CvWindow::createSlider(ncvslideio::String name, int* val, int count, CvTrackbarCallback2 on_notify, void* userdata)
 {
     CvTrackbar* trackbar = findTrackbarByName(name);
 
@@ -258,7 +258,7 @@ void CvWindow::createSlider(cv::String name, int* val, int count, CvTrackbarCall
     // Making slider the same size as the image control or setting minimal size.
     // This is added to cover potential edge cases because:
     //   1. Fist clause will not be true until the second call to any container-updating API
-    //      e.g. cv::createTrackbar, cv:imshow or cv::namedWindow
+    //      e.g. ncvslideio::createTrackbar, ncvslideio:imshow or ncvslideio::namedWindow
     //   2. Second clause will work but should be immediately overridden by Image->Loaded callback,
     //      see CvWindow ctor.
     if (this->imageControl->ActualWidth > 0) {
@@ -292,14 +292,14 @@ void CvWindow::createSlider(cv::String name, int* val, int count, CvTrackbarCall
                 Slider^ slider = (Slider^)sender;
                 trackbar->callback(slider->Value, nullptr);
             });
-        this->sliderMap->insert(std::pair<cv::String, CvTrackbar*>(name, trackbar));
+        this->sliderMap->insert(std::pair<ncvslideio::String, CvTrackbar*>(name, trackbar));
 
         // Adding slider to the window
         sliderPanel->Children->Append(slider);
     }
 }
 
-CvTrackbar* CvWindow::findTrackbarByName(cv::String name)
+CvTrackbar* CvWindow::findTrackbarByName(ncvslideio::String name)
 {
     auto search = sliderMap->find(name);
     if (search != sliderMap->end()) {
@@ -342,7 +342,7 @@ Page^ CvWindow::getPage()
 }
 
 //TODO: prototype, not in use yet
-void CvWindow::createButton(cv::String name)
+void CvWindow::createButton(ncvslideio::String name)
 {
     if (!buttonPanel) return;
 

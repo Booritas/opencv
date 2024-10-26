@@ -10,54 +10,54 @@ int main(int argc, char *argv[])
     bool need_first_conversion  = true;
     bool need_second_conversion = false;
 
-    cv::Size szOut(4, 4);
-    cv::GComputation cc([&](){
+    ncvslideio::Size szOut(4, 4);
+    ncvslideio::GComputation cc([&](){
 // ! [GIOProtoArgs usage]
-        auto ins = cv::GIn();
-        cv::GMat in1;
+        auto ins = ncvslideio::GIn();
+        ncvslideio::GMat in1;
         if (need_first_conversion)
-            ins += cv::GIn(in1);
+            ins += ncvslideio::GIn(in1);
 
-        cv::GMat in2;
+        ncvslideio::GMat in2;
         if (need_second_conversion)
-            ins += cv::GIn(in2);
+            ins += ncvslideio::GIn(in2);
 
-        auto outs = cv::GOut();
-        cv::GMat out1 = cv::gapi::resize(in1, szOut);
+        auto outs = ncvslideio::GOut();
+        ncvslideio::GMat out1 = ncvslideio::gapi::resize(in1, szOut);
         if (need_first_conversion)
-            outs += cv::GOut(out1);
+            outs += ncvslideio::GOut(out1);
 
-        cv::GMat out2 = cv::gapi::resize(in2, szOut);
+        ncvslideio::GMat out2 = ncvslideio::gapi::resize(in2, szOut);
         if (need_second_conversion)
-            outs += cv::GOut(out2);
+            outs += ncvslideio::GOut(out2);
 // ! [GIOProtoArgs usage]
-        return cv::GComputation(std::move(ins), std::move(outs));
+        return ncvslideio::GComputation(std::move(ins), std::move(outs));
     });
 
 // ! [GRunArgs usage]
-    auto in_vector = cv::gin();
+    auto in_vector = ncvslideio::gin();
 
-    cv::Mat in_mat1( 8,  8, CV_8UC3);
-    cv::Mat in_mat2(16, 16, CV_8UC3);
-    cv::randu(in_mat1, cv::Scalar::all(0), cv::Scalar::all(255));
-    cv::randu(in_mat2, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::Mat in_mat1( 8,  8, CV_8UC3);
+    ncvslideio::Mat in_mat2(16, 16, CV_8UC3);
+    ncvslideio::randu(in_mat1, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    ncvslideio::randu(in_mat2, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
 
     if (need_first_conversion)
-        in_vector += cv::gin(in_mat1);
+        in_vector += ncvslideio::gin(in_mat1);
     if (need_second_conversion)
-        in_vector += cv::gin(in_mat2);
+        in_vector += ncvslideio::gin(in_mat2);
 // ! [GRunArgs usage]
 
 // ! [GRunArgsP usage]
-    auto out_vector = cv::gout();
-    cv::Mat out_mat1, out_mat2;
+    auto out_vector = ncvslideio::gout();
+    ncvslideio::Mat out_mat1, out_mat2;
     if (need_first_conversion)
-        out_vector += cv::gout(out_mat1);
+        out_vector += ncvslideio::gout(out_mat1);
     if (need_second_conversion)
-        out_vector += cv::gout(out_mat2);
+        out_vector += ncvslideio::gout(out_mat2);
 // ! [GRunArgsP usage]
 
-    auto stream = cc.compileStreaming(cv::compile_args(cv::gapi::imgproc::cpu::kernels()));
+    auto stream = cc.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::imgproc::cpu::kernels()));
     stream.setSource(std::move(in_vector));
 
     stream.start();

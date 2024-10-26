@@ -6,13 +6,13 @@
 #include "persistence_impl.hpp"
 #include "persistence_base64_encoding.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class base64::Base64ContextEmitter
 {
 public:
-    explicit Base64ContextEmitter(cv::FileStorage::Impl& fs, bool needs_indent_)
+    explicit Base64ContextEmitter(ncvslideio::FileStorage::Impl& fs, bool needs_indent_)
             : file_storage(fs)
             , needs_indent(needs_indent_)
             , binary_buffer(BUFFER_LEN)
@@ -121,7 +121,7 @@ private:
     // static_assert(BUFFER_LEN % 3 == 0, "BUFFER_LEN is invalid");
 
 private:
-    cv::FileStorage::Impl& file_storage;
+    ncvslideio::FileStorage::Impl& file_storage;
     bool needs_indent;
 
     std::vector<uchar> binary_buffer;
@@ -196,7 +196,7 @@ size_t base64::base64_encode(const uint8_t *src, uint8_t *dst, size_t off, size_
 }
 
 int base64::icvCalcStructSize(const char *dt, int initial_size) {
-    int size = cv::fs::calcElemSize( dt, initial_size );
+    int size = ncvslideio::fs::calcElemSize( dt, initial_size );
     size_t elem_max_size = 0;
     for ( const char * type = dt; *type != '\0'; type++ ) {
         switch ( *type )
@@ -220,7 +220,7 @@ size_t base64::base64_encode_buffer_size(size_t cnt, bool is_end_with_zero) {
     return (cnt + 2U) / 3U * 4U + additional;
 }
 
-base64::Base64Writer::Base64Writer(cv::FileStorage::Impl& fs, bool can_indent)
+base64::Base64Writer::Base64Writer(ncvslideio::FileStorage::Impl& fs, bool can_indent)
         : emitter(new Base64ContextEmitter(fs, can_indent))
         , data_type_string()
 {
@@ -249,7 +249,7 @@ base64::Base64Writer::~Base64Writer()
 void base64::Base64Writer::check_dt(const char* dt)
 {
     if ( dt == 0 )
-        CV_Error( cv::Error::StsBadArg, "Invalid \'dt\'." );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid \'dt\'." );
     else if (data_type_string.empty()) {
         data_type_string = dt;
 
@@ -260,7 +260,7 @@ void base64::Base64Writer::check_dt(const char* dt)
 
         emitter->write(beg, end);
     } else if ( data_type_string != dt )
-        CV_Error( cv::Error::StsBadArg, "\'dt\' does not match." );
+        CV_Error( ncvslideio::Error::StsBadArg, "\'dt\' does not match." );
 }
 
 base64::RawDataToBinaryConvertor::RawDataToBinaryConvertor(const void* src, int len, const std::string & dt)
@@ -349,7 +349,7 @@ size_t base64::RawDataToBinaryConvertor::make_to_binary_funcs(const std::string 
                     break;
                 case 'r':
                 default:
-                    CV_Error(cv::Error::StsError, "type is not supported");
+                    CV_Error(ncvslideio::Error::StsError, "type is not supported");
             };
 
             offset = static_cast<size_t>(cvAlign(static_cast<int>(offset), static_cast<int>(size)));

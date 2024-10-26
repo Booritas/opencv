@@ -4,8 +4,8 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/ml.hpp"
 
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 
 struct Data
@@ -46,9 +46,9 @@ void addPointRetrainAndRedraw(Data &data, int x, int y, int response);
 
 bool doTrain( const Mat samples, const Mat responses, Mat &weights, float &shift)
 {
-    cv::Ptr<SVMSGD> svmsgd = SVMSGD::create();
+    ncvslideio::Ptr<SVMSGD> svmsgd = SVMSGD::create();
 
-    cv::Ptr<TrainData> trainData = TrainData::create(samples, cv::ml::ROW_SAMPLE, responses);
+    ncvslideio::Ptr<TrainData> trainData = TrainData::create(samples, ncvslideio::ml::ROW_SAMPLE, responses);
     svmsgd->train( trainData );
 
     if (svmsgd->isTrained())
@@ -156,7 +156,7 @@ void redraw(Data data, const Point points[2])
         color = (data.responses.at<float>(i) > 0) ? Scalar(128,128,0) : Scalar(0,128,128);
         circle(data.img, center, radius, color, 5);
     }
-    line(data.img, points[0], points[1],cv::Scalar(1,255,1));
+    line(data.img, points[0], points[1],ncvslideio::Scalar(1,255,1));
 
     imshow("Train svmsgd", data.img);
 }

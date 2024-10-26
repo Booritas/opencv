@@ -5,7 +5,7 @@
 #include "apple_conversions.h"
 #include "precomp.hpp"
 
-CGImageRef MatToCGImage(const cv::Mat& image) {
+CGImageRef MatToCGImage(const ncvslideio::Mat& image) {
     NSData *data = [NSData dataWithBytes:image.data
                                   length:image.step.p[0] * image.rows];
 
@@ -24,7 +24,7 @@ CGImageRef MatToCGImage(const cv::Mat& image) {
     bool alpha = image.channels() == 4;
     CGBitmapInfo bitmapInfo = (alpha ? kCGImageAlphaLast : kCGImageAlphaNone) | kCGBitmapByteOrderDefault;
 
-    // Creating CGImage from cv::Mat
+    // Creating CGImage from ncvslideio::Mat
     CGImageRef imageRef = CGImageCreate(image.cols,
                                         image.rows,
                                         8 * image.elemSize1(),
@@ -44,7 +44,7 @@ CGImageRef MatToCGImage(const cv::Mat& image) {
     return imageRef;
 }
 
-void CGImageToMat(const CGImageRef image, cv::Mat& m, bool alphaExist) {
+void CGImageToMat(const CGImageRef image, ncvslideio::Mat& m, bool alphaExist) {
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(image);
     CGFloat cols = CGImageGetWidth(image), rows = CGImageGetHeight(image);
     CGContextRef contextRef;
@@ -56,7 +56,7 @@ void CGImageToMat(const CGImageRef image, cv::Mat& m, bool alphaExist) {
         if (!alphaExist)
             bitmapInfo = kCGImageAlphaNone;
         else
-            m = cv::Scalar(0);
+            m = ncvslideio::Scalar(0);
         contextRef = CGBitmapContextCreate(m.data, m.cols, m.rows, 8,
                                            m.step[0], colorSpace,
                                            bitmapInfo);
@@ -70,7 +70,7 @@ void CGImageToMat(const CGImageRef image, cv::Mat& m, bool alphaExist) {
             bitmapInfo = kCGImageAlphaNoneSkipLast |
                                 kCGBitmapByteOrderDefault;
         else
-            m = cv::Scalar(0);
+            m = ncvslideio::Scalar(0);
         contextRef = CGBitmapContextCreate(m.data, m.cols, m.rows, 8,
                                            m.step[0], colorSpace,
                                            bitmapInfo);
@@ -83,7 +83,7 @@ void CGImageToMat(const CGImageRef image, cv::Mat& m, bool alphaExist) {
             bitmapInfo = kCGImageAlphaNoneSkipLast |
                                 kCGBitmapByteOrderDefault;
         else
-            m = cv::Scalar(0);
+            m = ncvslideio::Scalar(0);
         contextRef = CGBitmapContextCreate(m.data, m.cols, m.rows, 8,
                                            m.step[0], colorSpace,
                                            bitmapInfo);

@@ -72,7 +72,7 @@ OCL_PERF_TEST_P(BlendLinearFixture, BlendLinear, ::testing::Combine(OCL_TEST_SIZ
     randu(weights1, 0, 1);
     randu(weights2, 0, 1);
 
-    OCL_TEST_CYCLE() cv::blendLinear(src1, src2, weights1, weights2, dst);
+    OCL_TEST_CYCLE() ncvslideio::blendLinear(src1, src2, weights1, weights2, dst);
 
     SANITY_CHECK(dst, eps);
 }

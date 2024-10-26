@@ -15,12 +15,12 @@ from tests_common import NewOpenCVTests
 
 class imread_test(NewOpenCVTests):
     def test_imread_to_buffer(self):
-        path = self.extraTestDataPath + '/cv/shared/lena.png'
-        ref = cv.imread(path)
+        path = self.extraTestDataPath + '/ncvslideio/shared/lena.png'
+        ref = ncvslideio.imread(path)
 
         img = np.zeros_like(ref)
-        cv.imread(path, img)
-        self.assertEqual(cv.norm(ref, img, cv.NORM_INF), 0.0)
+        ncvslideio.imread(path, img)
+        self.assertEqual(ncvslideio.norm(ref, img, ncvslideio.NORM_INF), 0.0)
 
 
 if __name__ == '__main__':

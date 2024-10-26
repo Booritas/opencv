@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 int Quality::getInliers(const Ptr<Error> &error, const Mat &model, std::vector<int> &inliers, double threshold) {
     const auto &errors = error->getErrors(model);
     int num_inliers = 0;

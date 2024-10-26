@@ -37,11 +37,11 @@ std::ostream& operator<< (std::ostream &os, const KernelPackage &e)
 } // namespace
 
 struct GMatWithValue : public TestWithParam <KernelPackage> {
-    cv::GKernelPackage getKernelPackage() {
+    ncvslideio::GKernelPackage getKernelPackage() {
         switch (GetParam()) {
-        case KernelPackage::OCV: return cv::gapi::core::cpu::kernels();
-        case KernelPackage::OCL: return cv::gapi::core::ocl::kernels();
-        case KernelPackage::FLUID: return cv::gapi::core::fluid::kernels();
+        case KernelPackage::OCV: return ncvslideio::gapi::core::cpu::kernels();
+        case KernelPackage::OCL: return ncvslideio::gapi::core::ocl::kernels();
+        case KernelPackage::FLUID: return ncvslideio::gapi::core::fluid::kernels();
         default: GAPI_Error("Unknown package");
         }
     }
@@ -49,32 +49,32 @@ struct GMatWithValue : public TestWithParam <KernelPackage> {
 
 TEST_P(GMatWithValue, SingleIsland)
 {
-    cv::Size sz(2, 2);
-    cv::Mat in_mat = cv::Mat::eye(sz, CV_8U);
+    ncvslideio::Size sz(2, 2);
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(sz, CV_8U);
 
-    cv::GComputationT<cv::GMat(cv::GMat)> addEye([&](cv::GMat in) {
-        return in + cv::GMat(cv::Mat::eye(sz, CV_8U));
+    ncvslideio::GComputationT<ncvslideio::GMat(ncvslideio::GMat)> addEye([&](ncvslideio::GMat in) {
+        return in + ncvslideio::GMat(ncvslideio::Mat::eye(sz, CV_8U));
     });
 
-    cv::Mat out_mat;
-    addEye.apply(in_mat, out_mat, cv::compile_args(cv::gapi::use_only{getKernelPackage()}));
+    ncvslideio::Mat out_mat;
+    addEye.apply(in_mat, out_mat, ncvslideio::compile_args(ncvslideio::gapi::use_only{getKernelPackage()}));
 
-    cv::Mat out_mat_ref = in_mat*2;
+    ncvslideio::Mat out_mat_ref = in_mat*2;
     EXPECT_EQ(0, cvtest::norm(out_mat, out_mat_ref, NORM_INF));
 }
 
 TEST_P(GMatWithValue, GraphWithNoInput)
 {
-    cv::Mat cval = cv::Mat::eye(cv::Size(2, 2), CV_8U);
-    cv::GMat gval = cv::GMat(cval);
-    cv::GMat out = cv::gapi::bitwise_not(gval);
+    ncvslideio::Mat cval = ncvslideio::Mat::eye(ncvslideio::Size(2, 2), CV_8U);
+    ncvslideio::GMat gval = ncvslideio::GMat(cval);
+    ncvslideio::GMat out = ncvslideio::gapi::bitwise_not(gval);
 
-    cv::Mat out_mat;
-    cv::GComputation f(cv::GIn(), cv::GOut(out));
+    ncvslideio::Mat out_mat;
+    ncvslideio::GComputation f(ncvslideio::GIn(), ncvslideio::GOut(out));
 
     // Compiling this isn't supported for now
-    EXPECT_ANY_THROW(f.compile(cv::descr_of(cval),
-                               cv::compile_args(cv::gapi::use_only{getKernelPackage()})));
+    EXPECT_ANY_THROW(f.compile(ncvslideio::descr_of(cval),
+                               ncvslideio::compile_args(ncvslideio::gapi::use_only{getKernelPackage()})));
 }
 
 INSTANTIATE_TEST_CASE_P(GAPI_GMat, GMatWithValue,
@@ -87,28 +87,28 @@ TEST(GAPI_MatWithValue, MultipleIslands)
     // This test employs a non-trivial island fusion process
     // as there's multiple backends in the graph
 
-    cv::Size sz(2, 2);
-    cv::Mat cval2 = cv::Mat::eye(sz, CV_8U) * 2;
-    cv::Mat cval1 = cv::Mat::eye(sz, CV_8U);
+    ncvslideio::Size sz(2, 2);
+    ncvslideio::Mat cval2 = ncvslideio::Mat::eye(sz, CV_8U) * 2;
+    ncvslideio::Mat cval1 = ncvslideio::Mat::eye(sz, CV_8U);
 
-    cv::GMat in;
-    cv::GMat tmp = in  + cv::GMat(cval2); // Will be a Fluid operation
-    cv::GMat out = tmp - cv::GMat(cval1); // Will be an OCV operation
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp = in  + ncvslideio::GMat(cval2); // Will be a Fluid operation
+    ncvslideio::GMat out = tmp - ncvslideio::GMat(cval1); // Will be an OCV operation
 
-    cv::GKernelPackage fluid_kernels = cv::gapi::core::fluid::kernels();
-    cv::GKernelPackage opencv_kernels = cv::gapi::core::cpu::kernels();
-    fluid_kernels.remove<cv::gapi::core::GSub>();
-    opencv_kernels.remove<cv::gapi::core::GAdd>();
-    auto kernels = cv::gapi::combine(fluid_kernels, opencv_kernels);
+    ncvslideio::GKernelPackage fluid_kernels = ncvslideio::gapi::core::fluid::kernels();
+    ncvslideio::GKernelPackage opencv_kernels = ncvslideio::gapi::core::cpu::kernels();
+    fluid_kernels.remove<ncvslideio::gapi::core::GSub>();
+    opencv_kernels.remove<ncvslideio::gapi::core::GAdd>();
+    auto kernels = ncvslideio::gapi::combine(fluid_kernels, opencv_kernels);
 
-    cv::Mat in_mat = cv::Mat::zeros(sz, CV_8U);
-    cv::Mat out_mat;
-    auto cc = cv::GComputation(in, out)
-        .compile(cv::descr_of(in_mat),
-                 cv::compile_args(cv::gapi::use_only{kernels}));
-    cc(cv::gin(in_mat), cv::gout(out_mat));
+    ncvslideio::Mat in_mat = ncvslideio::Mat::zeros(sz, CV_8U);
+    ncvslideio::Mat out_mat;
+    auto cc = ncvslideio::GComputation(in, out)
+        .compile(ncvslideio::descr_of(in_mat),
+                 ncvslideio::compile_args(ncvslideio::gapi::use_only{kernels}));
+    cc(ncvslideio::gin(in_mat), ncvslideio::gout(out_mat));
 
-    EXPECT_EQ(0, cvtest::norm(out_mat, cv::Mat::eye(sz, CV_8U), NORM_INF));
+    EXPECT_EQ(0, cvtest::norm(out_mat, ncvslideio::Mat::eye(sz, CV_8U), NORM_INF));
 }
 
 } // namespace opencv_test

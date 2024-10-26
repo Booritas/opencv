@@ -20,20 +20,20 @@
 #include <opencv2/core/utils/configuration.private.hpp>
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #ifdef HAVE_INF_ENGINE
 
 CV__DNN_INLINE_NS_BEGIN
 
-cv::String getInferenceEngineBackendType()
+ncvslideio::String getInferenceEngineBackendType()
 {
     return "NGRAPH";
 }
-cv::String setInferenceEngineBackendType(const cv::String& newBackendType)
+ncvslideio::String setInferenceEngineBackendType(const ncvslideio::String& newBackendType)
 {
     if (newBackendType != "NGRAPH")
-        CV_Error(Error::StsNotImplemented, cv::format("DNN/IE: only NGRAPH backend is supported: %s", newBackendType.c_str()));
+        CV_Error(Error::StsNotImplemented, ncvslideio::format("DNN/IE: only NGRAPH backend is supported: %s", newBackendType.c_str()));
     return newBackendType;
 }
 
@@ -242,15 +242,15 @@ static std::string getInferenceEngineVPUType_()
     return param_vpu_type;
 }
 
-cv::String getInferenceEngineVPUType()
+ncvslideio::String getInferenceEngineVPUType()
 {
-    static cv::String vpu_type = getInferenceEngineVPUType_();
+    static ncvslideio::String vpu_type = getInferenceEngineVPUType_();
     return vpu_type;
 }
 
-cv::String getInferenceEngineCPUType()
+ncvslideio::String getInferenceEngineCPUType()
 {
-    static cv::String cpu_type = detectArmPlugin_() ?
+    static ncvslideio::String cpu_type = detectArmPlugin_() ?
                                  CV_DNN_INFERENCE_ENGINE_CPU_TYPE_ARM_COMPUTE :
                                  CV_DNN_INFERENCE_ENGINE_CPU_TYPE_X86;
     return cpu_type;
@@ -305,7 +305,7 @@ bool checkTarget(Target target)
 }  // namespace openvino
 
 
-cv::String getInferenceEngineBackendType()
+ncvslideio::String getInferenceEngineBackendType()
 {
 #if defined(ENABLE_PLUGINS)
     try
@@ -321,7 +321,7 @@ cv::String getInferenceEngineBackendType()
 #endif
     CV_Error(Error::StsNotImplemented, "This OpenCV build doesn't include InferenceEngine support");
 }
-cv::String setInferenceEngineBackendType(const cv::String& newBackendType)
+ncvslideio::String setInferenceEngineBackendType(const ncvslideio::String& newBackendType)
 {
 #if defined(ENABLE_PLUGINS)
     try
@@ -338,7 +338,7 @@ cv::String setInferenceEngineBackendType(const cv::String& newBackendType)
     CV_UNUSED(newBackendType);
     CV_Error(Error::StsNotImplemented, "This OpenCV build doesn't include InferenceEngine support");
 }
-cv::String getInferenceEngineVPUType()
+ncvslideio::String getInferenceEngineVPUType()
 {
 #if defined(ENABLE_PLUGINS)
     try
@@ -356,7 +356,7 @@ cv::String getInferenceEngineVPUType()
     CV_Error(Error::StsNotImplemented, "This OpenCV build doesn't include InferenceEngine support");
 }
 
-cv::String getInferenceEngineCPUType()
+ncvslideio::String getInferenceEngineCPUType()
 {
 #if defined(ENABLE_PLUGINS)
     try
@@ -381,4 +381,4 @@ cv::String getInferenceEngineCPUType()
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace dnn, namespace cv
+}}  // namespace dnn, namespace ncvslideio

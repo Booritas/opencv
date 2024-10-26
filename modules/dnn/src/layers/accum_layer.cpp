@@ -9,7 +9,7 @@
 #include "layers_common.hpp"
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class AccumLayerImpl CV_FINAL : public AccumLayer
 {
@@ -138,4 +138,4 @@ Ptr<AccumLayer> AccumLayer::create(const LayerParams& params)
     return Ptr<AccumLayer>(new AccumLayerImpl(params));
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

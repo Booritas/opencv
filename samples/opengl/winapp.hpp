@@ -218,5 +218,5 @@ protected:
     int           m_width;
     int           m_height;
     std::string   m_window_name;
-    cv::TickMeter m_timer;
+    ncvslideio::TickMeter m_timer;
 };

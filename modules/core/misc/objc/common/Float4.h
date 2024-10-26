@@ -49,7 +49,7 @@ CV_EXPORTS @interface Float4 : NSObject
 /**
 * The wrapped vector
 */
-@property(readonly) cv::Vec4f& nativeRef;
+@property(readonly) ncvslideio::Vec4f& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -74,7 +74,7 @@ CV_EXPORTS @interface Float4 : NSObject
 */
 -(instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 #ifdef __cplusplus
-+(instancetype)fromNative:(cv::Vec4f&)vec4f;
++(instancetype)fromNative:(ncvslideio::Vec4f&)vec4f;
 #endif
 
 /**

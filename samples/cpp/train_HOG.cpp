@@ -6,8 +6,8 @@
 #include <iostream>
 #include <time.h>
 
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 using namespace std;
 
 vector< float > get_svm_detector( const Ptr< SVM >& svm );

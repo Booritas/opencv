@@ -29,33 +29,33 @@ FLANN_INDEX_LSH    = 6
 def init_feature(name):
     chunks = name.split('-')
     if chunks[0] == 'sift':
-        detector = cv.SIFT_create()
-        norm = cv.NORM_L2
+        detector = ncvslideio.SIFT_create()
+        norm = ncvslideio.NORM_L2
     elif chunks[0] == 'surf':
-        detector = cv.xfeatures2d.SURF_create(800)
-        norm = cv.NORM_L2
+        detector = ncvslideio.xfeatures2d.SURF_create(800)
+        norm = ncvslideio.NORM_L2
     elif chunks[0] == 'orb':
-        detector = cv.ORB_create(400)
-        norm = cv.NORM_HAMMING
+        detector = ncvslideio.ORB_create(400)
+        norm = ncvslideio.NORM_HAMMING
     elif chunks[0] == 'akaze':
-        detector = cv.AKAZE_create()
-        norm = cv.NORM_HAMMING
+        detector = ncvslideio.AKAZE_create()
+        norm = ncvslideio.NORM_HAMMING
     elif chunks[0] == 'brisk':
-        detector = cv.BRISK_create()
-        norm = cv.NORM_HAMMING
+        detector = ncvslideio.BRISK_create()
+        norm = ncvslideio.NORM_HAMMING
     else:
         return None, None
     if 'flann' in chunks:
-        if norm == cv.NORM_L2:
+        if norm == ncvslideio.NORM_L2:
             flann_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
         else:
             flann_params= dict(algorithm = FLANN_INDEX_LSH,
                                table_number = 6, # 12
                                key_size = 12,     # 20
                                multi_probe_level = 1) #2
-        matcher = cv.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
+        matcher = ncvslideio.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
     else:
-        matcher = cv.BFMatcher(norm)
+        matcher = ncvslideio.BFMatcher(norm)
     return detector, matcher
 
 
@@ -77,12 +77,12 @@ def explore_match(win, img1, img2, kp_pairs, status = None, H = None):
     vis = np.zeros((max(h1, h2), w1+w2), np.uint8)
     vis[:h1, :w1] = img1
     vis[:h2, w1:w1+w2] = img2
-    vis = cv.cvtColor(vis, cv.COLOR_GRAY2BGR)
+    vis = ncvslideio.cvtColor(vis, ncvslideio.COLOR_GRAY2BGR)
 
     if H is not None:
         corners = np.float32([[0, 0], [w1, 0], [w1, h1], [0, h1]])
-        corners = np.int32( cv.perspectiveTransform(corners.reshape(1, -1, 2), H).reshape(-1, 2) + (w1, 0) )
-        cv.polylines(vis, [corners], True, (255, 255, 255))
+        corners = np.int32( ncvslideio.perspectiveTransform(corners.reshape(1, -1, 2), H).reshape(-1, 2) + (w1, 0) )
+        ncvslideio.polylines(vis, [corners], True, (255, 255, 255))
 
     if status is None:
         status = np.ones(len(kp_pairs), np.bool_)
@@ -98,26 +98,26 @@ def explore_match(win, img1, img2, kp_pairs, status = None, H = None):
     for (x1, y1), (x2, y2), inlier in zip(p1, p2, status):
         if inlier:
             col = green
-            cv.circle(vis, (x1, y1), 2, col, -1)
-            cv.circle(vis, (x2, y2), 2, col, -1)
+            ncvslideio.circle(vis, (x1, y1), 2, col, -1)
+            ncvslideio.circle(vis, (x2, y2), 2, col, -1)
         else:
             col = red
             r = 2
             thickness = 3
-            cv.line(vis, (x1-r, y1-r), (x1+r, y1+r), col, thickness)
-            cv.line(vis, (x1-r, y1+r), (x1+r, y1-r), col, thickness)
-            cv.line(vis, (x2-r, y2-r), (x2+r, y2+r), col, thickness)
-            cv.line(vis, (x2-r, y2+r), (x2+r, y2-r), col, thickness)
+            ncvslideio.line(vis, (x1-r, y1-r), (x1+r, y1+r), col, thickness)
+            ncvslideio.line(vis, (x1-r, y1+r), (x1+r, y1-r), col, thickness)
+            ncvslideio.line(vis, (x2-r, y2-r), (x2+r, y2+r), col, thickness)
+            ncvslideio.line(vis, (x2-r, y2+r), (x2+r, y2-r), col, thickness)
     vis0 = vis.copy()
     for (x1, y1), (x2, y2), inlier in zip(p1, p2, status):
         if inlier:
-            cv.line(vis, (x1, y1), (x2, y2), green)
+            ncvslideio.line(vis, (x1, y1), (x2, y2), green)
 
-    cv.imshow(win, vis)
+    ncvslideio.imshow(win, vis)
 
     def onmouse(event, x, y, flags, param):
         cur_vis = vis
-        if flags & cv.EVENT_FLAG_LBUTTON:
+        if flags & ncvslideio.EVENT_FLAG_LBUTTON:
             cur_vis = vis0.copy()
             r = 8
             m = (anorm(np.array(p1) - (x, y)) < r) | (anorm(np.array(p2) - (x, y)) < r)
@@ -127,15 +127,15 @@ def explore_match(win, img1, img2, kp_pairs, status = None, H = None):
             for i in idxs:
                 (x1, y1), (x2, y2) = p1[i], p2[i]
                 col = (red, green)[status[i][0]]
-                cv.line(cur_vis, (x1, y1), (x2, y2), col)
+                ncvslideio.line(cur_vis, (x1, y1), (x2, y2), col)
                 kp1, kp2 = kp_pairs[i]
                 kp1s.append(kp1)
                 kp2s.append(kp2)
-            cur_vis = cv.drawKeypoints(cur_vis, kp1s, None, flags=4, color=kp_color)
-            cur_vis[:,w1:] = cv.drawKeypoints(cur_vis[:,w1:], kp2s, None, flags=4, color=kp_color)
+            cur_vis = ncvslideio.drawKeypoints(cur_vis, kp1s, None, flags=4, color=kp_color)
+            cur_vis[:,w1:] = ncvslideio.drawKeypoints(cur_vis[:,w1:], kp2s, None, flags=4, color=kp_color)
 
-        cv.imshow(win, cur_vis)
-    cv.setMouseCallback(win, onmouse)
+        ncvslideio.imshow(win, cur_vis)
+    ncvslideio.setMouseCallback(win, onmouse)
     return vis
 
 
@@ -150,8 +150,8 @@ def main():
         fn1 = 'box.png'
         fn2 = 'box_in_scene.png'
 
-    img1 = cv.imread(cv.samples.findFile(fn1), cv.IMREAD_GRAYSCALE)
-    img2 = cv.imread(cv.samples.findFile(fn2), cv.IMREAD_GRAYSCALE)
+    img1 = ncvslideio.imread(ncvslideio.samples.findFile(fn1), ncvslideio.IMREAD_GRAYSCALE)
+    img2 = ncvslideio.imread(ncvslideio.samples.findFile(fn2), ncvslideio.IMREAD_GRAYSCALE)
     detector, matcher = init_feature(feature_name)
 
     if img1 is None:
@@ -177,7 +177,7 @@ def main():
         raw_matches = matcher.knnMatch(desc1, trainDescriptors = desc2, k = 2) #2
         p1, p2, kp_pairs = filter_matches(kp1, kp2, raw_matches)
         if len(p1) >= 4:
-            H, status = cv.findHomography(p1, p2, cv.RANSAC, 5.0)
+            H, status = ncvslideio.findHomography(p1, p2, ncvslideio.RANSAC, 5.0)
             print('%d / %d  inliers/matched' % (np.sum(status), len(status)))
         else:
             H, status = None, None
@@ -186,7 +186,7 @@ def main():
         _vis = explore_match(win, img1, img2, kp_pairs, status, H)
 
     match_and_draw('find_obj')
-    cv.waitKey()
+    ncvslideio.waitKey()
 
     print('Done')
 
@@ -194,4 +194,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -158,7 +158,7 @@ def draw_camera_boards(ax, camera_matrix, cam_width, cam_height, scale_focal,
         max_values = np.maximum(max_values, X[0:3,:].max(1))
 
     for idx in range(extrinsics.shape[0]):
-        R, _ = cv.Rodrigues(extrinsics[idx,0:3])
+        R, _ = ncvslideio.Rodrigues(extrinsics[idx,0:3])
         cMo = np.eye(4,4)
         cMo[0:3,0:3] = R
         cMo[0:3,3] = extrinsics[idx,3:6]
@@ -189,7 +189,7 @@ def main():
                         help='The calibration board is static and the camera is moving.')
     args = parser.parse_args()
 
-    fs = cv.FileStorage(cv.samples.findFile(args.calibration), cv.FILE_STORAGE_READ)
+    fs = ncvslideio.FileStorage(ncvslideio.samples.findFile(args.calibration), ncvslideio.FILE_STORAGE_READ)
     board_width = int(fs.getNode('board_width').real())
     board_height = int(fs.getNode('board_height').real())
     square_size = fs.getNode('square_size').real()
@@ -237,4 +237,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

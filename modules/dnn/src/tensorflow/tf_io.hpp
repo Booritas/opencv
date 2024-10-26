@@ -28,7 +28,7 @@ Declaration of various functions which are related to Tensorflow models reading.
 
 namespace tensorflow { using namespace opencv_tensorflow; }
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 // Read parameters from a file into a GraphDef proto message.

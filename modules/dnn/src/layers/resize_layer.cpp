@@ -18,10 +18,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/resize.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ResizeLayerImpl : public ResizeLayer
 {
@@ -333,7 +333,7 @@ public:
             std::vector<int> shape_of_size_mat{2};
             std::vector<int> size_vec{outHeight, outWidth};
             Mat size_mat(shape_of_size_mat, CV_32S, size_vec.data());
-            auto op_const_size = std::make_shared<CannConstOp>(size_mat.data, size_mat.type(), shape_of_size_mat, cv::format("%s_size", name.c_str()));
+            auto op_const_size = std::make_shared<CannConstOp>(size_mat.data, size_mat.type(), shape_of_size_mat, ncvslideio::format("%s_size", name.c_str()));
             op->set_input_size(*(op_const_size->getOp()));
             op->update_input_desc_size(*(op_const_size->getTensorDesc()));
 
@@ -493,4 +493,4 @@ Ptr<Layer> InterpLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

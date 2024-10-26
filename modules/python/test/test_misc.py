@@ -121,37 +121,37 @@ def get_ocv_arithm_op_table(apply_saturation=False):
         return res
 
     return {
-        cv.subtract: subtract,
-        cv.add: add,
-        cv.multiply: multiply,
-        cv.divide: divide,
-        cv.absdiff: absdiff
+        ncvslideio.subtract: subtract,
+        ncvslideio.add: add,
+        ncvslideio.multiply: multiply,
+        ncvslideio.divide: divide,
+        ncvslideio.absdiff: absdiff
     }
 
 
 class Bindings(NewOpenCVTests):
 
     def test_inheritance(self):
-        bm = cv.StereoBM_create()
+        bm = ncvslideio.StereoBM_create()
         bm.getPreFilterCap()  # from StereoBM
         bm.getBlockSize()  # from SteroMatcher
 
-        boost = cv.ml.Boost_create()
+        boost = ncvslideio.ml.Boost_create()
         boost.getBoostType()  # from ml::Boost
         boost.getMaxDepth()  # from ml::DTrees
         boost.isClassifier()  # from ml::StatModel
 
     def test_raiseGeneralException(self):
-        with self.assertRaises((cv.error,),
+        with self.assertRaises((ncvslideio.error,),
                             msg='C++ exception is not propagated to Python in the right way') as cm:
-            cv.utils.testRaiseGeneralException()
+            ncvslideio.utils.testRaiseGeneralException()
         self.assertEqual(str(cm.exception), 'exception text')
 
     def test_redirectError(self):
         try:
-            cv.imshow("", None)  # This causes an assert
+            ncvslideio.imshow("", None)  # This causes an assert
             self.assertEqual("Dead code", 0)
-        except cv.error as _e:
+        except ncvslideio.error as _e:
             pass
 
         handler_called = [False]
@@ -159,38 +159,38 @@ class Bindings(NewOpenCVTests):
         def test_error_handler(status, func_name, err_msg, file_name, line):
             handler_called[0] = True
 
-        cv.redirectError(test_error_handler)
+        ncvslideio.redirectError(test_error_handler)
         try:
-            cv.imshow("", None)  # This causes an assert
+            ncvslideio.imshow("", None)  # This causes an assert
             self.assertEqual("Dead code", 0)
-        except cv.error as _e:
+        except ncvslideio.error as _e:
             self.assertEqual(handler_called[0], True)
             pass
 
-        cv.redirectError(None)
+        ncvslideio.redirectError(None)
         try:
-            cv.imshow("", None)  # This causes an assert
+            ncvslideio.imshow("", None)  # This causes an assert
             self.assertEqual("Dead code", 0)
-        except cv.error as _e:
+        except ncvslideio.error as _e:
             pass
 
     def test_overload_resolution_can_choose_correct_overload(self):
         val = 123
         point = (51, 165)
-        self.assertEqual(cv.utils.testOverloadResolution(val, point),
+        self.assertEqual(ncvslideio.utils.testOverloadResolution(val, point),
                          'overload (int={}, point=(x={}, y={}))'.format(val, *point),
                          "Can't select first overload if all arguments are provided as positional")
 
-        self.assertEqual(cv.utils.testOverloadResolution(val, point=point),
+        self.assertEqual(ncvslideio.utils.testOverloadResolution(val, point=point),
                          'overload (int={}, point=(x={}, y={}))'.format(val, *point),
                          "Can't select first overload if one of the arguments are provided as keyword")
 
-        self.assertEqual(cv.utils.testOverloadResolution(val),
+        self.assertEqual(ncvslideio.utils.testOverloadResolution(val),
                          'overload (int={}, point=(x=42, y=24))'.format(val),
                          "Can't select first overload if one of the arguments has default value")
 
         rect = (1, 5, 10, 23)
-        self.assertEqual(cv.utils.testOverloadResolution(rect),
+        self.assertEqual(ncvslideio.utils.testOverloadResolution(rect),
                          'overload (rect=(x={}, y={}, w={}, h={}))'.format(*rect),
                          "Can't select second overload if all arguments are provided")
 
@@ -198,10 +198,10 @@ class Bindings(NewOpenCVTests):
         def test_overload_resolution(msg, *args, **kwargs):
             no_exception_msg = 'Overload resolution failed without any exception for: "{}"'.format(msg)
             wrong_exception_msg = 'Overload resolution failed with wrong exception type for: "{}"'.format(msg)
-            with self.assertRaises((cv.error, Exception), msg=no_exception_msg) as cm:
-                res = cv.utils.testOverloadResolution(*args, **kwargs)
+            with self.assertRaises((ncvslideio.error, Exception), msg=no_exception_msg) as cm:
+                res = ncvslideio.utils.testOverloadResolution(*args, **kwargs)
                 self.fail("Unexpected result for {}: '{}'".format(msg, res))
-            self.assertEqual(type(cm.exception), cv.error, wrong_exception_msg)
+            self.assertEqual(type(cm.exception), ncvslideio.error, wrong_exception_msg)
 
         test_overload_resolution('wrong second arg type (keyword arg)', 5, point=(1, 2, 3))
         test_overload_resolution('wrong second arg type', 5, 2)
@@ -214,7 +214,7 @@ class Bindings(NewOpenCVTests):
         test_overload_resolution('rect with wrong number of coordinates', (4, 4, 1))
 
     def test_properties_with_reserved_keywords_names_are_transformed(self):
-        obj = cv.utils.ClassWithKeywordProperties(except_arg=23)
+        obj = ncvslideio.utils.ClassWithKeywordProperties(except_arg=23)
         self.assertTrue(hasattr(obj, "lambda_"),
                         msg="Class doesn't have RW property with converted name")
         try:
@@ -231,17 +231,17 @@ class Bindings(NewOpenCVTests):
 
     def test_maketype(self):
         data = {
-            cv.CV_8UC3: [cv.CV_8U, 3, cv.CV_8UC],
-            cv.CV_16SC1: [cv.CV_16S, 1, cv.CV_16SC],
-            cv.CV_32FC4: [cv.CV_32F, 4, cv.CV_32FC],
-            cv.CV_64FC2: [cv.CV_64F, 2, cv.CV_64FC],
-            cv.CV_8SC4: [cv.CV_8S, 4, cv.CV_8SC],
-            cv.CV_16UC2: [cv.CV_16U, 2, cv.CV_16UC],
-            cv.CV_32SC1: [cv.CV_32S, 1, cv.CV_32SC],
-            cv.CV_16FC3: [cv.CV_16F, 3, cv.CV_16FC],
+            ncvslideio.CV_8UC3: [ncvslideio.CV_8U, 3, ncvslideio.CV_8UC],
+            ncvslideio.CV_16SC1: [ncvslideio.CV_16S, 1, ncvslideio.CV_16SC],
+            ncvslideio.CV_32FC4: [ncvslideio.CV_32F, 4, ncvslideio.CV_32FC],
+            ncvslideio.CV_64FC2: [ncvslideio.CV_64F, 2, ncvslideio.CV_64FC],
+            ncvslideio.CV_8SC4: [ncvslideio.CV_8S, 4, ncvslideio.CV_8SC],
+            ncvslideio.CV_16UC2: [ncvslideio.CV_16U, 2, ncvslideio.CV_16UC],
+            ncvslideio.CV_32SC1: [ncvslideio.CV_32S, 1, ncvslideio.CV_32SC],
+            ncvslideio.CV_16FC3: [ncvslideio.CV_16F, 3, ncvslideio.CV_16FC],
         }
         for ref, (depth, channels, func) in data.items():
-            self.assertEqual(ref, cv.CV_MAKETYPE(depth, channels))
+            self.assertEqual(ref, ncvslideio.CV_MAKETYPE(depth, channels))
             self.assertEqual(ref, func(channels))
 
 
@@ -260,50 +260,50 @@ class Arguments(NewOpenCVTests):
             return result
 
     def test_InputArray(self):
-        res1 = cv.utils.dumpInputArray(None)
+        res1 = ncvslideio.utils.dumpInputArray(None)
         # self.assertEqual(res1, "InputArray: noArray()")  # not supported
         self.assertEqual(res1, "InputArray: empty()=true kind=0x00010000 flags=0x01010000 total(-1)=0 dims(-1)=0 size(-1)=0x0 type(-1)=CV_8UC1")
-        res2_1 = cv.utils.dumpInputArray((1, 2))
+        res2_1 = ncvslideio.utils.dumpInputArray((1, 2))
         self.assertEqual(res2_1, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=2 dims(-1)=2 size(-1)=1x2 type(-1)=CV_64FC1")
-        res2_2 = cv.utils.dumpInputArray(1.5)  # Scalar(1.5, 1.5, 1.5, 1.5)
+        res2_2 = ncvslideio.utils.dumpInputArray(1.5)  # Scalar(1.5, 1.5, 1.5, 1.5)
         self.assertEqual(res2_2, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=4 dims(-1)=2 size(-1)=1x4 type(-1)=CV_64FC1")
         a = np.array([[1, 2], [3, 4], [5, 6]])
-        res3 = cv.utils.dumpInputArray(a)  # 32SC1
+        res3 = ncvslideio.utils.dumpInputArray(a)  # 32SC1
         self.assertEqual(res3, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=6 dims(-1)=2 size(-1)=2x3 type(-1)=CV_32SC1")
         a = np.array([[[1, 2], [3, 4], [5, 6]]], dtype='f')
-        res4 = cv.utils.dumpInputArray(a)  # 32FC2
+        res4 = ncvslideio.utils.dumpInputArray(a)  # 32FC2
         self.assertEqual(res4, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=3 dims(-1)=2 size(-1)=3x1 type(-1)=CV_32FC2")
         a = np.array([[[1, 2]], [[3, 4]], [[5, 6]]], dtype=float)
-        res5 = cv.utils.dumpInputArray(a)  # 64FC2
+        res5 = ncvslideio.utils.dumpInputArray(a)  # 64FC2
         self.assertEqual(res5, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=3 dims(-1)=2 size(-1)=1x3 type(-1)=CV_64FC2")
         a = np.zeros((2,3,4), dtype='f')
-        res6 = cv.utils.dumpInputArray(a)
+        res6 = ncvslideio.utils.dumpInputArray(a)
         self.assertEqual(res6, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=6 dims(-1)=2 size(-1)=3x2 type(-1)=CV_32FC4")
         a = np.zeros((2,3,4,5), dtype='f')
-        res7 = cv.utils.dumpInputArray(a)
+        res7 = ncvslideio.utils.dumpInputArray(a)
         self.assertEqual(res7, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=120 dims(-1)=4 size(-1)=[2 3 4 5] type(-1)=CV_32FC1")
 
     def test_InputArrayOfArrays(self):
-        res1 = cv.utils.dumpInputArrayOfArrays(None)
+        res1 = ncvslideio.utils.dumpInputArrayOfArrays(None)
         # self.assertEqual(res1, "InputArray: noArray()")  # not supported
         self.assertEqual(res1, "InputArrayOfArrays: empty()=true kind=0x00050000 flags=0x01050000 total(-1)=0 dims(-1)=1 size(-1)=0x0")
-        res2_1 = cv.utils.dumpInputArrayOfArrays((1, 2))  # { Scalar:all(1), Scalar::all(2) }
+        res2_1 = ncvslideio.utils.dumpInputArrayOfArrays((1, 2))  # { Scalar:all(1), Scalar::all(2) }
         self.assertEqual(res2_1, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=2 dims(-1)=1 size(-1)=2x1 type(0)=CV_64FC1 dims(0)=2 size(0)=1x4")
-        res2_2 = cv.utils.dumpInputArrayOfArrays([1.5])
+        res2_2 = ncvslideio.utils.dumpInputArrayOfArrays([1.5])
         self.assertEqual(res2_2, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=1 dims(-1)=1 size(-1)=1x1 type(0)=CV_64FC1 dims(0)=2 size(0)=1x4")
         a = np.array([[1, 2], [3, 4], [5, 6]])
         b = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-        res3 = cv.utils.dumpInputArrayOfArrays([a, b])
+        res3 = ncvslideio.utils.dumpInputArrayOfArrays([a, b])
         self.assertEqual(res3, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=2 dims(-1)=1 size(-1)=2x1 type(0)=CV_32SC1 dims(0)=2 size(0)=2x3")
         c = np.array([[[1, 2], [3, 4], [5, 6]]], dtype='f')
-        res4 = cv.utils.dumpInputArrayOfArrays([c, a, b])
+        res4 = ncvslideio.utils.dumpInputArrayOfArrays([c, a, b])
         self.assertEqual(res4, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=3 dims(-1)=1 size(-1)=3x1 type(0)=CV_32FC2 dims(0)=2 size(0)=3x1")
         a = np.zeros((2,3,4), dtype='f')
-        res5 = cv.utils.dumpInputArrayOfArrays([a, b])
+        res5 = ncvslideio.utils.dumpInputArrayOfArrays([a, b])
         self.assertEqual(res5, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=2 dims(-1)=1 size(-1)=2x1 type(0)=CV_32FC4 dims(0)=2 size(0)=3x2")
         # TODO: fix conversion error
         #a = np.zeros((2,3,4,5), dtype='f')
-        #res6 = cv.utils.dumpInputArray([a, b])
+        #res6 = ncvslideio.utils.dumpInputArray([a, b])
         #self.assertEqual(res6, "InputArrayOfArrays: empty()=false kind=0x00050000 flags=0x01050000 total(-1)=2 dims(-1)=1 size(-1)=2x1 type(0)=CV_32FC1 dims(0)=4 size(0)=[2 3 4 5]")
 
     def test_unsupported_numpy_data_types_string_description(self):
@@ -312,25 +312,25 @@ class Arguments(NewOpenCVTests):
             msg = ".*type = {} is not supported".format(test_array.dtype)
             if sys.version_info[0] < 3:
                 self.assertRaisesRegexp(
-                    Exception, msg, cv.utils.dumpInputArray, test_array
+                    Exception, msg, ncvslideio.utils.dumpInputArray, test_array
                 )
             else:
                 self.assertRaisesRegex(
-                    Exception, msg, cv.utils.dumpInputArray, test_array
+                    Exception, msg, ncvslideio.utils.dumpInputArray, test_array
                 )
 
     def test_numpy_writeable_flag_is_preserved(self):
         array = np.zeros((10, 10, 1), dtype=np.uint8)
         array.setflags(write=False)
         with self.assertRaises(Exception):
-            cv.rectangle(array, (0, 0), (5, 5), (255), 2)
+            ncvslideio.rectangle(array, (0, 0), (5, 5), (255), 2)
 
     def test_20968(self):
         pixel = np.uint8([[[40, 50, 200]]])
-        _ = cv.cvtColor(pixel, cv.COLOR_RGB2BGR)  # should not raise exception
+        _ = ncvslideio.cvtColor(pixel, ncvslideio.COLOR_RGB2BGR)  # should not raise exception
 
     def test_parse_to_bool_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpBool)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpBool)
         for convertible_true in (True, 1, 64, np.int8(123), np.int16(11), np.int32(2),
                                  np.int64(1), np.bool_(12)):
             actual = try_to_convert(convertible_true)
@@ -347,10 +347,10 @@ class Arguments(NewOpenCVTests):
                                 complex(imag=2), complex(1.1), np.array([1, 0], dtype=bool)):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpBool(not_convertible)
+                _ = ncvslideio.utils.dumpBool(not_convertible)
 
     def test_parse_to_bool_convertible_extra(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpBool)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpBool)
         _, max_size_t = get_limits(ctypes.c_size_t)
         for convertible_true in (-1, max_size_t):
             actual = try_to_convert(convertible_true)
@@ -361,10 +361,10 @@ class Arguments(NewOpenCVTests):
         for not_convertible in (np.array([False]), np.array([True])):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpBool(not_convertible)
+                _ = ncvslideio.utils.dumpBool(not_convertible)
 
     def test_parse_to_int_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpInt)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpInt)
         min_int, max_int = get_limits(ctypes.c_int)
         for convertible in (-10, -1, 2, int(43.2), np.uint8(15), np.int8(33), np.int16(-13),
                             np.int32(4), np.int64(345), (23), min_int, max_int, np.int_(33)):
@@ -380,7 +380,7 @@ class Arguments(NewOpenCVTests):
                                 complex(1, 1), complex(imag=2), complex(1.1)):
             with self.assertRaises((TypeError, OverflowError, ValueError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpInt(not_convertible)
+                _ = ncvslideio.utils.dumpInt(not_convertible)
 
     def test_parse_to_int_not_convertible_extra(self):
         for not_convertible in (np.bool_(True), True, False, np.float32(2.3),
@@ -388,10 +388,10 @@ class Arguments(NewOpenCVTests):
                                 np.array([11, ], dtype=np.uint8)):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpInt(not_convertible)
+                _ = ncvslideio.utils.dumpInt(not_convertible)
 
     def test_parse_to_int64_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpInt64)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpInt64)
         min_int64, max_int64 = get_limits(ctypes.c_longlong)
         for convertible in (-10, -1, 2, int(43.2), np.uint8(15), np.int8(33), np.int16(-13),
                             np.int32(4), np.int64(345), (23), min_int64, max_int64, np.int_(33)):
@@ -409,10 +409,10 @@ class Arguments(NewOpenCVTests):
                                 np.array([-2, ], dtype=np.int32), np.array([11, ], dtype=np.uint8)):
             with self.assertRaises((TypeError, OverflowError, ValueError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpInt64(not_convertible)
+                _ = ncvslideio.utils.dumpInt64(not_convertible)
 
     def test_parse_to_size_t_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpSizeT)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpSizeT)
         _, max_uint = get_limits(ctypes.c_uint)
         for convertible in (2, max_uint, (12), np.uint8(34), np.int8(12), np.int16(23),
                             np.int32(123), np.int64(344), np.uint64(3), np.uint16(2), np.uint32(5),
@@ -430,10 +430,10 @@ class Arguments(NewOpenCVTests):
                                 -1, min_long, np.int8(-35)):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpSizeT(not_convertible)
+                _ = ncvslideio.utils.dumpSizeT(not_convertible)
 
     def test_parse_to_size_t_convertible_extra(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpSizeT)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpSizeT)
         _, max_size_t = get_limits(ctypes.c_size_t)
         for convertible in (max_size_t,):
             expected = 'size_t: {0:d}'.format(convertible).lower()
@@ -445,10 +445,10 @@ class Arguments(NewOpenCVTests):
         for not_convertible in (np.bool_(True), True, False, np.array([123, ], dtype=np.uint8),):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpSizeT(not_convertible)
+                _ = ncvslideio.utils.dumpSizeT(not_convertible)
 
     def test_parse_to_float_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpFloat)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpFloat)
         min_float, max_float = get_limits(ctypes.c_float)
         for convertible in (2, -13, 1.24, np.float32(32.45), float(32), np.double(12.23),
                             np.float32(-12.3), np.float64(3.22), min_float,
@@ -480,7 +480,7 @@ class Arguments(NewOpenCVTests):
                                 np.array([1, 2], dtype=np.double), complex(1, 1), complex(imag=2),
                                 complex(1.1)):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpFloat(not_convertible)
+                _ = ncvslideio.utils.dumpFloat(not_convertible)
 
     def test_parse_to_float_not_convertible_extra(self):
         for not_convertible in (np.bool_(False), True, False, np.array([123, ], dtype=int),
@@ -488,10 +488,10 @@ class Arguments(NewOpenCVTests):
                                 np.array([True])):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpFloat(not_convertible)
+                _ = ncvslideio.utils.dumpFloat(not_convertible)
 
     def test_parse_to_double_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpDouble)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpDouble)
         min_float, max_float = get_limits(ctypes.c_float)
         min_double, max_double = get_limits(ctypes.c_double)
         for convertible in (2, -13, 1.24, np.float32(32.45), float(2), np.double(12.23),
@@ -517,7 +517,7 @@ class Arguments(NewOpenCVTests):
                                 np.array([1, 2], dtype=np.double), complex(1, 1), complex(imag=2),
                                 complex(1.1)):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpDouble(not_convertible)
+                _ = ncvslideio.utils.dumpDouble(not_convertible)
 
     def test_parse_to_double_not_convertible_extra(self):
         for not_convertible in (np.bool_(False), True, False, np.array([123, ], dtype=int),
@@ -525,10 +525,10 @@ class Arguments(NewOpenCVTests):
                                 np.array([12.4], dtype=np.double), np.array([True])):
             with self.assertRaises((TypeError, OverflowError),
                                    msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpDouble(not_convertible)
+                _ = ncvslideio.utils.dumpDouble(not_convertible)
 
     def test_parse_to_cstring_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpCString)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpCString)
         for convertible in ('', 's', 'str', str(123), ('char'), np.str_('test2')):
             expected = 'string: ' + convertible
             actual = try_to_convert(convertible)
@@ -539,10 +539,10 @@ class Arguments(NewOpenCVTests):
         for not_convertible in ((12,), ('t', 'e', 's', 't'), np.array(['123', ]),
                                 np.array(['t', 'e', 's', 't']), 1, -1.4, True, False, None):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpCString(not_convertible)
+                _ = ncvslideio.utils.dumpCString(not_convertible)
 
     def test_parse_to_string_convertible(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpString)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpString)
         for convertible in (None, '', 's', 'str', str(123), np.str_('test2')):
             expected = 'string: ' + (convertible if convertible else '')
             actual = try_to_convert(convertible)
@@ -553,11 +553,11 @@ class Arguments(NewOpenCVTests):
         for not_convertible in ((12,), ('t', 'e', 's', 't'), np.array(['123', ]),
                                 np.array(['t', 'e', 's', 't']), 1, True, False):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpString(not_convertible)
+                _ = ncvslideio.utils.dumpString(not_convertible)
 
     def test_parse_to_rect_convertible(self):
         Rect = namedtuple('Rect', ('x', 'y', 'w', 'h'))
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpRect)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpRect)
         for convertible in ((1, 2, 4, 5), [5, 3, 10, 20], np.array([10, 20, 23, 10]),
                             Rect(10, 30, 40, 55), tuple(np.array([40, 20, 24, 20])),
                             list(np.array([20, 40, 30, 35]))):
@@ -572,11 +572,11 @@ class Arguments(NewOpenCVTests):
                                 '1234', np.array([1, 2, 3, 4], dtype=np.float32),
                                 np.array([[1, 2], [3, 4], [5, 6], [6, 8]]), (1, 2, 5, 1.5)):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpRect(not_convertible)
+                _ = ncvslideio.utils.dumpRect(not_convertible)
 
     def test_parse_to_rotated_rect_convertible(self):
         RotatedRect = namedtuple('RotatedRect', ('center', 'size', 'angle'))
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpRotatedRect)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpRotatedRect)
         for convertible in (((2.5, 2.5), (10., 20.), 12.5), [[1.5, 10.5], (12.5, 51.5), 10],
                             RotatedRect((10, 40), np.array([10.5, 20.5]), 5),
                             np.array([[10, 6], [50, 50], 5.5], dtype=object)):
@@ -593,7 +593,7 @@ class Arguments(NewOpenCVTests):
         center = (34.5, 52.)
         size = (565.0, 140.0)
         angle = -177.5
-        rect1 = cv.RotatedRect(center, size, angle)
+        rect1 = ncvslideio.RotatedRect(center, size, angle)
         self.assertEqual(rect1.center, center)
         self.assertEqual(rect1.size, size)
         self.assertEqual(rect1.angle, angle)
@@ -604,8 +604,8 @@ class Arguments(NewOpenCVTests):
                [-244.6778, -30.25586]]
         self.assertLess(np.max(np.abs(rect1.points() - pts)), 1e-4)
 
-        rect2 = cv.RotatedRect(pts[0], pts[1], pts[2])
-        _, inter_pts = cv.rotatedRectangleIntersection(rect1, rect2)
+        rect2 = ncvslideio.RotatedRect(pts[0], pts[1], pts[2])
+        _, inter_pts = ncvslideio.rotatedRectangleIntersection(rect1, rect2)
         self.assertLess(np.max(np.abs(inter_pts.reshape(-1, 2) - pts)), 1e-4)
 
     def test_result_rotated_rect_boundingRect2f(self):
@@ -613,7 +613,7 @@ class Arguments(NewOpenCVTests):
         size = (10, 10)
         angle = 0
         gold_box = (-5.0, -5.0, 10.0, 10.0)
-        rect1 = cv.RotatedRect(center, size, angle)
+        rect1 = ncvslideio.RotatedRect(center, size, angle)
         bbox = rect1.boundingRect2f()
         self.assertEqual(gold_box, bbox)
 
@@ -621,11 +621,11 @@ class Arguments(NewOpenCVTests):
         for not_convertible in ([], (), np.array([]), (123, (45, 34), 1), {1: 2, 3: 4}, 123,
                                 np.array([[123, 123, 14], [1, 3], 56], dtype=object), '123'):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpRotatedRect(not_convertible)
+                _ = ncvslideio.utils.dumpRotatedRect(not_convertible)
 
     def test_parse_to_term_criteria_convertible(self):
         TermCriteria = namedtuple('TermCriteria', ('type', 'max_count', 'epsilon'))
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpTermCriteria)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpTermCriteria)
         for convertible in ((1, 10, 1e-3), [2, 30, 1e-1], np.array([10, 20, 0.5], dtype=object),
                             TermCriteria(0, 5, 0.1)):
             expected = 'term_criteria: (type={}, max_count={}, epsilon={:.6f}'.format(*convertible)
@@ -637,10 +637,10 @@ class Arguments(NewOpenCVTests):
         for not_convertible in ([], (), np.array([]), [1, 4], (10,), (1.5, 34, 0.1),
                                 {1: 5, 3: 5, 10: 10}, '145'):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpTermCriteria(not_convertible)
+                _ = ncvslideio.utils.dumpTermCriteria(not_convertible)
 
     def test_parse_to_range_convertible_to_all(self):
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpRange)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpRange)
         for convertible in ((), [], np.array([])):
             expected = 'range: all'
             actual = try_to_convert(convertible)
@@ -649,7 +649,7 @@ class Arguments(NewOpenCVTests):
 
     def test_parse_to_range_convertible(self):
         Range = namedtuple('Range', ('start', 'end'))
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpRange)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpRange)
         for convertible in ((10, 20), [-1, 3], np.array([10, 24]), Range(-4, 6)):
             expected = 'range: (s={}, e={})'.format(*convertible)
             actual = try_to_convert(convertible)
@@ -660,28 +660,28 @@ class Arguments(NewOpenCVTests):
         for not_convertible in ((1, ), [40, ], np.array([1, 4, 6]), {'a': 1, 'b': 40},
                                 (1.5, 13.5), [3, 6.7], np.array([6.3, 2.1]), '14, 4'):
             with self.assertRaises((TypeError), msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpRange(not_convertible)
+                _ = ncvslideio.utils.dumpRange(not_convertible)
 
     def test_reserved_keywords_are_transformed(self):
         default_lambda_value = 2
         default_from_value = 3
         format_str = "arg={}, lambda={}, from={}"
         self.assertEqual(
-            cv.utils.testReservedKeywordConversion(20), format_str.format(20, default_lambda_value, default_from_value)
+            ncvslideio.utils.testReservedKeywordConversion(20), format_str.format(20, default_lambda_value, default_from_value)
         )
         self.assertEqual(
-            cv.utils.testReservedKeywordConversion(10, lambda_=10), format_str.format(10, 10, default_from_value)
+            ncvslideio.utils.testReservedKeywordConversion(10, lambda_=10), format_str.format(10, 10, default_from_value)
         )
         self.assertEqual(
-            cv.utils.testReservedKeywordConversion(10, from_=10), format_str.format(10, default_lambda_value, 10)
+            ncvslideio.utils.testReservedKeywordConversion(10, from_=10), format_str.format(10, default_lambda_value, 10)
         )
         self.assertEqual(
-            cv.utils.testReservedKeywordConversion(20, lambda_=-4, from_=12), format_str.format(20, -4, 12)
+            ncvslideio.utils.testReservedKeywordConversion(20, lambda_=-4, from_=12), format_str.format(20, -4, 12)
         )
 
     def test_parse_vector_int_convertible(self):
         np.random.seed(123098765)
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpVectorOfInt)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpVectorOfInt)
         arr = np.random.randint(-20, 20, 40).astype(np.int32).reshape(10, 2, 2)
         int_min, int_max = get_limits(ctypes.c_int)
         for convertible in ((int_min, 1, 2, 3, int_max), [40, 50], tuple(),
@@ -702,11 +702,11 @@ class Arguments(NewOpenCVTests):
                                 np.array([int_min, -10, 24, [1, 2]], dtype=object),
                                 np.array([[1, 2], [3, 4]]), arr[:, 0, 1],):
             with self.assertRaises(TypeError, msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpVectorOfInt(not_convertible)
+                _ = ncvslideio.utils.dumpVectorOfInt(not_convertible)
 
     def test_parse_vector_double_convertible(self):
         np.random.seed(1230965)
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpVectorOfDouble)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpVectorOfDouble)
         arr = np.random.randint(-20, 20, 40).astype(np.int32).reshape(10, 2, 2)
         for convertible in ((1, 2.12, 3.5), [40, 50], tuple(),
                             np.array([-10, 24], dtype=np.int32),
@@ -723,11 +723,11 @@ class Arguments(NewOpenCVTests):
                                 np.array([-10.1, 24.5, [1, 2]], dtype=object),
                                 np.array([[1, 2], [3, 4]]),):
             with self.assertRaises(TypeError, msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpVectorOfDouble(not_convertible)
+                _ = ncvslideio.utils.dumpVectorOfDouble(not_convertible)
 
     def test_parse_vector_rect_convertible(self):
         np.random.seed(1238765)
-        try_to_convert = partial(self._try_to_convert, cv.utils.dumpVectorOfRect)
+        try_to_convert = partial(self._try_to_convert, ncvslideio.utils.dumpVectorOfRect)
         arr_of_rect_int32 = np.random.randint(5, 20, 4 * 3).astype(np.int32).reshape(3, 4)
         arr_of_rect_cast = np.random.randint(10, 40, 4 * 5).astype(np.uint8).reshape(5, 4)
         for convertible in (((1, 2, 3, 4), (10, -20, 30, 10)), arr_of_rect_int32, arr_of_rect_cast,
@@ -745,49 +745,49 @@ class Arguments(NewOpenCVTests):
                                 [[5, 3, 1, 4], []],
                                 ((float(4), np.uint8(10), int(32), np.int16(55)),)):
             with self.assertRaises(TypeError, msg=get_no_exception_msg(not_convertible)):
-                _ = cv.utils.dumpVectorOfRect(not_convertible)
+                _ = ncvslideio.utils.dumpVectorOfRect(not_convertible)
 
     def test_vector_general_return(self):
         expected_number_of_mats = 5
         expected_shape = (10, 10, 3)
         expected_type = np.uint8
-        mats = cv.utils.generateVectorOfMat(5, 10, 10, cv.CV_8UC3)
+        mats = ncvslideio.utils.generateVectorOfMat(5, 10, 10, ncvslideio.CV_8UC3)
         self.assertTrue(isinstance(mats, tuple),
                         "Vector of Mats objects should be returned as tuple. Got: {}".format(type(mats)))
         self.assertEqual(len(mats), expected_number_of_mats, "Returned array has wrong length")
         for mat in mats:
             self.assertEqual(mat.shape, expected_shape, "Returned Mat has wrong shape")
             self.assertEqual(mat.dtype, expected_type, "Returned Mat has wrong elements type")
-        empty_mats = cv.utils.generateVectorOfMat(0, 10, 10, cv.CV_32FC1)
+        empty_mats = ncvslideio.utils.generateVectorOfMat(0, 10, 10, ncvslideio.CV_32FC1)
         self.assertTrue(isinstance(empty_mats, tuple),
                         "Empty vector should be returned as empty tuple. Got: {}".format(type(mats)))
         self.assertEqual(len(empty_mats), 0, "Vector of size 0 should be returned as tuple of length 0")
 
     def test_vector_fast_return(self):
         expected_shape = (5, 4)
-        rects = cv.utils.generateVectorOfRect(expected_shape[0])
+        rects = ncvslideio.utils.generateVectorOfRect(expected_shape[0])
         self.assertTrue(isinstance(rects, np.ndarray),
                         "Vector of rectangles should be returned as numpy array. Got: {}".format(type(rects)))
         self.assertEqual(rects.dtype, np.int32, "Vector of rectangles has wrong elements type")
         self.assertEqual(rects.shape, expected_shape, "Vector of rectangles has wrong shape")
-        empty_rects = cv.utils.generateVectorOfRect(0)
+        empty_rects = ncvslideio.utils.generateVectorOfRect(0)
         self.assertTrue(isinstance(empty_rects, tuple),
                         "Empty vector should be returned as empty tuple. Got: {}".format(type(empty_rects)))
         self.assertEqual(len(empty_rects), 0, "Vector of size 0 should be returned as tuple of length 0")
 
         expected_shape = (10,)
-        ints = cv.utils.generateVectorOfInt(expected_shape[0])
+        ints = ncvslideio.utils.generateVectorOfInt(expected_shape[0])
         self.assertTrue(isinstance(ints, np.ndarray),
                         "Vector of integers should be returned as numpy array. Got: {}".format(type(ints)))
         self.assertEqual(ints.dtype, np.int32, "Vector of integers has wrong elements type")
         self.assertEqual(ints.shape, expected_shape, "Vector of integers has wrong shape.")
 
     def test_result_rotated_rect_issue_20930(self):
-        rr = cv.utils.testRotatedRect(10, 20, 100, 200, 45)
+        rr = ncvslideio.utils.testRotatedRect(10, 20, 100, 200, 45)
         self.assertTrue(isinstance(rr, tuple), msg=type(rr))
         self.assertEqual(len(rr), 3)
 
-        rrv = cv.utils.testRotatedRectVector(10, 20, 100, 200, 45)
+        rrv = ncvslideio.utils.testRotatedRectVector(10, 20, 100, 200, 45)
         self.assertTrue(isinstance(rrv, tuple), msg=type(rrv))
         self.assertEqual(len(rrv), 10)
 
@@ -796,9 +796,9 @@ class Arguments(NewOpenCVTests):
         self.assertEqual(len(rr), 3)
 
     def test_nested_function_availability(self):
-        self.assertTrue(hasattr(cv.utils, "nested"),
+        self.assertTrue(hasattr(ncvslideio.utils, "nested"),
                         msg="Module is not generated for nested namespace")
-        self.assertTrue(hasattr(cv.utils.nested, "testEchoBooleanFunction"),
+        self.assertTrue(hasattr(ncvslideio.utils.nested, "testEchoBooleanFunction"),
                         msg="Function in nested module is not available")
 
         if sys.version_info[0] < 3:
@@ -811,68 +811,68 @@ class Arguments(NewOpenCVTests):
             expected_ref_count = 3
 
         # `getrefcount` temporary increases reference counter by 1
-        actual_ref_count = sys.getrefcount(cv.utils.nested) - 1
+        actual_ref_count = sys.getrefcount(ncvslideio.utils.nested) - 1
 
         self.assertEqual(actual_ref_count, expected_ref_count,
                          msg="Nested submodule reference counter has wrong value\n"
                          "Expected: {}. Actual: {}".format(expected_ref_count, actual_ref_count))
         for flag in (True, False):
-            self.assertEqual(flag, cv.utils.nested.testEchoBooleanFunction(flag),
+            self.assertEqual(flag, ncvslideio.utils.nested.testEchoBooleanFunction(flag),
                              msg="Function in nested module returns wrong result")
 
     def test_class_from_submodule_has_global_alias(self):
-        self.assertTrue(hasattr(cv.ml, "Boost"),
+        self.assertTrue(hasattr(ncvslideio.ml, "Boost"),
                         msg="Class is not registered in the submodule")
-        self.assertTrue(hasattr(cv, "ml_Boost"),
+        self.assertTrue(hasattr(ncvslideio, "ml_Boost"),
                         msg="Class from submodule doesn't have alias in the "
                         "global module")
-        self.assertEqual(cv.ml.Boost, cv.ml_Boost,
+        self.assertEqual(ncvslideio.ml.Boost, ncvslideio.ml_Boost,
                          msg="Classes from submodules and global module don't refer "
                          "to the same type")
 
     def test_inner_class_has_global_alias(self):
-        self.assertTrue(hasattr(cv.SimpleBlobDetector, "Params"),
+        self.assertTrue(hasattr(ncvslideio.SimpleBlobDetector, "Params"),
                         msg="Class is not registered as inner class")
-        self.assertTrue(hasattr(cv, "SimpleBlobDetector_Params"),
+        self.assertTrue(hasattr(ncvslideio, "SimpleBlobDetector_Params"),
                         msg="Inner class doesn't have alias in the global module")
-        self.assertEqual(cv.SimpleBlobDetector.Params, cv.SimpleBlobDetector_Params,
+        self.assertEqual(ncvslideio.SimpleBlobDetector.Params, ncvslideio.SimpleBlobDetector_Params,
                          msg="Inner class and class in global module don't refer "
                          "to the same type")
 
     def test_export_class_with_different_name(self):
-        self.assertTrue(hasattr(cv.utils.nested, "ExportClassName"),
+        self.assertTrue(hasattr(ncvslideio.utils.nested, "ExportClassName"),
                         msg="Class with export alias is not registered in the submodule")
-        self.assertTrue(hasattr(cv, "utils_nested_ExportClassName"),
+        self.assertTrue(hasattr(ncvslideio, "utils_nested_ExportClassName"),
                         msg="Class with export alias doesn't have alias in the "
                         "global module")
-        self.assertEqual(cv.utils.nested.ExportClassName.originalName(), "OriginalClassName")
+        self.assertEqual(ncvslideio.utils.nested.ExportClassName.originalName(), "OriginalClassName")
 
-        instance = cv.utils.nested.ExportClassName.create()
-        self.assertTrue(isinstance(instance, cv.utils.nested.ExportClassName),
+        instance = ncvslideio.utils.nested.ExportClassName.create()
+        self.assertTrue(isinstance(instance, ncvslideio.utils.nested.ExportClassName),
                         msg="Factory function returns wrong class instance: {}".format(type(instance)))
-        self.assertTrue(hasattr(cv.utils.nested, "ExportClassName_create"),
+        self.assertTrue(hasattr(ncvslideio.utils.nested, "ExportClassName_create"),
                         msg="Factory function should have alias in the same module as the class")
-        # self.assertFalse(hasattr(cv.utils.nested, "OriginalClassName_create"),
+        # self.assertFalse(hasattr(ncvslideio.utils.nested, "OriginalClassName_create"),
         #                  msg="Factory function should not be registered with original class name, "\
         #                  "when class has different export name")
 
     def test_export_inner_class_of_class_exported_with_different_name(self):
-        if not hasattr(cv.utils.nested, "ExportClassName"):
+        if not hasattr(ncvslideio.utils.nested, "ExportClassName"):
             raise unittest.SkipTest(
                 "Outer class with export alias is not registered in the submodule")
 
-        self.assertTrue(hasattr(cv.utils.nested.ExportClassName, "Params"),
+        self.assertTrue(hasattr(ncvslideio.utils.nested.ExportClassName, "Params"),
                         msg="Inner class with export alias is not registered in "
                         "the outer class")
-        self.assertTrue(hasattr(cv, "utils_nested_ExportClassName_Params"),
+        self.assertTrue(hasattr(ncvslideio, "utils_nested_ExportClassName_Params"),
                         msg="Inner class with export alias is not registered in "
                         "global module")
-        params = cv.utils.nested.ExportClassName.Params()
+        params = ncvslideio.utils.nested.ExportClassName.Params()
         params.int_value = 45
         params.float_value = 4.5
 
-        instance = cv.utils.nested.ExportClassName.create(params)
-        self.assertTrue(isinstance(instance, cv.utils.nested.ExportClassName),
+        instance = ncvslideio.utils.nested.ExportClassName.create(params)
+        self.assertTrue(isinstance(instance, ncvslideio.utils.nested.ExportClassName),
                         msg="Factory function returns wrong class instance: {}".format(type(instance)))
         self.assertEqual(
             params.int_value, instance.getIntParam(),
@@ -889,13 +889,13 @@ class Arguments(NewOpenCVTests):
 
     def test_named_arguments_without_parameters(self):
         src = np.ones((5, 5, 3), dtype=np.uint8)
-        arguments_dump, src_copy = cv.utils.copyMatAndDumpNamedArguments(src)
+        arguments_dump, src_copy = ncvslideio.utils.copyMatAndDumpNamedArguments(src)
         np.testing.assert_equal(src, src_copy)
         self.assertEqual(arguments_dump, 'lambda=-1, sigma=0.0')
 
     def test_named_arguments_without_output_argument(self):
         src = np.zeros((2, 2, 3), dtype=np.uint8)
-        arguments_dump, src_copy = cv.utils.copyMatAndDumpNamedArguments(
+        arguments_dump, src_copy = ncvslideio.utils.copyMatAndDumpNamedArguments(
             src, lambda_=15, sigma=3.5
         )
         np.testing.assert_equal(src, src_copy)
@@ -904,7 +904,7 @@ class Arguments(NewOpenCVTests):
     def test_named_arguments_with_output_argument(self):
         src = np.zeros((3, 3, 3), dtype=np.uint8)
         dst = np.ones_like(src)
-        arguments_dump, src_copy = cv.utils.copyMatAndDumpNamedArguments(
+        arguments_dump, src_copy = ncvslideio.utils.copyMatAndDumpNamedArguments(
             src, dst, lambda_=25, sigma=5.5
         )
         np.testing.assert_equal(src, src_copy)
@@ -944,7 +944,7 @@ class CanUsePurePythonModuleFunction(NewOpenCVTests):
         if sys.version_info[0] < 3:
             raise unittest.SkipTest('Python 2.x is not supported')
 
-        self.assertEqual(cv.misc.get_ocv_version(), cv.__version__,
+        self.assertEqual(ncvslideio.misc.get_ocv_version(), ncvslideio.__version__,
                          "Can't get package version using Python misc module")
 
     def test_native_method_can_be_patched(self):
@@ -953,43 +953,43 @@ class CanUsePurePythonModuleFunction(NewOpenCVTests):
         if sys.version_info[0] < 3:
             raise unittest.SkipTest('Python 2.x is not supported')
 
-        res = cv.utils.testOverwriteNativeMethod(10)
+        res = ncvslideio.utils.testOverwriteNativeMethod(10)
         self.assertTrue(isinstance(res, Sequence),
                         msg="Overwritten method should return sequence. "
                             "Got: {} of type {}".format(res, type(res)))
         self.assertSequenceEqual(res, (11, 10),
                                  msg="Failed to overwrite native method")
-        res = cv.utils._native.testOverwriteNativeMethod(123)
+        res = ncvslideio.utils._native.testOverwriteNativeMethod(123)
         self.assertEqual(res, 123, msg="Failed to call native method implementation")
 
     def test_default_matx_argument(self):
-        res = cv.utils.dumpVec2i()
+        res = ncvslideio.utils.dumpVec2i()
         self.assertEqual(res, "Vec2i(42, 24)",
                          msg="Default argument is not properly handled")
-        res = cv.utils.dumpVec2i((12, 21))
+        res = ncvslideio.utils.dumpVec2i((12, 21))
         self.assertEqual(res, "Vec2i(12, 21)")
 
 
 class SamplesFindFile(NewOpenCVTests):
 
     def test_ExistedFile(self):
-        res = cv.samples.findFile('HappyFish.jpg', False)
+        res = ncvslideio.samples.findFile('HappyFish.jpg', False)
         self.assertNotEqual(res, '')
 
     def test_MissingFile(self):
-        res = cv.samples.findFile('non_existed.file', False)
+        res = ncvslideio.samples.findFile('non_existed.file', False)
         self.assertEqual(res, '')
 
     def test_MissingFileException(self):
         try:
-            _res = cv.samples.findFile('non_existed.file', True)
+            _res = ncvslideio.samples.findFile('non_existed.file', True)
             self.assertEqual("Dead code", 0)
-        except cv.error as _e:
+        except ncvslideio.error as _e:
             pass
 
 class AlgorithmImplHit(NewOpenCVTests):
     def test_callable(self):
-        res = cv.getDefaultAlgorithmHint()
+        res = ncvslideio.getDefaultAlgorithmHint()
         self.assertTrue(res is not None)
 
 if __name__ == '__main__':

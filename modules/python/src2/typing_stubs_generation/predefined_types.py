@@ -6,11 +6,11 @@ from .nodes.type_node import (
 
 # Set of predefined types used to cover cases when library doesn't
 # directly exports a type and equivalent one should be used instead.
-# Example: Instead of C++ `cv::Rect(1, 1, 5, 6)` in Python any sequence type
+# Example: Instead of C++ `ncvslideio::Rect(1, 1, 5, 6)` in Python any sequence type
 # with length 4 can be used: tuple `(1, 1, 5, 6)` or list `[1, 1, 5, 6]`.
 # Predefined type might be:
 #   - alias - defines a Python synonym for a native type name.
-#     Example: `cv::Rect` and `cv::Size` are both `Sequence[int]` in Python, but
+#     Example: `ncvslideio::Rect` and `ncvslideio::Size` are both `Sequence[int]` in Python, but
 #     with different length constraints (4 and 2 accordingly).
 #   - direct substitution - just a plain type replacement without any credits to
 #     native type. Example:

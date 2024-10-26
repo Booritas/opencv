@@ -102,8 +102,8 @@ OCL_TEST_P(Lut, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::LUT(src_roi, lut_roi, dst_roi));
-        OCL_ON(cv::LUT(usrc_roi, ulut_roi, udst_roi));
+        OCL_OFF(ncvslideio::LUT(src_roi, lut_roi, dst_roi));
+        OCL_ON(ncvslideio::LUT(usrc_roi, ulut_roi, udst_roi));
 
         Near();
     }
@@ -116,8 +116,8 @@ PARAM_TEST_CASE(ArithmTestBase, MatDepth, Channels, bool)
     int depth;
     int cn;
     bool use_roi;
-    cv::Scalar val;
-    cv::Scalar val_in_range;
+    ncvslideio::Scalar val;
+    ncvslideio::Scalar val_in_range;
 
     TEST_DECLARE_INPUT_PARAMETER(src1);
     TEST_DECLARE_INPUT_PARAMETER(src2);
@@ -154,15 +154,15 @@ PARAM_TEST_CASE(ArithmTestBase, MatDepth, Channels, bool)
 
         Border maskBorder = randomBorder(0, use_roi ? MAX_VALUE : 0);
         randomSubMat(mask, mask_roi, roiSize, maskBorder, CV_8UC1, 0, 2);
-        cv::threshold(mask, mask, 0.5, 255., CV_8UC1);
+        ncvslideio::threshold(mask, mask, 0.5, 255., CV_8UC1);
         *mask.ptr(0) = 255; // prevent test case with mask filled 0 only
 
-        val = cv::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
+        val = ncvslideio::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
                          rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0));
 
         if (with_val_in_range)
         {
-            val_in_range = cv::Scalar(rng.uniform(minV, maxV), rng.uniform(minV, maxV),
+            val_in_range = ncvslideio::Scalar(rng.uniform(minV, maxV), rng.uniform(minV, maxV),
                                       rng.uniform(minV, maxV), rng.uniform(minV, maxV));
         }
 
@@ -197,8 +197,8 @@ OCL_TEST_P(Add, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::add(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::add(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::add(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::add(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -209,8 +209,8 @@ OCL_TEST_P(Add, Mat_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::add(src1_roi, src2_roi, dst1_roi, mask_roi));
-        OCL_ON(cv::add(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::add(src1_roi, src2_roi, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::add(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
         Near(0);
     }
 }
@@ -221,8 +221,8 @@ OCL_TEST_P(Add, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::add(src1_roi, val, dst1_roi));
-        OCL_ON(cv::add(val, usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::add(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::add(val, usrc1_roi, udst1_roi));
         Near(1e-5);
     }
 }
@@ -233,8 +233,8 @@ OCL_TEST_P(Add, Scalar_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::add(src1_roi, val, dst1_roi, mask_roi));
-        OCL_ON(cv::add(usrc1_roi, val, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::add(src1_roi, val, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::add(usrc1_roi, val, udst1_roi, umask_roi));
         Near(1e-5);
     }
 }
@@ -249,8 +249,8 @@ OCL_TEST_P(Subtract, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::subtract(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::subtract(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::subtract(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::subtract(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -261,8 +261,8 @@ OCL_TEST_P(Subtract, Mat_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::subtract(src1_roi, src2_roi, dst1_roi, mask_roi));
-        OCL_ON(cv::subtract(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::subtract(src1_roi, src2_roi, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::subtract(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
         Near(0);
     }
 }
@@ -273,8 +273,8 @@ OCL_TEST_P(Subtract, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::subtract(val, src1_roi, dst1_roi));
-        OCL_ON(cv::subtract(val, usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::subtract(val, src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::subtract(val, usrc1_roi, udst1_roi));
         Near(1e-5);
     }
 }
@@ -285,8 +285,8 @@ OCL_TEST_P(Subtract, Scalar_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::subtract(src1_roi, val, dst1_roi, mask_roi));
-        OCL_ON(cv::subtract(usrc1_roi, val, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::subtract(src1_roi, val, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::subtract(usrc1_roi, val, udst1_roi, umask_roi));
         Near(1e-5);
     }
 }
@@ -301,8 +301,8 @@ OCL_TEST_P(Mul, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::multiply(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::multiply(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::multiply(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::multiply(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -313,8 +313,8 @@ OCL_TEST_P(Mul, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::multiply(src1_roi, val, dst1_roi));
-        OCL_ON(cv::multiply(val, usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::multiply(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::multiply(val, usrc1_roi, udst1_roi));
 
         Near(udst1_roi.depth() >= CV_32F ? 1e-3 : 1);
     }
@@ -326,8 +326,8 @@ OCL_TEST_P(Mul, Mat_Scale)
     {
         generateTestData();
 
-        OCL_OFF(cv::multiply(src1_roi, src2_roi, dst1_roi, val[0]));
-        OCL_ON(cv::multiply(usrc1_roi, usrc2_roi, udst1_roi, val[0]));
+        OCL_OFF(ncvslideio::multiply(src1_roi, src2_roi, dst1_roi, val[0]));
+        OCL_ON(ncvslideio::multiply(usrc1_roi, usrc2_roi, udst1_roi, val[0]));
 
         if (udst1_roi.depth() >= CV_32F)
 #ifdef __ANDROID__
@@ -346,8 +346,8 @@ OCL_TEST_P(Mul, Mat_Scalar_Scale)
     {
         generateTestData();
 
-        OCL_OFF(cv::multiply(src1_roi, val, dst1_roi, val[0]));
-        OCL_ON(cv::multiply(usrc1_roi, val, udst1_roi, val[0]));
+        OCL_OFF(ncvslideio::multiply(src1_roi, val, dst1_roi, val[0]));
+        OCL_ON(ncvslideio::multiply(usrc1_roi, val, udst1_roi, val[0]));
 
         if (udst1_roi.depth() >= CV_32F)
             Near(1e-6, true);
@@ -367,8 +367,8 @@ OCL_TEST_P(Div, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::divide(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::divide(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::divide(usrc1_roi, usrc2_roi, udst1_roi));
         Near(1);
     }
 }
@@ -379,8 +379,8 @@ OCL_TEST_P(Div, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(val, src1_roi, dst1_roi));
-        OCL_ON(cv::divide(val, usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::divide(val, src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::divide(val, usrc1_roi, udst1_roi));
 
         Near(udst1_roi.depth() >= CV_32F ? 1e-3 : 1);
     }
@@ -392,8 +392,8 @@ OCL_TEST_P(Div, Scalar2)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(src1_roi, val, dst1_roi));
-        OCL_ON(cv::divide(usrc1_roi, val, udst1_roi));
+        OCL_OFF(ncvslideio::divide(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::divide(usrc1_roi, val, udst1_roi));
 
         Near(udst1_roi.depth() >= CV_32F ? 1e-3 : 1);
     }
@@ -405,8 +405,8 @@ OCL_TEST_P(Div, Mat_Scale)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(src1_roi, src2_roi, dst1_roi, val[0]));
-        OCL_ON(cv::divide(usrc1_roi, usrc2_roi, udst1_roi, val[0]));
+        OCL_OFF(ncvslideio::divide(src1_roi, src2_roi, dst1_roi, val[0]));
+        OCL_ON(ncvslideio::divide(usrc1_roi, usrc2_roi, udst1_roi, val[0]));
 
         Near(udst1_roi.depth() >= CV_32F ? 4e-3 : 1);
     }
@@ -418,8 +418,8 @@ OCL_TEST_P(Div, Mat_Scalar_Scale)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(src1_roi, val, dst1_roi, val[0]));
-        OCL_ON(cv::divide(usrc1_roi, val, udst1_roi, val[0]));
+        OCL_OFF(ncvslideio::divide(src1_roi, val, dst1_roi, val[0]));
+        OCL_ON(ncvslideio::divide(usrc1_roi, val, udst1_roi, val[0]));
 
         Near(udst1_roi.depth() >= CV_32F ? 4e-3 : 1);
     }
@@ -431,8 +431,8 @@ OCL_TEST_P(Div, Recip)
     {
         generateTestData();
 
-        OCL_OFF(cv::divide(val[0], src1_roi, dst1_roi));
-        OCL_ON(cv::divide(val[0], usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::divide(val[0], src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::divide(val[0], usrc1_roi, udst1_roi));
 
         Near(udst1_roi.depth() >= CV_32F ? 1e-3 : 1);
     }
@@ -448,8 +448,8 @@ OCL_TEST_P(Min, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::min(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::min(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::min(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::min(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -462,8 +462,8 @@ OCL_TEST_P(Max, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::max(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::max(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::max(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::max(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -478,8 +478,8 @@ OCL_TEST_P(Absdiff, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::absdiff(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::absdiff(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::absdiff(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::absdiff(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -490,8 +490,8 @@ OCL_TEST_P(Absdiff, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::absdiff(src1_roi, val, dst1_roi));
-        OCL_ON(cv::absdiff(usrc1_roi, val, udst1_roi));
+        OCL_OFF(ncvslideio::absdiff(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::absdiff(usrc1_roi, val, udst1_roi));
         Near(1e-5);
     }
 }
@@ -506,8 +506,8 @@ OCL_TEST_P(CartToPolar, angleInDegree)
     {
         generateTestData();
 
-        OCL_OFF(cv::cartToPolar(src1_roi, src2_roi, dst1_roi, dst2_roi, true));
-        OCL_ON(cv::cartToPolar(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi, true));
+        OCL_OFF(ncvslideio::cartToPolar(src1_roi, src2_roi, dst1_roi, dst2_roi, true));
+        OCL_ON(ncvslideio::cartToPolar(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi, true));
         Near(0.5);
         Near1(0.5);
     }
@@ -519,8 +519,8 @@ OCL_TEST_P(CartToPolar, angleInRadians)
     {
         generateTestData();
 
-        OCL_OFF(cv::cartToPolar(src1_roi, src2_roi, dst1_roi, dst2_roi));
-        OCL_ON(cv::cartToPolar(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi));
+        OCL_OFF(ncvslideio::cartToPolar(src1_roi, src2_roi, dst1_roi, dst2_roi));
+        OCL_ON(ncvslideio::cartToPolar(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi));
         Near(0.5);
         Near1(0.5);
     }
@@ -536,8 +536,8 @@ OCL_TEST_P(PolarToCart, angleInDegree)
     {
         generateTestData();
 
-        OCL_OFF(cv::polarToCart(src1_roi, src2_roi, dst1_roi, dst2_roi, true));
-        OCL_ON(cv::polarToCart(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi, true));
+        OCL_OFF(ncvslideio::polarToCart(src1_roi, src2_roi, dst1_roi, dst2_roi, true));
+        OCL_ON(ncvslideio::polarToCart(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi, true));
 
         Near(0.5);
         Near1(0.5);
@@ -550,8 +550,8 @@ OCL_TEST_P(PolarToCart, angleInRadians)
     {
         generateTestData();
 
-        OCL_OFF(cv::polarToCart(src1_roi, src2_roi, dst1_roi, dst2_roi));
-        OCL_ON(cv::polarToCart(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi));
+        OCL_OFF(ncvslideio::polarToCart(src1_roi, src2_roi, dst1_roi, dst2_roi));
+        OCL_ON(ncvslideio::polarToCart(usrc1_roi, usrc2_roi, udst1_roi, udst2_roi));
 
         Near(0.5);
         Near1(0.5);
@@ -574,8 +574,8 @@ OCL_TEST_P(Transpose, Mat)
 
         UMAT_UPLOAD_INPUT_PARAMETER(dst1);
 
-        OCL_OFF(cv::transpose(src1_roi, dst1_roi));
-        OCL_ON(cv::transpose(usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::transpose(src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::transpose(usrc1_roi, udst1_roi));
 
         Near(1e-5);
     }
@@ -595,8 +595,8 @@ OCL_TEST_P(Transpose, SquareInplace)
 
         UMAT_UPLOAD_OUTPUT_PARAMETER(src1);
 
-        OCL_OFF(cv::transpose(src1_roi, src1_roi));
-        OCL_ON(cv::transpose(usrc1_roi, usrc1_roi));
+        OCL_OFF(ncvslideio::transpose(src1_roi, src1_roi));
+        OCL_ON(ncvslideio::transpose(usrc1_roi, usrc1_roi));
 
         OCL_EXPECT_MATS_NEAR(src1, 0);
     }
@@ -612,8 +612,8 @@ OCL_TEST_P(Bitwise_and, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_and(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::bitwise_and(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_and(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_and(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -624,8 +624,8 @@ OCL_TEST_P(Bitwise_and, Mat_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_and(src1_roi, src2_roi, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_and(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_and(src1_roi, src2_roi, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_and(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
         Near(0);
     }
 }
@@ -636,8 +636,8 @@ OCL_TEST_P(Bitwise_and, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_and(src1_roi, val, dst1_roi));
-        OCL_ON(cv::bitwise_and(usrc1_roi, val, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_and(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_and(usrc1_roi, val, udst1_roi));
         Near(1e-5);
     }
 }
@@ -648,8 +648,8 @@ OCL_TEST_P(Bitwise_and, Scalar_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_and(src1_roi, val, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_and(usrc1_roi, val, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_and(src1_roi, val, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_and(usrc1_roi, val, udst1_roi, umask_roi));
         Near(1e-5);
     }
 }
@@ -664,8 +664,8 @@ OCL_TEST_P(Bitwise_or, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_or(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::bitwise_or(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_or(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_or(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -676,8 +676,8 @@ OCL_TEST_P(Bitwise_or, Mat_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_or(src1_roi, src2_roi, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_or(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_or(src1_roi, src2_roi, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_or(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
         Near(0);
     }
 }
@@ -688,8 +688,8 @@ OCL_TEST_P(Bitwise_or, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_or(src1_roi, val, dst1_roi));
-        OCL_ON(cv::bitwise_or(usrc1_roi, val, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_or(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_or(usrc1_roi, val, udst1_roi));
         Near(1e-5);
     }
 }
@@ -700,8 +700,8 @@ OCL_TEST_P(Bitwise_or, Scalar_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_or(src1_roi, val, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_or(val, usrc1_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_or(src1_roi, val, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_or(val, usrc1_roi, udst1_roi, umask_roi));
         Near(1e-5);
     }
 }
@@ -716,8 +716,8 @@ OCL_TEST_P(Bitwise_xor, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_xor(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::bitwise_xor(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_xor(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_xor(usrc1_roi, usrc2_roi, udst1_roi));
         Near(0);
     }
 }
@@ -728,8 +728,8 @@ OCL_TEST_P(Bitwise_xor, Mat_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_xor(src1_roi, src2_roi, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_xor(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_xor(src1_roi, src2_roi, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_xor(usrc1_roi, usrc2_roi, udst1_roi, umask_roi));
         Near(0);
     }
 }
@@ -740,8 +740,8 @@ OCL_TEST_P(Bitwise_xor, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_xor(src1_roi, val, dst1_roi));
-        OCL_ON(cv::bitwise_xor(usrc1_roi, val, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_xor(src1_roi, val, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_xor(usrc1_roi, val, udst1_roi));
         Near(1e-5);
     }
 }
@@ -752,8 +752,8 @@ OCL_TEST_P(Bitwise_xor, Scalar_Mask)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_xor(src1_roi, val, dst1_roi, mask_roi));
-        OCL_ON(cv::bitwise_xor(usrc1_roi, val, udst1_roi, umask_roi));
+        OCL_OFF(ncvslideio::bitwise_xor(src1_roi, val, dst1_roi, mask_roi));
+        OCL_ON(ncvslideio::bitwise_xor(usrc1_roi, val, udst1_roi, umask_roi));
         Near(1e-5);
     }
 }
@@ -768,8 +768,8 @@ OCL_TEST_P(Bitwise_not, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::bitwise_not(src1_roi, dst1_roi));
-        OCL_ON(cv::bitwise_not(usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::bitwise_not(src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::bitwise_not(usrc1_roi, udst1_roi));
         Near(0);
     }
 }
@@ -791,8 +791,8 @@ OCL_TEST_P(Compare, Mat)
         {
             generateTestData();
 
-            OCL_OFF(cv::compare(src1_roi, src2_roi, dst1_roi, cmp_codes[i]));
-            OCL_ON(cv::compare(usrc1_roi, usrc2_roi, udst1_roi, cmp_codes[i]));
+            OCL_OFF(ncvslideio::compare(src1_roi, src2_roi, dst1_roi, cmp_codes[i]));
+            OCL_ON(ncvslideio::compare(usrc1_roi, usrc2_roi, udst1_roi, cmp_codes[i]));
 
             Near(0);
         }
@@ -808,8 +808,8 @@ OCL_TEST_P(Compare, Scalar)
         {
             generateTestData(true);
 
-            OCL_OFF(cv::compare(src1_roi, val_in_range, dst1_roi, cmp_codes[i]));
-            OCL_ON(cv::compare(usrc1_roi, val_in_range, udst1_roi, cmp_codes[i]));
+            OCL_OFF(ncvslideio::compare(src1_roi, val_in_range, dst1_roi, cmp_codes[i]));
+            OCL_ON(ncvslideio::compare(usrc1_roi, val_in_range, udst1_roi, cmp_codes[i]));
 
             Near(0);
         }
@@ -825,8 +825,8 @@ OCL_TEST_P(Compare, Scalar2)
         {
             generateTestData(true);
 
-            OCL_OFF(cv::compare(val_in_range, src1_roi, dst1_roi, cmp_codes[i]));
-            OCL_ON(cv::compare(val_in_range, usrc1_roi, udst1_roi, cmp_codes[i]));
+            OCL_OFF(ncvslideio::compare(val_in_range, src1_roi, dst1_roi, cmp_codes[i]));
+            OCL_ON(ncvslideio::compare(val_in_range, usrc1_roi, udst1_roi, cmp_codes[i]));
 
             Near(0);
         }
@@ -848,8 +848,8 @@ OCL_TEST_P(Pow, Mat)
 
             generateTestData();
 
-            OCL_OFF(cv::pow(src1_roi, pows[k], dst1_roi));
-            OCL_ON(cv::pow(usrc1_roi, pows[k], udst1_roi));
+            OCL_OFF(ncvslideio::pow(src1_roi, pows[k], dst1_roi));
+            OCL_ON(ncvslideio::pow(usrc1_roi, pows[k], udst1_roi));
 
             OCL_EXPECT_MATS_NEAR_RELATIVE(dst1, 1e-5);
         }
@@ -867,8 +867,8 @@ OCL_TEST_P(AddWeighted, Mat)
 
         const double alpha = 2.0, beta = 1.0, gama = 3.0;
 
-        OCL_OFF(cv::addWeighted(src1_roi, alpha, src2_roi, beta, gama, dst1_roi));
-        OCL_ON(cv::addWeighted(usrc1_roi, alpha, usrc2_roi, beta, gama, udst1_roi));
+        OCL_OFF(ncvslideio::addWeighted(src1_roi, alpha, src2_roi, beta, gama, dst1_roi));
+        OCL_ON(ncvslideio::addWeighted(usrc1_roi, alpha, usrc2_roi, beta, gama, udst1_roi));
 
         if(dst1_roi.depth() >= CV_32F)
             Near(3e-4, true);
@@ -887,8 +887,8 @@ OCL_TEST_P(SetIdentity, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::setIdentity(dst1_roi, val));
-        OCL_ON(cv::setIdentity(udst1_roi, val));
+        OCL_OFF(ncvslideio::setIdentity(dst1_roi, val));
+        OCL_ON(ncvslideio::setIdentity(udst1_roi, val));
 
         Near(0);
     }
@@ -929,8 +929,8 @@ OCL_TEST_P(Repeat, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::repeat(src1_roi, ny, nx, dst1_roi));
-        OCL_ON(cv::repeat(usrc1_roi, ny, nx, udst1_roi));
+        OCL_OFF(ncvslideio::repeat(src1_roi, ny, nx, dst1_roi));
+        OCL_ON(ncvslideio::repeat(usrc1_roi, ny, nx, udst1_roi));
 
         Near();
     }
@@ -947,8 +947,8 @@ OCL_TEST_P(CountNonZero, MAT)
         generateTestData();
 
         int cpures, gpures;
-        OCL_OFF(cpures = cv::countNonZero(src1_roi));
-        OCL_ON(gpures = cv::countNonZero(usrc1_roi));
+        OCL_OFF(cpures = ncvslideio::countNonZero(src1_roi));
+        OCL_ON(gpures = ncvslideio::countNonZero(usrc1_roi));
 
         EXPECT_EQ(cpures, gpures);
     }
@@ -965,8 +965,8 @@ OCL_TEST_P(Sum, MAT)
         generateTestData();
 
         Scalar cpures, gpures;
-        OCL_OFF(cpures = cv::sum(src1_roi));
-        OCL_ON(gpures = cv::sum(usrc1_roi));
+        OCL_OFF(cpures = ncvslideio::sum(src1_roi));
+        OCL_ON(gpures = ncvslideio::sum(usrc1_roi));
 
         for (int i = 0; i < cn; ++i)
             EXPECT_NEAR(cpures[i], gpures[i], 0.1);
@@ -986,8 +986,8 @@ OCL_TEST_P(MeanStdDev, Mat)
         Scalar cpu_mean, cpu_stddev;
         Scalar gpu_mean, gpu_stddev;
 
-        OCL_OFF(cv::meanStdDev(src1_roi, cpu_mean, cpu_stddev));
-        OCL_ON(cv::meanStdDev(usrc1_roi, gpu_mean, gpu_stddev));
+        OCL_OFF(ncvslideio::meanStdDev(src1_roi, cpu_mean, cpu_stddev));
+        OCL_ON(ncvslideio::meanStdDev(usrc1_roi, gpu_mean, gpu_stddev));
 
         for (int i = 0; i < cn; ++i)
         {
@@ -1006,8 +1006,8 @@ OCL_TEST_P(MeanStdDev, Mat_Mask)
         Scalar cpu_mean, cpu_stddev;
         Scalar gpu_mean, gpu_stddev;
 
-        OCL_OFF(cv::meanStdDev(src1_roi, cpu_mean, cpu_stddev, mask_roi));
-        OCL_ON(cv::meanStdDev(usrc1_roi, gpu_mean, gpu_stddev, umask_roi));
+        OCL_OFF(ncvslideio::meanStdDev(src1_roi, cpu_mean, cpu_stddev, mask_roi));
+        OCL_ON(ncvslideio::meanStdDev(usrc1_roi, gpu_mean, gpu_stddev, umask_roi));
 
         for (int i = 0; i < cn; ++i)
         {
@@ -1026,8 +1026,8 @@ OCL_TEST(MeanStdDev_, ZeroMask)
     Scalar cpu_mean, cpu_stddev;
     Scalar gpu_mean, gpu_stddev;
 
-    OCL_OFF(cv::meanStdDev(m, cpu_mean, cpu_stddev, mask));
-    OCL_ON(cv::meanStdDev(um, gpu_mean, gpu_stddev, umask));
+    OCL_OFF(ncvslideio::meanStdDev(m, cpu_mean, cpu_stddev, mask));
+    OCL_ON(ncvslideio::meanStdDev(um, gpu_mean, gpu_stddev, umask));
 
     for (int i = 0; i < 4; ++i)
     {
@@ -1046,8 +1046,8 @@ OCL_TEST_P(Log, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::log(src1_roi, dst1_roi));
-        OCL_ON(cv::log(usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::log(src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::log(usrc1_roi, udst1_roi));
         Near(1);
     }
 }
@@ -1062,8 +1062,8 @@ OCL_TEST_P(Exp, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::exp(src1_roi, dst1_roi));
-        OCL_ON(cv::exp(usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::exp(src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::exp(usrc1_roi, udst1_roi));
         Near(2);
     }
 }
@@ -1078,8 +1078,8 @@ OCL_TEST_P(Phase, angleInDegree)
     {
         generateTestData();
 
-        OCL_OFF(cv::phase(src1_roi, src2_roi, dst1_roi, true));
-        OCL_ON(cv::phase(usrc1_roi, usrc2_roi, udst1_roi, true));
+        OCL_OFF(ncvslideio::phase(src1_roi, src2_roi, dst1_roi, true));
+        OCL_ON(ncvslideio::phase(usrc1_roi, usrc2_roi, udst1_roi, true));
         Near(1e-2);
     }
 }
@@ -1090,8 +1090,8 @@ OCL_TEST_P(Phase, angleInRadians)
     {
         generateTestData();
 
-        OCL_OFF(cv::phase(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::phase(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::phase(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::phase(usrc1_roi, usrc2_roi, udst1_roi));
         Near(1e-2);
     }
 }
@@ -1106,8 +1106,8 @@ OCL_TEST_P(Magnitude, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::magnitude(src1_roi, src2_roi, dst1_roi));
-        OCL_ON(cv::magnitude(usrc1_roi, usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::magnitude(src1_roi, src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::magnitude(usrc1_roi, usrc2_roi, udst1_roi));
         Near(depth == CV_64F ? 1e-5 : 1e-2);
     }
 }
@@ -1122,8 +1122,8 @@ OCL_TEST_P(Flip, X)
     {
         generateTestData();
 
-        OCL_OFF(cv::flip(src1_roi, dst1_roi, 0));
-        OCL_ON(cv::flip(usrc1_roi, udst1_roi, 0));
+        OCL_OFF(ncvslideio::flip(src1_roi, dst1_roi, 0));
+        OCL_ON(ncvslideio::flip(usrc1_roi, udst1_roi, 0));
         Near(0);
     }
 }
@@ -1134,8 +1134,8 @@ OCL_TEST_P(Flip, Y)
     {
         generateTestData();
 
-        OCL_OFF(cv::flip(src1_roi, dst1_roi, 1));
-        OCL_ON(cv::flip(usrc1_roi, udst1_roi, 1));
+        OCL_OFF(ncvslideio::flip(src1_roi, dst1_roi, 1));
+        OCL_ON(ncvslideio::flip(usrc1_roi, udst1_roi, 1));
         Near(0);
     }
 }
@@ -1146,8 +1146,8 @@ OCL_TEST_P(Flip, BOTH)
     {
         generateTestData();
 
-        OCL_OFF(cv::flip(src1_roi, dst1_roi, -1));
-        OCL_ON(cv::flip(usrc1_roi, udst1_roi, -1));
+        OCL_OFF(ncvslideio::flip(src1_roi, dst1_roi, -1));
+        OCL_ON(ncvslideio::flip(usrc1_roi, udst1_roi, -1));
         Near(0);
     }
 }
@@ -1166,16 +1166,16 @@ OCL_TEST_P(MinMaxIdx, Mat)
 
         if (cn > 1)
         {
-            OCL_OFF(cv::minMaxIdx(src2_roi, &minv, &maxv) );
-            OCL_ON(cv::minMaxIdx(usrc2_roi, &uminv, &umaxv));
+            OCL_OFF(ncvslideio::minMaxIdx(src2_roi, &minv, &maxv) );
+            OCL_ON(ncvslideio::minMaxIdx(usrc2_roi, &uminv, &umaxv));
 
             EXPECT_DOUBLE_EQ(minv, uminv);
             EXPECT_DOUBLE_EQ(maxv, umaxv);
         }
         else
         {
-            OCL_OFF(cv::minMaxIdx(src2_roi, &minv, &maxv, p1, p2, noArray()));
-            OCL_ON(cv::minMaxIdx(usrc2_roi, &uminv, &umaxv, up1, up2, noArray()));
+            OCL_OFF(ncvslideio::minMaxIdx(src2_roi, &minv, &maxv, p1, p2, noArray()));
+            OCL_ON(ncvslideio::minMaxIdx(usrc2_roi, &uminv, &umaxv, up1, up2, noArray()));
 
             EXPECT_DOUBLE_EQ(minv, uminv);
             EXPECT_DOUBLE_EQ(maxv, umaxv);
@@ -1200,8 +1200,8 @@ OCL_TEST_P(MinMaxIdx_Mask, Mat)
         int p1[2], p2[2], up1[2], up2[2];
         double minv, maxv, uminv, umaxv;
 
-        OCL_OFF(cv::minMaxIdx(src2_roi, &minv, &maxv, p1, p2, mask_roi));
-        OCL_ON(cv::minMaxIdx(usrc2_roi, &uminv, &umaxv, up1, up2, umask_roi));
+        OCL_OFF(ncvslideio::minMaxIdx(src2_roi, &minv, &maxv, p1, p2, mask_roi));
+        OCL_ON(ncvslideio::minMaxIdx(usrc2_roi, &uminv, &umaxv, up1, up2, umask_roi));
 
         EXPECT_DOUBLE_EQ(minv, uminv);
         EXPECT_DOUBLE_EQ(maxv, umaxv);
@@ -1229,8 +1229,8 @@ OCL_TEST_P(Norm, NORM_INF_1arg)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_INF));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_INF));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_INF));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_INF));
 
         EXPECT_NEAR(cpuRes, gpuRes, 0.1);
     }
@@ -1242,8 +1242,8 @@ OCL_TEST_P(Norm, NORM_INF_1arg_mask)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_INF, mask_roi));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_INF, umask_roi));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_INF, mask_roi));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_INF, umask_roi));
 
         EXPECT_NEAR(cpuRes, gpuRes, 0.2);
     }
@@ -1255,8 +1255,8 @@ OCL_TEST_P(Norm, NORM_L1_1arg)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_L1));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_L1));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_L1));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_L1));
 
         EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
     }
@@ -1268,8 +1268,8 @@ OCL_TEST_P(Norm, NORM_L1_1arg_mask)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_L1, mask_roi));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_L1, umask_roi));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_L1, mask_roi));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_L1, umask_roi));
 
         EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
     }
@@ -1281,8 +1281,8 @@ OCL_TEST_P(Norm, NORM_L2_1arg)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_L2));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_L2));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_L2));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_L2));
 
         EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
     }
@@ -1294,8 +1294,8 @@ OCL_TEST_P(Norm, NORM_L2_1arg_mask)
     {
         generateTestData();
 
-        OCL_OFF(const double cpuRes = cv::norm(src1_roi, NORM_L2, mask_roi));
-        OCL_ON(const double gpuRes = cv::norm(usrc1_roi, NORM_L2, umask_roi));
+        OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, NORM_L2, mask_roi));
+        OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, NORM_L2, umask_roi));
 
         EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
     }
@@ -1314,8 +1314,8 @@ OCL_TEST_P(Norm, NORM_INF_2args)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1334,8 +1334,8 @@ OCL_TEST_P(Norm, NORM_INF_2args_mask)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type, mask_roi));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type, umask_roi));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type, mask_roi));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type, umask_roi));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1354,8 +1354,8 @@ OCL_TEST_P(Norm, NORM_L1_2args)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1374,8 +1374,8 @@ OCL_TEST_P(Norm, NORM_L1_2args_mask)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type, mask_roi));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type, umask_roi));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type, mask_roi));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type, umask_roi));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1394,8 +1394,8 @@ OCL_TEST_P(Norm, NORM_L2_2args)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1414,8 +1414,8 @@ OCL_TEST_P(Norm, NORM_L2_2args_mask)
             if (relative == 1)
                 type |= NORM_RELATIVE;
 
-            OCL_OFF(const double cpuRes = cv::norm(src1_roi, src2_roi, type, mask_roi));
-            OCL_ON(const double gpuRes = cv::norm(usrc1_roi, usrc2_roi, type, umask_roi));
+            OCL_OFF(const double cpuRes = ncvslideio::norm(src1_roi, src2_roi, type, mask_roi));
+            OCL_ON(const double gpuRes = ncvslideio::norm(usrc1_roi, usrc2_roi, type, umask_roi));
 
             EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
         }
@@ -1448,8 +1448,8 @@ OCL_TEST_P(Sqrt, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::sqrt(src1_roi, dst1_roi));
-        OCL_ON(cv::sqrt(usrc1_roi, udst1_roi));
+        OCL_OFF(ncvslideio::sqrt(src1_roi, dst1_roi));
+        OCL_ON(ncvslideio::sqrt(usrc1_roi, udst1_roi));
 
         Near(1);
     }
@@ -1469,8 +1469,8 @@ OCL_TEST_P(Normalize, Mat)
 
         for (int i = 0, size = sizeof(modes) / sizeof(modes[0]); i < size; ++i)
         {
-            OCL_OFF(cv::normalize(src1_roi, dst1_roi, 10, 110, modes[i], src1_roi.type(), mask_roi));
-            OCL_ON(cv::normalize(usrc1_roi, udst1_roi, 10, 110, modes[i], src1_roi.type(), umask_roi));
+            OCL_OFF(ncvslideio::normalize(src1_roi, dst1_roi, 10, 110, modes[i], src1_roi.type(), mask_roi));
+            OCL_ON(ncvslideio::normalize(usrc1_roi, udst1_roi, 10, 110, modes[i], src1_roi.type(), umask_roi));
 
             Near(1);
         }
@@ -1484,7 +1484,7 @@ PARAM_TEST_CASE(InRange, MatDepth, Channels, bool /*Scalar or not*/, bool /*Roi*
     int depth;
     int cn;
     bool scalars, use_roi;
-    cv::Scalar val1, val2;
+    ncvslideio::Scalar val1, val2;
 
     TEST_DECLARE_INPUT_PARAMETER(src1);
     TEST_DECLARE_INPUT_PARAMETER(src2);
@@ -1516,9 +1516,9 @@ PARAM_TEST_CASE(InRange, MatDepth, Channels, bool /*Scalar or not*/, bool /*Roi*
         Border dstBorder = randomBorder(0, use_roi ? MAX_VALUE : 0);
         randomSubMat(dst, dst_roi, roiSize, dstBorder, CV_8UC1, 5, 16);
 
-        val1 = cv::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
+        val1 = ncvslideio::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
                           rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0));
-        val2 = cv::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
+        val2 = ncvslideio::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
                           rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0));
 
         UMAT_UPLOAD_INPUT_PARAMETER(src1);
@@ -1539,8 +1539,8 @@ OCL_TEST_P(InRange, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::inRange(src1_roi, src2_roi, src3_roi, dst_roi));
-        OCL_ON(cv::inRange(usrc1_roi, usrc2_roi, usrc3_roi, udst_roi));
+        OCL_OFF(ncvslideio::inRange(src1_roi, src2_roi, src3_roi, dst_roi));
+        OCL_ON(ncvslideio::inRange(usrc1_roi, usrc2_roi, usrc3_roi, udst_roi));
 
         Near();
     }
@@ -1552,8 +1552,8 @@ OCL_TEST_P(InRange, Scalar)
     {
         generateTestData();
 
-        OCL_OFF(cv::inRange(src1_roi, val1, val2, dst_roi));
-        OCL_ON(cv::inRange(usrc1_roi, val1, val2, udst_roi));
+        OCL_OFF(ncvslideio::inRange(src1_roi, val1, val2, dst_roi));
+        OCL_ON(ncvslideio::inRange(usrc1_roi, val1, val2, udst_roi));
 
         Near();
     }
@@ -1566,7 +1566,7 @@ PARAM_TEST_CASE(ConvertScaleAbs, MatDepth, Channels, bool)
     int depth;
     int cn;
     bool use_roi;
-    cv::Scalar val;
+    ncvslideio::Scalar val;
 
     TEST_DECLARE_INPUT_PARAMETER(src);
     TEST_DECLARE_OUTPUT_PARAMETER(dst);
@@ -1590,7 +1590,7 @@ PARAM_TEST_CASE(ConvertScaleAbs, MatDepth, Channels, bool)
         Border dstBorder = randomBorder(0, use_roi ? MAX_VALUE : 0);
         randomSubMat(dst, dst_roi, roiSize, dstBorder, dtype, 5, 16);
 
-        val = cv::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
+        val = ncvslideio::Scalar(rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0),
                          rng.uniform(-100.0, 100.0), rng.uniform(-100.0, 100.0));
 
         UMAT_UPLOAD_INPUT_PARAMETER(src);
@@ -1611,8 +1611,8 @@ OCL_TEST_P(ConvertScaleAbs, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::convertScaleAbs(src_roi, dst_roi, val[0], val[1]));
-        OCL_ON(cv::convertScaleAbs(usrc_roi, udst_roi, val[0], val[1]));
+        OCL_OFF(ncvslideio::convertScaleAbs(src_roi, dst_roi, val[0], val[1]));
+        OCL_ON(ncvslideio::convertScaleAbs(usrc_roi, udst_roi, val[0], val[1]));
 
         Near(1);
     }
@@ -1624,7 +1624,7 @@ PARAM_TEST_CASE(ConvertFp16, Channels, bool)
 {
     int cn;
     bool fromHalf;
-    cv::Scalar val;
+    ncvslideio::Scalar val;
 
     TEST_DECLARE_INPUT_PARAMETER(src);
     TEST_DECLARE_OUTPUT_PARAMETER(dst);
@@ -1673,8 +1673,8 @@ OCL_TEST_P(ConvertFp16, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::convertFp16(src_roi, dst_roi));
-        OCL_ON(cv::convertFp16(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::convertFp16(src_roi, dst_roi));
+        OCL_ON(ncvslideio::convertFp16(usrc_roi, udst_roi));
 
         Near(1);
     }
@@ -1690,8 +1690,8 @@ OCL_TEST_P(ScaleAdd, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::scaleAdd(src1_roi, val[0], src2_roi, dst1_roi));
-        OCL_ON(cv::scaleAdd(usrc1_roi, val[0], usrc2_roi, udst1_roi));
+        OCL_OFF(ncvslideio::scaleAdd(src1_roi, val[0], src2_roi, dst1_roi));
+        OCL_ON(ncvslideio::scaleAdd(usrc1_roi, val[0], usrc2_roi, udst1_roi));
 
         Near(depth <= CV_32S ? 1 : 1e-3);
     }
@@ -1747,8 +1747,8 @@ OCL_TEST_P(PatchNaNs, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::patchNaNs(src_roi, value));
-        OCL_ON(cv::patchNaNs(usrc_roi, value));
+        OCL_OFF(ncvslideio::patchNaNs(src_roi, value));
+        OCL_ON(ncvslideio::patchNaNs(usrc_roi, value));
 
         Near();
     }
@@ -1766,8 +1766,8 @@ OCL_TEST_P(Psnr, Mat)
 
         double cpuRes = 0, gpuRes = 0;
 
-        OCL_OFF(cpuRes = cv::PSNR(src1_roi, src2_roi));
-        OCL_ON(gpuRes = cv::PSNR(usrc1_roi, usrc2_roi));
+        OCL_OFF(cpuRes = ncvslideio::PSNR(src1_roi, src2_roi));
+        OCL_ON(gpuRes = ncvslideio::PSNR(usrc1_roi, usrc2_roi));
 
         EXPECT_PRED3(relativeError, cpuRes, gpuRes, 1e-6);
     }
@@ -1819,8 +1819,8 @@ OCL_TEST_P(ReduceSum, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::reduce(src_roi, dst_roi, dim, REDUCE_SUM, dtype));
-        OCL_ON(cv::reduce(usrc_roi, udst_roi, dim, REDUCE_SUM, dtype));
+        OCL_OFF(ncvslideio::reduce(src_roi, dst_roi, dim, REDUCE_SUM, dtype));
+        OCL_ON(ncvslideio::reduce(usrc_roi, udst_roi, dim, REDUCE_SUM, dtype));
 
         double eps = ddepth <= CV_32S ? 1 : 7e-4;
         OCL_EXPECT_MATS_NEAR(dst, eps);
@@ -1835,8 +1835,8 @@ OCL_TEST_P(ReduceMax, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::reduce(src_roi, dst_roi, dim, REDUCE_MAX, dtype));
-        OCL_ON(cv::reduce(usrc_roi, udst_roi, dim, REDUCE_MAX, dtype));
+        OCL_OFF(ncvslideio::reduce(src_roi, dst_roi, dim, REDUCE_MAX, dtype));
+        OCL_ON(ncvslideio::reduce(usrc_roi, udst_roi, dim, REDUCE_MAX, dtype));
 
         OCL_EXPECT_MATS_NEAR(dst, 0);
     }
@@ -1850,8 +1850,8 @@ OCL_TEST_P(ReduceMin, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::reduce(src_roi, dst_roi, dim, REDUCE_MIN, dtype));
-        OCL_ON(cv::reduce(usrc_roi, udst_roi, dim, REDUCE_MIN, dtype));
+        OCL_OFF(ncvslideio::reduce(src_roi, dst_roi, dim, REDUCE_MIN, dtype));
+        OCL_ON(ncvslideio::reduce(usrc_roi, udst_roi, dim, REDUCE_MIN, dtype));
 
         OCL_EXPECT_MATS_NEAR(dst, 0);
     }
@@ -1865,8 +1865,8 @@ OCL_TEST_P(ReduceAvg, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::reduce(src_roi, dst_roi, dim, REDUCE_AVG, dtype));
-        OCL_ON(cv::reduce(usrc_roi, udst_roi, dim, REDUCE_AVG, dtype));
+        OCL_OFF(ncvslideio::reduce(src_roi, dst_roi, dim, REDUCE_AVG, dtype));
+        OCL_ON(ncvslideio::reduce(usrc_roi, udst_roi, dim, REDUCE_AVG, dtype));
 
         double eps = ddepth <= CV_32S ? 1 : 6e-6;
         OCL_EXPECT_MATS_NEAR(dst, eps);
@@ -1881,8 +1881,8 @@ OCL_TEST_P(ReduceSum2, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::reduce(src_roi, dst_roi, dim, REDUCE_SUM2, dtype));
-        OCL_ON(cv::reduce(usrc_roi, udst_roi, dim, REDUCE_SUM2, dtype));
+        OCL_OFF(ncvslideio::reduce(src_roi, dst_roi, dim, REDUCE_SUM2, dtype));
+        OCL_ON(ncvslideio::reduce(usrc_roi, udst_roi, dim, REDUCE_SUM2, dtype));
 
         double eps = ddepth <= CV_32S ? 1 : 6e-6;
         OCL_EXPECT_MATS_NEAR(dst, eps);

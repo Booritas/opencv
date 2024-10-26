@@ -11,8 +11,8 @@
 
 namespace
 {
-#define CORE_CPU [] () { return cv::compile_args(cv::gapi::use_only{cv::gapi::core::cpu::kernels()}); }
-    const std::vector <cv::Size> in_sizes{ cv::Size(1280, 720), cv::Size(128, 128) };
+#define CORE_CPU [] () { return ncvslideio::compile_args(ncvslideio::gapi::use_only{ncvslideio::gapi::core::cpu::kernels()}); }
+    const std::vector <ncvslideio::Size> in_sizes{ ncvslideio::Size(1280, 720), ncvslideio::Size(128, 128) };
 }  // anonymous namespace
 
 namespace opencv_test
@@ -208,18 +208,18 @@ INSTANTIATE_TEST_CASE_P(ThresholdTestCPU, ThresholdTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_CPU),
-                                Values(cv::THRESH_BINARY, cv::THRESH_BINARY_INV, cv::THRESH_TRUNC,
-                                       cv::THRESH_TOZERO, cv::THRESH_TOZERO_INV),
-                                Values(cv::Scalar(0, 0, 0, 0),
-                                       cv::Scalar(100, 100, 100, 100),
-                                       cv::Scalar(255, 255, 255, 255))));
+                                Values(ncvslideio::THRESH_BINARY, ncvslideio::THRESH_BINARY_INV, ncvslideio::THRESH_TRUNC,
+                                       ncvslideio::THRESH_TOZERO, ncvslideio::THRESH_TOZERO_INV),
+                                Values(ncvslideio::Scalar(0, 0, 0, 0),
+                                       ncvslideio::Scalar(100, 100, 100, 100),
+                                       ncvslideio::Scalar(255, 255, 255, 255))));
 
 INSTANTIATE_TEST_CASE_P(ThresholdTestCPU, ThresholdOTTest,
                         Combine(Values(CV_8UC1),
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_CPU),
-                                Values(cv::THRESH_OTSU, cv::THRESH_TRIANGLE)));
+                                Values(ncvslideio::THRESH_OTSU, ncvslideio::THRESH_TRIANGLE)));
 
 
 INSTANTIATE_TEST_CASE_P(InRangeTestCPU, InRangeTest,
@@ -270,7 +270,7 @@ INSTANTIATE_TEST_CASE_P(CropTestCPU, CropTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_CPU),
-                                Values(cv::Rect(10, 8, 20, 35), cv::Rect(4, 10, 37, 50))));
+                                Values(ncvslideio::Rect(10, 8, 20, 35), ncvslideio::Rect(4, 10, 37, 50))));
 
 INSTANTIATE_TEST_CASE_P(CopyTestCPU, CopyTest,
                         Combine(Values( CV_8UC1, CV_8UC3, CV_16UC1, CV_16SC1, CV_32FC1 ),
@@ -325,31 +325,31 @@ INSTANTIATE_TEST_CASE_P(ConcatHorVecTestCPU, ConcatHorVecTest,
 
 INSTANTIATE_TEST_CASE_P(WarpPerspectiveTestCPU, WarpPerspectiveTest,
                         Combine(Values(CV_8UC1, CV_8UC3),
-                                Values(cv::Size(1280, 720)),
+                                Values(ncvslideio::Size(1280, 720)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsExact().to_compare_obj()),
                                 Values(-50.0, 90.0),
                                 Values(0.6),
-                                Values(cv::INTER_LINEAR),
-                                Values(cv::BORDER_CONSTANT),
-                                Values(cv::Scalar())));
+                                Values(ncvslideio::INTER_LINEAR),
+                                Values(ncvslideio::BORDER_CONSTANT),
+                                Values(ncvslideio::Scalar())));
 
 INSTANTIATE_TEST_CASE_P(WarpAffineTestCPU, WarpAffineTest,
                         Combine(Values(CV_8UC1, CV_8UC3),
-                                Values(cv::Size(1280, 720)),
+                                Values(ncvslideio::Size(1280, 720)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsExact().to_compare_obj()),
                                 Values(-50.0, 90.0),
                                 Values(0.6),
-                                Values(cv::INTER_LINEAR),
-                                Values(cv::BORDER_CONSTANT),
-                                Values(cv::Scalar())));
+                                Values(ncvslideio::INTER_LINEAR),
+                                Values(ncvslideio::BORDER_CONSTANT),
+                                Values(ncvslideio::Scalar())));
 
 INSTANTIATE_TEST_CASE_P(NormalizeTestCPU, NormalizeTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_16UC1, CV_16SC1, CV_32FC1),
-                                Values(cv::Size(1280, 720)),
+                                Values(ncvslideio::Size(1280, 720)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsExact().to_compare_obj()),
@@ -360,70 +360,70 @@ INSTANTIATE_TEST_CASE_P(NormalizeTestCPU, NormalizeTest,
 
 INSTANTIATE_TEST_CASE_P(KMeansNDNoInitTestCPU, KMeansNDTest,
                         Combine(Values(CV_32FC1),
-                                Values(cv::Size(2, 20)),
+                                Values(ncvslideio::Size(2, 20)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsTolerance(0.01).to_compare_obj()),
                                 Values(5),
-                                Values(cv::KMEANS_RANDOM_CENTERS, cv::KMEANS_PP_CENTERS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS, ncvslideio::KMEANS_PP_CENTERS)));
 
 INSTANTIATE_TEST_CASE_P(KMeansNDInitTestCPU, KMeansNDTest,
                         Combine(Values(CV_32FC1, CV_32FC3),
-                                Values(cv::Size(1, 20),
-                                       cv::Size(2, 20),
-                                       cv::Size(5, 720)),
+                                Values(ncvslideio::Size(1, 20),
+                                       ncvslideio::Size(2, 20),
+                                       ncvslideio::Size(5, 720)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsTolerance(0.01).to_compare_obj()),
                                 Values(5, 15),
-                                Values(cv::KMEANS_RANDOM_CENTERS | cv::KMEANS_USE_INITIAL_LABELS,
-                                       cv::KMEANS_PP_CENTERS     | cv::KMEANS_USE_INITIAL_LABELS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS | ncvslideio::KMEANS_USE_INITIAL_LABELS,
+                                       ncvslideio::KMEANS_PP_CENTERS     | ncvslideio::KMEANS_USE_INITIAL_LABELS)));
 
 INSTANTIATE_TEST_CASE_P(KMeansNDInitReverseTestCPU, KMeansNDTest,
                         Combine(Values(CV_32FC3),
-                                Values(cv::Size(20, 1)),
+                                Values(ncvslideio::Size(20, 1)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(AbsTolerance(0.01).to_compare_obj()),
                                 Values(5, 15),
-                                Values(cv::KMEANS_RANDOM_CENTERS | cv::KMEANS_USE_INITIAL_LABELS,
-                                       cv::KMEANS_PP_CENTERS     | cv::KMEANS_USE_INITIAL_LABELS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS | ncvslideio::KMEANS_USE_INITIAL_LABELS,
+                                       ncvslideio::KMEANS_PP_CENTERS     | ncvslideio::KMEANS_USE_INITIAL_LABELS)));
 
 INSTANTIATE_TEST_CASE_P(KMeans2DNoInitTestCPU, KMeans2DTest,
                         Combine(Values(-1),
-                                Values(cv::Size(-1, 20)),
+                                Values(ncvslideio::Size(-1, 20)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(5),
-                                Values(cv::KMEANS_RANDOM_CENTERS, cv::KMEANS_PP_CENTERS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS, ncvslideio::KMEANS_PP_CENTERS)));
 
 INSTANTIATE_TEST_CASE_P(KMeans2DInitTestCPU, KMeans2DTest,
                         Combine(Values(-1),
-                                Values(cv::Size(-1, 720),
-                                       cv::Size(-1, 20)),
+                                Values(ncvslideio::Size(-1, 720),
+                                       ncvslideio::Size(-1, 20)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(5, 15),
-                                Values(cv::KMEANS_RANDOM_CENTERS | cv::KMEANS_USE_INITIAL_LABELS,
-                                       cv::KMEANS_PP_CENTERS     | cv::KMEANS_USE_INITIAL_LABELS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS | ncvslideio::KMEANS_USE_INITIAL_LABELS,
+                                       ncvslideio::KMEANS_PP_CENTERS     | ncvslideio::KMEANS_USE_INITIAL_LABELS)));
 
 INSTANTIATE_TEST_CASE_P(KMeans3DNoInitTestCPU, KMeans3DTest,
                         Combine(Values(-1),
-                                Values(cv::Size(-1, 20)),
+                                Values(ncvslideio::Size(-1, 20)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(5),
-                                Values(cv::KMEANS_RANDOM_CENTERS, cv::KMEANS_PP_CENTERS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS, ncvslideio::KMEANS_PP_CENTERS)));
 
 INSTANTIATE_TEST_CASE_P(KMeans3DInitTestCPU, KMeans3DTest,
                         Combine(Values(-1),
-                                Values(cv::Size(-1, 720),
-                                       cv::Size(-1, 20)),
+                                Values(ncvslideio::Size(-1, 720),
+                                       ncvslideio::Size(-1, 20)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(5, 15),
-                                Values(cv::KMEANS_RANDOM_CENTERS | cv::KMEANS_USE_INITIAL_LABELS,
-                                       cv::KMEANS_PP_CENTERS     | cv::KMEANS_USE_INITIAL_LABELS)));
+                                Values(ncvslideio::KMEANS_RANDOM_CENTERS | ncvslideio::KMEANS_USE_INITIAL_LABELS,
+                                       ncvslideio::KMEANS_PP_CENTERS     | ncvslideio::KMEANS_USE_INITIAL_LABELS)));
 
 INSTANTIATE_TEST_CASE_P(TransposeTestCPU, TransposeTest,
                         Combine(Values(CV_8UC1, CV_16UC1, CV_16SC1, CV_32FC1,
@@ -437,28 +437,28 @@ INSTANTIATE_TEST_CASE_P(TransposeTestCPU, TransposeTest,
 
 INSTANTIATE_TEST_CASE_P(BackendOutputAllocationTestCPU, BackendOutputAllocationTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_CPU)));
 
 INSTANTIATE_TEST_CASE_P(BackendOutputAllocationLargeSizeWithCorrectSubmatrixTestCPU,
                         BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_CPU)));
 
 INSTANTIATE_TEST_CASE_P(ReInitOutTestCPU, ReInitOutTest,
                         Combine(Values(CV_8UC3, CV_16SC4, CV_32FC1),
-                                Values(cv::Size(640, 480)),
+                                Values(ncvslideio::Size(640, 480)),
                                 Values(-1),
                                 Values(CORE_CPU),
-                                Values(cv::Size(640, 400),
-                                       cv::Size(10, 480))));
+                                Values(ncvslideio::Size(640, 400),
+                                       ncvslideio::Size(10, 480))));
 
 INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseSSDBLTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(1920, 1080)),
+                                Values(ncvslideio::Size(1920, 1080)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(0.3f, 0.5f, 0.7f),
@@ -466,7 +466,7 @@ INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseSSDBLTest,
 
 INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseSSDTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(1920, 1080)),
+                                Values(ncvslideio::Size(1920, 1080)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(0.3f, 0.5f, 0.7f),
@@ -475,7 +475,7 @@ INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseSSDTest,
 
 INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseYoloTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(1920, 1080)),
+                                Values(ncvslideio::Size(1920, 1080)),
                                 Values(-1),
                                 Values(CORE_CPU),
                                 Values(0.3f, 0.5f, 0.7f),
@@ -489,22 +489,22 @@ INSTANTIATE_TEST_CASE_P(ParseTestCPU, ParseYoloTest,
 
 INSTANTIATE_TEST_CASE_P(SizeTestCPU, SizeTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(32, 32),
-                                       cv::Size(640, 320)),
+                                Values(ncvslideio::Size(32, 32),
+                                       ncvslideio::Size(640, 320)),
                                 Values(-1),
                                 Values(CORE_CPU)));
 
 INSTANTIATE_TEST_CASE_P(SizeRTestCPU, SizeRTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(32, 32),
-                                       cv::Size(640, 320)),
+                                Values(ncvslideio::Size(32, 32),
+                                       ncvslideio::Size(640, 320)),
                                 Values(-1),
                                 Values(CORE_CPU)));
 
 INSTANTIATE_TEST_CASE_P(SizeMFTestCPU, SizeMFTest,
                         Combine(Values(CV_8UC1, CV_8UC3, CV_32FC1),
-                                Values(cv::Size(32, 32),
-                                       cv::Size(640, 320)),
+                                Values(ncvslideio::Size(32, 32),
+                                       ncvslideio::Size(640, 320)),
                                 Values(-1),
                                 Values(CORE_CPU)));
 }

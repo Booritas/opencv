@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 ////////////////////////////////// STANDARD TERMINATION ///////////////////////////////////////////
 class StandardTerminationCriteriaImpl : public StandardTerminationCriteria {
 private:

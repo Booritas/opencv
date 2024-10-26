@@ -22,7 +22,7 @@
 // As the thing becomes more complex, appropriate API and implementation
 // part will be placed to api/ and compiler/ modules respectively.
 
-namespace cv {
+namespace ncvslideio {
 
 namespace gimpl
 {
@@ -36,25 +36,25 @@ class GAPI_EXPORTS GCompiled::Priv
     // If we want to go autonomous, we might to do something with this.
     GMetaArgs  m_metas;    // passed by user
     GMetaArgs  m_outMetas; // inferred by compiler
-    std::unique_ptr<cv::gimpl::GAbstractExecutor> m_exec;
+    std::unique_ptr<ncvslideio::gimpl::GAbstractExecutor> m_exec;
 
-    void checkArgs(const cv::gimpl::GRuntimeArgs &args) const;
+    void checkArgs(const ncvslideio::gimpl::GRuntimeArgs &args) const;
 
 public:
     void setup(const GMetaArgs &metaArgs,
                const GMetaArgs &outMetas,
-               std::unique_ptr<cv::gimpl::GAbstractExecutor> &&pE);
+               std::unique_ptr<ncvslideio::gimpl::GAbstractExecutor> &&pE);
     bool isEmpty() const;
 
     bool canReshape() const;
     void reshape(const GMetaArgs& inMetas, const GCompileArgs &args);
     void prepareForNewStream();
 
-    void run(cv::gimpl::GRuntimeArgs &&args);
+    void run(ncvslideio::gimpl::GRuntimeArgs &&args);
     const GMetaArgs& metas() const;
     const GMetaArgs& outMetas() const;
 
-    const cv::gimpl::GModel::Graph& model() const;
+    const ncvslideio::gimpl::GModel::Graph& model() const;
 };
 
 }

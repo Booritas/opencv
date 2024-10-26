@@ -48,13 +48,13 @@
 #ifndef OPENCV_DNN_DNN_DICT_HPP
 #define OPENCV_DNN_DNN_DICT_HPP
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 //! @addtogroup dnn
 //! @{
 
-/** @brief This struct stores the scalar value (or array) of one of the following type: double, cv::String or int64.
+/** @brief This struct stores the scalar value (or array) of one of the following type: double, ncvslideio::String or int64.
  *  @todo Maybe int64 is useless because double type exactly stores at least 2^52 integers.
  */
 struct CV_EXPORTS_W DictValue

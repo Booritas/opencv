@@ -12,7 +12,7 @@
 
 #include <termios.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace highgui_backend {
 
 enum OpenCVFBMode{
@@ -130,6 +130,6 @@ public:
     virtual const std::string getName() const override;
 };
 
-}} // cv::highgui_backend::
+}} // ncvslideio::highgui_backend::
 
 #endif

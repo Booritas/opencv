@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 #if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900/*MSVS 2015*/)
 // Stitcher::ORIG_RESOL is initialized in stitching.hpp.
@@ -651,4 +651,4 @@ CV_DEPRECATED Ptr<Stitcher> createStitcherScans(bool /*ignored*/)
 
     return Stitcher::create(Stitcher::SCANS);
 }
-} // namespace cv
+} // namespace ncvslideio

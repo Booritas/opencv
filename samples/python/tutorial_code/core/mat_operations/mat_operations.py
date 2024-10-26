@@ -8,15 +8,15 @@ def load():
     # Input/Output
     filename = 'img.jpg'
     ## [Load an image from a file]
-    img = cv.imread(filename)
+    img = ncvslideio.imread(filename)
     ## [Load an image from a file]
 
     ## [Load an image from a file in grayscale]
-    img = cv.imread(filename, cv.IMREAD_GRAYSCALE)
+    img = ncvslideio.imread(filename, ncvslideio.IMREAD_GRAYSCALE)
     ## [Load an image from a file in grayscale]
 
     ## [Save image]
-    cv.imwrite(filename, img)
+    ncvslideio.imwrite(filename, img)
     ## [Save image]
 
 def access_pixel():
@@ -41,13 +41,13 @@ def access_pixel():
 def reference_counting():
     # Memory management and reference counting
     ## [Reference counting 2]
-    img = cv.imread('image.jpg')
+    img = ncvslideio.imread('image.jpg')
     _img1 = np.copy(img)
     ## [Reference counting 2]
 
     ## [Reference counting 3]
-    img = cv.imread('image.jpg')
-    _sobelx = cv.Sobel(img, cv.CV_32F, 1, 0)
+    img = ncvslideio.imread('image.jpg')
+    _sobelx = ncvslideio.Sobel(img, ncvslideio.CV_32F, 1, 0)
     ## [Reference counting 3]
 
 def primitive_operations():
@@ -61,8 +61,8 @@ def primitive_operations():
     ## [Select ROI]
 
     ## [BGR to Gray]
-    img = cv.imread('image.jpg')
-    _grey = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img = ncvslideio.imread('image.jpg')
+    _grey = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
     ## [BGR to Gray]
 
     src = np.ones((4,4), np.uint8)
@@ -72,21 +72,21 @@ def primitive_operations():
 
 def visualize_images():
     ## [imshow 1]
-    img = cv.imread('image.jpg')
-    cv.namedWindow('image', cv.WINDOW_AUTOSIZE)
-    cv.imshow('image', img)
-    cv.waitKey()
+    img = ncvslideio.imread('image.jpg')
+    ncvslideio.namedWindow('image', ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.imshow('image', img)
+    ncvslideio.waitKey()
     ## [imshow 1]
 
     ## [imshow 2]
-    img = cv.imread('image.jpg')
-    grey = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    sobelx = cv.Sobel(grey, cv.CV_32F, 1, 0)
+    img = ncvslideio.imread('image.jpg')
+    grey = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
+    sobelx = ncvslideio.Sobel(grey, ncvslideio.CV_32F, 1, 0)
     # find minimum and maximum intensities
     minVal = np.amin(sobelx)
     maxVal = np.amax(sobelx)
-    draw = cv.convertScaleAbs(sobelx, alpha=255.0/(maxVal - minVal), beta=-minVal * 255.0/(maxVal - minVal))
-    cv.namedWindow('image', cv.WINDOW_AUTOSIZE)
-    cv.imshow('image', draw)
-    cv.waitKey()
+    draw = ncvslideio.convertScaleAbs(sobelx, alpha=255.0/(maxVal - minVal), beta=-minVal * 255.0/(maxVal - minVal))
+    ncvslideio.namedWindow('image', ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.imshow('image', draw)
+    ncvslideio.waitKey()
     ## [imshow 2]

@@ -7,7 +7,7 @@
 #include "opencv2/highgui.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 // we're NOT "using namespace std;" here, to avoid collisions between the beta variable and std::beta in c++17
 using std::cin;

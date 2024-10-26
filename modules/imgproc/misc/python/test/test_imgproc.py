@@ -15,7 +15,7 @@ class Imgproc_Tests(NewOpenCVTests):
         color = (0,0,0)
         cnts = np.array(cntls, dtype=np.int32).reshape((1, -1, 2))
         try:
-            cv.fillPoly(img, cnts, color)
+            ncvslideio.fillPoly(img, cnts, color)
             assert False
         except:
             assert True

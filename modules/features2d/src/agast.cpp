@@ -45,7 +45,7 @@ The references are:
 #include "precomp.hpp"
 #include "agast_score.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 #if (defined __i386__ || defined(_M_IX86) || defined __x86_64__ || defined(_M_X64))
@@ -53,7 +53,7 @@ namespace cv
 static void AGAST_5_8(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
 
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -815,7 +815,7 @@ static void AGAST_5_8(InputArray _img, std::vector<KeyPoint>& keypoints, int thr
 
 static void AGAST_7_12d(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -3260,7 +3260,7 @@ static void AGAST_7_12d(InputArray _img, std::vector<KeyPoint>& keypoints, int t
 
 static void AGAST_7_12s(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -5341,7 +5341,7 @@ static void AGAST_7_12s(InputArray _img, std::vector<KeyPoint>& keypoints, int t
 
 static void OAST_9_16(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -7448,7 +7448,7 @@ static void OAST_9_16(InputArray _img, std::vector<KeyPoint>& keypoints, int thr
 
 static void AGAST_ALL(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, AgastFeatureDetector::DetectorType agasttype)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -8054,7 +8054,7 @@ void AGAST(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, boo
         break;
     }
 
-    cv::Mat img = _img.getMat();
+    ncvslideio::Mat img = _img.getMat();
 
     // score
     int pixel_[16];

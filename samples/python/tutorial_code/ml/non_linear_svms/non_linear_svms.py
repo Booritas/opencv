@@ -59,16 +59,16 @@ labels[NTRAINING_SAMPLES:2*NTRAINING_SAMPLES,:] = 2 # Class 2
 #------------------------ 2. Set up the support vector machines parameters --------------------
 print('Starting training process')
 ## [init]
-svm = cv.ml.SVM_create()
-svm.setType(cv.ml.SVM_C_SVC)
+svm = ncvslideio.ml.SVM_create()
+svm.setType(ncvslideio.ml.SVM_C_SVC)
 svm.setC(0.1)
-svm.setKernel(cv.ml.SVM_LINEAR)
-svm.setTermCriteria((cv.TERM_CRITERIA_MAX_ITER, int(1e7), 1e-6))
+svm.setKernel(ncvslideio.ml.SVM_LINEAR)
+svm.setTermCriteria((ncvslideio.TERM_CRITERIA_MAX_ITER, int(1e7), 1e-6))
 ## [init]
 
 #------------------------ 3. Train the svm ----------------------------------------------------
 ## [train]
-svm.train(trainData, cv.ml.ROW_SAMPLE, labels)
+svm.train(trainData, ncvslideio.ml.ROW_SAMPLE, labels)
 ## [train]
 print('Finished training process')
 
@@ -94,13 +94,13 @@ thick = -1
 for i in range(NTRAINING_SAMPLES):
     px = trainData[i,0]
     py = trainData[i,1]
-    cv.circle(I, (int(px), int(py)), 3, (0, 255, 0), thick)
+    ncvslideio.circle(I, (int(px), int(py)), 3, (0, 255, 0), thick)
 
 # Class 2
 for i in range(NTRAINING_SAMPLES, 2*NTRAINING_SAMPLES):
     px = trainData[i,0]
     py = trainData[i,1]
-    cv.circle(I, (int(px), int(py)), 3, (255, 0, 0), thick)
+    ncvslideio.circle(I, (int(px), int(py)), 3, (255, 0, 0), thick)
 ## [show_data]
 
 #------------------------- 6. Show support vectors --------------------------------------------
@@ -109,7 +109,7 @@ thick = 2
 sv = svm.getUncompressedSupportVectors()
 
 for i in range(sv.shape[0]):
-    cv.circle(I, (int(sv[i,0]), int(sv[i,1])), 6, (128, 128, 128), thick)
+    ncvslideio.circle(I, (int(sv[i,0]), int(sv[i,1])), 6, (128, 128, 128), thick)
 ## [show_vectors]
 
 cv.imwrite('result.png', I)                      # save the Image

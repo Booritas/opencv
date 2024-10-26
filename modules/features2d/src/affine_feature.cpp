@@ -47,7 +47,7 @@
 
 #include "precomp.hpp"
 #include <iostream>
-namespace cv {
+namespace ncvslideio {
 
 class AffineFeature_Impl CV_FINAL : public AffineFeature
 {
@@ -172,7 +172,7 @@ public:
           do_descriptors(_do_descriptors),
           backend(_backend) {}
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
 

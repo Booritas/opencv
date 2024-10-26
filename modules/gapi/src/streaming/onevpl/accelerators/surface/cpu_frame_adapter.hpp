@@ -11,7 +11,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -26,15 +26,15 @@ public:
     MediaFrame::View access(MediaFrame::Access) override;
 
     // The default implementation does nothing
-    cv::util::any blobParams() const override;
-    void serialize(cv::gapi::s11n::IOStream&) override;
-    void deserialize(cv::gapi::s11n::IIStream&) override;
+    ncvslideio::util::any blobParams() const override;
+    void serialize(ncvslideio::gapi::s11n::IOStream&) override;
+    void deserialize(ncvslideio::gapi::s11n::IIStream&) override;
 
 };
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_SURFACE_CPU_FRAME_ADAPTER_HPP

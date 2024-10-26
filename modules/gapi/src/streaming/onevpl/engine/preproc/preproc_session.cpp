@@ -15,7 +15,7 @@
 #include "streaming/onevpl/utils.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -39,8 +39,8 @@ Data::Meta VPPPreprocSession::generate_frame_meta() {
     const auto dur = std::chrono::duration_cast<std::chrono::microseconds>
                 (now.time_since_epoch());
     Data::Meta meta {
-                        {cv::gapi::streaming::meta_tag::timestamp, int64_t{dur.count()} },
-                        {cv::gapi::streaming::meta_tag::seq_id, int64_t{preprocessed_frames_count++}}
+                        {ncvslideio::gapi::streaming::meta_tag::timestamp, int64_t{dur.count()} },
+                        {ncvslideio::gapi::streaming::meta_tag::seq_id, int64_t{preprocessed_frames_count++}}
                     };
     return meta;
 }
@@ -76,10 +76,10 @@ void VPPPreprocSession::outgoing_task::release_frame() {
     memcpy(&(original_surface_ptr->Info),
            &original_frame_info, sizeof(Surface::info_t));
     // release references on frame adapter
-    original_frame = cv::MediaFrame();
+    original_frame = ncvslideio::MediaFrame();
 }
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

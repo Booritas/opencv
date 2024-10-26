@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     enum class PaddingType {
         CONSTANT,
@@ -34,14 +34,14 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         using wrapper_type = GetCUDABackendWrapperType<T>;
 
         /* `ranges` is indexed by axis and contains the range in the output where the input is copied to */
-        PaddingOp(csl::Stream stream_, PaddingType type_, T value_, std::vector<cv::Range> ranges)
+        PaddingOp(csl::Stream stream_, PaddingType type_, T value_, std::vector<ncvslideio::Range> ranges)
             : stream(std::move(stream_)),  type{ type_ }, value{ value_ }, dstRanges(std::move(ranges))
         {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(inputs.size() == 1 && outputs.size() == 1);
@@ -110,9 +110,9 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         PaddingType type;
         T value;
 
-        std::vector<cv::Range> dstRanges;
+        std::vector<ncvslideio::Range> dstRanges;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_PADDING_HPP */

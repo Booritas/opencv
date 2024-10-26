@@ -20,7 +20,7 @@
 #include "tbb/task_arena.h"
 #endif
 
-namespace cv { namespace parallel { namespace tbb {
+namespace ncvslideio { namespace parallel { namespace tbb {
 
 using namespace ::tbb;
 

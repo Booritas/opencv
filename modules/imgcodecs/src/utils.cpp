@@ -42,7 +42,7 @@
 #include "precomp.hpp"
 #include "utils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 int validateToInt(size_t sz)
 {

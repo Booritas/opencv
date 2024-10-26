@@ -31,7 +31,7 @@ CV_EXPORTS @interface TermCriteria : NSObject
 @property int maxCount;
 @property double epsilon;
 #ifdef __cplusplus
-@property(readonly) cv::TermCriteria& nativeRef;
+@property(readonly) ncvslideio::TermCriteria& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -40,7 +40,7 @@ CV_EXPORTS @interface TermCriteria : NSObject
 - (instancetype)initWithType:(int)type maxCount:(int)maxCount epsilon:(double)epsilon;
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::TermCriteria&)nativeTermCriteria;
++ (instancetype)fromNative:(ncvslideio::TermCriteria&)nativeTermCriteria;
 #endif
 
 #pragma mark - Methods

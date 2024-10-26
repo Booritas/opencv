@@ -20,15 +20,15 @@ def replace_template_parameters_with_placeholders(string: str) \
             instead of instantiation types and a tuple of extracted types.
 
     >>> template_string, args = replace_template_parameters_with_placeholders(
-    ...     "std::vector<cv::Point<int>>, test<int>"
+    ...     "std::vector<ncvslideio::Point<int>>, test<int>"
     ... )
-    >>> template_string.format(*args) == "std::vector<cv::Point<int>>, test<int>"
+    >>> template_string.format(*args) == "std::vector<ncvslideio::Point<int>>, test<int>"
     True
 
     >>> replace_template_parameters_with_placeholders(
-    ...     "cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>"
+    ...     "ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>"
     ... )
-    ('cv::util::variant<{}>', ('cv::GRunArgs, cv::GOptRunArgs',))
+    ('ncvslideio::util::variant<{}>', ('ncvslideio::GRunArgs, ncvslideio::GOptRunArgs',))
 
     >>> replace_template_parameters_with_placeholders("vector<Point<int>>")
     ('vector<{}>', ('Point<int>',))
@@ -76,8 +76,8 @@ def get_template_instantiation_type(typename: str) -> str:
     Returns:
         str: String containing template instantiation type
 
-    >>> get_template_instantiation_type("std::vector<cv::Point<int>>")
-    'cv::Point<int>'
+    >>> get_template_instantiation_type("std::vector<ncvslideio::Point<int>>")
+    'ncvslideio::Point<int>'
     >>> get_template_instantiation_type("std::vector<uchar>")
     'uchar'
     >>> get_template_instantiation_type("std::map<int, float>")
@@ -116,7 +116,7 @@ def normalize_ctype_name(typename: str) -> str:
     Returns:
         str: Normalized C++ type name.
 
-    >>> normalize_ctype_name('std::vector<cv::Point2f>&')
+    >>> normalize_ctype_name('std::vector<ncvslideio::Point2f>&')
     'vector<cv_Point2f>'
     >>> normalize_ctype_name('AKAZE::DescriptorType')
     'AKAZE_DescriptorType'
@@ -131,7 +131,7 @@ def normalize_ctype_name(typename: str) -> str:
     >>> normalize_ctype_name('Algorithm_Ptr')
     'Algorithm'
     """
-    for prefix_to_remove in ("cv", "std"):
+    for prefix_to_remove in ("ncvslideio", "std"):
         if typename.startswith(prefix_to_remove):
             typename = typename[len(prefix_to_remove):]
     typename = typename.replace("::", "_").lstrip("_")
@@ -254,7 +254,7 @@ def create_type_node(typename: str,
         2. Check whenever typename has a known predefined conversion or exported
            as alias e.g.
             - C++ `double` -> Python `float`
-            - C++ `cv::Rect` -> Python `Sequence[int]`
+            - C++ `ncvslideio::Rect` -> Python `Sequence[int]`
             - C++ `std::vector<char>` -> Python `np.ndarray`
            return TypeNode corresponding to the appropriate type.
         3. Check whenever typename is a container of types e.g. variant,
@@ -274,7 +274,7 @@ def create_type_node(typename: str,
 
     >>> create_type_node('Ptr<AKAZE>').typename
     'AKAZE'
-    >>> create_type_node('std::vector<Ptr<cv::Algorithm>>').typename
+    >>> create_type_node('std::vector<Ptr<ncvslideio::Algorithm>>').typename
     'typing.Sequence[Algorithm]'
     """
 

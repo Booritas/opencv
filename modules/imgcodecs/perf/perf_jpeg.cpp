@@ -47,7 +47,7 @@ PERF_TEST(JPEG, Decode_rgb)
 PERF_TEST(JPEG, Encode)
 {
     String filename = getDataPath("stitching/boat1.jpg");
-    cv::Mat src = imread(filename);
+    ncvslideio::Mat src = imread(filename);
 
     vector<uchar> buf;
     TEST_CYCLE() imencode(".jpg", src, buf);

@@ -68,8 +68,8 @@ void CV_PhaseCorrelatorTest::run( int )
     double expectedShiftY = -20.0;
 
     // draw 10x10 rectangles @ (100, 100) and (90, 80) should see ~(-10, -20) shift here...
-    cv::rectangle(r1, Point(100, 100), Point(110, 110), Scalar(0, 0, 0), cv::FILLED);
-    cv::rectangle(r2, Point(90, 80), Point(100, 90), Scalar(0, 0, 0), cv::FILLED);
+    ncvslideio::rectangle(r1, Point(100, 100), Point(110, 110), Scalar(0, 0, 0), ncvslideio::FILLED);
+    ncvslideio::rectangle(r2, Point(90, 80), Point(100, 90), Scalar(0, 0, 0), ncvslideio::FILLED);
 
     Mat hann;
     createHanningWindow(hann, r1.size(), CV_64F);
@@ -143,7 +143,7 @@ TEST(Imgproc_PhaseCorrelatorTest, float32_overflow) {
 
     // correlate
     double response = 0.0;
-    Point2d phaseShift = phaseCorrelate(roiLeft, roiRight, cv::noArray(), &response);
+    Point2d phaseShift = phaseCorrelate(roiLeft, roiRight, ncvslideio::noArray(), &response);
     ASSERT_TRUE(std::isnormal(phaseShift.x) || 0.0 == phaseShift.x);
     ASSERT_TRUE(std::isnormal(phaseShift.y) || 0.0 == phaseShift.y);
     ASSERT_TRUE(std::isnormal(response) || 0.0 == response);
@@ -411,7 +411,7 @@ void CV_DivSpectrumsTest::run_func()
     if ( cn == 1 )
     {
         Mat &dst = test_mat[TEMP][2];
-        cv::divSpectrums( src1, src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
+        ncvslideio::divSpectrums( src1, src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
         Mat &converted_dst = test_mat[OUTPUT][0];
         convert_from_ccs( dst, dst, converted_dst, flags );
     }
@@ -419,7 +419,7 @@ void CV_DivSpectrumsTest::run_func()
     else
     {
         Mat &dst = test_mat[OUTPUT][0];
-        cv::divSpectrums( src1, src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
+        ncvslideio::divSpectrums( src1, src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
     }
 }
 

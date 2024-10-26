@@ -30,7 +30,7 @@
 #include <vector>
 #include <memory>
 
-namespace cv {
+namespace ncvslideio {
 namespace obsensor {
 
 #define OBSENSOR_CAM_VID 0x2bc5 // usb vid
@@ -108,6 +108,6 @@ public:
 // "StreamChannelGroup" mean a group of stream channels from same one physical device
 std::vector<Ptr<IStreamChannel>> getStreamChannelGroup(uint32_t groupIdx = 0);
 
-}} // namespace cv::obsensor::
+}} // namespace ncvslideio::obsensor::
 #endif // HAVE_OBSENSOR
 #endif // OPENCV_VIDEOIO_OBSENSOR_STREAM_CHANNEL_INTERFACE_HPP

@@ -25,7 +25,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(const char** argv);

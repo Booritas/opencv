@@ -138,8 +138,8 @@ OCL_TEST_P(Bilateral, Mat)
         double sigmacolor = rng.uniform(20, 100);
         double sigmaspace = rng.uniform(10, 40);
 
-        OCL_OFF(cv::bilateralFilter(src_roi, dst_roi, ksize, sigmacolor, sigmaspace, borderType));
-        OCL_ON(cv::bilateralFilter(usrc_roi, udst_roi, ksize, sigmacolor, sigmaspace, borderType));
+        OCL_OFF(ncvslideio::bilateralFilter(src_roi, dst_roi, ksize, sigmacolor, sigmaspace, borderType));
+        OCL_ON(ncvslideio::bilateralFilter(usrc_roi, udst_roi, ksize, sigmacolor, sigmaspace, borderType));
 
         Near();
     }
@@ -158,8 +158,8 @@ OCL_TEST_P(LaplacianTest, Accuracy)
     {
         random_roi();
 
-        OCL_OFF(cv::Laplacian(src_roi, dst_roi, -1, ksize, scale, 10, borderType));
-        OCL_ON(cv::Laplacian(usrc_roi, udst_roi, -1, ksize, scale, 10, borderType));
+        OCL_OFF(ncvslideio::Laplacian(src_roi, dst_roi, -1, ksize, scale, 10, borderType));
+        OCL_ON(ncvslideio::Laplacian(usrc_roi, udst_roi, -1, ksize, scale, 10, borderType));
 
         Near();
     }
@@ -235,8 +235,8 @@ OCL_TEST_P(Laplacian3_cols16_rows2, Accuracy)
     {
         random_roi();
 
-        OCL_OFF(cv::Laplacian(src_roi, dst_roi, -1, ksize, scale, 10, borderType));
-        OCL_ON(cv::Laplacian(usrc_roi, udst_roi, -1, ksize, scale, 10, borderType));
+        OCL_OFF(ncvslideio::Laplacian(src_roi, dst_roi, -1, ksize, scale, 10, borderType));
+        OCL_ON(ncvslideio::Laplacian(usrc_roi, udst_roi, -1, ksize, scale, 10, borderType));
 
         Near();
     }
@@ -257,8 +257,8 @@ OCL_TEST_P(SobelTest, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::Sobel(src_roi, dst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
-        OCL_ON(cv::Sobel(usrc_roi, udst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
+        OCL_OFF(ncvslideio::Sobel(src_roi, dst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
+        OCL_ON(ncvslideio::Sobel(usrc_roi, udst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
 
         Near();
     }
@@ -275,8 +275,8 @@ OCL_TEST_P(Sobel3x3_cols16_rows2, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::Sobel(src_roi, dst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
-        OCL_ON(cv::Sobel(usrc_roi, udst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
+        OCL_OFF(ncvslideio::Sobel(src_roi, dst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
+        OCL_ON(ncvslideio::Sobel(usrc_roi, udst_roi, -1, dx, dy, ksize, scale, /* delta */0, borderType));
 
         Near();
     }
@@ -296,8 +296,8 @@ OCL_TEST_P(ScharrTest, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::Scharr(src_roi, dst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
-        OCL_ON(cv::Scharr(usrc_roi, udst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
+        OCL_OFF(ncvslideio::Scharr(src_roi, dst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
+        OCL_ON(ncvslideio::Scharr(usrc_roi, udst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
 
         Near();
     }
@@ -314,8 +314,8 @@ OCL_TEST_P(Scharr3x3_cols16_rows2, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::Scharr(src_roi, dst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
-        OCL_ON(cv::Scharr(usrc_roi, udst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
+        OCL_OFF(ncvslideio::Scharr(src_roi, dst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
+        OCL_ON(ncvslideio::Scharr(usrc_roi, udst_roi, -1, dx, dy, scale, /* delta */ 0, borderType));
 
         Near();
     }
@@ -335,8 +335,8 @@ OCL_TEST_P(GaussianBlurTest, Mat)
         double sigma1 = rng.uniform(0.1, 1.0);
         double sigma2 = j % 2 == 0 ? sigma1 : rng.uniform(0.1, 1.0);
 
-        OCL_OFF(cv::GaussianBlur(src_roi, dst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
-        OCL_ON(cv::GaussianBlur(usrc_roi, udst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
+        OCL_OFF(ncvslideio::GaussianBlur(src_roi, dst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
+        OCL_ON(ncvslideio::GaussianBlur(usrc_roi, udst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
 
         Near(CV_MAT_DEPTH(type) >= CV_32F ? 1e-3 : 4, CV_MAT_DEPTH(type) >= CV_32F);
     }
@@ -422,8 +422,8 @@ OCL_TEST_P(GaussianBlur_multicols, Mat)
         double sigma1 = rng.uniform(0.1, 1.0);
         double sigma2 = j % 2 == 0 ? sigma1 : rng.uniform(0.1, 1.0);
 
-        OCL_OFF(cv::GaussianBlur(src_roi, dst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
-        OCL_ON(cv::GaussianBlur(usrc_roi, udst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
+        OCL_OFF(ncvslideio::GaussianBlur(src_roi, dst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
+        OCL_ON(ncvslideio::GaussianBlur(usrc_roi, udst_roi, Size(ksize, ksize), sigma1, sigma2, borderType));
 
         Near(CV_MAT_DEPTH(type) >= CV_32F ? 1e-3 : 4, CV_MAT_DEPTH(type) >= CV_32F);
     }
@@ -444,8 +444,8 @@ OCL_TEST_P(Erode, Mat)
         random_roi();
         Mat kernel = ksize==0 ? Mat() : randomMat(kernelSize, CV_8UC1, 0, 2);
 
-        OCL_OFF(cv::erode(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
-        OCL_ON(cv::erode(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_OFF(ncvslideio::erode(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_ON(ncvslideio::erode(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
 
         Near();
     }
@@ -466,8 +466,8 @@ OCL_TEST_P(Dilate, Mat)
         random_roi();
         Mat kernel = ksize==0 ? Mat() : randomMat(kernelSize, CV_8UC1, 0, 2);
 
-        OCL_OFF(cv::dilate(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
-        OCL_ON(cv::dilate(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_OFF(ncvslideio::dilate(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_ON(ncvslideio::dilate(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
 
         Near();
     }
@@ -545,8 +545,8 @@ OCL_TEST_P(MorphFilter3x3_cols16_rows2, Mat)
         random_roi();
         Mat kernel = ksize==0 ? Mat() : randomMat(kernelSize, CV_8UC1, 0, 3);
 
-        OCL_OFF(cv::dilate(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
-        OCL_ON(cv::dilate(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_OFF(ncvslideio::dilate(src_roi, dst_roi, kernel, Point(-1, -1), iterations) );
+        OCL_ON(ncvslideio::dilate(usrc_roi, udst_roi, kernel, Point(-1, -1), iterations) );
 
         Near();
     }
@@ -622,8 +622,8 @@ OCL_TEST_P(MorphologyEx, Mat)
         random_roi();
         Mat kernel = randomMat(kernelSize, CV_8UC1, 0, 3);
 
-        OCL_OFF(cv::morphologyEx(src_roi, dst_roi, op, kernel, Point(-1, -1), iterations) );
-        OCL_ON(cv::morphologyEx(usrc_roi, udst_roi, op, kernel, Point(-1, -1), iterations) );
+        OCL_OFF(ncvslideio::morphologyEx(src_roi, dst_roi, op, kernel, Point(-1, -1), iterations) );
+        OCL_ON(ncvslideio::morphologyEx(usrc_roi, udst_roi, op, kernel, Point(-1, -1), iterations) );
 
         Near();
     }
@@ -635,13 +635,13 @@ OCL_TEST_P(MorphologyEx, Mat)
     Values((BorderType)BORDER_CONSTANT, (BorderType)BORDER_REPLICATE, (BorderType)BORDER_REFLECT, (BorderType)BORDER_WRAP, (BorderType)BORDER_REFLECT_101/*, \
             (int)BORDER_CONSTANT|BORDER_ISOLATED, (int)BORDER_REPLICATE|BORDER_ISOLATED, \
             (int)BORDER_REFLECT|BORDER_ISOLATED, (int)BORDER_WRAP|BORDER_ISOLATED, \
-            (int)BORDER_REFLECT_101|BORDER_ISOLATED*/) // WRAP and ISOLATED are not supported by cv:: version
+            (int)BORDER_REFLECT_101|BORDER_ISOLATED*/) // WRAP and ISOLATED are not supported by ncvslideio:: version
 
 #define FILTER_BORDER_SET_NO_WRAP_NO_ISOLATED \
     Values((BorderType)BORDER_CONSTANT, (BorderType)BORDER_REPLICATE, (BorderType)BORDER_REFLECT, /*(int)BORDER_WRAP,*/ (BorderType)BORDER_REFLECT_101/*, \
             (int)BORDER_CONSTANT|BORDER_ISOLATED, (int)BORDER_REPLICATE|BORDER_ISOLATED, \
             (int)BORDER_REFLECT|BORDER_ISOLATED, (int)BORDER_WRAP|BORDER_ISOLATED, \
-            (int)BORDER_REFLECT_101|BORDER_ISOLATED*/) // WRAP and ISOLATED are not supported by cv:: version
+            (int)BORDER_REFLECT_101|BORDER_ISOLATED*/) // WRAP and ISOLATED are not supported by ncvslideio:: version
 
 #define FILTER_TYPES Values(CV_8UC1, CV_8UC3, CV_8UC4, CV_16UC1, CV_16UC3, CV_16UC4, CV_32FC1, CV_32FC3, CV_32FC4)
 

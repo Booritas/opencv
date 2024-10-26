@@ -82,9 +82,9 @@ PARAM_TEST_CASE(SepFilter2D, MatDepth, Channels, BorderType, bool, bool)
             ksize.height++;
 
         Mat temp = randomMat(Size(ksize.width, 1), CV_32FC1, -0.5, 1.0);
-        cv::normalize(temp, kernelX, 1.0, 0.0, NORM_L1);
+        ncvslideio::normalize(temp, kernelX, 1.0, 0.0, NORM_L1);
         temp = randomMat(Size(1, ksize.height), CV_32FC1, -0.5, 1.0);
-        cv::normalize(temp, kernelY, 1.0, 0.0, NORM_L1);
+        ncvslideio::normalize(temp, kernelY, 1.0, 0.0, NORM_L1);
 
         if (bitExact)
         {
@@ -125,8 +125,8 @@ OCL_TEST_P(SepFilter2D, Mat)
     {
         random_roi(false);
 
-        OCL_OFF(cv::sepFilter2D(src_roi, dst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
-        OCL_ON(cv::sepFilter2D(usrc_roi, udst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
+        OCL_OFF(ncvslideio::sepFilter2D(src_roi, dst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
+        OCL_ON(ncvslideio::sepFilter2D(usrc_roi, udst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
 
         Near(1.0);
     }
@@ -138,8 +138,8 @@ OCL_TEST_P(SepFilter2D, Mat_BitExact)
     {
         random_roi(true);
 
-        OCL_OFF(cv::sepFilter2D(src_roi, dst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
-        OCL_ON(cv::sepFilter2D(usrc_roi, udst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
+        OCL_OFF(ncvslideio::sepFilter2D(src_roi, dst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
+        OCL_ON(ncvslideio::sepFilter2D(usrc_roi, udst_roi, -1, kernelX, kernelY, anchor, delta, borderType));
 
         if (src_roi.depth() < CV_32F)
             Near(0.0);

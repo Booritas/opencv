@@ -9,35 +9,35 @@
 
 #include <vas/ot.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
 namespace ot
 {
-GAPI_EXPORTS_W std::tuple<cv::GArray<cv::Rect>,
-                          cv::GArray<int32_t>,
-                          cv::GArray<uint64_t>,
-                          cv::GArray<int>>
-    track(const cv::GMat& mat,
-          const cv::GArray<cv::Rect>& detected_rects,
-          const cv::GArray<int>& detected_class_labels,
+GAPI_EXPORTS_W std::tuple<ncvslideio::GArray<ncvslideio::Rect>,
+                          ncvslideio::GArray<int32_t>,
+                          ncvslideio::GArray<uint64_t>,
+                          ncvslideio::GArray<int>>
+    track(const ncvslideio::GMat& mat,
+          const ncvslideio::GArray<ncvslideio::Rect>& detected_rects,
+          const ncvslideio::GArray<int>& detected_class_labels,
           float delta)
 {
     return GTrackFromMat::on(mat, detected_rects, detected_class_labels, delta);
 }
 
-GAPI_EXPORTS_W std::tuple<cv::GArray<cv::Rect>,
-                          cv::GArray<int32_t>,
-                          cv::GArray<uint64_t>,
-                          cv::GArray<int>>
-    track(const cv::GFrame& frame,
-          const cv::GArray<cv::Rect>& detected_rects,
-          const cv::GArray<int>& detected_class_labels,
+GAPI_EXPORTS_W std::tuple<ncvslideio::GArray<ncvslideio::Rect>,
+                          ncvslideio::GArray<int32_t>,
+                          ncvslideio::GArray<uint64_t>,
+                          ncvslideio::GArray<int>>
+    track(const ncvslideio::GFrame& frame,
+          const ncvslideio::GArray<ncvslideio::Rect>& detected_rects,
+          const ncvslideio::GArray<int>& detected_class_labels,
           float delta)
 {
     return GTrackFromFrame::on(frame, detected_rects, detected_class_labels, delta);
 }
 }   // namespace ot
 }   // namespace gapi
-}   // namespace cv
+}   // namespace ncvslideio

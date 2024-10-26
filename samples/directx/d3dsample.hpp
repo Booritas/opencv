@@ -27,14 +27,14 @@ public:
         MODE_GPU_NV12
     };
 
-    D3DSample(int width, int height, std::string& window_name, cv::VideoCapture& cap) :
+    D3DSample(int width, int height, std::string& window_name, ncvslideio::VideoCapture& cap) :
         WinApp(width, height, window_name)
     {
         m_shutdown          = false;
         m_mode              = MODE_CPU;
-        m_modeStr[0]        = cv::String("Processing on CPU");
-        m_modeStr[1]        = cv::String("Processing on GPU RGBA");
-        m_modeStr[2]        = cv::String("Processing on GPU NV12");
+        m_modeStr[0]        = ncvslideio::String("Processing on CPU");
+        m_modeStr[1]        = ncvslideio::String("Processing on GPU RGBA");
+        m_modeStr[2]        = ncvslideio::String("Processing on GPU NV12");
         m_demo_processing   = false;
         m_cap               = cap;
     }
@@ -99,11 +99,11 @@ protected:
     bool               m_shutdown;
     bool               m_demo_processing;
     MODE               m_mode;
-    cv::String         m_modeStr[3];
-    cv::VideoCapture   m_cap;
-    cv::Mat            m_frame_bgr;
-    cv::Mat            m_frame_rgba;
-    cv::TickMeter      m_timer;
+    ncvslideio::String         m_modeStr[3];
+    ncvslideio::VideoCapture   m_cap;
+    ncvslideio::Mat            m_frame_bgr;
+    ncvslideio::Mat            m_frame_rgba;
+    ncvslideio::TickMeter      m_timer;
 };
 
 
@@ -117,7 +117,7 @@ static const char* keys =
 template <typename TApp>
 int d3d_app(int argc, char** argv, std::string& title)
 {
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     std::string file = parser.get<std::string>("file");
     int    camera_id = parser.get<int>("camera");
 
@@ -132,7 +132,7 @@ int d3d_app(int argc, char** argv, std::string& title)
 
     parser.printMessage();
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
 
     if (file.empty())
         cap.open(camera_id);
@@ -145,8 +145,8 @@ int d3d_app(int argc, char** argv, std::string& title)
         return EXIT_FAILURE;
     }
 
-    int width  = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    int height = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    int width  = (int)cap.get(ncvslideio::CAP_PROP_FRAME_WIDTH);
+    int height = (int)cap.get(ncvslideio::CAP_PROP_FRAME_HEIGHT);
 
     std::string wndname = title;
 
@@ -158,7 +158,7 @@ int d3d_app(int argc, char** argv, std::string& title)
         return app.run();
     }
 
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         std::cerr << "Exception: " << e.what() << std::endl;
         return 10;

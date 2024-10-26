@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/hal/interface.h"
 #include "cvutils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -209,4 +209,4 @@ int integral(int depth, int sdepth, int sqdepth,
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio

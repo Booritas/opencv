@@ -60,10 +60,10 @@ public:
     using Ptr = std::shared_ptr<Pipeline>;
 
     Pipeline(std::string&&                  name,
-             cv::GComputation&&             comp,
+             ncvslideio::GComputation&&             comp,
              std::shared_ptr<DummySource>&& src,
              StopCriterion::Ptr             stop_criterion,
-             cv::GCompileArgs&&             args,
+             ncvslideio::GCompileArgs&&             args,
              const size_t                   num_outputs);
 
     void compile();
@@ -83,24 +83,24 @@ protected:
     void prepareOutputs();
 
     std::string                  m_name;
-    cv::GComputation             m_comp;
+    ncvslideio::GComputation             m_comp;
     std::shared_ptr<DummySource> m_src;
     StopCriterion::Ptr           m_stop_criterion;
-    cv::GCompileArgs             m_args;
+    ncvslideio::GCompileArgs             m_args;
     size_t                       m_num_outputs;
     PerfReport                   m_perf;
 
-    cv::GRunArgsP                m_pipeline_outputs;
-    std::vector<cv::Mat>         m_out_mats;
+    ncvslideio::GRunArgsP                m_pipeline_outputs;
+    std::vector<ncvslideio::Mat>         m_out_mats;
     int64_t                      m_start_ts;
     int64_t                      m_seq_id;
 };
 
 Pipeline::Pipeline(std::string&&                  name,
-                   cv::GComputation&&             comp,
+                   ncvslideio::GComputation&&             comp,
                    std::shared_ptr<DummySource>&& src,
                    StopCriterion::Ptr             stop_criterion,
-                   cv::GCompileArgs&&             args,
+                   ncvslideio::GCompileArgs&&             args,
                    const size_t                   num_outputs)
     : m_name(std::move(name)),
       m_comp(std::move(comp)),
@@ -122,10 +122,10 @@ void Pipeline::prepareOutputs() {
     // NB: N-2 buffers + timestamp + seq_id.
     m_out_mats.resize(m_num_outputs - 2);
     for (auto& m : m_out_mats) {
-        m_pipeline_outputs += cv::gout(m);
+        m_pipeline_outputs += ncvslideio::gout(m);
     }
-    m_pipeline_outputs += cv::gout(m_start_ts);
-    m_pipeline_outputs += cv::gout(m_seq_id);
+    m_pipeline_outputs += ncvslideio::gout(m_start_ts);
+    m_pipeline_outputs += ncvslideio::gout(m_seq_id);
 }
 
 void Pipeline::run() {
@@ -203,7 +203,7 @@ private:
     void _compile() override {
         m_compiled =
             m_comp.compileStreaming({m_src->descr_of()},
-                                     cv::GCompileArgs(m_args));
+                                     ncvslideio::GCompileArgs(m_args));
     }
 
     virtual void init() override {
@@ -216,10 +216,10 @@ private:
     }
 
     virtual void run_iter() override {
-        m_compiled.pull(cv::GRunArgsP{m_pipeline_outputs});
+        m_compiled.pull(ncvslideio::GRunArgsP{m_pipeline_outputs});
     }
 
-    cv::GStreamingCompiled m_compiled;
+    ncvslideio::GStreamingCompiled m_compiled;
 };
 
 class RegularPipeline : public Pipeline {
@@ -230,16 +230,16 @@ private:
     void _compile() override {
         m_compiled =
             m_comp.compile({m_src->descr_of()},
-                            cv::GCompileArgs(m_args));
+                            ncvslideio::GCompileArgs(m_args));
     }
 
     virtual void run_iter() override {
-        cv::gapi::wip::Data data;
+        ncvslideio::gapi::wip::Data data;
         m_src->pull(data);
-        m_compiled({data}, cv::GRunArgsP{m_pipeline_outputs});
+        m_compiled({data}, ncvslideio::GRunArgsP{m_pipeline_outputs});
     }
 
-    cv::GCompiled m_compiled;
+    ncvslideio::GCompiled m_compiled;
 };
 
 enum class PLMode {

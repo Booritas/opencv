@@ -14,8 +14,8 @@
 #include "opencv2/cudawarping.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 
 static void help()
@@ -29,7 +29,7 @@ static void convertAndResize(const Mat& src, Mat& gray, Mat& resized, double sca
 {
     if (src.channels() == 3)
     {
-        cv::cvtColor( src, gray, COLOR_BGR2GRAY );
+        ncvslideio::cvtColor( src, gray, COLOR_BGR2GRAY );
     }
     else
     {
@@ -40,7 +40,7 @@ static void convertAndResize(const Mat& src, Mat& gray, Mat& resized, double sca
 
     if (scale != 1)
     {
-        cv::resize(gray, resized, sz);
+        ncvslideio::resize(gray, resized, sz);
     }
     else
     {
@@ -52,7 +52,7 @@ static void convertAndResize(const GpuMat& src, GpuMat& gray, GpuMat& resized, d
 {
     if (src.channels() == 3)
     {
-        cv::cuda::cvtColor( src, gray, COLOR_BGR2GRAY );
+        ncvslideio::cuda::cvtColor( src, gray, COLOR_BGR2GRAY );
     }
     else
     {
@@ -63,7 +63,7 @@ static void convertAndResize(const GpuMat& src, GpuMat& gray, GpuMat& resized, d
 
     if (scale != 1)
     {
-        cv::cuda::resize(gray, resized, sz);
+        ncvslideio::cuda::resize(gray, resized, sz);
     }
     else
     {
@@ -77,7 +77,7 @@ static void matPrint(Mat &img, int lineOffsY, Scalar fontColor, const string &ss
     int fontFace = FONT_HERSHEY_DUPLEX;
     double fontScale = 0.8;
     int fontThickness = 2;
-    Size fontSize = cv::getTextSize("T[]", fontFace, fontScale, fontThickness, 0);
+    Size fontSize = ncvslideio::getTextSize("T[]", fontFace, fontScale, fontThickness, 0);
 
     Point org;
     org.x = 1;
@@ -132,7 +132,7 @@ int main(int argc, const char *argv[])
         return cerr << "No GPU found or the library is compiled without CUDA support" << endl, -1;
     }
 
-    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+    ncvslideio::cuda::printShortCudaDeviceInfo(ncvslideio::cuda::getDevice());
 
     string cascadeName;
     string inputName;
@@ -173,7 +173,7 @@ int main(int argc, const char *argv[])
 
     Ptr<cuda::CascadeClassifier> cascade_gpu = cuda::CascadeClassifier::create(cascadeName);
 
-    cv::CascadeClassifier cascade_cpu;
+    ncvslideio::CascadeClassifier cascade_cpu;
     if (!cascade_cpu.load(cascadeName))
     {
         return cerr << "ERROR: Could not load cascade classifier \"" << cascadeName << "\"" << endl, help(), -1;
@@ -275,7 +275,7 @@ int main(int argc, const char *argv[])
         }
         cout << endl;
 
-        cv::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
+        ncvslideio::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
         displayState(frameDisp, helpScreen, useGPU, findLargestObject, filterRects, fps);
         imshow("result", frameDisp);
 

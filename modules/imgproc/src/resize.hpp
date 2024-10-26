@@ -51,7 +51,7 @@
 #define OPENCV_IMGPROC_RESIZE_HPP
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace opt_AVX2
 {

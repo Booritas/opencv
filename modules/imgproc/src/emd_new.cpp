@@ -22,7 +22,7 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 
@@ -285,7 +285,7 @@ bool EMDSolver::calcSums(const Mat& sign1, const Mat& sign2)
             this->idx1[ssize_++] = i;
         }
         else if (weight_ < 0)
-            CV_Error(cv::Error::StsBadArg, "sign1 must not contain negative weights");
+            CV_Error(ncvslideio::Error::StsBadArg, "sign1 must not contain negative weights");
     }
 
     for (int i = 0; i < sign2.size().height; i++)
@@ -299,13 +299,13 @@ bool EMDSolver::calcSums(const Mat& sign1, const Mat& sign2)
             this->idx2[dsize_++] = i;
         }
         else if (weight_ < 0)
-            CV_Error(cv::Error::StsBadArg, "sign2 must not contain negative weights");
+            CV_Error(ncvslideio::Error::StsBadArg, "sign2 must not contain negative weights");
     }
 
     if (ssize_ == 0)
-        CV_Error(cv::Error::StsBadArg, "sign1 must contain at least one non-zero value");
+        CV_Error(ncvslideio::Error::StsBadArg, "sign1 must contain at least one non-zero value");
     if (dsize_ == 0)
-        CV_Error(cv::Error::StsBadArg, "sign2 must contain at least one non-zero value");
+        CV_Error(ncvslideio::Error::StsBadArg, "sign2 must contain at least one non-zero value");
 
     /* if supply different than the demand, add a zero-cost dummy cluster */
     diff = s_sum - d_sum;
@@ -398,7 +398,7 @@ void EMDSolver::solve()
             const float min_delta = checkOptimal();
 
             if (min_delta == CV_EMD_INF)
-                CV_Error(cv::Error::StsNoConv, "");
+                CV_Error(ncvslideio::Error::StsNoConv, "");
 
             /* if no negative deltamin, we found the optimal solution */
             if (min_delta >= -eps)
@@ -406,7 +406,7 @@ void EMDSolver::solve()
 
             /* improve solution */
             if (!checkNewSolution())
-                CV_Error(cv::Error::StsNoConv, "");
+                CV_Error(ncvslideio::Error::StsNoConv, "");
         }
     }
 }
@@ -930,7 +930,7 @@ void EMDSolver::addBasicVar(int min_i,
 //==============================================================================
 // External interface
 
-float cv::EMD(InputArray _sign1,
+float ncvslideio::EMD(InputArray _sign1,
               InputArray _sign2,
               int distType,
               InputArray _cost,
@@ -983,10 +983,10 @@ float cv::EMD(InputArray _sign1,
         CV_CheckNE(dims, 0, "Number of dimensions can be 0 only if a user-defined metric is used");
         switch (distType)
         {
-            case cv::DIST_L1: dfunc = distL1; break;
-            case cv::DIST_L2: dfunc = distL2; break;
-            case cv::DIST_C: dfunc = distC; break;
-            default: CV_Error(cv::Error::StsBadFlag, "Bad or unsupported metric type");
+            case ncvslideio::DIST_L1: dfunc = distL1; break;
+            case ncvslideio::DIST_L2: dfunc = distL2; break;
+            case ncvslideio::DIST_C: dfunc = distC; break;
+            default: CV_Error(ncvslideio::Error::StsBadFlag, "Bad or unsupported metric type");
         }
     }
 
@@ -1000,7 +1000,7 @@ float cv::EMD(InputArray _sign1,
     return (float)(state.calcFlow(_flow.needed() ? &flow : 0) / state.getWeight());
 }
 
-float cv::wrapperEMD(InputArray _sign1,
+float ncvslideio::wrapperEMD(InputArray _sign1,
                      InputArray _sign2,
                      int distType,
                      InputArray _cost,

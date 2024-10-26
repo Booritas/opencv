@@ -9,7 +9,7 @@
 
 #include <opencv2/gapi/video.hpp>
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 using namespace video;
 
 GBuildPyrOutput buildOpticalFlowPyramid(const GMat    &img,
@@ -26,8 +26,8 @@ GBuildPyrOutput buildOpticalFlowPyramid(const GMat    &img,
 
 GOptFlowLKOutput calcOpticalFlowPyrLK(const GMat                    &prevImg,
                                       const GMat                    &nextImg,
-                                      const cv::GArray<cv::Point2f> &prevPts,
-                                      const cv::GArray<cv::Point2f> &predPts,
+                                      const ncvslideio::GArray<ncvslideio::Point2f> &prevPts,
+                                      const ncvslideio::GArray<ncvslideio::Point2f> &predPts,
                                       const Size                    &winSize,
                                       const GScalar                 &maxLevel,
                                       const TermCriteria            &criteria,
@@ -38,10 +38,10 @@ GOptFlowLKOutput calcOpticalFlowPyrLK(const GMat                    &prevImg,
                               criteria, flags, minEigThresh);
 }
 
-GOptFlowLKOutput calcOpticalFlowPyrLK(const cv::GArray<cv::GMat>    &prevPyr,
-                                      const cv::GArray<cv::GMat>    &nextPyr,
-                                      const cv::GArray<cv::Point2f> &prevPts,
-                                      const cv::GArray<cv::Point2f> &predPts,
+GOptFlowLKOutput calcOpticalFlowPyrLK(const ncvslideio::GArray<ncvslideio::GMat>    &prevPyr,
+                                      const ncvslideio::GArray<ncvslideio::GMat>    &nextPyr,
+                                      const ncvslideio::GArray<ncvslideio::Point2f> &prevPts,
+                                      const ncvslideio::GArray<ncvslideio::Point2f> &predPts,
                                       const Size                    &winSize,
                                       const GScalar                 &maxLevel,
                                       const TermCriteria            &criteria,
@@ -57,19 +57,19 @@ GMat BackgroundSubtractor(const GMat& src, const BackgroundSubtractorParams& bsp
     return GBackgroundSubtractor::on(src, bsp);
 }
 
-GMat KalmanFilter(const GMat& m, const cv::GOpaque<bool>& have_m, const GMat& c, const KalmanParams& kp)
+GMat KalmanFilter(const GMat& m, const ncvslideio::GOpaque<bool>& have_m, const GMat& c, const KalmanParams& kp)
 {
     return GKalmanFilter::on(m, have_m, c, kp);
 }
 
-GMat KalmanFilter(const GMat& m, const cv::GOpaque<bool>& have_m, const KalmanParams& kp)
+GMat KalmanFilter(const GMat& m, const ncvslideio::GOpaque<bool>& have_m, const KalmanParams& kp)
 {
     return GKalmanFilterNoControl::on(m, have_m, kp);
 }
 
 namespace video {
-void checkParams(const cv::gapi::KalmanParams& kfParams,
-                 const cv::GMatDesc& measurement, const cv::GMatDesc& control)
+void checkParams(const ncvslideio::gapi::KalmanParams& kfParams,
+                 const ncvslideio::GMatDesc& measurement, const ncvslideio::GMatDesc& control)
 {
     int type = kfParams.transitionMatrix.type();
     GAPI_Assert(type == CV_32FC1 || type == CV_64FC1);
@@ -116,4 +116,4 @@ void checkParams(const cv::gapi::KalmanParams& kfParams,
 }
 }  // namespace video
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio

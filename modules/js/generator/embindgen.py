@@ -140,18 +140,18 @@ with_vec_from_js_array = True
 
 wrapper_namespace = "Wrappers"
 type_dict = {
-    'InputArray': 'const cv::Mat&',
-    'OutputArray': 'cv::Mat&',
-    'InputOutputArray': 'cv::Mat&',
-    'InputArrayOfArrays': 'const std::vector<cv::Mat>&',
-    'OutputArrayOfArrays': 'std::vector<cv::Mat>&',
+    'InputArray': 'const ncvslideio::Mat&',
+    'OutputArray': 'ncvslideio::Mat&',
+    'InputOutputArray': 'ncvslideio::Mat&',
+    'InputArrayOfArrays': 'const std::vector<ncvslideio::Mat>&',
+    'OutputArrayOfArrays': 'std::vector<ncvslideio::Mat>&',
     'string': 'std::string',
     'String': 'std::string',
     'const String&':'const std::string&'
 }
 
 def normalize_class_name(name):
-    return re.sub(r"^cv\.", "", name).replace(".", "_")
+    return re.sub(r"^ncvslideio\.", "", name).replace(".", "_")
 
 
 class ClassProp(object):
@@ -186,7 +186,7 @@ class ClassInfo(object):
             if len(self.bases) > 1:
                 self.bases = [self.bases[0].strip(",")]
                 # return sys.exit(-1)
-            if self.bases and self.bases[0].startswith("cv::"):
+            if self.bases and self.bases[0].startswith("ncvslideio::"):
                 self.bases[0] = self.bases[0][4:]
             if self.bases and self.bases[0] == "Algorithm":
                 self.isalgorithm = True
@@ -200,7 +200,7 @@ class ClassInfo(object):
                     self.issimple = True
             self.props = [ClassProp(p) for p in decl[3]]
 
-        if not customname and self.wname.startswith("Cv"):
+        if not customname and self.wname.startswith("ncvslideio"):
             self.wname = self.wname[2:]
 
 
@@ -250,14 +250,14 @@ class ArgInfo(object):
                 self.reference = True
         if self.tp == "Mat":
             if self.outputarg:
-                self.tp = "cv::Mat&"
+                self.tp = "ncvslideio::Mat&"
             elif self.inputarg:
-                self.tp = "const cv::Mat&"
+                self.tp = "const ncvslideio::Mat&"
         if self.tp == "vector_Mat":
             if self.outputarg:
-                self.tp = "std::vector<cv::Mat>&"
+                self.tp = "std::vector<ncvslideio::Mat>&"
             elif self.inputarg:
-                self.tp = "const std::vector<cv::Mat>&"
+                self.tp = "const std::vector<ncvslideio::Mat>&"
         self.tp = handle_vector(self.tp).strip()
         if self.const:
             self.tp = "const " + self.tp
@@ -529,9 +529,9 @@ class JSWrapperGenerator(object):
 
 
             # Wrapper function
-            if ns_name != None and ns_name != "cv":
+            if ns_name != None and ns_name != "ncvslideio":
                 ns_parts = ns_name.split(".")
-                if ns_parts[0] == "cv":
+                if ns_parts[0] == "ncvslideio":
                     ns_parts = ns_parts[1:]
                 ns_part = "_".join(ns_parts) + "_"
                 ns_id = '_'.join(ns_parts)
@@ -799,7 +799,7 @@ class JSWrapperGenerator(object):
         # Global functions
         for ns_name, ns in sorted(self.namespaces.items()):
             ns_parts = ns_name.split('.')
-            if ns_parts[0] != 'cv':
+            if ns_parts[0] != 'ncvslideio':
                 print('Ignore namespace: {}'.format(ns_name))
                 continue
             else:
@@ -913,11 +913,11 @@ class JSWrapperGenerator(object):
             # step 4: generate bindings for enums
             # TODO anonymous enums are ignored for now.
             for ns_name, ns in sorted(self.namespaces.items()):
-                if ns_name.split('.')[0] != 'cv':
+                if ns_name.split('.')[0] != 'ncvslideio':
                     continue
                 for name, enum in sorted(ns.enums.items()):
                     if not name.endswith('.anonymous'):
-                        name = name.replace("cv.", "")
+                        name = name.replace("ncvslideio.", "")
                         enum_values = []
                         for enum_val in enum:
                             value = enum_val[0][enum_val[0].rfind(".")+1:]
@@ -934,7 +934,7 @@ class JSWrapperGenerator(object):
         if export_consts:
             # step 5: generate bindings for consts
             for ns_name, ns in sorted(self.namespaces.items()):
-                if ns_name.split('.')[0] != 'cv':
+                if ns_name.split('.')[0] != 'ncvslideio':
                     continue
                 for name, const in sorted(ns.consts.items()):
                     # print("Gen consts: ", name, const)

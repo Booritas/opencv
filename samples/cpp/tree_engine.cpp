@@ -5,8 +5,8 @@
 #include <string>
 #include <map>
 
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 static void help(char** argv)
 {
@@ -34,7 +34,7 @@ static void train_and_print_errs(Ptr<StatModel> model, const Ptr<TrainData>& dat
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{ help h | | }{r | 0 | }{ts | | }{@input | | }");
+    ncvslideio::CommandLineParser parser(argc, argv, "{ help h | | }{r | 0 | }{ts | | }{@input | | }");
     if (parser.has("help"))
     {
         help(argv);
@@ -102,12 +102,12 @@ int main(int argc, char** argv)
     rtrees->setActiveVarCount(0);
     rtrees->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER, 100, 0));
     train_and_print_errs(rtrees, data);
-    cv::Mat ref_labels = data->getClassLabels();
-    cv::Mat test_data = data->getTestSampleIdx();
-    cv::Mat predict_labels;
+    ncvslideio::Mat ref_labels = data->getClassLabels();
+    ncvslideio::Mat test_data = data->getTestSampleIdx();
+    ncvslideio::Mat predict_labels;
     rtrees->predict(data->getSamples(), predict_labels);
 
-    cv::Mat variable_importance = rtrees->getVarImportance();
+    ncvslideio::Mat variable_importance = rtrees->getVarImportance();
     std::cout << "Estimated variable importance" << std::endl;
     for (int i = 0; i < variable_importance.rows; i++) {
         std::cout << "Variable " << i << ": " << variable_importance.at<float>(i, 0) << std::endl;

@@ -40,7 +40,7 @@
 
 #include "precomp.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace ml {
 
 
@@ -101,7 +101,7 @@ public:
                 norm(var_idx, __var_idx, NORM_INF) != 0 ||
                 cls_labels.size() != __cls_labels.size() ||
                 norm(cls_labels, __cls_labels, NORM_INF) != 0 )
-                CV_Error( cv::Error::StsBadArg,
+                CV_Error( ncvslideio::Error::StsBadArg,
                 "The new training data is inconsistent with the original training data; varIdx and the class labels should be the same" );
         }
 
@@ -174,7 +174,7 @@ public:
 
             SVD::compute(cov, w, cov_rotate_mats[cls], noArray());
             transpose(cov_rotate_mats[cls], cov_rotate_mats[cls]);
-            cv::max(w, min_variation, w);
+            ncvslideio::max(w, min_variation, w);
             for( j = 0; j < nvars; j++ )
                 det *= w.at<double>(j);
 
@@ -241,7 +241,7 @@ public:
                 rpstep = results_prob->isContinuous() ? results_prob->cols : results_prob->step/results_prob->elemSize();
             }
             // allocate memory and initializing headers for calculating
-            cv::AutoBuffer<double> _buffer(nvars*2);
+            ncvslideio::AutoBuffer<double> _buffer(nvars*2);
             double* _diffin = _buffer.data();
             double* _diffout = _buffer.data() + nvars;
             Mat diffin( 1, nvars, CV_64FC1, _diffin );
@@ -312,11 +312,11 @@ public:
         bool rawOutput = (flags & RAW_OUTPUT) != 0;
 
         if( samples.type() != CV_32F || samples.cols != nallvars )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
                      "The input samples must be 32f matrix with the number of columns = nallvars" );
 
         if( (samples.rows > 1) && (! _results.needed()) )
-            CV_Error( cv::Error::StsNullPtr,
+            CV_Error( ncvslideio::Error::StsNullPtr,
                      "When the number of input samples is >1, the output vector of results must be passed" );
 
         if( _results.needed() )
@@ -333,7 +333,7 @@ public:
             resultsProb = _resultsProb.getMat();
         }
 
-        cv::parallel_for_(cv::Range(0, nsamples),
+        ncvslideio::parallel_for_(ncvslideio::Range(0, nsamples),
                           NBPredictBody(c, cov_rotate_mats, inv_eigen_values, avg, samples,
                                        var_idx, cls_labels, results, resultsProb, rawOutput));
 
@@ -388,7 +388,7 @@ public:
         fn["var_all"] >> nallvars;
 
         if( nallvars <= 0 )
-            CV_Error( cv::Error::StsParseError,
+            CV_Error( ncvslideio::Error::StsParseError,
                      "The field \"var_count\" of NBayes classifier is missing or non-positive" );
 
         fn["var_idx"] >> var_idx;
@@ -397,7 +397,7 @@ public:
         int nclasses = (int)cls_labels.total(), i;
 
         if( cls_labels.empty() || nclasses < 1 )
-            CV_Error( cv::Error::StsParseError, "No or invalid \"cls_labels\" in NBayes classifier" );
+            CV_Error( ncvslideio::Error::StsParseError, "No or invalid \"cls_labels\" in NBayes classifier" );
 
         FileNodeIterator
             count_it = fn["count"].begin(),

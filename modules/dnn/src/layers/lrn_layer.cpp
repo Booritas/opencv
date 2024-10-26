@@ -56,15 +56,15 @@
 
 #ifdef HAVE_OPENCL
 #include "opencl_kernels_dnn.hpp"
-using namespace cv::dnn::ocl4dnn;
+using namespace ncvslideio::dnn::ocl4dnn;
 #endif
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/lrn.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -293,7 +293,7 @@ public:
     void sqrBoxFilter_(const Mat &src, Mat &dst)
     {
         Mat srcRawWrapper(src.rows, src.cols, src.type(), src.data, src.step[0]);
-        cv::sqrBoxFilter(srcRawWrapper, dst, dst.depth(), Size(size, size), Point(-1, -1), false, BORDER_CONSTANT);
+        ncvslideio::sqrBoxFilter(srcRawWrapper, dst, dst.depth(), Size(size, size), Point(-1, -1), false, BORDER_CONSTANT);
     }
 
     void spatialNormalization(Mat &srcBlob, Mat &dstBlob)
@@ -315,8 +315,8 @@ public:
                 sqrBoxFilter_(src, dst);
 
                 dst.convertTo(dst, dst.type(), alpha/sizeNormFactor, bias);
-                cv::pow(dst, beta, dst);
-                cv::divide(src, dst, dst);
+                ncvslideio::pow(dst, beta, dst);
+                ncvslideio::divide(src, dst, dst);
             }
         }
     }

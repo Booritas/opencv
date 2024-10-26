@@ -13,7 +13,7 @@
 #include <openvino/op/proposal.hpp>
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ProposalLayerImpl CV_FINAL : public ProposalLayer
 {
@@ -418,4 +418,4 @@ Ptr<ProposalLayer> ProposalLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

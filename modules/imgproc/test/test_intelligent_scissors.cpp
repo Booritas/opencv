@@ -193,7 +193,7 @@ void checkContour(std::vector<Point>& pts,
     std::vector<Point> reference_pts;
 #ifdef GENERATE_TEST_DATA
     {
-        cv::FileStorage fs(name, cv::FileStorage::WRITE);
+        ncvslideio::FileStorage fs(name, ncvslideio::FileStorage::WRITE);
         fs << "pts" << pts;
     }
     reference_pts = pts;
@@ -426,7 +426,7 @@ TEST(Imgproc_IntelligentScissorsMB, color_custom_features_edge)
     Mat canny_edges;
     Canny(image, canny_edges, 32, 100, 5);
     Mat binary_edge_feature;
-    cv::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
+    ncvslideio::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
     tool.applyImageFeatures(binary_edge_feature, noArray(), noArray(), image);
 
     Point source_point(275, 63);
@@ -450,7 +450,7 @@ TEST(Imgproc_IntelligentScissorsMB, color_custom_features_all)
     Mat canny_edges;
     Canny(image, canny_edges, 50, 100, 5);
     Mat binary_edge_feature; // 0, 1 values
-    cv::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
+    ncvslideio::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
 
     Mat_<Point2f> gradient_direction(image.size(), Point2f(0, 0));  // normalized
     Mat_<float> gradient_magnitude(image.size(), 0);  // cost function
@@ -477,7 +477,7 @@ TEST(Imgproc_IntelligentScissorsMB, color_custom_features_edge_magnitude)
     Mat canny_edges;
     Canny(image, canny_edges, 50, 100, 5);
     Mat binary_edge_feature; // 0, 1 values
-    cv::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
+    ncvslideio::threshold(canny_edges, binary_edge_feature, 254, 1, THRESH_BINARY_INV);
 
     Mat_<float> gradient_magnitude(image.size(), 0);  // cost function
     tool.applyImageFeatures(binary_edge_feature, noArray(), gradient_magnitude);

@@ -16,21 +16,21 @@ using namespace Windows::Phone::Input::Interop;
 
 namespace PhoneXamlDirect3DApp1Comp
 {
-    void Direct3DInterop::ApplyGrayFilter(const cv::Mat& image)
+    void Direct3DInterop::ApplyGrayFilter(const ncvslideio::Mat& image)
     {
-        cv::Mat intermediateMat;
-        cv::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
-        cv::cvtColor(intermediateMat, image, COLOR_GRAY2BGRA);
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
+        ncvslideio::cvtColor(intermediateMat, image, COLOR_GRAY2BGRA);
     }
 
-    void Direct3DInterop::ApplyCannyFilter(const cv::Mat& image)
+    void Direct3DInterop::ApplyCannyFilter(const ncvslideio::Mat& image)
     {
-        cv::Mat intermediateMat;
-        cv::Canny(image, intermediateMat, 80, 90);
-        cv::cvtColor(intermediateMat, image, COLOR_GRAY2BGRA);
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::Canny(image, intermediateMat, 80, 90);
+        ncvslideio::cvtColor(intermediateMat, image, COLOR_GRAY2BGRA);
     }
 
-    void Direct3DInterop::ApplySepiaFilter(const cv::Mat& image)
+    void Direct3DInterop::ApplySepiaFilter(const ncvslideio::Mat& image)
     {
         const float SepiaKernelData[16] =
         {
@@ -40,8 +40,8 @@ namespace PhoneXamlDirect3DApp1Comp
             /* A */0.000f, 0.000f, 0.000f, 1.f
         };
 
-        const cv::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
-        cv::transform(image, image, SepiaKernel);
+        const ncvslideio::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
+        ncvslideio::transform(image, image, SepiaKernel);
     }
 
     Direct3DInterop::Direct3DInterop() :
@@ -146,7 +146,7 @@ namespace PhoneXamlDirect3DApp1Comp
     {
         if (m_renderer)
         {
-            cv::Mat Lena = cv::Mat(height, width, CV_8UC4);
+            ncvslideio::Mat Lena = ncvslideio::Mat(height, width, CV_8UC4);
             memcpy(Lena.data, buffer->Data, 4 * height*width);
 
             switch (filter)

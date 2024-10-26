@@ -7,23 +7,23 @@
 
 #include "backend.hpp"
 
-namespace cv { namespace highgui_backend {
+namespace ncvslideio { namespace highgui_backend {
 
 class IUIBackendFactory
 {
 public:
     virtual ~IUIBackendFactory() {}
-    virtual std::shared_ptr<cv::highgui_backend::UIBackend> create() const = 0;
+    virtual std::shared_ptr<ncvslideio::highgui_backend::UIBackend> create() const = 0;
 };
 
 
 class StaticBackendFactory CV_FINAL: public IUIBackendFactory
 {
 protected:
-    std::function<std::shared_ptr<cv::highgui_backend::UIBackend>(void)> create_fn_;
+    std::function<std::shared_ptr<ncvslideio::highgui_backend::UIBackend>(void)> create_fn_;
 
 public:
-    StaticBackendFactory(std::function<std::shared_ptr<cv::highgui_backend::UIBackend>(void)>&& create_fn)
+    StaticBackendFactory(std::function<std::shared_ptr<ncvslideio::highgui_backend::UIBackend>(void)>&& create_fn)
         : create_fn_(create_fn)
     {
         // nothing
@@ -31,7 +31,7 @@ public:
 
     ~StaticBackendFactory() CV_OVERRIDE {}
 
-    std::shared_ptr<cv::highgui_backend::UIBackend> create() const CV_OVERRIDE
+    std::shared_ptr<ncvslideio::highgui_backend::UIBackend> create() const CV_OVERRIDE
     {
         return create_fn_();
     }

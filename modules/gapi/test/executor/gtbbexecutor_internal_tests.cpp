@@ -42,7 +42,7 @@ namespace {
 namespace opencv_test {
 
 TEST(TBBExecutor, Basic) {
-    using namespace cv::gimpl::parallel;
+    using namespace ncvslideio::gimpl::parallel;
     bool executed = false;
     prio_items_queue_t q;
     tile_node n([&]() {
@@ -54,7 +54,7 @@ TEST(TBBExecutor, Basic) {
 }
 
 TEST(TBBExecutor, SerialExecution) {
-    using namespace cv::gimpl::parallel;
+    using namespace ncvslideio::gimpl::parallel;
     const int n = 10;
     prio_items_queue_t q;
     std::vector<tile_node> nodes; nodes.reserve(n+1);
@@ -81,7 +81,7 @@ TEST(TBBExecutor, SerialExecution) {
 }
 
 TEST(TBBExecutor, AsyncBasic) {
-    using namespace cv::gimpl::parallel;
+    using namespace ncvslideio::gimpl::parallel;
 
     std::atomic<bool> callback_ready {false};
     std::function<void()> callback;
@@ -122,7 +122,7 @@ TEST(TBBExecutor, AsyncBasic) {
 }
 
 TEST(TBBExecutor, Dependencies) {
-    using namespace cv::gimpl::parallel;
+    using namespace ncvslideio::gimpl::parallel;
     const int n = 10;
     bool serial = true;
     std::atomic<int> counter {0};

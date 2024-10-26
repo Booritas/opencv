@@ -71,7 +71,7 @@ inline std::ostream& operator<<(std::ostream& os, bitwiseOp op)
 // opType, testWithScalar, scale, doReverseOp - test-specific parameters (names)
 //
 // We get:
-// 1. Default parameters: int type, cv::Size sz, int dtype, getCompileArgs() function
+// 1. Default parameters: int type, ncvslideio::Size sz, int dtype, getCompileArgs() function
 //      - available in test body
 // 2. Input/output matrices will be initialized by initMatsRandU (in this fixture)
 // 3. Specific parameters: opType, testWithScalar, scale, doReverseOp of corresponding types
@@ -102,7 +102,7 @@ GAPI_TEST_FIXTURE(AddWeightedTest, initMatsRandU, FIXTURE_API(CompareMats), 1, c
 GAPI_TEST_FIXTURE(NormTest, initMatrixRandU, FIXTURE_API(CompareScalars,NormTypes), 2,
     cmpF, opType)
 GAPI_TEST_FIXTURE(IntegralTest, initNothing, <>, 0)
-GAPI_TEST_FIXTURE(ThresholdTest, initMatrixRandU, FIXTURE_API(int, cv::Scalar), 2, tt, maxval)
+GAPI_TEST_FIXTURE(ThresholdTest, initMatrixRandU, FIXTURE_API(int, ncvslideio::Scalar), 2, tt, maxval)
 GAPI_TEST_FIXTURE(ThresholdOTTest, initMatrixRandU, FIXTURE_API(int), 1, tt)
 GAPI_TEST_FIXTURE(InRangeTest, initMatrixRandU, <>, 0)
 GAPI_TEST_FIXTURE(Split3Test, initMatrixRandU, <>, 0)
@@ -111,7 +111,7 @@ GAPI_TEST_FIXTURE(Merge3Test, initMatsRandU, <>, 0)
 GAPI_TEST_FIXTURE(Merge4Test, initMatsRandU, <>, 0)
 GAPI_TEST_FIXTURE(RemapTest, initMatrixRandU, <>, 0)
 GAPI_TEST_FIXTURE(FlipTest, initMatrixRandU, FIXTURE_API(int), 1, flipCode)
-GAPI_TEST_FIXTURE(CropTest, initMatrixRandU, FIXTURE_API(cv::Rect), 1, rect_to)
+GAPI_TEST_FIXTURE(CropTest, initMatrixRandU, FIXTURE_API(ncvslideio::Rect), 1, rect_to)
 GAPI_TEST_FIXTURE(CopyTest, initMatrixRandU, <>, 0)
 GAPI_TEST_FIXTURE(ConcatHorTest, initNothing, <>, 0)
 GAPI_TEST_FIXTURE(ConcatVertTest, initNothing, <>, 0)
@@ -128,26 +128,26 @@ struct BackendOutputAllocationTest : TestWithParams<>
 {
     BackendOutputAllocationTest()
     {
-        in_mat1 = cv::Mat(sz, type);
-        in_mat2 = cv::Mat(sz, type);
-        cv::randu(in_mat1, cv::Scalar::all(1), cv::Scalar::all(15));
-        cv::randu(in_mat2, cv::Scalar::all(1), cv::Scalar::all(15));
+        in_mat1 = ncvslideio::Mat(sz, type);
+        in_mat2 = ncvslideio::Mat(sz, type);
+        ncvslideio::randu(in_mat1, ncvslideio::Scalar::all(1), ncvslideio::Scalar::all(15));
+        ncvslideio::randu(in_mat2, ncvslideio::Scalar::all(1), ncvslideio::Scalar::all(15));
     }
 };
 // FIXME: move all tests from this fixture to the base class once all issues are resolved
 struct BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest : BackendOutputAllocationTest {};
-GAPI_TEST_FIXTURE(ReInitOutTest, initNothing, <cv::Size>, 1, out_sz)
+GAPI_TEST_FIXTURE(ReInitOutTest, initNothing, <ncvslideio::Size>, 1, out_sz)
 
 GAPI_TEST_FIXTURE(WarpPerspectiveTest, initMatrixRandU,
-        FIXTURE_API(CompareMats, double , double, int, int, cv::Scalar),
+        FIXTURE_API(CompareMats, double , double, int, int, ncvslideio::Scalar),
         6, cmpF, angle, scale, flags, border_mode, border_value)
 
 GAPI_TEST_FIXTURE(WarpAffineTest, initMatrixRandU,
-        FIXTURE_API(CompareMats, double , double, int, int, cv::Scalar),
+        FIXTURE_API(CompareMats, double , double, int, int, ncvslideio::Scalar),
         6, cmpF, angle, scale, flags, border_mode, border_value)
-GAPI_TEST_FIXTURE(KMeansNDTest, initMatrixRandU, FIXTURE_API(CompareMats, int, cv::KmeansFlags), 3, cmpF, K, flags)
-GAPI_TEST_FIXTURE(KMeans2DTest, initNothing,     FIXTURE_API(int, cv::KmeansFlags), 2, K, flags)
-GAPI_TEST_FIXTURE(KMeans3DTest, initNothing,     FIXTURE_API(int, cv::KmeansFlags), 2, K, flags)
+GAPI_TEST_FIXTURE(KMeansNDTest, initMatrixRandU, FIXTURE_API(CompareMats, int, ncvslideio::KmeansFlags), 3, cmpF, K, flags)
+GAPI_TEST_FIXTURE(KMeans2DTest, initNothing,     FIXTURE_API(int, ncvslideio::KmeansFlags), 2, K, flags)
+GAPI_TEST_FIXTURE(KMeans3DTest, initNothing,     FIXTURE_API(int, ncvslideio::KmeansFlags), 2, K, flags)
 GAPI_TEST_FIXTURE(TransposeTest, initMatrixRandU, FIXTURE_API(CompareMats), 1, cmpF)
 
 

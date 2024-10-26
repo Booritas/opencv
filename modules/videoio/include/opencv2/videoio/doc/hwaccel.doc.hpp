@@ -6,18 +6,18 @@
 // This file should not be used with compiler (documentation only)
 //
 
-namespace cv {
+namespace ncvslideio {
 /** @addtogroup videoio_hwaccel
 This section contains information about API to control Hardware-accelerated video decoding and encoding.
 
 @note Check [Wiki page](https://github.com/opencv/opencv/wiki/Video-IO-hardware-acceleration)
 for description of supported hardware / software configurations and available benchmarks
 
-cv::VideoCapture properties:
+ncvslideio::VideoCapture properties:
 - #CAP_PROP_HW_ACCELERATION (as #VideoAccelerationType)
 - #CAP_PROP_HW_DEVICE
 
-cv::VideoWriter properties:
+ncvslideio::VideoWriter properties:
 - #VIDEOWRITER_PROP_HW_ACCELERATION (as #VideoAccelerationType)
 - #VIDEOWRITER_PROP_HW_DEVICE
 

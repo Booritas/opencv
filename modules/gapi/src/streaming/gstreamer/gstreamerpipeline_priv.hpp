@@ -12,7 +12,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -52,7 +52,7 @@ public:
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMERPIPELINE_PRIV_HPP

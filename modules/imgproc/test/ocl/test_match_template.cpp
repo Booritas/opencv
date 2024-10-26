@@ -51,7 +51,7 @@ namespace ocl {
 
 ///////////////////////////////////////////// matchTemplate //////////////////////////////////////////////////////////
 
-CV_ENUM(MatchTemplType, cv::TM_CCORR, cv::TM_CCORR_NORMED, cv::TM_SQDIFF, cv::TM_SQDIFF_NORMED, cv::TM_CCOEFF, cv::TM_CCOEFF_NORMED)
+CV_ENUM(MatchTemplType, ncvslideio::TM_CCORR, ncvslideio::TM_CCORR_NORMED, ncvslideio::TM_SQDIFF, ncvslideio::TM_SQDIFF_NORMED, ncvslideio::TM_CCOEFF, ncvslideio::TM_CCOEFF_NORMED)
 
 PARAM_TEST_CASE(MatchTemplate, MatDepth, Channels, MatchTemplType, bool)
 {
@@ -115,8 +115,8 @@ OCL_TEST_P(MatchTemplate, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::matchTemplate(image_roi, templ_roi, result_roi, method));
-        OCL_ON(cv::matchTemplate(uimage_roi, utempl_roi, uresult_roi, method));
+        OCL_OFF(ncvslideio::matchTemplate(image_roi, templ_roi, result_roi, method));
+        OCL_ON(ncvslideio::matchTemplate(uimage_roi, utempl_roi, uresult_roi, method));
 
         Near();
     }

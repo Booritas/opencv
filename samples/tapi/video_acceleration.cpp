@@ -7,7 +7,7 @@
 #include "opencv2/videoio.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 const char* keys =
@@ -16,21 +16,21 @@ const char* keys =
 "{ backend    | any    | VideoCapture and VideoWriter backend, valid values: 'any', 'ffmpeg', 'msmf', 'gstreamer' }"
 "{ accel      | any    | GPU Video Acceleration, valid values: 'none', 'any', 'd3d11', 'vaapi', 'mfx' }"
 "{ device     | -1     | Video Acceleration device (GPU) index (-1 means default device) }"
-"{ out_w      |        | output width (resize by calling cv::resize) }"
-"{ out_h      |        | output height (resize by calling cv::resize) }"
-"{ bitwise_not| false  | apply simple image processing - bitwise_not pixels by calling cv::bitwise_not }"
+"{ out_w      |        | output width (resize by calling ncvslideio::resize) }"
+"{ out_h      |        | output height (resize by calling ncvslideio::resize) }"
+"{ bitwise_not| false  | apply simple image processing - bitwise_not pixels by calling ncvslideio::bitwise_not }"
 "{ opencl     | true   | use OpenCL (inside VideoCapture/VideoWriter and for image processing) }"
 "{ codec      | H264   | codec id (four characters string) of output file encoder }"
 "{ h help     |        | print help message }";
 
 struct {
-    cv::VideoCaptureAPIs backend;
+    ncvslideio::VideoCaptureAPIs backend;
     const char* str;
 } backend_strings[] = {
-    { cv::CAP_ANY, "any" },
-    { cv::CAP_FFMPEG, "ffmpeg" },
-    { cv::CAP_MSMF, "msmf" },
-    { cv::CAP_GSTREAMER, "gstreamer" },
+    { ncvslideio::CAP_ANY, "any" },
+    { ncvslideio::CAP_FFMPEG, "ffmpeg" },
+    { ncvslideio::CAP_MSMF, "msmf" },
+    { ncvslideio::CAP_GSTREAMER, "gstreamer" },
 };
 
 struct {
@@ -77,7 +77,7 @@ private:
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     if (cmd.has("help"))
     {
         cout << "Usage : video_acceleration [options]" << endl;
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     bool use_opencl = cmd.get<bool>("opencl");
     bool bitwise_not = cmd.get<bool>("bitwise_not");
 
-    cv::VideoCaptureAPIs backend = cv::CAP_ANY;
+    ncvslideio::VideoCaptureAPIs backend = ncvslideio::CAP_ANY;
     string backend_str = cmd.get<string>("backend");
     for (size_t i = 0; i < sizeof(backend_strings)/sizeof(backend_strings[0]); i++) {
         if (backend_str == backend_strings[i].str) {
@@ -176,15 +176,15 @@ int main(int argc, char** argv)
         }
 
         if (out_w && out_h) {
-            cv::resize(frame, frame2, cv::Size(out_w, out_h));
-            //cv::cvtColor(frame, outframe, COLOR_BGRA2RGBA);
+            ncvslideio::resize(frame, frame2, ncvslideio::Size(out_w, out_h));
+            //ncvslideio::cvtColor(frame, outframe, COLOR_BGRA2RGBA);
         }
         else {
             frame2 = frame;
         }
 
         if (bitwise_not) {
-            cv::bitwise_not(frame2, frame3);
+            ncvslideio::bitwise_not(frame2, frame3);
         }
         else {
             frame3 = frame2;
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
             if (key == 27)
                 break;
             else if (key == 'm') {
-                ocl::setUseOpenCL(!cv::ocl::useOpenCL());
+                ocl::setUseOpenCL(!ncvslideio::ocl::useOpenCL());
                 cout << "Switched to " << (ocl::useOpenCL() ? "OpenCL enabled" : "CPU") << " mode\n";
             }
         }

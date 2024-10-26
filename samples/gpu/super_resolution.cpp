@@ -12,8 +12,8 @@
 #include "opencv2/opencv_modules.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::superres;
+using namespace ncvslideio;
+using namespace ncvslideio::superres;
 
 #define MEASURE_TIME(op) \
     { \
@@ -24,32 +24,32 @@ using namespace cv::superres;
         cout << tm.getTimeSec() << " sec" << endl; \
     }
 
-static Ptr<cv::superres::DenseOpticalFlowExt> createOptFlow(const string& name, bool useGpu)
+static Ptr<ncvslideio::superres::DenseOpticalFlowExt> createOptFlow(const string& name, bool useGpu)
 {
     if (name == "farneback")
     {
         if (useGpu)
-            return cv::superres::createOptFlow_Farneback_CUDA();
+            return ncvslideio::superres::createOptFlow_Farneback_CUDA();
         else
-            return cv::superres::createOptFlow_Farneback();
+            return ncvslideio::superres::createOptFlow_Farneback();
     }
     /*else if (name == "simple")
         return createOptFlow_Simple();*/
     else if (name == "tvl1")
     {
         if (useGpu)
-            return cv::superres::createOptFlow_DualTVL1_CUDA();
+            return ncvslideio::superres::createOptFlow_DualTVL1_CUDA();
         else
-            return cv::superres::createOptFlow_DualTVL1();
+            return ncvslideio::superres::createOptFlow_DualTVL1();
     }
     else if (name == "brox")
-        return cv::superres::createOptFlow_Brox_CUDA();
+        return ncvslideio::superres::createOptFlow_Brox_CUDA();
     else if (name == "pyrlk")
-        return cv::superres::createOptFlow_PyrLK_CUDA();
+        return ncvslideio::superres::createOptFlow_PyrLK_CUDA();
     else
         cerr << "Incorrect Optical Flow algorithm - " << name << endl;
 
-    return Ptr<cv::superres::DenseOpticalFlowExt>();
+    return Ptr<ncvslideio::superres::DenseOpticalFlowExt>();
 }
 
 int main(int argc, const char* argv[])
@@ -90,7 +90,7 @@ int main(int argc, const char* argv[])
     else
         superRes = createSuperResolution_BTVL1();
 
-    Ptr<cv::superres::DenseOpticalFlowExt> of = createOptFlow(optFlow, useCuda);
+    Ptr<ncvslideio::superres::DenseOpticalFlowExt> of = createOptFlow(optFlow, useCuda);
 
     if (of.empty())
         return EXIT_FAILURE;
@@ -110,7 +110,7 @@ int main(int argc, const char* argv[])
             Mat frame;
             frameSource->nextFrame(frame);
         }
-        catch (const cv::Exception&)
+        catch (const ncvslideio::Exception&)
         {
             frameSource.release();
         }

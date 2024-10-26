@@ -7,7 +7,7 @@ def my_ellipse(img, angle):
     thickness = 2
     line_type = 8
 
-    cv.ellipse(img,
+    ncvslideio.ellipse(img,
                 (W // 2, W // 2),
                 (W // 4, W // 16),
                 angle,
@@ -22,7 +22,7 @@ def my_filled_circle(img, center):
     thickness = -1
     line_type = 8
 
-    cv.circle(img,
+    ncvslideio.circle(img,
                center,
                W // 32,
                (0, 0, 255),
@@ -45,16 +45,16 @@ def my_polygon(img):
                     [W / 4, 3 * W / 8], [13 * W / 32, 3 * W / 8],
                     [5 * W / 16, 13 * W / 16], [W / 4, 13 * W / 16]], np.int32)
     ppt = ppt.reshape((-1, 1, 2))
-    cv.fillPoly(img, [ppt], (255, 255, 255), line_type)
+    ncvslideio.fillPoly(img, [ppt], (255, 255, 255), line_type)
     # Only drawind the lines would be:
-    # cv.polylines(img, [ppt], True, (255, 0, 255), line_type)
+    # ncvslideio.polylines(img, [ppt], True, (255, 0, 255), line_type)
 ## [my_polygon]
 ## [my_line]
 def my_line(img, start, end):
     thickness = 2
     line_type = 8
 
-    cv.line(img,
+    ncvslideio.line(img,
              start,
              end,
              (0, 0, 0),

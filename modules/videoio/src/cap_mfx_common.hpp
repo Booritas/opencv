@@ -318,7 +318,7 @@ private:
 public:
     size_t width, height;
     size_t oneSize;
-    cv::AutoBuffer<uchar, 0> buffers;
+    ncvslideio::AutoBuffer<uchar, 0> buffers;
     std::vector<mfxFrameSurface1> surfaces;
 };
 

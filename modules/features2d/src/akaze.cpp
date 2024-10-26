@@ -53,7 +53,7 @@ http://www.robesafe.com/personal/pablo.alcantarilla/papers/Alcantarilla13bmvc.pd
 
 #include <iostream>
 
-namespace cv
+namespace ncvslideio
 {
     using namespace std;
 
@@ -201,7 +201,7 @@ namespace cv
 
             if (max_points > 0 && (int)keypoints.size() > max_points) {
                 std::partial_sort(keypoints.begin(), keypoints.begin() + max_points, keypoints.end(),
-                    [](const cv::KeyPoint& k1, const cv::KeyPoint& k2) {return k1.response > k2.response;});
+                    [](const ncvslideio::KeyPoint& k1, const ncvslideio::KeyPoint& k2) {return k1.response > k2.response;});
                 keypoints.erase(keypoints.begin() + max_points, keypoints.end());
             }
 

@@ -43,16 +43,16 @@ class NewOpenCVTests(unittest.TestCase):
 
     def get_sample(self, filename, iscolor = None):
         if iscolor is None:
-            iscolor = cv.IMREAD_COLOR
+            iscolor = ncvslideio.IMREAD_COLOR
         if not filename in self.image_cache:
             filepath = self.find_file(filename)
             with open(filepath, 'rb') as f:
                 filedata = f.read()
-            self.image_cache[filename] = cv.imdecode(np.fromstring(filedata, dtype=np.uint8), iscolor)
+            self.image_cache[filename] = ncvslideio.imdecode(np.fromstring(filedata, dtype=np.uint8), iscolor)
         return self.image_cache[filename]
 
     def setUp(self):
-        cv.setRNGSeed(10)
+        ncvslideio.setRNGSeed(10)
         self.image_cache = {}
 
     def hashimg(self, im):
@@ -80,7 +80,7 @@ class NewOpenCVTests(unittest.TestCase):
         parser.add_argument('--data', help='<not used> use data files from local folder (path to folder), '
                                             'if not set, data files will be downloaded from docs.opencv.org')
         args, other = parser.parse_known_args()
-        print("Testing OpenCV", cv.__version__)
+        print("Testing OpenCV", ncvslideio.__version__)
         print("Local repo path:", args.repo)
         NewOpenCVTests.repoPath = args.repo
         try:
@@ -100,8 +100,8 @@ def intersectionRate(s1, s2):
     x1, y1, x2, y2 = s2
     s2 = np.array([[x1, y1], [x2,y1], [x2, y2], [x1, y2]])
 
-    area, _intersection = cv.intersectConvexConvex(s1, s2)
-    return 2 * area / (cv.contourArea(s1) + cv.contourArea(s2))
+    area, _intersection = ncvslideio.intersectConvexConvex(s1, s2)
+    return 2 * area / (ncvslideio.contourArea(s1) + ncvslideio.contourArea(s2))
 
 def isPointInRect(p, rect):
     if rect[0] <= p[0] and rect[1] <=p[1] and p[0] <= rect[2] and p[1] <= rect[3]:

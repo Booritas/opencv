@@ -4,7 +4,7 @@
 #include "lbpfeatures.h"
 #include "cascadeclassifier.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 CvLBPFeatureParams::CvLBPFeatureParams()
 {

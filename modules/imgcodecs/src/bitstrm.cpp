@@ -6,7 +6,7 @@
 #include "bitstrm.hpp"
 #include "utils.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 const int BS_DEF_BLOCK_SIZE = 1<<15;

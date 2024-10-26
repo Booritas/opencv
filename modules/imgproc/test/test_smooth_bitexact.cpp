@@ -111,7 +111,7 @@ namespace opencv_test { namespace {
         for (int borderind = 0, _bordercnt = sizeof(bordermodes) / sizeof(bordermodes[0]); borderind < _bordercnt; ++borderind)
         {
             Mat src_border;
-            cv::copyMakeBorder(src_roi, src_border, kernel.height / 2, kernel.height / 2, kernel.width / 2, kernel.width / 2, bordermodes[borderind]);
+            ncvslideio::copyMakeBorder(src_roi, src_border, kernel.height / 2, kernel.height / 2, kernel.width / 2, kernel.width / 2, bordermodes[borderind]);
             for (int c = 0; c < src_border.channels(); c++)
             {
                 int fromTo[2] = { c, 0 };
@@ -136,10 +136,10 @@ namespace opencv_test { namespace {
                 mixChannels(dst_chan, refdst, toFrom, 1);
             }
 
-            cv::GaussianBlur(src_roi, dst, kernel, mode.sigma_x, mode.sigma_y, bordermodes[borderind]);
+            ncvslideio::GaussianBlur(src_roi, dst, kernel, mode.sigma_x, mode.sigma_y, bordermodes[borderind]);
 
-            EXPECT_GE(0, cvtest::norm(refdst, dst, cv::NORM_L1))
-                << "GaussianBlur " << cn << "-chan mat " << drows << "x" << dcols << " by kernel " << kernel << " sigma(" << mode.sigma_x << ";" << mode.sigma_y << ") failed with max diff " << cvtest::norm(refdst, dst, cv::NORM_INF);
+            EXPECT_GE(0, cvtest::norm(refdst, dst, ncvslideio::NORM_L1))
+                << "GaussianBlur " << cn << "-chan mat " << drows << "x" << dcols << " by kernel " << kernel << " sigma(" << mode.sigma_x << ";" << mode.sigma_y << ") failed with max diff " << cvtest::norm(refdst, dst, ncvslideio::NORM_INF);
         }
     }
 
@@ -224,7 +224,7 @@ TEST(GaussianBlur_Bitexact, overflow_20121)
 {
     Mat src(100, 100, CV_16UC1, Scalar(65535));
     Mat dst;
-    GaussianBlur(src, dst, cv::Size(9, 9), 0.0);
+    GaussianBlur(src, dst, ncvslideio::Size(9, 9), 0.0);
     double min_val;
     minMaxLoc(dst, &min_val);
     ASSERT_EQ(cvRound(min_val), 65535);
@@ -237,7 +237,7 @@ static void checkGaussianBlur_8Uvs32F(const Mat& src8u, const Mat& src32f, int N
 
     Mat dst32f; GaussianBlur(src32f, dst32f, Size(N, N), sigma);  // without bit-exact computations
 
-    double normINF_32f = cv::norm(dst8u_32f, dst32f, NORM_INF);
+    double normINF_32f = ncvslideio::norm(dst8u_32f, dst32f, NORM_INF);
     EXPECT_LE(normINF_32f, 1.0);
 }
 
@@ -287,10 +287,10 @@ TEST_P(GaussianBlurVsBitexact, approx)
     Mat src;
     orig.convertTo(src, dtype);
 
-    cv::Mat gt;
+    ncvslideio::Mat gt;
     GaussianBlur(src, gt, Size(ksize, ksize), sigma, sigma, border, ALGO_HINT_ACCURATE);
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
     GaussianBlur(src, dst, Size(ksize, ksize), sigma, sigma, border, ALGO_HINT_APPROX);
 
     EXPECT_LE(cvtest::norm(dst, gt, NORM_INF), 1);

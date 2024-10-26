@@ -14,7 +14,7 @@
 #include "executor/gabstractexecutor.hpp"
 #include "executor/thread_pool.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
 class Task;
@@ -23,7 +23,7 @@ public:
     using F = std::function<void()>;
 
     std::shared_ptr<Task> createTask(F &&f, std::vector<std::shared_ptr<Task>> &&producers);
-    void scheduleAndWait(cv::gapi::own::ThreadPool& tp);
+    void scheduleAndWait(ncvslideio::gapi::own::ThreadPool& tp);
 
 private:
     std::vector<std::shared_ptr<Task>> m_all_tasks;
@@ -43,7 +43,7 @@ public:
 
     explicit GThreadedExecutor(const uint32_t num_threads,
                                std::unique_ptr<ade::Graph> &&g_model);
-    void run(cv::gimpl::GRuntimeArgs &&args) override;
+    void run(ncvslideio::gimpl::GRuntimeArgs &&args) override;
 
     bool canReshape() const override;
     void reshape(const GMetaArgs& inMetas, const GCompileArgs& args) override;
@@ -61,7 +61,7 @@ private:
 
     GraphState                                m_state;
     std::vector<DataDesc>                     m_slots;
-    cv::gapi::own::ThreadPool                 m_thread_pool;
+    ncvslideio::gapi::own::ThreadPool                 m_thread_pool;
     TaskManager                               m_task_manager;
     std::vector<std::shared_ptr<IslandActor>> m_actors;
 };
@@ -87,7 +87,7 @@ public:
 
 private:
     GRunArgP get(int idx) override;
-    void post(cv::GRunArgP&&, const std::exception_ptr& e) override;
+    void post(ncvslideio::GRunArgP&&, const std::exception_ptr& e) override;
     void post(Exception&& ex) override;
     void post(EndOfStream&&) override {};
     void meta(const GRunArgP &out, const GRunArg::Meta &m) override;
@@ -118,6 +118,6 @@ private:
 
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GTHREADEDEXECUTOR_HPP

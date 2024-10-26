@@ -6,7 +6,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 void help();

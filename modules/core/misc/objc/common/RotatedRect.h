@@ -31,7 +31,7 @@ CV_EXPORTS @interface RotatedRect : NSObject
 @property Size2f* size;
 @property double angle;
 #ifdef __cplusplus
-@property(readonly) cv::RotatedRect& nativeRef;
+@property(readonly) ncvslideio::RotatedRect& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -40,7 +40,7 @@ CV_EXPORTS @interface RotatedRect : NSObject
 - (instancetype)initWithCenter:(Point2f*)center size:(Size2f*)size angle:(double)angle;
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::RotatedRect&)rotatedRect;
++ (instancetype)fromNative:(ncvslideio::RotatedRect&)rotatedRect;
 #endif
 
 #pragma mark - Methods

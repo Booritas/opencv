@@ -477,7 +477,7 @@ int CV_GoodFeatureToTTest::validate_test_results( int test_case_idx )
                k );
     }
 
-    double e = cv::norm(corners, Refcorners); // TODO cvtest
+    double e = ncvslideio::norm(corners, Refcorners); // TODO cvtest
 
     if (e > eps)
     {
@@ -502,7 +502,7 @@ int CV_GoodFeatureToTTest::validate_test_results( int test_case_idx )
         ts->set_failed_test_info(cvtest::TS::OK);
     }
 
-    e = cv::norm(cornersQuality, RefcornersQuality, NORM_RELATIVE | NORM_INF);
+    e = ncvslideio::norm(cornersQuality, RefcornersQuality, NORM_RELATIVE | NORM_INF);
 
     if (e > eps)
     {

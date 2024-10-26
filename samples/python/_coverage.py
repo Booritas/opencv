@@ -12,7 +12,7 @@ import cv2 as cv
 import re
 
 if __name__ == '__main__':
-    cv2_callable = set(['cv.'+name for name in dir(cv) if callable( getattr(cv, name) )])
+    cv2_callable = set(['ncvslideio.'+name for name in dir(ncvslideio) if callable( getattr(ncvslideio, name) )])
 
     found = set()
     for fn in glob('*.py'):

@@ -85,7 +85,7 @@ public:
     void doTest()
     {
         ASSERT_TRUE(cap.open(findDataFile(root + fileName), backend, params));
-        const int audioBaseIndex = static_cast<int>(cap.get(cv::CAP_PROP_AUDIO_BASE_INDEX));
+        const int audioBaseIndex = static_cast<int>(cap.get(ncvslideio::CAP_PROP_AUDIO_BASE_INDEX));
         const int numberOfChannels = (int)cap.get(CAP_PROP_AUDIO_TOTAL_CHANNELS);
         ASSERT_EQ(expectedNumAudioCh, numberOfChannels);
         double f = 0;
@@ -116,21 +116,21 @@ public:
 const param audioParams[] =
 {
 #ifdef _WIN32
-    param("test_audio.wav", 1, 132300, 0.0001, cv::CAP_MSMF),
-    param("test_mono_audio.mp3", 1, 133104, 0.12, cv::CAP_MSMF),
-    param("test_stereo_audio.mp3", 2, 133104, 0.12, cv::CAP_MSMF),
-    param("test_audio.mp4", 1, 133104, 0.15, cv::CAP_MSMF),
+    param("test_audio.wav", 1, 132300, 0.0001, ncvslideio::CAP_MSMF),
+    param("test_mono_audio.mp3", 1, 133104, 0.12, ncvslideio::CAP_MSMF),
+    param("test_stereo_audio.mp3", 2, 133104, 0.12, ncvslideio::CAP_MSMF),
+    param("test_audio.mp4", 1, 133104, 0.15, ncvslideio::CAP_MSMF),
 #endif
-    param("test_audio.wav", 1, 132300, 0.0001, cv::CAP_GSTREAMER),
-    param("test_audio.mp4", 1, 132522, 0.15, cv::CAP_GSTREAMER),
+    param("test_audio.wav", 1, 132300, 0.0001, ncvslideio::CAP_GSTREAMER),
+    param("test_audio.mp4", 1, 132522, 0.15, ncvslideio::CAP_GSTREAMER),
 };
 
 class Audio : public AudioTestFixture{};
 
 TEST_P(Audio, audio)
 {
-    if (!videoio_registry::hasBackend(cv::VideoCaptureAPIs(backend)))
-        throw SkipTestException(cv::videoio_registry::getBackendName(backend) + " backend was not found");
+    if (!videoio_registry::hasBackend(ncvslideio::VideoCaptureAPIs(backend)))
+        throw SkipTestException(ncvslideio::videoio_registry::getBackendName(backend) + " backend was not found");
 
     doTest();
 }
@@ -163,7 +163,7 @@ public:
     {
         ASSERT_TRUE(cap.open(findDataFile(root + fileName), backend, params));
 
-        const int audioBaseIndex = static_cast<int>(cap.get(cv::CAP_PROP_AUDIO_BASE_INDEX));
+        const int audioBaseIndex = static_cast<int>(cap.get(ncvslideio::CAP_PROP_AUDIO_BASE_INDEX));
         const int numberOfChannels = (int)cap.get(CAP_PROP_AUDIO_TOTAL_CHANNELS);
         ASSERT_EQ(expectedNumAudioCh, numberOfChannels);
 
@@ -178,7 +178,7 @@ public:
         audioData.resize(numberOfChannels);
         for (int frame = 0; frame < numberOfFrames; frame++)
         {
-            SCOPED_TRACE(cv::format("frame=%d", frame));
+            SCOPED_TRACE(ncvslideio::format("frame=%d", frame));
 
             ASSERT_TRUE(cap.grab());
             if (frame == 0)
@@ -234,7 +234,7 @@ public:
             }
             if (frame != 0 && frame != numberOfFrames-1 && audioData[0].size() != (size_t)numberOfSamples)
             {
-                if (backend == cv::CAP_MSMF)
+                if (backend == ncvslideio::CAP_MSMF)
                 {
                     int audioSamplesTolerance = samplesPerFrame / 2;
                     // validate audio frame size
@@ -263,8 +263,8 @@ class Media : public MediaTestFixture{};
 
 TEST_P(Media, audio)
 {
-    if (!videoio_registry::hasBackend(cv::VideoCaptureAPIs(backend)))
-        throw SkipTestException(cv::videoio_registry::getBackendName(backend) + " backend was not found");
+    if (!videoio_registry::hasBackend(ncvslideio::VideoCaptureAPIs(backend)))
+        throw SkipTestException(ncvslideio::videoio_registry::getBackendName(backend) + " backend was not found");
     if (cvtest::skipUnstableTests && backend == CAP_GSTREAMER)
         throw SkipTestException("Unstable GStreamer test");
 
@@ -273,12 +273,12 @@ TEST_P(Media, audio)
 
 const paramCombination mediaParams[] =
 {
-    paramCombination("test_audio.mp4", 1, 0.15, CV_8UC3, 240, 320, 90, 132299, 30, 30., cv::CAP_GSTREAMER)
+    paramCombination("test_audio.mp4", 1, 0.15, CV_8UC3, 240, 320, 90, 132299, 30, 30., ncvslideio::CAP_GSTREAMER)
 #ifdef _WIN32
-    , paramCombination("test_audio.mp4", 1, 0.15, CV_8UC3, 240, 320, 90, 131819, 30, 30., cv::CAP_MSMF)
+    , paramCombination("test_audio.mp4", 1, 0.15, CV_8UC3, 240, 320, 90, 131819, 30, 30., ncvslideio::CAP_MSMF)
 #if 0
     // https://filesamples.com/samples/video/mp4/sample_960x400_ocean_with_audio.mp4
-    , paramCombination("sample_960x400_ocean_with_audio.mp4", 2, -1/*eplsilon*/, CV_8UC3, 400, 960, 1116, 2056588, 30, 30., cv::CAP_MSMF)
+    , paramCombination("sample_960x400_ocean_with_audio.mp4", 2, -1/*eplsilon*/, CV_8UC3, 400, 960, 1116, 2056588, 30, 30., ncvslideio::CAP_MSMF)
 #endif
 #endif  // _WIN32
 };
@@ -287,7 +287,7 @@ INSTANTIATE_TEST_CASE_P(/**/, Media, testing::ValuesIn(mediaParams));
 
 TEST(AudioOpenCheck, bad_arg_invalid_audio_stream)
 {
-    if (!videoio_registry::hasBackend(cv::VideoCaptureAPIs(cv::CAP_MSMF)))
+    if (!videoio_registry::hasBackend(ncvslideio::VideoCaptureAPIs(ncvslideio::CAP_MSMF)))
         throw SkipTestException("CAP_MSMF backend was not found");
 
     std::string fileName = "audio/test_audio.wav";
@@ -297,13 +297,13 @@ TEST(AudioOpenCheck, bad_arg_invalid_audio_stream)
          CAP_PROP_AUDIO_DATA_DEPTH, CV_16S
     };
     VideoCapture cap;
-    cap.open(findDataFile(fileName), cv::CAP_MSMF, params);
+    cap.open(findDataFile(fileName), ncvslideio::CAP_MSMF, params);
     ASSERT_FALSE(cap.isOpened());
 }
 
 TEST(AudioOpenCheck, bad_arg_invalid_audio_stream_video)
 {
-    if (!videoio_registry::hasBackend(cv::VideoCaptureAPIs(cv::CAP_MSMF)))
+    if (!videoio_registry::hasBackend(ncvslideio::VideoCaptureAPIs(ncvslideio::CAP_MSMF)))
         throw SkipTestException("CAP_MSMF backend was not found");
 
     std::string fileName = "audio/test_audio.mp4";
@@ -313,14 +313,14 @@ TEST(AudioOpenCheck, bad_arg_invalid_audio_stream_video)
          CAP_PROP_AUDIO_DATA_DEPTH, CV_16S
     };
     VideoCapture cap;
-    cap.open(findDataFile(fileName), cv::CAP_MSMF, params);
+    cap.open(findDataFile(fileName), ncvslideio::CAP_MSMF, params);
     ASSERT_FALSE(cap.isOpened());
 }
 
 
 TEST(AudioOpenCheck, MSMF_bad_arg_invalid_audio_sample_per_second)
 {
-    if (!videoio_registry::hasBackend(cv::VideoCaptureAPIs(cv::CAP_MSMF)))
+    if (!videoio_registry::hasBackend(ncvslideio::VideoCaptureAPIs(ncvslideio::CAP_MSMF)))
         throw SkipTestException("CAP_MSMF backend was not found");
 
     std::string fileName = "audio/test_audio.mp4";
@@ -330,7 +330,7 @@ TEST(AudioOpenCheck, MSMF_bad_arg_invalid_audio_sample_per_second)
         CAP_PROP_AUDIO_SAMPLES_PER_SECOND, (int)1e9
     };
     VideoCapture cap;
-    cap.open(findDataFile(fileName), cv::CAP_MSMF, params);
+    cap.open(findDataFile(fileName), ncvslideio::CAP_MSMF, params);
     ASSERT_FALSE(cap.isOpened());
 }
 
@@ -343,7 +343,7 @@ TEST(AudioOpenCheck, bad_arg_invalid_audio_sample_per_second)
         CAP_PROP_AUDIO_SAMPLES_PER_SECOND, -1000
     };
     VideoCapture cap;
-    cap.open(findDataFile(fileName), cv::CAP_ANY, params);
+    cap.open(findDataFile(fileName), ncvslideio::CAP_ANY, params);
     ASSERT_FALSE(cap.isOpened());
 }
 

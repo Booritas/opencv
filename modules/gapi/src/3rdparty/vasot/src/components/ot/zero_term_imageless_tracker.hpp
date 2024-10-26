@@ -20,7 +20,7 @@ class ZeroTermImagelessTracker : public Tracker {
     explicit ZeroTermImagelessTracker(vas::ot::Tracker::InitParameters init_param);
     virtual ~ZeroTermImagelessTracker();
 
-    virtual int32_t TrackObjects(const cv::Mat &mat, const std::vector<Detection> &detections,
+    virtual int32_t TrackObjects(const ncvslideio::Mat &mat, const std::vector<Detection> &detections,
             std::vector<std::shared_ptr<Tracklet>> *tracklets, float delta_t) override;
 
     ZeroTermImagelessTracker() = delete;

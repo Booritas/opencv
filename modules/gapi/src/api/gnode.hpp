@@ -10,7 +10,7 @@
 
 #include <memory> // std::shared_ptr
 
-namespace cv {
+namespace ncvslideio {
 
 class GCall;
 

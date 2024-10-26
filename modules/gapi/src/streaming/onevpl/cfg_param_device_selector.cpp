@@ -40,7 +40,7 @@
 #include <codecvt>
 #include "opencv2/core/directx.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -298,7 +298,7 @@ CfgParamDeviceSelector::CfgParamDeviceSelector(Device::Ptr device_ptr,
     }
     mfxVariant accel_mode = cfg_param_to_mfx_variant(*accel_mode_it);
 
-    cv::util::suppress_unused_warning(device_id);
+    ncvslideio::util::suppress_unused_warning(device_id);
     switch(accel_mode.Data.U32) {
         case MFX_ACCEL_MODE_VIA_D3D11: {
 #if defined(HAVE_DIRECTX) && defined(HAVE_D3D11)
@@ -471,5 +471,5 @@ CfgParamDeviceSelector::DeviceContexts CfgParamDeviceSelector::select_context() 
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

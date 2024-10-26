@@ -70,7 +70,7 @@ bool CV_FeatureDetectorTest::isSimilarKeypoints( const KeyPoint& p1, const KeyPo
     const float maxAngleDif = 2.f;
     const float maxResponseDif = 0.1f;
 
-    float dist = (float)cv::norm( p1.pt - p2.pt );
+    float dist = (float)ncvslideio::norm( p1.pt - p2.pt );
     return (dist < maxPtDif &&
             fabs(p1.size - p2.size) < maxSizeDif &&
             abs(p1.angle - p2.angle) < maxAngleDif &&
@@ -103,7 +103,7 @@ void CV_FeatureDetectorTest::compareKeypointSets( const vector<KeyPoint>& validK
         for( size_t c = 0; c < calcKeypoints.size(); c++ )
         {
             progress = update_progress( progress, (int)(v*calcKeypoints.size() + c), progressCount, 0 );
-            float curDist = (float)cv::norm( calcKeypoints[c].pt - validKeypoints[v].pt );
+            float curDist = (float)ncvslideio::norm( calcKeypoints[c].pt - validKeypoints[v].pt );
             if( curDist < minDist )
             {
                 minDist = curDist;

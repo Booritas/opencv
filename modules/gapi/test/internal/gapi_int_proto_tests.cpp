@@ -13,10 +13,10 @@ namespace opencv_test {
 template<typename T>
 struct ProtoPtrTest : public ::testing::Test { using Type = T; };
 
-using ProtoPtrTestTypes = ::testing::Types< cv::Mat
-                                          , cv::UMat
-                                          , cv::RMat
-                                          , cv::Scalar
+using ProtoPtrTestTypes = ::testing::Types< ncvslideio::Mat
+                                          , ncvslideio::UMat
+                                          , ncvslideio::RMat
+                                          , ncvslideio::Scalar
                                           , std::vector<int>
                                           , int
                                           >;
@@ -26,8 +26,8 @@ TYPED_TEST_CASE(ProtoPtrTest, ProtoPtrTestTypes);
 TYPED_TEST(ProtoPtrTest, NonZero)
 {
     typename TestFixture::Type value;
-    const auto arg = cv::gout(value).front();
-    const auto ptr = cv::gimpl::proto::ptr(arg);
+    const auto arg = ncvslideio::gout(value).front();
+    const auto ptr = ncvslideio::gimpl::proto::ptr(arg);
     EXPECT_EQ(ptr, &value);
 }
 

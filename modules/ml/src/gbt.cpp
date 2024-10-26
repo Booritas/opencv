@@ -218,7 +218,7 @@ CvGBTrees::train( const CvMat* _train_data, int _tflag,
                 orig_response->data.fl[i] = (float) _responses->data.i[i*step];
         }; break;
         default:
-            CV_Error(cv::Error::StsUnmatchedFormats, "Response should be a 32fC1 or 32sC1 vector.");
+            CV_Error(ncvslideio::Error::StsUnmatchedFormats, "Response should be a 32fC1 or 32sC1 vector.");
     }
 
     if (!is_regression)
@@ -283,7 +283,7 @@ CvGBTrees::train( const CvMat* _train_data, int _tflag,
                         sample_idx->data.i[active_samples_count++] = i;
 
             } break;
-            default: CV_Error(cv::Error::StsUnmatchedFormats, "_sample_idx should be a 32sC1, 8sC1 or 8uC1 vector.");
+            default: CV_Error(ncvslideio::Error::StsUnmatchedFormats, "_sample_idx should be a 32sC1, 8sC1 or 8uC1 vector.");
         }
     }
     else
@@ -324,7 +324,7 @@ CvGBTrees::train( const CvMat* _train_data, int _tflag,
     }
 
     // subsample params and data
-    rng = &cv::theRNG();
+    rng = &ncvslideio::theRNG();
 
     int samples_count = get_len(sample_idx);
 
@@ -886,7 +886,7 @@ float CvGBTrees::predict_serial( const CvMat* _sample, const CvMat* _missing,
 }
 
 
-class Tree_predictor : public cv::ParallelLoopBody
+class Tree_predictor : public ncvslideio::ParallelLoopBody
 {
 private:
     pCvSeq* weak;
@@ -896,7 +896,7 @@ private:
     const CvMat* missing;
     const float shrinkage;
 
-    static cv::Mutex SumMutex;
+    static ncvslideio::Mutex SumMutex;
 
 
 public:
@@ -907,7 +907,7 @@ public:
                    missing(_missing), shrinkage(_shrinkage)
     {}
 
-    Tree_predictor( const Tree_predictor& p, cv::Split ) :
+    Tree_predictor( const Tree_predictor& p, ncvslideio::Split ) :
             weak(p.weak), sum(p.sum), k(p.k), sample(p.sample),
             missing(p.missing), shrinkage(p.shrinkage)
     {}
@@ -915,7 +915,7 @@ public:
     Tree_predictor& operator=( const Tree_predictor& )
     { return *this; }
 
-    virtual void operator()(const cv::Range& range) const
+    virtual void operator()(const ncvslideio::Range& range) const
     {
         CvSeqReader reader;
         int begin = range.start;
@@ -939,7 +939,7 @@ public:
             }
 
             {
-                cv::AutoLock lock(SumMutex);
+                ncvslideio::AutoLock lock(SumMutex);
                 sum[i] += tmp_sum;
             }
         }
@@ -949,7 +949,7 @@ public:
 
 }; // class Tree_predictor
 
-cv::Mutex Tree_predictor::SumMutex;
+ncvslideio::Mutex Tree_predictor::SumMutex;
 
 
 float CvGBTrees::predict( const CvMat* _sample, const CvMat* _missing,
@@ -967,7 +967,7 @@ float CvGBTrees::predict( const CvMat* _sample, const CvMat* _missing,
         Tree_predictor predictor = Tree_predictor(weak_seq, class_count,
                                     params.shrinkage, _sample, _missing, sum);
 
-        cv::parallel_for_(cv::Range(begin, end), predictor);
+        ncvslideio::parallel_for_(ncvslideio::Range(begin, end), predictor);
 
         for (int i=0; i<class_count; ++i)
             sum[i] = sum[i] /** params.shrinkage*/ + base_value;
@@ -1072,7 +1072,7 @@ void CvGBTrees::read_params( CvFileStorage* fs, CvFileNode* fnode )
 
 
     if( params.loss_function_type < SQUARED_LOSS || params.loss_function_type > DEVIANCE_LOSS ||  params.loss_function_type == 2)
-        CV_ERROR( cv::Error::StsBadArg, "Unknown loss function" );
+        CV_ERROR( ncvslideio::Error::StsBadArg, "Unknown loss function" );
 
     params.weak_count = cvReadIntByName( fs, fnode, "ensemble_length" );
     params.shrinkage = (float)cvReadRealByName( fs, fnode, "shrinkage", 0.1 );
@@ -1082,7 +1082,7 @@ void CvGBTrees::read_params( CvFileStorage* fs, CvFileNode* fnode )
     {
         class_labels = (CvMat*)cvReadByName( fs, fnode, "class_labels" );
         if( class_labels && !CV_IS_MAT(class_labels))
-            CV_ERROR( cv::Error::StsParseError, "class_labels must stored as a matrix");
+            CV_ERROR( ncvslideio::Error::StsParseError, "class_labels must stored as a matrix");
     }
     data->is_classifier = 0;
 
@@ -1100,12 +1100,12 @@ void CvGBTrees::write( CvFileStorage* fs, const char* name ) const
 
     CvSeqReader reader;
     int i;
-    cv::String s;
+    ncvslideio::String s;
 
     cvStartWriteStruct( fs, name, CV_NODE_MAP, CV_TYPE_NAME_ML_GBT );
 
     if( !weak )
-        CV_ERROR( cv::Error::StsBadArg, "The model has not been trained yet" );
+        CV_ERROR( ncvslideio::Error::StsBadArg, "The model has not been trained yet" );
 
     write_params( fs );
     cvWriteReal( fs, "base_value", base_value);
@@ -1113,7 +1113,7 @@ void CvGBTrees::write( CvFileStorage* fs, const char* name ) const
 
     for ( int j=0; j < class_count; ++j )
     {
-        s = cv::format("trees_%d", j);
+        s = ncvslideio::format("trees_%d", j);
         cvStartWriteStruct( fs, s.c_str(), CV_NODE_SEQ );
 
         cvStartReadSeq( weak[j], &reader );
@@ -1150,7 +1150,7 @@ void CvGBTrees::read( CvFileStorage* fs, CvFileNode* node )
     CvFileNode* trees_fnode;
     CvMemStorage* storage;
     int i, ntrees;
-    cv::String s;
+    ncvslideio::String s;
 
     clear();
     read_params( fs, node );
@@ -1166,17 +1166,17 @@ void CvGBTrees::read( CvFileStorage* fs, CvFileNode* node )
 
     for (int j=0; j<class_count; ++j)
     {
-        s = cv::format("trees_%d", j);
+        s = ncvslideio::format("trees_%d", j);
 
         trees_fnode = cvGetFileNodeByName( fs, node, s.c_str() );
         if( !trees_fnode || !CV_NODE_IS_SEQ(trees_fnode->tag) )
-            CV_ERROR( cv::Error::StsParseError, "<trees_x> tag is missing" );
+            CV_ERROR( ncvslideio::Error::StsParseError, "<trees_x> tag is missing" );
 
         cvStartReadSeq( trees_fnode->data.seq, &reader );
         ntrees = trees_fnode->data.seq->total;
 
         if( ntrees != params.weak_count )
-            CV_ERROR( cv::Error::StsUnmatchedSizes,
+            CV_ERROR( ncvslideio::Error::StsUnmatchedSizes,
             "The number of trees stored does not match <ntrees> tag value" );
 
         CV_CALL( storage = cvCreateMemStorage() );
@@ -1196,7 +1196,7 @@ void CvGBTrees::read( CvFileStorage* fs, CvFileNode* node )
 
 //===========================================================================
 
-class Sample_predictor : public cv::ParallelLoopBody
+class Sample_predictor : public ncvslideio::ParallelLoopBody
 {
 private:
     const CvGBTrees* gbt;
@@ -1219,14 +1219,14 @@ public:
     {}
 
 
-    Sample_predictor( const Sample_predictor& p, cv::Split ) :
+    Sample_predictor( const Sample_predictor& p, ncvslideio::Split ) :
             gbt(p.gbt), predictions(p.predictions),
             samples(p.samples), missing(p.missing), idx(p.idx),
             slice(p.slice)
     {}
 
 
-    virtual void operator()(const cv::Range& range) const
+    virtual void operator()(const ncvslideio::Range& range) const
     {
         int begin = range.start;
         int end = range.end;
@@ -1290,7 +1290,7 @@ CvGBTrees::calc_error( CvMLData* _data, int type, std::vector<float> *resp )
     Sample_predictor predictor = Sample_predictor(this, pred_resp, _data->get_values(),
             _data->get_missing(), _sample_idx);
 
-    cv::parallel_for_(cv::Range(0,n), predictor);
+    ncvslideio::parallel_for_(ncvslideio::Range(0,n), predictor);
 
     int* sidx = _sample_idx ? _sample_idx->data.i : 0;
     int r_step = CV_IS_MAT_CONT(response->type) ?
@@ -1325,10 +1325,10 @@ CvGBTrees::calc_error( CvMLData* _data, int type, std::vector<float> *resp )
 }
 
 
-CvGBTrees::CvGBTrees( const cv::Mat& trainData, int tflag,
-          const cv::Mat& responses, const cv::Mat& varIdx,
-          const cv::Mat& sampleIdx, const cv::Mat& varType,
-          const cv::Mat& missingDataMask,
+CvGBTrees::CvGBTrees( const ncvslideio::Mat& trainData, int tflag,
+          const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx,
+          const ncvslideio::Mat& sampleIdx, const ncvslideio::Mat& varType,
+          const ncvslideio::Mat& missingDataMask,
           CvGBTreesParams _params )
 {
     data = 0;
@@ -1346,10 +1346,10 @@ CvGBTrees::CvGBTrees( const cv::Mat& trainData, int tflag,
     train(trainData, tflag, responses, varIdx, sampleIdx, varType, missingDataMask, _params, false);
 }
 
-bool CvGBTrees::train( const cv::Mat& trainData, int tflag,
-                   const cv::Mat& responses, const cv::Mat& varIdx,
-                   const cv::Mat& sampleIdx, const cv::Mat& varType,
-                   const cv::Mat& missingDataMask,
+bool CvGBTrees::train( const ncvslideio::Mat& trainData, int tflag,
+                   const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx,
+                   const ncvslideio::Mat& sampleIdx, const ncvslideio::Mat& varType,
+                   const ncvslideio::Mat& missingDataMask,
                    CvGBTreesParams _params,
                    bool update )
 {
@@ -1362,12 +1362,12 @@ bool CvGBTrees::train( const cv::Mat& trainData, int tflag,
                   missingDataMask.empty() ? 0 : &_missingDataMask, _params, update);
 }
 
-float CvGBTrees::predict( const cv::Mat& sample, const cv::Mat& _missing,
-                          const cv::Range& slice, int k ) const
+float CvGBTrees::predict( const ncvslideio::Mat& sample, const ncvslideio::Mat& _missing,
+                          const ncvslideio::Range& slice, int k ) const
 {
     CvMat _sample = sample, miss = _missing;
     return predict(&_sample, _missing.empty() ? 0 : &miss, 0,
-                   slice==cv::Range::all() ? CV_WHOLE_SEQ : cvSlice(slice.start, slice.end), k);
+                   slice==ncvslideio::Range::all() ? CV_WHOLE_SEQ : cvSlice(slice.start, slice.end), k);
 }
 
 #endif

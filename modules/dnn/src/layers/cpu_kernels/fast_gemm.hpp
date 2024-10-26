@@ -15,7 +15,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 struct FastGemmOpt {
     bool use_avx;
@@ -176,6 +176,6 @@ void fastGemmBatch(size_t batch, const size_t *A_offsets, const size_t *B_offset
 void fastGemmBatch(bool trans_a, bool trans_b, float alpha, const Mat &A,
                    const Mat &B, float beta, Mat &C, FastGemmOpt &opt);
 
-}} // cv::dnn
+}} // ncvslideio::dnn
 
 #endif // OPENCV_DNN_FAST_GEMM_HPP

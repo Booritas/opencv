@@ -12,7 +12,7 @@
 #ifdef HAVE_DIRECTX
 #ifdef HAVE_D3D11
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -163,7 +163,7 @@ void DX11AllocationItem::release() {
     GAPI_LOG_DEBUG(nullptr, "texture: " << texture_ptr <<
                             ", subresource id: " << subresource_id <<
                             ", parent: " << parent.get());
-    cv::util::suppress_unused_warning(parent);
+    ncvslideio::util::suppress_unused_warning(parent);
 }
 
 ID3D11Texture2D* DX11AllocationItem::get_texture_ptr() {
@@ -414,7 +414,7 @@ size_t DX11AllocationRecord::size() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_D3D11
 #endif // HAVE_DIRECTX
 #endif // HAVE_ONEVPL

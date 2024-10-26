@@ -83,7 +83,7 @@ struct WrapAff2D
 
 bool CV_RigidTransform_Test::testNPoints(int from)
 {
-    cv::RNG rng = cv::theRNG();
+    ncvslideio::RNG rng = ncvslideio::theRNG();
 
     int progress = 0;
     int k, ntests = 10000;
@@ -120,7 +120,7 @@ bool CV_RigidTransform_Test::testNPoints(int from)
                 Mat A = fpts.reshape(1, 3);
                 Mat B = A - repeat(A.row(0), 3, 1), Bt = B.t();
                 B = Bt*B;
-                dB = cv::determinant(B);
+                dB = ncvslideio::determinant(B);
                 nB = cvtest::norm(B, NORM_L2);
                 if( fabs(dB) < 0.01*nB )
                     continue;
@@ -145,7 +145,7 @@ bool CV_RigidTransform_Test::testImage()
     }
     pyrDown(testImg, img);
 
-    Mat aff = cv::getRotationMatrix2D(Point(img.cols/2, img.rows/2), 1, 0.99);
+    Mat aff = ncvslideio::getRotationMatrix2D(Point(img.cols/2, img.rows/2), 1, 0.99);
     aff.ptr<double>()[2]+=3;
     aff.ptr<double>()[5]+=3;
 

@@ -18,7 +18,7 @@
 #ifdef HAVE_ONEVPL
 #include "streaming/onevpl/onevpl_export.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -34,21 +34,21 @@ struct VPLAccelerationPolicy;
 
 // GAPI_EXPORTS for tests
 class GAPI_EXPORTS VPPPreprocEngine final : public ProcessingEngineBase,
-                                            public cv::gapi::wip::IPreprocEngine {
+                                            public ncvslideio::gapi::wip::IPreprocEngine {
 public:
     using session_type     = VPPPreprocSession;
     using session_ptr_type = std::shared_ptr<session_type>;
 
     VPPPreprocEngine(std::unique_ptr<VPLAccelerationPolicy>&& accel);
 
-    cv::util::optional<pp_params> is_applicable(const cv::MediaFrame& in_frame) override;
+    ncvslideio::util::optional<pp_params> is_applicable(const ncvslideio::MediaFrame& in_frame) override;
 
     pp_session initialize_preproc(const pp_params& initial_frame_param,
                                   const GFrameDesc& required_frame_descr) override;
 
-    cv::MediaFrame run_sync(const pp_session &session_handle,
-                            const cv::MediaFrame& in_frame,
-                            const cv::util::optional<cv::Rect> &opt_roi) override;
+    ncvslideio::MediaFrame run_sync(const pp_session &session_handle,
+                            const ncvslideio::MediaFrame& in_frame,
+                            const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi) override;
 
 private:
     std::map<mfxFrameInfo, session_ptr_type, FrameInfoComparator> preproc_session_map;
@@ -63,6 +63,6 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONVPL_PREPROC_ENGINE_HPP

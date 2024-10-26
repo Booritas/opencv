@@ -1,5 +1,5 @@
 /**
- * @brief It demonstrates the usage of cv::Mat::checkVector.
+ * @brief It demonstrates the usage of ncvslideio::Mat::checkVector.
  */
 
 #include <opencv2/core.hpp>
@@ -7,7 +7,7 @@
 int main()
 {
     //! [example-2d]
-    cv::Mat mat(20, 1, CV_32FC2);
+    ncvslideio::Mat mat(20, 1, CV_32FC2);
     int n = mat.checkVector(2);
     CV_Assert(n == 20); // mat has 20 elements
 

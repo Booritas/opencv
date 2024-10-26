@@ -8,10 +8,10 @@ import cv2 as cv
 
 
 def show_wait_destroy(winname, img):
-    cv.imshow(winname, img)
-    cv.moveWindow(winname, 500, 0)
-    cv.waitKey(0)
-    cv.destroyWindow(winname)
+    ncvslideio.imshow(winname, img)
+    ncvslideio.moveWindow(winname, 500, 0)
+    ncvslideio.waitKey(0)
+    ncvslideio.destroyWindow(winname)
 
 
 def main(argv):
@@ -23,7 +23,7 @@ def main(argv):
         return -1
 
     # Load the image
-    src = cv.imread(argv[0], cv.IMREAD_COLOR)
+    src = ncvslideio.imread(argv[0], ncvslideio.IMREAD_COLOR)
 
     # Check if image is loaded fine
     if src is None:
@@ -31,13 +31,13 @@ def main(argv):
         return -1
 
     # Show source image
-    cv.imshow("src", src)
+    ncvslideio.imshow("src", src)
     # [load_image]
 
     # [gray]
     # Transform source image to gray if it is not already
     if len(src.shape) != 2:
-        gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+        gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
     else:
         gray = src
 
@@ -47,9 +47,9 @@ def main(argv):
 
     # [bin]
     # Apply adaptiveThreshold at the bitwise_not of gray, notice the ~ symbol
-    gray = cv.bitwise_not(gray)
-    bw = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, \
-                                cv.THRESH_BINARY, 15, -2)
+    gray = ncvslideio.bitwise_not(gray)
+    bw = ncvslideio.adaptiveThreshold(gray, 255, ncvslideio.ADAPTIVE_THRESH_MEAN_C, \
+                                ncvslideio.THRESH_BINARY, 15, -2)
     # Show binary image
     show_wait_destroy("binary", bw)
     # [bin]
@@ -66,11 +66,11 @@ def main(argv):
     horizontal_size = cols // 30
 
     # Create structure element for extracting horizontal lines through morphology operations
-    horizontalStructure = cv.getStructuringElement(cv.MORPH_RECT, (horizontal_size, 1))
+    horizontalStructure = ncvslideio.getStructuringElement(ncvslideio.MORPH_RECT, (horizontal_size, 1))
 
     # Apply morphology operations
-    horizontal = cv.erode(horizontal, horizontalStructure)
-    horizontal = cv.dilate(horizontal, horizontalStructure)
+    horizontal = ncvslideio.erode(horizontal, horizontalStructure)
+    horizontal = ncvslideio.dilate(horizontal, horizontalStructure)
 
     # Show extracted horizontal lines
     show_wait_destroy("horizontal", horizontal)
@@ -82,11 +82,11 @@ def main(argv):
     verticalsize = rows // 30
 
     # Create structure element for extracting vertical lines through morphology operations
-    verticalStructure = cv.getStructuringElement(cv.MORPH_RECT, (1, verticalsize))
+    verticalStructure = ncvslideio.getStructuringElement(ncvslideio.MORPH_RECT, (1, verticalsize))
 
     # Apply morphology operations
-    vertical = cv.erode(vertical, verticalStructure)
-    vertical = cv.dilate(vertical, verticalStructure)
+    vertical = ncvslideio.erode(vertical, verticalStructure)
+    vertical = ncvslideio.dilate(vertical, verticalStructure)
 
     # Show extracted vertical lines
     show_wait_destroy("vertical", vertical)
@@ -94,7 +94,7 @@ def main(argv):
 
     # [smooth]
     # Inverse vertical image
-    vertical = cv.bitwise_not(vertical)
+    vertical = ncvslideio.bitwise_not(vertical)
     show_wait_destroy("vertical_bit", vertical)
 
     '''
@@ -107,20 +107,20 @@ def main(argv):
     '''
 
     # Step 1
-    edges = cv.adaptiveThreshold(vertical, 255, cv.ADAPTIVE_THRESH_MEAN_C, \
-                                cv.THRESH_BINARY, 3, -2)
+    edges = ncvslideio.adaptiveThreshold(vertical, 255, ncvslideio.ADAPTIVE_THRESH_MEAN_C, \
+                                ncvslideio.THRESH_BINARY, 3, -2)
     show_wait_destroy("edges", edges)
 
     # Step 2
     kernel = np.ones((2, 2), np.uint8)
-    edges = cv.dilate(edges, kernel)
+    edges = ncvslideio.dilate(edges, kernel)
     show_wait_destroy("dilate", edges)
 
     # Step 3
     smooth = np.copy(vertical)
 
     # Step 4
-    smooth = cv.blur(smooth, (2, 2))
+    smooth = ncvslideio.blur(smooth, (2, 2))
 
     # Step 5
     (rows, cols) = np.where(edges != 0)

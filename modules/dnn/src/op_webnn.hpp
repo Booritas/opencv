@@ -27,7 +27,7 @@
 
 #endif  // HAVE_WEBNN
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 constexpr bool haveWebnn() {
 #ifdef HAVE_WEBNN
@@ -105,10 +105,10 @@ public:
 
     void forward(const std::vector<Ptr<BackendWrapper> >& outBlobsWrappers, bool isAsync);
 
-    std::vector<ml::Operand> setInputs(const std::vector<cv::Mat>& inputs, const std::vector<std::string>& names);
+    std::vector<ml::Operand> setInputs(const std::vector<ncvslideio::Mat>& inputs, const std::vector<std::string>& names);
 
     void setUnconnectedNodes(Ptr<WebnnBackendNode>& node);
-    void addBlobs(const std::vector<cv::Ptr<BackendWrapper> >& ptrs);
+    void addBlobs(const std::vector<ncvslideio::Ptr<BackendWrapper> >& ptrs);
 
     void createNet(Target targetId);
     // void setNodePtr(std::shared_ptr<ov::Node>* ptr);
@@ -119,7 +119,7 @@ public:
     ml::Context context;
     ml::Graph graph;
 
-    std::unordered_map<std::string, cv::Ptr<WebnnBackendWrapper>> allBlobs;
+    std::unordered_map<std::string, ncvslideio::Ptr<WebnnBackendWrapper>> allBlobs;
 
     bool hasNetOwner;
     std::string device_name;
@@ -165,7 +165,7 @@ public:
 void forwardWebnn(const std::vector<Ptr<BackendWrapper> >& outBlobsWrappers,
                    Ptr<BackendNode>& node, bool isAsync);
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 
 
 #endif  // __OPENCV_DNN_OP_WEBNN_HPP__

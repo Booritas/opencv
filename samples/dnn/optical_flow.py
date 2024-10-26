@@ -25,16 +25,16 @@ import cv2 as cv
 class OpticalFlow(object):
     def __init__(self, model, height, width, proto=""):
         if proto:
-            self.net = cv.dnn.readNetFromCaffe(proto, model)
+            self.net = ncvslideio.dnn.readNetFromCaffe(proto, model)
         else:
-            self.net = cv.dnn.readNet(model)
-        self.net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
+            self.net = ncvslideio.dnn.readNet(model)
+        self.net.setPreferableBackend(ncvslideio.dnn.DNN_BACKEND_OPENCV)
         self.height = height
         self.width = width
 
     def compute_flow(self, first_img, second_img):
-        inp0 = cv.dnn.blobFromImage(first_img, size=(self.width, self.height))
-        inp1 = cv.dnn.blobFromImage(second_img, size=(self.width, self.height))
+        inp0 = ncvslideio.dnn.blobFromImage(first_img, size=(self.width, self.height))
+        inp1 = ncvslideio.dnn.blobFromImage(second_img, size=(self.width, self.height))
         self.net.setInputsNames(["img0", "img1"])
         self.net.setInput(inp0, "img0")
         self.net.setInput(inp1, "img1")
@@ -45,7 +45,7 @@ class OpticalFlow(object):
 
     def motion_to_color(self, flow):
         arr = np.arange(0, 255, dtype=np.uint8)
-        colormap = cv.applyColorMap(arr, cv.COLORMAP_HSV)
+        colormap = ncvslideio.applyColorMap(arr, ncvslideio.COLORMAP_HSV)
         colormap = colormap.squeeze(1)
 
         flow = flow.squeeze(0)
@@ -85,8 +85,8 @@ if __name__ == '__main__':
         raise OSError("Prototxt does not exist")
 
     winName = 'Calculation optical flow in OpenCV'
-    cv.namedWindow(winName, cv.WINDOW_NORMAL)
-    cap = cv.VideoCapture(args.input if args.input else 0)
+    ncvslideio.namedWindow(winName, ncvslideio.WINDOW_NORMAL)
+    cap = ncvslideio.VideoCapture(args.input if args.input else 0)
     hasFrame, first_frame = cap.read()
 
     if args.proto:
@@ -111,10 +111,10 @@ if __name__ == '__main__':
     else:
         opt_flow = OpticalFlow(args.model, 360, 480)
 
-    while cv.waitKey(1) < 0:
+    while ncvslideio.waitKey(1) < 0:
         hasFrame, second_frame = cap.read()
         if not hasFrame:
             break
         flow = opt_flow.compute_flow(first_frame, second_frame)
         first_frame = second_frame
-        cv.imshow(winName, flow)
+        ncvslideio.imshow(winName, flow)

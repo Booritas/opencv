@@ -70,7 +70,7 @@
 QUnit.module('Utils', {});
 QUnit.test('Test vectors', function(assert) {
     {
-        let pointVector = new cv.PointVector();
+        let pointVector = new ncvslideio.PointVector();
         for (let i=0; i<100; ++i) {
             pointVector.push_back({x: i, y: 2*i});
         }
@@ -96,12 +96,12 @@ QUnit.test('Test vectors', function(assert) {
     }
 
     {
-        let pointVector = new cv.PointVector();
+        let pointVector = new ncvslideio.PointVector();
         for (let i=0; i<100; ++i) {
-            pointVector.push_back(new cv.Point(i, 2*i));
+            pointVector.push_back(new ncvslideio.Point(i, 2*i));
         }
 
-        pointVector.push_back(new cv.Point());
+        pointVector.push_back(new ncvslideio.Point());
 
         assert.equal(pointVector.size(), 101);
 
@@ -129,13 +129,13 @@ QUnit.test('Test vectors', function(assert) {
     }
 });
 QUnit.test('Test Rect', function(assert) {
-    let rectVector = new cv.RectVector();
+    let rectVector = new ncvslideio.RectVector();
     let rect = {x: 1, y: 2, width: 3, height: 4};
     rectVector.push_back(rect);
-    rectVector.push_back(new cv.Rect());
-    rectVector.push_back(new cv.Rect(rect));
-    rectVector.push_back(new cv.Rect({x: 5, y: 6}, {width: 7, height: 8}));
-    rectVector.push_back(new cv.Rect(9, 10, 11, 12));
+    rectVector.push_back(new ncvslideio.Rect());
+    rectVector.push_back(new ncvslideio.Rect(rect));
+    rectVector.push_back(new ncvslideio.Rect({x: 5, y: 6}, {width: 7, height: 8}));
+    rectVector.push_back(new ncvslideio.Rect(9, 10, 11, 12));
 
     assert.equal(rectVector.size(), 5);
 
@@ -173,11 +173,11 @@ QUnit.test('Test Rect', function(assert) {
 });
 QUnit.test('Test Size', function(assert) {
     {
-        let mat = new cv.Mat();
-        mat.create({width: 5, height: 10}, cv.CV_8UC4);
+        let mat = new ncvslideio.Mat();
+        mat.create({width: 5, height: 10}, ncvslideio.CV_8UC4);
         let size = mat.size();
 
-        assert.ok(mat.type() === cv.CV_8UC4);
+        assert.ok(mat.type() === ncvslideio.CV_8UC4);
         assert.ok(size.height === 10);
         assert.ok(size.width === 5);
         assert.ok(mat.channels() === 4);
@@ -186,11 +186,11 @@ QUnit.test('Test Size', function(assert) {
     }
 
     {
-        let mat = new cv.Mat();
-        mat.create(new cv.Size(5, 10), cv.CV_8UC4);
+        let mat = new ncvslideio.Mat();
+        mat.create(new ncvslideio.Size(5, 10), ncvslideio.CV_8UC4);
         let size = mat.size();
 
-        assert.ok(mat.type() === cv.CV_8UC4);
+        assert.ok(mat.type() === ncvslideio.CV_8UC4);
         assert.ok(size.height === 10);
         assert.ok(size.width === 5);
         assert.ok(mat.channels() === 4);
@@ -212,7 +212,7 @@ QUnit.test('test_rotated_rect', function(assert) {
     }
 
     {
-        let rect = new cv.RotatedRect();
+        let rect = new ncvslideio.RotatedRect();
 
         assert.equal(rect.center.x, 0);
         assert.equal(rect.center.y, 0);
@@ -220,7 +220,7 @@ QUnit.test('test_rotated_rect', function(assert) {
         assert.equal(rect.size.height, 0);
         assert.equal(rect.size.width, 0);
 
-        let points = cv.RotatedRect.points(rect);
+        let points = ncvslideio.RotatedRect.points(rect);
 
         assert.equal(points[0].x, 0);
         assert.equal(points[0].y, 0);
@@ -233,7 +233,7 @@ QUnit.test('test_rotated_rect', function(assert) {
     }
 
     {
-        let rect = new cv.RotatedRect({x: 100, y: 100}, {height: 100, width: 50}, 30);
+        let rect = new ncvslideio.RotatedRect({x: 100, y: 100}, {height: 100, width: 50}, 30);
 
         assert.equal(rect.center.x, 100);
         assert.equal(rect.center.y, 100);
@@ -241,9 +241,9 @@ QUnit.test('test_rotated_rect', function(assert) {
         assert.equal(rect.size.height, 100);
         assert.equal(rect.size.width, 50);
 
-        let points = cv.RotatedRect.points(rect);
+        let points = ncvslideio.RotatedRect.points(rect);
 
-        assert.equal(points[0].x, cv.RotatedRect.boundingRect2f(rect).x);
-        assert.equal(points[1].y, cv.RotatedRect.boundingRect2f(rect).y);
+        assert.equal(points[0].x, ncvslideio.RotatedRect.boundingRect2f(rect).x);
+        assert.equal(points[1].y, ncvslideio.RotatedRect.boundingRect2f(rect).y);
     }
 });

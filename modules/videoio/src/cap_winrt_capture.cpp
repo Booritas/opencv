@@ -43,7 +43,7 @@ using namespace Microsoft::WRL;
 
 using namespace ::std;
 
-namespace cv {
+namespace ncvslideio {
 
     /******************************* exported API functions **************************************/
 
@@ -152,7 +152,7 @@ namespace cv {
 
     // should be called on the image processing thread after grabFrame
     // see VideoCapture::read
-    bool VideoCapture_WinRT::retrieveFrame(int channel, cv::OutputArray outArray)
+    bool VideoCapture_WinRT::retrieveFrame(int channel, ncvslideio::OutputArray outArray)
     {
         if (!started) {
 

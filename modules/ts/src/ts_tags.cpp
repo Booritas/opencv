@@ -429,7 +429,7 @@ static std::vector<std::string> parseStringList(const std::string& s)
 
 }
 
-void activateTestTags(const cv::CommandLineParser& parser)
+void activateTestTags(const ncvslideio::CommandLineParser& parser)
 {
     std::string test_tag_skip = parser.get<std::string>("test_tag_skip");
     if (!test_tag_skip.empty())

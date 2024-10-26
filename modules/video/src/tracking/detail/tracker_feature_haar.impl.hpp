@@ -6,7 +6,7 @@
 #include "opencv2/video/detail/tracking.detail.hpp"
 #include "tracking_feature.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 inline namespace internal {
@@ -55,7 +55,7 @@ TrackerFeatureHAAR::TrackerFeatureHAAR(const TrackerFeatureHAAR::Params& paramet
     featureEvaluator->init(&haarParams, 1, params.rectSize);
 }
 
-class Parallel_compute : public cv::ParallelLoopBody
+class Parallel_compute : public ncvslideio::ParallelLoopBody
 {
 private:
     Ptr<CvHaarEvaluator> featureEvaluator;
@@ -72,7 +72,7 @@ public:
         //features = featureEvaluator->getFeatures();
     }
 
-    virtual void operator()(const cv::Range& r) const CV_OVERRIDE
+    virtual void operator()(const ncvslideio::Range& r) const CV_OVERRIDE
     {
         for (int jf = r.start; jf != r.end; ++jf)
         {
@@ -118,4 +118,4 @@ bool TrackerFeatureHAAR::computeImpl(const std::vector<Mat>& images, Mat& respon
     return true;
 }
 
-}}}}  // namespace cv::detail::tracking::internal
+}}}}  // namespace ncvslideio::detail::tracking::internal

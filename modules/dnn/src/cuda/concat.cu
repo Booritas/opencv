@@ -21,10 +21,10 @@
 #include <cstddef>
 #include <vector>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     namespace raw {
         template <class T, std::size_t N>
@@ -274,4 +274,4 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
     template void concat_with_offsets(const Stream&, TensorSpan<__half>, TensorView<__half>, std::vector<std::size_t>);
     template void concat_with_offsets(const Stream&, TensorSpan<float>, TensorView<float>, std::vector<std::size_t>);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

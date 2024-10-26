@@ -14,7 +14,7 @@
 // --------------------------------------------------- //
 
 /**  The custom constructor of the Triangle Class */
-Triangle::Triangle(const cv::Point3f& V0, const cv::Point3f& V1, const cv::Point3f& V2) :
+Triangle::Triangle(const ncvslideio::Point3f& V0, const ncvslideio::Point3f& V1, const ncvslideio::Point3f& V2) :
     v0_(V0), v1_(V1), v2_(V2)
 {
 }
@@ -31,7 +31,7 @@ Triangle::~Triangle()
 // --------------------------------------------------- //
 
 /**  The custom constructor of the Ray Class */
-Ray::Ray(const cv::Point3f& P0, const cv::Point3f& P1) :
+Ray::Ray(const ncvslideio::Point3f& P0, const ncvslideio::Point3f& P1) :
     p0_(P0), p1_(P1)
 {
 }

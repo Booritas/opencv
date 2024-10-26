@@ -11,46 +11,46 @@
 
 #include <opencv2/gapi/cpu/gcpukernel.hpp>
 
-const cv::Mat& cv::GCPUContext::inMat(int input)
+const ncvslideio::Mat& ncvslideio::GCPUContext::inMat(int input)
 {
-    return inArg<cv::Mat>(input);
+    return inArg<ncvslideio::Mat>(input);
 }
 
-cv::Mat&  cv::GCPUContext::outMatR(int output)
+ncvslideio::Mat&  ncvslideio::GCPUContext::outMatR(int output)
 {
-    return *util::get<cv::Mat*>(m_results.at(output));
+    return *util::get<ncvslideio::Mat*>(m_results.at(output));
 }
 
-const cv::Scalar& cv::GCPUContext::inVal(int input)
+const ncvslideio::Scalar& ncvslideio::GCPUContext::inVal(int input)
 {
-    return inArg<cv::Scalar>(input);
+    return inArg<ncvslideio::Scalar>(input);
 }
 
-cv::Scalar& cv::GCPUContext::outValR(int output)
+ncvslideio::Scalar& ncvslideio::GCPUContext::outValR(int output)
 {
-    return *util::get<cv::Scalar*>(m_results.at(output));
+    return *util::get<ncvslideio::Scalar*>(m_results.at(output));
 }
 
-cv::detail::VectorRef& cv::GCPUContext::outVecRef(int output)
+ncvslideio::detail::VectorRef& ncvslideio::GCPUContext::outVecRef(int output)
 {
-    return util::get<cv::detail::VectorRef>(m_results.at(output));
+    return util::get<ncvslideio::detail::VectorRef>(m_results.at(output));
 }
 
-cv::detail::OpaqueRef& cv::GCPUContext::outOpaqueRef(int output)
+ncvslideio::detail::OpaqueRef& ncvslideio::GCPUContext::outOpaqueRef(int output)
 {
-    return util::get<cv::detail::OpaqueRef>(m_results.at(output));
+    return util::get<ncvslideio::detail::OpaqueRef>(m_results.at(output));
 }
 
-cv::MediaFrame& cv::GCPUContext::outFrame(int output)
+ncvslideio::MediaFrame& ncvslideio::GCPUContext::outFrame(int output)
 {
-    return *util::get<cv::MediaFrame*>(m_results.at(output));
+    return *util::get<ncvslideio::MediaFrame*>(m_results.at(output));
 }
 
-cv::GCPUKernel::GCPUKernel()
+ncvslideio::GCPUKernel::GCPUKernel()
 {
 }
 
-cv::GCPUKernel::GCPUKernel(const GCPUKernel::RunF &runF, const GCPUKernel::SetupF &setupF)
+ncvslideio::GCPUKernel::GCPUKernel(const GCPUKernel::RunF &runF, const GCPUKernel::SetupF &setupF)
     : m_runF(runF), m_setupF(setupF), m_isStateful(m_setupF != nullptr)
 {
 }

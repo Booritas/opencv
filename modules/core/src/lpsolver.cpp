@@ -45,7 +45,7 @@
 #define dprintf(x)
 #define print_matrix(x)
 
-namespace cv
+namespace ncvslideio
 {
 
 using std::vector;

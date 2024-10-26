@@ -24,7 +24,7 @@
 
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace {
 
 struct AvifImageDeleter {
@@ -37,8 +37,8 @@ avifResult CopyToMat(const avifImage *image, int channels, bool useRGB , Mat *ma
   CV_Assert((int)image->height == mat->rows);
   CV_Assert((int)image->width == mat->cols);
   if (channels == 1) {
-    const cv::Mat image_wrap =
-        cv::Mat(image->height, image->width,
+    const ncvslideio::Mat image_wrap =
+        ncvslideio::Mat(image->height, image->width,
                 CV_MAKE_TYPE((image->depth == 8) ? CV_8U : CV_16U, 1),
                 image->yuvPlanes[0], image->yuvRowBytes[0]);
     if ((image->depth == 8 && mat->depth() == CV_8U) ||
@@ -67,7 +67,7 @@ avifResult CopyToMat(const avifImage *image, int channels, bool useRGB , Mat *ma
   return avifImageYUVToRGB(image, &rgba);
 }
 
-AvifImageUniquePtr ConvertToAvif(const cv::Mat &img, bool lossless,
+AvifImageUniquePtr ConvertToAvif(const ncvslideio::Mat &img, bool lossless,
                                  int bit_depth) {
   CV_Assert(img.depth() == CV_8U || img.depth() == CV_16U);
 
@@ -344,8 +344,8 @@ bool AvifEncoder::writeToOutput(const std::vector<Mat> &img_vec,
                                      ? AVIF_ADD_IMAGE_FLAG_SINGLE
                                      : AVIF_ADD_IMAGE_FLAG_NONE;
   std::vector<AvifImageUniquePtr> images;
-  std::vector<cv::Mat> imgs_scaled;
-  for (const cv::Mat &img : img_vec) {
+  std::vector<ncvslideio::Mat> imgs_scaled;
+  for (const ncvslideio::Mat &img : img_vec) {
     CV_CheckType(
         img.type(),
         (bit_depth == 8 && img.depth() == CV_8U) ||
@@ -380,6 +380,6 @@ bool AvifEncoder::writeToOutput(const std::vector<Mat> &img_vec,
 
 ImageEncoder AvifEncoder::newEncoder() const { return makePtr<AvifEncoder>(); }
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif

@@ -21,13 +21,13 @@
 template<typename T> using QueueClass = tbb::concurrent_bounded_queue<T>;
 #else
 #  include "executor/conc_queue.hpp"
-template<typename T> using QueueClass = cv::gapi::own::concurrent_bounded_queue<T>;
+template<typename T> using QueueClass = ncvslideio::gapi::own::concurrent_bounded_queue<T>;
 #endif // TBB
 #include "executor/last_value.hpp"
 
 #include "executor/gabstractstreamingexecutor.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
 namespace stream {
@@ -37,28 +37,28 @@ struct Stop {
         HARD, // a hard-stop: end-of-pipeline reached or stop() called
         CNST, // a soft-stop emitted for/by constant sources (see QueueReader)
     } kind = Kind::HARD;
-    cv::GRunArg cdata; // const data for CNST stop
+    ncvslideio::GRunArg cdata; // const data for CNST stop
 };
 
 struct Result {
-    cv::GRunArgs      args;  // Full results vector
+    ncvslideio::GRunArgs      args;  // Full results vector
     std::vector<bool> flags; // Availability flags (in case of desync)
 };
 
-using Cmd = cv::util::variant
-    < cv::util::monostate
+using Cmd = ncvslideio::util::variant
+    < ncvslideio::util::monostate
     , Start                // Tells emitters to start working. Not broadcasted to workers.
     , Stop                 // Tells emitters to stop working. Broadcasted to workers.
-    , cv::GRunArg          // Workers data payload to process.
+    , ncvslideio::GRunArg          // Workers data payload to process.
     , Result               // Pipeline's data for gout()
-    , cv::gimpl::Exception // Exception which is thrown while execution.
+    , ncvslideio::gimpl::Exception // Exception which is thrown while execution.
    >;
 
 // Interface over a queue. The underlying queue implementation may be
 // different. This class is mainly introduced to bring some
 // abstraction over the real queues (bounded in-order) and a
 // desynchronized data slots (see required to implement
-// cv::gapi::desync)
+// ncvslideio::gapi::desync)
 
 class Q {
 public:
@@ -87,7 +87,7 @@ public:
 // This container can hold 0 or 1 element
 // Special handling for Stop is implemented (FIXME: not really)
 class DesyncQueue final: public Q {
-    cv::gapi::own::last_written_value<Cmd> m_v;
+    ncvslideio::gapi::own::last_written_value<Cmd> m_v;
 
 public:
     virtual void push(const Cmd &cmd) override { m_v.push(cmd); }
@@ -128,7 +128,7 @@ protected:
         RUNNING,
     } state = State::STOPPED;
 
-    cv::GMetaArgs m_last_metas;
+    ncvslideio::GMetaArgs m_last_metas;
     util::optional<bool> m_reshapable;
 
     // FIXME: Naive executor details are here for now
@@ -137,10 +137,10 @@ protected:
     {
         std::vector<RcDesc> in_objects;
         std::vector<RcDesc> out_objects;
-        cv::GMetaArgs       out_metas;
+        ncvslideio::GMetaArgs       out_metas;
         ade::NodeHandle     nh;
 
-        cv::GRunArgs in_constants;
+        ncvslideio::GRunArgs in_constants;
 
         std::shared_ptr<GIslandExecutable> isl_exec;
     };
@@ -153,7 +153,7 @@ protected:
     };
     std::vector<DataDesc> m_slots;
 
-    cv::GRunArgs m_const_vals;
+    ncvslideio::GRunArgs m_const_vals;
 
     // Order in these vectors follows the GComputaion's protocol
     std::vector<ade::NodeHandle> m_emitters;
@@ -187,23 +187,23 @@ protected:
 
     void wait_shutdown();
 
-    cv::GTypesInfo out_info;
+    ncvslideio::GTypesInfo out_info;
 
 public:
     explicit GStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
-                                const cv::GCompileArgs &comp_args);
+                                const ncvslideio::GCompileArgs &comp_args);
     ~GStreamingExecutor();
     void setSource(GRunArgs &&args) override;
     void start() override;
-    bool pull(cv::GRunArgsP &&outs) override;
-    bool pull(cv::GOptRunArgsP &&outs) override;
+    bool pull(ncvslideio::GRunArgsP &&outs) override;
+    bool pull(ncvslideio::GOptRunArgsP &&outs) override;
     PyPullResult pull() override;
-    bool try_pull(cv::GRunArgsP &&outs) override;
+    bool try_pull(ncvslideio::GRunArgsP &&outs) override;
     void stop() override;
     bool running() const override;
 };
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMING_EXECUTOR_HPP

@@ -34,7 +34,7 @@
 
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace opencl {
 
@@ -69,7 +69,7 @@ private:
         cl_int res;
 
         size_t psize;
-        cv::AutoBuffer<char> buf;
+        ncvslideio::AutoBuffer<char> buf;
 
         res = clGetPlatformInfo(id, param, 0, 0, &psize);
         if (CL_SUCCESS != res)
@@ -419,9 +419,9 @@ public:
     int initOpenCL();
     int initVideoSource();
 
-    int process_frame_with_open_cl(cv::Mat& frame, bool use_buffer, cl_mem* cl_buffer);
-    int process_cl_buffer_with_opencv(cl_mem buffer, size_t step, int rows, int cols, int type, cv::UMat& u);
-    int process_cl_image_with_opencv(cl_mem image, cv::UMat& u);
+    int process_frame_with_open_cl(ncvslideio::Mat& frame, bool use_buffer, cl_mem* cl_buffer);
+    int process_cl_buffer_with_opencv(cl_mem buffer, size_t step, int rows, int cols, int type, ncvslideio::UMat& u);
+    int process_cl_image_with_opencv(cl_mem image, ncvslideio::UMat& u);
 
     int run();
 
@@ -434,7 +434,7 @@ public:
     void setUseBuffer(bool use_buffer) { m_use_buffer = use_buffer; }
 
 protected:
-    bool nextFrame(cv::Mat& frame) { return m_cap.read(frame); }
+    bool nextFrame(ncvslideio::Mat& frame) { return m_cap.read(frame); }
     void handleKey(char key);
     void timerStart();
     void timerEnd();
@@ -453,9 +453,9 @@ private:
 
     string                      m_file_name;
     int                         m_camera_id;
-    cv::VideoCapture            m_cap;
-    cv::Mat                     m_frame;
-    cv::Mat                     m_frameGray;
+    ncvslideio::VideoCapture            m_cap;
+    ncvslideio::Mat                     m_frame;
+    ncvslideio::Mat                     m_frameGray;
 
     opencl::PlatformInfo        m_platformInfo;
     opencl::DeviceInfo          m_deviceInfo;
@@ -487,7 +487,7 @@ App::App(CommandLineParser& cmd)
     m_t0         = 0;
     m_t1         = 0;
     m_time       = 0.0;
-    m_frequency  = (float)cv::getTickFrequency();
+    m_frequency  = (float)ncvslideio::getTickFrequency();
 
     m_context    = 0;
     m_device_id  = 0;
@@ -638,7 +638,7 @@ int App::initOpenCL()
         m_deviceInfo.QueryInfo(m_device_id);
 
         // attach OpenCL context to OpenCV
-        cv::ocl::attachContext(m_platformInfo.Name(), m_platform_ids[i], m_context, m_device_id);
+        ncvslideio::ocl::attachContext(m_platformInfo.Name(), m_platform_ids[i], m_context, m_device_id);
 
         break;
     }
@@ -685,7 +685,7 @@ int App::initVideoSource()
 // It creates OpenCL buffer or image, depending on use_buffer flag,
 // from input media frame and process these data
 // (inverts each pixel value in half of frame) with OpenCL kernel
-int App::process_frame_with_open_cl(cv::Mat& frame, bool use_buffer, cl_mem* mem_obj)
+int App::process_frame_with_open_cl(ncvslideio::Mat& frame, bool use_buffer, cl_mem* mem_obj)
 {
     cl_int res = CL_SUCCESS;
 
@@ -811,16 +811,16 @@ int App::process_frame_with_open_cl(cv::Mat& frame, bool use_buffer, cl_mem* mem
 // this function is an example of interoperability between OpenCL buffer
 // and OpenCV UMat objects. It converts (without copying data) OpenCL buffer
 // to OpenCV UMat and then do blur on these data
-int App::process_cl_buffer_with_opencv(cl_mem buffer, size_t step, int rows, int cols, int type, cv::UMat& u)
+int App::process_cl_buffer_with_opencv(cl_mem buffer, size_t step, int rows, int cols, int type, ncvslideio::UMat& u)
 {
-    cv::ocl::convertFromBuffer(buffer, step, rows, cols, type, u);
+    ncvslideio::ocl::convertFromBuffer(buffer, step, rows, cols, type, u);
 
     // process right half of frame in OpenCV
-    cv::Point pt(u.cols / 2, 0);
-    cv::Size  sz(u.cols / 2, u.rows);
-    cv::Rect roi(pt, sz);
-    cv::UMat uroi(u, roi);
-    cv::blur(uroi, uroi, cv::Size(7, 7), cv::Point(-3, -3));
+    ncvslideio::Point pt(u.cols / 2, 0);
+    ncvslideio::Size  sz(u.cols / 2, u.rows);
+    ncvslideio::Rect roi(pt, sz);
+    ncvslideio::UMat uroi(u, roi);
+    ncvslideio::blur(uroi, uroi, ncvslideio::Size(7, 7), ncvslideio::Point(-3, -3));
 
     if (buffer)
         clReleaseMemObject(buffer);
@@ -833,16 +833,16 @@ int App::process_cl_buffer_with_opencv(cl_mem buffer, size_t step, int rows, int
 // this function is an example of interoperability between OpenCL image
 // and OpenCV UMat objects. It converts OpenCL image
 // to OpenCV UMat and then do blur on these data
-int App::process_cl_image_with_opencv(cl_mem image, cv::UMat& u)
+int App::process_cl_image_with_opencv(cl_mem image, ncvslideio::UMat& u)
 {
-    cv::ocl::convertFromImage(image, u);
+    ncvslideio::ocl::convertFromImage(image, u);
 
     // process right half of frame in OpenCV
-    cv::Point pt(u.cols / 2, 0);
-    cv::Size  sz(u.cols / 2, u.rows);
-    cv::Rect roi(pt, sz);
-    cv::UMat uroi(u, roi);
-    cv::blur(uroi, uroi, cv::Size(7, 7), cv::Point(-3, -3));
+    ncvslideio::Point pt(u.cols / 2, 0);
+    ncvslideio::Size  sz(u.cols / 2, u.rows);
+    ncvslideio::Rect roi(pt, sz);
+    ncvslideio::UMat uroi(u, roi);
+    ncvslideio::blur(uroi, uroi, ncvslideio::Size(7, 7), ncvslideio::Point(-3, -3));
 
     if (image)
         clReleaseMemObject(image);
@@ -872,15 +872,15 @@ int App::run()
     // can be toggled on/off by 'p' button
     setDoProcess(true);
     // set use buffer flag,
-    // when it is set to true, will demo interop opencl buffer and cv::Umat,
-    // otherwise demo interop opencl image and cv::UMat
+    // when it is set to true, will demo interop opencl buffer and ncvslideio::Umat,
+    // otherwise demo interop opencl image and ncvslideio::UMat
     // can be switched on/of by SPACE button
     setUseBuffer(true);
 
     // Iterate over all frames
     while (isRunning() && nextFrame(m_frame))
     {
-        cv::cvtColor(m_frame, m_frameGray, COLOR_BGR2GRAY);
+        ncvslideio::cvtColor(m_frame, m_frameGray, COLOR_BGR2GRAY);
 
         UMat uframe;
 
@@ -909,7 +909,7 @@ int App::run()
         putText(img_to_show, "Version : " + m_platformInfo.Version(), Point(5, 30), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
         putText(img_to_show, "Name : " + m_platformInfo.Name(), Point(5, 60), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
         putText(img_to_show, "Device : " + m_deviceInfo.Name(), Point(5, 90), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
-        cv::String memtype = useBuffer() ? "buffer" : "image";
+        ncvslideio::String memtype = useBuffer() ? "buffer" : "image";
         putText(img_to_show, "interop with OpenCL " + memtype, Point(5, 120), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
         putText(img_to_show, "Time : " + timeStr() + " msec", Point(5, 150), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
 
@@ -988,7 +988,7 @@ int main(int argc, char** argv)
         app.run();
     }
 
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         cout << "error: " << e.what() << endl;
         return 1;

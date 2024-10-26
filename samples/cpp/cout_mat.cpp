@@ -1,7 +1,7 @@
 /*
  *
- * cvout_sample just demonstrates the serial out capabilities of cv::Mat
- *  That is, cv::Mat M(...); cout << M;  Now works.
+ * cvout_sample just demonstrates the serial out capabilities of ncvslideio::Mat
+ *  That is, ncvslideio::Mat M(...); cout << M;  Now works.
  *
  */
 
@@ -9,14 +9,14 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {
     cout
     << "\n------------------------------------------------------------------\n"
-    << " This program shows the serial out capabilities of cv::Mat\n"
-    << "That is, cv::Mat M(...); cout << M;  Now works.\n"
+    << " This program shows the serial out capabilities of ncvslideio::Mat\n"
+    << "That is, ncvslideio::Mat M(...); cout << M;  Now works.\n"
     << "Output can be formatted to OpenCV, matlab, python, numpy, csv and \n"
     << "C styles Usage:\n"
     << argv[0]
@@ -27,7 +27,7 @@ static void help(char** argv)
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{help h||}");
     if (parser.has("help"))
     {
         help(argv);

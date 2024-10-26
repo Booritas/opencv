@@ -14,7 +14,7 @@
 #include "opencv2/dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 TrackerNano::TrackerNano()
 {
@@ -43,7 +43,7 @@ TrackerNano::Params::Params()
 static void softmax(const Mat& src, Mat& dst)
 {
     Mat maxVal;
-    cv::max(src.row(1), src.row(0), maxVal);
+    ncvslideio::max(src.row(1), src.row(0), maxVal);
 
     src.row(1) -= maxVal;
     src.row(0) -= maxVal;
@@ -67,7 +67,7 @@ static Mat sizeCal(const Mat& w, const Mat& h)
     Mat pad = (w + h) * 0.5;
     Mat sz2 = (w + pad).mul((h + pad));
 
-    cv::sqrt(sz2, sz2);
+    ncvslideio::sqrt(sz2, sz2);
     return sz2;
 }
 
@@ -153,8 +153,8 @@ void TrackerNanoImpl::generateGrids()
 
     Mat x1M(1, sz, CV_32FC1, x1Vec.data());
 
-    cv::repeat(x1M, sz, 1, grid2searchX);
-    cv::repeat(x1M.t(), 1, sz, grid2searchY);
+    ncvslideio::repeat(x1M, sz, 1, grid2searchX);
+    ncvslideio::repeat(x1M.t(), 1, sz, grid2searchY);
 
     grid2searchX *= trackState.totalStride;
     grid2searchY *= trackState.totalStride;
@@ -182,7 +182,7 @@ void TrackerNanoImpl::init(InputArray image_, const Rect &boundingBox_)
     float sumSz = targetSz[0] + targetSz[1];
     float wExtent = targetSz[0] + trackState.contextAmount * (sumSz);
     float hExtent = targetSz[1] + trackState.contextAmount * (sumSz);
-    int sz = int(cv::sqrt(wExtent * hExtent));
+    int sz = int(ncvslideio::sqrt(wExtent * hExtent));
 
     Mat crop;
     getSubwindow(crop, image, sz, exemplarSize);
@@ -221,14 +221,14 @@ void TrackerNanoImpl::getSubwindow(Mat& dstCrop, Mat& srcImg, int originalSz, in
     if (left_pad == 0 && top_pad == 0 && right_pad == 0 && bottom_pad == 0)
     {
         // Crop image without padding.
-        cropImg = srcImg(cv::Rect(context_xmin, context_ymin,
+        cropImg = srcImg(ncvslideio::Rect(context_xmin, context_ymin,
                                   context_xmax - context_xmin + 1, context_ymax - context_ymin + 1));
     }
     else // Crop image with padding, and the padding value is avgChans
     {
-        cv::Mat tmpMat;
-        cv::copyMakeBorder(srcImg, tmpMat, top_pad, bottom_pad, left_pad, right_pad, cv::BORDER_CONSTANT, avgChans);
-        cropImg = tmpMat(cv::Rect(context_xmin, context_ymin, context_xmax - context_xmin + 1, context_ymax - context_ymin + 1));
+        ncvslideio::Mat tmpMat;
+        ncvslideio::copyMakeBorder(srcImg, tmpMat, top_pad, bottom_pad, left_pad, right_pad, ncvslideio::BORDER_CONSTANT, avgChans);
+        cropImg = tmpMat(ncvslideio::Rect(context_xmin, context_ymin, context_xmax - context_xmin + 1, context_ymax - context_ymin + 1));
     }
     resize(cropImg, dstCrop, Size(resizeSz, resizeSz));
 }
@@ -240,7 +240,7 @@ bool TrackerNanoImpl::update(InputArray image_, Rect &boundingBoxRes)
 
     float wc = targetSz[0] + trackState.contextAmount * targetSzSum;
     float hc = targetSz[1] + trackState.contextAmount * targetSzSum;
-    float sz = cv::sqrt(wc * hc);
+    float sz = ncvslideio::sqrt(wc * hc);
     float scale_z = exemplarSize / sz;
     float sx = sz * (instanceSize / exemplarSize);
     targetSz[0] *= scale_z;
@@ -353,7 +353,7 @@ Ptr<TrackerNano> TrackerNano::create(const TrackerNano::Params& parameters)
 Ptr<TrackerNano> TrackerNano::create(const TrackerNano::Params& parameters)
 {
     CV_UNUSED(parameters);
-    CV_Error(cv::Error::StsNotImplemented, "to use NanoTrack, the tracking module needs to be built with opencv_dnn !");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "to use NanoTrack, the tracking module needs to be built with opencv_dnn !");
 }
 #endif  // OPENCV_HAVE_DNN
 }

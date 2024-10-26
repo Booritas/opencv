@@ -43,8 +43,8 @@
 #include "opencv2/ts/cuda_test.hpp"
 #include <stdexcept>
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 using namespace cvtest;
 using namespace testing;
 using namespace testing::internal;
@@ -199,7 +199,7 @@ namespace cvtest
 
     void parseCudaDeviceOptions(int argc, char **argv)
     {
-        cv::CommandLineParser cmd(argc, argv,
+        ncvslideio::CommandLineParser cmd(argc, argv,
             "{ cuda_device | -1    | CUDA device on which tests will be executed (-1 means all devices) }"
             "{ h help      | false | Print help info                                                    }"
         );
@@ -219,7 +219,7 @@ namespace cvtest
         else
         {
             cvtest::DeviceManager::instance().load(device);
-            cv::cuda::DeviceInfo info(device);
+            ncvslideio::cuda::DeviceInfo info(device);
             std::cout << "Run tests on CUDA device " << device << " [" << info.name() << "] \n" << std::endl;
         }
     }
@@ -291,13 +291,13 @@ namespace cvtest
                     if (val < minVal)
                     {
                         minVal = val;
-                        minLoc = cv::Point(x, y);
+                        minLoc = ncvslideio::Point(x, y);
                     }
 
                     if (val > maxVal)
                     {
                         maxVal = val;
-                        maxLoc = cv::Point(x, y);
+                        maxLoc = ncvslideio::Point(x, y);
                     }
                 }
             }
@@ -432,7 +432,7 @@ namespace cvtest
 
         Mat diff;
         absdiff(gold, actual, diff);
-        threshold(diff, diff, eps, 255.0, cv::THRESH_BINARY);
+        threshold(diff, diff, eps, 255.0, ncvslideio::THRESH_BINARY);
 
         namedWindow("gold", WINDOW_NORMAL);
         namedWindow("actual", WINDOW_NORMAL);
@@ -447,14 +447,14 @@ namespace cvtest
 
     namespace
     {
-        bool keyPointsEquals(const cv::KeyPoint& p1, const cv::KeyPoint& p2)
+        bool keyPointsEquals(const ncvslideio::KeyPoint& p1, const ncvslideio::KeyPoint& p2)
         {
             const double maxPtDif = 1.0;
             const double maxSizeDif = 1.0;
             const double maxAngleDif = 2.0;
             const double maxResponseDif = 0.1;
 
-            double dist = cv::norm(p1.pt - p2.pt);
+            double dist = ncvslideio::norm(p1.pt - p2.pt);
 
             if (dist < maxPtDif &&
                 fabs(p1.size - p2.size) < maxSizeDif &&
@@ -471,14 +471,14 @@ namespace cvtest
 
         struct KeyPointLess
         {
-            bool operator()(const cv::KeyPoint& kp1, const cv::KeyPoint& kp2) const
+            bool operator()(const ncvslideio::KeyPoint& kp1, const ncvslideio::KeyPoint& kp2) const
             {
                 return kp1.pt.y < kp2.pt.y || (kp1.pt.y == kp2.pt.y && kp1.pt.x < kp2.pt.x);
             }
         };
     }
 
-    testing::AssertionResult assertKeyPointsEquals(const char* gold_expr, const char* actual_expr, std::vector<cv::KeyPoint>& gold, std::vector<cv::KeyPoint>& actual)
+    testing::AssertionResult assertKeyPointsEquals(const char* gold_expr, const char* actual_expr, std::vector<ncvslideio::KeyPoint>& gold, std::vector<ncvslideio::KeyPoint>& actual)
     {
         if (gold.size() != actual.size())
         {
@@ -494,8 +494,8 @@ namespace cvtest
 
         for (size_t i = 0; i < gold.size(); ++i)
         {
-            const cv::KeyPoint& p1 = gold[i];
-            const cv::KeyPoint& p2 = actual[i];
+            const ncvslideio::KeyPoint& p1 = gold[i];
+            const ncvslideio::KeyPoint& p2 = actual[i];
 
             if (!keyPointsEquals(p1, p2))
             {
@@ -515,7 +515,7 @@ namespace cvtest
         return ::testing::AssertionSuccess();
     }
 
-    int getMatchedPointsCount(std::vector<cv::KeyPoint>& gold, std::vector<cv::KeyPoint>& actual)
+    int getMatchedPointsCount(std::vector<ncvslideio::KeyPoint>& gold, std::vector<ncvslideio::KeyPoint>& actual)
     {
         std::sort(actual.begin(), actual.end(), KeyPointLess());
         std::sort(gold.begin(), gold.end(), KeyPointLess());
@@ -526,8 +526,8 @@ namespace cvtest
         {
             for (size_t i = 0; i < gold.size(); ++i)
             {
-                const cv::KeyPoint& p1 = gold[i];
-                const cv::KeyPoint& p2 = actual[i];
+                const ncvslideio::KeyPoint& p1 = gold[i];
+                const ncvslideio::KeyPoint& p2 = actual[i];
 
                 if (keyPointsEquals(p1, p2))
                     ++validCount;
@@ -535,8 +535,8 @@ namespace cvtest
         }
         else
         {
-            std::vector<cv::KeyPoint>& shorter = gold;
-            std::vector<cv::KeyPoint>& longer = actual;
+            std::vector<ncvslideio::KeyPoint>& shorter = gold;
+            std::vector<ncvslideio::KeyPoint>& longer = actual;
             if (actual.size() < gold.size())
             {
                 shorter = actual;
@@ -544,9 +544,9 @@ namespace cvtest
             }
             for (size_t i = 0; i < shorter.size(); ++i)
             {
-                const cv::KeyPoint& p1 = shorter[i];
-                const cv::KeyPoint& p2 = longer[i];
-                const cv::KeyPoint& p3 = longer[i+1];
+                const ncvslideio::KeyPoint& p1 = shorter[i];
+                const ncvslideio::KeyPoint& p2 = longer[i];
+                const ncvslideio::KeyPoint& p3 = longer[i+1];
 
                 if (keyPointsEquals(p1, p2) || keyPointsEquals(p1, p3))
                     ++validCount;
@@ -556,16 +556,16 @@ namespace cvtest
         return validCount;
     }
 
-    int getMatchedPointsCount(const std::vector<cv::KeyPoint>& keypoints1, const std::vector<cv::KeyPoint>& keypoints2, const std::vector<cv::DMatch>& matches)
+    int getMatchedPointsCount(const std::vector<ncvslideio::KeyPoint>& keypoints1, const std::vector<ncvslideio::KeyPoint>& keypoints2, const std::vector<ncvslideio::DMatch>& matches)
     {
         int validCount = 0;
 
         for (size_t i = 0; i < matches.size(); ++i)
         {
-            const cv::DMatch& m = matches[i];
+            const ncvslideio::DMatch& m = matches[i];
 
-            const cv::KeyPoint& p1 = keypoints1[m.queryIdx];
-            const cv::KeyPoint& p2 = keypoints2[m.trainIdx];
+            const ncvslideio::KeyPoint& p1 = keypoints1[m.queryIdx];
+            const ncvslideio::KeyPoint& p2 = keypoints2[m.trainIdx];
 
             if (keyPointsEquals(p1, p2))
                 ++validCount;
@@ -581,7 +581,7 @@ namespace cvtest
 }
 
 
-void cv::cuda::PrintTo(const DeviceInfo& info, std::ostream* os)
+void ncvslideio::cuda::PrintTo(const DeviceInfo& info, std::ostream* os)
 {
     (*os) << info.name();
     if (info.deviceID())

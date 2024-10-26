@@ -48,10 +48,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/normalize_bbox.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class NormalizeBBoxLayerImpl CV_FINAL : public NormalizeBBoxLayer
 {
@@ -140,7 +140,7 @@ public:
             UMat dst = out.row(i).reshape(1, s.size(), &s[0]);
 
             UMat abs_mat;
-            absdiff(src, cv::Scalar::all(0), abs_mat);
+            absdiff(src, ncvslideio::Scalar::all(0), abs_mat);
             pow(abs_mat, pnorm, buffer);
 
             if (planeSize == 1)
@@ -157,7 +157,7 @@ public:
                 norm += epsilon;
 
                 // compute inverted norm to call multiply instead divide
-                cv::pow(norm, -1.0f / pnorm, norm);
+                ncvslideio::pow(norm, -1.0f / pnorm, norm);
 
                 repeat(norm, numPlanes, 1, buffer);
                 multiply(src, buffer, dst);
@@ -223,7 +223,7 @@ public:
         {
             Mat src = Mat(numPlanes, planeSize, CV_32F, (void*)inpData);
             Mat dst = Mat(numPlanes, planeSize, CV_32F, (void*)outData);
-            cv::pow(abs(src), pnorm, buffer);
+            ncvslideio::pow(abs(src), pnorm, buffer);
 
             if (planeSize == 1)
             {
@@ -239,7 +239,7 @@ public:
                 norm += epsilon;
 
                 // compute inverted norm to call multiply instead divide
-                cv::pow(norm, -1.0f / pnorm, norm);
+                ncvslideio::pow(norm, -1.0f / pnorm, norm);
 
                 repeat(norm, numPlanes, 1, buffer);
                 multiply(src, buffer, dst);

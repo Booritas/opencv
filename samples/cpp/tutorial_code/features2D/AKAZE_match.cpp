@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const float inlier_threshold = 2.5f; // Distance threshold to identify inliers with homography check
 const float nn_match_ratio = 0.8f;   // Nearest neighbor matching ratio

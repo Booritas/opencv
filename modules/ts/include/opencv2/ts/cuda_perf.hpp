@@ -67,10 +67,10 @@ namespace perf
     #define DEF_PARAM_TEST(name, ...) typedef ::perf::TestBaseWithParam< testing::tuple< __VA_ARGS__ > > name
     #define DEF_PARAM_TEST_1(name, param_type) typedef ::perf::TestBaseWithParam< param_type > name
 
-    DEF_PARAM_TEST_1(Sz, cv::Size);
+    DEF_PARAM_TEST_1(Sz, ncvslideio::Size);
     typedef perf::Size_MatType Sz_Type;
-    DEF_PARAM_TEST(Sz_Depth, cv::Size, perf::MatDepth);
-    DEF_PARAM_TEST(Sz_Depth_Cn, cv::Size, perf::MatDepth, MatCn);
+    DEF_PARAM_TEST(Sz_Depth, ncvslideio::Size, perf::MatDepth);
+    DEF_PARAM_TEST(Sz_Depth_Cn, ncvslideio::Size, perf::MatDepth, MatCn);
 
     #define CUDA_TYPICAL_MAT_SIZES testing::Values(perf::sz720p, perf::szSXGA, perf::sz1080p)
 
@@ -78,17 +78,17 @@ namespace perf
 
     #define CUDA_SANITY_CHECK(mat, ...) \
         do{ \
-            cv::Mat gpu_##mat(mat); \
+            ncvslideio::Mat gpu_##mat(mat); \
             SANITY_CHECK(gpu_##mat, ## __VA_ARGS__); \
         } while(0)
 
     #define CPU_SANITY_CHECK(mat, ...) \
         do{ \
-            cv::Mat cpu_##mat(mat); \
+            ncvslideio::Mat cpu_##mat(mat); \
             SANITY_CHECK(cpu_##mat, ## __VA_ARGS__); \
         } while(0)
 
-    cv::Mat readImage(const std::string& fileName, int flags = cv::IMREAD_COLOR);
+    ncvslideio::Mat readImage(const std::string& fileName, int flags = ncvslideio::IMREAD_COLOR);
 
     struct CvtColorInfo
     {
@@ -103,7 +103,7 @@ namespace perf
 
     void printCudaInfo();
 
-    void sortKeyPoints(std::vector<cv::KeyPoint>& keypoints, cv::InputOutputArray _descriptors = cv::noArray());
+    void sortKeyPoints(std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputOutputArray _descriptors = ncvslideio::noArray());
 
 #ifdef HAVE_CUDA
     #define CV_PERF_TEST_CUDA_MAIN(modulename) \

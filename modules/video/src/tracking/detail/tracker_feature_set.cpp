@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "opencv2/video/detail/tracking.detail.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -57,4 +57,4 @@ void TrackerFeatureSet::clearResponses()
     responses.clear();
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

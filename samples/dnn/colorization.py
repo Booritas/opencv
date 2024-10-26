@@ -23,7 +23,7 @@ if __name__ == '__main__':
     args = parse_args()
 
     # Select desired model
-    net = cv.dnn.readNetFromCaffe(args.prototxt, args.caffemodel)
+    net = ncvslideio.dnn.readNetFromCaffe(args.prototxt, args.caffemodel)
 
     pts_in_hull = np.load(args.kernel) # load cluster centers
 
@@ -33,37 +33,37 @@ if __name__ == '__main__':
     net.getLayer(net.getLayerId('conv8_313_rh')).blobs = [np.full([1, 313], 2.606, np.float32)]
 
     if args.input:
-        cap = cv.VideoCapture(args.input)
+        cap = ncvslideio.VideoCapture(args.input)
     else:
-        cap = cv.VideoCapture(0)
+        cap = ncvslideio.VideoCapture(0)
 
-    while cv.waitKey(1) < 0:
+    while ncvslideio.waitKey(1) < 0:
         hasFrame, frame = cap.read()
         if not hasFrame:
-            cv.waitKey()
+            ncvslideio.waitKey()
             break
 
         img_rgb = (frame[:,:,[2, 1, 0]] * 1.0 / 255).astype(np.float32)
 
-        img_lab = cv.cvtColor(img_rgb, cv.COLOR_RGB2Lab)
+        img_lab = ncvslideio.cvtColor(img_rgb, ncvslideio.COLOR_RGB2Lab)
         img_l = img_lab[:,:,0] # pull out L channel
         (H_orig,W_orig) = img_rgb.shape[:2] # original image size
 
         # resize image to network input size
-        img_rs = cv.resize(img_rgb, (W_in, H_in)) # resize image to network input size
-        img_lab_rs = cv.cvtColor(img_rs, cv.COLOR_RGB2Lab)
+        img_rs = ncvslideio.resize(img_rgb, (W_in, H_in)) # resize image to network input size
+        img_lab_rs = ncvslideio.cvtColor(img_rs, ncvslideio.COLOR_RGB2Lab)
         img_l_rs = img_lab_rs[:,:,0]
         img_l_rs -= 50 # subtract 50 for mean-centering
 
-        net.setInput(cv.dnn.blobFromImage(img_l_rs))
+        net.setInput(ncvslideio.dnn.blobFromImage(img_l_rs))
         ab_dec = net.forward()[0,:,:,:].transpose((1,2,0)) # this is our result
 
         (H_out,W_out) = ab_dec.shape[:2]
-        ab_dec_us = cv.resize(ab_dec, (W_orig, H_orig))
+        ab_dec_us = ncvslideio.resize(ab_dec, (W_orig, H_orig))
         img_lab_out = np.concatenate((img_l[:,:,np.newaxis],ab_dec_us),axis=2) # concatenate with original image L
-        img_bgr_out = np.clip(cv.cvtColor(img_lab_out, cv.COLOR_Lab2BGR), 0, 1)
+        img_bgr_out = np.clip(ncvslideio.cvtColor(img_lab_out, ncvslideio.COLOR_Lab2BGR), 0, 1)
 
-        frame = cv.resize(frame, imshowSize)
-        cv.imshow('origin', frame)
-        cv.imshow('gray', cv.cvtColor(frame, cv.COLOR_RGB2GRAY))
-        cv.imshow('colorized', cv.resize(img_bgr_out, imshowSize))
+        frame = ncvslideio.resize(frame, imshowSize)
+        ncvslideio.imshow('origin', frame)
+        ncvslideio.imshow('gray', ncvslideio.cvtColor(frame, ncvslideio.COLOR_RGB2GRAY))
+        ncvslideio.imshow('colorized', ncvslideio.resize(img_bgr_out, imshowSize))

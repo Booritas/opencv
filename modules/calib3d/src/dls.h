@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace cv {
+namespace ncvslideio {
 
 class dls
 {
@@ -769,5 +769,5 @@ public:
     Mat eigenvectors() { return _eigenvectors; }
 };
 
-} // namespace cv
+} // namespace ncvslideio
 #endif // DLS_H

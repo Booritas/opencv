@@ -17,7 +17,7 @@
 #include <iostream>
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 //hide the local functions in an anon namespace
@@ -70,7 +70,7 @@ namespace {
 }
 
 int main(int ac, char** av) {
-    cv::CommandLineParser parser(ac, av, "{help h||}{@input||}");
+    ncvslideio::CommandLineParser parser(ac, av, "{help h||}{@input||}");
     if (parser.has("help"))
     {
         help(av);

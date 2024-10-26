@@ -15,7 +15,7 @@
 #include <opencv2/gapi/util/variant.hpp>
 #include <opencv2/gapi/own/exports.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -39,7 +39,7 @@ struct freetype_font
 /**
  * @brief This structure represents a text string to draw.
  *
- * Parameters match cv::putText().
+ * Parameters match ncvslideio::putText().
  */
 struct GAPI_EXPORTS_W_SIMPLE Text
 {
@@ -57,10 +57,10 @@ struct GAPI_EXPORTS_W_SIMPLE Text
      */
     GAPI_WRAP
     Text(const std::string& text_,
-         const cv::Point& org_,
+         const ncvslideio::Point& org_,
          int ff_,
          double fs_,
-         const cv::Scalar& color_,
+         const ncvslideio::Scalar& color_,
          int thick_ = 1,
          int lt_ = 8,
          bool bottom_left_origin_ = false) :
@@ -74,10 +74,10 @@ struct GAPI_EXPORTS_W_SIMPLE Text
 
     /*@{*/
     GAPI_PROP_RW std::string text;               //!< The text string to be drawn
-    GAPI_PROP_RW cv::Point   org;                //!< The bottom-left corner of the text string in the image
+    GAPI_PROP_RW ncvslideio::Point   org;                //!< The bottom-left corner of the text string in the image
     GAPI_PROP_RW int         ff;                 //!< The font type, see #HersheyFonts
     GAPI_PROP_RW double      fs;                 //!< The font scale factor that is multiplied by the font-specific base size
-    GAPI_PROP_RW cv::Scalar  color;              //!< The text color
+    GAPI_PROP_RW ncvslideio::Scalar  color;              //!< The text color
     GAPI_PROP_RW int         thick;              //!< The thickness of the lines used to draw a text
     GAPI_PROP_RW int         lt;                 //!< The line type. See #LineTypes
     GAPI_PROP_RW bool        bottom_left_origin; //!< When true, the image data origin is at the bottom-left corner. Otherwise, it is at the top-left corner
@@ -102,9 +102,9 @@ struct FText
      * @param color_ The text color
      */
     FText(const std::wstring& text_,
-          const cv::Point& org_,
+          const ncvslideio::Point& org_,
           int fh_,
-          const cv::Scalar& color_) :
+          const ncvslideio::Scalar& color_) :
         text(text_), org(org_), fh(fh_), color(color_)
     {
     }
@@ -113,16 +113,16 @@ struct FText
 
     /*@{*/
     std::wstring text;              //!< The text string to be drawn
-    cv::Point    org;               //!< The bottom-left corner of the text string in the image
+    ncvslideio::Point    org;               //!< The bottom-left corner of the text string in the image
     int          fh;                //!< The height of text
-    cv::Scalar   color;             //!< The text color
+    ncvslideio::Scalar   color;             //!< The text color
     /*@{*/
 };
 
 /**
  * @brief This structure represents a rectangle to draw.
  *
- * Parameters match cv::rectangle().
+ * Parameters match ncvslideio::rectangle().
  */
 struct GAPI_EXPORTS_W_SIMPLE Rect
 {
@@ -135,8 +135,8 @@ struct GAPI_EXPORTS_W_SIMPLE Rect
      * @param lt_     The type of the line. See #LineTypes
      * @param shift_  The number of fractional bits in the point coordinates
      */
-    Rect(const cv::Rect& rect_,
-         const cv::Scalar& color_,
+    Rect(const ncvslideio::Rect& rect_,
+         const ncvslideio::Scalar& color_,
          int thick_ = 1,
          int lt_ = 8,
          int shift_ = 0) :
@@ -148,8 +148,8 @@ struct GAPI_EXPORTS_W_SIMPLE Rect
     Rect() = default;
 
     /*@{*/
-    GAPI_PROP_RW cv::Rect   rect;  //!< Coordinates of the rectangle
-    GAPI_PROP_RW cv::Scalar color; //!< The rectangle color or brightness (grayscale image)
+    GAPI_PROP_RW ncvslideio::Rect   rect;  //!< Coordinates of the rectangle
+    GAPI_PROP_RW ncvslideio::Scalar color; //!< The rectangle color or brightness (grayscale image)
     GAPI_PROP_RW int        thick; //!< The thickness of lines that make up the rectangle. Negative values, like #FILLED, mean that the function has to draw a filled rectangle
     GAPI_PROP_RW int        lt;    //!< The type of the line. See #LineTypes
     GAPI_PROP_RW int        shift; //!< The number of fractional bits in the point coordinates
@@ -159,7 +159,7 @@ struct GAPI_EXPORTS_W_SIMPLE Rect
 /**
  * @brief This structure represents a circle to draw.
  *
- * Parameters match cv::circle().
+ * Parameters match ncvslideio::circle().
  */
 struct GAPI_EXPORTS_W_SIMPLE Circle
 {
@@ -174,9 +174,9 @@ struct GAPI_EXPORTS_W_SIMPLE Circle
      * @param  shift_  The Number of fractional bits in the coordinates of the center and in the radius value
      */
     GAPI_WRAP
-    Circle(const cv::Point& center_,
+    Circle(const ncvslideio::Point& center_,
            int radius_,
-           const cv::Scalar& color_,
+           const ncvslideio::Scalar& color_,
            int thick_ = 1,
            int lt_ = 8,
            int shift_ = 0) :
@@ -188,9 +188,9 @@ struct GAPI_EXPORTS_W_SIMPLE Circle
     Circle() = default;
 
     /*@{*/
-    GAPI_PROP_RW cv::Point  center; //!< The center of the circle
+    GAPI_PROP_RW ncvslideio::Point  center; //!< The center of the circle
     GAPI_PROP_RW int        radius; //!< The radius of the circle
-    GAPI_PROP_RW cv::Scalar color;  //!< The color of the  circle
+    GAPI_PROP_RW ncvslideio::Scalar color;  //!< The color of the  circle
     GAPI_PROP_RW int        thick;  //!< The thickness of the circle outline, if positive. Negative values, like #FILLED, mean that a filled circle is to be drawn
     GAPI_PROP_RW int        lt;     //!< The Type of the circle boundary. See #LineTypes
     GAPI_PROP_RW int        shift;  //!< The Number of fractional bits in the coordinates of the center and in the radius value
@@ -200,7 +200,7 @@ struct GAPI_EXPORTS_W_SIMPLE Circle
 /**
  * @brief This structure represents a line to draw.
  *
- * Parameters match cv::line().
+ * Parameters match ncvslideio::line().
  */
 struct GAPI_EXPORTS_W_SIMPLE Line
 {
@@ -215,9 +215,9 @@ struct GAPI_EXPORTS_W_SIMPLE Line
      * @param  shift_  The number of fractional bits in the point coordinates
     */
     GAPI_WRAP
-    Line(const cv::Point& pt1_,
-         const cv::Point& pt2_,
-         const cv::Scalar& color_,
+    Line(const ncvslideio::Point& pt1_,
+         const ncvslideio::Point& pt2_,
+         const ncvslideio::Scalar& color_,
          int thick_ = 1,
          int lt_ = 8,
          int shift_ = 0) :
@@ -229,9 +229,9 @@ struct GAPI_EXPORTS_W_SIMPLE Line
     Line() = default;
 
     /*@{*/
-    GAPI_PROP_RW cv::Point  pt1;    //!< The first point of the line segment
-    GAPI_PROP_RW cv::Point  pt2;    //!< The second point of the line segment
-    GAPI_PROP_RW cv::Scalar color;  //!< The line color
+    GAPI_PROP_RW ncvslideio::Point  pt1;    //!< The first point of the line segment
+    GAPI_PROP_RW ncvslideio::Point  pt2;    //!< The second point of the line segment
+    GAPI_PROP_RW ncvslideio::Scalar color;  //!< The line color
     GAPI_PROP_RW int        thick;  //!< The thickness of line
     GAPI_PROP_RW int        lt;     //!< The Type of the line. See #LineTypes
     GAPI_PROP_RW int        shift;  //!< The number of fractional bits in the point coordinates
@@ -252,7 +252,7 @@ struct GAPI_EXPORTS_W_SIMPLE Mosaic
      * @param cellSz_ Cell size (same for X, Y)
      * @param decim_  Decimation (0 stands for no decimation)
     */
-    Mosaic(const cv::Rect& mos_,
+    Mosaic(const ncvslideio::Rect& mos_,
            int cellSz_,
            int decim_) :
         mos(mos_), cellSz(cellSz_), decim(decim_)
@@ -263,7 +263,7 @@ struct GAPI_EXPORTS_W_SIMPLE Mosaic
     Mosaic() : cellSz(0), decim(0) {}
 
     /*@{*/
-    GAPI_PROP_RW cv::Rect mos;    //!< Coordinates of the mosaic
+    GAPI_PROP_RW ncvslideio::Rect mos;    //!< Coordinates of the mosaic
     GAPI_PROP_RW int      cellSz; //!< Cell size (same for X, Y)
     GAPI_PROP_RW int      decim;  //!< Decimation (0 stands for no decimation)
     /*@{*/
@@ -284,9 +284,9 @@ struct GAPI_EXPORTS_W_SIMPLE Image
      * @param  alpha_ Alpha channel for image to draw (same size and number of channels)
     */
     GAPI_WRAP
-    Image(const cv::Point& org_,
-          const cv::Mat& img_,
-          const cv::Mat& alpha_) :
+    Image(const ncvslideio::Point& org_,
+          const ncvslideio::Mat& img_,
+          const ncvslideio::Mat& alpha_) :
         org(org_), img(img_), alpha(alpha_)
     {
     }
@@ -295,9 +295,9 @@ struct GAPI_EXPORTS_W_SIMPLE Image
     Image() = default;
 
     /*@{*/
-    GAPI_PROP_RW cv::Point org;   //!< The bottom-left corner of the image
-    GAPI_PROP_RW cv::Mat   img;   //!< Image to draw
-    GAPI_PROP_RW cv::Mat   alpha; //!< Alpha channel for image to draw (same size and number of channels)
+    GAPI_PROP_RW ncvslideio::Point org;   //!< The bottom-left corner of the image
+    GAPI_PROP_RW ncvslideio::Mat   img;   //!< Image to draw
+    GAPI_PROP_RW ncvslideio::Mat   alpha; //!< Alpha channel for image to draw (same size and number of channels)
     /*@{*/
 };
 
@@ -316,8 +316,8 @@ struct GAPI_EXPORTS_W_SIMPLE Poly
      * @param shift_  The number of fractional bits in the point coordinate
     */
     GAPI_WRAP
-    Poly(const std::vector<cv::Point>& points_,
-         const cv::Scalar& color_,
+    Poly(const std::vector<ncvslideio::Point>& points_,
+         const ncvslideio::Scalar& color_,
          int thick_ = 1,
          int lt_ = 8,
          int shift_ = 0) :
@@ -329,8 +329,8 @@ struct GAPI_EXPORTS_W_SIMPLE Poly
     Poly() = default;
 
     /*@{*/
-    GAPI_PROP_RW std::vector<cv::Point> points;  //!< Points to connect
-    GAPI_PROP_RW cv::Scalar             color;   //!< The line color
+    GAPI_PROP_RW std::vector<ncvslideio::Point> points;  //!< Points to connect
+    GAPI_PROP_RW ncvslideio::Scalar             color;   //!< The line color
     GAPI_PROP_RW int                    thick;   //!< The thickness of line
     GAPI_PROP_RW int                    lt;      //!< The Type of the line. See #LineTypes
     GAPI_PROP_RW int                    shift;   //!< The number of fractional bits in the point coordinate
@@ -354,6 +354,6 @@ using Prims = std::vector<Prim>;
 } // namespace draw
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_RENDER_TYPES_HPP

@@ -18,7 +18,7 @@
 #include <opencv2/core/cvdef.h>     // GAPI_EXPORTS
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace ie {
 namespace util {
@@ -26,9 +26,9 @@ namespace util {
 // NB: These functions are EXPORTed to make them accessible by the
 // test suite only.
 GAPI_EXPORTS std::vector<int> to_ocv(const InferenceEngine::SizeVector &dims);
-GAPI_EXPORTS cv::Mat to_ocv(InferenceEngine::Blob::Ptr blob);
-GAPI_EXPORTS InferenceEngine::Blob::Ptr to_ie(const cv::Mat &blob);
-GAPI_EXPORTS InferenceEngine::Blob::Ptr to_ie(const cv::Mat &y_plane, const cv::Mat &uv_plane);
+GAPI_EXPORTS ncvslideio::Mat to_ocv(InferenceEngine::Blob::Ptr blob);
+GAPI_EXPORTS InferenceEngine::Blob::Ptr to_ie(const ncvslideio::Mat &blob);
+GAPI_EXPORTS InferenceEngine::Blob::Ptr to_ie(const ncvslideio::Mat &y_plane, const ncvslideio::Mat &uv_plane);
 
 }}}}
 

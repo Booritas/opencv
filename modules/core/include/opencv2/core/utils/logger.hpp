@@ -12,7 +12,7 @@
 #include "logger.defines.hpp"
 #include "logtag.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 
@@ -26,16 +26,16 @@ CV_EXPORTS LogLevel setLogLevel(LogLevel logLevel);
 /** Get global logging level */
 CV_EXPORTS LogLevel getLogLevel();
 
-CV_EXPORTS void registerLogTag(cv::utils::logging::LogTag* plogtag);
+CV_EXPORTS void registerLogTag(ncvslideio::utils::logging::LogTag* plogtag);
 
-CV_EXPORTS void setLogTagLevel(const char* tag, cv::utils::logging::LogLevel level);
+CV_EXPORTS void setLogTagLevel(const char* tag, ncvslideio::utils::logging::LogLevel level);
 
-CV_EXPORTS cv::utils::logging::LogLevel getLogTagLevel(const char* tag);
+CV_EXPORTS ncvslideio::utils::logging::LogLevel getLogTagLevel(const char* tag);
 
 namespace internal {
 
 /** Get global log tag */
-CV_EXPORTS cv::utils::logging::LogTag* getGlobalLogTag();
+CV_EXPORTS ncvslideio::utils::logging::LogTag* getGlobalLogTag();
 
 /** Write log message */
 CV_EXPORTS void writeLogMessage(LogLevel logLevel, const char* message);
@@ -68,7 +68,7 @@ struct LogTagAuto
 # endif
 #endif
 
-#define CV_LOGTAG_PTR_CAST(expr) static_cast<const cv::utils::logging::LogTag*>(expr)
+#define CV_LOGTAG_PTR_CAST(expr) static_cast<const ncvslideio::utils::logging::LogTag*>(expr)
 
 // CV_LOGTAG_EXPAND_NAME is intended to be re-defined (undef and then define again)
 // to allows logging users to use a shorter name argument when calling
@@ -95,19 +95,19 @@ struct LogTagAuto
 // CV_LOGTAG_FALLBACK is intended to be re-defined (undef and then define again)
 // by any other compilation units to provide a log tag when the logging statement
 // does not specify one. The macro needs to expand into a C++ expression that can
-// be static_cast into (cv::utils::logging::LogTag*). Null (nullptr) is permitted.
+// be static_cast into (ncvslideio::utils::logging::LogTag*). Null (nullptr) is permitted.
 #define CV_LOGTAG_FALLBACK nullptr
 
 // CV_LOGTAG_GLOBAL is the tag used when a log tag is not specified in the logging
 // statement nor the compilation unit. The macro needs to expand into a C++
-// expression that can be static_cast into (cv::utils::logging::LogTag*). Must be
+// expression that can be static_cast into (ncvslideio::utils::logging::LogTag*). Must be
 // non-null. Do not re-define.
-#define CV_LOGTAG_GLOBAL cv::utils::logging::internal::getGlobalLogTag()
+#define CV_LOGTAG_GLOBAL ncvslideio::utils::logging::internal::getGlobalLogTag()
 
 #define CV_LOG_WITH_TAG(tag, msgLevel, extra_check0, extra_check1, ...) \
     for(;;) { \
         extra_check0; \
-        const auto cv_temp_msglevel = (cv::utils::logging::LogLevel)(msgLevel); \
+        const auto cv_temp_msglevel = (ncvslideio::utils::logging::LogLevel)(msgLevel); \
         if (cv_temp_msglevel >= (CV_LOG_STRIP_LEVEL)) break; \
         auto cv_temp_logtagptr = CV_LOGTAG_PTR_CAST(CV_LOGTAG_EXPAND_NAME(tag)); \
         if (!cv_temp_logtagptr) cv_temp_logtagptr = CV_LOGTAG_PTR_CAST(CV_LOGTAG_FALLBACK); \
@@ -116,7 +116,7 @@ struct LogTagAuto
         extra_check1; \
         std::stringstream cv_temp_logstream; \
         cv_temp_logstream << __VA_ARGS__; \
-        cv::utils::logging::internal::writeLogMessageEx( \
+        ncvslideio::utils::logging::internal::writeLogMessageEx( \
             cv_temp_msglevel, \
             (cv_temp_logtagptr ? cv_temp_logtagptr->name : nullptr), \
             __FILE__, \
@@ -126,12 +126,12 @@ struct LogTagAuto
         break; \
     }
 
-#define CV_LOG_FATAL(tag, ...)   CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_FATAL, , , __VA_ARGS__)
-#define CV_LOG_ERROR(tag, ...)   CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_ERROR, , , __VA_ARGS__)
-#define CV_LOG_WARNING(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_WARNING, , , __VA_ARGS__)
-#define CV_LOG_INFO(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_INFO, , , __VA_ARGS__)
-#define CV_LOG_DEBUG(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_DEBUG, , , __VA_ARGS__)
-#define CV_LOG_VERBOSE(tag, v, ...) CV_LOG_WITH_TAG(tag, (cv::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), , , __VA_ARGS__)
+#define CV_LOG_FATAL(tag, ...)   CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_FATAL, , , __VA_ARGS__)
+#define CV_LOG_ERROR(tag, ...)   CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_ERROR, , , __VA_ARGS__)
+#define CV_LOG_WARNING(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_WARNING, , , __VA_ARGS__)
+#define CV_LOG_INFO(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_INFO, , , __VA_ARGS__)
+#define CV_LOG_DEBUG(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_DEBUG, , , __VA_ARGS__)
+#define CV_LOG_VERBOSE(tag, v, ...) CV_LOG_WITH_TAG(tag, (ncvslideio::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), , , __VA_ARGS__)
 
 #if CV_LOG_STRIP_LEVEL <= CV_LOG_LEVEL_INFO
 #undef CV_LOG_INFO
@@ -164,11 +164,11 @@ struct LogTagAuto
 
 // CV_LOG_ONCE_XXX macros
 
-#define CV_LOG_ONCE_ERROR(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_ERROR, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
-#define CV_LOG_ONCE_WARNING(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_WARNING, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
-#define CV_LOG_ONCE_INFO(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_INFO, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
-#define CV_LOG_ONCE_DEBUG(tag, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_DEBUG, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
-#define CV_LOG_ONCE_VERBOSE(tag, v, ...) CV_LOG_WITH_TAG(tag, (cv::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
+#define CV_LOG_ONCE_ERROR(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_ERROR, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
+#define CV_LOG_ONCE_WARNING(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_WARNING, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
+#define CV_LOG_ONCE_INFO(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_INFO, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
+#define CV_LOG_ONCE_DEBUG(tag, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_DEBUG, CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
+#define CV_LOG_ONCE_VERBOSE(tag, v, ...) CV_LOG_WITH_TAG(tag, (ncvslideio::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), CV__LOG_ONCE_CHECK_PRE, CV__LOG_ONCE_CHECK_POST, __VA_ARGS__)
 
 #if CV_LOG_STRIP_LEVEL <= CV_LOG_LEVEL_INFO
 #undef CV_LOG_ONCE_INFO
@@ -188,12 +188,12 @@ struct LogTagAuto
 
 // CV_LOG_IF_XXX macros
 
-#define CV_LOG_IF_FATAL(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_FATAL, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
-#define CV_LOG_IF_ERROR(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_ERROR, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
-#define CV_LOG_IF_WARNING(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_WARNING, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
-#define CV_LOG_IF_INFO(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_INFO, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
-#define CV_LOG_IF_DEBUG(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, cv::utils::logging::LOG_LEVEL_DEBUG, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
-#define CV_LOG_IF_VERBOSE(tag, v, logging_cond, ...) CV_LOG_WITH_TAG(tag, (cv::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_FATAL(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_FATAL, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_ERROR(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_ERROR, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_WARNING(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_WARNING, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_INFO(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_INFO, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_DEBUG(tag, logging_cond, ...) CV_LOG_WITH_TAG(tag, ncvslideio::utils::logging::LOG_LEVEL_DEBUG, , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
+#define CV_LOG_IF_VERBOSE(tag, v, logging_cond, ...) CV_LOG_WITH_TAG(tag, (ncvslideio::utils::logging::LOG_LEVEL_VERBOSE + (int)(v)), , CV__LOG_IF_CHECK(logging_cond), __VA_ARGS__)
 
 #if CV_LOG_STRIP_LEVEL <= CV_LOG_LEVEL_INFO
 #undef CV_LOG_IF_INFO

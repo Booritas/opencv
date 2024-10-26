@@ -30,7 +30,7 @@ def main():
     except:
         fn = 'fruits.jpg'
 
-    img = cv.imread(cv.samples.findFile(fn))
+    img = ncvslideio.imread(ncvslideio.samples.findFile(fn))
     if img is None:
         print('Failed to load image file:', fn)
         sys.exit(1)
@@ -40,12 +40,12 @@ def main():
     sketch = Sketcher('img', [img_mark, mark], lambda : ((255, 255, 255), 255))
 
     while True:
-        ch = cv.waitKey()
+        ch = ncvslideio.waitKey()
         if ch == 27:
             break
         if ch == ord(' '):
-            res = cv.inpaint(img_mark, mark, 3, cv.INPAINT_TELEA)
-            cv.imshow('inpaint', res)
+            res = ncvslideio.inpaint(img_mark, mark, 3, ncvslideio.INPAINT_TELEA)
+            ncvslideio.imshow('inpaint', res)
         if ch == ord('r'):
             img_mark[:] = img
             mark[:] = 0
@@ -57,4 +57,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

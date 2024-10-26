@@ -50,7 +50,7 @@ namespace {
 }
 
 
-namespace cv
+namespace ncvslideio
 {
 
 ExifEntry_t::ExifEntry_t() :
@@ -532,4 +532,4 @@ std::vector<u_rational_t> ExifReader::getRefBW(const size_t offset) const
     return result;
 }
 
-} //namespace cv
+} //namespace ncvslideio

@@ -33,7 +33,7 @@
 
 #include "usac.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 // for some compilers it takes very long time to compile
@@ -135,7 +135,7 @@ public:
             }
 
             Mat Bz(3, 3, CV_64F, bz);
-            cv::Mat xy1;
+            ncvslideio::Mat xy1;
             SVD::solveZ(Bz, xy1);
 
             if (fabs(xy1.at<double>(2)) < 1e-10) continue;
@@ -143,7 +143,7 @@ public:
             ys.push_back(xy1.at<double>(1) / xy1.at<double>(2));
             zs.push_back(z1);
 
-            cv::Mat Evec = EE.col(0) * xs.back() + EE.col(1) * ys.back() + EE.col(2) * zs.back() + EE.col(3);
+            ncvslideio::Mat Evec = EE.col(0) * xs.back() + EE.col(1) * ys.back() + EE.col(2) * zs.back() + EE.col(3);
             Evec /= norm(Evec);
 
             memcpy(e + count * 9, Evec.ptr(), 9 * sizeof(double));
@@ -439,7 +439,7 @@ static Mat findEssentialMat_( InputArray _points1, InputArray _points2,
 }
 
 // Input should be a vector of n 2D points or a Nx2 matrix
-cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
                               int method, double prob, double threshold,
                               int maxIters, OutputArray _mask)
 {
@@ -491,32 +491,32 @@ cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2, InputArr
     return E;
 }
 
-cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
                               int method, double prob, double threshold,
                               OutputArray _mask)
 {
-    return cv::findEssentialMat(_points1, _points2, _cameraMatrix, method, prob, threshold, 1000, _mask);
+    return ncvslideio::findEssentialMat(_points1, _points2, _cameraMatrix, method, prob, threshold, 1000, _mask);
 }
 
-cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2, double focal, Point2d pp,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray _points1, InputArray _points2, double focal, Point2d pp,
                               int method, double prob, double threshold, int maxIters, OutputArray _mask)
 {
     CV_INSTRUMENT_REGION();
 
     Mat cameraMatrix = (Mat_<double>(3,3) << focal, 0, pp.x, 0, focal, pp.y, 0, 0, 1);
-    return cv::findEssentialMat(_points1, _points2, cameraMatrix, method, prob, threshold, maxIters, _mask);
+    return ncvslideio::findEssentialMat(_points1, _points2, cameraMatrix, method, prob, threshold, maxIters, _mask);
 }
 
-cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2, double focal, Point2d pp,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray _points1, InputArray _points2, double focal, Point2d pp,
                               int method, double prob, double threshold, OutputArray _mask)
 {
     CV_INSTRUMENT_REGION();
 
     Mat cameraMatrix = (Mat_<double>(3,3) << focal, 0, pp.x, 0, focal, pp.y, 0, 0, 1);
-    return cv::findEssentialMat(_points1, _points2, cameraMatrix, method, prob, threshold, 1000, _mask);
+    return ncvslideio::findEssentialMat(_points1, _points2, cameraMatrix, method, prob, threshold, 1000, _mask);
 }
 
-cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray _points1, InputArray _points2,
                               InputArray cameraMatrix1, InputArray distCoeffs1,
                               InputArray cameraMatrix2, InputArray distCoeffs2,
                               int method, double prob, double threshold, OutputArray _mask)
@@ -530,7 +530,7 @@ cv::Mat cv::findEssentialMat( InputArray _points1, InputArray _points2,
     return findEssentialMat_(_pointsUndistorted1, _pointsUndistorted2, cameraMatrix1, cameraMatrix2, method, prob, threshold, _mask);
 }
 
-cv::Mat cv::findEssentialMat( InputArray points1, InputArray points2,
+ncvslideio::Mat ncvslideio::findEssentialMat( InputArray points1, InputArray points2,
                       InputArray cameraMatrix1, InputArray cameraMatrix2,
                       InputArray dist_coeff1, InputArray dist_coeff2, OutputArray mask, const UsacParams &params) {
     Ptr<usac::Model> model;
@@ -544,7 +544,7 @@ cv::Mat cv::findEssentialMat( InputArray points1, InputArray points2,
 
 }
 
-int cv::recoverPose( InputArray _points1, InputArray _points2,
+int ncvslideio::recoverPose( InputArray _points1, InputArray _points2,
                             InputArray cameraMatrix1, InputArray distCoeffs1,
                             InputArray cameraMatrix2, InputArray distCoeffs2,
                             OutputArray E, OutputArray R, OutputArray t,
@@ -568,7 +568,7 @@ int cv::recoverPose( InputArray _points1, InputArray _points2,
     return recoverPose(_E, _pointsUndistorted1, _pointsUndistorted2, Mat::eye(3,3, CV_64F), R, t, _mask);
 }
 
-int cv::recoverPose( InputArray E, InputArray _points1, InputArray _points2,
+int ncvslideio::recoverPose( InputArray E, InputArray _points1, InputArray _points2,
                             InputArray _cameraMatrix, OutputArray _R, OutputArray _t, double distanceThresh,
                      InputOutputArray _mask, OutputArray triangulatedPoints)
 {
@@ -738,20 +738,20 @@ int cv::recoverPose( InputArray E, InputArray _points1, InputArray _points2,
     }
 }
 
-int cv::recoverPose( InputArray E, InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
+int ncvslideio::recoverPose( InputArray E, InputArray _points1, InputArray _points2, InputArray _cameraMatrix,
                      OutputArray _R, OutputArray _t, InputOutputArray _mask)
 {
-    return cv::recoverPose(E, _points1, _points2, _cameraMatrix, _R, _t, 50, _mask);
+    return ncvslideio::recoverPose(E, _points1, _points2, _cameraMatrix, _R, _t, 50, _mask);
 }
 
-int cv::recoverPose( InputArray E, InputArray _points1, InputArray _points2, OutputArray _R,
+int ncvslideio::recoverPose( InputArray E, InputArray _points1, InputArray _points2, OutputArray _R,
                      OutputArray _t, double focal, Point2d pp, InputOutputArray _mask)
 {
     Mat cameraMatrix = (Mat_<double>(3,3) << focal, 0, pp.x, 0, focal, pp.y, 0, 0, 1);
-    return cv::recoverPose(E, _points1, _points2, cameraMatrix, _R, _t, _mask);
+    return ncvslideio::recoverPose(E, _points1, _points2, cameraMatrix, _R, _t, _mask);
 }
 
-void cv::decomposeEssentialMat( InputArray _E, OutputArray _R1, OutputArray _R2, OutputArray _t )
+void ncvslideio::decomposeEssentialMat( InputArray _E, OutputArray _R1, OutputArray _R2, OutputArray _t )
 {
     CV_INSTRUMENT_REGION();
 

@@ -56,24 +56,24 @@
 
 namespace
 {
-static void calcScharrDeriv(const cv::Mat& src, cv::Mat& dst)
+static void calcScharrDeriv(const ncvslideio::Mat& src, ncvslideio::Mat& dst)
 {
-    using namespace cv;
-    using cv::detail::deriv_type;
+    using namespace ncvslideio;
+    using ncvslideio::detail::deriv_type;
     int rows = src.rows, cols = src.cols, cn = src.channels(), depth = src.depth();
     CV_Assert(depth == CV_8U);
     dst.create(rows, cols, CV_MAKETYPE(DataType<deriv_type>::depth, cn*2));
 
     CALL_HAL(ScharrDeriv, cv_hal_ScharrDeriv, src.data, src.step, (short*)dst.data, dst.step, cols, rows, cn);
 
-    parallel_for_(Range(0, rows), cv::detail::ScharrDerivInvoker(src, dst), cv::getNumThreads());
+    parallel_for_(Range(0, rows), ncvslideio::detail::ScharrDerivInvoker(src, dst), ncvslideio::getNumThreads());
 }
 
 }//namespace
 
-void cv::detail::ScharrDerivInvoker::operator()(const Range& range) const
+void ncvslideio::detail::ScharrDerivInvoker::operator()(const Range& range) const
 {
-    using cv::detail::deriv_type;
+    using ncvslideio::detail::deriv_type;
     int rows = src.rows, cols = src.cols, cn = src.channels(), colsn = cols*cn;
 
     int x, y, delta = (int)alignSize((cols + 2)*cn, 16);
@@ -154,7 +154,7 @@ void cv::detail::ScharrDerivInvoker::operator()(const Range& range) const
     }
 }
 
-cv::detail::LKTrackerInvoker::LKTrackerInvoker(
+ncvslideio::detail::LKTrackerInvoker::LKTrackerInvoker(
                       const Mat& _prevImg, const Mat& _prevDeriv, const Mat& _nextImg,
                       const Point2f* _prevPts, Point2f* _nextPts,
                       uchar* _status, float* _err,
@@ -184,7 +184,7 @@ typedef float acctype;
 typedef float itemtype;
 #endif
 
-void cv::detail::LKTrackerInvoker::operator()(const Range& range) const
+void ncvslideio::detail::LKTrackerInvoker::operator()(const Range& range) const
 {
     CV_INSTRUMENT_REGION();
 
@@ -196,11 +196,11 @@ void cv::detail::LKTrackerInvoker::operator()(const Range& range) const
     const Mat& J = *nextImg;
     const Mat& derivI = *prevDeriv;
 
-    cv::AutoBuffer<Point2f> prevPtsScaledData(range.end - range.start);
+    ncvslideio::AutoBuffer<Point2f> prevPtsScaledData(range.end - range.start);
     Point2f* prevPtsScaled = prevPtsScaledData.data();
 
     int j, cn = I.channels(), cn2 = cn*2;
-    cv::AutoBuffer<deriv_type> _buf(winSize.area()*(cn + cn2));
+    ncvslideio::AutoBuffer<deriv_type> _buf(winSize.area()*(cn + cn2));
     int derivDepth = DataType<deriv_type>::depth;
 
     Mat IWinBuf(winSize, CV_MAKETYPE(derivDepth, cn), _buf.data());
@@ -744,7 +744,7 @@ void cv::detail::LKTrackerInvoker::operator()(const Range& range) const
     }
 }
 
-int cv::buildOpticalFlowPyramid(InputArray _img, OutputArrayOfArrays pyramid, Size winSize, int maxLevel, bool withDerivatives,
+int ncvslideio::buildOpticalFlowPyramid(InputArray _img, OutputArrayOfArrays pyramid, Size winSize, int maxLevel, bool withDerivatives,
                                 int pyrBorder, int derivBorder, bool tryReuseInputImage)
 {
     CV_INSTRUMENT_REGION();
@@ -755,7 +755,7 @@ int cv::buildOpticalFlowPyramid(InputArray _img, OutputArrayOfArrays pyramid, Si
 
     pyramid.create(1, (maxLevel + 1) * pyrstep, 0 /*type*/, -1, true);
 
-    int derivType = CV_MAKETYPE(DataType<cv::detail::deriv_type>::depth, img.channels() * 2);
+    int derivType = CV_MAKETYPE(DataType<ncvslideio::detail::deriv_type>::depth, img.channels() * 2);
 
     //level 0
     bool lvl0IsSet = false;
@@ -842,7 +842,7 @@ int cv::buildOpticalFlowPyramid(InputArray _img, OutputArrayOfArrays pyramid, Si
     return maxLevel;
 }
 
-namespace cv
+namespace ncvslideio
 {
 namespace
 {
@@ -884,7 +884,7 @@ namespace
         virtual void calc(InputArray prevImg, InputArray nextImg,
                           InputArray prevPts, InputOutputArray nextPts,
                           OutputArray status,
-                          OutputArray err = cv::noArray()) CV_OVERRIDE;
+                          OutputArray err = ncvslideio::noArray()) CV_OVERRIDE;
 
         virtual String getDefaultName() const CV_OVERRIDE { return "SparseOpticalFlow.SparsePyrLKOpticalFlow"; }
 
@@ -1008,15 +1008,15 @@ namespace
                 wsx = 0;
             if(winSize.height < 16)
                 wsy = 0;
-            cv::String build_options;
+            ncvslideio::String build_options;
             if (isDeviceCPU())
                 build_options = " -D CPU";
             else
-                build_options = cv::format("-D WSX=%d -D WSY=%d",
+                build_options = ncvslideio::format("-D WSX=%d -D WSY=%d",
                                            wsx, wsy);
 
             ocl::Kernel kernel;
-            if (!kernel.create("lkSparse", cv::ocl::video::pyrlk_oclsrc, build_options))
+            if (!kernel.create("lkSparse", ncvslideio::ocl::video::pyrlk_oclsrc, build_options))
                 return false;
 
             CV_Assert(I.depth() == CV_32F && J.depth() == CV_32F);
@@ -1044,7 +1044,7 @@ namespace
     private:
         inline static bool isDeviceCPU()
         {
-            return (cv::ocl::Device::TYPE_CPU == cv::ocl::Device::getDefault().type());
+            return (ncvslideio::ocl::Device::TYPE_CPU == ncvslideio::ocl::Device::getDefault().type());
         }
 
 
@@ -1054,7 +1054,7 @@ namespace
     {
         if (0 != (OPTFLOW_LK_GET_MIN_EIGENVALS & flags))
             return false;
-        if (!cv::ocl::Device::getDefault().imageSupport())
+        if (!ncvslideio::ocl::Device::getDefault().imageSupport())
             return false;
         if (_nextImg.size() != _prevImg.size())
             return false;
@@ -1273,7 +1273,7 @@ void SparsePyrLKOpticalFlowImpl::calc( InputArray _prevImg, InputArray _nextImg,
                openvx_pyrlk(_prevImg, _nextImg, _prevPts, _nextPts, _status, _err))
 
     Mat prevPtsMat = _prevPts.getMat();
-    const int derivDepth = DataType<cv::detail::deriv_type>::depth;
+    const int derivDepth = DataType<ncvslideio::detail::deriv_type>::depth;
 
     CV_Assert( maxLevel >= 0 && winSize.width > 2 && winSize.height > 2 );
 
@@ -1415,7 +1415,7 @@ void SparsePyrLKOpticalFlowImpl::calc( InputArray _prevImg, InputArray _nextImg,
         CV_Assert(prevPyr[level * lvlStep1].size() == nextPyr[level * lvlStep2].size());
         CV_Assert(prevPyr[level * lvlStep1].type() == nextPyr[level * lvlStep2].type());
 
-        typedef cv::detail::LKTrackerInvoker LKTrackerInvoker;
+        typedef ncvslideio::detail::LKTrackerInvoker LKTrackerInvoker;
         parallel_for_(Range(0, npoints), LKTrackerInvoker(prevPyr[level * lvlStep1], derivI,
                                                           nextPyr[level * lvlStep2], prevPts, nextPts,
                                                           status, err,
@@ -1425,22 +1425,22 @@ void SparsePyrLKOpticalFlowImpl::calc( InputArray _prevImg, InputArray _nextImg,
 }
 
 } // namespace
-} // namespace cv
-cv::Ptr<cv::SparsePyrLKOpticalFlow> cv::SparsePyrLKOpticalFlow::create(Size winSize, int maxLevel, TermCriteria crit, int flags, double minEigThreshold){
+} // namespace ncvslideio
+ncvslideio::Ptr<ncvslideio::SparsePyrLKOpticalFlow> ncvslideio::SparsePyrLKOpticalFlow::create(Size winSize, int maxLevel, TermCriteria crit, int flags, double minEigThreshold){
     return makePtr<SparsePyrLKOpticalFlowImpl>(winSize,maxLevel,crit,flags,minEigThreshold);
 }
-void cv::calcOpticalFlowPyrLK( InputArray _prevImg, InputArray _nextImg,
+void ncvslideio::calcOpticalFlowPyrLK( InputArray _prevImg, InputArray _nextImg,
                                InputArray _prevPts, InputOutputArray _nextPts,
                                OutputArray _status, OutputArray _err,
                                Size winSize, int maxLevel,
                                TermCriteria criteria,
                                int flags, double minEigThreshold )
 {
-    Ptr<cv::SparsePyrLKOpticalFlow> optflow = cv::SparsePyrLKOpticalFlow::create(winSize,maxLevel,criteria,flags,minEigThreshold);
+    Ptr<ncvslideio::SparsePyrLKOpticalFlow> optflow = ncvslideio::SparsePyrLKOpticalFlow::create(winSize,maxLevel,criteria,flags,minEigThreshold);
     optflow->calc(_prevImg,_nextImg,_prevPts,_nextPts,_status,_err);
 }
 
-cv::Mat cv::estimateRigidTransform( InputArray src1, InputArray src2, bool fullAffine )
+ncvslideio::Mat ncvslideio::estimateRigidTransform( InputArray src1, InputArray src2, bool fullAffine )
 {
     CV_INSTRUMENT_REGION();
 #ifndef HAVE_OPENCV_CALIB3D

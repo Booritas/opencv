@@ -16,7 +16,7 @@ static bool isSimilarKeypoints( const KeyPoint& p1, const KeyPoint& p2 )
     const float maxAngleDif = 2.f;
     const float maxResponseDif = 0.1f;
 
-    float dist = (float)cv::norm( p1.pt - p2.pt );
+    float dist = (float)ncvslideio::norm( p1.pt - p2.pt );
     return (dist < maxPtDif &&
             fabs(p1.size - p2.size) < maxSizeDif &&
             abs(p1.angle - p2.angle) < maxAngleDif &&
@@ -138,7 +138,7 @@ TEST(Features2d_AFFINE_FEATURE, regression)
         {
             if( validKeypoints[v].class_id != calcKeypoints[c].class_id )
                 continue;
-            float curDist = (float)cv::norm( calcKeypoints[c].pt - validKeypoints[v].pt );
+            float curDist = (float)ncvslideio::norm( calcKeypoints[c].pt - validKeypoints[v].pt );
             if( curDist < minDist )
             {
                 minDist = curDist;

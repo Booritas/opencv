@@ -175,7 +175,7 @@ void CV_CharucoDetection::run(int) {
 
                     ASSERT_LT(currentId, (int)board.getChessboardCorners().size()) << "Invalid Charuco corner id";
 
-                    double repError = cv::norm(charucoCorners[i] - projectedCharucoCorners[currentId]);  // TODO cvtest
+                    double repError = ncvslideio::norm(charucoCorners[i] - projectedCharucoCorners[currentId]);  // TODO cvtest
 
                     ASSERT_LE(repError, 5.) << "Charuco corner reprojection error too high";
                 }
@@ -286,7 +286,7 @@ void CV_CharucoPoseEstimation::run(int) {
 
                     ASSERT_LT(currentId, (int)board.getChessboardCorners().size()) << "Invalid Charuco corner id";
 
-                    double repError = cv::norm(charucoCorners[i] - projectedCharucoCorners[currentId]);  // TODO cvtest
+                    double repError = ncvslideio::norm(charucoCorners[i] - projectedCharucoCorners[currentId]);  // TODO cvtest
 
                     ASSERT_LE(repError, 5.) << "Charuco corner reprojection error too high";
                 }
@@ -411,7 +411,7 @@ void CV_CharucoDiamondDetection::run(int) {
 
                 for(unsigned int i = 0; i < 4; i++) {
 
-                    double repError = cv::norm(diamondCorners[0][i] - projectedDiamondCornersReorder[i]);  // TODO cvtest
+                    double repError = ncvslideio::norm(diamondCorners[0][i] - projectedDiamondCornersReorder[i]);  // TODO cvtest
 
                     if(repError > 5.) {
                         ts->printf(cvtest::TS::LOG, "Diamond corner reprojection error too high");
@@ -436,7 +436,7 @@ void CV_CharucoDiamondDetection::run(int) {
                               distCoeffs, projectedDiamondCornersPose);
 
                 for(unsigned int i = 0; i < 4; i++) {
-                    double repError = cv::norm(projectedDiamondCornersReorder[i] - projectedDiamondCornersPose[i]);  // TODO cvtest
+                    double repError = ncvslideio::norm(projectedDiamondCornersReorder[i] - projectedDiamondCornersPose[i]);  // TODO cvtest
 
                     if(repError > 5.) {
                         ts->printf(cvtest::TS::LOG, "Charuco pose error too high");
@@ -483,7 +483,7 @@ void CV_CharucoBoardCreation::run(int)
                 board_meters.getNearestMarkerIdx()[i][0] != board_millimeters.getNearestMarkerIdx()[i][0])
             {
                 ts->printf(cvtest::TS::LOG,
-                    cv::format("Charuco board topology is sensitive to scale with squareSize=%.1f\n",
+                    ncvslideio::format("Charuco board topology is sensitive to scale with squareSize=%.1f\n",
                         squareSize_mm).c_str());
                 ts->set_failed_test_info(cvtest::TS::FAIL_INVALID_OUTPUT);
                 break;
@@ -595,14 +595,14 @@ TEST(Charuco, testCharucoCornersCollinear_false)
 // test that ChArUco board detection is subpixel accurate
 TEST(Charuco, testBoardSubpixelCoords)
 {
-    cv::Size res{500, 500};
-    cv::Mat K = (cv::Mat_<double>(3,3) <<
+    ncvslideio::Size res{500, 500};
+    ncvslideio::Mat K = (ncvslideio::Mat_<double>(3,3) <<
         0.5*res.width, 0, 0.5*res.width,
         0, 0.5*res.height, 0.5*res.height,
         0, 0, 1);
 
     // set expected_corners values
-    cv::Mat expected_corners = (cv::Mat_<float>(9,2) <<
+    ncvslideio::Mat expected_corners = (ncvslideio::Mat_<float>(9,2) <<
         200, 200,
         250, 200,
         300, 200,
@@ -614,17 +614,17 @@ TEST(Charuco, testBoardSubpixelCoords)
         300, 300
     );
 
-    cv::Mat gray;
+    ncvslideio::Mat gray;
 
-    aruco::Dictionary dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
+    aruco::Dictionary dict = ncvslideio::aruco::getPredefinedDictionary(ncvslideio::aruco::DICT_APRILTAG_36h11);
     aruco::CharucoBoard board(Size(4, 4), 1.f, .8f, dict);
 
     // generate ChArUco board
     board.generateImage(Size(res.width, res.height), gray, 150);
-    cv::GaussianBlur(gray, gray, Size(5, 5), 1.0);
+    ncvslideio::GaussianBlur(gray, gray, Size(5, 5), 1.0);
 
     aruco::DetectorParameters params;
-    params.cornerRefinementMethod = (int)cv::aruco::CORNER_REFINE_APRILTAG;
+    params.cornerRefinementMethod = (int)ncvslideio::aruco::CORNER_REFINE_APRILTAG;
 
     aruco::CharucoParameters charucoParameters;
     charucoParameters.cameraMatrix = K;
@@ -632,8 +632,8 @@ TEST(Charuco, testBoardSubpixelCoords)
     detector.setDetectorParameters(params);
 
     std::vector<int> ids;
-    std::vector<std::vector<cv::Point2f>> corners;
-    cv::Mat c_ids, c_corners;
+    std::vector<std::vector<ncvslideio::Point2f>> corners;
+    ncvslideio::Mat c_ids, c_corners;
 
     detector.detectBoard(gray, c_corners, c_ids, corners, ids);
 
@@ -753,12 +753,12 @@ TEST_P(CharucoDraw, testDrawDetected) {
     ASSERT_EQ(detectedCenter, center_gold);
 }
 
-typedef testing::TestWithParam<cv::Size> CharucoBoard;
+typedef testing::TestWithParam<ncvslideio::Size> CharucoBoard;
 INSTANTIATE_TEST_CASE_P(/**/, CharucoBoard, testing::Values(Size(3, 2), Size(3, 2), Size(6, 2), Size(2, 6),
                                                             Size(3, 4), Size(4, 3), Size(7, 3), Size(3, 7)));
 TEST_P(CharucoBoard, testWrongSizeDetection)
 {
-    cv::Size boardSize = GetParam();
+    ncvslideio::Size boardSize = GetParam();
     ASSERT_FALSE(boardSize.width == boardSize.height);
     aruco::CharucoBoard board(boardSize, 1.f, 0.5f, aruco::getPredefinedDictionary(aruco::DICT_4X4_50));
 
@@ -788,7 +788,7 @@ TEST_P(CharucoBoard, testWrongSizeDetection)
 }
 
 
-typedef testing::TestWithParam<std::tuple<cv::Size, float, cv::Size, int>> CharucoBoardGenerate;
+typedef testing::TestWithParam<std::tuple<ncvslideio::Size, float, ncvslideio::Size, int>> CharucoBoardGenerate;
 INSTANTIATE_TEST_CASE_P(/**/, CharucoBoardGenerate, testing::Values(make_tuple(Size(7, 4), 13.f, Size(400, 300), 24),
                                                                     make_tuple(Size(12, 2), 13.f, Size(200, 150), 1),
                                                                     make_tuple(Size(12, 2), 13.1f, Size(400, 300), 1)));
@@ -839,7 +839,7 @@ TEST_P(CharucoBoardGenerate, issue_24806)
         Point2f chessCorner(pixInSquare*(p.x/squareLength),
                             pixInSquare*(p.y/squareLength));
         Mat winCorner = chessboardZoneImg(Rect(Point(cvRound(chessCorner.x) - 1, cvRound(chessCorner.y) - 1), Size(2, 2)));
-        bool eq = (cv::countNonZero(goldCorner1 != winCorner) == 0) || (cv::countNonZero(goldCorner2 != winCorner) == 0);
+        bool eq = (ncvslideio::countNonZero(goldCorner1 != winCorner) == 0) || (ncvslideio::countNonZero(goldCorner2 != winCorner) == 0);
         ASSERT_TRUE(eq);
     }
 
@@ -913,7 +913,7 @@ TEST(Charuco, testSeveralBoardsWithCustomIds)
     );
 
 
-    aruco::Dictionary dict = cv::aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
+    aruco::Dictionary dict = ncvslideio::aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
     vector<int> ids1 = {0, 1, 33, 3, 4, 5, 6, 8}, ids2 = {7, 9, 44, 11, 12, 13, 14, 15};
     aruco::CharucoBoard board1(Size(4, 4), 1.f, .8f, dict, ids1), board2(Size(4, 4), 1.f, .8f, dict, ids2);
 

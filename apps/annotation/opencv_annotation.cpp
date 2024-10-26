@@ -62,7 +62,7 @@ Adapted by: Puttemans Steven - April 2016 - Vectorize the process to enable bett
 #include <map>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 // Function prototypes
 void on_mouse(int, int, int, int, void*);

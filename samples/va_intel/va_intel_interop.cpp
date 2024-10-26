@@ -121,7 +121,7 @@ public:
 
     Timer() : m_t0(0), m_diff(0)
     {
-        m_tick_frequency = (float)cv::getTickFrequency();
+        m_tick_frequency = (float)ncvslideio::getTickFrequency();
 
         m_unit_mul[USEC] = 1000000;
         m_unit_mul[MSEC] = 1000;
@@ -135,12 +135,12 @@ public:
 
     void start()
     {
-        m_t0 = cv::getTickCount();
+        m_t0 = ncvslideio::getTickCount();
     }
 
     void stop()
     {
-        m_diff = cv::getTickCount() - m_t0;
+        m_diff = ncvslideio::getTickCount() - m_t0;
     }
 
     float time(UNITS u = MSEC)
@@ -181,18 +181,18 @@ static void checkIfAvailableYUV420()
         throw std::runtime_error("Desired YUV420 RT format not found");
 }
 
-static cv::UMat readImage(const char* fileName)
+static ncvslideio::UMat readImage(const char* fileName)
 {
-    cv::Mat m = cv::imread(fileName);
+    ncvslideio::Mat m = ncvslideio::imread(fileName);
     if (m.empty())
         throw std::runtime_error("Failed to load image: " + std::string(fileName));
-    return m.getUMat(cv::ACCESS_RW);
+    return m.getUMat(ncvslideio::ACCESS_RW);
 }
 
-static void writeImage(const cv::UMat& u, const char* fileName, bool doInterop)
+static void writeImage(const ncvslideio::UMat& u, const char* fileName, bool doInterop)
 {
     std::string fn = std::string(fileName) + std::string(doInterop ? ".on" : ".off") + std::string(".jpg");
-    cv::imwrite(fn, u);
+    ncvslideio::imwrite(fn, u);
 }
 
 static float run(const char* infile, const char* outfile1, const char* outfile2, bool doInterop)
@@ -202,26 +202,26 @@ static float run(const char* infile, const char* outfile1, const char* outfile2,
     Timer t;
 
     // initialize CL context for CL/VA interop
-    cv::va_intel::ocl::initializeContextFromVA(va::display, doInterop);
+    ncvslideio::va_intel::ocl::initializeContextFromVA(va::display, doInterop);
 
     // load input image
-    cv::UMat u1 = readImage(infile);
-    cv::Size size2 = u1.size();
+    ncvslideio::UMat u1 = readImage(infile);
+    ncvslideio::Size size2 = u1.size();
     status = vaCreateSurfaces(va::display, VA_RT_FORMAT_YUV420, size2.width, size2.height, &surface, 1, NULL, 0);
     CHECK_VASTATUS(status, "vaCreateSurfaces");
 
     // transfer image into VA surface, make sure all CL initialization is done (kernels etc)
-    cv::va_intel::convertToVASurface(va::display, u1, surface, size2);
-    cv::va_intel::convertFromVASurface(va::display, surface, size2, u1);
-    cv::UMat u2;
-    cv::blur(u1, u2, cv::Size(7, 7), cv::Point(-3, -3));
+    ncvslideio::va_intel::convertToVASurface(va::display, u1, surface, size2);
+    ncvslideio::va_intel::convertFromVASurface(va::display, surface, size2, u1);
+    ncvslideio::UMat u2;
+    ncvslideio::blur(u1, u2, ncvslideio::Size(7, 7), ncvslideio::Point(-3, -3));
 
     // measure performance on some image processing
     writeImage(u1, outfile1, doInterop);
     t.start();
-    cv::va_intel::convertFromVASurface(va::display, surface, size2, u1);
-    cv::blur(u1, u2, cv::Size(7, 7), cv::Point(-3, -3));
-    cv::va_intel::convertToVASurface(va::display, u2, surface, size2);
+    ncvslideio::va_intel::convertFromVASurface(va::display, surface, size2, u1);
+    ncvslideio::blur(u1, u2, ncvslideio::Size(7, 7), ncvslideio::Point(-3, -3));
+    ncvslideio::va_intel::convertToVASurface(va::display, u2, surface, size2);
     t.stop();
     writeImage(u2, outfile2, doInterop);
 

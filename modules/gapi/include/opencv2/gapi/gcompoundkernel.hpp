@@ -13,14 +13,14 @@
 #include <opencv2/gapi/gkernel.hpp>
 #include <opencv2/gapi/garg.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi
 {
 namespace compound
 {
     // FIXME User does not need to know about this function
     // Needs that user may define compound kernels(as cpu kernels)
-    GAPI_EXPORTS cv::gapi::GBackend backend();
+    GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 } // namespace compound
 } // namespace gapi
 
@@ -55,31 +55,31 @@ template<typename T> struct get_compound_in
     static T get(GCompoundContext &ctx, int idx) { return ctx.inArg<T>(idx); }
 };
 
-template<typename U> struct get_compound_in<cv::GArray<U>>
+template<typename U> struct get_compound_in<ncvslideio::GArray<U>>
 {
-    static cv::GArray<U> get(GCompoundContext &ctx, int idx)
+    static ncvslideio::GArray<U> get(GCompoundContext &ctx, int idx)
     {
-        auto array = cv::GArray<U>();
+        auto array = ncvslideio::GArray<U>();
         ctx.m_args[idx] = GArg(array);
         return array;
     }
 };
 
-template<typename U> struct get_compound_in<cv::GOpaque<U>>
+template<typename U> struct get_compound_in<ncvslideio::GOpaque<U>>
 {
-    static cv::GOpaque<U> get(GCompoundContext &ctx, int idx)
+    static ncvslideio::GOpaque<U> get(GCompoundContext &ctx, int idx)
     {
-        auto opaq = cv::GOpaque<U>();
+        auto opaq = ncvslideio::GOpaque<U>();
         ctx.m_args[idx] = GArg(opaq);
         return opaq;
     }
 };
 
-template<> struct get_compound_in<cv::GMatP>
+template<> struct get_compound_in<ncvslideio::GMatP>
 {
-    static cv::GMatP get(GCompoundContext &ctx, int idx)
+    static ncvslideio::GMatP get(GCompoundContext &ctx, int idx)
     {
-        auto mat = cv::GMatP();
+        auto mat = ncvslideio::GMatP();
         ctx.m_args[idx] = GArg(mat);
         return mat;
     }
@@ -96,7 +96,7 @@ struct GCompoundCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...> >
     {
         auto result = Impl::expand(get_compound_in<Ins>::get(ctx, IIs)...);
         auto tuple_return = tuple_wrap_helper<decltype(result)>::get(std::move(result));
-        ctx.m_results = { cv::GArg(std::get<OIs>(tuple_return))... };
+        ctx.m_results = { ncvslideio::GArg(std::get<OIs>(tuple_return))... };
     }
 
     static void expand(GCompoundContext &ctx)
@@ -108,15 +108,15 @@ struct GCompoundCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...> >
 };
 
 template<class Impl, class K>
-class GCompoundKernelImpl: public cv::detail::GCompoundCallHelper<Impl, typename K::InArgs, typename K::OutArgs>,
-                           public cv::detail::KernelTag
+class GCompoundKernelImpl: public ncvslideio::detail::GCompoundCallHelper<Impl, typename K::InArgs, typename K::OutArgs>,
+                           public ncvslideio::detail::KernelTag
 {
-    using P = cv::detail::GCompoundCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
+    using P = ncvslideio::detail::GCompoundCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
 
 public:
     using API = K;
 
-    static cv::gapi::GBackend backend() { return cv::gapi::compound::backend(); }
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::compound::backend(); }
     static GCompoundKernel    kernel()  { return GCompoundKernel(&P::expand);   }
 };
 
@@ -132,8 +132,8 @@ public:
  * @param API the interface this kernel implements
  */
 #define GAPI_COMPOUND_KERNEL(Name, API) \
-    struct Name: public cv::detail::GCompoundKernelImpl<Name, API>
+    struct Name: public ncvslideio::detail::GCompoundKernelImpl<Name, API>
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GCOMPOUNDKERNEL_HPP

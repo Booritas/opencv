@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
     console.log('opencv.js loaded');
     if (isNodeJs) {
-      global.cv = cv;
+      global.ncvslideio = ncvslideio;
       global.combine = HelpFunc.combine;
       global.log = HelpFunc.log;
       global.decodeParams2Case = HelpFunc.decodeParams2Case;
@@ -43,21 +43,21 @@ function perf() {
 
     function addSobelCase(suite, type) {
         suite.add('sobel', function() {
-            cv.Sobel(src, dst, ddepth, dx, dy, ksize, 1, 0, borderType);
+            ncvslideio.Sobel(src, dst, ddepth, dx, dy, ksize, 1, 0, borderType);
           }, {
               'setup': function() {
                 let size = this.params.size;
-                let ddepth = cv[this.params.ddepth];
+                let ddepth = ncvslideio[this.params.ddepth];
                 let dxdy = this.params.dxdy;
                 let ksize = this.params.ksize;
                 let type = this.params.type;
                 let src, dst;
                 if (type %2 == 0) {
-                  src = new cv.Mat(size[1], size[0], cv.CV_8U);
-                  dst = new cv.Mat(size[1], size[0], ddepth);
+                  src = new ncvslideio.Mat(size[1], size[0], ncvslideio.CV_8U);
+                  dst = new ncvslideio.Mat(size[1], size[0], ddepth);
                 } else {
-                  src = new cv.Mat(size[1]+10, size[0]+10, cv.CV_8U);
-                  dst = new cv.Mat(size[1]+10, size[0]+10, ddepth);
+                  src = new ncvslideio.Mat(size[1]+10, size[0]+10, ncvslideio.CV_8U);
+                  dst = new ncvslideio.Mat(size[1]+10, size[0]+10, ddepth);
                   src = src.colRange(5, size[0]+5);
                   src = src.rowRange(5, size[1]+5);
                   dst = dst.colRange(5, size[0]+5);
@@ -69,9 +69,9 @@ function perf() {
                 let borderTypeArray = this.params.borderType;
                 let borderType;
                 if (borderTypeArray.length == 1) {
-                  borderType = cv[borderTypeArray[0]];
+                  borderType = ncvslideio[borderTypeArray[0]];
                 } else {
-                  borderType = cv[borderTypeArray[0]] | cv[borderTypeArray[1]];
+                  borderType = ncvslideio[borderTypeArray[0]] | ncvslideio[borderTypeArray[1]];
                 }
                 },
               'teardown': function() {
@@ -109,7 +109,7 @@ function perf() {
         let params = "";
         let paramObjs = [];
         paramObjs.push({name:"size", value:"", reg:[""], index:0});
-        paramObjs.push({name:"ddepth", value:"", reg:["/CV\_[0-9]+[FSUfsu]C1/g"], index:1});
+        paramObjs.push({name:"ddepth", value:"", reg:["/ncvslideio\_[0-9]+[FSUfsu]C1/g"], index:1});
         paramObjs.push({name:"dxdy", value:"", reg:["/\\([0-2],[0-2]\\)/"], index:2});
 
         if (/\([0-9]+x[0-9]+,[\ ]*\w+,[\ ]*\([0-2],[0-2]\),[\ ]*\w+\)/g.test(paramsContent.toString())) {
@@ -162,11 +162,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

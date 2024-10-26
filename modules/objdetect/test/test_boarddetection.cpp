@@ -112,7 +112,7 @@ void CV_ArucoBoardPose::run(int) {
                                   projectedCorners);
 
                     for(int c = 0; c < 4; c++) {
-                        double repError = cv::norm(projectedCorners[c] - corners[i][c]);  // TODO cvtest
+                        double repError = ncvslideio::norm(projectedCorners[c] - corners[i][c]);  // TODO cvtest
                         if(repError > 5.) {
                             ts->printf(cvtest::TS::LOG, "Corner reprojection error too high");
                             ts->set_failed_test_info(cvtest::TS::FAIL_MISMATCH);
@@ -230,18 +230,18 @@ TEST(CV_ArucoBoardPose, CheckNegativeZ)
     double matrixData[9] = { -3.9062571886921410e+02, 0., 4.2350000000000000e+02,
                               0., 3.9062571886921410e+02, 2.3950000000000000e+02,
                               0., 0., 1 };
-    cv::Mat cameraMatrix = cv::Mat(3, 3, CV_64F, matrixData);
+    ncvslideio::Mat cameraMatrix = ncvslideio::Mat(3, 3, CV_64F, matrixData);
 
-    vector<cv::Point3f> pts3d1, pts3d2;
-    pts3d1.push_back(cv::Point3f(0.326198f, -0.030621f, 0.303620f));
-    pts3d1.push_back(cv::Point3f(0.325340f, -0.100594f, 0.301862f));
-    pts3d1.push_back(cv::Point3f(0.255859f, -0.099530f, 0.293416f));
-    pts3d1.push_back(cv::Point3f(0.256717f, -0.029557f, 0.295174f));
+    vector<ncvslideio::Point3f> pts3d1, pts3d2;
+    pts3d1.push_back(ncvslideio::Point3f(0.326198f, -0.030621f, 0.303620f));
+    pts3d1.push_back(ncvslideio::Point3f(0.325340f, -0.100594f, 0.301862f));
+    pts3d1.push_back(ncvslideio::Point3f(0.255859f, -0.099530f, 0.293416f));
+    pts3d1.push_back(ncvslideio::Point3f(0.256717f, -0.029557f, 0.295174f));
 
-    pts3d2.push_back(cv::Point3f(-0.033144f, -0.034819f, 0.245216f));
-    pts3d2.push_back(cv::Point3f(-0.035507f, -0.104705f, 0.241987f));
-    pts3d2.push_back(cv::Point3f(-0.105289f, -0.102120f, 0.237120f));
-    pts3d2.push_back(cv::Point3f(-0.102926f, -0.032235f, 0.240349f));
+    pts3d2.push_back(ncvslideio::Point3f(-0.033144f, -0.034819f, 0.245216f));
+    pts3d2.push_back(ncvslideio::Point3f(-0.035507f, -0.104705f, 0.241987f));
+    pts3d2.push_back(ncvslideio::Point3f(-0.105289f, -0.102120f, 0.237120f));
+    pts3d2.push_back(ncvslideio::Point3f(-0.102926f, -0.032235f, 0.240349f));
 
     vector<int> tmpIds = {0, 1};
     vector<vector<Point3f> > tmpObjectPoints = {pts3d1, pts3d2};
@@ -249,16 +249,16 @@ TEST(CV_ArucoBoardPose, CheckNegativeZ)
 
     vector<vector<Point2f> > corners;
     vector<Point2f> pts2d;
-    pts2d.push_back(cv::Point2f(37.7f, 203.3f));
-    pts2d.push_back(cv::Point2f(38.5f, 120.5f));
-    pts2d.push_back(cv::Point2f(105.5f, 115.8f));
-    pts2d.push_back(cv::Point2f(104.2f, 202.7f));
+    pts2d.push_back(ncvslideio::Point2f(37.7f, 203.3f));
+    pts2d.push_back(ncvslideio::Point2f(38.5f, 120.5f));
+    pts2d.push_back(ncvslideio::Point2f(105.5f, 115.8f));
+    pts2d.push_back(ncvslideio::Point2f(104.2f, 202.7f));
     corners.push_back(pts2d);
     pts2d.clear();
-    pts2d.push_back(cv::Point2f(476.0f, 184.2f));
-    pts2d.push_back(cv::Point2f(479.6f, 73.8f));
-    pts2d.push_back(cv::Point2f(590.9f, 77.0f));
-    pts2d.push_back(cv::Point2f(587.5f, 188.1f));
+    pts2d.push_back(ncvslideio::Point2f(476.0f, 184.2f));
+    pts2d.push_back(ncvslideio::Point2f(479.6f, 73.8f));
+    pts2d.push_back(ncvslideio::Point2f(590.9f, 77.0f));
+    pts2d.push_back(ncvslideio::Point2f(587.5f, 188.1f));
     corners.push_back(pts2d);
 
     Vec3d rvec, tvec;
@@ -271,22 +271,22 @@ TEST(CV_ArucoBoardPose, CheckNegativeZ)
     }
     ASSERT_EQ(nUsed, 2);
 
-    cv::Matx33d rotm; cv::Point3d out;
-    cv::Rodrigues(rvec, rotm);
-    out = cv::Point3d(tvec) + rotm*Point3d(board.getObjPoints()[0][0]);
+    ncvslideio::Matx33d rotm; ncvslideio::Point3d out;
+    ncvslideio::Rodrigues(rvec, rotm);
+    out = ncvslideio::Point3d(tvec) + rotm*Point3d(board.getObjPoints()[0][0]);
     ASSERT_GT(out.z, 0);
 
     corners.clear(); pts2d.clear();
-    pts2d.push_back(cv::Point2f(38.4f, 204.5f));
-    pts2d.push_back(cv::Point2f(40.0f, 124.7f));
-    pts2d.push_back(cv::Point2f(102.0f, 119.1f));
-    pts2d.push_back(cv::Point2f(99.9f, 203.6f));
+    pts2d.push_back(ncvslideio::Point2f(38.4f, 204.5f));
+    pts2d.push_back(ncvslideio::Point2f(40.0f, 124.7f));
+    pts2d.push_back(ncvslideio::Point2f(102.0f, 119.1f));
+    pts2d.push_back(ncvslideio::Point2f(99.9f, 203.6f));
     corners.push_back(pts2d);
     pts2d.clear();
-    pts2d.push_back(cv::Point2f(476.0f, 184.3f));
-    pts2d.push_back(cv::Point2f(479.2f, 75.1f));
-    pts2d.push_back(cv::Point2f(588.7f, 79.2f));
-    pts2d.push_back(cv::Point2f(586.3f, 188.5f));
+    pts2d.push_back(ncvslideio::Point2f(476.0f, 184.3f));
+    pts2d.push_back(ncvslideio::Point2f(479.2f, 75.1f));
+    pts2d.push_back(ncvslideio::Point2f(588.7f, 79.2f));
+    pts2d.push_back(ncvslideio::Point2f(586.3f, 188.5f));
     corners.push_back(pts2d);
 
     nUsed = 0;
@@ -298,8 +298,8 @@ TEST(CV_ArucoBoardPose, CheckNegativeZ)
     }
     ASSERT_EQ(nUsed, 2);
 
-    cv::Rodrigues(rvec, rotm);
-    out = cv::Point3d(tvec) + rotm*Point3d(board.getObjPoints()[0][0]);
+    ncvslideio::Rodrigues(rvec, rotm);
+    out = ncvslideio::Point3d(tvec) + rotm*Point3d(board.getObjPoints()[0][0]);
     ASSERT_GT(out.z, 0);
 }
 
@@ -307,10 +307,10 @@ TEST(CV_ArucoGenerateBoard, regression_1226) {
     int bwidth = 1600;
     int bheight = 1200;
 
-    cv::aruco::Dictionary dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
-    cv::aruco::CharucoBoard board(Size(7, 5), 1.0, 0.75, dict);
-    cv::Size sz(bwidth, bheight);
-    cv::Mat mat;
+    ncvslideio::aruco::Dictionary dict = ncvslideio::aruco::getPredefinedDictionary(ncvslideio::aruco::DICT_4X4_50);
+    ncvslideio::aruco::CharucoBoard board(Size(7, 5), 1.0, 0.75, dict);
+    ncvslideio::Size sz(bwidth, bheight);
+    ncvslideio::Mat mat;
 
     ASSERT_NO_THROW(
     {
@@ -323,7 +323,7 @@ TEST(CV_ArucoDictionary, extendDictionary) {
     aruco::Dictionary custom_dictionary = aruco::extendDictionary(150, 4, base_dictionary);
 
     ASSERT_EQ(custom_dictionary.bytesList.rows, 150);
-    ASSERT_EQ(cv::norm(custom_dictionary.bytesList, base_dictionary.bytesList.rowRange(0, 150)), 0.);
+    ASSERT_EQ(ncvslideio::norm(custom_dictionary.bytesList, base_dictionary.bytesList.rowRange(0, 150)), 0.);
 }
 
 }} // namespace

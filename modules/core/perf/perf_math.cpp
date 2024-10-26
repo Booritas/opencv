@@ -17,7 +17,7 @@ PERF_TEST_P(VectorLength, phase32f, testing::Values(128, 1000, 128*1024, 512*102
 
     declare.in(X, Y, WARMUP_RNG).out(angle);
 
-    TEST_CYCLE_N(200) cv::phase(X, Y, angle, true);
+    TEST_CYCLE_N(200) ncvslideio::phase(X, Y, angle, true);
 
     SANITY_CHECK(angle, 5e-5);
 }
@@ -31,7 +31,7 @@ PERF_TEST_P(VectorLength, phase64f, testing::Values(128, 1000, 128*1024, 512*102
 
     declare.in(X, Y, WARMUP_RNG).out(angle);
 
-    TEST_CYCLE_N(200) cv::phase(X, Y, angle, true);
+    TEST_CYCLE_N(200) ncvslideio::phase(X, Y, angle, true);
 
     SANITY_CHECK(angle, 5e-5);
 }
@@ -40,7 +40,7 @@ PERF_TEST_P(VectorLength, phase64f, testing::Values(128, 1000, 128*1024, 512*102
 Mat randomOrtho(int rows, int ftype, RNG& rng)
 {
     Mat result(rows, rows, ftype);
-    rng.fill(result, RNG::UNIFORM, cv::Scalar(-1), cv::Scalar(1));
+    rng.fill(result, RNG::UNIFORM, ncvslideio::Scalar(-1), ncvslideio::Scalar(1));
 
     for (int i = 0; i < rows; i++)
     {
@@ -52,7 +52,7 @@ Mat randomOrtho(int rows, int ftype, RNG& rng)
             v -= p.dot(v) * p;
         }
 
-        v = v * (1. / cv::norm(v));
+        v = v * (1. / ncvslideio::norm(v));
     }
 
     return result;
@@ -61,7 +61,7 @@ Mat randomOrtho(int rows, int ftype, RNG& rng)
 template<typename FType>
 Mat buildRandomMat(int rows, int cols, RNG& rng, int rank, bool symmetrical)
 {
-    int mtype = cv::traits::Depth<FType>::value;
+    int mtype = ncvslideio::traits::Depth<FType>::value;
     Mat u = randomOrtho(rows, mtype, rng);
     Mat v = randomOrtho(cols, mtype, rng);
     Mat s(rows, cols, mtype, Scalar(0));
@@ -93,7 +93,7 @@ Mat buildRandomMat(int rows, int cols, int mtype, RNG& rng, int rank, bool symme
     }
     else
     {
-        CV_Error(cv::Error::StsBadArg, "This type is not supported");
+        CV_Error(ncvslideio::Error::StsBadArg, "This type is not supported");
     }
 }
 
@@ -175,7 +175,7 @@ PERF_TEST_P(SolveTest, randomMat, ::testing::Combine(
         break;
     }
 
-    TEST_CYCLE() cv::solve(A, b, x, method);
+    TEST_CYCLE() ncvslideio::solve(A, b, x, method);
 
     SANITY_CHECK_NOTHING();
 }
@@ -218,7 +218,7 @@ PERF_TEST_P(SvdTest, decompose, ::testing::Combine(
 
     RNG& rng = theRNG();
     Mat A = buildRandomMat(rows, cols, mtype, rng, rank, symmetrical);
-    TEST_CYCLE() cv::SVD svd(A, flags);
+    TEST_CYCLE() ncvslideio::SVD svd(A, flags);
 
     SANITY_CHECK_NOTHING();
 }
@@ -252,7 +252,7 @@ PERF_TEST_P(SvdTest, backSubst, ::testing::Combine(
 
     RNG& rng = theRNG();
     Mat A = buildRandomMat(rows, cols, mtype, rng, rank, /* symmetrical */ false);
-    cv::SVD svd(A);
+    ncvslideio::SVD svd(A);
     // preallocate to not spend time on it during backSubst()
     Mat dst(cols, 1, mtype);
     Mat rhs(rows, 1, mtype);
@@ -284,7 +284,7 @@ PERF_TEST_P_(KMeans, single_iter)
     for (int i = 0; i < N; i++)
     {
         int base = rng.uniform(0, N0);
-        cv::add(data0.row(base), data.row(i), data.row(i));
+        ncvslideio::add(data0.row(base), data.row(i), data.row(i));
     }
 
     declare.in(data);
@@ -318,7 +318,7 @@ PERF_TEST_P_(KMeans, good)
     for (int i = 0; i < N; i++)
     {
         int base = rng.uniform(0, N0);
-        cv::add(data0.row(base), data.row(i), data.row(i));
+        ncvslideio::add(data0.row(base), data.row(i), data.row(i));
     }
 
     declare.in(data);

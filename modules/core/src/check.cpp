@@ -8,7 +8,7 @@
 
 #include "opencv2/core/check.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 const char* depthToString(int depth)
 {
@@ -16,12 +16,12 @@ const char* depthToString(int depth)
     return s ? s : "<invalid depth>";
 }
 
-cv::String typeToString(int type)
+ncvslideio::String typeToString(int type)
 {
-    cv::String s = detail::typeToString_(type);
+    ncvslideio::String s = detail::typeToString_(type);
     if (s.empty())
     {
-        static cv::String invalidType("<invalid type>");
+        static ncvslideio::String invalidType("<invalid type>");
         return invalidType;
     }
     return s;
@@ -49,13 +49,13 @@ const char* depthToString_(int depth)
     return (depth <= CV_16F && depth >= 0) ? depthNames[depth] : NULL;
 }
 
-cv::String typeToString_(int type)
+ncvslideio::String typeToString_(int type)
 {
     int depth = CV_MAT_DEPTH(type);
     int cn = CV_MAT_CN(type);
     if (depth >= 0 && depth <= CV_16F)
-        return cv::format("%sC%d", depthToString_(depth), cn);
-    return cv::String();
+        return ncvslideio::format("%sC%d", depthToString_(depth), cn);
+    return ncvslideio::String();
 }
 
 template<typename T> static CV_NORETURN
@@ -69,7 +69,7 @@ void check_failed_auto_(const T& v1, const T& v2, const CheckContext& ctx)
         ss << "must be " << getTestOpPhraseStr(ctx.testOp) << std::endl;
     }
     ss  << "    '" << ctx.p2_str << "' is " << v2;
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatDepth(const int v1, const int v2, const CheckContext& ctx)
 {
@@ -81,7 +81,7 @@ void check_failed_MatDepth(const int v1, const int v2, const CheckContext& ctx)
         ss << "must be " << getTestOpPhraseStr(ctx.testOp) << std::endl;
     }
     ss  << "    '" << ctx.p2_str << "' is " << v2 << " (" << depthToString(v2) << ")";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatType(const int v1, const int v2, const CheckContext& ctx)
 {
@@ -93,7 +93,7 @@ void check_failed_MatType(const int v1, const int v2, const CheckContext& ctx)
         ss << "must be " << getTestOpPhraseStr(ctx.testOp) << std::endl;
     }
     ss  << "    '" << ctx.p2_str << "' is " << v2 << " (" << typeToString(v2) << ")";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatChannels(const int v1, const int v2, const CheckContext& ctx)
 {
@@ -133,7 +133,7 @@ void check_failed_auto_(const T& v, const CheckContext& ctx)
         << "    '" << ctx.p2_str << "'" << std::endl
         << "where" << std::endl
         << "    '" << ctx.p1_str << "' is " << v;
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatDepth(const int v, const CheckContext& ctx)
 {
@@ -142,7 +142,7 @@ void check_failed_MatDepth(const int v, const CheckContext& ctx)
         << "    '" << ctx.p2_str << "'" << std::endl
         << "where" << std::endl
         << "    '" << ctx.p1_str << "' is " << v << " (" << depthToString(v) << ")";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatType(const int v, const CheckContext& ctx)
 {
@@ -151,7 +151,7 @@ void check_failed_MatType(const int v, const CheckContext& ctx)
         << "    '" << ctx.p2_str << "'" << std::endl
         << "where" << std::endl
         << "    '" << ctx.p1_str << "' is " << v << " (" << typeToString(v) << ")";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_MatChannels(const int v, const CheckContext& ctx)
 {
@@ -160,7 +160,7 @@ void check_failed_MatChannels(const int v, const CheckContext& ctx)
         << "    '" << ctx.p2_str << "'" << std::endl
         << "where" << std::endl
         << "    '" << ctx.p1_str << "' is " << v;
-    cv::error(cv::Error::BadNumChannels, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::BadNumChannels, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_true(const bool v, const CheckContext& ctx)
 {
@@ -168,7 +168,7 @@ void check_failed_true(const bool v, const CheckContext& ctx)
     std::stringstream ss;
     ss  << ctx.message << ":" << std::endl
         << "    '" << ctx.p1_str << "' must be 'true'";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_false(const bool v, const CheckContext& ctx)
 {
@@ -176,7 +176,7 @@ void check_failed_false(const bool v, const CheckContext& ctx)
     std::stringstream ss;
     ss  << ctx.message << ":" << std::endl
         << "    '" << ctx.p1_str << "' must be 'false'";
-    cv::error(cv::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
+    ncvslideio::error(ncvslideio::Error::StsError, ss.str(), ctx.func, ctx.file, ctx.line);
 }
 void check_failed_auto(const int v, const CheckContext& ctx)
 {

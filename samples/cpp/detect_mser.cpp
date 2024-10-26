@@ -31,7 +31,7 @@
 
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 
 static void help(char** argv)
@@ -402,7 +402,7 @@ int main(int argc, char *argv[])
 {
     Mat imgOrig, img;
     Size blurSize(5, 5);
-    cv::CommandLineParser parser(argc, argv, "{ help h | | }{ @input | | }");
+    ncvslideio::CommandLineParser parser(argc, argv, "{ help h | | }{ @input | | }");
     if (parser.has("help"))
     {
         help(argv);

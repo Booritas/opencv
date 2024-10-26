@@ -46,7 +46,7 @@
 #include <Eigen/Dense>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 Ptr<ExposureCompensator> ExposureCompensator::createDefault(int type)
@@ -616,4 +616,4 @@ void BlocksChannelsCompensator::feed(const std::vector<Point> &corners, const st
 
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

@@ -8,7 +8,7 @@
 
 #include "opencv2/core/utils/filesystem.private.hpp"  // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT && defined(PARALLEL_ENABLE_PLUGINS)
 #define DECLARE_DYNAMIC_BACKEND(name) \
@@ -21,7 +21,7 @@ ParallelBackendInfo { \
 
 #define DECLARE_STATIC_BACKEND(name, createBackendAPI) \
 ParallelBackendInfo { \
-    1000, name, std::make_shared<cv::parallel::StaticBackendFactory>([=] () -> std::shared_ptr<cv::parallel::ParallelForAPI> { return createBackendAPI(); }) \
+    1000, name, std::make_shared<ncvslideio::parallel::StaticBackendFactory>([=] () -> std::shared_ptr<ncvslideio::parallel::ParallelForAPI> { return createBackendAPI(); }) \
 },
 
 static
@@ -78,7 +78,7 @@ protected:
             ParallelBackendInfo& info = enabledBackends[enabled];
             if (enabled != i)
                 info = enabledBackends[i];
-            size_t param_priority = utils::getConfigurationParameterSizeT(cv::format("OPENCV_PARALLEL_PRIORITY_%s", info.name.c_str()).c_str(), (size_t)info.priority);
+            size_t param_priority = utils::getConfigurationParameterSizeT(ncvslideio::format("OPENCV_PARALLEL_PRIORITY_%s", info.name.c_str()).c_str(), (size_t)info.priority);
             CV_Assert(param_priority == (size_t)(int)param_priority); // overflow check
             if (param_priority > 0)
             {
@@ -111,7 +111,7 @@ protected:
     bool readPrioritySettings()
     {
         bool hasChanges = false;
-        cv::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_PARALLEL_PRIORITY_LIST", NULL);
+        ncvslideio::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_PARALLEL_PRIORITY_LIST", NULL);
         if (prioritized_backends.empty())
             return hasChanges;
         CV_LOG_INFO(NULL, "core(parallel): Configured priority list (OPENCV_PARALLEL_PRIORITY_LIST): " << prioritized_backends);
@@ -167,7 +167,7 @@ public:
 
 const std::vector<ParallelBackendInfo>& getParallelBackendsInfo()
 {
-    return cv::parallel::ParallelBackendRegistry::getInstance().getEnabledBackends();
+    return ncvslideio::parallel::ParallelBackendRegistry::getInstance().getEnabledBackends();
 }
 
 }} // namespace

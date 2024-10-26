@@ -62,14 +62,14 @@
 #define icvWriteFrame_FFMPEG_p cvWriteFrame_FFMPEG
 
 
-namespace cv {
+namespace ncvslideio {
 namespace {
 
-class CvCapture_FFMPEG_proxy CV_FINAL : public cv::VideoCaptureBase
+class CvCapture_FFMPEG_proxy CV_FINAL : public ncvslideio::VideoCaptureBase
 {
 public:
     CvCapture_FFMPEG_proxy() { ffmpegCapture = 0; }
-    CvCapture_FFMPEG_proxy(const cv::String& filename, const cv::VideoCaptureParameters& params)
+    CvCapture_FFMPEG_proxy(const ncvslideio::String& filename, const ncvslideio::VideoCaptureParameters& params)
         : ffmpegCapture(NULL)
     {
         open(filename, params);
@@ -88,7 +88,7 @@ public:
     {
         return ffmpegCapture ? icvGrabFrame_FFMPEG_p(ffmpegCapture)!=0 : false;
     }
-    virtual bool retrieveFrame_(int flag, cv::OutputArray frame) CV_OVERRIDE
+    virtual bool retrieveFrame_(int flag, ncvslideio::OutputArray frame) CV_OVERRIDE
     {
         unsigned char* data = 0;
         int step=0, width=0, height=0, cn=0, depth=0;
@@ -112,10 +112,10 @@ public:
                 return false;
         }
 
-        cv::Mat(height, width, CV_MAKETYPE(depth, cn), data, step).copyTo(frame);
+        ncvslideio::Mat(height, width, CV_MAKETYPE(depth, cn), data, step).copyTo(frame);
         return true;
     }
-    bool open(const cv::String& filename, const cv::VideoCaptureParameters& params)
+    bool open(const ncvslideio::String& filename, const ncvslideio::VideoCaptureParameters& params)
     {
         close();
 
@@ -131,7 +131,7 @@ public:
     }
 
     virtual bool isOpened() const CV_OVERRIDE { return ffmpegCapture != 0; }
-    virtual int getCaptureDomain() CV_OVERRIDE { return cv::CAP_FFMPEG; }
+    virtual int getCaptureDomain() CV_OVERRIDE { return ncvslideio::CAP_FFMPEG; }
 
 protected:
     CvCapture_FFMPEG* ffmpegCapture;
@@ -139,27 +139,27 @@ protected:
 
 } // namespace
 
-cv::Ptr<cv::IVideoCapture> cvCreateFileCapture_FFMPEG_proxy(const std::string &filename, const cv::VideoCaptureParameters& params)
+ncvslideio::Ptr<ncvslideio::IVideoCapture> cvCreateFileCapture_FFMPEG_proxy(const std::string &filename, const ncvslideio::VideoCaptureParameters& params)
 {
-    cv::Ptr<CvCapture_FFMPEG_proxy> capture = cv::makePtr<CvCapture_FFMPEG_proxy>(filename, params);
+    ncvslideio::Ptr<CvCapture_FFMPEG_proxy> capture = ncvslideio::makePtr<CvCapture_FFMPEG_proxy>(filename, params);
     if (capture && capture->isOpened())
         return capture;
-    return cv::Ptr<cv::IVideoCapture>();
+    return ncvslideio::Ptr<ncvslideio::IVideoCapture>();
 }
 
 namespace {
 
 class CvVideoWriter_FFMPEG_proxy CV_FINAL :
-    public cv::IVideoWriter
+    public ncvslideio::IVideoWriter
 {
 public:
     CvVideoWriter_FFMPEG_proxy() { ffmpegWriter = 0; }
-    CvVideoWriter_FFMPEG_proxy(const cv::String& filename, int fourcc, double fps, cv::Size frameSize, const VideoWriterParameters& params) { ffmpegWriter = 0; open(filename, fourcc, fps, frameSize, params); }
+    CvVideoWriter_FFMPEG_proxy(const ncvslideio::String& filename, int fourcc, double fps, ncvslideio::Size frameSize, const VideoWriterParameters& params) { ffmpegWriter = 0; open(filename, fourcc, fps, frameSize, params); }
     virtual ~CvVideoWriter_FFMPEG_proxy() { close(); }
 
-    int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_FFMPEG; }
+    int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_FFMPEG; }
 
-    virtual void write(cv::InputArray image ) CV_OVERRIDE
+    virtual void write(ncvslideio::InputArray image ) CV_OVERRIDE
     {
         if(!ffmpegWriter)
             return;
@@ -174,7 +174,7 @@ public:
 
         icvWriteFrame_FFMPEG_p(ffmpegWriter, (const uchar*)image.getMat().ptr(), (int)image.step(), image.cols(), image.rows(), image.channels(), 0);
     }
-    virtual bool open( const cv::String& filename, int fourcc, double fps, cv::Size frameSize, const VideoWriterParameters& params )
+    virtual bool open( const ncvslideio::String& filename, int fourcc, double fps, ncvslideio::Size frameSize, const VideoWriterParameters& params )
     {
         close();
         ffmpegWriter = cvCreateVideoWriterWithParams_FFMPEG( filename.c_str(), fourcc, fps, frameSize.width, frameSize.height, params );
@@ -208,14 +208,14 @@ protected:
 
 } // namespace
 
-cv::Ptr<cv::IVideoWriter> cvCreateVideoWriter_FFMPEG_proxy(const std::string& filename, int fourcc,
-                                                           double fps, const cv::Size& frameSize,
+ncvslideio::Ptr<ncvslideio::IVideoWriter> cvCreateVideoWriter_FFMPEG_proxy(const std::string& filename, int fourcc,
+                                                           double fps, const ncvslideio::Size& frameSize,
                                                            const VideoWriterParameters& params)
 {
-    cv::Ptr<CvVideoWriter_FFMPEG_proxy> writer = cv::makePtr<CvVideoWriter_FFMPEG_proxy>(filename, fourcc, fps, frameSize, params);
+    ncvslideio::Ptr<CvVideoWriter_FFMPEG_proxy> writer = ncvslideio::makePtr<CvVideoWriter_FFMPEG_proxy>(filename, fourcc, fps, frameSize, params);
     if (writer && writer->isOpened())
         return writer;
-    return cv::Ptr<cv::IVideoWriter>();
+    return ncvslideio::Ptr<ncvslideio::IVideoWriter>();
 }
 
 } // namespace
@@ -241,7 +241,7 @@ cv::Ptr<cv::IVideoWriter> cvCreateVideoWriter_FFMPEG_proxy(const std::string& fi
 #include "plugin_writer_api.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 static
 CvResult CV_API_CALL cv_capture_open(const char* filename, int camera_index, CV_OUT CvPluginCapture* handle)
@@ -255,7 +255,7 @@ CvResult CV_API_CALL cv_capture_open(const char* filename, int camera_index, CV_
     CvCapture_FFMPEG_proxy *cap = 0;
     try
     {
-        cap = new CvCapture_FFMPEG_proxy(filename, cv::VideoCaptureParameters());
+        cap = new CvCapture_FFMPEG_proxy(filename, ncvslideio::VideoCaptureParameters());
         if (cap->isOpened())
         {
             *handle = (CvPluginCapture)cap;
@@ -291,7 +291,7 @@ CvResult CV_API_CALL cv_capture_open_with_params(
     CvCapture_FFMPEG_proxy *cap = 0;
     try
     {
-        cv::VideoCaptureParameters parameters(params, n_params);
+        ncvslideio::VideoCaptureParameters parameters(params, n_params);
         cap = new CvCapture_FFMPEG_proxy(filename, parameters);
         if (cap->isOpened())
         {

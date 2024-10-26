@@ -45,7 +45,7 @@
 
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv { namespace ml {
+namespace ncvslideio { namespace ml {
 
 static const float MISSED_VAL = TrainData::missingValue();
 static const int VAR_MISSED = VAR_ORDERED;
@@ -55,8 +55,8 @@ TrainData::~TrainData() {}
 Mat TrainData::getSubVector(const Mat& vec, const Mat& idx)
 {
     if (!(vec.cols == 1 || vec.rows == 1))
-        CV_LOG_WARNING(NULL, "'getSubVector(const Mat& vec, const Mat& idx)' call with non-1D input is deprecated. It is not designed to work with 2D matrixes (especially with 'cv::ml::COL_SAMPLE' layout).");
-    return getSubMatrix(vec, idx, vec.rows == 1 ? cv::ml::COL_SAMPLE : cv::ml::ROW_SAMPLE);
+        CV_LOG_WARNING(NULL, "'getSubVector(const Mat& vec, const Mat& idx)' call with non-1D input is deprecated. It is not designed to work with 2D matrixes (especially with 'ncvslideio::ml::COL_SAMPLE' layout).");
+    return getSubMatrix(vec, idx, vec.rows == 1 ? ncvslideio::ml::COL_SAMPLE : ncvslideio::ml::ROW_SAMPLE);
 }
 
 template<typename T>
@@ -179,21 +179,21 @@ public:
     }
     Mat getTrainResponses() const CV_OVERRIDE
     {
-        return getSubMatrix(responses, getTrainSampleIdx(), cv::ml::ROW_SAMPLE);  // col-based responses are transposed in setData()
+        return getSubMatrix(responses, getTrainSampleIdx(), ncvslideio::ml::ROW_SAMPLE);  // col-based responses are transposed in setData()
     }
     Mat getTrainNormCatResponses() const CV_OVERRIDE
     {
-        return getSubMatrix(normCatResponses, getTrainSampleIdx(), cv::ml::ROW_SAMPLE);  // like 'responses'
+        return getSubMatrix(normCatResponses, getTrainSampleIdx(), ncvslideio::ml::ROW_SAMPLE);  // like 'responses'
     }
     Mat getTestResponses() const CV_OVERRIDE
     {
         Mat idx = getTestSampleIdx();
-        return idx.empty() ? Mat() : getSubMatrix(responses, idx, cv::ml::ROW_SAMPLE);  // col-based responses are transposed in setData()
+        return idx.empty() ? Mat() : getSubMatrix(responses, idx, ncvslideio::ml::ROW_SAMPLE);  // col-based responses are transposed in setData()
     }
     Mat getTestNormCatResponses() const CV_OVERRIDE
     {
         Mat idx = getTestSampleIdx();
-        return idx.empty() ? Mat() : getSubMatrix(normCatResponses, idx, cv::ml::ROW_SAMPLE);  // like 'responses'
+        return idx.empty() ? Mat() : getSubMatrix(normCatResponses, idx, ncvslideio::ml::ROW_SAMPLE);  // like 'responses'
     }
     Mat getNormCatResponses() const CV_OVERRIDE { return normCatResponses; }
     Mat getClassLabels() const CV_OVERRIDE { return classLabels; }
@@ -574,7 +574,7 @@ public:
             if( nvars == 0 )
             {
                 if( rowvals.empty() )
-                    CV_Error(cv::Error::StsBadArg, "invalid CSV format; no data found");
+                    CV_Error(ncvslideio::Error::StsBadArg, "invalid CSV format; no data found");
                 nvars = (int)rowvals.size();
                 if( !varTypeSpec.empty() && varTypeSpec.size() > 0 )
                 {
@@ -637,7 +637,7 @@ public:
             {
                 for( i = ninputvars; i < nvars; i++ )
                     if( vtypes[i] == VAR_CATEGORICAL )
-                        CV_Error(cv::Error::StsBadArg,
+                        CV_Error(ncvslideio::Error::StsBadArg,
                                  "If responses are vector values, not scalars, they must be marked as ordered responses");
             }
         }
@@ -724,14 +724,14 @@ public:
                 }
 
                 if ( ptr[3] != '[')
-                    CV_Error( cv::Error::StsBadArg, errmsg );
+                    CV_Error( ncvslideio::Error::StsBadArg, errmsg );
 
                 ptr += 4; // pass "ord["
                 do
                 {
                     int b1 = (int)strtod( ptr, &stopstring );
                     if( *stopstring == 0 || (*stopstring != ',' && *stopstring != ']' && *stopstring != '-') )
-                        CV_Error( cv::Error::StsBadArg, errmsg );
+                        CV_Error( ncvslideio::Error::StsBadArg, errmsg );
                     ptr = stopstring + 1;
                     if( (stopstring[0] == ',') || (stopstring[0] == ']'))
                     {
@@ -745,7 +745,7 @@ public:
                         {
                             int b2 = (int)strtod( ptr, &stopstring);
                             if ( (*stopstring == 0) || (*stopstring != ',' && *stopstring != ']') )
-                                CV_Error( cv::Error::StsBadArg, errmsg );
+                                CV_Error( ncvslideio::Error::StsBadArg, errmsg );
                             ptr = stopstring + 1;
                             CV_Assert( 0 <= b1 && b1 <= b2 && b2 < nvars );
                             for (int i = b1; i <= b2; i++)
@@ -753,7 +753,7 @@ public:
                             specCounter += b2 - b1 + 1;
                         }
                         else
-                            CV_Error( cv::Error::StsBadArg, errmsg );
+                            CV_Error( ncvslideio::Error::StsBadArg, errmsg );
 
                     }
                 }
@@ -762,7 +762,7 @@ public:
         }
 
         if( specCounter != nvars )
-            CV_Error( cv::Error::StsBadArg, "type of some variables is not specified" );
+            CV_Error( ncvslideio::Error::StsBadArg, "type of some variables is not specified" );
     }
 
     void setTrainTestSplitRatio(double ratio, bool shuffle) CV_OVERRIDE

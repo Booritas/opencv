@@ -2,7 +2,7 @@
 #include "common.h"
 #include "features2d_converters.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #define CHECK_MAT(cond) if(!(cond)){ LOGD("FAILED: " #cond); return; }
 

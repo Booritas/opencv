@@ -41,7 +41,7 @@
 //M*/
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static const int DIST_SHIFT = 16;
@@ -448,7 +448,7 @@ static void getDistanceTransformMask( int maskType, float *metrics )
         metrics[2] = 2.1969f;
         break;
     default:
-        CV_Error(cv::Error::StsBadArg, "Unknown metric type");
+        CV_Error(ncvslideio::Error::StsBadArg, "Unknown metric type");
     }
 }
 
@@ -593,10 +593,10 @@ trueDistTrans( const Mat& src, Mat& dst )
     CV_Assert( src.type() == CV_8UC1 && dst.type() == CV_32FC1 );
     int i, m = src.rows, n = src.cols;
 
-    cv::AutoBuffer<uchar> _buf(std::max(m*2*sizeof(int) + (m*3+1)*sizeof(int), n*2*sizeof(float)));
+    ncvslideio::AutoBuffer<uchar> _buf(std::max(m*2*sizeof(int) + (m*3+1)*sizeof(int), n*2*sizeof(float)));
     // stage 1: compute 1d distance transform of each column
     unsigned int* sqr_tab = (unsigned int*)_buf.data();
-    int* sat_tab = cv::alignPtr((int*)(sqr_tab + m*2), sizeof(int));
+    int* sat_tab = ncvslideio::alignPtr((int*)(sqr_tab + m*2), sizeof(int));
     int shift = m*2;
 
     for( i = 0; i < m; i++ )
@@ -608,7 +608,7 @@ trueDistTrans( const Mat& src, Mat& dst )
     for( ; i <= m*3; i++ )
         sat_tab[i] = i - shift;
 
-    cv::parallel_for_(cv::Range(0, n), cv::DTColumnInvoker(&src, &dst, sat_tab, sqr_tab), src.total()/(double)(1<<16));
+    ncvslideio::parallel_for_(ncvslideio::Range(0, n), ncvslideio::DTColumnInvoker(&src, &dst, sat_tab, sqr_tab), src.total()/(double)(1<<16));
 
     // stage 2: compute modified distance transform for each row
     float* inv_tab = (float*)sqr_tab + n;
@@ -621,7 +621,7 @@ trueDistTrans( const Mat& src, Mat& dst )
         sqr_tab[i] = i >= PRECISE_DIST_MAX ? inf : static_cast<unsigned int>(i) * i;
     }
 
-    cv::parallel_for_(cv::Range(0, m), cv::DTRowInvoker(&dst, sqr_tab, inv_tab));
+    ncvslideio::parallel_for_(ncvslideio::Range(0, m), ncvslideio::DTRowInvoker(&dst, sqr_tab, inv_tab));
 }
 
 
@@ -651,7 +651,7 @@ distanceATS_L1_8u( const Mat& src, Mat& dst )
 
     ////////////////////// forward scan ////////////////////////
     for( x = 0; x < 256; x++ )
-        lut[x] = cv::saturate_cast<uchar>(x+1);
+        lut[x] = ncvslideio::saturate_cast<uchar>(x+1);
 
     //init first pixel to max (we're going to be skipping it)
     dbase[0] = (uchar)(sbase[0] == 0 ? 0 : 255);
@@ -709,7 +709,7 @@ distanceATS_L1_8u( const Mat& src, Mat& dst )
 
 }
 
-namespace cv
+namespace ncvslideio
 {
 static void distanceTransform_L1_8U(InputArray _src, OutputArray _dst)
 {
@@ -741,7 +741,7 @@ static void distanceTransform_L1_8U(InputArray _src, OutputArray _dst)
 }
 
 // Wrapper function for distance transform group
-void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labels,
+void ncvslideio::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labels,
                             int distType, int maskSize, int labelType )
 {
     CV_INSTRUMENT_REGION();
@@ -760,18 +760,18 @@ void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labe
 
         _labels.create(src.size(), CV_32S);
         labels = _labels.getMat();
-        maskSize = cv::DIST_MASK_5;
+        maskSize = ncvslideio::DIST_MASK_5;
     }
 
     float _mask[5] = {0};
 
-    if( maskSize != cv::DIST_MASK_3 && maskSize != cv::DIST_MASK_5 && maskSize != cv::DIST_MASK_PRECISE )
-        CV_Error( cv::Error::StsBadSize, "Mask size should be 3 or 5 or 0 (precise)" );
+    if( maskSize != ncvslideio::DIST_MASK_3 && maskSize != ncvslideio::DIST_MASK_5 && maskSize != ncvslideio::DIST_MASK_PRECISE )
+        CV_Error( ncvslideio::Error::StsBadSize, "Mask size should be 3 or 5 or 0 (precise)" );
 
-    if ((distType == cv::DIST_C || distType == cv::DIST_L1) && !need_labels)
-        maskSize = cv::DIST_MASK_3;
+    if ((distType == ncvslideio::DIST_C || distType == ncvslideio::DIST_L1) && !need_labels)
+        maskSize = ncvslideio::DIST_MASK_3;
 
-    if( maskSize == cv::DIST_MASK_PRECISE )
+    if( maskSize == ncvslideio::DIST_MASK_PRECISE )
     {
 
 #ifdef HAVE_IPP
@@ -779,7 +779,7 @@ void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labe
         {
 #if IPP_DISABLE_PERF_TRUE_DIST_MT
             // IPP uses floats, but 4097 cannot be squared into a float
-            if((cv::getNumThreads()<=1 || (src.total()<(int)(1<<14))) &&
+            if((ncvslideio::getNumThreads()<=1 || (src.total()<(int)(1<<14))) &&
                 src.rows < 4097 && src.cols < 4097)
 #endif
             {
@@ -809,19 +809,19 @@ void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labe
         return;
     }
 
-    CV_Assert( distType == cv::DIST_C || distType == cv::DIST_L1 || distType == cv::DIST_L2 );
+    CV_Assert( distType == ncvslideio::DIST_C || distType == ncvslideio::DIST_L1 || distType == ncvslideio::DIST_L2 );
 
-    getDistanceTransformMask( (distType == cv::DIST_C ? 0 :
-        distType == cv::DIST_L1 ? 1 : 2) + maskSize*10, _mask );
+    getDistanceTransformMask( (distType == ncvslideio::DIST_C ? 0 :
+        distType == ncvslideio::DIST_L1 ? 1 : 2) + maskSize*10, _mask );
 
     Size size = src.size();
 
-    int border = maskSize == cv::DIST_MASK_3 ? 1 : 2;
+    int border = maskSize == ncvslideio::DIST_MASK_3 ? 1 : 2;
     Mat temp;
 
     if( !need_labels )
     {
-        if( maskSize == cv::DIST_MASK_3 )
+        if( maskSize == ncvslideio::DIST_MASK_3 )
         {
 #if defined (HAVE_IPP) && (IPP_VERSION_X100 >= 700)
             bool has_int_overflow = (int64)src.cols * src.rows >= INT_MAX;
@@ -864,7 +864,7 @@ void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labe
     {
         labels.setTo(Scalar::all(0));
 
-        if( labelType == cv::DIST_LABEL_CCOMP )
+        if( labelType == ncvslideio::DIST_LABEL_CCOMP )
         {
             Mat zpix = src == 0;
             connectedComponents(zpix, labels, 8, CV_32S, CCL_WU);
@@ -888,12 +888,12 @@ void cv::distanceTransform( InputArray _src, OutputArray _dst, OutputArray _labe
     }
 }
 
-void cv::distanceTransform( InputArray _src, OutputArray _dst,
+void ncvslideio::distanceTransform( InputArray _src, OutputArray _dst,
                             int distanceType, int maskSize, int dstType)
 {
     CV_INSTRUMENT_REGION();
 
-    if (distanceType == cv::DIST_L1 && dstType==CV_8U)
+    if (distanceType == ncvslideio::DIST_L1 && dstType==CV_8U)
         distanceTransform_L1_8U(_src, _dst);
     else
         distanceTransform(_src, _dst, noArray(), distanceType, maskSize, DIST_LABEL_PIXEL);
@@ -906,11 +906,11 @@ cvDistTransform( const void* srcarr, void* dstarr,
                 const float * /*mask*/,
                 void* labelsarr, int labelType )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr);
-    const cv::Mat dst = cv::cvarrToMat(dstarr);
-    const cv::Mat labels = cv::cvarrToMat(labelsarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr);
+    const ncvslideio::Mat dst = ncvslideio::cvarrToMat(dstarr);
+    const ncvslideio::Mat labels = ncvslideio::cvarrToMat(labelsarr);
 
-    cv::distanceTransform(src, dst, labelsarr ? cv::_OutputArray(labels) : cv::_OutputArray(),
+    ncvslideio::distanceTransform(src, dst, labelsarr ? ncvslideio::_OutputArray(labels) : ncvslideio::_OutputArray(),
                           distType, maskSize, labelType);
 
 }

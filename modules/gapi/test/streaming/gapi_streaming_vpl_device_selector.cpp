@@ -48,35 +48,35 @@ namespace opencv_test
 namespace
 {
 
-void test_dev_eq(const typename cv::gapi::wip::onevpl::IDeviceSelector::DeviceScoreTable::value_type &scored_device,
-                 cv::gapi::wip::onevpl::IDeviceSelector::Score expected_score,
-                 cv::gapi::wip::onevpl::AccelType expected_type,
-                 cv::gapi::wip::onevpl::Device::Ptr expected_ptr) {
+void test_dev_eq(const typename ncvslideio::gapi::wip::onevpl::IDeviceSelector::DeviceScoreTable::value_type &scored_device,
+                 ncvslideio::gapi::wip::onevpl::IDeviceSelector::Score expected_score,
+                 ncvslideio::gapi::wip::onevpl::AccelType expected_type,
+                 ncvslideio::gapi::wip::onevpl::Device::Ptr expected_ptr) {
     EXPECT_EQ(std::get<0>(scored_device), expected_score);
     EXPECT_EQ(std::get<1>(scored_device).get_type(), expected_type);
     EXPECT_EQ(std::get<1>(scored_device).get_ptr(), expected_ptr);
 }
 
-void test_ctx_eq(const typename cv::gapi::wip::onevpl::IDeviceSelector::DeviceContexts::value_type &ctx,
-                 cv::gapi::wip::onevpl::AccelType expected_type,
-                 cv::gapi::wip::onevpl::Context::Ptr expected_ptr) {
+void test_ctx_eq(const typename ncvslideio::gapi::wip::onevpl::IDeviceSelector::DeviceContexts::value_type &ctx,
+                 ncvslideio::gapi::wip::onevpl::AccelType expected_type,
+                 ncvslideio::gapi::wip::onevpl::Context::Ptr expected_ptr) {
     EXPECT_EQ(ctx.get_type(), expected_type);
     EXPECT_EQ(ctx.get_ptr(), expected_ptr);
 }
 
-void test_host_dev_eq(const typename cv::gapi::wip::onevpl::IDeviceSelector::DeviceScoreTable::value_type &scored_device,
-                      cv::gapi::wip::onevpl::IDeviceSelector::Score expected_score) {
+void test_host_dev_eq(const typename ncvslideio::gapi::wip::onevpl::IDeviceSelector::DeviceScoreTable::value_type &scored_device,
+                      ncvslideio::gapi::wip::onevpl::IDeviceSelector::Score expected_score) {
     test_dev_eq(scored_device, expected_score,
-                cv::gapi::wip::onevpl::AccelType::HOST, nullptr);
+                ncvslideio::gapi::wip::onevpl::AccelType::HOST, nullptr);
 }
 
-void test_host_ctx_eq(const typename cv::gapi::wip::onevpl::IDeviceSelector::DeviceContexts::value_type &ctx) {
-    test_ctx_eq(ctx, cv::gapi::wip::onevpl::AccelType::HOST, nullptr);
+void test_host_ctx_eq(const typename ncvslideio::gapi::wip::onevpl::IDeviceSelector::DeviceContexts::value_type &ctx) {
+    test_ctx_eq(ctx, ncvslideio::gapi::wip::onevpl::AccelType::HOST, nullptr);
 }
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDevice)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     CfgParamDeviceSelector selector;
     IDeviceSelector::DeviceScoreTable devs = selector.select_devices();
     EXPECT_TRUE(devs.size() == 1);
@@ -89,7 +89,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDevice)
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> empty_params;
     CfgParamDeviceSelector selector(empty_params);
     IDeviceSelector::DeviceScoreTable devs = selector.select_devices();
@@ -102,7 +102,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam)
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithAccelNACfgParam)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_no_accel;
     cfg_params_w_no_accel.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_NA));
     CfgParamDeviceSelector selector(cfg_params_w_no_accel);
@@ -119,7 +119,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithAccelNACfgParam)
 #ifdef HAVE_D3D11
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam_DX11_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> empty_params;
     CfgParamDeviceSelector selector(empty_params);
     IDeviceSelector::DeviceScoreTable devs = selector.select_devices();
@@ -133,7 +133,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam_DX11
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithDX11AccelCfgParam_DX11_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_dx11;
     cfg_params_w_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
     std::unique_ptr<CfgParamDeviceSelector> selector_ptr;
@@ -152,7 +152,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithDX11AccelCfgParam_
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, NULLDeviceWithDX11AccelCfgParam_DX11_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_dx11;
     cfg_params_w_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
     Device::Ptr empty_device_ptr = nullptr;
@@ -165,7 +165,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, NULLDeviceWithDX11AccelCfgParam_DX1
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, ExternalDeviceWithDX11AccelCfgParam_DX11_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     ID3D11Device *device = nullptr;
     ID3D11DeviceContext* device_context = nullptr;
     {
@@ -209,7 +209,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, ExternalDeviceWithDX11AccelCfgParam
 #ifndef HAVE_D3D11
 TEST(OneVPL_Source_Device_Selector_CfgParam, DX11DeviceFromCfgParamWithDX11Disabled)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_non_existed_dx11;
     cfg_params_w_non_existed_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
     EXPECT_THROW(CfgParamDeviceSelector{cfg_params_w_non_existed_dx11},
@@ -222,7 +222,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DX11DeviceFromCfgParamWithDX11Disab
 #if defined(HAVE_VA) || defined(HAVE_VA_INTEL)
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam_VAAPI_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> empty_params;
     CfgParamDeviceSelector selector(empty_params);
     IDeviceSelector::DeviceScoreTable devs = selector.select_devices();
@@ -236,7 +236,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithEmptyCfgParam_VAAP
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithVAAPIAccelCfgParam_VAAPI_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_vaapi;
     cfg_params_w_vaapi.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_VAAPI));
     std::unique_ptr<CfgParamDeviceSelector> selector_ptr;
@@ -255,7 +255,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, DefaultDeviceWithVAAPIAccelCfgParam
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, NULLDeviceWithVAAPIAccelCfgParam_VAAPI_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> cfg_params_w_vaapi;
     cfg_params_w_vaapi.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_VAAPI));
     Device::Ptr empty_device_ptr = nullptr;
@@ -269,7 +269,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, NULLDeviceWithVAAPIAccelCfgParam_VA
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, ExternalDeviceWithVAAPIAccelCfgParam_VAAPI_ENABLED)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     VADisplay va_handle = nullptr;
     struct FileDescriptorRAII {
         FileDescriptorRAII() :fd (-1) {}
@@ -317,11 +317,11 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, ExternalDeviceWithVAAPIAccelCfgPara
     }
     EXPECT_TRUE(device_fd != -1);
     EXPECT_TRUE(va_handle);
-    auto device = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_vaapi_device(reinterpret_cast<void*>(va_handle),
+    auto device = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_vaapi_device(reinterpret_cast<void*>(va_handle),
                                                                        "GPU", device_fd));
-    auto device_context = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_vaapi_context(nullptr));
+    auto device_context = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_vaapi_context(nullptr));
 
     std::unique_ptr<CfgParamDeviceSelector> selector_ptr;
     std::vector<CfgParam> cfg_params_w_vaapi;
@@ -345,7 +345,7 @@ TEST(OneVPL_Source_Device_Selector_CfgParam, ExternalDeviceWithVAAPIAccelCfgPara
 
 TEST(OneVPL_Source_Device_Selector_CfgParam, UnknownPtrDeviceFromCfgParam)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::vector<CfgParam> empty_params;
     Device::Ptr empty_device_ptr = nullptr;
     Context::Ptr empty_ctx_ptr = nullptr;

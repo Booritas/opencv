@@ -49,15 +49,15 @@
             postRun: [] ,
             onRuntimeInitialized: function() {
               console.log("Emscripten runtime is ready, launching QUnit tests...");
-              if (window.cv instanceof Promise) {
-                window.cv.then((target) => {
-                   window.cv = target;
-                   console.log(cv.getBuildInformation());
+              if (window.ncvslideio instanceof Promise) {
+                window.ncvslideio.then((target) => {
+                   window.ncvslideio = target;
+                   console.log(ncvslideio.getBuildInformation());
                    QUnit.start();
                 })
               } else {
                 // for backward compatible
-                console.log(cv.getBuildInformation());
+                console.log(ncvslideio.getBuildInformation());
                 QUnit.start();
               }
             },

@@ -10,7 +10,7 @@
 #include "color_yuv.simd.hpp"
 #include "color_yuv.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 //
 // HAL functions
@@ -537,4 +537,4 @@ void cvtColorTwoPlaneYUV2BGRpair( InputArray _ysrc, InputArray _uvsrc, OutputArr
     }
 }
 
-} // namespace cv
+} // namespace ncvslideio

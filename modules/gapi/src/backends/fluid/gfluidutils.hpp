@@ -13,15 +13,15 @@
 #include <opencv2/gapi/util/compiler_hints.hpp> //suppress_unused_warning
 #include <opencv2/gapi/own/saturate.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
-using cv::gapi::own::saturate;
-using cv::gapi::own::ceild;
-using cv::gapi::own::floord;
-using cv::gapi::own::roundd;
-using cv::gapi::own::rintd;
+using ncvslideio::gapi::own::saturate;
+using ncvslideio::gapi::own::ceild;
+using ncvslideio::gapi::own::floord;
+using ncvslideio::gapi::own::roundd;
+using ncvslideio::gapi::own::rintd;
 
 //--------------------------------
 //
@@ -30,8 +30,8 @@ using cv::gapi::own::rintd;
 //--------------------------------
 
 #define UNARY_(DST, SRC, OP, ...)                         \
-    if (cv::DataType<DST>::depth == dst.meta().depth &&   \
-        cv::DataType<SRC>::depth == src.meta().depth)     \
+    if (ncvslideio::DataType<DST>::depth == dst.meta().depth &&   \
+        ncvslideio::DataType<SRC>::depth == src.meta().depth)     \
     {                                                     \
         GAPI_DbgAssert(dst.length() == src.length());       \
         GAPI_DbgAssert(dst.meta().chan == src.meta().chan); \
@@ -42,8 +42,8 @@ using cv::gapi::own::rintd;
 
 // especial unary operation: dst is always 8UC1 image
 #define INRANGE_(DST, SRC, OP, ...)                       \
-    if (cv::DataType<DST>::depth == dst.meta().depth &&   \
-        cv::DataType<SRC>::depth == src.meta().depth)     \
+    if (ncvslideio::DataType<DST>::depth == dst.meta().depth &&   \
+        ncvslideio::DataType<SRC>::depth == src.meta().depth)     \
     {                                                     \
         GAPI_DbgAssert(dst.length() == src.length());       \
         GAPI_DbgAssert(dst.meta().chan == 1);               \
@@ -53,9 +53,9 @@ using cv::gapi::own::rintd;
     }
 
 #define BINARY_(DST, SRC1, SRC2, OP, ...)                  \
-    if (cv::DataType<DST>::depth == dst.meta().depth &&    \
-        cv::DataType<SRC1>::depth == src1.meta().depth &&  \
-        cv::DataType<SRC2>::depth == src2.meta().depth)    \
+    if (ncvslideio::DataType<DST>::depth == dst.meta().depth &&    \
+        ncvslideio::DataType<SRC1>::depth == src1.meta().depth &&  \
+        ncvslideio::DataType<SRC2>::depth == src2.meta().depth)    \
     {                                                      \
         GAPI_DbgAssert(dst.length() == src1.length());       \
         GAPI_DbgAssert(dst.length() == src2.length());       \
@@ -69,10 +69,10 @@ using cv::gapi::own::rintd;
 
 // especial ternary operation: src3 has only one channel
 #define SELECT_(DST, SRC1, SRC2, SRC3, OP, ...)            \
-    if (cv::DataType<DST>::depth == dst.meta().depth &&    \
-        cv::DataType<SRC1>::depth == src1.meta().depth &&  \
-        cv::DataType<SRC2>::depth == src2.meta().depth &&  \
-        cv::DataType<SRC3>::depth == src3.meta().depth)    \
+    if (ncvslideio::DataType<DST>::depth == dst.meta().depth &&    \
+        ncvslideio::DataType<SRC1>::depth == src1.meta().depth &&  \
+        ncvslideio::DataType<SRC2>::depth == src2.meta().depth &&  \
+        ncvslideio::DataType<SRC3>::depth == src3.meta().depth)    \
     {                                                      \
         GAPI_DbgAssert(dst.length() == src1.length());       \
         GAPI_DbgAssert(dst.length() == src2.length());       \
@@ -87,8 +87,8 @@ using cv::gapi::own::rintd;
     }
 
 #define MERGE3_(T, OP, ...)                                \
-    if (cv::DataType<T>::depth == dst.meta().depth &&      \
-        cv::DataType<T>::depth == src1.meta().depth)       \
+    if (ncvslideio::DataType<T>::depth == dst.meta().depth &&      \
+        ncvslideio::DataType<T>::depth == src1.meta().depth)       \
     {                                                      \
         GAPI_DbgAssert(dst.length() == src1.length());     \
         GAPI_DbgAssert(dst.length() == src2.length());     \
@@ -105,6 +105,6 @@ using cv::gapi::own::rintd;
 
 } // namespace fluid
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GFLUIDUTILS_HPP

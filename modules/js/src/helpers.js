@@ -42,8 +42,8 @@ if (typeof Module.FS === 'undefined' && typeof FS !== 'undefined') {
     Module.FS = FS;
 }
 
-if (typeof cv === 'undefined') {
-    var cv = Module;
+if (typeof ncvslideio === 'undefined') {
+    var ncvslideio = Module;
 }
 
 Module['imread'] = function(imageSource) {
@@ -70,7 +70,7 @@ Module['imread'] = function(imageSource) {
     }
 
     var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    return cv.matFromImageData(imgData);
+    return ncvslideio.matFromImageData(imgData);
 };
 
 Module['imshow'] = function(canvasSource, mat) {
@@ -84,27 +84,27 @@ Module['imshow'] = function(canvasSource, mat) {
         throw new Error('Please input the valid canvas element or id.');
         return;
     }
-    if (!(mat instanceof cv.Mat)) {
-        throw new Error('Please input the valid cv.Mat instance.');
+    if (!(mat instanceof ncvslideio.Mat)) {
+        throw new Error('Please input the valid ncvslideio.Mat instance.');
         return;
     }
 
-    // convert the mat type to cv.CV_8U
-    var img = new cv.Mat();
+    // convert the mat type to ncvslideio.CV_8U
+    var img = new ncvslideio.Mat();
     var depth = mat.type()%8;
-    var scale = depth <= cv.CV_8S? 1.0 : (depth <= cv.CV_32S? 1.0/256.0 : 255.0);
-    var shift = (depth === cv.CV_8S || depth === cv.CV_16S)? 128.0 : 0.0;
-    mat.convertTo(img, cv.CV_8U, scale, shift);
+    var scale = depth <= ncvslideio.CV_8S? 1.0 : (depth <= ncvslideio.CV_32S? 1.0/256.0 : 255.0);
+    var shift = (depth === ncvslideio.CV_8S || depth === ncvslideio.CV_16S)? 128.0 : 0.0;
+    mat.convertTo(img, ncvslideio.CV_8U, scale, shift);
 
-    // convert the img type to cv.CV_8UC4
+    // convert the img type to ncvslideio.CV_8UC4
     switch (img.type()) {
-        case cv.CV_8UC1:
-            cv.cvtColor(img, img, cv.COLOR_GRAY2RGBA);
+        case ncvslideio.CV_8UC1:
+            ncvslideio.cvtColor(img, img, ncvslideio.COLOR_GRAY2RGBA);
             break;
-        case cv.CV_8UC3:
-            cv.cvtColor(img, img, cv.COLOR_RGB2RGBA);
+        case ncvslideio.CV_8UC3:
+            ncvslideio.cvtColor(img, img, ncvslideio.COLOR_RGB2RGBA);
             break;
-        case cv.CV_8UC4:
+        case ncvslideio.CV_8UC4:
             break;
         default:
             throw new Error('Bad number of channels (Source image must have 1, 3 or 4 channels)');
@@ -136,12 +136,12 @@ Module['VideoCapture'] = function(videoSource) {
     var ctx = canvas.getContext('2d');
     this.video = video;
     this.read = function(frame) {
-        if (!(frame instanceof cv.Mat)) {
-            throw new Error('Please input the valid cv.Mat instance.');
+        if (!(frame instanceof ncvslideio.Mat)) {
+            throw new Error('Please input the valid ncvslideio.Mat instance.');
             return;
         }
-        if (frame.type() !== cv.CV_8UC4) {
-            throw new Error('Bad type of input mat: the type should be cv.CV_8UC4.');
+        if (frame.type() !== ncvslideio.CV_8UC4) {
+            throw new Error('Bad type of input mat: the type should be ncvslideio.CV_8UC4.');
             return;
         }
         if (frame.cols !== video.width || frame.rows !== video.height) {
@@ -177,7 +177,7 @@ Module['Size'] = Size;
 function Rect() {
     switch (arguments.length) {
         case 0: {
-            // new cv.Rect()
+            // new ncvslideio.Rect()
             this.x = 0;
             this.y = 0;
             this.width = 0;
@@ -185,7 +185,7 @@ function Rect() {
             break;
         }
         case 1: {
-            // new cv.Rect(rect)
+            // new ncvslideio.Rect(rect)
             var rect = arguments[0];
             this.x = rect.x;
             this.y = rect.y;
@@ -194,7 +194,7 @@ function Rect() {
             break;
         }
         case 2: {
-            // new cv.Rect(point, size)
+            // new ncvslideio.Rect(point, size)
             var point = arguments[0];
             var size = arguments[1];
             this.x = point.x;
@@ -204,7 +204,7 @@ function Rect() {
             break;
         }
         case 4: {
-            // new cv.Rect(x, y, width, height)
+            // new ncvslideio.Rect(x, y, width, height)
             this.x = arguments[0];
             this.y = arguments[1];
             this.width = arguments[2];
@@ -335,61 +335,61 @@ function TermCriteria() {
 Module['TermCriteria'] = TermCriteria;
 
 Module['matFromArray'] = function(rows, cols, type, array) {
-    var mat = new cv.Mat(rows, cols, type);
+    var mat = new ncvslideio.Mat(rows, cols, type);
     switch (type) {
-        case cv.CV_8U:
-        case cv.CV_8UC1:
-        case cv.CV_8UC2:
-        case cv.CV_8UC3:
-        case cv.CV_8UC4: {
+        case ncvslideio.CV_8U:
+        case ncvslideio.CV_8UC1:
+        case ncvslideio.CV_8UC2:
+        case ncvslideio.CV_8UC3:
+        case ncvslideio.CV_8UC4: {
             mat.data.set(array);
             break;
         }
-        case cv.CV_8S:
-        case cv.CV_8SC1:
-        case cv.CV_8SC2:
-        case cv.CV_8SC3:
-        case cv.CV_8SC4: {
+        case ncvslideio.CV_8S:
+        case ncvslideio.CV_8SC1:
+        case ncvslideio.CV_8SC2:
+        case ncvslideio.CV_8SC3:
+        case ncvslideio.CV_8SC4: {
             mat.data8S.set(array);
             break;
         }
-        case cv.CV_16U:
-        case cv.CV_16UC1:
-        case cv.CV_16UC2:
-        case cv.CV_16UC3:
-        case cv.CV_16UC4: {
+        case ncvslideio.CV_16U:
+        case ncvslideio.CV_16UC1:
+        case ncvslideio.CV_16UC2:
+        case ncvslideio.CV_16UC3:
+        case ncvslideio.CV_16UC4: {
             mat.data16U.set(array);
             break;
         }
-        case cv.CV_16S:
-        case cv.CV_16SC1:
-        case cv.CV_16SC2:
-        case cv.CV_16SC3:
-        case cv.CV_16SC4: {
+        case ncvslideio.CV_16S:
+        case ncvslideio.CV_16SC1:
+        case ncvslideio.CV_16SC2:
+        case ncvslideio.CV_16SC3:
+        case ncvslideio.CV_16SC4: {
             mat.data16S.set(array);
             break;
         }
-        case cv.CV_32S:
-        case cv.CV_32SC1:
-        case cv.CV_32SC2:
-        case cv.CV_32SC3:
-        case cv.CV_32SC4: {
+        case ncvslideio.CV_32S:
+        case ncvslideio.CV_32SC1:
+        case ncvslideio.CV_32SC2:
+        case ncvslideio.CV_32SC3:
+        case ncvslideio.CV_32SC4: {
             mat.data32S.set(array);
             break;
         }
-        case cv.CV_32F:
-        case cv.CV_32FC1:
-        case cv.CV_32FC2:
-        case cv.CV_32FC3:
-        case cv.CV_32FC4: {
+        case ncvslideio.CV_32F:
+        case ncvslideio.CV_32FC1:
+        case ncvslideio.CV_32FC2:
+        case ncvslideio.CV_32FC3:
+        case ncvslideio.CV_32FC4: {
             mat.data32F.set(array);
             break;
         }
-        case cv.CV_64F:
-        case cv.CV_64FC1:
-        case cv.CV_64FC2:
-        case cv.CV_64FC3:
-        case cv.CV_64FC4: {
+        case ncvslideio.CV_64F:
+        case ncvslideio.CV_64FC1:
+        case ncvslideio.CV_64FC2:
+        case ncvslideio.CV_64FC3:
+        case ncvslideio.CV_64FC4: {
             mat.data64F.set(array);
             break;
         }
@@ -401,7 +401,7 @@ Module['matFromArray'] = function(rows, cols, type, array) {
 };
 
 Module['matFromImageData'] = function(imageData) {
-    var mat = new cv.Mat(imageData.height, imageData.width, cv.CV_8UC4);
+    var mat = new ncvslideio.Mat(imageData.height, imageData.width, ncvslideio.CV_8UC4);
     mat.data.set(imageData.data);
     return mat;
 };

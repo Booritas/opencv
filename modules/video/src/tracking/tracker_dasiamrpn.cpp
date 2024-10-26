@@ -8,7 +8,7 @@
 #include "opencv2/dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 TrackerDaSiamRPN::TrackerDaSiamRPN()
 {
@@ -50,7 +50,7 @@ Mat sizeCal(const Mat& w, const Mat& h)
     Mat pad = (w + h) * 0.5;
     Mat sz2 = (w + pad).mul((h + pad));
 
-    cv::sqrt(sz2, sz2);
+    ncvslideio::sqrt(sz2, sz2);
     return sz2;
 }
 
@@ -296,7 +296,7 @@ float TrackerDaSiamRPNImpl::getTrackingScore()
 void TrackerDaSiamRPNImpl::softmax(const Mat& src, Mat& dst)
 {
     Mat maxVal;
-    cv::max(src.row(1), src.row(0), maxVal);
+    ncvslideio::max(src.row(1), src.row(0), maxVal);
 
     src.row(1) -= maxVal;
     src.row(0) -= maxVal;
@@ -434,7 +434,7 @@ Ptr<TrackerDaSiamRPN> TrackerDaSiamRPN::create(const TrackerDaSiamRPN::Params& p
 Ptr<TrackerDaSiamRPN> TrackerDaSiamRPN::create(const TrackerDaSiamRPN::Params& parameters)
 {
     (void)(parameters);
-    CV_Error(cv::Error::StsNotImplemented, "to use GOTURN, the tracking module needs to be built with opencv_dnn !");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "to use GOTURN, the tracking module needs to be built with opencv_dnn !");
 }
 #endif  // OPENCV_HAVE_DNN
 }

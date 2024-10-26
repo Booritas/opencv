@@ -76,14 +76,14 @@ void Tracker::ComputeOcclusion() {
         if (tracklet0->status != ST_TRACKED)
             continue;
 
-        const cv::Rect2f &r0 = tracklet0->trajectory.back();
+        const ncvslideio::Rect2f &r0 = tracklet0->trajectory.back();
         float max_occlusion_ratio = 0.0f;
         for (int32_t t1 = 0; t1 < static_cast<int32_t>(tracklets_.size()); ++t1) {
             const auto &tracklet1 = tracklets_[t1];
             if (t0 == t1 || tracklet1->status == ST_LOST)
                 continue;
 
-            const cv::Rect2f &r1 = tracklet1->trajectory.back();
+            const ncvslideio::Rect2f &r1 = tracklet1->trajectory.back();
             max_occlusion_ratio = std::max(max_occlusion_ratio, (r0 & r1).area() / r0.area()); // different from IoU
         }
         tracklets_[t0]->occlusion_ratio = max_occlusion_ratio;
@@ -91,9 +91,9 @@ void Tracker::ComputeOcclusion() {
 }
 
 void Tracker::RemoveOutOfBoundTracklets(int32_t input_width, int32_t input_height, bool is_filtered) {
-    const cv::Rect2f image_region(0.0f, 0.0f, static_cast<float>(input_width), static_cast<float>(input_height));
+    const ncvslideio::Rect2f image_region(0.0f, 0.0f, static_cast<float>(input_width), static_cast<float>(input_height));
     for (auto tracklet = tracklets_.begin(); tracklet != tracklets_.end();) {
-        const cv::Rect2f &object_region =
+        const ncvslideio::Rect2f &object_region =
             is_filtered ? (*tracklet)->trajectory_filtered.back() : (*tracklet)->trajectory.back();
         if ((image_region & object_region).area() / object_region.area() <
             min_region_ratio_in_boundary_) { // only 10% is in image boundary

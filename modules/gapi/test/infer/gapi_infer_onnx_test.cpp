@@ -18,42 +18,42 @@
 #include <opencv2/gapi/infer/onnx.hpp>
 
 namespace {
-class TestMediaBGR final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_mat;
-    using Cb = cv::MediaFrame::View::Callback;
+class TestMediaBGR final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_mat;
+    using Cb = ncvslideio::MediaFrame::View::Callback;
     Cb m_cb;
 
 public:
-    explicit TestMediaBGR(cv::Mat m, Cb cb = [](){})
+    explicit TestMediaBGR(ncvslideio::Mat m, Cb cb = [](){})
         : m_mat(m), m_cb(cb) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::BGR, cv::Size(m_mat.cols, m_mat.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, ncvslideio::Size(m_mat.cols, m_mat.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
     }
 };
 
-class TestMediaNV12 final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_y;
-    cv::Mat m_uv;
+class TestMediaNV12 final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_y;
+    ncvslideio::Mat m_uv;
 public:
-    TestMediaNV12(cv::Mat y, cv::Mat uv) : m_y(y), m_uv(uv) {
+    TestMediaNV12(ncvslideio::Mat y, ncvslideio::Mat uv) : m_y(y), m_uv(uv) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::NV12, cv::Size(m_y.cols, m_y.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::NV12, ncvslideio::Size(m_y.cols, m_y.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = {
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = {
             m_y.ptr(), m_uv.ptr(), nullptr, nullptr
         };
-        cv::MediaFrame::View::Strides ss = {
+        ncvslideio::MediaFrame::View::Strides ss = {
             m_y.step, m_uv.step, 0u, 0u
         };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
     }
 };
 struct ONNXInitPath {
@@ -66,15 +66,15 @@ struct ONNXInitPath {
 };
 static ONNXInitPath g_init_path;
 
-cv::Mat initMatrixRandU(const int type, const cv::Size& sz_in) {
-    const cv::Mat in_mat = cv::Mat(sz_in, type);
+ncvslideio::Mat initMatrixRandU(const int type, const ncvslideio::Size& sz_in) {
+    const ncvslideio::Mat in_mat = ncvslideio::Mat(sz_in, type);
 
     if (CV_MAT_DEPTH(type) < CV_32F) {
-        cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar::all(255));
+        ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
     } else {
         const int fscale = 256;  // avoid bits near ULP, generate stable test input
-        cv::Mat in_mat32s(in_mat.size(), CV_MAKE_TYPE(CV_32S, CV_MAT_CN(type)));
-        cv::randu(in_mat32s, cv::Scalar::all(0), cv::Scalar::all(255 * fscale));
+        ncvslideio::Mat in_mat32s(in_mat.size(), CV_MAKE_TYPE(CV_32S, CV_MAT_CN(type)));
+        ncvslideio::randu(in_mat32s, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255 * fscale));
         in_mat32s.convertTo(in_mat, type, 1.0f / fscale, 0);
     }
     return in_mat;
@@ -85,13 +85,13 @@ namespace opencv_test
 namespace {
 
 // FIXME: taken from the DNN module
-void normAssert(cv::InputArray& ref, cv::InputArray& test,
+void normAssert(ncvslideio::InputArray& ref, ncvslideio::InputArray& test,
                 const char *comment /*= ""*/,
                 const double l1 = 0.00001, const double lInf = 0.0001) {
-    const double normL1 = cvtest::norm(ref, test, cv::NORM_L1) / ref.getMat().total();
+    const double normL1 = cvtest::norm(ref, test, ncvslideio::NORM_L1) / ref.getMat().total();
     EXPECT_LE(normL1, l1) << comment;
 
-    const double normInf = cvtest::norm(ref, test, cv::NORM_INF);
+    const double normInf = cvtest::norm(ref, test, ncvslideio::NORM_INF);
     EXPECT_LE(normInf, lInf) << comment;
 }
 
@@ -99,13 +99,13 @@ inline std::string findModel(const std::string &model_name) {
     return findDataFile("vision/" + model_name + ".onnx", false);
 }
 
-inline void toCHW(const cv::Mat& src, cv::Mat& dst) {
-    dst.create(cv::Size(src.cols, src.rows * src.channels()), CV_32F);
-    std::vector<cv::Mat> planes;
+inline void toCHW(const ncvslideio::Mat& src, ncvslideio::Mat& dst) {
+    dst.create(ncvslideio::Size(src.cols, src.rows * src.channels()), CV_32F);
+    std::vector<ncvslideio::Mat> planes;
     for (int i = 0; i < src.channels(); ++i) {
         planes.push_back(dst.rowRange(i * src.rows, (i + 1) * src.rows));
     }
-    cv::split(src, planes);
+    ncvslideio::split(src, planes);
 }
 
 inline int toCV(ONNXTensorElementDataType prec) {
@@ -119,7 +119,7 @@ inline int toCV(ONNXTensorElementDataType prec) {
     return -1;
 }
 
-void copyFromONNX(Ort::Value &v, cv::Mat& mat) {
+void copyFromONNX(Ort::Value &v, ncvslideio::Mat& mat) {
     const auto info = v.GetTensorTypeAndShapeInfo();
     const auto prec = info.GetElementType();
     const auto shape = info.GetShape();
@@ -146,8 +146,8 @@ void copyFromONNX(Ort::Value &v, cv::Mat& mat) {
     }
 }
 
-inline std::vector<int64_t> toORT(const cv::MatSize &sz) {
-    return cv::to_own<int64_t>(sz);
+inline std::vector<int64_t> toORT(const ncvslideio::MatSize &sz) {
+    return ncvslideio::to_own<int64_t>(sz);
 }
 
 inline std::vector<const char*> getCharNames(const std::vector<std::string>& names) {
@@ -159,7 +159,7 @@ inline std::vector<const char*> getCharNames(const std::vector<std::string>& nam
 }
 
 template<typename T>
-void copyToOut(const cv::Mat& onnx_out, const T end_mark, cv::Mat& gapi_out) {
+void copyToOut(const ncvslideio::Mat& onnx_out, const T end_mark, ncvslideio::Mat& gapi_out) {
     // This function is part of some remap__ function.
     // You can set graph output size (gapi_out) larger than real out from ONNX
     // so you have to add something for separate correct data and garbage.
@@ -175,40 +175,40 @@ void copyToOut(const cv::Mat& onnx_out, const T end_mark, cv::Mat& gapi_out) {
     }
 }
 
-void remapYolo(const std::unordered_map<std::string, cv::Mat> &onnx,
-                     std::unordered_map<std::string, cv::Mat> &gapi) {
+void remapYolo(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                     std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     GAPI_Assert(onnx.size() == 1u);
     GAPI_Assert(gapi.size() == 1u);
     // Result from Run method
-    const cv::Mat& in = onnx.begin()->second;
+    const ncvslideio::Mat& in = onnx.begin()->second;
     GAPI_Assert(in.depth() == CV_32F);
     // Configured output
-    cv::Mat& out = gapi.begin()->second;
+    ncvslideio::Mat& out = gapi.begin()->second;
     // Simple copy
     copyToOut<float>(in, -1.f, out);
 }
 
-void remapYoloV3(const std::unordered_map<std::string, cv::Mat> &onnx,
-                       std::unordered_map<std::string, cv::Mat> &gapi) {
+void remapYoloV3(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                       std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     // Simple copy for outputs
-    const cv::Mat& in_boxes = onnx.at("yolonms_layer_1/ExpandDims_1:0");
-    const cv::Mat& in_scores = onnx.at("yolonms_layer_1/ExpandDims_3:0");
-    const cv::Mat& in_indices = onnx.at("yolonms_layer_1/concat_2:0");
+    const ncvslideio::Mat& in_boxes = onnx.at("yolonms_layer_1/ExpandDims_1:0");
+    const ncvslideio::Mat& in_scores = onnx.at("yolonms_layer_1/ExpandDims_3:0");
+    const ncvslideio::Mat& in_indices = onnx.at("yolonms_layer_1/concat_2:0");
     GAPI_Assert(in_boxes.depth() == CV_32F);
     GAPI_Assert(in_scores.depth() == CV_32F);
     GAPI_Assert(in_indices.depth() == CV_32S);
 
-    cv::Mat& out_boxes = gapi.at("out1");
-    cv::Mat& out_scores = gapi.at("out2");
-    cv::Mat& out_indices = gapi.at("out3");
+    ncvslideio::Mat& out_boxes = gapi.at("out1");
+    ncvslideio::Mat& out_scores = gapi.at("out2");
+    ncvslideio::Mat& out_indices = gapi.at("out3");
 
     copyToOut<float>(in_boxes, -1.f, out_boxes);
     copyToOut<float>(in_scores, -1.f, out_scores);
     copyToOut<int>(in_indices, -1, out_indices);
 }
 
-void remapToIESSDOut(const std::vector<cv::Mat> &detections,
-                           cv::Mat &ssd_output) {
+void remapToIESSDOut(const std::vector<ncvslideio::Mat> &detections,
+                           ncvslideio::Mat &ssd_output) {
     GAPI_Assert(detections.size() == 4u);
     for (const auto &det_el : detections) {
         GAPI_Assert(det_el.depth() == CV_32F);
@@ -247,52 +247,52 @@ void remapToIESSDOut(const std::vector<cv::Mat> &detections,
     }
 }
 
-void remapSSDPorts(const std::unordered_map<std::string, cv::Mat> &onnx,
-                         std::unordered_map<std::string, cv::Mat> &gapi) {
+void remapSSDPorts(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                         std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     // Assemble ONNX-processed outputs back to a single 1x1x200x7 blob
     // to preserve compatibility with OpenVINO-based SSD pipeline
-    const cv::Mat &num_detections = onnx.at("num_detections:0");
-    const cv::Mat &detection_boxes = onnx.at("detection_boxes:0");
-    const cv::Mat &detection_scores = onnx.at("detection_scores:0");
-    const cv::Mat &detection_classes = onnx.at("detection_classes:0");
-    cv::Mat &ssd_output = gapi.at("detection_output");
+    const ncvslideio::Mat &num_detections = onnx.at("num_detections:0");
+    const ncvslideio::Mat &detection_boxes = onnx.at("detection_boxes:0");
+    const ncvslideio::Mat &detection_scores = onnx.at("detection_scores:0");
+    const ncvslideio::Mat &detection_classes = onnx.at("detection_classes:0");
+    ncvslideio::Mat &ssd_output = gapi.at("detection_output");
     remapToIESSDOut({num_detections, detection_boxes, detection_scores, detection_classes}, ssd_output);
 }
 
-void reallocSSDPort(const std::unordered_map<std::string, cv::Mat> &/*onnx*/,
-                          std::unordered_map<std::string, cv::Mat> &gapi) {
+void reallocSSDPort(const std::unordered_map<std::string, ncvslideio::Mat> &/*onnx*/,
+                          std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     gapi["detection_boxes"].create(1000, 3000, CV_32FC3);
 }
 
-void remapRCNNPortsC(const std::unordered_map<std::string, cv::Mat> &onnx,
-                          std::unordered_map<std::string, cv::Mat> &gapi) {
+void remapRCNNPortsC(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                          std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     // Simple copy for outputs
-    const cv::Mat& in_boxes = onnx.at("6379");
-    const cv::Mat& in_labels = onnx.at("6381");
-    const cv::Mat& in_scores = onnx.at("6383");
+    const ncvslideio::Mat& in_boxes = onnx.at("6379");
+    const ncvslideio::Mat& in_labels = onnx.at("6381");
+    const ncvslideio::Mat& in_scores = onnx.at("6383");
 
     GAPI_Assert(in_boxes.depth() == CV_32F);
     GAPI_Assert(in_labels.depth() == CV_32S);
     GAPI_Assert(in_scores.depth() == CV_32F);
 
-    cv::Mat& out_boxes = gapi.at("out1");
-    cv::Mat& out_labels = gapi.at("out2");
-    cv::Mat& out_scores = gapi.at("out3");
+    ncvslideio::Mat& out_boxes = gapi.at("out1");
+    ncvslideio::Mat& out_labels = gapi.at("out2");
+    ncvslideio::Mat& out_scores = gapi.at("out3");
 
     copyToOut<float>(in_boxes, -1.f, out_boxes);
     copyToOut<int>(in_labels, -1, out_labels);
     copyToOut<float>(in_scores, -1.f, out_scores);
 }
 
-void remapRCNNPortsDO(const std::unordered_map<std::string, cv::Mat> &onnx,
-                          std::unordered_map<std::string, cv::Mat> &gapi) {
+void remapRCNNPortsDO(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                          std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     // Simple copy for outputs
-    const cv::Mat& in_boxes = onnx.at("6379");
-    const cv::Mat& in_scores = onnx.at("6383");
+    const ncvslideio::Mat& in_boxes = onnx.at("6379");
+    const ncvslideio::Mat& in_scores = onnx.at("6383");
     GAPI_Assert(in_boxes.depth()  == CV_32F);
     GAPI_Assert(in_scores.depth() == CV_32F);
-    cv::Mat& out_boxes = gapi.at("out1");
-    cv::Mat& out_scores = gapi.at("out2");
+    ncvslideio::Mat& out_boxes = gapi.at("out1");
+    ncvslideio::Mat& out_scores = gapi.at("out2");
 
     copyToOut<float>(in_boxes, -1.f, out_boxes);
     copyToOut<float>(in_scores, -1.f, out_scores);
@@ -302,9 +302,9 @@ class ONNXtest : public ::testing::Test {
 public:
     std::string model_path;
     size_t num_in, num_out;
-    std::vector<cv::Mat> out_gapi;
-    std::vector<cv::Mat> out_onnx;
-    cv::Mat in_mat;
+    std::vector<ncvslideio::Mat> out_gapi;
+    std::vector<ncvslideio::Mat> out_onnx;
+    ncvslideio::Mat in_mat;
 
     ONNXtest() {
         env = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
@@ -313,8 +313,8 @@ public:
     }
 
     template<typename T>
-    void infer(const std::vector<cv::Mat>& ins,
-                     std::vector<cv::Mat>& outs,
+    void infer(const std::vector<ncvslideio::Mat>& ins,
+                     std::vector<ncvslideio::Mat>& outs,
                      std::vector<std::string>&& custom_out_names = {}) {
         // Prepare session
 #ifndef _WIN32
@@ -374,18 +374,18 @@ public:
     }
     // One input/output overload
     template<typename T>
-    void infer(const cv::Mat& in, cv::Mat& out) {
-        std::vector<cv::Mat> result;
-        infer<T>(std::vector<cv::Mat>{in}, result);
+    void infer(const ncvslideio::Mat& in, ncvslideio::Mat& out) {
+        std::vector<ncvslideio::Mat> result;
+        infer<T>(std::vector<ncvslideio::Mat>{in}, result);
         GAPI_Assert(result.size() == 1u);
         out = result.front();
     }
     // One input overload
     template<typename T>
-    void infer(const cv::Mat& in,
-                     std::vector<cv::Mat>& outs,
+    void infer(const ncvslideio::Mat& in,
+                     std::vector<ncvslideio::Mat>& outs,
                      std::vector<std::string>&& custom_out_names = {}) {
-        infer<T>(std::vector<cv::Mat>{in}, outs, std::move(custom_out_names));
+        infer<T>(std::vector<ncvslideio::Mat>{in}, outs, std::move(custom_out_names));
     }
 
     void validate() {
@@ -414,22 +414,22 @@ private:
 
 class ONNXClassification : public ONNXtest {
 public:
-    const cv::Scalar mean = { 0.485, 0.456, 0.406 };
-    const cv::Scalar std  = { 0.229, 0.224, 0.225 };
+    const ncvslideio::Scalar mean = { 0.485, 0.456, 0.406 };
+    const ncvslideio::Scalar std  = { 0.229, 0.224, 0.225 };
 
     // Rois for InferList, InferList2
-    const std::vector<cv::Rect> rois = {
-        cv::Rect(cv::Point{ 0,   0}, cv::Size{80, 120}),
-        cv::Rect(cv::Point{50, 100}, cv::Size{250, 360})
+    const std::vector<ncvslideio::Rect> rois = {
+        ncvslideio::Rect(ncvslideio::Point{ 0,   0}, ncvslideio::Size{80, 120}),
+        ncvslideio::Rect(ncvslideio::Point{50, 100}, ncvslideio::Size{250, 360})
     };
 
     // FIXME(dm): There's too much "preprocess" routines in this file
     // Only one must stay but better design it wisely (and later)
-    void preprocess(const cv::Mat& src, cv::Mat& dst, bool norm = true) {
+    void preprocess(const ncvslideio::Mat& src, ncvslideio::Mat& dst, bool norm = true) {
         const int new_h = 224;
         const int new_w = 224;
-        cv::Mat tmp, cvt, rsz;
-        cv::resize(src, rsz, cv::Size(new_w, new_h));
+        ncvslideio::Mat tmp, cvt, rsz;
+        ncvslideio::resize(src, rsz, ncvslideio::Size(new_w, new_h));
         rsz.convertTo(cvt, CV_32F, norm ? 1.f / 255 : 1.f);
         tmp = norm
             ? (cvt - mean) / std
@@ -441,25 +441,25 @@ public:
 
 class ONNXMediaFrame : public ONNXClassification {
 public:
-    const std::vector<cv::Rect> rois = {
-        cv::Rect(cv::Point{ 0,   0}, cv::Size{80, 120}),
-        cv::Rect(cv::Point{50, 100}, cv::Size{250, 360}),
-        cv::Rect(cv::Point{70, 10}, cv::Size{20, 260}),
-        cv::Rect(cv::Point{5, 15}, cv::Size{200, 160}),
+    const std::vector<ncvslideio::Rect> rois = {
+        ncvslideio::Rect(ncvslideio::Point{ 0,   0}, ncvslideio::Size{80, 120}),
+        ncvslideio::Rect(ncvslideio::Point{50, 100}, ncvslideio::Size{250, 360}),
+        ncvslideio::Rect(ncvslideio::Point{70, 10}, ncvslideio::Size{20, 260}),
+        ncvslideio::Rect(ncvslideio::Point{5, 15}, ncvslideio::Size{200, 160}),
     };
-    const cv::Size sz{640, 480};
-    const cv::Mat m_in_y = initMatrixRandU(CV_8UC1, sz);
-    const cv::Mat m_in_uv = initMatrixRandU(CV_8UC2, sz / 2);
+    const ncvslideio::Size sz{640, 480};
+    const ncvslideio::Mat m_in_y = initMatrixRandU(CV_8UC1, sz);
+    const ncvslideio::Mat m_in_uv = initMatrixRandU(CV_8UC2, sz / 2);
 };
 
 class ONNXGRayScale : public ONNXtest {
 public:
-    void preprocess(const cv::Mat& src, cv::Mat& dst) {
+    void preprocess(const ncvslideio::Mat& src, ncvslideio::Mat& dst) {
         const int new_h = 64;
         const int new_w = 64;
-        cv::Mat cvc, rsz, cvt;
-        cv::cvtColor(src, cvc, cv::COLOR_BGR2GRAY);
-        cv::resize(cvc, rsz, cv::Size(new_w, new_h));
+        ncvslideio::Mat cvc, rsz, cvt;
+        ncvslideio::cvtColor(src, cvc, ncvslideio::COLOR_BGR2GRAY);
+        ncvslideio::resize(cvc, rsz, ncvslideio::Size(new_w, new_h));
         rsz.convertTo(cvt, CV_32F);
         toCHW(cvt, dst);
         dst = dst.reshape(1, {1, 1, new_h, new_w});
@@ -470,7 +470,7 @@ class ONNXWithRemap : public ONNXtest {
 private:
     size_t step_by_outs = 0;
 public:
-    // This function checks each next cv::Mat in out_gapi vector for next call.
+    // This function checks each next ncvslideio::Mat in out_gapi vector for next call.
     // end_mark is edge of correct data
     template <typename T>
     void validate(const T end_mark) {
@@ -492,12 +492,12 @@ public:
 
 class ONNXRCNN : public ONNXWithRemap {
 private:
-    const cv::Scalar rcnn_mean = { 102.9801, 115.9465, 122.7717 };
+    const ncvslideio::Scalar rcnn_mean = { 102.9801, 115.9465, 122.7717 };
     const float range_max = 1333;
     const float range_min = 800;
 public:
-    void preprocess(const cv::Mat& src, cv::Mat& dst) {
-        cv::Mat rsz, cvt, chw, mn;
+    void preprocess(const ncvslideio::Mat& src, ncvslideio::Mat& dst) {
+        ncvslideio::Mat rsz, cvt, chw, mn;
         const auto get_ratio = [&](const int dim) -> float {
                                    return ((dim > range_max) || (dim < range_min))
                                               ? dim > range_max
@@ -509,28 +509,28 @@ public:
         const auto ratio_w = get_ratio(src.cols);
         const auto new_h = static_cast<int>(ratio_h * src.rows);
         const auto new_w = static_cast<int>(ratio_w * src.cols);
-        cv::resize(src, rsz, cv::Size(new_w, new_h));
+        ncvslideio::resize(src, rsz, ncvslideio::Size(new_w, new_h));
         rsz.convertTo(cvt, CV_32F, 1.f);
         toCHW(cvt, chw);
         mn = chw - rcnn_mean;
         const int padded_h = std::ceil(new_h / 32.f) * 32;
         const int padded_w = std::ceil(new_w / 32.f) * 32;
-        cv::Mat pad_im(cv::Size(padded_w, 3 * padded_h), CV_32F, 0.f);
-        pad_im(cv::Rect(0, 0, mn.cols, mn.rows)) += mn;
+        ncvslideio::Mat pad_im(ncvslideio::Size(padded_w, 3 * padded_h), CV_32F, 0.f);
+        pad_im(ncvslideio::Rect(0, 0, mn.cols, mn.rows)) += mn;
         dst = pad_im.reshape(1, {3, padded_h, padded_w});
     }
 };
 
 class ONNXYoloV3 : public ONNXWithRemap {
 public:
-    std::vector<cv::Mat> ins;
+    std::vector<ncvslideio::Mat> ins;
 
-    void constructYoloInputs(const cv::Mat& src) {
+    void constructYoloInputs(const ncvslideio::Mat& src) {
         const int yolo_in_h = 416;
         const int yolo_in_w = 416;
-        cv::Mat yolov3_input, shape, prep_mat;
-        cv::resize(src, yolov3_input, cv::Size(yolo_in_w, yolo_in_h));
-        shape.create(cv::Size(2, 1), CV_32F);
+        ncvslideio::Mat yolov3_input, shape, prep_mat;
+        ncvslideio::resize(src, yolov3_input, ncvslideio::Size(yolo_in_w, yolo_in_h));
+        shape.create(ncvslideio::Size(2, 1), CV_32F);
         float* ptr = shape.ptr<float>();
         ptr[0] = src.cols;
         ptr[1] = src.rows;
@@ -539,8 +539,8 @@ public:
     }
 
 private:
-    void preprocess(const cv::Mat& src, cv::Mat& dst) {
-        cv::Mat cvt;
+    void preprocess(const ncvslideio::Mat& src, ncvslideio::Mat& dst) {
+        ncvslideio::Mat cvt;
         src.convertTo(cvt, CV_32F, 1.f / 255.f);
         toCHW(cvt, dst);
         dst = dst.reshape(1, {1, 3, 416, 416});
@@ -551,22 +551,22 @@ private:
 TEST_F(ONNXClassification, Infer)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
-    cv::Mat processed_mat;
+    ncvslideio::Mat processed_mat;
     preprocess(in_mat, processed_mat, false); // NO normalization for 1.0-9, see #23597
     infer<float>(processed_mat, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GMat in;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(in_mat),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(in_mat),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -574,23 +574,23 @@ TEST_F(ONNXClassification, Infer)
 TEST_F(ONNXClassification, InferTensor)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // Create tensor
-    cv::Mat tensor;
+    ncvslideio::Mat tensor;
     preprocess(in_mat, tensor, false); // NO normalization for 1.0-9, see #23597
     // ONNX_API code
     infer<float>(tensor, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GMat in;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(tensor),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(tensor),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -598,24 +598,24 @@ TEST_F(ONNXClassification, InferTensor)
 TEST_F(ONNXClassification, InferROI)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto ROI = rois.at(0);
     // ONNX_API code
-    cv::Mat roi_mat;
+    ncvslideio::Mat roi_mat;
     preprocess(in_mat(ROI), roi_mat, false);  // NO normalization for 1.0-9, see #23597
     infer<float>(roi_mat, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GMat in;
-    cv::GOpaque<cv::Rect> rect;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(rect, in);
-    cv::GComputation comp(cv::GIn(in, rect), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Rect> rect;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(rect, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rect), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(in_mat, ROI),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(in_mat, ROI),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -623,27 +623,27 @@ TEST_F(ONNXClassification, InferROI)
 TEST_F(ONNXClassification, InferROIList)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(in_mat(rois[i]), roi_mat, false);  // NO normalization for 1.0-9, see #23597
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GMat in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer<SqueezNet>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer<SqueezNet>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(in_mat, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(in_mat, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -651,27 +651,27 @@ TEST_F(ONNXClassification, InferROIList)
 TEST_F(ONNXClassification, Infer2ROIList)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(in_mat(rois[i]), roi_mat, false);   // NO normalization for 1.0-9, see #23597
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GMat in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer2<SqueezNet>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer2<SqueezNet>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(in_mat, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(in_mat, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -679,26 +679,26 @@ TEST_F(ONNXClassification, Infer2ROIList)
 TEST_F(ONNXWithRemap, InferDynamicInputTensor)
 {
     useModel("object_detection_segmentation/tiny-yolov2/model/tinyyolov2-8");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // Create tensor
-    cv::Mat cvt, rsz, tensor;
-    cv::resize(in_mat, rsz, cv::Size{416, 416});
+    ncvslideio::Mat cvt, rsz, tensor;
+    ncvslideio::resize(in_mat, rsz, ncvslideio::Size{416, 416});
     rsz.convertTo(cvt, CV_32F, 1.f / 255.f);
     toCHW(cvt, tensor);
     tensor = tensor.reshape(1, {1, 3, 416, 416});
     // ONNX_API code
     infer<float>(tensor, out_onnx);
     // G_API code
-    G_API_NET(YoloNet, <cv::GMat(cv::GMat)>, "YoloNet");
-    cv::GMat in;
-    cv::GMat out = cv::gapi::infer<YoloNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<YoloNet>{ model_path }
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1, 125, 13, 13}}}, remapYolo)
+    G_API_NET(YoloNet, <ncvslideio::GMat(ncvslideio::GMat)>, "YoloNet");
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<YoloNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<YoloNet>{ model_path }
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1, 125, 13, 13}}}, remapYolo)
         .cfgOutputLayers({"out"});
-    comp.apply(cv::gin(tensor),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(tensor),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
 }
@@ -706,21 +706,21 @@ TEST_F(ONNXWithRemap, InferDynamicInputTensor)
 TEST_F(ONNXGRayScale, InferImage)
 {
     useModel("body_analysis/emotion_ferplus/model/emotion-ferplus-8");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
-    cv::Mat prep_mat;
+    ncvslideio::Mat prep_mat;
     preprocess(in_mat, prep_mat);
     infer<float>(prep_mat, out_onnx);
     // G_API code
-    G_API_NET(EmotionNet, <cv::GMat(cv::GMat)>, "emotion-ferplus");
-    cv::GMat in;
-    cv::GMat out = cv::gapi::infer<EmotionNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<EmotionNet> { model_path }
+    G_API_NET(EmotionNet, <ncvslideio::GMat(ncvslideio::GMat)>, "emotion-ferplus");
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<EmotionNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<EmotionNet> { model_path }
         .cfgNormalize({ false }); // model accepts 0..255 range in FP32;
-    comp.apply(cv::gin(in_mat),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(in_mat),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -728,25 +728,25 @@ TEST_F(ONNXGRayScale, InferImage)
 TEST_F(ONNXWithRemap, InferMultiOutput)
 {
     useModel("object_detection_segmentation/ssd-mobilenetv1/model/ssd_mobilenet_v1_10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
     const auto prep_mat = in_mat.reshape(1, {1, in_mat.rows, in_mat.cols, in_mat.channels()});
     infer<uint8_t>(prep_mat, out_onnx);
-    cv::Mat onnx_conv_out({1, 1, 200, 7}, CV_32F);
+    ncvslideio::Mat onnx_conv_out({1, 1, 200, 7}, CV_32F);
     remapToIESSDOut({out_onnx[3], out_onnx[0], out_onnx[2], out_onnx[1]}, onnx_conv_out);
     out_onnx.clear();
     out_onnx.push_back(onnx_conv_out);
     // G_API code
-    G_API_NET(MobileNet, <cv::GMat(cv::GMat)>, "ssd_mobilenet");
-    cv::GMat in;
-    cv::GMat out = cv::gapi::infer<MobileNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    auto net = cv::gapi::onnx::Params<MobileNet>{ model_path }
+    G_API_NET(MobileNet, <ncvslideio::GMat(ncvslideio::GMat)>, "ssd_mobilenet");
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<MobileNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto net = ncvslideio::gapi::onnx::Params<MobileNet>{ model_path }
         .cfgOutputLayers({"detection_output"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1, 1, 200, 7}}}, remapSSDPorts);
-    comp.apply(cv::gin(in_mat),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1, 1, 200, 7}}}, remapSSDPorts);
+    comp.apply(ncvslideio::gin(in_mat),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
 }
@@ -754,25 +754,25 @@ TEST_F(ONNXWithRemap, InferMultiOutput)
 TEST_F(ONNXMediaFrame, InferBGR)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // ONNX_API code
-    cv::Mat processed_mat;
+    ncvslideio::Mat processed_mat;
     preprocess(in_mat, processed_mat, false); // NO normalization for 1.0-9, see #23597
     infer<float>(processed_mat, out_onnx);
     // G_API code
     auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -780,27 +780,27 @@ TEST_F(ONNXMediaFrame, InferBGR)
 TEST_F(ONNXMediaFrame, InferYUV)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
     // ONNX_API code
-    cv::Mat pp;
-    cvtColorTwoPlane(m_in_y, m_in_uv, pp, cv::COLOR_YUV2BGR_NV12);
-    cv::Mat processed_mat;
+    ncvslideio::Mat pp;
+    cvtColorTwoPlane(m_in_y, m_in_uv, pp, ncvslideio::COLOR_YUV2BGR_NV12);
+    ncvslideio::Mat processed_mat;
     preprocess(pp, processed_mat, false); // NO normalization for 1.0-9, see #23597
     infer<float>(processed_mat, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -808,26 +808,26 @@ TEST_F(ONNXMediaFrame, InferYUV)
 TEST_F(ONNXMediaFrame, InferROIBGR)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
     // ONNX_API code
-    cv::Mat roi_mat;
+    ncvslideio::Mat roi_mat;
     preprocess(in_mat(rois.front()), roi_mat, false);  // NO normalization for 1.0-9, see #23597
     infer<float>(roi_mat, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> rect;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(rect, in);
-    cv::GComputation comp(cv::GIn(in, rect), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> rect;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(rect, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rect), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame, rois.front()),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame, rois.front()),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -835,28 +835,28 @@ TEST_F(ONNXMediaFrame, InferROIBGR)
 TEST_F(ONNXMediaFrame, InferROIYUV)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
     // ONNX_API code
-    cv::Mat pp;
-    cvtColorTwoPlane(m_in_y, m_in_uv, pp, cv::COLOR_YUV2BGR_NV12);
-    cv::Mat roi_mat;
+    ncvslideio::Mat pp;
+    cvtColorTwoPlane(m_in_y, m_in_uv, pp, ncvslideio::COLOR_YUV2BGR_NV12);
+    ncvslideio::Mat roi_mat;
     preprocess(pp(rois.front()), roi_mat, false);  // NO normalization for 1.0-9, see #23597
     infer<float>(roi_mat, out_onnx);
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> rect;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(rect, in);
-    cv::GComputation comp(cv::GIn(in, rect), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> rect;
+    ncvslideio::GMat out = ncvslideio::gapi::infer<SqueezNet>(rect, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rect), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame, rois.front()),
-               cv::gout(out_gapi.front()),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame, rois.front()),
+               ncvslideio::gout(out_gapi.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -864,28 +864,28 @@ TEST_F(ONNXMediaFrame, InferROIYUV)
 TEST_F(ONNXMediaFrame, InferListBGR)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
     // ONNX_API code
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(in_mat(rois[i]), roi_mat, false);  // NO normalization for 1.0-9, see #23597
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer<SqueezNet>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer<SqueezNet>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -893,55 +893,55 @@ TEST_F(ONNXMediaFrame, InferListBGR)
 TEST_F(ONNXMediaFrame, InferListYUV)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
     // ONNX_API code
-    cv::Mat pp;
-    cvtColorTwoPlane(m_in_y, m_in_uv, pp, cv::COLOR_YUV2BGR_NV12);
+    ncvslideio::Mat pp;
+    cvtColorTwoPlane(m_in_y, m_in_uv, pp, ncvslideio::COLOR_YUV2BGR_NV12);
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(pp(rois[i]), roi_mat, false);   // NO normalization for 1.0-9, see #23597
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer<SqueezNet>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer<SqueezNet>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
 TEST_F(ONNXRCNN, InferWithDisabledOut)
 {
     useModel("object_detection_segmentation/faster-rcnn/model/FasterRCNN-10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
-    cv::Mat pp;
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
+    ncvslideio::Mat pp;
     preprocess(in_mat, pp);
     // ONNX_API code
     infer<float>(pp, out_onnx, {"6379", "6383"});
     // G_API code
-    using FRCNNOUT = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(FasterRCNN, <FRCNNOUT(cv::GMat)>, "FasterRCNN");
-    auto net = cv::gapi::onnx::Params<FasterRCNN>{model_path}
+    using FRCNNOUT = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(FasterRCNN, <FRCNNOUT(ncvslideio::GMat)>, "FasterRCNN");
+    auto net = ncvslideio::gapi::onnx::Params<FasterRCNN>{model_path}
         .cfgOutputLayers({"out1", "out2"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {7,4}},
-                      cv::GMatDesc{CV_32F, {7}}}, remapRCNNPortsDO, {"6383", "6379"});
-    cv::GMat in, out1, out2;
-    std::tie(out1, out2) = cv::gapi::infer<FasterRCNN>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out1, out2));
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {7,4}},
+                      ncvslideio::GMatDesc{CV_32F, {7}}}, remapRCNNPortsDO, {"6383", "6379"});
+    ncvslideio::GMat in, out1, out2;
+    std::tie(out1, out2) = ncvslideio::gapi::infer<FasterRCNN>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2));
     out_gapi.resize(num_out);
-    comp.apply(cv::gin(pp),
-               cv::gout(out_gapi[0], out_gapi[1]),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(pp),
+               ncvslideio::gout(out_gapi[0], out_gapi[1]),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
     validate<float>(-1.f);
@@ -950,28 +950,28 @@ TEST_F(ONNXRCNN, InferWithDisabledOut)
 TEST_F(ONNXMediaFrame, InferList2BGR)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
     // ONNX_API code
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(in_mat(rois[i]), roi_mat, false);  // NO normalization for 1.0-9, see #23597
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer2<SqueezNet>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer2<SqueezNet>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> {
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> {
         model_path
     }.cfgNormalize({false});
-    comp.apply(cv::gin(frame, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(frame, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -979,28 +979,28 @@ TEST_F(ONNXMediaFrame, InferList2BGR)
 TEST_F(ONNXMediaFrame, InferList2YUV)
 {
     useModel("classification/squeezenet/model/squeezenet1.0-9");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     const auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
     // ONNX_API code
-    cv::Mat pp;
-    cvtColorTwoPlane(m_in_y, m_in_uv, pp, cv::COLOR_YUV2BGR_NV12);
+    ncvslideio::Mat pp;
+    cvtColorTwoPlane(m_in_y, m_in_uv, pp, ncvslideio::COLOR_YUV2BGR_NV12);
     for (size_t i = 0; i < rois.size(); ++i) {
-        cv::Mat roi_mat;
+        ncvslideio::Mat roi_mat;
         preprocess(pp(rois[i]), roi_mat);
         infer<float>(roi_mat, out_onnx);
     }
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> out = cv::gapi::infer2<SqueezNet>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(out));
+    G_API_NET(SqueezNet, <ncvslideio::GMat(ncvslideio::GMat)>, "squeeznet");
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> out = ncvslideio::gapi::infer2<SqueezNet>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> { model_path }.cfgMeanStd({ mean }, { std });
-    comp.apply(cv::gin(frame, rois),
-               cv::gout(out_gapi),
-               cv::compile_args(cv::gapi::networks(net)));
+    auto net = ncvslideio::gapi::onnx::Params<SqueezNet> { model_path }.cfgMeanStd({ mean }, { std });
+    comp.apply(ncvslideio::gin(frame, rois),
+               ncvslideio::gout(out_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate();
 }
@@ -1008,27 +1008,27 @@ TEST_F(ONNXMediaFrame, InferList2YUV)
 TEST_F(ONNXYoloV3, InferConstInput)
 {
     useModel("object_detection_segmentation/yolov3/model/yolov3-10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     constructYoloInputs(in_mat);
     // ONNX_API code
     infer<float>(ins, out_onnx);
     // G_API code
-    using OUT = std::tuple<cv::GMat, cv::GMat, cv::GMat>;
-    G_API_NET(YoloNet, <OUT(cv::GMat)>, "yolov3");
-    auto net = cv::gapi::onnx::Params<YoloNet>{model_path}
+    using OUT = std::tuple<ncvslideio::GMat, ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(YoloNet, <OUT(ncvslideio::GMat)>, "yolov3");
+    auto net = ncvslideio::gapi::onnx::Params<YoloNet>{model_path}
         .constInput("image_shape", ins[1])
         .cfgInputLayers({"input_1"})
         .cfgOutputLayers({"out1", "out2", "out3"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1, 10000, 4}},
-                      cv::GMatDesc{CV_32F, {1, 80, 10000}},
-                      cv::GMatDesc{CV_32S, {5, 3}}}, remapYoloV3);
-    cv::GMat in, out1, out2, out3;
-    std::tie(out1, out2, out3) = cv::gapi::infer<YoloNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out1, out2, out3));
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1, 10000, 4}},
+                      ncvslideio::GMatDesc{CV_32F, {1, 80, 10000}},
+                      ncvslideio::GMatDesc{CV_32S, {5, 3}}}, remapYoloV3);
+    ncvslideio::GMat in, out1, out2, out3;
+    std::tie(out1, out2, out3) = ncvslideio::gapi::infer<YoloNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2, out3));
     out_gapi.resize(num_out);
-    comp.apply(cv::gin(ins[0]),
-               cv::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(ins[0]),
+               ncvslideio::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
     validate<float>(-1.f);
@@ -1041,36 +1041,36 @@ TEST_F(ONNXYoloV3, InferBSConstInput)
     // and all input layer names are specified.
     // Const input has the advantage. It is expected behavior.
     useModel("object_detection_segmentation/yolov3/model/yolov3-10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     constructYoloInputs(in_mat);
     // Tensor with incorrect image size
     // is used for check case when InputLayers and constInput have same names
-    cv::Mat bad_shape;
-    bad_shape.create(cv::Size(2, 1), CV_32F);
+    ncvslideio::Mat bad_shape;
+    bad_shape.create(ncvslideio::Size(2, 1), CV_32F);
     float* ptr = bad_shape.ptr<float>();
     ptr[0] = 590;
     ptr[1] = 12;
     // ONNX_API code
     infer<float>(ins, out_onnx);
     // G_API code
-    using OUT = std::tuple<cv::GMat, cv::GMat, cv::GMat>;
-    G_API_NET(YoloNet, <OUT(cv::GMat, cv::GMat)>, "yolov3");
-    auto net = cv::gapi::onnx::Params<YoloNet>{model_path}
+    using OUT = std::tuple<ncvslideio::GMat, ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(YoloNet, <OUT(ncvslideio::GMat, ncvslideio::GMat)>, "yolov3");
+    auto net = ncvslideio::gapi::onnx::Params<YoloNet>{model_path}
     // Data from const input will be used to infer
         .constInput("image_shape", ins[1])
     // image_shape - const_input has same name
         .cfgInputLayers({"input_1", "image_shape"})
         .cfgOutputLayers({"out1", "out2", "out3"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1, 10000, 4}},
-                      cv::GMatDesc{CV_32F, {1, 80, 10000}},
-                      cv::GMatDesc{CV_32S, {5, 3}}}, remapYoloV3);
-    cv::GMat in1, in2, out1, out2, out3;
-    std::tie(out1, out2, out3) = cv::gapi::infer<YoloNet>(in1, in2);
-    cv::GComputation comp(cv::GIn(in1, in2), cv::GOut(out1, out2, out3));
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1, 10000, 4}},
+                      ncvslideio::GMatDesc{CV_32F, {1, 80, 10000}},
+                      ncvslideio::GMatDesc{CV_32S, {5, 3}}}, remapYoloV3);
+    ncvslideio::GMat in1, in2, out1, out2, out3;
+    std::tie(out1, out2, out3) = ncvslideio::gapi::infer<YoloNet>(in1, in2);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out1, out2, out3));
     out_gapi.resize(num_out);
-    comp.apply(cv::gin(ins[0], bad_shape),
-               cv::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(ins[0], bad_shape),
+               ncvslideio::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
     validate<float>(-1.f);
@@ -1080,26 +1080,26 @@ TEST_F(ONNXYoloV3, InferBSConstInput)
 TEST_F(ONNXRCNN, ConversionInt64to32)
 {
     useModel("object_detection_segmentation/faster-rcnn/model/FasterRCNN-10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
-    cv::Mat dst;
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
+    ncvslideio::Mat dst;
     preprocess(in_mat, dst);
     // ONNX_API code
     infer<float>(dst, out_onnx);
     // G_API code
-    using FRCNNOUT = std::tuple<cv::GMat,cv::GMat,cv::GMat>;
-    G_API_NET(FasterRCNN, <FRCNNOUT(cv::GMat)>, "FasterRCNN");
-    auto net = cv::gapi::onnx::Params<FasterRCNN>{model_path}
+    using FRCNNOUT = std::tuple<ncvslideio::GMat,ncvslideio::GMat,ncvslideio::GMat>;
+    G_API_NET(FasterRCNN, <FRCNNOUT(ncvslideio::GMat)>, "FasterRCNN");
+    auto net = ncvslideio::gapi::onnx::Params<FasterRCNN>{model_path}
         .cfgOutputLayers({"out1", "out2", "out3"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {7,4}},
-                      cv::GMatDesc{CV_32S, {7}},
-                      cv::GMatDesc{CV_32F, {7}}}, remapRCNNPortsC);
-    cv::GMat in, out1, out2, out3;
-    std::tie(out1, out2, out3) = cv::gapi::infer<FasterRCNN>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out1, out2, out3));
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {7,4}},
+                      ncvslideio::GMatDesc{CV_32S, {7}},
+                      ncvslideio::GMatDesc{CV_32F, {7}}}, remapRCNNPortsC);
+    ncvslideio::GMat in, out1, out2, out3;
+    std::tie(out1, out2, out3) = ncvslideio::gapi::infer<FasterRCNN>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2, out3));
     out_gapi.resize(num_out);
-    comp.apply(cv::gin(dst),
-               cv::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
-               cv::compile_args(cv::gapi::networks(net)));
+    comp.apply(ncvslideio::gin(dst),
+               ncvslideio::gout(out_gapi[0], out_gapi[1], out_gapi[2]),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(net)));
     // Validate
     validate<float>(-1.f);
     validate<int>(-1);
@@ -1109,19 +1109,19 @@ TEST_F(ONNXRCNN, ConversionInt64to32)
 TEST_F(ONNXWithRemap, InferOutReallocation)
 {
     useModel("object_detection_segmentation/ssd-mobilenetv1/model/ssd_mobilenet_v1_10");
-    in_mat = cv::imread(findDataFile("cv/dpm/cat.png", false));
+    in_mat = ncvslideio::imread(findDataFile("ncvslideio/dpm/cat.png", false));
     // G_API code
-    G_API_NET(MobileNet, <cv::GMat(cv::GMat)>, "ssd_mobilenet");
-    auto net = cv::gapi::onnx::Params<MobileNet>{model_path}
+    G_API_NET(MobileNet, <ncvslideio::GMat(ncvslideio::GMat)>, "ssd_mobilenet");
+    auto net = ncvslideio::gapi::onnx::Params<MobileNet>{model_path}
         .cfgOutputLayers({"detection_boxes"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1,100,4}}}, reallocSSDPort);
-    cv::GMat in;
-    cv::GMat out1;
-    out1 = cv::gapi::infer<MobileNet>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out1));
-    EXPECT_THROW(comp.apply(cv::gin(in_mat),
-                 cv::gout(out_gapi[0]),
-                 cv::compile_args(cv::gapi::networks(net))), std::exception);
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1,100,4}}}, reallocSSDPort);
+    ncvslideio::GMat in;
+    ncvslideio::GMat out1;
+    out1 = ncvslideio::gapi::infer<MobileNet>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out1));
+    EXPECT_THROW(comp.apply(ncvslideio::gin(in_mat),
+                 ncvslideio::gout(out_gapi[0]),
+                 ncvslideio::compile_args(ncvslideio::gapi::networks(net))), std::exception);
 }
 
 } // namespace opencv_test

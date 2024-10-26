@@ -8,7 +8,7 @@
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
     template <class T> __device__ T abs(T val) { return (val < T(0) ? -val : val); }
     template <> inline __device__ float abs(float val) { return fabsf(val); }
@@ -261,6 +261,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace de
     template <class T> __device__ T fast_sigmoid(T value) { return sigmoid(value); }
     template <> inline __device__ float fast_sigmoid(float value) { return __fdividef(1, 1 + __expf(-value)); }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_MATH_HPP */

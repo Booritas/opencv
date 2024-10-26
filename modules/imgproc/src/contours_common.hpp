@@ -8,17 +8,17 @@
 #include "precomp.hpp"
 #include <stack>
 
-namespace cv {
+namespace ncvslideio {
 
 static const schar MAX_SIZE = 16;
 
-static const cv::Point chainCodeDeltas[8] =
+static const ncvslideio::Point chainCodeDeltas[8] =
     {{1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 
 static inline int getDelta(schar s, size_t step)
 {
     CV_DbgAssert(s >= 0 && s < 16);
-    const cv::Point res = chainCodeDeltas[s % 8];
+    const ncvslideio::Point res = chainCodeDeltas[s % 8];
     return res.x + res.y * (int)step;
 }
 
@@ -168,9 +168,9 @@ private:
 class Contour
 {
 public:
-    cv::Rect brect;
-    cv::Point origin;
-    std::vector<cv::Point> pts;
+    ncvslideio::Rect brect;
+    ncvslideio::Point origin;
+    std::vector<ncvslideio::Point> pts;
     std::vector<schar> codes;
     bool isHole;
     bool isChain;
@@ -207,13 +207,13 @@ typedef TreeIterator<Contour> CIterator;
 
 void contourTreeToResults(CTree& tree,
                           int res_type,
-                          cv::OutputArrayOfArrays& _contours,
-                          cv::OutputArray& _hierarchy);
+                          ncvslideio::OutputArrayOfArrays& _contours,
+                          ncvslideio::OutputArray& _hierarchy);
 
 
 std::vector<Point>
     approximateChainTC89(std::vector<schar> chain, const Point& origin, const int method);
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // OPENCV_CONTOURS_COMMON_HPP

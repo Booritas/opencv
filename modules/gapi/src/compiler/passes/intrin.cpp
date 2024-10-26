@@ -23,9 +23,9 @@ namespace {
 //
 // @return a vector of new edge handles connecting the "main" graph
 // with its desynchronized part.
-std::vector<ade::EdgeHandle> drop(cv::gimpl::GModel::Graph &g,
+std::vector<ade::EdgeHandle> drop(ncvslideio::gimpl::GModel::Graph &g,
                                   ade::NodeHandle nh) {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
 
     // What we need to do here:
     // 1. Connect the readers of its produced data objects
@@ -114,11 +114,11 @@ std::vector<ade::EdgeHandle> drop(cv::gimpl::GModel::Graph &g,
 //
 // If NO inputs of this node have a valid desync_id, the desync
 // invariant is broken and the function throws.
-void traceUp(cv::gimpl::GModel::Graph &g,
+void traceUp(ncvslideio::gimpl::GModel::Graph &g,
              const ade::NodeHandle &nh,
              int desync_id,
              std::vector<ade::NodeHandle> &path) {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
 
     GAPI_Assert(!nh->inNodes().empty()
                 && "traceUp: a desynchronized part of the graph is not isolated?");
@@ -163,10 +163,10 @@ void traceUp(cv::gimpl::GModel::Graph &g,
 // - if this desync path is not overlapped.
 // It also originates the traceUp() process at the points of
 // uncertainty (as described in the comment above).
-void traceDown(cv::gimpl::GModel::Graph &g,
+void traceDown(ncvslideio::gimpl::GModel::Graph &g,
                const ade::NodeHandle &nh,
                int desync_id) {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
 
     if (g.metadata(nh).contains<DesyncPath>()) {
         // We may face nodes which have DesyncPath already visited during
@@ -202,8 +202,8 @@ void traceDown(cv::gimpl::GModel::Graph &g,
 // Streaming case: ensure the graph has proper isolation of the
 // desynchronized parts, set proper Edge metadata hints for
 // GStreamingIntrinExecutable
-void apply(cv::gimpl::GModel::Graph &g) {
-    using namespace cv::gimpl;
+void apply(ncvslideio::gimpl::GModel::Graph &g) {
+    using namespace ncvslideio::gimpl;
 
     // Stage 0. Trace down the desync operations in the graph.
     // Tag them with their unique (per graph) identifiers.
@@ -211,7 +211,7 @@ void apply(cv::gimpl::GModel::Graph &g) {
     for (auto &&nh : g.nodes()) {
         if (g.metadata(nh).get<NodeType>().t == NodeType::OP) {
             const auto &op = g.metadata(nh).get<Op>();
-            if (op.k.name == cv::gapi::streaming::detail::GDesync::id()) {
+            if (op.k.name == ncvslideio::gapi::streaming::detail::GDesync::id()) {
                 GAPI_Assert(!g.metadata(nh).contains<DesyncPath>()
                             && "Desynchronization can't be nested!");
                 const int this_desync_id = total_desync++;
@@ -237,7 +237,7 @@ void apply(cv::gimpl::GModel::Graph &g) {
         }
         if (g.metadata(nh).get<NodeType>().t == NodeType::OP) {
             const auto &op = g.metadata(nh).get<Op>();
-            if (op.k.name == cv::gapi::streaming::detail::GDesync::id()) {
+            if (op.k.name == ncvslideio::gapi::streaming::detail::GDesync::id()) {
                 auto index = g.metadata(nh).get<DesyncPath>().index;
                 auto new_links = drop(g, nh);
                 for (auto &&eh : new_links) {
@@ -256,10 +256,10 @@ void apply(cv::gimpl::GModel::Graph &g) {
 // Probably the simplest case: desync makes no sense in the regular
 // compilation process, so just drop all its occurrences in the graph,
 // reconnecting nodes properly.
-void drop(cv::gimpl::GModel::Graph &g) {
+void drop(ncvslideio::gimpl::GModel::Graph &g) {
     // FIXME: LOG here that we're dropping the desync operations as
     // they have no sense when compiling in the regular mode.
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
     std::vector<ade::NodeHandle> nodes(g.nodes().begin(), g.nodes().end());
     for (auto &&nh : nodes) {
         if (nh == nullptr) {
@@ -269,7 +269,7 @@ void drop(cv::gimpl::GModel::Graph &g) {
         }
         if (g.metadata(nh).get<NodeType>().t == NodeType::OP) {
             const auto &op = g.metadata(nh).get<Op>();
-            if (op.k.name == cv::gapi::streaming::detail::GDesync::id()) {
+            if (op.k.name == ncvslideio::gapi::streaming::detail::GDesync::id()) {
                 drop(g, nh);
             } // if (desync)
         } // if (Op)
@@ -279,7 +279,7 @@ void drop(cv::gimpl::GModel::Graph &g) {
 } // anonymous namespace
 } // namespace desync
 
-void cv::gimpl::passes::intrinDesync(ade::passes::PassContext &ctx) {
+void ncvslideio::gimpl::passes::intrinDesync(ade::passes::PassContext &ctx) {
     GModel::Graph gr(ctx.graph);
     if (!gr.metadata().contains<HasIntrinsics>())
         return;
@@ -290,7 +290,7 @@ void cv::gimpl::passes::intrinDesync(ade::passes::PassContext &ctx) {
 }
 
 // Clears the HasIntrinsics flag if all intrinsics have been handled.
-void cv::gimpl::passes::intrinFinalize(ade::passes::PassContext &ctx) {
+void ncvslideio::gimpl::passes::intrinFinalize(ade::passes::PassContext &ctx) {
     GModel::Graph gr(ctx.graph);
     for (auto &&nh : gr.nodes()) {
         if (gr.metadata(nh).get<NodeType>().t == NodeType::OP) {

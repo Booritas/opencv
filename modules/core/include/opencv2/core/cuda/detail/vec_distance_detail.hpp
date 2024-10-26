@@ -47,7 +47,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     namespace vec_distance_detail
     {
@@ -114,7 +114,7 @@ namespace cv { namespace cuda { namespace device
             }
         };
     } // namespace vec_distance_detail
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

@@ -15,27 +15,27 @@
 
 #include "api/gorigin.hpp"
 
-// cv::GMat public implementation //////////////////////////////////////////////
-cv::GMat::GMat()
+// ncvslideio::GMat public implementation //////////////////////////////////////////////
+ncvslideio::GMat::GMat()
     : m_priv(new GOrigin(GShape::GMAT, GNode::Param()))
 {
 }
 
-cv::GMat::GMat(const GNode &n, std::size_t out)
+ncvslideio::GMat::GMat(const GNode &n, std::size_t out)
     : m_priv(new GOrigin(GShape::GMAT, n, out))
 {
 }
 
-cv::GMat::GMat(cv::Mat m)
-    : m_priv(new GOrigin(GShape::GMAT, cv::gimpl::ConstVal(m))) {
+ncvslideio::GMat::GMat(ncvslideio::Mat m)
+    : m_priv(new GOrigin(GShape::GMAT, ncvslideio::gimpl::ConstVal(m))) {
 }
 
-cv::GOrigin& cv::GMat::priv()
+ncvslideio::GOrigin& ncvslideio::GMat::priv()
 {
     return *m_priv;
 }
 
-const cv::GOrigin& cv::GMat::priv() const
+const ncvslideio::GOrigin& ncvslideio::GMat::priv() const
 {
     return *m_priv;
 }
@@ -61,21 +61,21 @@ static std::vector<int> checkVectorImpl(const int width, const int height, const
     }
 }
 
-int cv::gapi::detail::checkVector(const cv::GMatDesc& in, const size_t n)
+int ncvslideio::gapi::detail::checkVector(const ncvslideio::GMatDesc& in, const size_t n)
 {
     GAPI_Assert(n != 0u);
     return checkVectorImpl(in.size.width, in.size.height, in.chan, static_cast<int>(n))[0];
 }
 
-std::vector<int> cv::gapi::detail::checkVector(const cv::GMatDesc& in)
+std::vector<int> ncvslideio::gapi::detail::checkVector(const ncvslideio::GMatDesc& in)
 {
     return checkVectorImpl(in.size.width, in.size.height, in.chan, -1);
 }
 
 namespace{
-    template <typename T> cv::GMetaArgs vec_descr_of(const std::vector<T> &vec)
+    template <typename T> ncvslideio::GMetaArgs vec_descr_of(const std::vector<T> &vec)
         {
-        cv::GMetaArgs vec_descr;
+        ncvslideio::GMetaArgs vec_descr;
         vec_descr.reserve(vec.size());
         for(auto& mat : vec){
             vec_descr.emplace_back(descr_of(mat));
@@ -85,7 +85,7 @@ namespace{
 }
 
 #if !defined(GAPI_STANDALONE)
-cv::GMatDesc cv::descr_of(const cv::Mat &mat)
+ncvslideio::GMatDesc ncvslideio::descr_of(const ncvslideio::Mat &mat)
 {
     const auto mat_dims = mat.size.dims();
 
@@ -94,14 +94,14 @@ cv::GMatDesc cv::descr_of(const cv::Mat &mat)
 
     std::vector<int> dims(mat_dims);
     for (auto i : ade::util::iota(mat_dims)) {
-        // Note: cv::MatSize is not iterable
+        // Note: ncvslideio::MatSize is not iterable
         dims[i] = mat.size[i];
     }
     return GMatDesc{mat.depth(), std::move(dims)};
 }
 #endif
 
-cv::GMatDesc cv::gapi::own::descr_of(const Mat &mat)
+ncvslideio::GMatDesc ncvslideio::gapi::own::descr_of(const Mat &mat)
 {
     return (mat.dims.empty())
         ? GMatDesc{mat.depth(), mat.channels(), {mat.cols, mat.rows}}
@@ -109,35 +109,35 @@ cv::GMatDesc cv::gapi::own::descr_of(const Mat &mat)
 }
 
 #if !defined(GAPI_STANDALONE)
-cv::GMatDesc cv::descr_of(const cv::UMat &mat)
+ncvslideio::GMatDesc ncvslideio::descr_of(const ncvslideio::UMat &mat)
 {
     GAPI_Assert(mat.size.dims() == 2);
     return GMatDesc{ mat.depth(), mat.channels(),{ mat.cols, mat.rows } };
 }
 
-cv::GMetaArgs cv::descrs_of(const std::vector<cv::UMat> &vec)
+ncvslideio::GMetaArgs ncvslideio::descrs_of(const std::vector<ncvslideio::UMat> &vec)
 {
     return vec_descr_of(vec);
 }
 #endif
 
-cv::GMetaArgs cv::descrs_of(const std::vector<cv::Mat> &vec)
+ncvslideio::GMetaArgs ncvslideio::descrs_of(const std::vector<ncvslideio::Mat> &vec)
 {
     return vec_descr_of(vec);
 }
 
-cv::GMetaArgs cv::gapi::own::descrs_of(const std::vector<Mat> &vec)
+ncvslideio::GMetaArgs ncvslideio::gapi::own::descrs_of(const std::vector<Mat> &vec)
 {
     return vec_descr_of(vec);
 }
 
-cv::GMatDesc cv::descr_of(const cv::RMat &mat)
+ncvslideio::GMatDesc ncvslideio::descr_of(const ncvslideio::RMat &mat)
 {
     return mat.desc();
 }
 
-namespace cv {
-std::ostream& operator<<(std::ostream& os, const cv::GMatDesc &desc)
+namespace ncvslideio {
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GMatDesc &desc)
 {
     switch (desc.depth)
     {
@@ -176,19 +176,19 @@ std::ostream& operator<<(std::ostream& os, const cv::GMatDesc &desc)
 namespace {
 template<typename M> inline bool canDescribeHelper(const GMatDesc& desc, const M& mat)
 {
-    const auto mat_desc = desc.planar ? cv::descr_of(mat).asPlanar(desc.chan) : cv::descr_of(mat);
+    const auto mat_desc = desc.planar ? ncvslideio::descr_of(mat).asPlanar(desc.chan) : ncvslideio::descr_of(mat);
     return desc == mat_desc;
 }
 } // anonymous namespace
 
-bool GMatDesc::canDescribe(const cv::Mat& mat) const
+bool GMatDesc::canDescribe(const ncvslideio::Mat& mat) const
 {
     return canDescribeHelper(*this, mat);
 }
 
-bool GMatDesc::canDescribe(const cv::RMat& mat) const
+bool GMatDesc::canDescribe(const ncvslideio::RMat& mat) const
 {
     return canDescribeHelper(*this, mat);
 }
 
-}// namespace cv
+}// namespace ncvslideio

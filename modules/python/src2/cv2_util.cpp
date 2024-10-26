@@ -4,15 +4,15 @@
 #include "opencv2/core/utils/logger.hpp"
 
 PyObject* opencv_error = NULL;
-cv::TLSData<std::vector<std::string> > conversionErrorsTLS;
+ncvslideio::TLSData<std::vector<std::string> > conversionErrorsTLS;
 
-using namespace cv;
+using namespace ncvslideio;
 
 //======================================================================================================================
 
 bool isPythonBindingsDebugEnabled()
 {
-    static bool param_debug = cv::utils::getConfigurationParameterBool("OPENCV_PYTHON_DEBUG", false);
+    static bool param_debug = ncvslideio::utils::getConfigurationParameterBool("OPENCV_PYTHON_DEBUG", false);
     return param_debug;
 }
 
@@ -52,7 +52,7 @@ PyObject* failmsgp(const char *fmt, ...)
     return 0;
 }
 
-void pyRaiseCVException(const cv::Exception &e)
+void pyRaiseCVException(const ncvslideio::Exception &e)
 {
     PyObject* temp_obj = PyString_FromString(e.file.c_str());
     PyObject_SetAttrString(opencv_error, "file", temp_obj);
@@ -103,12 +103,12 @@ void pyRaiseCVOverloadException(const std::string& functionName)
             errorMessage += bullet;
             errorMessage += conversionErrors[i];
         }
-        cv::Exception exception(Error::StsBadArg, errorMessage, functionName, "", -1);
+        ncvslideio::Exception exception(Error::StsBadArg, errorMessage, functionName, "", -1);
         pyRaiseCVException(exception);
     }
     else
     {
-        cv::Exception exception(Error::StsInternal, "Overload resolution failed, but no errors reported",
+        ncvslideio::Exception exception(Error::StsInternal, "Overload resolution failed, but no errors reported",
                                 functionName, "", -1);
         pyRaiseCVException(exception);
     }

@@ -54,43 +54,43 @@ static void fastNlMeansDenoising_( const Mat& src, Mat& dst, const std::vector<f
 
     switch (CV_MAT_CN(src.type())) {
         case 1:
-            parallel_for_(cv::Range(0, src.rows),
+            parallel_for_(ncvslideio::Range(0, src.rows),
                           FastNlMeansDenoisingInvoker<ST, IT, UIT, D, int>(
                               src, dst, templateWindowSize, searchWindowSize, &h[0]),
                           granularity);
             break;
         case 2:
             if (hn == 1)
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 2>, IT, UIT, D, int>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 2>, IT, UIT, D, Vec2i>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             break;
         case 3:
             if (hn == 1)
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 3>, IT, UIT, D, int>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 3>, IT, UIT, D, Vec3i>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             break;
         case 4:
             if (hn == 1)
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 4>, IT, UIT, D, int>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, src.rows),
+                parallel_for_(ncvslideio::Range(0, src.rows),
                               FastNlMeansDenoisingInvoker<Vec<ST, 4>, IT, UIT, D, Vec4i>(
                                   src, dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
@@ -101,7 +101,7 @@ static void fastNlMeansDenoising_( const Mat& src, Mat& dst, const std::vector<f
     }
 }
 
-void cv::fastNlMeansDenoising( InputArray _src, OutputArray _dst, float h,
+void ncvslideio::fastNlMeansDenoising( InputArray _src, OutputArray _dst, float h,
                                int templateWindowSize, int searchWindowSize)
 {
     CV_INSTRUMENT_REGION();
@@ -110,7 +110,7 @@ void cv::fastNlMeansDenoising( InputArray _src, OutputArray _dst, float h,
                          templateWindowSize, searchWindowSize);
 }
 
-void cv::fastNlMeansDenoising( InputArray _src, OutputArray _dst, const std::vector<float>& h,
+void ncvslideio::fastNlMeansDenoising( InputArray _src, OutputArray _dst, const std::vector<float>& h,
                                int templateWindowSize, int searchWindowSize, int normType)
 {
     CV_INSTRUMENT_REGION();
@@ -165,7 +165,7 @@ void cv::fastNlMeansDenoising( InputArray _src, OutputArray _dst, const std::vec
     }
 }
 
-void cv::fastNlMeansDenoisingColored( InputArray _src, OutputArray _dst,
+void ncvslideio::fastNlMeansDenoisingColored( InputArray _src, OutputArray _dst,
                                       float h, float hForColorComponents,
                                       int templateWindowSize, int searchWindowSize)
 {
@@ -252,7 +252,7 @@ static void fastNlMeansDenoisingMulti_( const std::vector<Mat>& srcImgs, Mat& ds
     switch (srcImgs[0].type())
     {
         case CV_8U:
-            parallel_for_(cv::Range(0, srcImgs[0].rows),
+            parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                           FastNlMeansMultiDenoisingInvoker<uchar, IT, UIT, D, int>(
                               srcImgs, imgToDenoiseIndex, temporalWindowSize,
                               dst, templateWindowSize, searchWindowSize, &h[0]),
@@ -260,13 +260,13 @@ static void fastNlMeansDenoisingMulti_( const std::vector<Mat>& srcImgs, Mat& ds
             break;
         case CV_8UC2:
             if (hn == 1)
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 2>, IT, UIT, D, int>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 2>, IT, UIT, D, Vec2i>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
@@ -274,13 +274,13 @@ static void fastNlMeansDenoisingMulti_( const std::vector<Mat>& srcImgs, Mat& ds
             break;
         case CV_8UC3:
             if (hn == 1)
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 3>, IT, UIT, D, int>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 3>, IT, UIT, D, Vec3i>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
@@ -288,13 +288,13 @@ static void fastNlMeansDenoisingMulti_( const std::vector<Mat>& srcImgs, Mat& ds
             break;
         case CV_8UC4:
             if (hn == 1)
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 4>, IT, UIT, D, int>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
                               granularity);
             else
-                parallel_for_(cv::Range(0, srcImgs[0].rows),
+                parallel_for_(ncvslideio::Range(0, srcImgs[0].rows),
                               FastNlMeansMultiDenoisingInvoker<Vec<ST, 4>, IT, UIT, D, Vec4i>(
                                   srcImgs, imgToDenoiseIndex, temporalWindowSize,
                                   dst, templateWindowSize, searchWindowSize, &h[0]),
@@ -306,7 +306,7 @@ static void fastNlMeansDenoisingMulti_( const std::vector<Mat>& srcImgs, Mat& ds
     }
 }
 
-void cv::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
+void ncvslideio::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
                                     int imgToDenoiseIndex, int temporalWindowSize,
                                     float h, int templateWindowSize, int searchWindowSize)
 {
@@ -316,7 +316,7 @@ void cv::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _ds
                               std::vector<float>(1, h), templateWindowSize, searchWindowSize);
 }
 
-void cv::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
+void ncvslideio::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
                                     int imgToDenoiseIndex, int temporalWindowSize,
                                     const std::vector<float>& h,
                                     int templateWindowSize, int searchWindowSize, int normType)
@@ -379,7 +379,7 @@ void cv::fastNlMeansDenoisingMulti( InputArrayOfArrays _srcImgs, OutputArray _ds
     }
 }
 
-void cv::fastNlMeansDenoisingColoredMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
+void ncvslideio::fastNlMeansDenoisingColoredMulti( InputArrayOfArrays _srcImgs, OutputArray _dst,
                                            int imgToDenoiseIndex, int temporalWindowSize,
                                            float h, float hForColorComponents,
                                            int templateWindowSize, int searchWindowSize)

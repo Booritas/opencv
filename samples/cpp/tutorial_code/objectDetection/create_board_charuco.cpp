@@ -3,7 +3,7 @@
 #include <iostream>
 #include "aruco_samples_utility.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Create a ChArUco board image";
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
     //! [create_charucoBoard]
     aruco::Dictionary dictionary = readDictionatyFromCommandLine(parser);
-    cv::aruco::CharucoBoard board(Size(squaresX, squaresY), (float)squareLength, (float)markerLength, dictionary);
+    ncvslideio::aruco::CharucoBoard board(Size(squaresX, squaresY), (float)squareLength, (float)markerLength, dictionary);
     //! [create_charucoBoard]
 
     // show created board

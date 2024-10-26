@@ -75,27 +75,27 @@ QUnit.test('Background Segmentation', function(assert) {
         const varThreshold = 15;
         const detectShadows = true;
 
-        let mog2 = new cv.BackgroundSubtractorMOG2(history, varThreshold, detectShadows);
+        let mog2 = new ncvslideio.BackgroundSubtractorMOG2(history, varThreshold, detectShadows);
 
-        assert.equal(mog2 instanceof cv.BackgroundSubtractorMOG2, true);
-
-        mog2.delete();
-
-        mog2 = new cv.BackgroundSubtractorMOG2();
-
-        assert.equal(mog2 instanceof cv.BackgroundSubtractorMOG2, true);
+        assert.equal(mog2 instanceof ncvslideio.BackgroundSubtractorMOG2, true);
 
         mog2.delete();
 
-        mog2 = new cv.BackgroundSubtractorMOG2(history);
+        mog2 = new ncvslideio.BackgroundSubtractorMOG2();
 
-        assert.equal(mog2 instanceof cv.BackgroundSubtractorMOG2, true);
+        assert.equal(mog2 instanceof ncvslideio.BackgroundSubtractorMOG2, true);
 
         mog2.delete();
 
-        mog2 = new cv.BackgroundSubtractorMOG2(history, varThreshold);
+        mog2 = new ncvslideio.BackgroundSubtractorMOG2(history);
 
-        assert.equal(mog2 instanceof cv.BackgroundSubtractorMOG2, true);
+        assert.equal(mog2 instanceof ncvslideio.BackgroundSubtractorMOG2, true);
+
+        mog2.delete();
+
+        mog2 = new ncvslideio.BackgroundSubtractorMOG2(history, varThreshold);
+
+        assert.equal(mog2 instanceof ncvslideio.BackgroundSubtractorMOG2, true);
 
         mog2.delete();
     }
@@ -103,15 +103,15 @@ QUnit.test('Background Segmentation', function(assert) {
 
 QUnit.test('TrackerMIL', function(assert) {
     {
-        let src1 = cv.Mat.zeros(100, 100, cv.CV_8UC1);
-        let src2 = cv.Mat.zeros(100, 100, cv.CV_8UC1);
+        let src1 = ncvslideio.Mat.zeros(100, 100, ncvslideio.CV_8UC1);
+        let src2 = ncvslideio.Mat.zeros(100, 100, ncvslideio.CV_8UC1);
 
-        let tracker = new cv.TrackerMIL();
+        let tracker = new ncvslideio.TrackerMIL();
 
-        assert.equal(tracker instanceof cv.TrackerMIL, true);
-        assert.equal(tracker instanceof cv.Tracker, true);
+        assert.equal(tracker instanceof ncvslideio.TrackerMIL, true);
+        assert.equal(tracker instanceof ncvslideio.Tracker, true);
 
-        let rect = new cv.Rect(10, 10, 50, 60);
+        let rect = new ncvslideio.Rect(10, 10, 50, 60);
         tracker.init(src1, rect);
 
         let [updated, rect2] = tracker.update(src2);

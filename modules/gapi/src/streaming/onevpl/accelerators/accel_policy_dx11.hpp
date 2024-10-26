@@ -27,7 +27,7 @@
 #undef NOMINMAX
 #endif // HAVE_DIRECTX && HAVE_D3D11
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -49,7 +49,7 @@ struct GAPI_EXPORTS VPLDX11AccelerationPolicy final: public VPLAccelerationPolic
     size_t get_free_surface_count(pool_key_t key) const override;
     size_t get_surface_count(pool_key_t key) const override;
 
-    cv::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
+    ncvslideio::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
                                                     const FrameConstructorArgs &params) override;
 private:
 #ifdef HAVE_DIRECTX
@@ -84,7 +84,7 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_ACCEL_POLICY_DX11_HPP

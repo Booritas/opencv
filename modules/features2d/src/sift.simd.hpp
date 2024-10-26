@@ -75,7 +75,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include <opencv2/core/utils/buffer_area.private.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 #if !defined(CV_CPU_DISPATCH_MODE) || !defined(CV_CPU_OPTIMIZATION_DECLARATIONS_ONLY)
 /******************************* Defs and macros *****************************/
@@ -146,7 +146,7 @@ void findScaleSpaceExtrema(
     const std::vector<Mat>& gauss_pyr,
     const std::vector<Mat>& dog_pyr,
     std::vector<KeyPoint>& kpts,
-    const cv::Range& range);
+    const ncvslideio::Range& range);
 
 void calcSIFTDescriptor(
         const Mat& img, Point2f ptf, float ori, float scl,
@@ -169,7 +169,7 @@ float calcOrientationHist(
 
     float expf_scale = -1.f/(2.f * sigma * sigma);
 
-    cv::utils::BufferArea area;
+    ncvslideio::utils::BufferArea area;
     float *X = 0, *Y = 0, *Mag, *Ori = 0, *W = 0, *temphist = 0;
     area.allocate(X, len, CV_SIMD_WIDTH);
     area.allocate(Y, len, CV_SIMD_WIDTH);
@@ -205,9 +205,9 @@ float calcOrientationHist(
     len = k;
 
     // compute gradient values, orientations and the weights over the pixel neighborhood
-    cv::hal::exp32f(W, W, len);
-    cv::hal::fastAtan2(Y, X, Ori, len, true);
-    cv::hal::magnitude32f(X, Y, Mag, len);
+    ncvslideio::hal::exp32f(W, W, len);
+    ncvslideio::hal::fastAtan2(Y, X, Ori, len, true);
+    ncvslideio::hal::magnitude32f(X, Y, Mag, len);
 
     k = 0;
 #if (CV_SIMD || CV_SIMD_SCALABLE)
@@ -431,7 +431,7 @@ public:
     {
         // nothing
     }
-    void process(const cv::Range& range)
+    void process(const ncvslideio::Range& range)
     {
         CV_TRACE_FUNCTION();
 
@@ -694,7 +694,7 @@ void findScaleSpaceExtrema(
     const std::vector<Mat>& gauss_pyr,
     const std::vector<Mat>& dog_pyr,
     std::vector<KeyPoint>& kpts,
-    const cv::Range& range)
+    const ncvslideio::Range& range)
 {
     CV_TRACE_FUNCTION();
 
@@ -731,7 +731,7 @@ void calcSIFTDescriptor(
     const int len_ddn = d * d * n;
     int rows = img.rows, cols = img.cols;
 
-    cv::utils::BufferArea area;
+    ncvslideio::utils::BufferArea area;
     float *X = 0, *Y = 0, *Mag, *Ori = 0, *W = 0, *RBin = 0, *CBin = 0, *hist = 0, *rawDst = 0;
     area.allocate(X, len, CV_SIMD_WIDTH);
     area.allocate(Y, len, CV_SIMD_WIDTH);
@@ -775,9 +775,9 @@ void calcSIFTDescriptor(
         }
 
     const int len_left = k;
-    cv::hal::fastAtan2(Y, X, Ori, len_left, true);
-    cv::hal::magnitude32f(X, Y, Mag, len_left);
-    cv::hal::exp32f(W, W, len_left);
+    ncvslideio::hal::fastAtan2(Y, X, Ori, len_left, true);
+    ncvslideio::hal::magnitude32f(X, Y, Mag, len_left);
+    ncvslideio::hal::exp32f(W, W, len_left);
 
     k = 0;
 #if (CV_SIMD || CV_SIMD_SCALABLE)

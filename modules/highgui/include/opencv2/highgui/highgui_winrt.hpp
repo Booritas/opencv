@@ -26,7 +26,7 @@
 
 using namespace Windows::UI::Xaml::Controls;
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup highgui_winrt

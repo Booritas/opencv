@@ -3,7 +3,7 @@
 #include "opencv2/core/cvdef.h"
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 static inline Point calcPoint(Point2f center, double R, double angle)
 {
@@ -81,14 +81,14 @@ int main(int, char**)
 
             // plot points
             img = img * 0.2;
-            drawMarker(img, measPt, Scalar(0, 0, 255), cv::MARKER_SQUARE, 5, 2);
-            drawMarker(img, predictPt, Scalar(0, 255, 255), cv::MARKER_SQUARE, 5, 2);
-            drawMarker(img, improvedPt, Scalar(0, 255, 0), cv::MARKER_SQUARE, 5, 2);
-            drawMarker(img, statePt, Scalar(255, 255, 255), cv::MARKER_STAR, 10, 1);
+            drawMarker(img, measPt, Scalar(0, 0, 255), ncvslideio::MARKER_SQUARE, 5, 2);
+            drawMarker(img, predictPt, Scalar(0, 255, 255), ncvslideio::MARKER_SQUARE, 5, 2);
+            drawMarker(img, improvedPt, Scalar(0, 255, 0), ncvslideio::MARKER_SQUARE, 5, 2);
+            drawMarker(img, statePt, Scalar(255, 255, 255), ncvslideio::MARKER_STAR, 10, 1);
             // forecast one step
             Mat test = Mat(KF.transitionMatrix*KF.statePost);
             drawMarker(img, calcPoint(center, R, Mat(KF.transitionMatrix*KF.statePost).at<float>(0)),
-                       Scalar(255, 255, 0), cv::MARKER_SQUARE, 12, 1);
+                       Scalar(255, 255, 0), ncvslideio::MARKER_SQUARE, 12, 1);
 
             line( img, statePt, measPt, Scalar(0,0,255), 1, LINE_AA, 0 );
             line( img, statePt, predictPt, Scalar(0,255,255), 1, LINE_AA, 0 );

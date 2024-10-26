@@ -46,7 +46,7 @@
 #include "precomp.hpp"
 #include "cap_interface.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifdef HAVE_PVAPI
 #if !defined _WIN32 && !defined _LINUX
@@ -380,7 +380,7 @@ bool CvCaptureCAM_PvAPI::setProperty( int property_id, double value )
         }
         else
         {
-            cv::String ip=cv::format("%d.%d.%d.%d", ((unsigned int)value>>24)&255, ((unsigned int)value>>16)&255, ((unsigned int)value>>8)&255, (unsigned int)value&255);
+            ncvslideio::String ip=ncvslideio::format("%d.%d.%d.%d", ((unsigned int)value>>24)&255, ((unsigned int)value>>16)&255, ((unsigned int)value>>8)&255, (unsigned int)value&255);
             if ((PvAttrEnumSet(Camera.Handle,"MulticastEnable", "On")==ePvErrSuccess) &&
                 (PvAttrStringSet(Camera.Handle, "MulticastIPAddress", ip.c_str())==ePvErrSuccess))
                 break;
@@ -442,7 +442,7 @@ bool CvCaptureCAM_PvAPI::setProperty( int property_id, double value )
             return false;
     case CAP_PROP_PVAPI_PIXELFORMAT:
         {
-            cv::String pixelFormat;
+            ncvslideio::String pixelFormat;
 
             if (value==1)
                 pixelFormat = "Mono8";
@@ -572,7 +572,7 @@ bool CvCaptureCAM_PvAPI::resizeCaptureFrame (int frameWidth, int frameHeight)
     PvAttrUint32Get(Camera.Handle, "TotalBytesPerFrame", &frameSize);
 
 
-    const cv::Size sz((int)frameWidth, (int)frameHeight);
+    const ncvslideio::Size sz((int)frameWidth, (int)frameHeight);
     if ( (strcmp(pixelFormat, "Mono8")==0) || (strcmp(pixelFormat, "Bayer8")==0) )
     {
         frame.create(sz, CV_8UC1);
@@ -603,7 +603,7 @@ bool CvCaptureCAM_PvAPI::resizeCaptureFrame (int frameWidth, int frameHeight)
     return true;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::create_PvAPI_capture( int index )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_PvAPI_capture( int index )
 {
     Ptr<CvCaptureCAM_PvAPI> capture = makePtr<CvCaptureCAM_PvAPI>();
 

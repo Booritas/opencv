@@ -40,7 +40,7 @@ target_include_directories(${FLUID_TARGET}
 target_compile_definitions(${FLUID_TARGET} PUBLIC GAPI_STANDALONE
 # This preprocessor definition resolves symbol clash when
 # standalone fluid meets gapi ocv module in one application
-                                           PUBLIC cv=fluidcv)
+                                           PUBLIC ncvslideio=fluidcv)
 
 set_target_properties(${FLUID_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE True)
 set_property(TARGET ${FLUID_TARGET} PROPERTY CXX_STANDARD 11)

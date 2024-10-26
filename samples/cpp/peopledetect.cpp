@@ -9,7 +9,7 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 class Detector
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         {
             Rect &r = *i;
             detector.adjustRect(r);
-            rectangle(frame, r.tl(), r.br(), cv::Scalar(0, 255, 0), 2);
+            rectangle(frame, r.tl(), r.br(), ncvslideio::Scalar(0, 255, 0), 2);
         }
         imshow("People detector", frame);
 

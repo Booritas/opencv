@@ -52,7 +52,7 @@ using std::endl;
 *                        Stochastic Gradient Descent SVM Classifier                      *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 namespace ml
 {
@@ -99,8 +99,8 @@ public:
     inline void setInitialStepSize(float val) CV_OVERRIDE { params.initialStepSize = val; }
     inline float getStepDecreasingPower() const CV_OVERRIDE { return params.stepDecreasingPower; }
     inline void setStepDecreasingPower(float val) CV_OVERRIDE { params.stepDecreasingPower = val; }
-    inline cv::TermCriteria getTermCriteria() const CV_OVERRIDE { return params.termCrit; }
-    inline void setTermCriteria(const cv::TermCriteria& val) CV_OVERRIDE { params.termCrit = val; }
+    inline ncvslideio::TermCriteria getTermCriteria() const CV_OVERRIDE { return params.termCrit; }
+    inline void setTermCriteria(const ncvslideio::TermCriteria& val) CV_OVERRIDE { params.termCrit = val; }
 
 private:
     void updateWeights(InputArray sample, bool positive, float stepSize, Mat &weights);
@@ -178,7 +178,7 @@ void SVMSGDImpl::makeExtendedTrainSamples(const Mat &trainSamples, Mat &extended
     normalizeSamples(normalizedTrainSamples, average, multiplier);
 
     Mat onesCol = Mat::ones(samplesCount, 1, CV_32F);
-    cv::hconcat(normalizedTrainSamples, onesCol, extendedTrainSamples);
+    ncvslideio::hconcat(normalizedTrainSamples, onesCol, extendedTrainSamples);
 }
 
 void SVMSGDImpl::updateWeights(InputArray _sample, bool positive, float stepSize, Mat& weights)
@@ -331,9 +331,9 @@ bool SVMSGDImpl::train(const Ptr<TrainData>& data, int)
 float SVMSGDImpl::predict( InputArray _samples, OutputArray _results, int ) const
 {
     float result = 0;
-    cv::Mat samples = _samples.getMat();
+    ncvslideio::Mat samples = _samples.getMat();
     int nSamples = samples.rows;
-    cv::Mat results;
+    ncvslideio::Mat results;
 
     CV_Assert( samples.cols == weights_.cols && samples.type() == CV_32FC1);
 
@@ -375,7 +375,7 @@ bool SVMSGDImpl::isTrained() const
 void SVMSGDImpl::write(FileStorage& fs) const
 {
     if( !isTrained() )
-        CV_Error( cv::Error::StsParseError, "SVMSGD model data is invalid, it hasn't been trained" );
+        CV_Error( ncvslideio::Error::StsParseError, "SVMSGD model data is invalid, it hasn't been trained" );
 
     writeFormat(fs);
     writeParams( fs );
@@ -437,7 +437,7 @@ void SVMSGDImpl::readParams( const FileNode& fn )
                                      svmsgdTypeStr == "ASGD" ? ASGD : -1;
 
     if( svmsgdType < 0 )
-        CV_Error( cv::Error::StsParseError, "Missing or invalid SVMSGD type" );
+        CV_Error( ncvslideio::Error::StsParseError, "Missing or invalid SVMSGD type" );
 
     params.svmsgdType = svmsgdType;
 
@@ -447,7 +447,7 @@ void SVMSGDImpl::readParams( const FileNode& fn )
                                              marginTypeStr == "HARD_MARGIN" ? HARD_MARGIN : -1;
 
     if( marginType < 0 )
-        CV_Error( cv::Error::StsParseError, "Missing or invalid margin type" );
+        CV_Error( ncvslideio::Error::StsParseError, "Missing or invalid margin type" );
 
     params.marginType = marginType;
 
@@ -517,7 +517,7 @@ void SVMSGDImpl::setOptimalParameters(int svmsgdType, int marginType)
         break;
 
     default:
-        CV_Error( cv::Error::StsParseError, "SVMSGD model data is invalid" );
+        CV_Error( ncvslideio::Error::StsParseError, "SVMSGD model data is invalid" );
     }
 }
 }   //ml

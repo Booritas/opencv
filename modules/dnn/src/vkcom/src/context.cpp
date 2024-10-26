@@ -27,7 +27,7 @@ Below is the original copyright:
 #include "../include/context.hpp"
 #include "../vulkan/vk_loader.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -35,7 +35,7 @@ namespace cv { namespace dnn { namespace vkcom {
 VkQueue kQueue = VK_NULL_HANDLE;
 VkDevice kDevice = VK_NULL_HANDLE; // It was used almost everywhere.
 VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-cv::Mutex kContextMtx;
+ncvslideio::Mutex kContextMtx;
 Ptr<CommandPool> cmdPoolPtr;
 Ptr<PipelineFactory> pipelineFactoryPtr;
 
@@ -225,7 +225,7 @@ void Context::createInstance()
 
         if (result != VK_SUCCESS)
         {
-            CV_Error(cv::Error::StsError, "Vulkan: vkEnumerateInstanceLayerProperties failed!");
+            CV_Error(ncvslideio::Error::StsError, "Vulkan: vkEnumerateInstanceLayerProperties failed!");
             return;
         }
 
@@ -234,7 +234,7 @@ void Context::createInstance()
 
         if (result != VK_SUCCESS)
         {
-            CV_Error(cv::Error::StsError, "Vulkan: vkEnumerateInstanceLayerProperties failed!");
+            CV_Error(ncvslideio::Error::StsError, "Vulkan: vkEnumerateInstanceLayerProperties failed!");
             return;
         }
 
@@ -388,7 +388,7 @@ Context::Context()
     vkEnumeratePhysicalDevices(kInstance, &deviceCount, NULL);
     if (deviceCount == 0)
     {
-        CV_Error(cv::Error::StsError, "Vulkan Backend: could not find a device with vulkan support!");
+        CV_Error(ncvslideio::Error::StsError, "Vulkan Backend: could not find a device with vulkan support!");
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -442,7 +442,7 @@ Context::Context()
     if (!cmdPoolPtr)
         cmdPoolPtr = CommandPool::create(kQueue, kQueueFamilyIndex);
     else
-        CV_Error(cv::Error::StsError, "cmdPoolPtr has been created before!!");
+        CV_Error(ncvslideio::Error::StsError, "cmdPoolPtr has been created before!!");
 
     pipelineFactoryPtr = PipelineFactory::create();
 }
@@ -863,7 +863,7 @@ static bool callOnce = false;
 
 Ptr<Context> Context::create()
 {
-    cv::AutoLock lock(kContextMtx);
+    ncvslideio::AutoLock lock(kContextMtx);
     if (!callOnce)
     {
         callOnce = true;
@@ -884,4 +884,4 @@ bool isAvailable()
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

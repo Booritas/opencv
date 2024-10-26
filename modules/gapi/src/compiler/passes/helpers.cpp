@@ -111,12 +111,12 @@ namespace TopoSort
 
 } // anonymous namespace
 
-bool cv::gimpl::pass_helpers::hasCycles(const ade::Graph &g)
+bool ncvslideio::gimpl::pass_helpers::hasCycles(const ade::Graph &g)
 {
     return Cycles::hasCycles(g);
 }
 
-std::vector<ade::NodeHandle> cv::gimpl::pass_helpers::topoSort(const ade::Graph &g)
+std::vector<ade::NodeHandle> ncvslideio::gimpl::pass_helpers::topoSort(const ade::Graph &g)
 {
     return TopoSort::topoSort(g);
 }

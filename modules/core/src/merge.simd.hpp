@@ -5,7 +5,7 @@
 
 #include "precomp.hpp"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 void merge8u(const uchar** src, uchar* dst, int len, int cn);

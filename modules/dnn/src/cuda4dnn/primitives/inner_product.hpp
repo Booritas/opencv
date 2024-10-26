@@ -20,7 +20,7 @@
 #include <vector>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class InnerProductOp final : public CUDABackendNode {
@@ -43,8 +43,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             for (int i = 0; i < inputs.size(); i++)
@@ -87,6 +87,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         std::size_t axis;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_INNER_PRODUCT_HPP */

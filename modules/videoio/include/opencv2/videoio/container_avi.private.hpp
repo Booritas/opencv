@@ -15,7 +15,7 @@
 #include <string>
 #include <memory>
 
-namespace cv
+namespace ncvslideio
 {
 
 /*
@@ -152,7 +152,7 @@ public:
     AVIWriteContainer();
     ~AVIWriteContainer();
 
-    bool initContainer(const std::string& filename, double fps, cv::Size size, bool iscolor);
+    bool initContainer(const std::string& filename, double fps, ncvslideio::Size size, bool iscolor);
     void startWriteAVI(int stream_count);
     void writeStreamHeader(Codecs codec_);
     void startWriteChunk(uint32_t fourcc);

@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
     console.log('opencv.js loaded');
     if (isNodeJs) {
-      global.cv = cv;
+      global.ncvslideio = ncvslideio;
       global.combine = HelpFunc.combine;
       global.log = HelpFunc.log;
       global.decodeParams2Case = HelpFunc.decodeParams2Case;
@@ -36,25 +36,25 @@ function perf() {
 
     function addRemapCase(suite, type) {
         suite.add('remap', function() {
-            cv.remap(src, dst, map1, map2, interType);
+            ncvslideio.remap(src, dst, map1, map2, interType);
           }, {
               'setup': function() {
                 let size = this.params.size;
-                let matType = cv[this.params.matType];
-                let mapType = cv[this.params.mapType];
-                let interType = cv[this.params.interType];
+                let matType = ncvslideio[this.params.matType];
+                let mapType = ncvslideio[this.params.mapType];
+                let interType = ncvslideio[this.params.interType];
 
 
-                let src = new cv.Mat(size, matType);
-                let dst = new cv.Mat(size, matType);
-                let map1 = new cv.Mat(size, mapType);
+                let src = new ncvslideio.Mat(size, matType);
+                let dst = new ncvslideio.Mat(size, matType);
+                let map1 = new ncvslideio.Mat(size, mapType);
                 let map2;
-                if (mapType == cv.CV_32FC1) {
-                  map2 = new cv.Mat(size, mapType);
-                } else if (interType != cv.INTER_NEAREST && mapType == cv.CV_16SC2) {
-                  map2 = new cv.Mat.zeros(size, cv.CV_16UC1);
+                if (mapType == ncvslideio.CV_32FC1) {
+                  map2 = new ncvslideio.Mat(size, mapType);
+                } else if (interType != ncvslideio.INTER_NEAREST && mapType == ncvslideio.CV_16SC2) {
+                  map2 = new ncvslideio.Mat.zeros(size, ncvslideio.CV_16UC1);
                 } else {
-                  map2 = new cv.Mat();
+                  map2 = new ncvslideio.Mat();
                 }
 
                 for (let j = 0; j < map1.rows; j++) {
@@ -62,15 +62,15 @@ function perf() {
                     let randNum = Math.random();
                     let view, view1;
                     switch(matType) {
-                      case cv.CV_16UC1:
+                      case ncvslideio.CV_16UC1:
                         view = src.ushortPtr(j,i);
                         view[0] = Math.floor(randNum*256);
                         break;
-                      case cv.CV_16SC1:
+                      case ncvslideio.CV_16SC1:
                         view = src.shortPtr(j,i);
                         view[0] = Math.floor(randNum*256);
                         break;
-                      case cv.CV_32FC1:
+                      case ncvslideio.CV_32FC1:
                         view = src.floatPtr(j,i);
                         view[0] = randNum*256;
                         break;
@@ -80,18 +80,18 @@ function perf() {
                     }
 
                     switch(mapType) {
-                      case cv.CV_32FC1:
+                      case ncvslideio.CV_32FC1:
                         view1 = map1.floatPtr(j,i);
                         let view2 = map2.floatPtr(j,i);
                         view1[0] = src.cols - i - 1;
                         view2[0] = j;
                         break;
-                      case cv.CV_32FC2:
+                      case ncvslideio.CV_32FC2:
                         view1 = map1.floatPtr(j,i);
                         view1[0] = src.cols - i - 1;
                         view1[1] = j;
                         break;
-                      case cv.CV_16SC2:
+                      case ncvslideio.CV_16SC2:
                         view1 = map1.shortPtr(j,i);
                         view1[0] = src.cols - i - 1;
                         view1[1] = j;
@@ -130,12 +130,12 @@ function perf() {
       totalCaseNum = 0;
       currentCaseId = 0;
 
-      if (/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*CV\_\w+,[\ ]*INTER\_\w+\)/g.test(paramsContent.toString())) {
-          let params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*CV\_\w+,[\ ]*INTER\_\w+\)/g)[0];
+      if (/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*ncvslideio\_\w+,[\ ]*INTER\_\w+\)/g.test(paramsContent.toString())) {
+          let params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*ncvslideio\_\w+,[\ ]*INTER\_\w+\)/g)[0];
           let paramObjs = [];
           paramObjs.push({name:"size", value:"", reg:[""], index:0});
-          paramObjs.push({name:"matType", value:"", reg:["/CV\_[0-9]+[FSUfsu]C[0-9]/"], index:1});
-          paramObjs.push({name:"mapType", value:"", reg:["/CV\_[0-9]+[FSUfsu]C[0-9]/g"], index:2, loc:1});
+          paramObjs.push({name:"matType", value:"", reg:["/ncvslideio\_[0-9]+[FSUfsu]C[0-9]/"], index:1});
+          paramObjs.push({name:"mapType", value:"", reg:["/ncvslideio\_[0-9]+[FSUfsu]C[0-9]/g"], index:2, loc:1});
           paramObjs.push({name:"interType", value: "", reg:["/INTER\_\\w+/"], index:3});
           let locationList = decodeParams2Case(params, paramObjs, remapCombinations);
 
@@ -158,8 +158,8 @@ function perf() {
     if (isNodeJs) {
       const args = process.argv.slice(2);
       let paramsContent = '';
-      if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*CV\_\w+,[\ ]*INTER\_\w+\)/g.test(args.toString())) {
-        paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*CV\_\w+,[\ ]*INTER\_\w+\)/g)[0];
+      if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*ncvslideio\_\w+,[\ ]*INTER\_\w+\)/g.test(args.toString())) {
+        paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*ncvslideio\_\w+,[\ ]*INTER\_\w+\)/g)[0];
       }
       genBenchmarkCase(paramsContent);
     } else {
@@ -174,11 +174,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 using std::vector;

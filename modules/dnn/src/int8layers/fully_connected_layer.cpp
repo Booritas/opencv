@@ -9,7 +9,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -467,7 +467,7 @@ public:
             int32_t* bias = blobs[1].ptr<int32_t>();
             std::vector<float> ovBias(blobs[1].total());
             for (int i = 0; i < ovBias.size(); ++i) {
-                ovBias[i] = (bias[i] + input_zp * cv::sum(blobs[0].row(i))[0]) * outputMultiplier.ptr<float>()[i] * output_sc;
+                ovBias[i] = (bias[i] + input_zp * ncvslideio::sum(blobs[0].row(i))[0]) * outputMultiplier.ptr<float>()[i] * output_sc;
             }
             auto bias_node = std::make_shared<ov::op::v0::Constant>(ov::element::f32,
                                             ov::Shape{blobs[1].total()}, ovBias.data());

@@ -86,9 +86,9 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda {
-    CV_EXPORTS cv::String getNppErrorMessage(int code);
-    CV_EXPORTS cv::String getCudaDriverApiErrorMessage(int code);
+namespace ncvslideio { namespace cuda {
+    CV_EXPORTS ncvslideio::String getNppErrorMessage(int code);
+    CV_EXPORTS ncvslideio::String getCudaDriverApiErrorMessage(int code);
 
     CV_EXPORTS GpuMat getInputMat(InputArray _src, Stream& stream);
 
@@ -103,26 +103,26 @@ namespace cv { namespace cuda {
 
 #ifndef HAVE_CUDA
 
-static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::GpuNotSupported, "The library is compiled without CUDA support"); }
+static inline CV_NORETURN void throw_no_cuda() { CV_Error(ncvslideio::Error::GpuNotSupported, "The library is compiled without CUDA support"); }
 
 #else // HAVE_CUDA
 
 #define nppSafeSetStream(oldStream, newStream) { if(oldStream != newStream) { cudaStreamSynchronize(oldStream); nppSetStream(newStream); } }
 
-static inline CV_NORETURN void throw_no_cuda() { CV_Error(cv::Error::StsNotImplemented, "The called functionality is disabled for current build or platform"); }
+static inline CV_NORETURN void throw_no_cuda() { CV_Error(ncvslideio::Error::StsNotImplemented, "The called functionality is disabled for current build or platform"); }
 
-namespace cv { namespace cuda
+namespace ncvslideio { namespace cuda
 {
     static inline void checkNppError(int code, const char* file, const int line, const char* func)
     {
         if (code < 0)
-            cv::error(cv::Error::GpuApiCallError, getNppErrorMessage(code), func, file, line);
+            ncvslideio::error(ncvslideio::Error::GpuApiCallError, getNppErrorMessage(code), func, file, line);
     }
 
     static inline void checkCudaDriverApiError(int code, const char* file, const int line, const char* func)
     {
         if (code != CUDA_SUCCESS)
-            cv::error(cv::Error::GpuApiCallError, getCudaDriverApiErrorMessage(code), func, file, line);
+            ncvslideio::error(ncvslideio::Error::GpuApiCallError, getCudaDriverApiErrorMessage(code), func, file, line);
     }
 
     template<int n> struct NPPTypeTraits;
@@ -159,8 +159,8 @@ namespace cv { namespace cuda
     };
 }}
 
-#define nppSafeCall(expr)  cv::cuda::checkNppError(expr, __FILE__, __LINE__, CV_Func)
-#define cuSafeCall(expr)  cv::cuda::checkCudaDriverApiError(expr, __FILE__, __LINE__, CV_Func)
+#define nppSafeCall(expr)  ncvslideio::cuda::checkNppError(expr, __FILE__, __LINE__, CV_Func)
+#define cuSafeCall(expr)  ncvslideio::cuda::checkCudaDriverApiError(expr, __FILE__, __LINE__, CV_Func)
 
 #endif // HAVE_CUDA
 

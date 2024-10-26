@@ -40,7 +40,7 @@
 #define CANNY
 //#define FACES
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace video_capture_xaml {
 
@@ -128,14 +128,14 @@ namespace video_capture_xaml {
     void cvDetectFaces(Mat &frame)
     {
         Mat faces;
-        std::vector<cv::Rect> facesColl;
+        std::vector<ncvslideio::Rect> facesColl;
         cvtColor(frame, faces, COLOR_RGB2GRAY);
         equalizeHist(faces, faces);
-        face_cascade.detectMultiScale(faces, facesColl, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(1, 1));
+        face_cascade.detectMultiScale(faces, facesColl, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, ncvslideio::Size(1, 1));
         for (unsigned int i = 0; i < facesColl.size(); i++)
         {
             auto face = facesColl[i];
-            cv::rectangle(frame, face, cv::Scalar(0, 255, 255), 3);
+            ncvslideio::rectangle(frame, face, ncvslideio::Scalar(0, 255, 255), 3);
         }
     }
 }

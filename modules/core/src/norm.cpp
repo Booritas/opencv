@@ -11,7 +11,7 @@
 *                                         norm                                           *
 \****************************************************************************************/
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 extern const uchar popCountTable[256] =
 {
@@ -211,7 +211,7 @@ int normL1_(const uchar* a, const uchar* b, int n)
     return d;
 }
 
-} //cv::hal
+} //ncvslideio::hal
 
 //==================================================================================================
 
@@ -1262,9 +1262,9 @@ double norm( InputArray _src1, InputArray _src2, int normType, InputArray _mask 
     return result.d;
 }
 
-cv::Hamming::ResultType Hamming::operator()( const unsigned char* a, const unsigned char* b, int size ) const
+ncvslideio::Hamming::ResultType Hamming::operator()( const unsigned char* a, const unsigned char* b, int size ) const
 {
-    return cv::hal::normHamming(a, b, size);
+    return ncvslideio::hal::normHamming(a, b, size);
 }
 
 double PSNR(InputArray _src1, InputArray _src2, double R)
@@ -1398,7 +1398,7 @@ void normalize(InputArray _src, InputOutputArray _dst, double a, double b,
         shift = 0;
     }
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown/unsupported norm type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown/unsupported norm type" );
 
     CV_OCL_RUN(_dst.isUMat(),
                ocl_normalize(_src, _dst, _mask, rtype, scale, shift))

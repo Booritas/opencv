@@ -145,11 +145,11 @@ TEST(Photo_DenoisingColoredMulti, regression)
 
 TEST(Photo_White, issue_2646)
 {
-    cv::Mat img(50, 50, CV_8UC1, cv::Scalar::all(255));
-    cv::Mat filtered;
-    cv::fastNlMeansDenoising(img, filtered);
+    ncvslideio::Mat img(50, 50, CV_8UC1, ncvslideio::Scalar::all(255));
+    ncvslideio::Mat filtered;
+    ncvslideio::fastNlMeansDenoising(img, filtered);
 
-    int nonWhitePixelsCount = (int)img.total() - cv::countNonZero(filtered == img);
+    int nonWhitePixelsCount = (int)img.total() - ncvslideio::countNonZero(filtered == img);
 
     ASSERT_EQ(0, nonWhitePixelsCount);
 }

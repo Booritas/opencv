@@ -74,7 +74,7 @@ OCL_PERF_TEST_P(GemmFixture, Gemm, ::testing::Combine(
     randu(src2, -10.0f, 10.0f);
     randu(src3, -10.0f, 10.0f);
 
-    OCL_TEST_CYCLE() cv::gemm(src1, src2, 0.6, src3, 1.5, dst, flags);
+    OCL_TEST_CYCLE() ncvslideio::gemm(src1, src2, 0.6, src3, 1.5, dst, flags);
 
     SANITY_CHECK(dst, 0.01);
 }

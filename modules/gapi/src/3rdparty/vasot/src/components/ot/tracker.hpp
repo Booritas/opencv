@@ -66,7 +66,7 @@ class Tracker {
      * @param[out] tracklets Tracked object data vector.
      * @return 0 for success. negative value for failure
      */
-    virtual int32_t TrackObjects(const cv::Mat &mat, const std::vector<Detection> &detections,
+    virtual int32_t TrackObjects(const ncvslideio::Mat &mat, const std::vector<Detection> &detections,
                                  std::vector<std::shared_ptr<Tracklet>> *tracklets, float delta_t = 0.033f) = 0;
 
     /**

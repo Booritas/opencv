@@ -1,7 +1,7 @@
 #include <opencv2/objdetect/aruco_detector.hpp>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static int _getSelfDistance(const Mat &marker) {
@@ -10,8 +10,8 @@ static int _getSelfDistance(const Mat &marker) {
 
     double minHamming = (double)marker.total() + 1;
     for(int r = 1; r < 4; r++) {
-        cv::Mat tmp1(1, bytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, bytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -20,15 +20,15 @@ static int _getSelfDistance(const Mat &marker) {
             rot1[i] = bytes.ptr()[bytes.cols*r + i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if (currentHamming < minHamming) minHamming = currentHamming;
     }
     Mat b;
     flip(marker, b, 0);
     Mat flipBytes = aruco::Dictionary::getByteListFromBits(b);
     for(int r = 0; r < 4; r++) {
-        cv::Mat tmp1(1, flipBytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, flipBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -37,14 +37,14 @@ static int _getSelfDistance(const Mat &marker) {
             rot1[i] = bytes.ptr()[bytes.cols*r + i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if(currentHamming < minHamming) minHamming = currentHamming;
     }
     flip(marker, b, 1);
     flipBytes = aruco::Dictionary::getByteListFromBits(b);
     for(int r = 0; r < 4; r++) {
-        cv::Mat tmp1(1, flipBytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, flipBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, bytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -53,7 +53,7 @@ static int _getSelfDistance(const Mat &marker) {
             rot1[i] = bytes.ptr()[bytes.cols*r + i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if(currentHamming < minHamming) minHamming = currentHamming;
     }
     return cvRound(minHamming);
@@ -70,8 +70,8 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
     double currentMinDistance = int(bits.total() * bits.total());
     for(unsigned int r = 0; r < nRotations; r++) {
 
-        cv::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -80,7 +80,7 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
             rot1[i] = candidateBytes.ptr()[i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if(currentHamming < currentMinDistance) {
             currentMinDistance = currentHamming;
         }
@@ -89,8 +89,8 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
     flip(bits.getMat(), b, 0);
     candidateBytes = aruco::Dictionary::getByteListFromBits(b);
     for(unsigned int r = 0; r < nRotations; r++) {
-        cv::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -99,7 +99,7 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
             rot1[i] = candidateBytes.ptr()[i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if (currentHamming < currentMinDistance) {
             currentMinDistance = currentHamming;
         }
@@ -108,8 +108,8 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
     flip(bits.getMat(), b, 1);
     candidateBytes = aruco::Dictionary::getByteListFromBits(b);
     for(unsigned int r = 0; r < nRotations; r++) {
-        cv::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
-        cv::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp1(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
+        ncvslideio::Mat tmp2(1, candidateBytes.cols, CV_8UC1, Scalar::all(0));
         uchar* rot0 = tmp1.ptr();
         uchar* rot1 = tmp2.ptr();
 
@@ -118,7 +118,7 @@ static inline int getFlipDistanceToId(const aruco::Dictionary& dict, InputArray 
             rot1[i] = candidateBytes.ptr()[i];
         }
 
-        double currentHamming = cv::norm(tmp1, tmp2, cv::NORM_HAMMING);
+        double currentHamming = ncvslideio::norm(tmp1, tmp2, ncvslideio::NORM_HAMMING);
         if (currentHamming < currentMinDistance) {
             currentMinDistance = currentHamming;
         }
@@ -283,32 +283,32 @@ int main(int argc, char *argv[])
     int markerSize = parser.get<int>("markerSize");
     bool checkFlippedMarkers = parser.get<bool>("r");
 
-    aruco::Dictionary dictionary = aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+    aruco::Dictionary dictionary = aruco::getPredefinedDictionary(ncvslideio::aruco::DICT_4X4_50);
 
     if (parser.has("d")) {
         string arucoDictName = parser.get<string>("d");
-        cv::aruco::PredefinedDictionaryType arucoDict;
-        if (arucoDictName == "DICT_4X4_50") { arucoDict = cv::aruco::DICT_4X4_50; }
-        else if (arucoDictName == "DICT_4X4_100") { arucoDict = cv::aruco::DICT_4X4_100; }
-        else if (arucoDictName == "DICT_4X4_250") { arucoDict = cv::aruco::DICT_4X4_250; }
-        else if (arucoDictName == "DICT_4X4_1000") { arucoDict = cv::aruco::DICT_4X4_1000; }
-        else if (arucoDictName == "DICT_5X5_50") { arucoDict = cv::aruco::DICT_5X5_50; }
-        else if (arucoDictName == "DICT_5X5_100") { arucoDict = cv::aruco::DICT_5X5_100; }
-        else if (arucoDictName == "DICT_5X5_250") { arucoDict = cv::aruco::DICT_5X5_250; }
-        else if (arucoDictName == "DICT_5X5_1000") { arucoDict = cv::aruco::DICT_5X5_1000; }
-        else if (arucoDictName == "DICT_6X6_50") { arucoDict = cv::aruco::DICT_6X6_50; }
-        else if (arucoDictName == "DICT_6X6_100") { arucoDict = cv::aruco::DICT_6X6_100; }
-        else if (arucoDictName == "DICT_6X6_250") { arucoDict = cv::aruco::DICT_6X6_250; }
-        else if (arucoDictName == "DICT_6X6_1000") { arucoDict = cv::aruco::DICT_6X6_1000; }
-        else if (arucoDictName == "DICT_7X7_50") { arucoDict = cv::aruco::DICT_7X7_50; }
-        else if (arucoDictName == "DICT_7X7_100") { arucoDict = cv::aruco::DICT_7X7_100; }
-        else if (arucoDictName == "DICT_7X7_250") { arucoDict = cv::aruco::DICT_7X7_250; }
-        else if (arucoDictName == "DICT_7X7_1000") { arucoDict = cv::aruco::DICT_7X7_1000; }
-        else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = cv::aruco::DICT_ARUCO_ORIGINAL; }
-        else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = cv::aruco::DICT_APRILTAG_16h5; }
-        else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = cv::aruco::DICT_APRILTAG_25h9; }
-        else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = cv::aruco::DICT_APRILTAG_36h10; }
-        else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = cv::aruco::DICT_APRILTAG_36h11; }
+        ncvslideio::aruco::PredefinedDictionaryType arucoDict;
+        if (arucoDictName == "DICT_4X4_50") { arucoDict = ncvslideio::aruco::DICT_4X4_50; }
+        else if (arucoDictName == "DICT_4X4_100") { arucoDict = ncvslideio::aruco::DICT_4X4_100; }
+        else if (arucoDictName == "DICT_4X4_250") { arucoDict = ncvslideio::aruco::DICT_4X4_250; }
+        else if (arucoDictName == "DICT_4X4_1000") { arucoDict = ncvslideio::aruco::DICT_4X4_1000; }
+        else if (arucoDictName == "DICT_5X5_50") { arucoDict = ncvslideio::aruco::DICT_5X5_50; }
+        else if (arucoDictName == "DICT_5X5_100") { arucoDict = ncvslideio::aruco::DICT_5X5_100; }
+        else if (arucoDictName == "DICT_5X5_250") { arucoDict = ncvslideio::aruco::DICT_5X5_250; }
+        else if (arucoDictName == "DICT_5X5_1000") { arucoDict = ncvslideio::aruco::DICT_5X5_1000; }
+        else if (arucoDictName == "DICT_6X6_50") { arucoDict = ncvslideio::aruco::DICT_6X6_50; }
+        else if (arucoDictName == "DICT_6X6_100") { arucoDict = ncvslideio::aruco::DICT_6X6_100; }
+        else if (arucoDictName == "DICT_6X6_250") { arucoDict = ncvslideio::aruco::DICT_6X6_250; }
+        else if (arucoDictName == "DICT_6X6_1000") { arucoDict = ncvslideio::aruco::DICT_6X6_1000; }
+        else if (arucoDictName == "DICT_7X7_50") { arucoDict = ncvslideio::aruco::DICT_7X7_50; }
+        else if (arucoDictName == "DICT_7X7_100") { arucoDict = ncvslideio::aruco::DICT_7X7_100; }
+        else if (arucoDictName == "DICT_7X7_250") { arucoDict = ncvslideio::aruco::DICT_7X7_250; }
+        else if (arucoDictName == "DICT_7X7_1000") { arucoDict = ncvslideio::aruco::DICT_7X7_1000; }
+        else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = ncvslideio::aruco::DICT_ARUCO_ORIGINAL; }
+        else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_16h5; }
+        else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_25h9; }
+        else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h10; }
+        else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h11; }
         else {
             cout << "incorrect name of aruco dictionary \n";
             return 1;

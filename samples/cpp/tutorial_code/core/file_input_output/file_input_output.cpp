@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** av)
@@ -110,7 +110,7 @@ int main(int ac, char** av)
         //! [writeMap]
 
         //! [iomatw]
-        fs << "R" << R;                                      // cv::Mat
+        fs << "R" << R;                                      // ncvslideio::Mat
         fs << "T" << T;
         //! [iomatw]
 
@@ -167,7 +167,7 @@ int main(int ac, char** av)
         Mat R, T;
 
         //! [iomat]
-        fs["R"] >> R;                                      // Read cv::Mat
+        fs["R"] >> R;                                      // Read ncvslideio::Mat
         fs["T"] >> T;
         //! [iomat]
         //! [customIO]

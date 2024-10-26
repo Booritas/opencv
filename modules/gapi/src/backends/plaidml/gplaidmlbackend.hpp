@@ -26,7 +26,7 @@
 #include <plaidml2/exec/exec.h>
 #include <plaidml2/core/core.h>
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 struct PlaidMLUnit
 {
@@ -46,8 +46,8 @@ public:
     GPlaidMLExecutable(Config                              cfg,
                        const ade::Graph&                   graph,
                        const std::vector<ade::NodeHandle>& nodes,
-                       const std::vector<cv::gimpl::Data>& ins_data,
-                       const std::vector<cv::gimpl::Data>& outs_data);
+                       const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                       const std::vector<ncvslideio::gimpl::Data>& outs_data);
 
     virtual inline bool canReshape() const override { return false; }
 
@@ -60,14 +60,14 @@ public:
                      std::vector<OutObj> &&output_objs) override;
 
 private:
-    void initBuffers(const std::vector<cv::gimpl::Data>& ins_data,
+    void initBuffers(const std::vector<ncvslideio::gimpl::Data>& ins_data,
                      std::vector<plaidml::exec::Binding>& bindings);
 
     void bindInArg  (const RcDesc &rc, const GRunArg  &arg);
     void bindOutArg (const RcDesc &rc, const GRunArgP &arg);
 
-    void compile(const std::vector<cv::gimpl::Data>& ins_data,
-                 const std::vector<cv::gimpl::Data>& outs_data);
+    void compile(const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                 const std::vector<ncvslideio::gimpl::Data>& outs_data);
 
     // FIXME User also can pass config via compile args ?
     void initConfig();

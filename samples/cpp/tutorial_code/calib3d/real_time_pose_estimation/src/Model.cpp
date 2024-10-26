@@ -17,24 +17,24 @@ Model::~Model()
     // TODO Auto-generated destructor stub
 }
 
-void Model::add_correspondence(const cv::Point2f &point2d, const cv::Point3f &point3d)
+void Model::add_correspondence(const ncvslideio::Point2f &point2d, const ncvslideio::Point3f &point3d)
 {
     list_points2d_in_.push_back(point2d);
     list_points3d_in_.push_back(point3d);
     n_correspondences_++;
 }
 
-void Model::add_outlier(const cv::Point2f &point2d)
+void Model::add_outlier(const ncvslideio::Point2f &point2d)
 {
     list_points2d_out_.push_back(point2d);
 }
 
-void Model::add_descriptor(const cv::Mat &descriptor)
+void Model::add_descriptor(const ncvslideio::Mat &descriptor)
 {
     descriptors_.push_back(descriptor);
 }
 
-void Model::add_keypoint(const cv::KeyPoint &kp)
+void Model::add_keypoint(const ncvslideio::KeyPoint &kp)
 {
     list_keypoints_.push_back(kp);
 }
@@ -47,10 +47,10 @@ void Model::set_trainingImagePath(const std::string &path)
 /** Save a YAML file and fill the object mesh */
 void Model::save(const std::string &path)
 {
-    cv::Mat points3dmatrix = cv::Mat(list_points3d_in_);
-    cv::Mat points2dmatrix = cv::Mat(list_points2d_in_);
+    ncvslideio::Mat points3dmatrix = ncvslideio::Mat(list_points3d_in_);
+    ncvslideio::Mat points2dmatrix = ncvslideio::Mat(list_points2d_in_);
 
-    cv::FileStorage storage(path, cv::FileStorage::WRITE);
+    ncvslideio::FileStorage storage(path, ncvslideio::FileStorage::WRITE);
     storage << "points_3d" << points3dmatrix;
     storage << "points_2d" << points2dmatrix;
     storage << "keypoints" << list_keypoints_;
@@ -63,9 +63,9 @@ void Model::save(const std::string &path)
 /** Load a YAML file using OpenCv functions **/
 void Model::load(const std::string &path)
 {
-    cv::Mat points3d_mat;
+    ncvslideio::Mat points3d_mat;
 
-    cv::FileStorage storage(path, cv::FileStorage::READ);
+    ncvslideio::FileStorage storage(path, ncvslideio::FileStorage::READ);
     storage["points_3d"] >> points3d_mat;
     storage["descriptors"] >> descriptors_;
     if (!storage["keypoints"].empty())

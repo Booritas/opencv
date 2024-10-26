@@ -6,7 +6,7 @@
 #include <iostream>
 #include <ctype.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help()
@@ -46,7 +46,7 @@ int main( int argc, char** argv )
     bool nightMode = false;
 
     help();
-    cv::CommandLineParser parser(argc, argv, "{@input|0|}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@input|0|}");
     string input = parser.get<string>("@input");
 
     if( input.size() == 1 && isdigit(input[0]) )
@@ -144,7 +144,7 @@ int main( int argc, char** argv )
         }
 
         std::swap(points[1], points[0]);
-        cv::swap(prevGray, gray);
+        ncvslideio::swap(prevGray, gray);
     }
 
     return 0;

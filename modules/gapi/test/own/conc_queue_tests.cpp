@@ -13,7 +13,7 @@
 
 namespace opencv_test
 {
-using namespace cv::gapi;
+using namespace ncvslideio::gapi;
 
 TEST(ConcQueue, PushPop)
 {

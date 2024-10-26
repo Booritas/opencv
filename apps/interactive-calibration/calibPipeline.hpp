@@ -29,15 +29,15 @@ class CalibPipeline
 {
 protected:
     captureParameters mCaptureParams;
-    cv::Size mImageSize;
-    cv::VideoCapture mCapture;
+    ncvslideio::Size mImageSize;
+    ncvslideio::VideoCapture mCapture;
 
-    cv::Size getCameraResolution();
+    ncvslideio::Size getCameraResolution();
 
 public:
     CalibPipeline(captureParameters params);
-    PipelineExitStatus start(std::vector<cv::Ptr<FrameProcessor> > processors);
-    cv::Size getImageSize() const;
+    PipelineExitStatus start(std::vector<ncvslideio::Ptr<FrameProcessor> > processors);
+    ncvslideio::Size getImageSize() const;
 };
 
 }

@@ -14,8 +14,8 @@ using namespace concurrency;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 
-void CopyIVectorToMatrix(IVector<int>^ input, cv::Mat& mat, int size);
-void CopyMatrixToVector(const cv::Mat& mat, std::vector<int>& vector, int size);
+void CopyIVectorToMatrix(IVector<int>^ input, ncvslideio::Mat& mat, int size);
+void CopyMatrixToVector(const ncvslideio::Mat& mat, std::vector<int>& vector, int size);
 
 OpenCVLib::OpenCVLib()
 {
@@ -24,17 +24,17 @@ OpenCVLib::OpenCVLib()
 IAsyncOperation<IVectorView<int>^>^ OpenCVLib::ProcessAsync(IVector<int>^ input, int width, int height)
 {
     int size = input->Size;
-    cv::Mat mat(width, height, CV_8UC4);
+    ncvslideio::Mat mat(width, height, CV_8UC4);
     CopyIVectorToMatrix(input, mat, size);
 
     return create_async([=]() -> IVectorView<int>^
     {
         // convert to grayscale
-        cv::Mat intermediateMat;
-        cv::cvtColor(mat, intermediateMat, COLOR_RGB2GRAY);
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::cvtColor(mat, intermediateMat, COLOR_RGB2GRAY);
 
         // convert to BGRA
-        cv::cvtColor(intermediateMat, mat, COLOR_GRAY2BGRA);
+        ncvslideio::cvtColor(intermediateMat, mat, COLOR_GRAY2BGRA);
 
         std::vector<int> output;
         CopyMatrixToVector(mat, output, size);
@@ -45,7 +45,7 @@ IAsyncOperation<IVectorView<int>^>^ OpenCVLib::ProcessAsync(IVector<int>^ input,
 }
 
 
-void CopyIVectorToMatrix(IVector<int>^ input, cv::Mat& mat, int size)
+void CopyIVectorToMatrix(IVector<int>^ input, ncvslideio::Mat& mat, int size)
 {
     unsigned char* data = mat.data;
     for (int i = 0; i < size; i++)
@@ -56,7 +56,7 @@ void CopyIVectorToMatrix(IVector<int>^ input, cv::Mat& mat, int size)
     }
 }
 
-void CopyMatrixToVector(const cv::Mat& mat, std::vector<int>& vector, int size)
+void CopyMatrixToVector(const ncvslideio::Mat& mat, std::vector<int>& vector, int size)
 {
     int* data = (int*) mat.data;
     for (int i = 0; i < size; i++)

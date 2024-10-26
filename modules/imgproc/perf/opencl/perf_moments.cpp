@@ -64,11 +64,11 @@ OCL_PERF_TEST_P(MomentsFixture, Moments,
     const Size srcSize = get<0>(params);
     const bool binaryImage = get<1>(params);
 
-    cv::Moments m;
+    ncvslideio::Moments m;
     UMat src(srcSize, CV_8UC1);
     declare.in(src, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() m = cv::moments(src, binaryImage);
+    OCL_TEST_CYCLE() m = ncvslideio::moments(src, binaryImage);
 
     SANITY_CHECK_MOMENTS(m, 1e-6, ERROR_RELATIVE);
 }

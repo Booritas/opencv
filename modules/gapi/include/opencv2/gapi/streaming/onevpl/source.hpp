@@ -14,7 +14,7 @@
 #include <opencv2/gapi/streaming/onevpl/data_provider_interface.hpp>
 #include <opencv2/gapi/streaming/onevpl/device_selector_interface.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -30,7 +30,7 @@ using CfgParams = std::vector<CfgParam>;
  *
  * @note stream sources are passed to G-API via shared pointers, so
  *  please gapi::make_onevpl_src<> to create objects and ptr() to pass a
- *  GSource to cv::gin().
+ *  GSource to ncvslideio::gin().
  */
 class GAPI_EXPORTS GSource : public IStreamSource
 {
@@ -70,7 +70,7 @@ public:
 
     ~GSource() override;
 
-    bool pull(cv::gapi::wip::Data& data) override;
+    bool pull(ncvslideio::gapi::wip::Data& data) override;
     GMetaArg descr_of() const override;
 
 private:
@@ -82,13 +82,13 @@ private:
 using GVPLSource = onevpl::GSource;
 
 template<class... Args>
-GAPI_EXPORTS_W cv::Ptr<IStreamSource> inline make_onevpl_src(Args&&... args)
+GAPI_EXPORTS_W ncvslideio::Ptr<IStreamSource> inline make_onevpl_src(Args&&... args)
 {
     return make_src<onevpl::GSource>(std::forward<Args>(args)...);
 }
 
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_ONEVPL_ONEVPL_SOURCE_HPP

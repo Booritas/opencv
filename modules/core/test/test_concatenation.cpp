@@ -55,22 +55,22 @@ TEST(Core_Concatenation, empty)
 
     Mat result;
 
-    cv::hconcat(mat5x0, mat5x0, result);
+    ncvslideio::hconcat(mat5x0, mat5x0, result);
     EXPECT_MAT_N_DIFF(result, mat5x0, 0);
-    cv::hconcat(mat5x0, mat5x10, result);
+    ncvslideio::hconcat(mat5x0, mat5x10, result);
     EXPECT_MAT_N_DIFF(result, mat5x10, 0);
-    cv::hconcat(mat5x10, mat5x0, result);
+    ncvslideio::hconcat(mat5x10, mat5x0, result);
     EXPECT_MAT_N_DIFF(result, mat5x10, 0);
-    cv::hconcat(mat5x10, mat5x10, result);
+    ncvslideio::hconcat(mat5x10, mat5x10, result);
     EXPECT_MAT_N_DIFF(result, mat5x20, 0);
 
-    cv::vconcat(mat0x5, mat0x5, result);
+    ncvslideio::vconcat(mat0x5, mat0x5, result);
     EXPECT_MAT_N_DIFF(result, mat0x5, 0);
-    cv::vconcat(mat0x5, mat10x5, result);
+    ncvslideio::vconcat(mat0x5, mat10x5, result);
     EXPECT_MAT_N_DIFF(result, mat10x5, 0);
-    cv::vconcat(mat10x5, mat0x5, result);
+    ncvslideio::vconcat(mat10x5, mat0x5, result);
     EXPECT_MAT_N_DIFF(result, mat10x5, 0);
-    cv::vconcat(mat10x5, mat10x5, result);
+    ncvslideio::vconcat(mat10x5, mat10x5, result);
     EXPECT_MAT_N_DIFF(result, mat20x5, 0);
 }
 

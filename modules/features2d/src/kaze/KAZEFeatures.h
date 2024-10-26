@@ -17,7 +17,7 @@
 #include "fed.h"
 #include "TEvolution.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 /* ************************************************************************* */
@@ -31,7 +31,7 @@ private:
     std::vector<TEvolution> evolution_;    ///< Vector of nonlinear diffusion evolution
 
     /// Vector of keypoint vectors for finding extrema in multiple threads
-    std::vector<std::vector<cv::KeyPoint> > kpts_par_;
+    std::vector<std::vector<ncvslideio::KeyPoint> > kpts_par_;
 
     /// FED parameters
     int ncycles_;                  ///< Number of cycles
@@ -46,17 +46,17 @@ public:
 
     /// Public methods for KAZE interface
     void Allocate_Memory_Evolution(void);
-    int Create_Nonlinear_Scale_Space(const cv::Mat& img);
-    void Feature_Detection(std::vector<cv::KeyPoint>& kpts);
-    void Feature_Description(std::vector<cv::KeyPoint>& kpts, cv::Mat& desc);
-    static void Compute_Main_Orientation(cv::KeyPoint& kpt, const std::vector<TEvolution>& evolution_, const KAZEOptions& options);
+    int Create_Nonlinear_Scale_Space(const ncvslideio::Mat& img);
+    void Feature_Detection(std::vector<ncvslideio::KeyPoint>& kpts);
+    void Feature_Description(std::vector<ncvslideio::KeyPoint>& kpts, ncvslideio::Mat& desc);
+    static void Compute_Main_Orientation(ncvslideio::KeyPoint& kpt, const std::vector<TEvolution>& evolution_, const KAZEOptions& options);
 
     /// Feature Detection Methods
-    void Compute_KContrast(const cv::Mat& img, const float& kper);
+    void Compute_KContrast(const ncvslideio::Mat& img, const float& kper);
     void Compute_Multiscale_Derivatives(void);
     void Compute_Detector_Response(void);
-    void Determinant_Hessian(std::vector<cv::KeyPoint>& kpts);
-    void Do_Subpixel_Refinement(std::vector<cv::KeyPoint>& kpts);
+    void Determinant_Hessian(std::vector<ncvslideio::KeyPoint>& kpts);
+    void Do_Subpixel_Refinement(std::vector<ncvslideio::KeyPoint>& kpts);
 };
 
 }

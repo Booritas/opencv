@@ -12,11 +12,11 @@ typedef perf::TestBaseWithParam<ImgSize_TmplSize_Method_t> ImgSize_TmplSize_Meth
 
 PERF_TEST_P(ImgSize_TmplSize_Method, matchTemplateSmall,
             testing::Combine(
-                testing::Values(szSmall128, cv::Size(320, 240),
-                                cv::Size(640, 480), cv::Size(800, 600),
-                                cv::Size(1024, 768), cv::Size(1280, 1024)),
-                testing::Values(cv::Size(12, 12), cv::Size(28, 9),
-                                cv::Size(8, 30), cv::Size(16, 16)),
+                testing::Values(szSmall128, ncvslideio::Size(320, 240),
+                                ncvslideio::Size(640, 480), ncvslideio::Size(800, 600),
+                                ncvslideio::Size(1024, 768), ncvslideio::Size(1280, 1024)),
+                testing::Values(ncvslideio::Size(12, 12), ncvslideio::Size(28, 9),
+                                ncvslideio::Size(8, 30), ncvslideio::Size(16, 16)),
                 MethodType::all()
                 )
             )
@@ -49,8 +49,8 @@ PERF_TEST_P(ImgSize_TmplSize_Method, matchTemplateSmall,
 
 PERF_TEST_P(ImgSize_TmplSize_Method, matchTemplateBig,
             testing::Combine(
-                testing::Values(cv::Size(1280, 1024)),
-                testing::Values(cv::Size(1260, 1000), cv::Size(1261, 1013)),
+                testing::Values(ncvslideio::Size(1280, 1024)),
+                testing::Values(ncvslideio::Size(1260, 1000), ncvslideio::Size(1261, 1013)),
                 MethodType::all()
                 )
     )

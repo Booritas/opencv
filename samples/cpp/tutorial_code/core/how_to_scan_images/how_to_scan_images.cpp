@@ -6,13 +6,13 @@
 #include <sstream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help()
 {
     cout
         << "\n--------------------------------------------------------------------------" << endl
-        << "This program shows how to scan image objects in OpenCV (cv::Mat). As use case"
+        << "This program shows how to scan image objects in OpenCV (ncvslideio::Mat). As use case"
         << " we take an input image and divide the native color palette (255) with the "  << endl
         << "input. Shows C operator[] method, iterators and at function for on-the-fly item address calculation."<< endl
         << "Usage:"                                                                       << endl
@@ -70,7 +70,7 @@ int main( int argc, char* argv[])
 
     for (int i = 0; i < times; ++i)
     {
-        cv::Mat clone_i = I.clone();
+        ncvslideio::Mat clone_i = I.clone();
         J = ScanImageAndReduceC(clone_i, table);
     }
 
@@ -84,7 +84,7 @@ int main( int argc, char* argv[])
 
     for (int i = 0; i < times; ++i)
     {
-        cv::Mat clone_i = I.clone();
+        ncvslideio::Mat clone_i = I.clone();
         J = ScanImageAndReduceIterator(clone_i, table);
     }
 
@@ -98,7 +98,7 @@ int main( int argc, char* argv[])
 
     for (int i = 0; i < times; ++i)
     {
-        cv::Mat clone_i = I.clone();
+        ncvslideio::Mat clone_i = I.clone();
         ScanImageAndReduceRandomAccess(clone_i, table);
     }
 

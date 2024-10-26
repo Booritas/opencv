@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <opencv2/gapi.hpp>
-#include <opencv2/highgui.hpp> // cv::CommandLineParser
+#include <opencv2/highgui.hpp> // ncvslideio::CommandLineParser
 #include <opencv2/core/utils/filesystem.hpp>
 
 #if defined(_WIN32)
@@ -52,11 +52,11 @@ static WaitMode strToWaitMode(const std::string& mode_str) {
 }
 
 template <typename T>
-T read(const cv::FileNode& node) {
+T read(const ncvslideio::FileNode& node) {
     return static_cast<T>(node);
 }
 
-static cv::FileNode check_and_get_fn(const cv::FileNode& fn,
+static ncvslideio::FileNode check_and_get_fn(const ncvslideio::FileNode& fn,
                                      const std::string&  field,
                                      const std::string&  uplvl) {
     const bool is_map = fn.isMap();
@@ -66,7 +66,7 @@ static cv::FileNode check_and_get_fn(const cv::FileNode& fn,
     return fn[field];
 }
 
-static cv::FileNode check_and_get_fn(const cv::FileStorage& fs,
+static ncvslideio::FileNode check_and_get_fn(const ncvslideio::FileStorage& fs,
                                      const std::string&     field,
                                      const std::string&     uplvl) {
     auto fn = fs[field];
@@ -85,12 +85,12 @@ T check_and_read(const FileT& f,
 }
 
 template <typename T>
-cv::optional<T> readOpt(const cv::FileNode& fn) {
-    return fn.empty() ? cv::optional<T>() : cv::optional<T>(read<T>(fn));
+ncvslideio::optional<T> readOpt(const ncvslideio::FileNode& fn) {
+    return fn.empty() ? ncvslideio::optional<T>() : ncvslideio::optional<T>(read<T>(fn));
 }
 
 template <typename T>
-std::vector<T> readList(const cv::FileNode& fn,
+std::vector<T> readList(const ncvslideio::FileNode& fn,
                         const std::string& field,
                         const std::string& uplvl) {
     auto fn_field = check_and_get_fn(fn, field, uplvl);
@@ -106,7 +106,7 @@ std::vector<T> readList(const cv::FileNode& fn,
 }
 
 template <typename T>
-std::vector<T> readVec(const cv::FileNode& fn,
+std::vector<T> readVec(const ncvslideio::FileNode& fn,
                        const std::string& field,
                        const std::string& uplvl) {
     auto fn_field = check_and_get_fn(fn, field, uplvl);
@@ -128,14 +128,14 @@ static int strToPrecision(const std::string& precision) {
 }
 
 template <>
-OutputDescr read<OutputDescr>(const cv::FileNode& fn) {
+OutputDescr read<OutputDescr>(const ncvslideio::FileNode& fn) {
     auto dims      = readVec<int>(fn, "dims", "output");
     auto str_prec = check_and_read<std::string>(fn, "precision", "output");
     return OutputDescr{dims, strToPrecision(str_prec)};
 }
 
 template <>
-Edge read<Edge>(const cv::FileNode& fn) {
+Edge read<Edge>(const ncvslideio::FileNode& fn) {
     auto from = check_and_read<std::string>(fn, "from", "edge");
     auto to   = check_and_read<std::string>(fn, "to", "edge");
 
@@ -160,8 +160,8 @@ static std::string getModelsPath() {
 }
 
 template <>
-ModelPath read<ModelPath>(const cv::FileNode& fn) {
-    using cv::utils::fs::join;
+ModelPath read<ModelPath>(const ncvslideio::FileNode& fn) {
+    using ncvslideio::utils::fs::join;
     if (!fn["xml"].empty() && !fn["bin"].empty()) {
         return ModelPath{LoadPath{join(getModelsPath(), fn["xml"].string()),
                                   join(getModelsPath(), fn["bin"].string())}};
@@ -191,11 +191,11 @@ static PLMode strToPLMode(const std::string& mode_str) {
     }
 }
 
-static cv::gapi::ie::InferMode strToInferMode(const std::string& infer_mode) {
+static ncvslideio::gapi::ie::InferMode strToInferMode(const std::string& infer_mode) {
     if (infer_mode == "async") {
-        return cv::gapi::ie::InferMode::Async;
+        return ncvslideio::gapi::ie::InferMode::Async;
     } else if (infer_mode == "sync") {
-        return cv::gapi::ie::InferMode::Sync;
+        return ncvslideio::gapi::ie::InferMode::Sync;
     } else {
         throw std::logic_error("Unsupported Infer mode: " + infer_mode +
                 "\nPlease chose between: async and sync");
@@ -203,7 +203,7 @@ static cv::gapi::ie::InferMode strToInferMode(const std::string& infer_mode) {
 }
 
 template <>
-CallParams read<CallParams>(const cv::FileNode& fn) {
+CallParams read<CallParams>(const ncvslideio::FileNode& fn) {
     auto name =
         check_and_read<std::string>(fn, "name", "node");
     // FIXME: Impossible to read size_t due OpenCV limitations.
@@ -218,7 +218,7 @@ CallParams read<CallParams>(const cv::FileNode& fn) {
 }
 
 template <typename V>
-std::map<std::string, V> readMap(const cv::FileNode& fn) {
+std::map<std::string, V> readMap(const ncvslideio::FileNode& fn) {
     std::map<std::string, V> map;
     for (auto item : fn) {
         map.emplace(item.name(), read<V>(item));
@@ -227,7 +227,7 @@ std::map<std::string, V> readMap(const cv::FileNode& fn) {
 }
 
 template <>
-InferParams read<InferParams>(const cv::FileNode& fn) {
+InferParams read<InferParams>(const ncvslideio::FileNode& fn) {
     auto name =
         check_and_read<std::string>(fn, "name", "node");
 
@@ -241,13 +241,13 @@ InferParams read<InferParams>(const cv::FileNode& fn) {
     auto out_prec_str = readOpt<std::string>(fn["output_precision"]);
     if (out_prec_str.has_value()) {
         params.out_precision =
-            cv::optional<int>(strToPrecision(out_prec_str.value()));
+            ncvslideio::optional<int>(strToPrecision(out_prec_str.value()));
     }
     return params;
 }
 
 template <>
-DummyParams read<DummyParams>(const cv::FileNode& fn) {
+DummyParams read<DummyParams>(const ncvslideio::FileNode& fn) {
     auto name =
         check_and_read<std::string>(fn, "name", "node");
 
@@ -273,12 +273,12 @@ static std::vector<std::string> parseExecList(const std::string& exec_list) {
 
 static void loadConfig(const std::string&                        filename,
                              std::map<std::string, std::string>& config) {
-    cv::FileStorage fs(filename, cv::FileStorage::READ);
+    ncvslideio::FileStorage fs(filename, ncvslideio::FileStorage::READ);
     if (!fs.isOpened()) {
         throw std::runtime_error("Failed to load config: " + filename);
     }
 
-    cv::FileNode root = fs.root();
+    ncvslideio::FileNode root = fs.root();
     for (auto it = root.begin(); it != root.end(); ++it) {
         auto device = *it;
         if (!device.isMap()) {
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) {
                                    " are prohibited. }"
         "{ infer_mode  | async     | OpenVINO inference mode (async/sync). }";
 
-        cv::CommandLineParser cmd(argc, argv, keys);
+        ncvslideio::CommandLineParser cmd(argc, argv, keys);
         if (cmd.has("help")) {
             cmd.printMessage();
             return 0;
@@ -335,7 +335,7 @@ int main(int argc, char* argv[]) {
         const auto infer_mode  = strToInferMode(cmd.get<std::string>("infer_mode"));
         const auto drop_frames = cmd.get<bool>("drop_frames");
 
-        cv::FileStorage fs;
+        ncvslideio::FileStorage fs;
         if (cfg.empty()) {
             throw std::logic_error("Config must be specified via --cfg option");
         }
@@ -345,12 +345,12 @@ int main(int argc, char* argv[]) {
                                    " to determine if it's a file (*.yml) a or string");
         }
         if (cfg.substr(cfg.size() - 4, cfg.size()) == ".yml") {
-            if (!fs.open(cfg, cv::FileStorage::READ)) {
+            if (!fs.open(cfg, ncvslideio::FileStorage::READ)) {
                 throw std::logic_error("Failed to open config file: " + cfg);
             }
         } else {
-            fs = cv::FileStorage(cfg, cv::FileStorage::FORMAT_YAML |
-                                      cv::FileStorage::MEMORY);
+            fs = ncvslideio::FileStorage(cfg, ncvslideio::FileStorage::FORMAT_YAML |
+                                      ncvslideio::FileStorage::MEMORY);
         }
 
         std::map<std::string, std::string> gconfig;
@@ -364,13 +364,13 @@ int main(int argc, char* argv[]) {
         }
 
         auto opt_work_time_ms = readOpt<double>(fs["work_time"]);
-        cv::optional<int64_t> opt_work_time_mcs;
+        ncvslideio::optional<int64_t> opt_work_time_mcs;
         if (opt_work_time_ms) {
             const double work_time_ms = opt_work_time_ms.value();
             if (work_time_ms < 0) {
                 throw std::logic_error("work_time must be positive");
             }
-            opt_work_time_mcs = cv::optional<int64_t>(utils::ms_to_mcs(work_time_ms));
+            opt_work_time_mcs = ncvslideio::optional<int64_t>(utils::ms_to_mcs(work_time_ms));
         }
 
         auto pipelines_fn = check_and_get_fn(fs, "Pipelines", "Config");

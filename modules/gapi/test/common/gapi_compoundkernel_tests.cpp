@@ -23,9 +23,9 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundDoubleAddCImpl, GCompoundDoubleAddC)
     {
-        static GMat expand(cv::GMat in, cv::GScalar s)
+        static GMat expand(ncvslideio::GMat in, ncvslideio::GScalar s)
         {
-            return cv::gapi::addC(cv::gapi::addC(in, s), s);
+            return ncvslideio::gapi::addC(ncvslideio::gapi::addC(in, s), s);
         }
     };
 
@@ -36,9 +36,9 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundAddCImpl, GCompoundAddC)
     {
-        static GMat expand(cv::GMat in, cv::GScalar s)
+        static GMat expand(ncvslideio::GMat in, ncvslideio::GScalar s)
         {
-            return cv::gapi::addC(in, s);
+            return ncvslideio::gapi::addC(in, s);
         }
     };
 
@@ -55,9 +55,9 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundMergeWithSplitImpl, GCompoundMergeWithSplit)
     {
-        static GMat3 expand(cv::GMat a, cv::GMat b, cv::GMat c)
+        static GMat3 expand(ncvslideio::GMat a, ncvslideio::GMat b, ncvslideio::GMat c)
         {
-            return cv::gapi::split3(cv::gapi::merge3(a, b, c));
+            return ncvslideio::gapi::split3(ncvslideio::gapi::merge3(a, b, c));
         }
     };
 
@@ -71,9 +71,9 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundAddWithAddCImpl, GCompoundAddWithAddC)
     {
-        static GMat expand(cv::GMat in1, cv::GMat in2, cv::GScalar s)
+        static GMat expand(ncvslideio::GMat in1, ncvslideio::GMat in2, ncvslideio::GScalar s)
         {
-            return cv::gapi::addC(cv::gapi::add(in1, in2), s);
+            return ncvslideio::gapi::addC(ncvslideio::gapi::add(in1, in2), s);
         }
     };
 
@@ -89,11 +89,11 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundSplitWithAddImpl, GCompoundSplitWithAdd)
     {
-        static GMat2 expand(cv::GMat in)
+        static GMat2 expand(ncvslideio::GMat in)
         {
-            cv::GMat a, b, c;
-            std::tie(a, b, c) = cv::gapi::split3(in);
-            return std::make_tuple(cv::gapi::add(a, b), c);
+            ncvslideio::GMat a, b, c;
+            std::tie(a, b, c) = ncvslideio::gapi::split3(in);
+            return std::make_tuple(ncvslideio::gapi::add(a, b), c);
         }
     };
 
@@ -107,17 +107,17 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundParallelAddCImpl, GCompoundParallelAddC)
     {
-        static GMat2 expand(cv::GMat in, cv::GScalar s)
+        static GMat2 expand(ncvslideio::GMat in, ncvslideio::GScalar s)
         {
-            return std::make_tuple(cv::gapi::addC(in, s), cv::gapi::addC(in, s));
+            return std::make_tuple(ncvslideio::gapi::addC(in, s), ncvslideio::gapi::addC(in, s));
         }
     };
 
-    GAPI_COMPOUND_KERNEL(GCompoundAddImpl, cv::gapi::core::GAdd)
+    GAPI_COMPOUND_KERNEL(GCompoundAddImpl, ncvslideio::gapi::core::GAdd)
     {
-        static GMat expand(cv::GMat in1, cv::GMat in2, int)
+        static GMat expand(ncvslideio::GMat in1, ncvslideio::GMat in2, int)
         {
-            return cv::gapi::sub(cv::gapi::sub(in1, in2), in2);
+            return ncvslideio::gapi::sub(ncvslideio::gapi::sub(in1, in2), in2);
         }
     };
 
@@ -131,13 +131,13 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundAddWithAddCWithDoubleAddCImpl, GCompoundAddWithAddCWithDoubleAddC)
     {
-        static GMat expand(cv::GMat in1, cv::GMat in2, cv::GScalar s)
+        static GMat expand(ncvslideio::GMat in1, ncvslideio::GMat in2, ncvslideio::GScalar s)
         {
             return GCompoundDoubleAddC::on(GCompoundAddWithAddC::on(in1, in2, s), s);
         }
     };
 
-    using GDoubleArray = cv::GArray<double>;
+    using GDoubleArray = ncvslideio::GArray<double>;
     G_TYPED_KERNEL(GNegateArray, <GDoubleArray(GDoubleArray)>, "org.opencv.test.negate_array")
     {
         static GArrayDesc outMeta(const GArrayDesc&) { return empty_array_desc(); }
@@ -158,7 +158,7 @@ namespace
 
     GAPI_OCV_KERNEL(GMaxInArrayImpl, GMaxInArray)
     {
-        static void run(const std::vector<double>& in, cv::Scalar& out)
+        static void run(const std::vector<double>& in, ncvslideio::Scalar& out)
         {
             out = *std::max_element(in.begin(), in.end());
         }
@@ -195,7 +195,7 @@ namespace
         static GMatDesc outMeta(GMatDesc in, GArrayDesc) { return in; }
     };
 
-    void setDiag(cv::Mat& in, const std::vector<double>& diag)
+    void setDiag(ncvslideio::Mat& in, const std::vector<double>& diag)
     {
         GAPI_Assert(in.rows == static_cast<int>(diag.size()));
         GAPI_Assert(in.cols == static_cast<int>(diag.size()));
@@ -207,7 +207,7 @@ namespace
 
     GAPI_OCV_KERNEL(SetDiagKernelImpl, SetDiagKernel)
     {
-        static void run(const cv::Mat& in, const std::vector<double>& v, cv::Mat& out)
+        static void run(const ncvslideio::Mat& in, const std::vector<double>& v, ncvslideio::Mat& out)
         {
             in.copyTo(out);
             setDiag(out, v);
@@ -223,7 +223,7 @@ namespace
     {
         static GMat expand(GMat a, GDoubleArray b, GMat c)
         {
-            return SetDiagKernel::on(cv::gapi::add(a, c), b);
+            return SetDiagKernel::on(ncvslideio::gapi::add(a, c), b);
         }
     };
 
@@ -249,12 +249,12 @@ namespace
 
     GAPI_OCV_KERNEL(GToInterleavedImpl, GToInterleaved)
     {
-        static void run(const cv::Mat& in, cv::Mat& out)
+        static void run(const ncvslideio::Mat& in, ncvslideio::Mat& out)
         {
             constexpr int inPlanesCount = 3;
             int inPlaneHeight = in.rows / inPlanesCount;
 
-            std::vector<cv::Mat> inPlanes(inPlanesCount);
+            std::vector<ncvslideio::Mat> inPlanes(inPlanesCount);
             for (int i = 0; i < inPlanesCount; ++i)
             {
                 int startRow = i * inPlaneHeight;
@@ -262,17 +262,17 @@ namespace
                 inPlanes[i] = in.rowRange(startRow, endRow);
             }
 
-            cv::merge(inPlanes, out);
+            ncvslideio::merge(inPlanes, out);
         }
     };
 
     GAPI_OCV_KERNEL(GToPlanarImpl, GToPlanar)
     {
-        static void run(const cv::Mat& in, cv::Mat& out)
+        static void run(const ncvslideio::Mat& in, ncvslideio::Mat& out)
         {
-            std::vector<cv::Mat> inPlanes;
-            cv::split(in, inPlanes);
-            cv::vconcat(inPlanes, out);
+            std::vector<ncvslideio::Mat> inPlanes;
+            ncvslideio::split(in, inPlanes);
+            ncvslideio::vconcat(inPlanes, out);
         }
     };
 
@@ -289,27 +289,27 @@ namespace
 
     GAPI_COMPOUND_KERNEL(GCompoundToInterleavedToPlanarImpl, GCompoundToInterleavedToPlanar)
     {
-        static GMatP expand(cv::GMatP in)
+        static GMatP expand(ncvslideio::GMatP in)
         {
             return GToPlanar::on(GToInterleaved::on(in));
         }
     };
 } // namespace
 
-// FIXME avoid cv::combine that use custom and default kernels together
+// FIXME avoid ncvslideio::combine that use custom and default kernels together
 TEST(GCompoundKernel, ReplaceDefaultKernel)
 {
-    cv::GMat in1, in2;
-    auto out = cv::gapi::add(in1, in2);
-    const auto custom_pkg = cv::gapi::kernels<GCompoundAddImpl>();
-    const auto full_pkg   = cv::gapi::combine(cv::gapi::core::cpu::kernels(), custom_pkg);
-    cv::GComputation comp(cv::GIn(in1, in2), cv::GOut(out));
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-            in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::add(in1, in2);
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundAddImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(ncvslideio::gapi::core::cpu::kernels(), custom_pkg);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+            in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
             out_mat(3, 3, CV_8UC1),
             ref_mat(3, 3, CV_8UC1);
 
-    comp.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 - in_mat2 - in_mat2;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -317,24 +317,24 @@ TEST(GCompoundKernel, ReplaceDefaultKernel)
 
 TEST(GCompoundKernel, DoubleAddC)
 {
-    cv::GMat in1, in2;
-    cv::GScalar s;
-    auto add_res   = cv::gapi::add(in1, in2);
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GScalar s;
+    auto add_res   = ncvslideio::gapi::add(in1, in2);
     auto super     = GCompoundDoubleAddC::on(add_res, s);
-    auto out       = cv::gapi::addC(super, s);
+    auto out       = ncvslideio::gapi::addC(super, s);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundDoubleAddCImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2, s), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundDoubleAddCImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2, s), ncvslideio::GOut(out));
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-        in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+        in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
         out_mat(3, 3, CV_8UC1),
         ref_mat(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat1, in_mat2, scalar), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2, scalar), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 + in_mat2 + scalar + scalar + scalar;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -342,24 +342,24 @@ TEST(GCompoundKernel, DoubleAddC)
 
 TEST(GCompoundKernel, AddC)
 {
-    cv::GMat in1, in2;
-    cv::GScalar s;
-    auto add_res   = cv::gapi::add(in1, in2);
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GScalar s;
+    auto add_res   = ncvslideio::gapi::add(in1, in2);
     auto super     = GCompoundAddC::on(add_res, s);
-    auto out       = cv::gapi::addC(super, s);
+    auto out       = ncvslideio::gapi::addC(super, s);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundAddCImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2, s), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundAddCImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2, s), ncvslideio::GOut(out));
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-        in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+        in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
         out_mat(3, 3, CV_8UC1),
         ref_mat(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat1, in_mat2, scalar), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2, scalar), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 + in_mat2 + scalar + scalar;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -367,19 +367,19 @@ TEST(GCompoundKernel, AddC)
 
 TEST(GCompoundKernel, MergeWithSplit)
 {
-    cv::GMat in, a1, b1, c1,
+    ncvslideio::GMat in, a1, b1, c1,
         a2, b2, c2;
 
-    std::tie(a1, b1, c1) = cv::gapi::split3(in);
+    std::tie(a1, b1, c1) = ncvslideio::gapi::split3(in);
     std::tie(a2, b2, c2) = GCompoundMergeWithSplit::on(a1, b1, c1);
-    auto out = cv::gapi::merge3(a2, b2, c2);
+    auto out = ncvslideio::gapi::merge3(a2, b2, c2);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundMergeWithSplitImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundMergeWithSplitImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    cv::Mat in_mat = cv::Mat::eye(3, 3, CV_8UC3), out_mat, ref_mat;
-    comp.apply(cv::gin(in_mat), cv::gout(out_mat), cv::compile_args(full_pkg));
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(3, 3, CV_8UC3), out_mat, ref_mat;
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -387,22 +387,22 @@ TEST(GCompoundKernel, MergeWithSplit)
 
 TEST(GCompoundKernel, AddWithAddC)
 {
-    cv::GMat in1, in2;
-    cv::GScalar s;
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GScalar s;
     auto out = GCompoundAddWithAddC::on(in1, in2, s);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundAddWithAddCImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2, s), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundAddWithAddCImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2, s), ncvslideio::GOut(out));
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-        in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+        in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
         out_mat(3, 3, CV_8UC1),
         ref_mat(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat1, in_mat2, scalar), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2, scalar), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 + in_mat2 + scalar;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -410,23 +410,23 @@ TEST(GCompoundKernel, AddWithAddC)
 
 TEST(GCompoundKernel, SplitWithAdd)
 {
-    cv::GMat in, out1, out2;
+    ncvslideio::GMat in, out1, out2;
     std::tie(out1, out2) = GCompoundSplitWithAdd::on(in);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundSplitWithAddImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out1, out2));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundSplitWithAddImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2));
 
-    cv::Mat in_mat = cv::Mat::eye(3, 3, CV_8UC3),
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(3, 3, CV_8UC3),
         out_mat1(3, 3, CV_8UC1),
         out_mat2(3, 3, CV_8UC1),
         ref_mat1(3, 3, CV_8UC1),
         ref_mat2(3, 3, CV_8UC1);
 
-    comp.apply(cv::gin(in_mat), cv::gout(out_mat1, out_mat2), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(out_mat1, out_mat2), ncvslideio::compile_args(full_pkg));
 
-    std::vector<cv::Mat> channels(3);
-    cv::split(in_mat, channels);
+    std::vector<ncvslideio::Mat> channels(3);
+    ncvslideio::split(in_mat, channels);
 
     ref_mat1 = channels[0] + channels[1];
     ref_mat2 = channels[2];
@@ -437,23 +437,23 @@ TEST(GCompoundKernel, SplitWithAdd)
 
 TEST(GCompoundKernel, ParallelAddC)
 {
-    cv::GMat in1, out1, out2;
-    cv::GScalar in2;
+    ncvslideio::GMat in1, out1, out2;
+    ncvslideio::GScalar in2;
     std::tie(out1, out2) = GCompoundParallelAddC::on(in1, in2);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundParallelAddCImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2), cv::GOut(out1, out2));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundParallelAddCImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out1, out2));
 
-    cv::Mat in_mat = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(3, 3, CV_8UC1),
         out_mat1(3, 3, CV_8UC1),
         out_mat2(3, 3, CV_8UC1),
         ref_mat1(3, 3, CV_8UC1),
         ref_mat2(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat, scalar), cv::gout(out_mat1, out_mat2), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat, scalar), ncvslideio::gout(out_mat1, out_mat2), ncvslideio::compile_args(full_pkg));
 
     ref_mat1 = in_mat + scalar;
     ref_mat2 = in_mat + scalar;
@@ -464,22 +464,22 @@ TEST(GCompoundKernel, ParallelAddC)
 
 TEST(GCompoundKernel, GCompundKernelAndDefaultUseOneData)
 {
-    cv::GMat in1, in2;
-    cv::GScalar s;
-    auto out = cv::gapi::add(GCompoundAddWithAddC::on(in1, in2, s), cv::gapi::addC(in2, s));
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GScalar s;
+    auto out = ncvslideio::gapi::add(GCompoundAddWithAddC::on(in1, in2, s), ncvslideio::gapi::addC(in2, s));
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundAddWithAddCImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2, s), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundAddWithAddCImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2, s), ncvslideio::GOut(out));
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-        in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+        in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
         out_mat(3, 3, CV_8UC1),
         ref_mat(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat1, in_mat2, scalar), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2, scalar), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 + in_mat2 + scalar + in_mat2 + scalar;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -487,25 +487,25 @@ TEST(GCompoundKernel, GCompundKernelAndDefaultUseOneData)
 
 TEST(GCompoundKernel, CompoundExpandedToCompound)
 {
-    cv::GMat in1, in2;
-    cv::GScalar s;
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GScalar s;
     auto out = GCompoundAddWithAddCWithDoubleAddC::on(in1, in2, s);
 
-    const auto custom_pkg = cv::gapi::kernels<GCompoundAddWithAddCWithDoubleAddCImpl,
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundAddWithAddCWithDoubleAddCImpl,
                                               GCompoundAddWithAddCImpl,
                                               GCompoundDoubleAddCImpl>();
 
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in1, in2, s), cv::GOut(out));
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in1, in2, s), ncvslideio::GOut(out));
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC1),
-            in_mat2 = cv::Mat::eye(3, 3, CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
+            in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC1),
             out_mat(3, 3, CV_8UC1),
             ref_mat(3, 3, CV_8UC1);
 
-    cv::Scalar scalar = 2;
+    ncvslideio::Scalar scalar = 2;
 
-    comp.apply(cv::gin(in_mat1, in_mat2, scalar), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2, scalar), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
     ref_mat = in_mat1 + in_mat2 + scalar + scalar + scalar;
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
@@ -515,14 +515,14 @@ TEST(GCompoundKernel, MaxInArray)
 {
     GDoubleArray in;
     auto out = GCompoundMaxInArray::on(in);
-    const auto custom_pkg = cv::gapi::kernels<GCompoundMaxInArrayImpl, GMaxInArrayImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundMaxInArrayImpl, GMaxInArrayImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
     std::vector<double> v = { 1, 5, -2, 3, 10, 2};
-    cv::Scalar out_scl;
-    cv::Scalar ref_scl(*std::max_element(v.begin(), v.end()));
+    ncvslideio::Scalar out_scl;
+    ncvslideio::Scalar ref_scl(*std::max_element(v.begin(), v.end()));
 
-    comp.apply(cv::gin(v), cv::gout(out_scl), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(v), ncvslideio::gout(out_scl), ncvslideio::compile_args(full_pkg));
 
     EXPECT_EQ(out_scl, ref_scl);
 }
@@ -531,35 +531,35 @@ TEST(GCompoundKernel, NegateArray)
 {
     GDoubleArray in;
     GDoubleArray out = GCompoundNegateArray::on(in);
-    const auto custom_pkg = cv::gapi::kernels<GCompoundNegateArrayImpl, GNegateArrayImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundNegateArrayImpl, GNegateArrayImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
     std::vector<double> in_v = {1, 5, -2, -10, 3};
     std::vector<double> out_v;
     std::vector<double> ref_v;
     ade::util::transform(in_v, std::back_inserter(ref_v), std::negate<double>());
 
-    comp.apply(cv::gin(in_v), cv::gout(out_v), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_v), ncvslideio::gout(out_v), ncvslideio::compile_args(full_pkg));
 
     EXPECT_EQ(out_v, ref_v);
 }
 
 TEST(GCompoundKernel, RightGArrayHandle)
 {
-    cv::GMat in[2];
+    ncvslideio::GMat in[2];
     GDoubleArray a;
-    cv::GMat out = GCompoundGMatGArrayGMat::on(in[0], a, in[1]);
-    const auto custom_pkg = cv::gapi::kernels<GCompoundGMatGArrayGMatImpl, SetDiagKernelImpl>();
-    const auto full_pkg   = cv::gapi::combine(custom_pkg, cv::gapi::core::cpu::kernels());
-    cv::GComputation comp(cv::GIn(in[0], a, in[1]), cv::GOut(out));
+    ncvslideio::GMat out = GCompoundGMatGArrayGMat::on(in[0], a, in[1]);
+    const auto custom_pkg = ncvslideio::gapi::kernels<GCompoundGMatGArrayGMatImpl, SetDiagKernelImpl>();
+    const auto full_pkg   = ncvslideio::gapi::combine(custom_pkg, ncvslideio::gapi::core::cpu::kernels());
+    ncvslideio::GComputation comp(ncvslideio::GIn(in[0], a, in[1]), ncvslideio::GOut(out));
     std::vector<double> in_v(3, 1.0);
-    cv::Mat in_mat1 = cv::Mat::eye(cv::Size(3, 3), CV_8UC1),
-            in_mat2 = cv::Mat::eye(cv::Size(3, 3), CV_8UC1),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_8UC1),
+            in_mat2 = ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_8UC1),
             out_mat;
-    cv::Mat ref_mat= in_mat1 + in_mat2;
+    ncvslideio::Mat ref_mat= in_mat1 + in_mat2;
     setDiag(ref_mat, in_v);
 
-    comp.apply(cv::gin(in_mat1, in_v, in_mat2), cv::gout(out_mat), cv::compile_args(full_pkg));
+    comp.apply(ncvslideio::gin(in_mat1, in_v, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(full_pkg));
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
 
@@ -567,24 +567,24 @@ TEST(GCompoundKernel, RightGArrayHandle)
 
 TEST(GCompoundKernel, ToInterleavedToPlanar)
 {
-    cv::GMatP in;
-    cv::GMatP out = GCompoundToInterleavedToPlanar::on(in);
-    const auto pkg = cv::gapi::kernels<GCompoundToInterleavedToPlanarImpl,
+    ncvslideio::GMatP in;
+    ncvslideio::GMatP out = GCompoundToInterleavedToPlanar::on(in);
+    const auto pkg = ncvslideio::gapi::kernels<GCompoundToInterleavedToPlanarImpl,
                                        GToInterleavedImpl,
                                        GToPlanarImpl>();
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     constexpr int numPlanes = 3;
-    cv::Mat in_mat(cv::Size(15, 15), CV_8UC1),
+    ncvslideio::Mat in_mat(ncvslideio::Size(15, 15), CV_8UC1),
             out_mat,
             ref_mat;
 
-    cv::randu(in_mat, 0, 255);
+    ncvslideio::randu(in_mat, 0, 255);
     ref_mat = in_mat;
 
-    comp.compile(cv::descr_of(in_mat).asPlanar(numPlanes), cv::compile_args(pkg))
-         (cv::gin(in_mat), cv::gout(out_mat));
+    comp.compile(ncvslideio::descr_of(in_mat).asPlanar(numPlanes), ncvslideio::compile_args(pkg))
+         (ncvslideio::gin(in_mat), ncvslideio::gout(out_mat));
 
     EXPECT_EQ(0, cvtest::norm(out_mat, ref_mat, NORM_INF));
 

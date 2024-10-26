@@ -13,10 +13,10 @@
 
 #include <opencv2/gapi/ocl/goclkernel.hpp>
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // NB: This is what a "Kernel Package" from the original Wiki doc should be.
-void loadOCLCore(std::map<std::string, cv::GOCLKernel> &kmap);
+void loadOCLCore(std::map<std::string, ncvslideio::GOCLKernel> &kmap);
 
 }
 }

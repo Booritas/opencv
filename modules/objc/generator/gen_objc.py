@@ -70,7 +70,7 @@ type_dict = {
 }
 
 # Defines a rule to add extra prefixes for names from specific namespaces.
-# In example, cv::fisheye::stereoRectify from namespace fisheye is wrapped as fisheye_stereoRectify
+# In example, ncvslideio::fisheye::stereoRectify from namespace fisheye is wrapped as fisheye_stereoRectify
 namespaces_dict = {}
 
 # { module: { class | "*" : [ header ]} }
@@ -134,10 +134,10 @@ def header_import(hdr):
     return hdr
 
 def make_objcname(m):
-    return "Cv"+m if (m[0] in "0123456789") else m
+    return "ncvslideio"+m if (m[0] in "0123456789") else m
 
 def make_objcmodule(m):
-    return "cv"+m if (m[0] in "0123456789") else m
+    return "ncvslideio"+m if (m[0] in "0123456789") else m
 
 T_OBJC_CLASS_HEADER = read_contents(os.path.join(SCRIPT_DIR, 'templates/objc_class_header.template'))
 T_OBJC_CLASS_BODY = read_contents(os.path.join(SCRIPT_DIR, 'templates/objc_class_body.template'))
@@ -230,7 +230,7 @@ def normalize_field_name(name):
     return name.replace(".","_").replace("[","").replace("]","").replace("_getNativeObjAddr()","_nativeObj")
 
 def normalize_class_name(name):
-    return re.sub(r"^cv\.", "", name).replace(".", "_")
+    return re.sub(r"^ncvslideio\.", "", name).replace(".", "_")
 
 def get_cname(name):
     return name.replace(".", "::")
@@ -392,12 +392,12 @@ class ClassInfo(GeneralInfo):
                             nativePointerHandling = Template(
 """
 #ifdef __cplusplus
-@property(readonly)cv::Ptr<$cName> $native_ptr_name;
+@property(readonly)ncvslideio::Ptr<$cName> $native_ptr_name;
 #endif
 
 #ifdef __cplusplus
-- (instancetype)initWithNativePtr:(cv::Ptr<$cName>)nativePtr;
-+ (instancetype)fromNative:(cv::Ptr<$cName>)nativePtr;
+- (instancetype)initWithNativePtr:(ncvslideio::Ptr<$cName>)nativePtr;
++ (instancetype)fromNative:(ncvslideio::Ptr<$cName>)nativePtr;
 #endif
 """
                             ).substitute(
@@ -418,7 +418,7 @@ class ClassInfo(GeneralInfo):
                             module = M,
                             nativePointerHandling=Template(
 """
-- (instancetype)initWithNativePtr:(cv::Ptr<$cName>)nativePtr {
+- (instancetype)initWithNativePtr:(ncvslideio::Ptr<$cName>)nativePtr {
     self = [super $init_call];
     if (self) {
         _$native_ptr_name = nativePtr;
@@ -426,7 +426,7 @@ class ClassInfo(GeneralInfo):
     return self;
 }
 
-+ (instancetype)fromNative:(cv::Ptr<$cName>)nativePtr {
++ (instancetype)fromNative:(ncvslideio::Ptr<$cName>)nativePtr {
     return [[$objcName alloc] initWithNativePtr:nativePtr];
 }
 """
@@ -721,11 +721,11 @@ class ObjectiveCWrapperGenerator(object):
         self.clear()
 
     def clear(self):
-        self.namespaces = ["cv"]
+        self.namespaces = ["ncvslideio"]
         mat_class_info = ClassInfo([ 'class Mat', '', [], [] ], self.namespaces)
-        mat_class_info.namespace = "cv"
+        mat_class_info.namespace = "ncvslideio"
         self.classes = { "Mat" : mat_class_info }
-        self.classes["Mat"].namespace = "cv"
+        self.classes["Mat"].namespace = "ncvslideio"
         self.module = ""
         self.Module = ""
         self.extension_implementations = None # Swift extensions implementations stream
@@ -891,7 +891,7 @@ class ObjectiveCWrapperGenerator(object):
         updated_files += 1
 
     def get_namespace_prefix(self, cname):
-        namespace = self.classes[cname].namespace if cname in self.classes else "cv"
+        namespace = self.classes[cname].namespace if cname in self.classes else "ncvslideio"
         return namespace.replace(".", "::") + "::"
 
     def gen(self, srcfiles, module, output_path, output_objc_path, common_headers, manual_classes):
@@ -1163,19 +1163,19 @@ class ObjectiveCWrapperGenerator(object):
                 cpp_type = type_dict[ret_type]["c_type"]
                 real_cpp_type = type_dict[ret_type].get("real_c_type", cpp_type)
                 namespace_prefix = self.get_namespace_prefix(cpp_type)
-                ret_val = "cv::Ptr<" + namespace_prefix + real_cpp_type + "> retVal = "
+                ret_val = "ncvslideio::Ptr<" + namespace_prefix + real_cpp_type + "> retVal = "
                 ret = "return [" + type_dict[ret_type]["objc_type"][:-1] + " fromNative:retVal];"
             elif ret_type == "void":
                 ret_val = ""
                 ret = ""
             elif ret_type == "": # c-tor
                 constructor = True
-                ret_val = "return [self initWithNativePtr:cv::Ptr<" + fi.fullClass(isCPP=True) + ">(new "
+                ret_val = "return [self initWithNativePtr:ncvslideio::Ptr<" + fi.fullClass(isCPP=True) + ">(new "
                 tail = ")]"
                 ret = ""
             elif self.isWrapped(ret_type): # wrapped class
                 namespace_prefix = self.get_namespace_prefix(ret_type)
-                ret_val = "cv::Ptr<" + namespace_prefix + ret_type + "> retVal = new " + namespace_prefix + ret_type + "("
+                ret_val = "ncvslideio::Ptr<" + namespace_prefix + ret_type + "> retVal = new " + namespace_prefix + ret_type + "("
                 tail = ")"
                 ret_type_dict = type_dict[ret_type]
                 from_cpp = ret_type_dict["from_cpp_ptr"] if "from_cpp_ptr" in ret_type_dict else ret_type_dict["from_cpp"]

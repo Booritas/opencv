@@ -18,18 +18,18 @@ vert[5] = (5*r//2, int(1.34*r))
 
 # Draw it in src
 for i in range(6):
-    cv.line(src, vert[i],  vert[(i+1)%6], ( 255 ), 3)
+    ncvslideio.line(src, vert[i],  vert[(i+1)%6], ( 255 ), 3)
 
 # Get the contours
-contours, _ = cv.findContours(src, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+contours, _ = ncvslideio.findContours(src, ncvslideio.RETR_TREE, ncvslideio.CHAIN_APPROX_SIMPLE)
 
 # Calculate the distances to the contour
 raw_dist = np.empty(src.shape, dtype=np.float32)
 for i in range(src.shape[0]):
     for j in range(src.shape[1]):
-        raw_dist[i,j] = cv.pointPolygonTest(contours[0], (j,i), True)
+        raw_dist[i,j] = ncvslideio.pointPolygonTest(contours[0], (j,i), True)
 
-minVal, maxVal, _, maxDistPt = cv.minMaxLoc(raw_dist)
+minVal, maxVal, _, maxDistPt = ncvslideio.minMaxLoc(raw_dist)
 minVal = abs(minVal)
 maxVal = abs(maxVal)
 
@@ -46,7 +46,7 @@ for i in range(src.shape[0]):
             drawing[i,j,1] = 255
             drawing[i,j,2] = 255
 
-cv.circle(drawing,maxDistPt, int(maxVal),(255,255,255), 1, cv.LINE_8, 0)
+cv.circle(drawing,maxDistPt, int(maxVal),(255,255,255), 1, ncvslideio.LINE_8, 0)
 cv.imshow('Source', src)
 cv.imshow('Distance and inscribed circle', drawing)
 cv.waitKey()

@@ -15,7 +15,7 @@
 #include <opencv2/gapi/gcommon.hpp> // GShape
 #include <opencv2/gapi/util/optional.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 // Forward declaration; GNode and GOrigin are an internal
 // (user-inaccessible) classes.
@@ -26,14 +26,14 @@ struct GOrigin;
  * @{
  */
 /**
- * @brief GScalar class represents cv::Scalar data in the graph.
+ * @brief GScalar class represents ncvslideio::Scalar data in the graph.
  *
- * GScalar may be associated with a cv::Scalar value, which becomes
- * its constant value bound in graph compile time. cv::GScalar describes a
+ * GScalar may be associated with a ncvslideio::Scalar value, which becomes
+ * its constant value bound in graph compile time. ncvslideio::GScalar describes a
  * functional relationship between operations consuming and producing
  * GScalar objects.
  *
- * GScalar is a virtual counterpart of cv::Scalar, which is usually used
+ * GScalar is a virtual counterpart of ncvslideio::Scalar, which is usually used
  * to represent the GScalar data in G-API during the execution.
  *
  * @sa Scalar
@@ -64,25 +64,25 @@ public:
      * other GScalar to the object using `operator=` -- on the
      * assignment, the old GScalar value is discarded.
      *
-     * @param s a cv::Scalar value to associate with this GScalar object.
+     * @param s a ncvslideio::Scalar value to associate with this GScalar object.
      */
     GAPI_WRAP
-    explicit GScalar(const cv::Scalar& s);
+    explicit GScalar(const ncvslideio::Scalar& s);
 
     /**
      * @overload
      * @brief Constructs a value-initialized GScalar
      *
-     * @param s a cv::Scalar value to associate with this GScalar object.
+     * @param s a ncvslideio::Scalar value to associate with this GScalar object.
      */
-    explicit GScalar(cv::Scalar&& s);       // Constant value move-constructor from cv::Scalar
+    explicit GScalar(ncvslideio::Scalar&& s);       // Constant value move-constructor from ncvslideio::Scalar
 
     /**
      * @overload
      * @brief Constructs a value-initialized GScalar
      *
      * @param v0 A `double` value to associate with this GScalar. Note
-     *  that only the first component of a four-component cv::Scalar is
+     *  that only the first component of a four-component ncvslideio::Scalar is
      *  set to this value, with others remain zeros.
      *
      * This constructor overload is not marked `explicit` and can be
@@ -90,7 +90,7 @@ public:
      *
      * @snippet samples/cpp/tutorial_code/gapi/doc_snippets/api_ref_snippets.cpp gscalar_implicit
      *
-     * Here operator+(GMat,GScalar) is used to wrap cv::gapi::addC()
+     * Here operator+(GMat,GScalar) is used to wrap ncvslideio::gapi::addC()
      * and a value-initialized GScalar is created on the fly.
      *
      * @overload
@@ -131,10 +131,10 @@ struct GAPI_EXPORTS_W_SIMPLE GScalarDesc
 
 GAPI_EXPORTS_W inline GScalarDesc empty_scalar_desc() { return GScalarDesc(); }
 
-GAPI_EXPORTS GScalarDesc descr_of(const cv::Scalar &scalar);
+GAPI_EXPORTS GScalarDesc descr_of(const ncvslideio::Scalar &scalar);
 
-std::ostream& operator<<(std::ostream& os, const cv::GScalarDesc &desc);
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GScalarDesc &desc);
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSCALAR_HPP

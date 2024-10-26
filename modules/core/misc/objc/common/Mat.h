@@ -48,17 +48,17 @@ NS_ASSUME_NONNULL_BEGIN
 CV_EXPORTS @interface Mat : NSObject
 
 #ifdef __cplusplus
-@property(readonly) cv::Ptr<cv::Mat> nativePtr;
-@property(readonly) cv::Mat& nativeRef;
+@property(readonly) ncvslideio::Ptr<ncvslideio::Mat> nativePtr;
+@property(readonly) ncvslideio::Mat& nativeRef;
 #endif
 
 #pragma mark - Constructors
 
 - (instancetype)init;
 #ifdef __cplusplus
-- (instancetype)initWithNativeMat:(cv::Ptr<cv::Mat>)nativeMat;
-+ (instancetype)fromNativePtr:(cv::Ptr<cv::Mat>)nativePtr;
-+ (instancetype)fromNative:(cv::Mat&)nativeRef;
+- (instancetype)initWithNativeMat:(ncvslideio::Ptr<ncvslideio::Mat>)nativeMat;
++ (instancetype)fromNativePtr:(ncvslideio::Ptr<ncvslideio::Mat>)nativePtr;
++ (instancetype)fromNative:(ncvslideio::Mat&)nativeRef;
 #endif
 /**
  Creates a Mat object with the specified number of rows and columns and Mat type

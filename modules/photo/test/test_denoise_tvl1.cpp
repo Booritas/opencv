@@ -42,36 +42,36 @@
 
 namespace opencv_test { namespace {
 
-void make_noisy(const cv::Mat& img, cv::Mat& noisy, double sigma, double pepper_salt_ratio,cv::RNG& rng)
+void make_noisy(const ncvslideio::Mat& img, ncvslideio::Mat& noisy, double sigma, double pepper_salt_ratio,ncvslideio::RNG& rng)
 {
     noisy.create(img.size(), img.type());
-    cv::Mat noise(img.size(), img.type()), mask(img.size(), CV_8U);
-    rng.fill(noise,cv::RNG::NORMAL,128.0,sigma);
-    cv::addWeighted(img, 1, noise, 1, -128, noisy);
-    cv::randn(noise, cv::Scalar::all(0), cv::Scalar::all(2));
+    ncvslideio::Mat noise(img.size(), img.type()), mask(img.size(), CV_8U);
+    rng.fill(noise,ncvslideio::RNG::NORMAL,128.0,sigma);
+    ncvslideio::addWeighted(img, 1, noise, 1, -128, noisy);
+    ncvslideio::randn(noise, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(2));
     noise *= 255;
-    cv::randu(mask, 0, cvRound(1./pepper_salt_ratio));
-    cv::Mat half = mask.colRange(0, img.cols/2);
-    half = cv::Scalar::all(1);
+    ncvslideio::randu(mask, 0, cvRound(1./pepper_salt_ratio));
+    ncvslideio::Mat half = mask.colRange(0, img.cols/2);
+    half = ncvslideio::Scalar::all(1);
     noise.setTo(128, mask);
-    cv::addWeighted(noisy, 1, noise, 1, -128, noisy);
+    ncvslideio::addWeighted(noisy, 1, noise, 1, -128, noisy);
 }
 
 #if 0
-void make_spotty(cv::Mat& img,cv::RNG& rng, int r=3,int n=1000)
+void make_spotty(ncvslideio::Mat& img,ncvslideio::RNG& rng, int r=3,int n=1000)
 {
     for(int i=0;i<n;i++)
     {
         int x=rng(img.cols-r),y=rng(img.rows-r);
         if(rng(2)==0)
-            img(cv::Range(y,y+r),cv::Range(x,x+r))=(uchar)0;
+            img(ncvslideio::Range(y,y+r),ncvslideio::Range(x,x+r))=(uchar)0;
         else
-            img(cv::Range(y,y+r),cv::Range(x,x+r))=(uchar)255;
+            img(ncvslideio::Range(y,y+r),ncvslideio::Range(x,x+r))=(uchar)255;
     }
 }
 #endif
 
-bool validate_pixel(const cv::Mat& image,int x,int y,uchar val)
+bool validate_pixel(const ncvslideio::Mat& image,int x,int y,uchar val)
 {
     bool ok = std::abs(image.at<uchar>(x,y) - val) < 10;
     printf("test: image(%d,%d)=%d vs %d - %s\n",x,y,(int)image.at<uchar>(x,y),val,ok?"ok":"bad");
@@ -80,23 +80,23 @@ bool validate_pixel(const cv::Mat& image,int x,int y,uchar val)
 
 TEST(Optim_denoise_tvl1, regression_basic)
 {
-    cv::RNG rng(42);
-    cv::Mat img = cv::imread(cvtest::TS::ptr()->get_data_path() + "shared/lena.png", 0), noisy, res;
+    ncvslideio::RNG rng(42);
+    ncvslideio::Mat img = ncvslideio::imread(cvtest::TS::ptr()->get_data_path() + "shared/lena.png", 0), noisy, res;
 
     ASSERT_FALSE(img.empty()) << "Error: can't open 'lena.png'";
 
     const int obs_num=5;
-    std::vector<cv::Mat> images(obs_num, cv::Mat());
+    std::vector<ncvslideio::Mat> images(obs_num, ncvslideio::Mat());
     for(int i=0;i<(int)images.size();i++)
     {
         make_noisy(img,images[i], 20, 0.02,rng);
         //make_spotty(images[i],rng);
     }
 
-    //cv::imshow("test", images[0]);
-    cv::denoise_TVL1(images, res);
-    //cv::imshow("denoised", res);
-    //cv::waitKey();
+    //ncvslideio::imshow("test", images[0]);
+    ncvslideio::denoise_TVL1(images, res);
+    //ncvslideio::imshow("denoised", res);
+    //ncvslideio::waitKey();
 
 #if 0
     ASSERT_TRUE(validate_pixel(res,248,334,179));

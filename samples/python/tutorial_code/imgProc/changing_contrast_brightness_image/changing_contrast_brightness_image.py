@@ -12,9 +12,9 @@ gamma = 1.0
 gamma_max = 200
 
 def basicLinearTransform():
-    res = cv.convertScaleAbs(img_original, alpha=alpha, beta=beta)
-    img_corrected = cv.hconcat([img_original, res])
-    cv.imshow("Brightness and contrast adjustments", img_corrected)
+    res = ncvslideio.convertScaleAbs(img_original, alpha=alpha, beta=beta)
+    img_corrected = ncvslideio.hconcat([img_original, res])
+    ncvslideio.imshow("Brightness and contrast adjustments", img_corrected)
 
 def gammaCorrection():
     ## [changing-contrast-brightness-gamma-correction]
@@ -22,11 +22,11 @@ def gammaCorrection():
     for i in range(256):
         lookUpTable[0,i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
 
-    res = cv.LUT(img_original, lookUpTable)
+    res = ncvslideio.LUT(img_original, lookUpTable)
     ## [changing-contrast-brightness-gamma-correction]
 
-    img_gamma_corrected = cv.hconcat([img_original, res])
-    cv.imshow("Gamma correction", img_gamma_corrected)
+    img_gamma_corrected = ncvslideio.hconcat([img_original, res])
+    ncvslideio.imshow("Gamma correction", img_gamma_corrected)
 
 def on_linear_transform_alpha_trackbar(val):
     global alpha
@@ -47,7 +47,7 @@ parser = argparse.ArgumentParser(description='Code for Changing the contrast and
 parser.add_argument('--input', help='Path to input image.', default='lena.jpg')
 args = parser.parse_args()
 
-img_original = cv.imread(cv.samples.findFile(args.input))
+img_original = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if img_original is None:
     print('Could not open or find the image: ', args.input)
     exit(0)
@@ -55,8 +55,8 @@ if img_original is None:
 img_corrected = np.empty((img_original.shape[0], img_original.shape[1]*2, img_original.shape[2]), img_original.dtype)
 img_gamma_corrected = np.empty((img_original.shape[0], img_original.shape[1]*2, img_original.shape[2]), img_original.dtype)
 
-img_corrected = cv.hconcat([img_original, img_original])
-img_gamma_corrected = cv.hconcat([img_original, img_original])
+img_corrected = ncvslideio.hconcat([img_original, img_original])
+img_gamma_corrected = ncvslideio.hconcat([img_original, img_original])
 
 cv.namedWindow('Brightness and contrast adjustments')
 cv.namedWindow('Gamma correction')

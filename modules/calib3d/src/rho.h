@@ -76,7 +76,7 @@
 
 
 /* Namespace cv */
-namespace cv{
+namespace ncvslideio{
 
 /* Data structures */
 

@@ -8,7 +8,7 @@
 #ifndef __OPENCV_FEATURES_2D_TEVOLUTION_H__
 #define __OPENCV_FEATURES_2D_TEVOLUTION_H__
 
-namespace cv
+namespace ncvslideio
 {
 
 /* ************************************************************************* */

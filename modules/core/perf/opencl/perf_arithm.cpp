@@ -67,7 +67,7 @@ OCL_PERF_TEST_P(LUTFixture, LUT,
 
     declare.in(src, lut, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::LUT(src, lut, dst);
+    OCL_TEST_CYCLE() ncvslideio::LUT(src, lut, dst);
 
     SANITY_CHECK(dst);
 }
@@ -89,7 +89,7 @@ OCL_PERF_TEST_P(ExpFixture, Exp, ::testing::Combine(
     declare.in(src).out(dst);
     randu(src, 5, 16);
 
-    OCL_TEST_CYCLE() cv::exp(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::exp(src, dst);
 
     if (CV_MAT_DEPTH(type) >= CV_32F)
         SANITY_CHECK(dst, 1e-5, ERROR_RELATIVE);
@@ -114,7 +114,7 @@ OCL_PERF_TEST_P(LogFixture, Log, ::testing::Combine(
     randu(src, 1, 10000);
     declare.in(src).out(dst);
 
-    OCL_TEST_CYCLE() cv::log(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::log(src, dst);
 
     if (CV_MAT_DEPTH(type) >= CV_32F)
         SANITY_CHECK(dst, 2e-4, ERROR_RELATIVE);
@@ -137,7 +137,7 @@ OCL_PERF_TEST_P(AddFixture, Add,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::add(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::add(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -158,7 +158,7 @@ OCL_PERF_TEST_P(SubtractFixture, Subtract,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::subtract(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::subtract(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -178,7 +178,7 @@ OCL_PERF_TEST_P(MulFixture, Multiply, ::testing::Combine(OCL_TEST_SIZES, OCL_TES
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::multiply(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::multiply(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -205,10 +205,10 @@ OCL_PERF_TEST_P(DivFixture, Divide,
         Mat zero_mask = m2 == 0;
         Mat fix;
         zero_mask.convertTo(fix, type); // 0 or 255
-        cv::add(m2, fix, m2);
+        ncvslideio::add(m2, fix, m2);
     }
 
-    OCL_TEST_CYCLE() cv::divide(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::divide(src1, src2, dst);
 
     if (CV_MAT_DEPTH(type) >= CV_32F)
         SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);
@@ -232,7 +232,7 @@ OCL_PERF_TEST_P(AbsDiffFixture, Absdiff,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).in(dst);
 
-    OCL_TEST_CYCLE() cv::absdiff(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::absdiff(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -254,7 +254,7 @@ OCL_PERF_TEST_P(CartToPolarFixture, CartToPolar, ::testing::Combine(
             dst1(srcSize, type), dst2(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst1, dst2);
 
-    OCL_TEST_CYCLE() cv::cartToPolar(src1, src2, dst1, dst2);
+    OCL_TEST_CYCLE() ncvslideio::cartToPolar(src1, src2, dst1, dst2);
 
     SANITY_CHECK(dst1, 8e-3);
     SANITY_CHECK(dst2, 8e-3);
@@ -277,7 +277,7 @@ OCL_PERF_TEST_P(PolarToCartFixture, PolarToCart, ::testing::Combine(
             dst1(srcSize, type), dst2(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst1, dst2);
 
-    OCL_TEST_CYCLE() cv::polarToCart(src1, src2, dst1, dst2);
+    OCL_TEST_CYCLE() ncvslideio::polarToCart(src1, src2, dst1, dst2);
 
     SANITY_CHECK(dst1, 5e-5);
     SANITY_CHECK(dst2, 5e-5);
@@ -300,7 +300,7 @@ OCL_PERF_TEST_P(MagnitudeFixture, Magnitude, ::testing::Combine(
             dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::magnitude(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::magnitude(src1, src2, dst);
 
     SANITY_CHECK(dst, 1e-6);
 }
@@ -321,7 +321,7 @@ OCL_PERF_TEST_P(TransposeFixture, Transpose, ::testing::Combine(
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::transpose(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::transpose(src, dst);
 
     SANITY_CHECK(dst);
 }
@@ -338,7 +338,7 @@ OCL_PERF_TEST_P(TransposeFixture, TransposeInplace, ::testing::Combine(
     UMat src(srcSize, type);
     declare.in(src, WARMUP_RNG).out(src, WARMUP_NONE);
 
-    OCL_TEST_CYCLE() cv::transpose(src, src);
+    OCL_TEST_CYCLE() ncvslideio::transpose(src, src);
 
     SANITY_CHECK_NOTHING();
 }
@@ -370,7 +370,7 @@ OCL_PERF_TEST_P(FlipFixture, Flip,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::flip(src, dst, flipType - 1);
+    OCL_TEST_CYCLE() ncvslideio::flip(src, dst, flipType - 1);
 
     SANITY_CHECK(dst);
 }
@@ -402,7 +402,7 @@ OCL_PERF_TEST_P(RotateFixture, rotate,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::rotate(src, dst, rotateCode);
+    OCL_TEST_CYCLE() ncvslideio::rotate(src, dst, rotateCode);
 
     SANITY_CHECK_NOTHING();
 }
@@ -427,7 +427,7 @@ OCL_PERF_TEST_P(MinMaxLocFixture, MinMaxLoc,
     double min_val = 0.0, max_val = 0.0;
     Point min_loc, max_loc;
 
-    OCL_TEST_CYCLE() cv::minMaxLoc(src, &min_val, &max_val, onecn ? &min_loc : NULL,
+    OCL_TEST_CYCLE() ncvslideio::minMaxLoc(src, &min_val, &max_val, onecn ? &min_loc : NULL,
                                    onecn ? &max_loc : NULL);
 
     ASSERT_GE(max_val, min_val);
@@ -461,7 +461,7 @@ OCL_PERF_TEST_P(SumFixture, Sum,
     randu(src, 0, 60);
     declare.in(src);
 
-    OCL_TEST_CYCLE() result = cv::sum(src);
+    OCL_TEST_CYCLE() result = ncvslideio::sum(src);
 
     if (depth >= CV_32F)
         SANITY_CHECK(result, 1e-6, ERROR_RELATIVE);
@@ -488,7 +488,7 @@ OCL_PERF_TEST_P(CountNonZeroFixture, CountNonZero,
     randu(src, 0, 10);
     declare.in(src);
 
-    OCL_TEST_CYCLE() result = cv::countNonZero(src);
+    OCL_TEST_CYCLE() result = ncvslideio::countNonZero(src);
 
     SANITY_CHECK(result);
 }
@@ -512,7 +512,7 @@ OCL_PERF_TEST_P(HasNonZeroFixture, HasNonZero,
     randu(src, 0, 10);
     declare.in(src);
 
-    OCL_TEST_CYCLE() /*result =*/ cv::hasNonZero(src);
+    OCL_TEST_CYCLE() /*result =*/ ncvslideio::hasNonZero(src);
 
     SANITY_CHECK_NOTHING();
 }
@@ -534,7 +534,7 @@ OCL_PERF_TEST_P(PhaseFixture, Phase, ::testing::Combine(
             dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::phase(src1, src2, dst, 1);
+    OCL_TEST_CYCLE() ncvslideio::phase(src1, src2, dst, 1);
 
     SANITY_CHECK(dst, 1e-2);
 }
@@ -555,7 +555,7 @@ OCL_PERF_TEST_P(BitwiseAndFixture, Bitwise_and,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::bitwise_and(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::bitwise_and(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -576,7 +576,7 @@ OCL_PERF_TEST_P(BitwiseXorFixture, Bitwise_xor,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::bitwise_xor(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::bitwise_xor(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -597,7 +597,7 @@ OCL_PERF_TEST_P(BitwiseOrFixture, Bitwise_or,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::bitwise_or(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::bitwise_or(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -618,7 +618,7 @@ OCL_PERF_TEST_P(BitwiseNotFixture, Bitwise_not,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::bitwise_not(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::bitwise_not(src, dst);
 
     SANITY_CHECK(dst);
 }
@@ -644,7 +644,7 @@ OCL_PERF_TEST_P(CompareFixture, Compare,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, CV_8UC(CV_MAT_CN(type)));
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::compare(src1, src2, dst, cmpCode);
+    OCL_TEST_CYCLE() ncvslideio::compare(src1, src2, dst, cmpCode);
 
     SANITY_CHECK(dst);
 }
@@ -664,7 +664,7 @@ OCL_PERF_TEST_P(CompareFixture, CompareScalar,
     UMat src1(srcSize, type), dst(srcSize, CV_8UC(CV_MAT_CN(type)));
     declare.in(src1, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::compare(src1, 32, dst, cmpCode);
+    OCL_TEST_CYCLE() ncvslideio::compare(src1, 32, dst, cmpCode);
 
     SANITY_CHECK(dst);
 }
@@ -686,7 +686,7 @@ OCL_PERF_TEST_P(PowFixture, Pow, ::testing::Combine(
     randu(src, 0, 100);
     declare.in(src).out(dst);
 
-    OCL_TEST_CYCLE() cv::pow(src, 2.17, dst);
+    OCL_TEST_CYCLE() ncvslideio::pow(src, 2.17, dst);
 
     SANITY_CHECK(dst, 1.5e-6, ERROR_RELATIVE);
 }
@@ -705,7 +705,7 @@ OCL_PERF_TEST_P(PowFixture, iPow, ::testing::Combine(
     randu(src, 0, 100);
     declare.in(src).out(dst);
 
-    OCL_TEST_CYCLE() cv::pow(src, 7.0, dst);
+    OCL_TEST_CYCLE() ncvslideio::pow(src, 7.0, dst);
 
     SANITY_CHECK_NOTHING();
 }
@@ -726,7 +726,7 @@ OCL_PERF_TEST_P(AddWeightedFixture, AddWeighted,
     declare.in(src1, src2, WARMUP_RNG).out(dst);
     double alpha = 2.0, beta = 1.0, gama = 3.0;
 
-    OCL_TEST_CYCLE() cv::addWeighted(src1, alpha, src2, beta, gama, dst);
+    OCL_TEST_CYCLE() ncvslideio::addWeighted(src1, alpha, src2, beta, gama, dst);
 
     if (depth >= CV_32F)
         SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);
@@ -751,7 +751,7 @@ OCL_PERF_TEST_P(SqrtFixture, Sqrt, ::testing::Combine(
     randu(src, 0, 1000);
     declare.in(src).out(dst);
 
-    OCL_TEST_CYCLE() cv::sqrt(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::sqrt(src, dst);
 
     // To square root 32 bit floats we use native_sqrt, which has implementation
     // defined accuracy. We know intel devices have accurate native_sqrt, but
@@ -780,7 +780,7 @@ OCL_PERF_TEST_P(SetIdentityFixture, SetIdentity,
     UMat dst(srcSize, type);
     declare.out(dst);
 
-    OCL_TEST_CYCLE() cv::setIdentity(dst, cv::Scalar::all(181));
+    OCL_TEST_CYCLE() ncvslideio::setIdentity(dst, ncvslideio::Scalar::all(181));
 
     SANITY_CHECK(dst);
 }
@@ -804,7 +804,7 @@ OCL_PERF_TEST_P(MeanStdDevFixture, MeanStdDev,
     Scalar mean, stddev;
     declare.in(src, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::meanStdDev(src, mean, stddev);
+    OCL_TEST_CYCLE() ncvslideio::meanStdDev(src, mean, stddev);
 
     double mean0 = mean[0], mean1 = mean[1], mean2 = mean[2], mean3 = mean[3];
     double stddev0 = stddev[0], stddev1 = stddev[1], stddev2 = stddev[2], stddev3 = stddev[3];
@@ -834,7 +834,7 @@ OCL_PERF_TEST_P(MeanStdDevFixture, MeanStdDevWithMask,
     Scalar mean, stddev;
     declare.in(src, mask, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::meanStdDev(src, mean, stddev, mask);
+    OCL_TEST_CYCLE() ncvslideio::meanStdDev(src, mean, stddev, mask);
 
     double mean0 = mean[0], mean1 = mean[1], mean2 = mean[2], mean3 = mean[3];
     double stddev0 = stddev[0], stddev1 = stddev[1], stddev2 = stddev[2], stddev3 = stddev[3];
@@ -871,7 +871,7 @@ OCL_PERF_TEST_P(NormFixture, Norm1Arg,
     double res;
     declare.in(src1, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() res = cv::norm(src1, normType);
+    OCL_TEST_CYCLE() res = ncvslideio::norm(src1, normType);
 
     SANITY_CHECK(res, 1e-5, ERROR_RELATIVE);
 }
@@ -891,7 +891,7 @@ OCL_PERF_TEST_P(NormFixture, Norm,
     double res;
     declare.in(src1, src2, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() res = cv::norm(src1, src2, normType);
+    OCL_TEST_CYCLE() res = ncvslideio::norm(src1, src2, normType);
 
     SANITY_CHECK(res, 1e-5, ERROR_RELATIVE);
 }
@@ -911,7 +911,7 @@ OCL_PERF_TEST_P(NormFixture, NormRel,
     double res;
     declare.in(src1, src2, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() res = cv::norm(src1, src2, normType | cv::NORM_RELATIVE);
+    OCL_TEST_CYCLE() res = ncvslideio::norm(src1, src2, normType | ncvslideio::NORM_RELATIVE);
 
     SANITY_CHECK(res, 1e-5, ERROR_RELATIVE);
 }
@@ -955,7 +955,7 @@ OCL_PERF_TEST_P(RepeatFixture, Repeat,
     UMat src(srcSize, type), dst(Size(srcSize.width * nx, srcSize.height * ny), type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::repeat(src, nx, ny, dst);
+    OCL_TEST_CYCLE() ncvslideio::repeat(src, nx, ny, dst);
 
     SANITY_CHECK(dst);
 }
@@ -976,7 +976,7 @@ OCL_PERF_TEST_P(MinFixture, Min,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::min(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::min(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -997,7 +997,7 @@ OCL_PERF_TEST_P(MaxFixture, Max,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::max(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::max(src1, src2, dst);
 
     SANITY_CHECK(dst);
 }
@@ -1018,7 +1018,7 @@ OCL_PERF_TEST_P(InRangeFixture, InRange,
     UMat src(srcSize, type), lb(srcSize, type), ub(srcSize, type), dst(srcSize, CV_8UC1);
     declare.in(src, lb, ub, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::inRange(src, lb, ub, dst);
+    OCL_TEST_CYCLE() ncvslideio::inRange(src, lb, ub, dst);
 
     SANITY_CHECK(dst);
 }
@@ -1043,7 +1043,7 @@ OCL_PERF_TEST_P(NormalizeFixture, Normalize,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::normalize(src, dst, 10, 110, mode);
+    OCL_TEST_CYCLE() ncvslideio::normalize(src, dst, 10, 110, mode);
 
     SANITY_CHECK(dst, 5e-2);
 }
@@ -1061,7 +1061,7 @@ OCL_PERF_TEST_P(NormalizeFixture, NormalizeWithMask,
     UMat src(srcSize, type), mask(srcSize, CV_8UC1), dst(srcSize, type);
     declare.in(src, mask, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::normalize(src, dst, 10, 110, mode, -1, mask);
+    OCL_TEST_CYCLE() ncvslideio::normalize(src, dst, 10, 110, mode, -1, mask);
 
     SANITY_CHECK(dst, 5e-2);
 }
@@ -1082,7 +1082,7 @@ OCL_PERF_TEST_P(ConvertScaleAbsFixture, ConvertScaleAbs,
     UMat src(srcSize, type), dst(srcSize, CV_8UC(cn));
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::convertScaleAbs(src, dst, 0.5, 2);
+    OCL_TEST_CYCLE() ncvslideio::convertScaleAbs(src, dst, 0.5, 2);
 
     SANITY_CHECK(dst, 1); // CV_8U
 }
@@ -1115,7 +1115,7 @@ OCL_PERF_TEST_P(PatchNaNsFixture, PatchNaNs,
         }
     }
 
-    OCL_TEST_CYCLE() cv::patchNaNs(src, 17.7);
+    OCL_TEST_CYCLE() ncvslideio::patchNaNs(src, 17.7);
 
     SANITY_CHECK(src);
 }
@@ -1137,7 +1137,7 @@ OCL_PERF_TEST_P(ScaleAddFixture, ScaleAdd,
     UMat src1(srcSize, type), src2(srcSize, type), dst(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::scaleAdd(src1, 0.6, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::scaleAdd(src1, 0.6, src2, dst);
 
     SANITY_CHECK(dst, 1e-6);
 }
@@ -1165,7 +1165,7 @@ OCL_PERF_TEST_P(TransformFixture, Transform,
     randu(src, 0, 30);
     declare.in(src).out(dst);
 
-    OCL_TEST_CYCLE() cv::transform(src, dst, mtx);
+    OCL_TEST_CYCLE() ncvslideio::transform(src, dst, mtx);
 
     SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);
 }
@@ -1187,7 +1187,7 @@ OCL_PERF_TEST_P(PSNRFixture, PSNR,
     UMat src1(srcSize, type), src2(srcSize, type);
     declare.in(src1, src2, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() psnr = cv::PSNR(src1, src2);
+    OCL_TEST_CYCLE() psnr = ncvslideio::PSNR(src1, src2);
 
     SANITY_CHECK(psnr, 1e-4, ERROR_RELATIVE);
 }
@@ -1220,7 +1220,7 @@ OCL_PERF_TEST_P(ReduceMinMaxFixture, Reduce,
     UMat src(srcSize, stype), dst(dstSize, dtype);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::reduce(src, dst, dim, op, dtype);
+    OCL_TEST_CYCLE() ncvslideio::reduce(src, dst, dim, op, dtype);
 
     SANITY_CHECK(dst, eps);
 }
@@ -1250,7 +1250,7 @@ OCL_PERF_TEST_P(ReduceAccFixture, Reduce,
     UMat src(srcSize, stype), dst(dstSize, dtype);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::reduce(src, dst, dim, op, dtype);
+    OCL_TEST_CYCLE() ncvslideio::reduce(src, dst, dim, op, dtype);
 
     SANITY_CHECK_NOTHING();
 }

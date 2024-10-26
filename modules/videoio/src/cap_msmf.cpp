@@ -88,7 +88,7 @@ struct IMFAttributes;
 #define CV_CAP_MODE_GRAY CV_FOURCC_MACRO('G','R','E','Y')
 #define CV_CAP_MODE_YUYV CV_FOURCC_MACRO('Y', 'U', 'Y', 'V')
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace
 {
@@ -449,7 +449,7 @@ public:
     STDMETHODIMP OnReadSample(HRESULT hrStatus, DWORD dwStreamIndex, DWORD dwStreamFlags, LONGLONG llTimestamp, IMFSample *pSample) CV_OVERRIDE
     {
         HRESULT hr = 0;
-        cv::AutoLock lock(m_mutex);
+        ncvslideio::AutoLock lock(m_mutex);
 
         if (SUCCEEDED(hrStatus))
         {
@@ -512,7 +512,7 @@ public:
         for (;;)
         {
             {
-                cv::AutoLock lock(m_mutex);
+                ncvslideio::AutoLock lock(m_mutex);
 
                 pbEOS = m_bEOS && m_capturedFrames.empty();
                 if (pbEOS)
@@ -553,7 +553,7 @@ private:
 
 public:
     long                m_nRefCount;        // Reference count.
-    cv::Mutex           m_mutex;
+    ncvslideio::Mutex           m_mutex;
     HANDLE              m_hEvent;
     BOOL                m_bEOS;
     HRESULT             m_hrStatus;
@@ -707,7 +707,7 @@ public:
         if (FAILED(MFCreateAttributes(&attr, 1)) ||
             FAILED(attr->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, sourceType)))
         {
-            CV_Error(cv::Error::StsError, "Failed to create attributes");
+            CV_Error(ncvslideio::Error::StsError, "Failed to create attributes");
         }
         if (FAILED(MFEnumDeviceSources(attr.Get(), &devices, &count)))
         {
@@ -735,7 +735,7 @@ private:
 //==================================================================================================
 
 /******* Capturing video from camera or file via Microsoft Media Foundation **********/
-class CvCapture_MSMF : public cv::IVideoCapture
+class CvCapture_MSMF : public ncvslideio::IVideoCapture
 {
 public:
     typedef enum {
@@ -744,9 +744,9 @@ public:
     } MSMFCapture_Mode;
     CvCapture_MSMF();
     virtual ~CvCapture_MSMF();
-    bool configureHW(const cv::VideoCaptureParameters& params);
-    virtual bool open(int, const cv::VideoCaptureParameters* params);
-    virtual bool open(const cv::String&, const cv::VideoCaptureParameters* params);
+    bool configureHW(const ncvslideio::VideoCaptureParameters& params);
+    virtual bool open(int, const ncvslideio::VideoCaptureParameters* params);
+    virtual bool open(const ncvslideio::String&, const ncvslideio::VideoCaptureParameters* params);
     virtual void close();
     virtual double getProperty(int) const CV_OVERRIDE;
     virtual bool setProperty(int, double) CV_OVERRIDE;
@@ -756,18 +756,18 @@ public:
     virtual bool grabFrame() CV_OVERRIDE;
     bool retrieveAudioFrame(int, OutputArray);
     bool retrieveVideoFrame(OutputArray);
-    virtual bool retrieveFrame(int, cv::OutputArray) CV_OVERRIDE;
+    virtual bool retrieveFrame(int, ncvslideio::OutputArray) CV_OVERRIDE;
     virtual bool isOpened() const CV_OVERRIDE { return isOpen; }
     virtual int getCaptureDomain() CV_OVERRIDE { return CAP_MSMF; }
 protected:
     bool configureOutput();
     bool configureAudioOutput(MediaType newType);
-    bool configureVideoOutput(MediaType newType, cv::uint32_t outFormat);
+    bool configureVideoOutput(MediaType newType, ncvslideio::uint32_t outFormat);
     bool setTime(double time, bool rough);
     bool setTime(int numberFrame);
     bool configureHW(bool enable);
-    bool configureStreams(const cv::VideoCaptureParameters&);
-    bool setAudioProperties(const cv::VideoCaptureParameters&);
+    bool configureStreams(const ncvslideio::VideoCaptureParameters&);
+    bool setAudioProperties(const ncvslideio::VideoCaptureParameters&);
     bool checkAudioProperties();
 
     template <typename CtrlT>
@@ -780,7 +780,7 @@ protected:
     bool openFinalize_(const VideoCaptureParameters* params);
 
     Media_Foundation& MF;
-    cv::String filename;
+    ncvslideio::String filename;
     int camid;
     MSMFCapture_Mode captureMode;
     VideoAccelerationType va_type;
@@ -961,14 +961,14 @@ _ComPtr<IMFAttributes> CvCapture_MSMF::getDefaultSourceConfig(UINT32 num)
         FAILED(res->SetUINT32(MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING, true))
         )
     {
-        CV_Error(cv::Error::StsError, "Failed to create attributes");
+        CV_Error(ncvslideio::Error::StsError, "Failed to create attributes");
     }
 #ifdef HAVE_MSMF_DXVA
     if (D3DMgr)
     {
         if (FAILED(res->SetUnknown(MF_SOURCE_READER_D3D_MANAGER, D3DMgr.Get())))
         {
-            CV_Error(cv::Error::StsError, "Failed to create attributes");
+            CV_Error(ncvslideio::Error::StsError, "Failed to create attributes");
         }
     }
 #endif
@@ -987,7 +987,7 @@ bool CvCapture_MSMF::configureHW(bool enable)
 
     bool reopen = isOpen;
     int prevcam = camid;
-    cv::String prevfile = filename;
+    ncvslideio::String prevfile = filename;
     close();
     if (enable)
     {
@@ -1116,7 +1116,7 @@ bool CvCapture_MSMF::configureAudioOutput(MediaType newType)
     return initStream(dwAudioStreamIndex, newFormat);
 }
 
-bool CvCapture_MSMF::configureVideoOutput(MediaType newType, cv::uint32_t outFormat)
+bool CvCapture_MSMF::configureVideoOutput(MediaType newType, ncvslideio::uint32_t outFormat)
 {
     FormatStorage formats;
     formats.read(videoFileSource.Get());
@@ -1187,7 +1187,7 @@ bool CvCapture_MSMF::configureOutput()
     return tmp;
 }
 
-bool CvCapture_MSMF::open(int index, const cv::VideoCaptureParameters* params)
+bool CvCapture_MSMF::open(int index, const ncvslideio::VideoCaptureParameters* params)
 {
     close();
     if (index < 0)
@@ -1249,7 +1249,7 @@ bool CvCapture_MSMF::open(int index, const cv::VideoCaptureParameters* params)
     return isOpen;
 }
 
-bool CvCapture_MSMF::open(const cv::String& _filename, const cv::VideoCaptureParameters* params)
+bool CvCapture_MSMF::open(const ncvslideio::String& _filename, const ncvslideio::VideoCaptureParameters* params)
 {
     close();
     if (_filename.empty())
@@ -1263,7 +1263,7 @@ bool CvCapture_MSMF::open(const cv::String& _filename, const cv::VideoCapturePar
     }
     // Set source reader parameters
     _ComPtr<IMFAttributes> attr = getDefaultSourceConfig();
-    cv::AutoBuffer<wchar_t> unicodeFileName(_filename.length() + 1);
+    ncvslideio::AutoBuffer<wchar_t> unicodeFileName(_filename.length() + 1);
     MultiByteToWideChar(CP_ACP, 0, _filename.c_str(), -1, unicodeFileName.data(), (int)_filename.length() + 1);
     if (SUCCEEDED(MFCreateSourceReaderFromURL(unicodeFileName.data(), attr.Get(), &videoFileSource)))
     {
@@ -1340,7 +1340,7 @@ bool CvCapture_MSMF::openFinalize_(const VideoCaptureParameters* params)
     return true;
 }
 
-bool CvCapture_MSMF::configureStreams(const cv::VideoCaptureParameters& params)
+bool CvCapture_MSMF::configureStreams(const ncvslideio::VideoCaptureParameters& params)
 {
     if (params.has(CAP_PROP_VIDEO_STREAM))
     {
@@ -1366,7 +1366,7 @@ bool CvCapture_MSMF::configureStreams(const cv::VideoCaptureParameters& params)
     }
     return true;
 }
-bool CvCapture_MSMF::setAudioProperties(const cv::VideoCaptureParameters& params)
+bool CvCapture_MSMF::setAudioProperties(const ncvslideio::VideoCaptureParameters& params)
 {
     if (params.has(CAP_PROP_AUDIO_DATA_DEPTH))
     {
@@ -1598,16 +1598,16 @@ bool CvCapture_MSMF::configureAudioFrame()
             switch (outputAudioFormat)
             {
             case CV_8S:
-                cv::Mat((int)chunkLengthOfBytes/(captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_8S, audioDataInUse.data()).copyTo(audioFrame);
+                ncvslideio::Mat((int)chunkLengthOfBytes/(captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_8S, audioDataInUse.data()).copyTo(audioFrame);
                 break;
             case CV_16S:
-                cv::Mat((int)chunkLengthOfBytes/(2*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_16S, audioDataInUse.data()).copyTo(audioFrame);
+                ncvslideio::Mat((int)chunkLengthOfBytes/(2*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_16S, audioDataInUse.data()).copyTo(audioFrame);
                 break;
             case CV_32S:
-                cv::Mat((int)chunkLengthOfBytes/(4*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_32S, audioDataInUse.data()).copyTo(audioFrame);
+                ncvslideio::Mat((int)chunkLengthOfBytes/(4*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_32S, audioDataInUse.data()).copyTo(audioFrame);
                 break;
             case CV_32F:
-                cv::Mat((int)chunkLengthOfBytes/(4*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_32F, audioDataInUse.data()).copyTo(audioFrame);
+                ncvslideio::Mat((int)chunkLengthOfBytes/(4*captureAudioFormat.nChannels), captureAudioFormat.nChannels, CV_32F, audioDataInUse.data()).copyTo(audioFrame);
                 break;
             default:
                 break;
@@ -1810,7 +1810,7 @@ bool CvCapture_MSMF::grabFrame()
     return false;
 }
 
-bool CvCapture_MSMF::retrieveVideoFrame(cv::OutputArray frame)
+bool CvCapture_MSMF::retrieveVideoFrame(ncvslideio::OutputArray frame)
 {
     CV_TRACE_FUNCTION();
     CV_LOG_DEBUG(NULL, "videoio(MSMF): retrieve video frame start...");
@@ -1870,22 +1870,22 @@ bool CvCapture_MSMF::retrieveVideoFrame(cv::OutputArray frame)
                 switch (outputVideoFormat)
                 {
                 case CV_CAP_MODE_YUYV:
-                    cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC2, ptr, pitch).copyTo(frame);
+                    ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC2, ptr, pitch).copyTo(frame);
                     break;
                 case CV_CAP_MODE_BGR:
                     if (captureMode == MODE_HW)
-                        cv::cvtColor(cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC4, ptr, pitch), frame, cv::COLOR_BGRA2BGR);
+                        ncvslideio::cvtColor(ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC4, ptr, pitch), frame, ncvslideio::COLOR_BGRA2BGR);
                     else
-                        cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC3, ptr, pitch).copyTo(frame);
+                        ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC3, ptr, pitch).copyTo(frame);
                     break;
                 case CV_CAP_MODE_RGB:
                     if (captureMode == MODE_HW)
-                        cv::cvtColor(cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC4, ptr, pitch), frame, cv::COLOR_BGRA2BGR);
+                        ncvslideio::cvtColor(ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC4, ptr, pitch), frame, ncvslideio::COLOR_BGRA2BGR);
                     else
-                        cv::cvtColor(cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC3, ptr, pitch), frame, cv::COLOR_BGR2RGB);
+                        ncvslideio::cvtColor(ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC3, ptr, pitch), frame, ncvslideio::COLOR_BGR2RGB);
                     break;
                 case CV_CAP_MODE_GRAY:
-                    cv::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC1, ptr, pitch).copyTo(frame);
+                    ncvslideio::Mat(captureVideoFormat.height, captureVideoFormat.width, CV_8UC1, ptr, pitch).copyTo(frame);
                     break;
                 default:
                     frame.release();
@@ -1897,7 +1897,7 @@ bool CvCapture_MSMF::retrieveVideoFrame(cv::OutputArray frame)
         }
         else
         {
-            cv::Mat(1, cursize, CV_8UC1, ptr, pitch).copyTo(frame);
+            ncvslideio::Mat(1, cursize, CV_8UC1, ptr, pitch).copyTo(frame);
         }
         CV_TRACE_REGION_NEXT("unlock");
         if (lock2d)
@@ -1912,7 +1912,7 @@ bool CvCapture_MSMF::retrieveVideoFrame(cv::OutputArray frame)
     return false;
 }
 
-bool CvCapture_MSMF::retrieveAudioFrame(int index, cv::OutputArray frame)
+bool CvCapture_MSMF::retrieveAudioFrame(int index, ncvslideio::OutputArray frame)
 {
     CV_TRACE_FUNCTION();
     if (audioStartOffset - usedVideoSampleTime > videoSampleDuration)
@@ -1928,26 +1928,26 @@ bool CvCapture_MSMF::retrieveAudioFrame(int index, cv::OutputArray frame)
             if (aEOS)
                 return true;
         }
-        cv::Mat data;
+        ncvslideio::Mat data;
         switch (outputAudioFormat)
         {
         case CV_8S:
-            data = cv::Mat(1, audioFrame.rows, CV_8S);
+            data = ncvslideio::Mat(1, audioFrame.rows, CV_8S);
             for (int i = 0; i < audioFrame.rows; i++)
                 data.at<char>(0,i) = audioFrame.at<char>(i,index-audioBaseIndex);
             break;
         case CV_16S:
-            data = cv::Mat(1, audioFrame.rows, CV_16S);
+            data = ncvslideio::Mat(1, audioFrame.rows, CV_16S);
             for (int i = 0; i < audioFrame.rows; i++)
                 data.at<short>(0,i) = audioFrame.at<short>(i,index-audioBaseIndex);
             break;
         case CV_32S:
-            data = cv::Mat(1, audioFrame.rows, CV_32S);
+            data = ncvslideio::Mat(1, audioFrame.rows, CV_32S);
             for (int i = 0; i < audioFrame.rows; i++)
                 data.at<int>(0,i) = audioFrame.at<int>(i,index-audioBaseIndex);
             break;
         case CV_32F:
-            data = cv::Mat(1, audioFrame.rows, CV_32F);
+            data = ncvslideio::Mat(1, audioFrame.rows, CV_32F);
             for (int i = 0; i < audioFrame.rows; i++)
                 data.at<float>(0,i) = audioFrame.at<float>(i,index-audioBaseIndex);
             break;
@@ -1964,7 +1964,7 @@ bool CvCapture_MSMF::retrieveAudioFrame(int index, cv::OutputArray frame)
     return false;
 }
 
-bool CvCapture_MSMF::retrieveFrame(int index, cv::OutputArray frame)
+bool CvCapture_MSMF::retrieveFrame(int index, ncvslideio::OutputArray frame)
 {
     CV_TRACE_FUNCTION();
     if (index < 0)
@@ -2082,9 +2082,9 @@ double CvCapture_MSMF::getProperty( int property_id ) const
         {
         case CAP_PROP_MODE:
             return captureMode;
-        case cv::CAP_PROP_HW_DEVICE:
+        case ncvslideio::CAP_PROP_HW_DEVICE:
             return hwDeviceIndex;
-        case cv::CAP_PROP_HW_ACCELERATION:
+        case ncvslideio::CAP_PROP_HW_ACCELERATION:
             return static_cast<double>(va_type);
         case CAP_PROP_CONVERT_RGB:
                 return convertFormat ? 1 : 0;
@@ -2363,28 +2363,28 @@ bool CvCapture_MSMF::setProperty( int property_id, double value )
     return false;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::cvCreateCapture_MSMF( int index, const cv::VideoCaptureParameters& params)
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::cvCreateCapture_MSMF( int index, const ncvslideio::VideoCaptureParameters& params)
 {
-    cv::Ptr<CvCapture_MSMF> capture = cv::makePtr<CvCapture_MSMF>();
+    ncvslideio::Ptr<CvCapture_MSMF> capture = ncvslideio::makePtr<CvCapture_MSMF>();
     if (capture)
     {
         capture->open(index, &params);
         if (capture->isOpened())
             return capture;
     }
-    return cv::Ptr<cv::IVideoCapture>();
+    return ncvslideio::Ptr<ncvslideio::IVideoCapture>();
 }
 
-cv::Ptr<cv::IVideoCapture> cv::cvCreateCapture_MSMF (const cv::String& filename, const cv::VideoCaptureParameters& params)
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::cvCreateCapture_MSMF (const ncvslideio::String& filename, const ncvslideio::VideoCaptureParameters& params)
 {
-    cv::Ptr<CvCapture_MSMF> capture = cv::makePtr<CvCapture_MSMF>();
+    ncvslideio::Ptr<CvCapture_MSMF> capture = ncvslideio::makePtr<CvCapture_MSMF>();
     if (capture)
     {
         capture->open(filename, &params);
         if (capture->isOpened())
             return capture;
     }
-    return cv::Ptr<cv::IVideoCapture>();
+    return ncvslideio::Ptr<ncvslideio::IVideoCapture>();
 }
 
 //
@@ -2393,21 +2393,21 @@ cv::Ptr<cv::IVideoCapture> cv::cvCreateCapture_MSMF (const cv::String& filename,
 //
 //
 
-class CvVideoWriter_MSMF : public cv::IVideoWriter
+class CvVideoWriter_MSMF : public ncvslideio::IVideoWriter
 {
 public:
     CvVideoWriter_MSMF();
     virtual ~CvVideoWriter_MSMF();
-    virtual bool open(const cv::String& filename, int fourcc,
-                      double fps, cv::Size frameSize, const cv::VideoWriterParameters& params);
+    virtual bool open(const ncvslideio::String& filename, int fourcc,
+                      double fps, ncvslideio::Size frameSize, const ncvslideio::VideoWriterParameters& params);
     virtual void close();
-    virtual void write(cv::InputArray);
+    virtual void write(ncvslideio::InputArray);
 
     virtual double getProperty(int) const override;
     virtual bool setProperty(int, double) { return false; }
     virtual bool isOpened() const { return initiated; }
 
-    int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_MSMF; }
+    int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_MSMF; }
 private:
     Media_Foundation& MF;
     VideoAccelerationType va_type;
@@ -2514,8 +2514,8 @@ const GUID CvVideoWriter_MSMF::FourCC2GUID(int fourcc)
     }
 }
 
-bool CvVideoWriter_MSMF::open( const cv::String& filename, int fourcc,
-                               double _fps, cv::Size _frameSize, const cv::VideoWriterParameters& params)
+bool CvVideoWriter_MSMF::open( const ncvslideio::String& filename, int fourcc,
+                               double _fps, ncvslideio::Size _frameSize, const ncvslideio::VideoWriterParameters& params)
 {
     if (initiated)
         close();
@@ -2584,7 +2584,7 @@ bool CvVideoWriter_MSMF::open( const cv::String& filename, int fourcc,
         )
     {
         // Create the sink writer
-        cv::AutoBuffer<wchar_t> unicodeFileName(filename.length() + 1);
+        ncvslideio::AutoBuffer<wchar_t> unicodeFileName(filename.length() + 1);
         MultiByteToWideChar(CP_ACP, 0, filename.c_str(), -1, unicodeFileName.data(), (int)filename.length() + 1);
         HRESULT hr = MFCreateSinkWriterFromURL(unicodeFileName.data(), NULL, spAttr.Get(), &sinkWriter);
         if (SUCCEEDED(hr))
@@ -2632,7 +2632,7 @@ void CvVideoWriter_MSMF::close()
     }
 }
 
-void CvVideoWriter_MSMF::write(cv::InputArray img)
+void CvVideoWriter_MSMF::write(ncvslideio::InputArray img)
 {
     if (img.empty() ||
         (img.channels() != 1 && img.channels() != 3 && img.channels() != 4) ||
@@ -2659,7 +2659,7 @@ void CvVideoWriter_MSMF::write(cv::InputArray img)
         SUCCEEDED(buffer->Lock(&pData, NULL, NULL)))
     {
         // Copy the video frame to the buffer.
-        cv::cvtColor(img.getMat(), cv::Mat(videoHeight, videoWidth, CV_8UC4, pData, cbWidth), img.channels() > 1 ? cv::COLOR_BGR2BGRA : cv::COLOR_GRAY2BGRA);
+        ncvslideio::cvtColor(img.getMat(), ncvslideio::Mat(videoHeight, videoWidth, CV_8UC4, pData, cbWidth), img.channels() > 1 ? ncvslideio::COLOR_BGR2BGRA : ncvslideio::COLOR_GRAY2BGRA);
         buffer->Unlock();
         // Send media sample to the Sink Writer.
         if (SUCCEEDED(sinkWriter->WriteSample(streamIndex, sample.Get())))
@@ -2683,18 +2683,18 @@ double CvVideoWriter_MSMF::getProperty(int propId) const
     return 0;
 }
 
-cv::Ptr<cv::IVideoWriter> cv::cvCreateVideoWriter_MSMF( const std::string& filename, int fourcc,
-                                                        double fps, const cv::Size& frameSize,
+ncvslideio::Ptr<ncvslideio::IVideoWriter> ncvslideio::cvCreateVideoWriter_MSMF( const std::string& filename, int fourcc,
+                                                        double fps, const ncvslideio::Size& frameSize,
                                                         const VideoWriterParameters& params)
 {
-    cv::Ptr<CvVideoWriter_MSMF> writer = cv::makePtr<CvVideoWriter_MSMF>();
+    ncvslideio::Ptr<CvVideoWriter_MSMF> writer = ncvslideio::makePtr<CvVideoWriter_MSMF>();
     if (writer)
     {
         writer->open(filename, fourcc, fps, frameSize, params);
         if (writer->isOpened())
             return writer;
     }
-    return cv::Ptr<cv::IVideoWriter>();
+    return ncvslideio::Ptr<ncvslideio::IVideoWriter>();
 }
 
 #if defined(BUILD_PLUGIN)
@@ -2714,7 +2714,7 @@ cv::Ptr<cv::IVideoWriter> cv::cvCreateVideoWriter_MSMF( const std::string& filen
 #include "plugin_writer_api.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 typedef CvCapture_MSMF CaptureT;
 typedef CvVideoWriter_MSMF WriterT;
@@ -2732,7 +2732,7 @@ CvResult CV_API_CALL cv_capture_open_with_params(
     CaptureT* cap = 0;
     try
     {
-        cv::VideoCaptureParameters parameters(params, n_params);
+        ncvslideio::VideoCaptureParameters parameters(params, n_params);
         cap = new CaptureT();
         bool res;
         if (filename)
@@ -2985,18 +2985,18 @@ static const OpenCV_VideoIO_Plugin_API_preview plugin_api =
         "Microsoft Media Foundation OpenCV Video I/O plugin"
     },
     {
-        /*  1*/cv::CAP_MSMF,
-        /*  2*/cv::cv_capture_open,
-        /*  3*/cv::cv_capture_release,
-        /*  4*/cv::cv_capture_get_prop,
-        /*  5*/cv::cv_capture_set_prop,
-        /*  6*/cv::cv_capture_grab,
-        /*  7*/cv::cv_capture_retrieve,
-        /*  8*/cv::cv_writer_open,
-        /*  9*/cv::cv_writer_release,
-        /* 10*/cv::cv_writer_get_prop,
-        /* 11*/cv::cv_writer_set_prop,
-        /* 12*/cv::cv_writer_write
+        /*  1*/ncvslideio::CAP_MSMF,
+        /*  2*/ncvslideio::cv_capture_open,
+        /*  3*/ncvslideio::cv_capture_release,
+        /*  4*/ncvslideio::cv_capture_get_prop,
+        /*  5*/ncvslideio::cv_capture_set_prop,
+        /*  6*/ncvslideio::cv_capture_grab,
+        /*  7*/ncvslideio::cv_capture_retrieve,
+        /*  8*/ncvslideio::cv_writer_open,
+        /*  9*/ncvslideio::cv_writer_release,
+        /* 10*/ncvslideio::cv_writer_get_prop,
+        /* 11*/ncvslideio::cv_writer_set_prop,
+        /* 12*/ncvslideio::cv_writer_write
     }
 };
 
@@ -3017,16 +3017,16 @@ static const OpenCV_VideoIO_Capture_Plugin_API capture_plugin_api =
         "Microsoft Media Foundation OpenCV Video I/O plugin"
     },
     {
-        /*  1*/cv::CAP_MSMF,
-        /*  2*/cv::cv_capture_open,
-        /*  3*/cv::cv_capture_release,
-        /*  4*/cv::cv_capture_get_prop,
-        /*  5*/cv::cv_capture_set_prop,
-        /*  6*/cv::cv_capture_grab,
-        /*  7*/cv::cv_capture_retrieve,
+        /*  1*/ncvslideio::CAP_MSMF,
+        /*  2*/ncvslideio::cv_capture_open,
+        /*  3*/ncvslideio::cv_capture_release,
+        /*  4*/ncvslideio::cv_capture_get_prop,
+        /*  5*/ncvslideio::cv_capture_set_prop,
+        /*  6*/ncvslideio::cv_capture_grab,
+        /*  7*/ncvslideio::cv_capture_retrieve,
     },
     {
-        /*  8*/cv::cv_capture_open_with_params,
+        /*  8*/ncvslideio::cv_capture_open_with_params,
     }
 };
 
@@ -3045,15 +3045,15 @@ static const OpenCV_VideoIO_Writer_Plugin_API writer_plugin_api =
         "Microsoft Media Foundation OpenCV Video I/O plugin"
     },
     {
-        /*  1*/cv::CAP_MSMF,
-        /*  2*/cv::cv_writer_open,
-        /*  3*/cv::cv_writer_release,
-        /*  4*/cv::cv_writer_get_prop,
-        /*  5*/cv::cv_writer_set_prop,
-        /*  6*/cv::cv_writer_write
+        /*  1*/ncvslideio::CAP_MSMF,
+        /*  2*/ncvslideio::cv_writer_open,
+        /*  3*/ncvslideio::cv_writer_release,
+        /*  4*/ncvslideio::cv_writer_get_prop,
+        /*  5*/ncvslideio::cv_writer_set_prop,
+        /*  6*/ncvslideio::cv_writer_write
     },
     {
-        /*  7*/cv::cv_writer_open_with_params
+        /*  7*/ncvslideio::cv_writer_open_with_params
     }
 };
 

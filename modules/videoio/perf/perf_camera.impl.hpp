@@ -33,7 +33,7 @@ PERF_TEST(VideoCapture_Camera, waitAny_V4L)
     for (size_t i = 0; i < cameraNames.size(); ++i)
     {
         const auto& name = cameraNames[i];
-        int fps = (int)utils::getConfigurationParameterSizeT(cv::format("OPENCV_TEST_CAMERA%d_FPS", (int)i).c_str(), (i & 1) ? fpsDefaultOdd : fpsDefaultEven);
+        int fps = (int)utils::getConfigurationParameterSizeT(ncvslideio::format("OPENCV_TEST_CAMERA%d_FPS", (int)i).c_str(), (i & 1) ? fpsDefaultOdd : fpsDefaultEven);
         std::cout << "Camera[" << i << "] = '" << name << "', fps=" << fps << std::endl;
         VideoCapture cap(name, CAP_V4L);
         ASSERT_TRUE(cap.isOpened()) << name;

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <ctype.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 Mat image;

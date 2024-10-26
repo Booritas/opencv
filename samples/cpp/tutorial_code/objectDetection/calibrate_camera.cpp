@@ -8,7 +8,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 
 namespace {

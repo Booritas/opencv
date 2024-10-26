@@ -80,7 +80,7 @@ inline char* cv_skip_BOM(char* ptr)
     return ptr;
 }
 
-namespace cv
+namespace ncvslideio
 {
 namespace fs
 {
@@ -172,8 +172,8 @@ private:
         InUse,
     };
 
-    friend class cv::FileStorage::Impl;
-    friend class cv::FileStorage;
+    friend class ncvslideio::FileStorage::Impl;
+    friend class ncvslideio::FileStorage;
     friend class JSONEmitter;
     friend class XMLEmitter;
     friend class YAMLEmitter;

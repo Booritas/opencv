@@ -33,7 +33,7 @@ struct bad_any_cast : public std::exception
     bad_any_cast() = default;
 
     bad_any_cast(const char* src, const char* dst)
-        : message_(cv::format("cvflann::bad_any_cast(from %s to %s)", src, dst)) {}
+        : message_(ncvslideio::format("cvflann::bad_any_cast(from %s to %s)", src, dst)) {}
 
 
     const char* what() const noexcept override
@@ -135,9 +135,9 @@ template<> inline void big_any_policy<flann_algorithm_t>::print(std::ostream& ou
     out << int(*reinterpret_cast<flann_algorithm_t const*>(*src));
 }
 
-template<> inline void big_any_policy<cv::String>::print(std::ostream& out, void* const* src)
+template<> inline void big_any_policy<ncvslideio::String>::print(std::ostream& out, void* const* src)
 {
-    out << (*reinterpret_cast<cv::String const*>(*src)).c_str();
+    out << (*reinterpret_cast<ncvslideio::String const*>(*src)).c_str();
 }
 
 template<typename T>

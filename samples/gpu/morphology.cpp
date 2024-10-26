@@ -6,7 +6,7 @@
 #include "opencv2/cudaimgproc.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 class App
 {

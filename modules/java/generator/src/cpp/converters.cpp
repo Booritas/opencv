@@ -5,7 +5,7 @@
 #define LOG_TAG "org.opencv.utils.Converters"
 #include "common.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 // vector_int
 
@@ -202,7 +202,7 @@ void vector_Point3d_to_Mat(std::vector<Point3d>& v_point, Mat& mat)
 }
 
 //vector_Mat
-void Mat_to_vector_Mat(cv::Mat& mat, std::vector<cv::Mat>& v_mat)
+void Mat_to_vector_Mat(ncvslideio::Mat& mat, std::vector<ncvslideio::Mat>& v_mat)
 {
     v_mat.clear();
     if(mat.type() == CV_32SC2 && mat.cols == 1)
@@ -221,7 +221,7 @@ void Mat_to_vector_Mat(cv::Mat& mat, std::vector<cv::Mat>& v_mat)
 }
 
 
-void vector_Mat_to_Mat(std::vector<cv::Mat>& v_mat, cv::Mat& mat)
+void vector_Mat_to_Mat(std::vector<ncvslideio::Mat>& v_mat, ncvslideio::Mat& mat)
 {
     int count = (int)v_mat.size();
     mat.create(count, 1, CV_32SC2);

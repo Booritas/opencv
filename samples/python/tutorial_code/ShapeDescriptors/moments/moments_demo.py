@@ -12,18 +12,18 @@ def thresh_callback(val):
 
     ## [Canny]
     # Detect edges using Canny
-    canny_output = cv.Canny(src_gray, threshold, threshold * 2)
+    canny_output = ncvslideio.Canny(src_gray, threshold, threshold * 2)
     ## [Canny]
 
     ## [findContours]
     # Find contours
-    contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = ncvslideio.findContours(canny_output, ncvslideio.RETR_TREE, ncvslideio.CHAIN_APPROX_SIMPLE)
     ## [findContours]
 
     # Get the moments
     mu = [None]*len(contours)
     for i in range(len(contours)):
-        mu[i] = cv.moments(contours[i])
+        mu[i] = ncvslideio.moments(contours[i])
 
     # Get the mass centers
     mc = [None]*len(contours)
@@ -38,18 +38,18 @@ def thresh_callback(val):
     ## [forContour]
     for i in range(len(contours)):
         color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
-        cv.drawContours(drawing, contours, i, color, 2)
-        cv.circle(drawing, (int(mc[i][0]), int(mc[i][1])), 4, color, -1)
+        ncvslideio.drawContours(drawing, contours, i, color, 2)
+        ncvslideio.circle(drawing, (int(mc[i][0]), int(mc[i][1])), 4, color, -1)
     ## [forContour]
 
     ## [showDrawings]
     # Show in a window
-    cv.imshow('Contours', drawing)
+    ncvslideio.imshow('Contours', drawing)
     ## [showDrawings]
 
     # Calculate the area with the moments 00 and compare with the result of the OpenCV function
     for i in range(len(contours)):
-        print(' * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f' % (i, mu[i]['m00'], cv.contourArea(contours[i]), cv.arcLength(contours[i], True)))
+        print(' * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f' % (i, mu[i]['m00'], ncvslideio.contourArea(contours[i]), ncvslideio.arcLength(contours[i], True)))
 
 ## [setup]
 # Load source image
@@ -57,14 +57,14 @@ parser = argparse.ArgumentParser(description='Code for Image Moments tutorial.')
 parser.add_argument('--input', help='Path to input image.', default='stuff.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 
 # Convert image to gray and blur it
-src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-src_gray = cv.blur(src_gray, (3,3))
+src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
+src_gray = ncvslideio.blur(src_gray, (3,3))
 ## [setup]
 
 ## [createWindow]

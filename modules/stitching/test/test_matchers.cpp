@@ -48,7 +48,7 @@ namespace opencv_test { namespace {
 TEST(SurfFeaturesFinder, CanFindInROIs)
 {
     Ptr<Feature2D> finder = xfeatures2d::SURF::create();
-    Mat img  = imread(string(cvtest::TS::ptr()->get_data_path()) + "cv/shared/lena.png");
+    Mat img  = imread(string(cvtest::TS::ptr()->get_data_path()) + "ncvslideio/shared/lena.png");
 
     vector<Rect> rois;
     rois.push_back(Rect(0, 0, img.cols / 2, img.rows / 2));
@@ -102,10 +102,10 @@ TEST(ParallelFeaturesFinder, IsSameWithSerial)
     serial_features.descriptors.copyTo(serial_descriptors);
     for(size_t i = 0; i < para_features.size(); ++i)
     {
-        SCOPED_TRACE(cv::format("i=%zu", i));
+        SCOPED_TRACE(ncvslideio::format("i=%zu", i));
         EXPECT_EQ(serial_descriptors.size(), para_features[i].descriptors.size());
 #if 0 // FIXIT ORB descriptors are not bit-exact (perhaps due internal parallel_for usage)
-        ASSERT_EQ(0, cv::norm(u_serial_descriptors, para_features[i].descriptors, NORM_L1))
+        ASSERT_EQ(0, ncvslideio::norm(u_serial_descriptors, para_features[i].descriptors, NORM_L1))
             << "serial_size=" << u_serial_descriptors.size()
             << " par_size=" << para_features[i].descriptors.size()
             << endl << u_serial_descriptors.getMat(ACCESS_READ)

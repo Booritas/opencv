@@ -13,7 +13,7 @@
 
 #include <queue>  // std::priority_queue
 
-namespace cv {
+namespace ncvslideio {
 namespace segmentation {
 
 namespace {

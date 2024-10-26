@@ -18,7 +18,7 @@
 #define CV_IPP_RUN(c, f, ...)
 #endif // OPENCV_IPP_SUM
 
-namespace cv
+namespace ncvslideio
 {
 
 SumFunc getSumFunc(int depth)

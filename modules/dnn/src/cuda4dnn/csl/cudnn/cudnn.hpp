@@ -19,9 +19,9 @@
 #include <iterator>
 
 #define CUDA4DNN_CHECK_CUDNN(call) \
-    ::cv::dnn::cuda4dnn::csl::cudnn::detail::check((call), CV_Func, __FILE__, __LINE__)
+    ::ncvslideio::dnn::cuda4dnn::csl::cudnn::detail::check((call), CV_Func, __FILE__, __LINE__)
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
 
     /** @brief exception class for errors thrown by the cuDNN API */
     class cuDNNException : public CUDAException {
@@ -332,6 +332,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
         std::vector<TensorDescriptor<T>> descriptors;
     };
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::cudnn */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::cudnn */
 
 #endif /* OPENCV_DNN_CUDA4DNN_CSL_CUDNN_HPP */

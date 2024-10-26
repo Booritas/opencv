@@ -24,8 +24,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/dnn.hpp>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 const char* keys =
     "{ help  h              | | Print help message. }"
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
             // Text Recognition
             Mat recInput;
             if (!imreadRGB) {
-                cvtColor(frame, recInput, cv::COLOR_BGR2GRAY);
+                cvtColor(frame, recInput, ncvslideio::COLOR_BGR2GRAY);
             } else {
                 recInput = frame;
             }

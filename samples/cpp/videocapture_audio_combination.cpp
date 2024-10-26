@@ -3,12 +3,12 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{@audio||}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@audio||}");
     string file = parser.get<string>("@audio");
 
     if (file.empty())

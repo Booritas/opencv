@@ -70,7 +70,7 @@ PERF_TEST_P_(Layer_Einsum, einsum) {
     CV_CheckFalse(params.einsumInpShapes.empty(), "ERROR no inputs shapes provided");
 
     for (int i = 0; i < params.einsumInpShapes.size(); i++) {
-        lp.set("inputShapes" + cv::format("%d", i), DictValue::arrayInt(params.einsumInpShapes[i].begin(), params.einsumInpShapes[i].size()));
+        lp.set("inputShapes" + ncvslideio::format("%d", i), DictValue::arrayInt(params.einsumInpShapes[i].begin(), params.einsumInpShapes[i].size()));
     }
 
     Net net;

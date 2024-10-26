@@ -7,7 +7,7 @@
 #include <opencv2/core.hpp>
 #include <vector>
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 /**

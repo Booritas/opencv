@@ -49,13 +49,13 @@ The references are:
 #pragma warning( disable : 4127 )
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 static void AGAST_5_8(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
 
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -817,7 +817,7 @@ static void AGAST_5_8(InputArray _img, std::vector<KeyPoint>& keypoints, int thr
 
 static void AGAST_7_12d(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -3263,7 +3263,7 @@ static void AGAST_7_12d(InputArray _img, std::vector<KeyPoint>& keypoints, int t
 
 static void AGAST_7_12s(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -5346,7 +5346,7 @@ static void AGAST_7_12s(InputArray _img, std::vector<KeyPoint>& keypoints, int t
 
 static void OAST_9_16(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     if(!_img.getMat().isContinuous())
       img = _img.getMat().clone();
     else
@@ -7560,7 +7560,7 @@ void AGAST(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, boo
         break;
     }
 
-    cv::Mat img = _img.getMat();
+    ncvslideio::Mat img = _img.getMat();
 
     // score
     int pixel_[16];

@@ -20,7 +20,7 @@ int main()
 #include <condition_variable>
 #include <atomic>
 
-using namespace cv;
+using namespace ncvslideio;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -98,7 +98,7 @@ int main()
             if (depthStream.grab())
             {
                 Frame f;
-                f.timestamp = cv::getTickCount();
+                f.timestamp = ncvslideio::getTickCount();
                 depthStream.retrieve(f.frame, CAP_OPENNI_DEPTH_MAP);
                 if (f.frame.empty())
                 {
@@ -126,7 +126,7 @@ int main()
             if (colorStream.grab())
             {
                 Frame f;
-                f.timestamp = cv::getTickCount();
+                f.timestamp = ncvslideio::getTickCount();
                 colorStream.retrieve(f.frame);
                 if (f.frame.empty())
                 {

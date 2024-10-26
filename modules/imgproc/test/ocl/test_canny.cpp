@@ -101,8 +101,8 @@ OCL_TEST_P(Canny, Accuracy)
     const double low_thresh = 50.0, high_thresh = 100.0;
     double eps = 0.03;
 
-    OCL_OFF(cv::Canny(src_roi, dst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
-    OCL_ON(cv::Canny(usrc_roi, udst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
+    OCL_OFF(ncvslideio::Canny(src_roi, dst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
+    OCL_ON(ncvslideio::Canny(usrc_roi, udst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
 
     EXPECT_MAT_SIMILAR(dst_roi, udst_roi, eps);
     EXPECT_MAT_SIMILAR(dst, udst, eps);
@@ -115,12 +115,12 @@ OCL_TEST_P(Canny, AccuracyCustomGradient)
     const double low_thresh = 50.0, high_thresh = 100.0;
     double eps = 0.03;
 
-    OCL_OFF(cv::Canny(src_roi, dst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
+    OCL_OFF(ncvslideio::Canny(src_roi, dst_roi, low_thresh, high_thresh, aperture_size, useL2gradient));
     OCL_ON(
         UMat dx, dy;
         Sobel(usrc_roi, dx, CV_16S, 1, 0, aperture_size, 1, 0, BORDER_REPLICATE);
         Sobel(usrc_roi, dy, CV_16S, 0, 1, aperture_size, 1, 0, BORDER_REPLICATE);
-        cv::Canny(dx, dy, udst_roi, low_thresh, high_thresh, useL2gradient);
+        ncvslideio::Canny(dx, dy, udst_roi, low_thresh, high_thresh, useL2gradient);
     );
 
     EXPECT_MAT_SIMILAR(dst_roi, udst_roi, eps);

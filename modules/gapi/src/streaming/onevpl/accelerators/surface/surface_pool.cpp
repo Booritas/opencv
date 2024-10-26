@@ -5,7 +5,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -82,5 +82,5 @@ CachedPool::surface_ptr_t CachedPool::find_by_handle(mfxFrameSurface1* handle) {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

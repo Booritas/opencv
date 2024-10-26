@@ -46,7 +46,7 @@
 #include <typeinfo>
 #include <typeindex>
 
-namespace cv { namespace ocl {
+namespace ncvslideio { namespace ocl {
 
 //! @addtogroup core_opencl
 //! @{
@@ -631,7 +631,7 @@ public:
      */
     static ProgramSource fromBinary(const String& module, const String& name,
             const unsigned char* binary, const size_t size,
-            const cv::String& buildOptions = cv::String());
+            const ncvslideio::String& buildOptions = ncvslideio::String());
 
     /** @brief Describe OpenCL program in SPIR format.
      * Do not call clCreateProgramWithBinary() and/or clBuildProgram().
@@ -656,12 +656,12 @@ public:
      */
     static ProgramSource fromSPIR(const String& module, const String& name,
             const unsigned char* binary, const size_t size,
-            const cv::String& buildOptions = cv::String());
+            const ncvslideio::String& buildOptions = ncvslideio::String());
 
     //OpenCL 2.1+ only
     //static Program fromSPIRV(const String& module, const String& name,
     //        const unsigned char* binary, const size_t size,
-    //        const cv::String& buildOptions = cv::String());
+    //        const ncvslideio::String& buildOptions = ncvslideio::String());
 
     struct Impl; friend struct Impl;
     inline Impl* getImpl() const { return (Impl*)p; }
@@ -906,10 +906,10 @@ public:
 namespace internal {
 
 CV_EXPORTS bool isOpenCLForced();
-#define OCL_FORCE_CHECK(condition) (cv::ocl::internal::isOpenCLForced() || (condition))
+#define OCL_FORCE_CHECK(condition) (ncvslideio::ocl::internal::isOpenCLForced() || (condition))
 
 CV_EXPORTS bool isPerformanceCheckBypassed();
-#define OCL_PERFORMANCE_CHECK(condition) (cv::ocl::internal::isPerformanceCheckBypassed() || (condition))
+#define OCL_PERFORMANCE_CHECK(condition) (ncvslideio::ocl::internal::isPerformanceCheckBypassed() || (condition))
 
 CV_EXPORTS bool isCLBuffer(UMat& u);
 

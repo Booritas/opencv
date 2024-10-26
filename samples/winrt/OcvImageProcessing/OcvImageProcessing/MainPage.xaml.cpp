@@ -45,8 +45,8 @@ MainPage::MainPage()
 #ifdef __OPENCV_IMGCODECS_HPP__
 
     // Image loading OpenCV way ... way more simple
-    cv::Mat image = cv::imread("Assets/Lena.png");
-    Lena = cv::Mat(image.rows, image.cols, CV_8UC4);
+    ncvslideio::Mat image = ncvslideio::imread("Assets/Lena.png");
+    Lena = ncvslideio::Mat(image.rows, image.cols, CV_8UC4);
     cvtColor(image, Lena, COLOR_BGR2BGRA);
     UpdateImage(Lena);
 
@@ -80,7 +80,7 @@ MainPage::MainPage()
     {
         PixelDataProvider^ pixelProvider = thisTask.get();
         Platform::Array<byte>^ srcPixels = pixelProvider->DetachPixelData();
-        Lena = cv::Mat(frameHeight, frameWidth, CV_8UC4);
+        Lena = ncvslideio::Mat(frameHeight, frameWidth, CV_8UC4);
         memcpy(Lena.data, srcPixels->Data, 4*frameWidth*frameHeight);
         UpdateImage(Lena);
     });
@@ -94,18 +94,18 @@ MainPage::MainPage()
 /// </summary>
 /// <param name="suffix">Temporary file suffix, e.g. "tmp"</param>
 std::string OcvImageProcessing::MainPage::CreateTempFile(const std::string &suffix) {
-    return cv::tempfile(suffix.c_str());
+    return ncvslideio::tempfile(suffix.c_str());
 }
 
 /// <summary>
 /// Creating/writing a file in the application local directory
 /// </summary>
 /// <param name="path">Image to save</param>
-bool OcvImageProcessing::MainPage::SaveImage(cv::Mat image) {
+bool OcvImageProcessing::MainPage::SaveImage(ncvslideio::Mat image) {
     StorageFolder^ localFolderRT = ApplicationData::Current->LocalFolder;
-    cv::String localFile = ConvertPath(ApplicationData::Current->LocalFolder->Path) + "\\Lena.png";
+    ncvslideio::String localFile = ConvertPath(ApplicationData::Current->LocalFolder->Path) + "\\Lena.png";
 
-    return cv::imwrite(localFile, image);
+    return ncvslideio::imwrite(localFile, image);
 }
 
 /// <summary>
@@ -114,7 +114,7 @@ bool OcvImageProcessing::MainPage::SaveImage(cv::Mat image) {
 /// Can't use this one: https://msdn.microsoft.com/en-us/library/bb384865.aspx, not available on WinRT.
 /// </summary>
 /// <param name="path">Path to be converted</param>
-cv::String OcvImageProcessing::MainPage::ConvertPath(Platform::String^ path) {
+ncvslideio::String OcvImageProcessing::MainPage::ConvertPath(Platform::String^ path) {
     std::wstring localPathW(path->Begin());
 
     // Opt #1
@@ -128,9 +128,9 @@ cv::String OcvImageProcessing::MainPage::ConvertPath(Platform::String^ path) {
     char* localPathC = new char[outSize];
     size_t charsConverted = 0;
     wcstombs_s(&charsConverted, localPathC, outSize, localPathW.c_str(), localPathW.length());
-    cv::String localPath(localPathC);
+    ncvslideio::String localPath(localPathC);
 
-    // Implicit conversion from std::string to cv::String
+    // Implicit conversion from std::string to ncvslideio::String
     return localPath;
 }
 
@@ -157,7 +157,7 @@ void MainPage::OnNavigatedTo(NavigationEventArgs^ e)
     (void) e;    // Unused parameter
 }
 
-void OcvImageProcessing::MainPage::UpdateImage(const cv::Mat& image)
+void OcvImageProcessing::MainPage::UpdateImage(const ncvslideio::Mat& image)
 {
     // Create the WriteableBitmap
     WriteableBitmap^ bitmap = ref new WriteableBitmap(image.cols, image.rows);
@@ -180,52 +180,52 @@ void OcvImageProcessing::MainPage::UpdateImage(const cv::Mat& image)
 }
 
 
-cv::Mat OcvImageProcessing::MainPage::ApplyGrayFilter(const cv::Mat& image)
+ncvslideio::Mat OcvImageProcessing::MainPage::ApplyGrayFilter(const ncvslideio::Mat& image)
 {
-    cv::Mat result;
-    cv::Mat intermediateMat;
-    cv::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
-    cv::cvtColor(intermediateMat, result, COLOR_GRAY2BGRA);
+    ncvslideio::Mat result;
+    ncvslideio::Mat intermediateMat;
+    ncvslideio::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
+    ncvslideio::cvtColor(intermediateMat, result, COLOR_GRAY2BGRA);
     return result;
 }
 
-cv::Mat OcvImageProcessing::MainPage::ApplyCannyFilter(const cv::Mat& image)
+ncvslideio::Mat OcvImageProcessing::MainPage::ApplyCannyFilter(const ncvslideio::Mat& image)
 {
-    cv::Mat result;
-    cv::Mat intermediateMat;
-    cv::Canny(image, intermediateMat, 80, 90);
-    cv::cvtColor(intermediateMat, result, COLOR_GRAY2BGRA);
+    ncvslideio::Mat result;
+    ncvslideio::Mat intermediateMat;
+    ncvslideio::Canny(image, intermediateMat, 80, 90);
+    ncvslideio::cvtColor(intermediateMat, result, COLOR_GRAY2BGRA);
     return result;
 }
 
-cv::Mat OcvImageProcessing::MainPage::ApplyBlurFilter(const cv::Mat& image)
+ncvslideio::Mat OcvImageProcessing::MainPage::ApplyBlurFilter(const ncvslideio::Mat& image)
 {
-    cv::Mat result;
-    cv::blur(image, result, cv::Size(3,3));
+    ncvslideio::Mat result;
+    ncvslideio::blur(image, result, ncvslideio::Size(3,3));
     return result;
 }
 
-cv::Mat OcvImageProcessing::MainPage::ApplyFindFeaturesFilter(const cv::Mat& image)
+ncvslideio::Mat OcvImageProcessing::MainPage::ApplyFindFeaturesFilter(const ncvslideio::Mat& image)
 {
-    cv::Mat result;
-    cv::Mat intermediateMat;
-    cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(50);
-    std::vector<cv::KeyPoint> features;
+    ncvslideio::Mat result;
+    ncvslideio::Mat intermediateMat;
+    ncvslideio::Ptr<ncvslideio::FastFeatureDetector> detector = ncvslideio::FastFeatureDetector::create(50);
+    std::vector<ncvslideio::KeyPoint> features;
 
     image.copyTo(result);
-    cv::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
+    ncvslideio::cvtColor(image, intermediateMat, COLOR_RGBA2GRAY);
     detector->detect(intermediateMat, features);
 
     for( unsigned int i = 0; i < std::min(features.size(), (size_t)50); i++ )
     {
-        const cv::KeyPoint& kp = features[i];
-        cv::circle(result, cv::Point((int)kp.pt.x, (int)kp.pt.y), 10, cv::Scalar(255,0,0,255));
+        const ncvslideio::KeyPoint& kp = features[i];
+        ncvslideio::circle(result, ncvslideio::Point((int)kp.pt.x, (int)kp.pt.y), 10, ncvslideio::Scalar(255,0,0,255));
     }
 
     return result;
 }
 
-cv::Mat OcvImageProcessing::MainPage::ApplySepiaFilter(const cv::Mat& image)
+ncvslideio::Mat OcvImageProcessing::MainPage::ApplySepiaFilter(const ncvslideio::Mat& image)
 {
     const float SepiaKernelData[16] =
     {
@@ -234,9 +234,9 @@ cv::Mat OcvImageProcessing::MainPage::ApplySepiaFilter(const cv::Mat& image)
         /* R */0.189f, 0.769f, 0.393f, 0.f,
         /* A */0.000f, 0.000f, 0.000f, 1.f
     };
-    const cv::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
-    cv::Mat result;
-    cv::transform(image, result, SepiaKernel);
+    const ncvslideio::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
+    ncvslideio::Mat result;
+    ncvslideio::transform(image, result, SepiaKernel);
     return result;
 }
 

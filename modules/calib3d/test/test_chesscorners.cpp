@@ -393,19 +393,19 @@ bool validateData(const ChessBoardGenerator& cbg, const Size& imgSz,
         {
             const Point2f& cur = mat(i, j);
 
-            tmp = cv::norm(cur - mat(i + 1, j + 1)); // TODO cvtest
+            tmp = ncvslideio::norm(cur - mat(i + 1, j + 1)); // TODO cvtest
             if (tmp < minNeibDist)
                 minNeibDist = tmp;
 
-            tmp = cv::norm(cur - mat(i - 1, j + 1)); // TODO cvtest
+            tmp = ncvslideio::norm(cur - mat(i - 1, j + 1)); // TODO cvtest
             if (tmp < minNeibDist)
                 minNeibDist = tmp;
 
-            tmp = cv::norm(cur - mat(i + 1, j - 1)); // TODO cvtest
+            tmp = ncvslideio::norm(cur - mat(i + 1, j - 1)); // TODO cvtest
             if (tmp < minNeibDist)
                 minNeibDist = tmp;
 
-            tmp = cv::norm(cur - mat(i - 1, j - 1)); // TODO cvtest
+            tmp = ncvslideio::norm(cur - mat(i - 1, j - 1)); // TODO cvtest
             if (tmp < minNeibDist)
                 minNeibDist = tmp;
         }
@@ -444,7 +444,7 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
     bool res = true;
 
     //theRNG() = 0x58e6e895b9913160;
-    //cv::DefaultRngAuto dra;
+    //ncvslideio::DefaultRngAuto dra;
     //theRNG() = *ts->get_rng();
 
     Mat bg(Size(800, 600), CV_8UC3, Scalar::all(255));
@@ -463,7 +463,7 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
     int progress = 0;
     for(int i = 0; i < test_num; ++i)
     {
-        SCOPED_TRACE(cv::format("test_num=%d", test_num));
+        SCOPED_TRACE(ncvslideio::format("test_num=%d", test_num));
 
         progress = update_progress( progress, i, test_num, 0 );
         ChessBoardGenerator cbg(sizes[i % sizes_num]);
@@ -480,8 +480,8 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
 
         /*cb = cb * 0.8 + Scalar::all(30);
         GaussianBlur(cb, cb, Size(3, 3), 0.8);     */
-        //cv::addWeighted(cb, 0.8, bg, 0.2, 20, cb);
-        //cv::namedWindow("CB"); cv::imshow("CB", cb); cv::waitKey();
+        //ncvslideio::addWeighted(cb, 0.8, bg, 0.2, 20, cb);
+        //ncvslideio::namedWindow("CB"); ncvslideio::imshow("CB", cb); ncvslideio::waitKey();
 
         vector<Point2f> corners_found;
         int flags = i % 8; // need to check branches for all flags
@@ -501,7 +501,7 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
         {
             imshow("cb", cb);
             Mat cb_corners = cb.clone();
-            cv::drawChessboardCorners(cb_corners, cbg.cornersSize(), Mat(corners_found), found);
+            ncvslideio::drawChessboardCorners(cb_corners, cbg.cornersSize(), Mat(corners_found), found);
             imshow("corners", cb_corners);
             waitKey(0);
         }
@@ -539,13 +539,13 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
         vector<Point>& cnt = cnts[0];
         cnt.push_back(cg[  0]); cnt.push_back(cg[0+2]);
         cnt.push_back(cg[7+0]); cnt.push_back(cg[7+2]);
-        cv::drawContours(cb, cnts, -1, Scalar::all(128), FILLED);
+        ncvslideio::drawContours(cb, cnts, -1, Scalar::all(128), FILLED);
 
         found = findChessboardCornersWrapper(cb, cbg.cornersSize(), corners_found,0);
         if (found)
             res = false;
 
-        cv::drawChessboardCorners(cb, cbg.cornersSize(), Mat(corners_found), found);
+        ncvslideio::drawChessboardCorners(cb, cbg.cornersSize(), Mat(corners_found), found);
     }
 
     return res;
@@ -557,11 +557,11 @@ bool CV_ChessboardDetectorTest::checkByGenerator()
 bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
 {
     // draw 2D pattern
-    cv::Size pattern_size(6,5);
+    ncvslideio::Size pattern_size(6,5);
     int cell_size = 80;
     bool bwhite = true;
-    cv::Mat image = cv::Mat::ones((pattern_size.height+3)*cell_size,(pattern_size.width+3)*cell_size,CV_8UC1)*255;
-    cv::Mat pimage = image(Rect(cell_size,cell_size,(pattern_size.width+1)*cell_size,(pattern_size.height+1)*cell_size));
+    ncvslideio::Mat image = ncvslideio::Mat::ones((pattern_size.height+3)*cell_size,(pattern_size.width+3)*cell_size,CV_8UC1)*255;
+    ncvslideio::Mat pimage = image(Rect(cell_size,cell_size,(pattern_size.width+1)*cell_size,(pattern_size.height+1)*cell_size));
     pimage = 0;
     for(int row=0;row<=pattern_size.height;++row)
     {
@@ -572,7 +572,7 @@ bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
             if(bwhite2)
             {
                 int x = int(cell_size*col+0.5F);
-                pimage(cv::Rect(x,y,cell_size,cell_size)) = 255;
+                pimage(ncvslideio::Rect(x,y,cell_size,cell_size)) = 255;
             }
             bwhite2 = !bwhite2;
 
@@ -589,28 +589,28 @@ bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
         for(int col=0;col<pattern_size.width;++col)
         {
             int x = int(cell_size*(col+2));
-            pts1_all.push_back(cv::Point2f(x-0.5F,y-0.5F));
+            pts1_all.push_back(ncvslideio::Point2f(x-0.5F,y-0.5F));
         }
     }
 
     // back project chessboard corners to a virtual plane
     double fx = 500;
     double fy = 500;
-    cv::Point2f center(250,250);
+    ncvslideio::Point2f center(250,250);
     double fxi = 1.0/fx;
     double fyi = 1.0/fy;
     for(auto &&pt : pts1_all)
     {
         // calc camera ray
-        cv::Vec3f ray(float((pt.x-center.x)*fxi),float((pt.y-center.y)*fyi),1.0F);
-        ray /= cv::norm(ray);
+        ncvslideio::Vec3f ray(float((pt.x-center.x)*fxi),float((pt.y-center.y)*fyi),1.0F);
+        ray /= ncvslideio::norm(ray);
 
         // intersect ray with virtual plane
-        cv::Scalar plane(0,0,1,-1);
-        cv::Vec3f n(float(plane(0)),float(plane(1)),float(plane(2)));
-        cv::Point3f p0(0,0,0);
+        ncvslideio::Scalar plane(0,0,1,-1);
+        ncvslideio::Vec3f n(float(plane(0)),float(plane(1)),float(plane(2)));
+        ncvslideio::Point3f p0(0,0,0);
 
-        cv::Point3f l0(0,0,0);    // camera center in world coordinates
+        ncvslideio::Point3f l0(0,0,0);    // camera center in world coordinates
         p0.z = float(-plane(3)/plane(2));
         double val1 = ray.dot(n);
         if(val1 == 0)
@@ -619,7 +619,7 @@ bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
             ts->set_failed_test_info( cvtest::TS::FAIL_GENERIC);
             return false;
         }
-        pts3d.push_back(Point3f(ray/val1*cv::Vec3f((p0-l0)).dot(n))+l0);
+        pts3d.push_back(Point3f(ray/val1*ncvslideio::Vec3f((p0-l0)).dot(n))+l0);
     }
 
     // generate multiple rotations
@@ -628,8 +628,8 @@ bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
         // project 3d points to new camera
         Vec3f rvec(0.0F,0.05F,float(float(i)/180.0*CV_PI));
         Vec3f tvec(0,0,0);
-        cv::Mat k = (cv::Mat_<double>(3,3) << fx/2,0,center.x*2, 0,fy/2,center.y, 0,0,1);
-        cv::projectPoints(pts3d,rvec,tvec,k,cv::Mat(),pts2_all);
+        ncvslideio::Mat k = (ncvslideio::Mat_<double>(3,3) << fx/2,0,center.x*2, 0,fy/2,center.y, 0,0,1);
+        ncvslideio::projectPoints(pts3d,rvec,tvec,k,ncvslideio::Mat(),pts2_all);
 
         // get perspective transform using four correspondences and wrap original image
         pts1.clear();
@@ -662,10 +662,10 @@ bool CV_ChessboardDetectorTest::checkByGeneratorHighAccuracy()
             ts->set_failed_test_info( cvtest::TS::FAIL_BAD_ACCURACY );
             return false;
         }
-        //cv::cvtColor(out,out,cv::COLOR_GRAY2BGR);
-        //cv::drawChessboardCorners(out,pattern_size,corners_found,true);
-        //cv::imshow("img",out);
-        //cv::waitKey(-1);
+        //ncvslideio::cvtColor(out,out,ncvslideio::COLOR_GRAY2BGR);
+        //ncvslideio::drawChessboardCorners(out,pattern_size,corners_found,true);
+        //ncvslideio::imshow("img",out);
+        //ncvslideio::waitKey(-1);
     }
     return true;
 }
@@ -681,37 +681,37 @@ TEST(Calib3d_AsymmetricCirclesPatternDetectorWithClustering, accuracy) { CV_Ches
 
 TEST(Calib3d_ChessboardWithMarkers, regression_25806_white)
 {
-    const cv::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/";
-    const cv::Mat image = cv::imread(dataDir + "checkerboard_marker_white.png");
+    const ncvslideio::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/";
+    const ncvslideio::Mat image = ncvslideio::imread(dataDir + "checkerboard_marker_white.png");
 
     std::vector<Point2f> corners;
-    const bool success = cv::findChessboardCornersSB(image, Size(9, 14), corners, CALIB_CB_MARKER);
+    const bool success = ncvslideio::findChessboardCornersSB(image, Size(9, 14), corners, CALIB_CB_MARKER);
     ASSERT_TRUE(success);
 }
 
 TEST(Calib3d_ChessboardWithMarkers, regression_25806_black)
 {
-    const cv::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/";
-    const cv::Mat image = cv::imread(dataDir + "checkerboard_marker_black.png");
+    const ncvslideio::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/";
+    const ncvslideio::Mat image = ncvslideio::imread(dataDir + "checkerboard_marker_black.png");
 
     std::vector<Point2f> corners;
-    const bool success = cv::findChessboardCornersSB(image, Size(9, 14), corners, CALIB_CB_MARKER);
+    const bool success = ncvslideio::findChessboardCornersSB(image, Size(9, 14), corners, CALIB_CB_MARKER);
     ASSERT_TRUE(success);
 }
 
 TEST(Calib3d_CirclesPatternDetectorWithClustering, accuracy)
 {
-    cv::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/circles/";
+    ncvslideio::String dataDir = string(TS::ptr()->get_data_path()) + "cv/cameracalibration/circles/";
 
-    cv::Mat expected;
+    ncvslideio::Mat expected;
     FileStorage fs(dataDir + "circles_corners15.dat", FileStorage::READ);
     fs["corners"] >> expected;
     fs.release();
 
-    cv::Mat image = cv::imread(dataDir + "circles15.png");
+    ncvslideio::Mat image = ncvslideio::imread(dataDir + "circles15.png");
 
     std::vector<Point2f> centers;
-    cv::findCirclesGrid(image, Size(10, 8), centers, CALIB_CB_SYMMETRIC_GRID | CALIB_CB_CLUSTERING);
+    ncvslideio::findCirclesGrid(image, Size(10, 8), centers, CALIB_CB_SYMMETRIC_GRID | CALIB_CB_CLUSTERING);
     ASSERT_EQ(expected.total(), centers.size());
 
     double error = calcError(centers, expected);
@@ -815,7 +815,7 @@ TEST(Calib3d_AsymmetricCirclesPatternDetector, regression_19498)
 TEST(Calib3d_RotatedCirclesPatternDetector, issue_24964)
 {
     string path = cvtest::findDataFile("cv/cameracalibration/circles/circles_24964.png");
-    Mat image = cv::imread(path);
+    Mat image = ncvslideio::imread(path);
     ASSERT_FALSE(image.empty()) << "Can't read image: " << path;
 
     vector<Point2f> centers;

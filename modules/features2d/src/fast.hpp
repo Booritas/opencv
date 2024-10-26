@@ -44,7 +44,7 @@ The references are:
 #ifndef OPENCV_FEATURES2D_FAST_HPP
 #define OPENCV_FEATURES2D_FAST_HPP
 
-namespace cv
+namespace ncvslideio
 {
 namespace opt_AVX2
 {

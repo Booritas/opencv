@@ -11,60 +11,60 @@
 #include <opencv2/gapi/gmat.hpp>
 #include <opencv2/gapi/gscalar.hpp>
 
-namespace cv
+namespace ncvslideio
 {
-GAPI_EXPORTS cv::GMat operator+(const cv::GMat&    lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator+(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator+(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator+(const cv::GScalar& lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator+(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator+(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator-(const cv::GMat&    lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator-(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator-(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator-(const cv::GScalar& lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator-(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator-(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator*(const cv::GMat&    lhs, float              rhs);
-GAPI_EXPORTS cv::GMat operator*(float              lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator*(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator*(const cv::GScalar& lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator*(const ncvslideio::GMat&    lhs, float              rhs);
+GAPI_EXPORTS ncvslideio::GMat operator*(float              lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator*(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator*(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator/(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator/(const cv::GScalar& lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator/(const cv::GMat&    lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator/(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator/(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator/(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator&(const cv::GMat&    lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator|(const cv::GMat&    lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator^(const cv::GMat&    lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator~(const cv::GMat&    lhs);
+GAPI_EXPORTS ncvslideio::GMat operator&(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator|(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator^(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator~(const ncvslideio::GMat&    lhs);
 
-GAPI_EXPORTS cv::GMat operator&(const cv::GScalar& lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator|(const cv::GScalar& lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator^(const cv::GScalar& lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator&(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator|(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator^(const ncvslideio::GScalar& lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator&(const cv::GMat& lhs, const cv::GScalar&    rhs);
-GAPI_EXPORTS cv::GMat operator|(const cv::GMat& lhs, const cv::GScalar&    rhs);
-GAPI_EXPORTS cv::GMat operator^(const cv::GMat& lhs, const cv::GScalar&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator&(const ncvslideio::GMat& lhs, const ncvslideio::GScalar&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator|(const ncvslideio::GMat& lhs, const ncvslideio::GScalar&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator^(const ncvslideio::GMat& lhs, const ncvslideio::GScalar&    rhs);
 
-GAPI_EXPORTS cv::GMat operator>(const cv::GMat&    lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator>=(const cv::GMat&   lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator<(const cv::GMat&    lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator<=(const cv::GMat&   lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator==(const cv::GMat&   lhs, const cv::GMat&    rhs);
-GAPI_EXPORTS cv::GMat operator!=(const cv::GMat&   lhs, const cv::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>=(const ncvslideio::GMat&   lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<(const ncvslideio::GMat&    lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<=(const ncvslideio::GMat&   lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator==(const ncvslideio::GMat&   lhs, const ncvslideio::GMat&    rhs);
+GAPI_EXPORTS ncvslideio::GMat operator!=(const ncvslideio::GMat&   lhs, const ncvslideio::GMat&    rhs);
 
-GAPI_EXPORTS cv::GMat operator>(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator>=(const cv::GMat&   lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator<(const cv::GMat&    lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator<=(const cv::GMat&   lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator==(const cv::GMat&   lhs, const cv::GScalar& rhs);
-GAPI_EXPORTS cv::GMat operator!=(const cv::GMat&   lhs, const cv::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>=(const ncvslideio::GMat&   lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<(const ncvslideio::GMat&    lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<=(const ncvslideio::GMat&   lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator==(const ncvslideio::GMat&   lhs, const ncvslideio::GScalar& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator!=(const ncvslideio::GMat&   lhs, const ncvslideio::GScalar& rhs);
 
-GAPI_EXPORTS cv::GMat operator>(const cv::GScalar&    lhs, const cv::GMat& rhs);
-GAPI_EXPORTS cv::GMat operator>=(const cv::GScalar&   lhs, const cv::GMat& rhs);
-GAPI_EXPORTS cv::GMat operator<(const cv::GScalar&    lhs, const cv::GMat& rhs);
-GAPI_EXPORTS cv::GMat operator<=(const cv::GScalar&   lhs, const cv::GMat& rhs);
-GAPI_EXPORTS cv::GMat operator==(const cv::GScalar&   lhs, const cv::GMat& rhs);
-GAPI_EXPORTS cv::GMat operator!=(const cv::GScalar&   lhs, const cv::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>(const ncvslideio::GScalar&    lhs, const ncvslideio::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator>=(const ncvslideio::GScalar&   lhs, const ncvslideio::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<(const ncvslideio::GScalar&    lhs, const ncvslideio::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator<=(const ncvslideio::GScalar&   lhs, const ncvslideio::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator==(const ncvslideio::GScalar&   lhs, const ncvslideio::GMat& rhs);
+GAPI_EXPORTS ncvslideio::GMat operator!=(const ncvslideio::GScalar&   lhs, const ncvslideio::GMat& rhs);
 } // cv
 
 #endif // OPENCV_GAPI_OPERATORS_HPP

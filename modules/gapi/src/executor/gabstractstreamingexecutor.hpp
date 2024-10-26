@@ -13,7 +13,7 @@
 
 #include "backends/common/gbackend.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
 class GAbstractStreamingExecutor
@@ -21,29 +21,29 @@ class GAbstractStreamingExecutor
 protected:
     std::unique_ptr<ade::Graph> m_orig_graph;
     std::shared_ptr<ade::Graph> m_island_graph;
-    cv::GCompileArgs m_comp_args;
+    ncvslideio::GCompileArgs m_comp_args;
 
-    cv::gimpl::GIslandModel::Graph m_gim; // FIXME: make const?
+    ncvslideio::gimpl::GIslandModel::Graph m_gim; // FIXME: make const?
     const bool m_desync;
 
 public:
     explicit GAbstractStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
-                                        const cv::GCompileArgs &comp_args);
+                                        const ncvslideio::GCompileArgs &comp_args);
     virtual ~GAbstractStreamingExecutor() = default;
     virtual void setSource(GRunArgs &&args) = 0;
     virtual void start() = 0;
-    virtual bool pull(cv::GRunArgsP &&outs) = 0;
-    virtual bool pull(cv::GOptRunArgsP &&outs) = 0;
+    virtual bool pull(ncvslideio::GRunArgsP &&outs) = 0;
+    virtual bool pull(ncvslideio::GOptRunArgsP &&outs) = 0;
 
-    using PyPullResult = std::tuple<bool, cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>>;
+    using PyPullResult = std::tuple<bool, ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>>;
     virtual PyPullResult pull() = 0;
 
-    virtual bool try_pull(cv::GRunArgsP &&outs) = 0;
+    virtual bool try_pull(ncvslideio::GRunArgsP &&outs) = 0;
     virtual void stop() = 0;
     virtual bool running() const = 0;
 };
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GABSTRACT_STREAMING_EXECUTOR_HPP

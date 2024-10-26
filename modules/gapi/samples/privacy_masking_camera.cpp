@@ -45,25 +45,25 @@ std::string weights_path(const std::string &model_path) {
 
 namespace custom {
 
-G_API_NET(VehLicDetector, <cv::GMat(cv::GMat)>, "vehicle-license-plate-detector");
-G_API_NET(FaceDetector,   <cv::GMat(cv::GMat)>,                  "face-detector");
+G_API_NET(VehLicDetector, <ncvslideio::GMat(ncvslideio::GMat)>, "vehicle-license-plate-detector");
+G_API_NET(FaceDetector,   <ncvslideio::GMat(ncvslideio::GMat)>,                  "face-detector");
 
-using GDetections = cv::GArray<cv::Rect>;
+using GDetections = ncvslideio::GArray<ncvslideio::Rect>;
 
-using GPrims = cv::GArray<cv::gapi::wip::draw::Prim>;
+using GPrims = ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim>;
 
 G_API_OP(ToMosaic, <GPrims(GDetections, GDetections)>, "custom.privacy_masking.to_mosaic") {
-    static cv::GArrayDesc outMeta(const cv::GArrayDesc &, const cv::GArrayDesc &) {
-        return cv::empty_array_desc();
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc &, const ncvslideio::GArrayDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
 GAPI_OCV_KERNEL(OCVToMosaic, ToMosaic) {
-    static void run(const std::vector<cv::Rect> &in_plate_rcs,
-                    const std::vector<cv::Rect> &in_face_rcs,
-                          std::vector<cv::gapi::wip::draw::Prim> &out_prims) {
+    static void run(const std::vector<ncvslideio::Rect> &in_plate_rcs,
+                    const std::vector<ncvslideio::Rect> &in_face_rcs,
+                          std::vector<ncvslideio::gapi::wip::draw::Prim> &out_prims) {
         out_prims.clear();
-        const auto cvt = [](cv::Rect rc) {
+        const auto cvt = [](ncvslideio::Rect rc) {
             // Align the mosaic region to mosaic block size
             const int BLOCK_SIZE = 24;
             const int dw = BLOCK_SIZE - (rc.width  % BLOCK_SIZE);
@@ -72,7 +72,7 @@ GAPI_OCV_KERNEL(OCVToMosaic, ToMosaic) {
             rc.height += dh;
             rc.x      -= dw / 2;
             rc.y      -= dh / 2;
-            return cv::gapi::wip::draw::Mosaic{rc, BLOCK_SIZE, 0};
+            return ncvslideio::gapi::wip::draw::Mosaic{rc, BLOCK_SIZE, 0};
         };
         for (auto &&rc : in_plate_rcs) { out_prims.emplace_back(cvt(rc)); }
         for (auto &&rc : in_face_rcs)  { out_prims.emplace_back(cvt(rc)); }
@@ -83,7 +83,7 @@ GAPI_OCV_KERNEL(OCVToMosaic, ToMosaic) {
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -93,68 +93,68 @@ int main(int argc, char *argv[])
     const bool no_show = cmd.get<bool>("noshow");
     const bool run_trad = cmd.get<bool>("trad");
 
-    cv::GMat in;
-    cv::GMat blob_plates = cv::gapi::infer<custom::VehLicDetector>(in);
-    cv::GMat blob_faces  = cv::gapi::infer<custom::FaceDetector>(in);
+    ncvslideio::GMat in;
+    ncvslideio::GMat blob_plates = ncvslideio::gapi::infer<custom::VehLicDetector>(in);
+    ncvslideio::GMat blob_faces  = ncvslideio::gapi::infer<custom::FaceDetector>(in);
     // VehLicDetector from Open Model Zoo marks vehicles with label "1" and
     // license plates with label "2", filter out license plates only.
-    cv::GOpaque<cv::Size> sz = cv::gapi::streaming::size(in);
-    cv::GArray<cv::Rect> rc_plates, rc_faces;
-    cv::GArray<int> labels;
-    std::tie(rc_plates, labels) = cv::gapi::parseSSD(blob_plates, sz, 0.5f, 2);
+    ncvslideio::GOpaque<ncvslideio::Size> sz = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GArray<ncvslideio::Rect> rc_plates, rc_faces;
+    ncvslideio::GArray<int> labels;
+    std::tie(rc_plates, labels) = ncvslideio::gapi::parseSSD(blob_plates, sz, 0.5f, 2);
     // Face detector produces faces only so there's no need to filter by label,
     // pass "-1".
-    std::tie(rc_faces, labels) = cv::gapi::parseSSD(blob_faces, sz, 0.5f, -1);
-    cv::GMat out = cv::gapi::wip::draw::render3ch(in, custom::ToMosaic::on(rc_plates, rc_faces));
-    cv::GComputation graph(in, out);
+    std::tie(rc_faces, labels) = ncvslideio::gapi::parseSSD(blob_faces, sz, 0.5f, -1);
+    ncvslideio::GMat out = ncvslideio::gapi::wip::draw::render3ch(in, custom::ToMosaic::on(rc_plates, rc_faces));
+    ncvslideio::GComputation graph(in, out);
 
     const auto plate_model_path = cmd.get<std::string>("platm");
-    auto plate_net = cv::gapi::ie::Params<custom::VehLicDetector> {
+    auto plate_net = ncvslideio::gapi::ie::Params<custom::VehLicDetector> {
         plate_model_path,                // path to topology IR
         weights_path(plate_model_path),  // path to weights
         cmd.get<std::string>("platd"),   // device specifier
     };
     const auto face_model_path = cmd.get<std::string>("facem");
-    auto face_net = cv::gapi::ie::Params<custom::FaceDetector> {
+    auto face_net = ncvslideio::gapi::ie::Params<custom::FaceDetector> {
         face_model_path,                 // path to topology IR
         weights_path(face_model_path),   // path to weights
         cmd.get<std::string>("faced"),   // device specifier
     };
-    auto kernels = cv::gapi::kernels<custom::OCVToMosaic>();
-    auto networks = cv::gapi::networks(plate_net, face_net);
+    auto kernels = ncvslideio::gapi::kernels<custom::OCVToMosaic>();
+    auto networks = ncvslideio::gapi::networks(plate_net, face_net);
 
-    cv::TickMeter tm;
-    cv::Mat out_frame;
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat out_frame;
     std::size_t frames = 0u;
     std::cout << "Reading " << input << std::endl;
 
     if (run_trad) {
-        cv::Mat in_frame;
-        cv::VideoCapture cap(input);
+        ncvslideio::Mat in_frame;
+        ncvslideio::VideoCapture cap(input);
         cap >> in_frame;
 
-        auto exec = graph.compile(cv::descr_of(in_frame), cv::compile_args(kernels, networks));
+        auto exec = graph.compile(ncvslideio::descr_of(in_frame), ncvslideio::compile_args(kernels, networks));
         tm.start();
         do {
             exec(in_frame, out_frame);
             if (!no_show) {
-                cv::imshow("Out", out_frame);
-                cv::waitKey(1);
+                ncvslideio::imshow("Out", out_frame);
+                ncvslideio::waitKey(1);
             }
             frames++;
         } while (cap.read(in_frame));
         tm.stop();
     } else {
-        auto pipeline = graph.compileStreaming(cv::compile_args(kernels, networks));
-        pipeline.setSource(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input));
+        auto pipeline = graph.compileStreaming(ncvslideio::compile_args(kernels, networks));
+        pipeline.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input));
         pipeline.start();
         tm.start();
 
-        while (pipeline.pull(cv::gout(out_frame))) {
+        while (pipeline.pull(ncvslideio::gout(out_frame))) {
             frames++;
             if (!no_show) {
-                cv::imshow("Out", out_frame);
-                cv::waitKey(1);
+                ncvslideio::imshow("Out", out_frame);
+                ncvslideio::waitKey(1);
             }
         }
 

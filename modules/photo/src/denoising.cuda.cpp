@@ -55,21 +55,21 @@
 #  include "opencv2/cudaimgproc.hpp"
 #endif
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 #if !defined (HAVE_CUDA) || !defined(HAVE_OPENCV_CUDAARITHM) || !defined(HAVE_OPENCV_CUDAIMGPROC)
 
-void cv::cuda::nonLocalMeans(InputArray, OutputArray, float, int, int, int, Stream&) { throw_no_cuda(); }
-void cv::cuda::fastNlMeansDenoising(InputArray, OutputArray, float, int, int, Stream&) { throw_no_cuda(); }
-void cv::cuda::fastNlMeansDenoisingColored(InputArray, OutputArray, float, float, int, int, Stream&) { throw_no_cuda(); }
+void ncvslideio::cuda::nonLocalMeans(InputArray, OutputArray, float, int, int, int, Stream&) { throw_no_cuda(); }
+void ncvslideio::cuda::fastNlMeansDenoising(InputArray, OutputArray, float, int, int, Stream&) { throw_no_cuda(); }
+void ncvslideio::cuda::fastNlMeansDenoisingColored(InputArray, OutputArray, float, float, int, int, Stream&) { throw_no_cuda(); }
 
 #else
 
 //////////////////////////////////////////////////////////////////////////////////
 //// Non Local Means Denosing (brute force)
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     namespace imgproc
     {
@@ -78,9 +78,9 @@ namespace cv { namespace cuda { namespace device
     }
 }}}
 
-void cv::cuda::nonLocalMeans(InputArray _src, OutputArray _dst, float h, int search_window, int block_window, int borderMode, Stream& stream)
+void ncvslideio::cuda::nonLocalMeans(InputArray _src, OutputArray _dst, float h, int search_window, int block_window, int borderMode, Stream& stream)
 {
-    using cv::cuda::device::imgproc::nlm_bruteforce_gpu;
+    using ncvslideio::cuda::device::imgproc::nlm_bruteforce_gpu;
     typedef void (*func_t)(const PtrStepSzb& src, PtrStepSzb dst, int search_radius, int block_radius, float h, int borderMode, cudaStream_t stream);
 
     static const func_t funcs[4] = { nlm_bruteforce_gpu<uchar>, nlm_bruteforce_gpu<uchar2>, nlm_bruteforce_gpu<uchar3>, 0/*nlm_bruteforce_gpu<uchar4>,*/ };
@@ -101,7 +101,7 @@ void cv::cuda::nonLocalMeans(InputArray _src, OutputArray _dst, float h, int sea
     func(src, dst, search_window/2, block_window/2, h, borderMode, StreamAccessor::getStream(stream));
 }
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     namespace imgproc
     {
@@ -116,7 +116,7 @@ namespace cv { namespace cuda { namespace device
      }
 }}}
 
-void cv::cuda::fastNlMeansDenoising(InputArray _src, OutputArray _dst, float h, int search_window, int block_window, Stream& stream)
+void ncvslideio::cuda::fastNlMeansDenoising(InputArray _src, OutputArray _dst, float h, int search_window, int block_window, Stream& stream)
 {
     const GpuMat src = _src.getGpuMat();
 
@@ -128,14 +128,14 @@ void cv::cuda::fastNlMeansDenoising(InputArray _src, OutputArray _dst, float h, 
     BufferPool pool(stream);
 
     GpuMat extended_src = pool.getBuffer(esize, src.type());
-    cv::cuda::copyMakeBorder(src, extended_src, border_size, border_size, border_size, border_size, cv::BORDER_DEFAULT, Scalar(), stream);
+    ncvslideio::cuda::copyMakeBorder(src, extended_src, border_size, border_size, border_size, border_size, ncvslideio::BORDER_DEFAULT, Scalar(), stream);
     GpuMat src_hdr = extended_src(Rect(Point2i(border_size, border_size), src.size()));
 
     int bcols, brows;
     device::imgproc::nln_fast_get_buffer_size(src_hdr, search_window, block_window, bcols, brows);
     GpuMat buffer = pool.getBuffer(brows, bcols, CV_32S);
 
-    using namespace cv::cuda::device::imgproc;
+    using namespace ncvslideio::cuda::device::imgproc;
     typedef void (*nlm_fast_t)(const PtrStepSzb&, PtrStepSzb, PtrStepi, int, int, float, cudaStream_t);
     static const nlm_fast_t funcs[] = { nlm_fast_gpu<uchar>, nlm_fast_gpu<uchar2>, nlm_fast_gpu<uchar3>, 0};
 
@@ -145,7 +145,7 @@ void cv::cuda::fastNlMeansDenoising(InputArray _src, OutputArray _dst, float h, 
     funcs[src.channels()-1](src_hdr, dst, buffer, search_window, block_window, h, StreamAccessor::getStream(stream));
 }
 
-void cv::cuda::fastNlMeansDenoisingColored(InputArray _src, OutputArray _dst, float h_luminance, float h_color, int search_window, int block_window, Stream& stream)
+void ncvslideio::cuda::fastNlMeansDenoisingColored(InputArray _src, OutputArray _dst, float h_luminance, float h_color, int search_window, int block_window, Stream& stream)
 {
     const GpuMat src = _src.getGpuMat();
 
@@ -154,7 +154,7 @@ void cv::cuda::fastNlMeansDenoisingColored(InputArray _src, OutputArray _dst, fl
     BufferPool pool(stream);
 
     GpuMat lab = pool.getBuffer(src.size(), src.type());
-    cv::cuda::cvtColor(src, lab, cv::COLOR_BGR2Lab, 0, stream);
+    ncvslideio::cuda::cvtColor(src, lab, ncvslideio::COLOR_BGR2Lab, 0, stream);
 
     GpuMat l = pool.getBuffer(src.size(), CV_8U);
     GpuMat ab = pool.getBuffer(src.size(), CV_8UC2);
@@ -164,7 +164,7 @@ void cv::cuda::fastNlMeansDenoisingColored(InputArray _src, OutputArray _dst, fl
     fastNlMeansDenoising(ab, ab, h_color, search_window, block_window, stream);
 
     device::imgproc::fnlm_merge_channels(l, ab, lab, StreamAccessor::getStream(stream));
-    cv::cuda::cvtColor(lab, _dst, cv::COLOR_Lab2BGR, 0, stream);
+    ncvslideio::cuda::cvtColor(lab, _dst, ncvslideio::COLOR_Lab2BGR, 0, stream);
 }
 
 #endif

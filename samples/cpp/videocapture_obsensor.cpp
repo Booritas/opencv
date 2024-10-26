@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 int main()
 {
     VideoCapture obsensorCapture(0, CAP_OBSENSOR);
@@ -55,12 +55,12 @@ int main()
             if (!image.empty() && !depthMap.empty())
             {
                 depthMap.convertTo(adjDepthMap, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
-                cv::resize(adjDepthMap, adjDepthMap, cv::Size(image.cols, image.rows));
+                ncvslideio::resize(adjDepthMap, adjDepthMap, ncvslideio::Size(image.cols, image.rows));
                 for (int i = 0; i < image.rows; i++)
                 {
                     for (int j = 0; j < image.cols; j++)
                     {
-                        cv::Vec3b& outRgb = image.at<cv::Vec3b>(i, j);
+                        ncvslideio::Vec3b& outRgb = image.at<ncvslideio::Vec3b>(i, j);
                         uint8_t depthValue = 255 - adjDepthMap.at<uint8_t>(i, j);
                         if (depthValue != 0 && depthValue != 255)
                         {

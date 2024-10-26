@@ -15,8 +15,8 @@
 #include <opencv2/highgui.hpp>
 //![includes]
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 void getClasses(std::string classesFile);
 void drawPrediction(int classId, float conf, int left, int top, int right, int bottom, Mat& frame);
@@ -120,7 +120,7 @@ void yoloPostProcessing(
     if (model_name == "yolov8" || model_name == "yolov10" ||
         model_name == "yolov9")
     {
-        cv::transposeND(outs[0], {0, 2, 1}, outs[0]);
+        ncvslideio::transposeND(outs[0], {0, 2, 1}, outs[0]);
     }
 
     if (model_name == "yolonas")
@@ -130,7 +130,7 @@ void yoloPostProcessing(
         // squeeze the first dimension
         outs[0] = outs[0].reshape(1, outs[0].size[1]);
         outs[1] = outs[1].reshape(1, outs[1].size[1]);
-        cv::hconcat(outs[1], outs[0], concat_out);
+        ncvslideio::hconcat(outs[1], outs[0], concat_out);
         outs[0] = concat_out;
         // remove the second element
         outs.pop_back();
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
         cap.open(cameraIndex);
         if (!cap.isOpened())
         {
-            CV_Error(Error::StsError, cv::format("Cannot open camera #%d", cameraIndex));
+            CV_Error(Error::StsError, ncvslideio::format("Cannot open camera #%d", cameraIndex));
         }
         isCamera = true;
     }

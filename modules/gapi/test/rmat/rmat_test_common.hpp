@@ -12,10 +12,10 @@
 
 namespace opencv_test {
 class RMatAdapterRef : public RMat::IAdapter {
-    cv::Mat& m_mat;
+    ncvslideio::Mat& m_mat;
     bool& m_callbackCalled;
 public:
-    RMatAdapterRef(cv::Mat& m, bool& callbackCalled)
+    RMatAdapterRef(ncvslideio::Mat& m, bool& callbackCalled)
         : m_mat(m), m_callbackCalled(callbackCalled)
     {}
     virtual RMat::View access(RMat::Access access) override {
@@ -24,25 +24,25 @@ public:
             steps[i] = m_mat.step[i];
         }
         if (access == RMat::Access::W) {
-            return RMat::View(cv::descr_of(m_mat), m_mat.data, steps,
+            return RMat::View(ncvslideio::descr_of(m_mat), m_mat.data, steps,
                               [this](){
                                   EXPECT_FALSE(m_callbackCalled);
                                   m_callbackCalled = true;
                               });
         } else {
-            return RMat::View(cv::descr_of(m_mat), m_mat.data, steps);
+            return RMat::View(ncvslideio::descr_of(m_mat), m_mat.data, steps);
         }
     }
-    virtual cv::GMatDesc desc() const override { return cv::descr_of(m_mat); }
+    virtual ncvslideio::GMatDesc desc() const override { return ncvslideio::descr_of(m_mat); }
 };
 
 class RMatAdapterCopy : public RMat::IAdapter {
-    cv::Mat& m_deviceMat;
-    cv::Mat  m_hostMat;
+    ncvslideio::Mat& m_deviceMat;
+    ncvslideio::Mat  m_hostMat;
     bool& m_callbackCalled;
 
 public:
-    RMatAdapterCopy(cv::Mat& m, bool& callbackCalled)
+    RMatAdapterCopy(ncvslideio::Mat& m, bool& callbackCalled)
         : m_deviceMat(m), m_hostMat(m.clone()), m_callbackCalled(callbackCalled)
     {}
     virtual RMat::View access(RMat::Access access) override {
@@ -51,7 +51,7 @@ public:
             steps[i] = m_hostMat.step[i];
         }
         if (access == RMat::Access::W) {
-            return RMat::View(cv::descr_of(m_hostMat), m_hostMat.data, steps,
+            return RMat::View(ncvslideio::descr_of(m_hostMat), m_hostMat.data, steps,
                               [this](){
                                   EXPECT_FALSE(m_callbackCalled);
                                   m_callbackCalled = true;
@@ -59,10 +59,10 @@ public:
                               });
         } else {
             m_deviceMat.copyTo(m_hostMat);
-            return RMat::View(cv::descr_of(m_hostMat), m_hostMat.data, steps);
+            return RMat::View(ncvslideio::descr_of(m_hostMat), m_hostMat.data, steps);
         }
     }
-    virtual cv::GMatDesc desc() const override { return cv::descr_of(m_hostMat); }
+    virtual ncvslideio::GMatDesc desc() const override { return ncvslideio::descr_of(m_hostMat); }
 };
 } // namespace opencv_test
 

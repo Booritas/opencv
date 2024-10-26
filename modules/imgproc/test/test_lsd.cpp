@@ -290,7 +290,7 @@ TEST_F(Imgproc_LSD_Common, supportsVec4iResult)
             {
                 for (int ch = 0; ch < 4; ch++)
                 {
-                    if (cv::saturate_cast<int>(lines[lineIndex][ch]) != linesVec4i[lineIndex][ch])
+                    if (ncvslideio::saturate_cast<int>(lines[lineIndex][ch]) != linesVec4i[lineIndex][ch])
                     {
                         pass = false;
                         break;

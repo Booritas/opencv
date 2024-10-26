@@ -44,7 +44,7 @@
 #include "fisheye.hpp"
 #include <limits>
 
-namespace cv { namespace
+namespace ncvslideio { namespace
 {
     struct JacobianRow
     {
@@ -58,9 +58,9 @@ namespace cv { namespace
 }}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::projectPoints
+/// ncvslideio::fisheye::projectPoints
 
-void cv::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints, const Affine3d& affine,
+void ncvslideio::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints, const Affine3d& affine,
     InputArray K, InputArray D, double alpha, OutputArray jacobian)
 {
     CV_INSTRUMENT_REGION();
@@ -68,7 +68,7 @@ void cv::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints
     projectPoints(objectPoints, imagePoints, affine.rvec(), affine.translation(), K, D, alpha, jacobian);
 }
 
-void cv::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints, InputArray _rvec,
+void ncvslideio::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints, InputArray _rvec,
         InputArray _tvec, InputArray _K, InputArray _D, double alpha, OutputArray jacobian)
 {
     CV_INSTRUMENT_REGION();
@@ -87,7 +87,7 @@ void cv::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints
 
     CV_Assert(_K.size() == Size(3,3) && (_K.type() == CV_32F || _K.type() == CV_64F) && _D.type() == _K.type() && _D.total() == 4);
 
-    cv::Vec2d f, c;
+    ncvslideio::Vec2d f, c;
     if (_K.depth() == CV_32F)
     {
 
@@ -252,9 +252,9 @@ void cv::fisheye::projectPoints(InputArray objectPoints, OutputArray imagePoints
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::distortPoints
+/// ncvslideio::fisheye::distortPoints
 
-void cv::fisheye::distortPoints(InputArray undistorted, OutputArray distorted, InputArray K, InputArray D, double alpha)
+void ncvslideio::fisheye::distortPoints(InputArray undistorted, OutputArray distorted, InputArray K, InputArray D, double alpha)
 {
     CV_INSTRUMENT_REGION();
 
@@ -265,7 +265,7 @@ void cv::fisheye::distortPoints(InputArray undistorted, OutputArray distorted, I
 
     CV_Assert(K.size() == Size(3,3) && (K.type() == CV_32F || K.type() == CV_64F) && D.total() == 4);
 
-    cv::Vec2d f, c;
+    ncvslideio::Vec2d f, c;
     if (K.depth() == CV_32F)
     {
         Matx33f camMat = K.getMat();
@@ -315,15 +315,15 @@ void cv::fisheye::distortPoints(InputArray undistorted, OutputArray distorted, I
     }
 }
 
-void cv::fisheye::distortPoints(InputArray _undistorted, OutputArray distorted, InputArray Kundistorted, InputArray K, InputArray D, double alpha)
+void ncvslideio::fisheye::distortPoints(InputArray _undistorted, OutputArray distorted, InputArray Kundistorted, InputArray K, InputArray D, double alpha)
 {
     CV_INSTRUMENT_REGION();
 
     CV_Assert(_undistorted.type() == CV_32FC2 || _undistorted.type() == CV_64FC2);
     CV_Assert(Kundistorted.size() == Size(3,3) && (Kundistorted.type() == CV_32F || Kundistorted.type() == CV_64F));
 
-    cv::Mat undistorted = _undistorted.getMat();
-    cv::Mat normalized(undistorted.size(), CV_64FC2);
+    ncvslideio::Mat undistorted = _undistorted.getMat();
+    ncvslideio::Mat normalized(undistorted.size(), CV_64FC2);
 
     Mat Knew = Kundistorted.getMat();
 
@@ -354,13 +354,13 @@ void cv::fisheye::distortPoints(InputArray _undistorted, OutputArray distorted, 
         normXd[i][1] = (p[1] - cy) / fy;
     }
 
-    cv::fisheye::distortPoints(normalized, distorted, K, D, alpha);
+    ncvslideio::fisheye::distortPoints(normalized, distorted, K, D, alpha);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::undistortPoints
+/// ncvslideio::fisheye::undistortPoints
 
-void cv::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted, InputArray K, InputArray D,
+void ncvslideio::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted, InputArray K, InputArray D,
                                    InputArray R, InputArray P, TermCriteria criteria)
 {
     CV_INSTRUMENT_REGION();
@@ -375,7 +375,7 @@ void cv::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted
 
     CV_Assert(criteria.isValid());
 
-    cv::Vec2d f, c;
+    ncvslideio::Vec2d f, c;
     if (K.depth() == CV_32F)
     {
         Matx33f camMat = K.getMat();
@@ -391,28 +391,28 @@ void cv::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted
 
     Vec4d k = D.depth() == CV_32F ? (Vec4d)*D.getMat().ptr<Vec4f>(): *D.getMat().ptr<Vec4d>();
 
-    cv::Matx33d RR = cv::Matx33d::eye();
+    ncvslideio::Matx33d RR = ncvslideio::Matx33d::eye();
     if (!R.empty() && R.total() * R.channels() == 3)
     {
-        cv::Vec3d rvec;
+        ncvslideio::Vec3d rvec;
         R.getMat().convertTo(rvec, CV_64F);
-        RR = cv::Affine3d(rvec).rotation();
+        RR = ncvslideio::Affine3d(rvec).rotation();
     }
     else if (!R.empty() && R.size() == Size(3, 3))
         R.getMat().convertTo(RR, CV_64F);
 
     if(!P.empty())
     {
-        cv::Matx33d PP;
+        ncvslideio::Matx33d PP;
         P.getMat().colRange(0, 3).convertTo(PP, CV_64F);
         RR = PP * RR;
     }
 
     // start undistorting
-    const cv::Vec2f* srcf = distorted.getMat().ptr<cv::Vec2f>();
-    const cv::Vec2d* srcd = distorted.getMat().ptr<cv::Vec2d>();
-    cv::Vec2f* dstf = undistorted.getMat().ptr<cv::Vec2f>();
-    cv::Vec2d* dstd = undistorted.getMat().ptr<cv::Vec2d>();
+    const ncvslideio::Vec2f* srcf = distorted.getMat().ptr<ncvslideio::Vec2f>();
+    const ncvslideio::Vec2d* srcd = distorted.getMat().ptr<ncvslideio::Vec2d>();
+    ncvslideio::Vec2f* dstf = undistorted.getMat().ptr<ncvslideio::Vec2f>();
+    ncvslideio::Vec2d* dstd = undistorted.getMat().ptr<ncvslideio::Vec2d>();
 
     size_t n = distorted.total();
     int sdepth = distorted.depth();
@@ -502,10 +502,10 @@ void cv::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::initUndistortRectifyMap
+/// ncvslideio::fisheye::initUndistortRectifyMap
 
-void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArray R, InputArray P,
-    const cv::Size& size, int m1type, OutputArray map1, OutputArray map2 )
+void ncvslideio::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArray R, InputArray P,
+    const ncvslideio::Size& size, int m1type, OutputArray map1, OutputArray map2 )
 {
     CV_INSTRUMENT_REGION();
 
@@ -519,7 +519,7 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
     CV_Assert(R.empty() || R.size() == Size(3, 3) || R.total() * R.channels() == 3);
     CV_Assert(P.empty() || P.size() == Size(3, 3) || P.size() == Size(4, 3));
 
-    cv::Vec2d f, c;
+    ncvslideio::Vec2d f, c;
     if (K.depth() == CV_32F)
     {
         Matx33f camMat = K.getMat();
@@ -537,21 +537,21 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
     if (!D.empty())
         k = D.depth() == CV_32F ? (Vec4d)*D.getMat().ptr<Vec4f>(): *D.getMat().ptr<Vec4d>();
 
-    cv::Matx33d RR  = cv::Matx33d::eye();
+    ncvslideio::Matx33d RR  = ncvslideio::Matx33d::eye();
     if (!R.empty() && R.total() * R.channels() == 3)
     {
-        cv::Vec3d rvec;
+        ncvslideio::Vec3d rvec;
         R.getMat().convertTo(rvec, CV_64F);
         RR = Affine3d(rvec).rotation();
     }
     else if (!R.empty() && R.size() == Size(3, 3))
         R.getMat().convertTo(RR, CV_64F);
 
-    cv::Matx33d PP = cv::Matx33d::eye();
+    ncvslideio::Matx33d PP = ncvslideio::Matx33d::eye();
     if (!P.empty())
         P.getMat().colRange(0, 3).convertTo(PP, CV_64F);
 
-    cv::Matx33d iR = (PP * RR).inv(cv::DECOMP_SVD);
+    ncvslideio::Matx33d iR = (PP * RR).inv(ncvslideio::DECOMP_SVD);
 
     for( int i = 0; i < size.height; ++i)
     {
@@ -589,11 +589,11 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
 
             if( m1type == CV_16SC2 )
             {
-                int iu = cv::saturate_cast<int>(u*cv::INTER_TAB_SIZE);
-                int iv = cv::saturate_cast<int>(v*cv::INTER_TAB_SIZE);
-                m1[j*2+0] = (short)(iu >> cv::INTER_BITS);
-                m1[j*2+1] = (short)(iv >> cv::INTER_BITS);
-                m2[j] = (ushort)((iv & (cv::INTER_TAB_SIZE-1))*cv::INTER_TAB_SIZE + (iu & (cv::INTER_TAB_SIZE-1)));
+                int iu = ncvslideio::saturate_cast<int>(u*ncvslideio::INTER_TAB_SIZE);
+                int iv = ncvslideio::saturate_cast<int>(v*ncvslideio::INTER_TAB_SIZE);
+                m1[j*2+0] = (short)(iu >> ncvslideio::INTER_BITS);
+                m1[j*2+1] = (short)(iv >> ncvslideio::INTER_BITS);
+                m2[j] = (ushort)((iv & (ncvslideio::INTER_TAB_SIZE-1))*ncvslideio::INTER_TAB_SIZE + (iu & (ncvslideio::INTER_TAB_SIZE-1)));
             }
             else if( m1type == CV_32FC1 )
             {
@@ -609,25 +609,25 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::undistortImage
+/// ncvslideio::fisheye::undistortImage
 
-void cv::fisheye::undistortImage(InputArray distorted, OutputArray undistorted,
+void ncvslideio::fisheye::undistortImage(InputArray distorted, OutputArray undistorted,
         InputArray K, InputArray D, InputArray Knew, const Size& new_size)
 {
     CV_INSTRUMENT_REGION();
 
     Size size = !new_size.empty() ? new_size : distorted.size();
 
-    cv::Mat map1, map2;
-    fisheye::initUndistortRectifyMap(K, D, cv::Matx33d::eye(), Knew, size, CV_16SC2, map1, map2 );
-    cv::remap(distorted, undistorted, map1, map2, INTER_LINEAR, BORDER_CONSTANT);
+    ncvslideio::Mat map1, map2;
+    fisheye::initUndistortRectifyMap(K, D, ncvslideio::Matx33d::eye(), Knew, size, CV_16SC2, map1, map2 );
+    ncvslideio::remap(distorted, undistorted, map1, map2, INTER_LINEAR, BORDER_CONSTANT);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::estimateNewCameraMatrixForUndistortRectify
+/// ncvslideio::fisheye::estimateNewCameraMatrixForUndistortRectify
 
-void cv::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, InputArray D, const Size &image_size, InputArray R,
+void ncvslideio::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, InputArray D, const Size &image_size, InputArray R,
     OutputArray P, double balance, const Size& new_size, double fov_scale)
 {
     CV_INSTRUMENT_REGION();
@@ -638,7 +638,7 @@ void cv::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, Input
     int w = image_size.width, h = image_size.height;
     balance = std::min(std::max(balance, 0.0), 1.0);
 
-    cv::Mat points(1, 4, CV_64FC2);
+    ncvslideio::Mat points(1, 4, CV_64FC2);
     Vec2d* pptr = points.ptr<Vec2d>();
     pptr[0] = Vec2d(w/2, 0);
     pptr[1] = Vec2d(w, h/2);
@@ -646,8 +646,8 @@ void cv::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, Input
     pptr[3] = Vec2d(0, h/2);
 
     fisheye::undistortPoints(points, points, K, D, R);
-    cv::Scalar center_mass = mean(points);
-    cv::Vec2d cn(center_mass.val);
+    ncvslideio::Scalar center_mass = mean(points);
+    ncvslideio::Vec2d cn(center_mass.val);
 
     double aspect_ratio = (K.depth() == CV_32F) ? K.getMat().at<float >(0,0)/K.getMat().at<float> (1,1)
                                                 : K.getMat().at<double>(0,0)/K.getMat().at<double>(1,1);
@@ -677,7 +677,7 @@ void cv::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, Input
     double f = balance * fmin + (1.0 - balance) * fmax;
     f *= fov_scale > 0 ? 1.0/fov_scale : 1.0;
 
-    cv::Vec2d new_f(f, f), new_c = -cn * f + Vec2d(w, h * aspect_ratio) * 0.5;
+    ncvslideio::Vec2d new_f(f, f), new_c = -cn * f + Vec2d(w, h * aspect_ratio) * 0.5;
 
     // restore aspect ratio
     new_f[1] /= aspect_ratio;
@@ -699,9 +699,9 @@ void cv::fisheye::estimateNewCameraMatrixForUndistortRectify(InputArray K, Input
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::stereoRectify
+/// ncvslideio::fisheye::stereoRectify
 
-void cv::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, InputArray D2, const Size& imageSize,
+void ncvslideio::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, InputArray D2, const Size& imageSize,
         InputArray _R, InputArray _tvec, OutputArray R1, OutputArray R2, OutputArray P1, OutputArray P2,
         OutputArray Q, int flags, const Size& newImageSize, double balance, double fov_scale)
 {
@@ -711,12 +711,12 @@ void cv::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, In
     CV_Assert(_tvec.total() * _tvec.channels() == 3 && (_tvec.depth() == CV_32F || _tvec.depth() == CV_64F));
 
 
-    cv::Mat aaa = _tvec.getMat().reshape(3, 1);
+    ncvslideio::Mat aaa = _tvec.getMat().reshape(3, 1);
 
     Vec3d rvec; // Rodrigues vector
     if (_R.size() == Size(3, 3))
     {
-        cv::Matx33d rmat;
+        ncvslideio::Matx33d rmat;
         _R.getMat().convertTo(rmat, CV_64F);
         rvec = Affine3d(rmat).rvec();
     }
@@ -739,7 +739,7 @@ void cv::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, In
     Vec3d ww = t.cross(uu);
     double nw = norm(ww);
     if (nw > 0.0)
-        ww *= acos(fabs(t[0])/cv::norm(t))/nw;
+        ww *= acos(fabs(t[0])/ncvslideio::norm(t))/nw;
 
     Matx33d wr;
     Rodrigues(ww, wr);
@@ -762,7 +762,7 @@ void cv::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, In
     // Vertical focal length must be the same for both images to keep the epipolar constraint use fy for fx also.
     // For simplicity, set the principal points for both cameras to be the average
     // of the two principal points (either one of or both x- and y- coordinates)
-    if( flags & cv::CALIB_ZERO_DISPARITY )
+    if( flags & ncvslideio::CALIB_ZERO_DISPARITY )
         cc_new[0] = cc_new[1] = (cc_new[0] + cc_new[1]) * 0.5;
     else
         cc_new[0].y = cc_new[1].y = (cc_new[0].y + cc_new[1].y)*0.5;
@@ -783,11 +783,11 @@ void cv::fisheye::stereoRectify( InputArray K1, InputArray D1, InputArray K2, In
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::calibrate
+/// ncvslideio::fisheye::calibrate
 
-double cv::fisheye::calibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints, const Size& image_size,
+double ncvslideio::fisheye::calibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints, const Size& image_size,
                                     InputOutputArray K, InputOutputArray D, OutputArrayOfArrays rvecs, OutputArrayOfArrays tvecs,
-                                    int flags , cv::TermCriteria criteria)
+                                    int flags , ncvslideio::TermCriteria criteria)
 {
     CV_INSTRUMENT_REGION();
 
@@ -801,7 +801,7 @@ double cv::fisheye::calibrate(InputArrayOfArrays objectPoints, InputArrayOfArray
 
     CV_Assert((!K.empty() && !D.empty()) || !(flags & CALIB_USE_INTRINSIC_GUESS));
 
-    using namespace cv::internal;
+    using namespace ncvslideio::internal;
     //-------------------------------Initialization
     IntrinsicParams finalParam;
     IntrinsicParams currentParam;
@@ -892,8 +892,8 @@ double cv::fisheye::calibrate(InputArrayOfArrays objectPoints, InputArrayOfArray
             0,                    finalParam.f[1], finalParam.c[1],
             0,                                  0,               1);
 
-    if (K.needed()) cv::Mat(_K).convertTo(K, K.empty() ? CV_64FC1 : K.type());
-    if (D.needed()) cv::Mat(finalParam.k).convertTo(D, D.empty() ? CV_64FC1 : D.type());
+    if (K.needed()) ncvslideio::Mat(_K).convertTo(K, K.empty() ? CV_64FC1 : K.type());
+    if (D.needed()) ncvslideio::Mat(finalParam.k).convertTo(D, D.empty() ? CV_64FC1 : D.type());
     if (rvecs.isMatVector())
     {
         int N = (int)objectPoints.total();
@@ -914,24 +914,24 @@ double cv::fisheye::calibrate(InputArrayOfArrays objectPoints, InputArrayOfArray
     }
     else
     {
-        if (rvecs.needed()) cv::Mat(omc).convertTo(rvecs, rvecs.empty() ? CV_64FC3 : rvecs.type());
-        if (tvecs.needed()) cv::Mat(Tc).convertTo(tvecs, tvecs.empty() ? CV_64FC3 : tvecs.type());
+        if (rvecs.needed()) ncvslideio::Mat(omc).convertTo(rvecs, rvecs.empty() ? CV_64FC3 : rvecs.type());
+        if (tvecs.needed()) ncvslideio::Mat(Tc).convertTo(tvecs, tvecs.empty() ? CV_64FC3 : tvecs.type());
     }
 
     return rms;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::stereoCalibrate
+/// ncvslideio::fisheye::stereoCalibrate
 
-double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints1, InputArrayOfArrays imagePoints2,
+double ncvslideio::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints1, InputArrayOfArrays imagePoints2,
                                     InputOutputArray K1, InputOutputArray D1, InputOutputArray K2, InputOutputArray D2, Size imageSize,
                                     OutputArray R, OutputArray T, int flags, TermCriteria criteria)
 {
-    return cv::fisheye::stereoCalibrate(objectPoints, imagePoints1, imagePoints2, K1, D1, K2, D2, imageSize, R, T, noArray(), noArray(), flags, criteria);
+    return ncvslideio::fisheye::stereoCalibrate(objectPoints, imagePoints1, imagePoints2, K1, D1, K2, D2, imageSize, R, T, noArray(), noArray(), flags, criteria);
 }
 
-double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints1, InputArrayOfArrays imagePoints2,
+double ncvslideio::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints1, InputArrayOfArrays imagePoints2,
                                     InputOutputArray K1, InputOutputArray D1, InputOutputArray K2, InputOutputArray D2, Size imageSize,
                                     OutputArray R, OutputArray T, OutputArrayOfArrays rvecs, OutputArrayOfArrays tvecs, int flags, TermCriteria criteria)
 {
@@ -961,11 +961,11 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
 
     double change = 1;
 
-    cv::internal::IntrinsicParams intrinsicLeft;
-    cv::internal::IntrinsicParams intrinsicRight;
+    ncvslideio::internal::IntrinsicParams intrinsicLeft;
+    ncvslideio::internal::IntrinsicParams intrinsicRight;
 
-    cv::internal::IntrinsicParams intrinsicLeft_errors;
-    cv::internal::IntrinsicParams intrinsicRight_errors;
+    ncvslideio::internal::IntrinsicParams intrinsicLeft_errors;
+    ncvslideio::internal::IntrinsicParams intrinsicRight_errors;
 
     Matx33d _K1, _K2;
     Vec4d _D1, _D2;
@@ -990,8 +990,8 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
 
     if ((flags & CALIB_FIX_INTRINSIC))
     {
-        cv::internal::CalibrateExtrinsics(objectPoints,  imagePoints1, intrinsicLeft, check_cond, thresh_cond, rvecs1, tvecs1);
-        cv::internal::CalibrateExtrinsics(objectPoints,  imagePoints2, intrinsicRight, check_cond, thresh_cond, rvecs2, tvecs2);
+        ncvslideio::internal::CalibrateExtrinsics(objectPoints,  imagePoints1, intrinsicLeft, check_cond, thresh_cond, rvecs1, tvecs1);
+        ncvslideio::internal::CalibrateExtrinsics(objectPoints,  imagePoints2, intrinsicRight, check_cond, thresh_cond, rvecs2, tvecs2);
     }
 
     intrinsicLeft.isEstimate[0] = flags & CALIB_FIX_INTRINSIC ? 0 : 1;
@@ -1024,23 +1024,23 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
     selectedParams.insert(selectedParams.end(), tmp.begin(), tmp.end());
 
     //Init values for rotation and translation between two views
-    cv::Mat om_list(1, n_images, CV_64FC3), T_list(1, n_images, CV_64FC3);
-    cv::Mat om_ref, R_ref, T_ref, R1, R2;
+    ncvslideio::Mat om_list(1, n_images, CV_64FC3), T_list(1, n_images, CV_64FC3);
+    ncvslideio::Mat om_ref, R_ref, T_ref, R1, R2;
     for (int image_idx = 0; image_idx < n_images; ++image_idx)
     {
-        cv::Rodrigues(rvecs1[image_idx], R1);
-        cv::Rodrigues(rvecs2[image_idx], R2);
+        ncvslideio::Rodrigues(rvecs1[image_idx], R1);
+        ncvslideio::Rodrigues(rvecs2[image_idx], R2);
         R_ref = R2 * R1.t();
-        T_ref = cv::Mat(tvecs2[image_idx]) - R_ref * cv::Mat(tvecs1[image_idx]);
-        cv::Rodrigues(R_ref, om_ref);
+        T_ref = ncvslideio::Mat(tvecs2[image_idx]) - R_ref * ncvslideio::Mat(tvecs1[image_idx]);
+        ncvslideio::Rodrigues(R_ref, om_ref);
         om_ref.reshape(3, 1).copyTo(om_list.col(image_idx));
         T_ref.reshape(3, 1).copyTo(T_list.col(image_idx));
     }
-    cv::Vec3d omcur = cv::internal::median3d(om_list);
-    cv::Vec3d Tcur  = cv::internal::median3d(T_list);
+    ncvslideio::Vec3d omcur = ncvslideio::internal::median3d(om_list);
+    ncvslideio::Vec3d Tcur  = ncvslideio::internal::median3d(T_list);
 
-    cv::Mat J = cv::Mat::zeros(4 * n_points * n_images, 18 + 6 * (n_images + 1), CV_64FC1),
-            e = cv::Mat::zeros(4 * n_points * n_images, 1, CV_64FC1), Jkk, ekk;
+    ncvslideio::Mat J = ncvslideio::Mat::zeros(4 * n_points * n_images, 18 + 6 * (n_images + 1), CV_64FC1),
+            e = ncvslideio::Mat::zeros(4 * n_points * n_images, 1, CV_64FC1), Jkk, ekk;
 
     for(int iter = 0; ; ++iter)
     {
@@ -1054,22 +1054,22 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
         Jkk.create(4 * n_points, 18 + 6 * (n_images + 1), CV_64FC1);
         ekk.create(4 * n_points, 1, CV_64FC1);
 
-        cv::Mat omr, Tr, domrdomckk, domrdTckk, domrdom, domrdT, dTrdomckk, dTrdTckk, dTrdom, dTrdT;
+        ncvslideio::Mat omr, Tr, domrdomckk, domrdTckk, domrdom, domrdT, dTrdomckk, dTrdTckk, dTrdom, dTrdT;
 
         for (int image_idx = 0; image_idx < n_images; ++image_idx)
         {
-            Jkk = cv::Mat::zeros(4 * n_points, 18 + 6 * (n_images + 1), CV_64FC1);
+            Jkk = ncvslideio::Mat::zeros(4 * n_points, 18 + 6 * (n_images + 1), CV_64FC1);
 
-            cv::Mat object  = objectPoints.getMat(image_idx).clone();
-            cv::Mat imageLeft  = imagePoints1.getMat(image_idx).clone();
-            cv::Mat imageRight  = imagePoints2.getMat(image_idx).clone();
-            cv::Mat jacobians, projected;
+            ncvslideio::Mat object  = objectPoints.getMat(image_idx).clone();
+            ncvslideio::Mat imageLeft  = imagePoints1.getMat(image_idx).clone();
+            ncvslideio::Mat imageRight  = imagePoints2.getMat(image_idx).clone();
+            ncvslideio::Mat jacobians, projected;
 
             //left camera jacobian
-            cv::Mat rvec = cv::Mat(rvecs1[image_idx]);
-            cv::Mat tvec  = cv::Mat(tvecs1[image_idx]);
-            cv::internal::projectPoints(object, projected, rvec, tvec, intrinsicLeft, jacobians);
-            cv::Mat(cv::Mat((imageLeft - projected).t()).reshape(1, 1).t()).copyTo(ekk.rowRange(0, 2 * n_points));
+            ncvslideio::Mat rvec = ncvslideio::Mat(rvecs1[image_idx]);
+            ncvslideio::Mat tvec  = ncvslideio::Mat(tvecs1[image_idx]);
+            ncvslideio::internal::projectPoints(object, projected, rvec, tvec, intrinsicLeft, jacobians);
+            ncvslideio::Mat(ncvslideio::Mat((imageLeft - projected).t()).reshape(1, 1).t()).copyTo(ekk.rowRange(0, 2 * n_points));
             jacobians.colRange(8, 11).copyTo(Jkk.colRange(24 + image_idx * 6, 27 + image_idx * 6).rowRange(0, 2 * n_points));
             jacobians.colRange(11, 14).copyTo(Jkk.colRange(27 + image_idx * 6, 30 + image_idx * 6).rowRange(0, 2 * n_points));
             jacobians.colRange(0, 2).copyTo(Jkk.colRange(0, 2).rowRange(0, 2 * n_points));
@@ -1078,16 +1078,16 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
             jacobians.col(14).copyTo(Jkk.col(4).rowRange(0, 2 * n_points));
 
             //right camera jacobian
-            cv::internal::compose_motion(rvec, tvec, omcur, Tcur, omr, Tr, domrdomckk, domrdTckk, domrdom, domrdT, dTrdomckk, dTrdTckk, dTrdom, dTrdT);
-            rvec = cv::Mat(rvecs2[image_idx]);
-            tvec  = cv::Mat(tvecs2[image_idx]);
+            ncvslideio::internal::compose_motion(rvec, tvec, omcur, Tcur, omr, Tr, domrdomckk, domrdTckk, domrdom, domrdT, dTrdomckk, dTrdTckk, dTrdom, dTrdT);
+            rvec = ncvslideio::Mat(rvecs2[image_idx]);
+            tvec  = ncvslideio::Mat(tvecs2[image_idx]);
 
-            cv::internal::projectPoints(object, projected, omr, Tr, intrinsicRight, jacobians);
-            cv::Mat(cv::Mat((imageRight - projected).t()).reshape(1, 1).t()).copyTo(ekk.rowRange(2 * n_points, 4 * n_points));
-            cv::Mat dxrdom = jacobians.colRange(8, 11) * domrdom + jacobians.colRange(11, 14) * dTrdom;
-            cv::Mat dxrdT = jacobians.colRange(8, 11) * domrdT + jacobians.colRange(11, 14)* dTrdT;
-            cv::Mat dxrdomckk = jacobians.colRange(8, 11) * domrdomckk + jacobians.colRange(11, 14) * dTrdomckk;
-            cv::Mat dxrdTckk = jacobians.colRange(8, 11) * domrdTckk + jacobians.colRange(11, 14) * dTrdTckk;
+            ncvslideio::internal::projectPoints(object, projected, omr, Tr, intrinsicRight, jacobians);
+            ncvslideio::Mat(ncvslideio::Mat((imageRight - projected).t()).reshape(1, 1).t()).copyTo(ekk.rowRange(2 * n_points, 4 * n_points));
+            ncvslideio::Mat dxrdom = jacobians.colRange(8, 11) * domrdom + jacobians.colRange(11, 14) * dTrdom;
+            ncvslideio::Mat dxrdT = jacobians.colRange(8, 11) * domrdT + jacobians.colRange(11, 14)* dTrdT;
+            ncvslideio::Mat dxrdomckk = jacobians.colRange(8, 11) * domrdomckk + jacobians.colRange(11, 14) * dTrdomckk;
+            ncvslideio::Mat dxrdTckk = jacobians.colRange(8, 11) * domrdTckk + jacobians.colRange(11, 14) * dTrdTckk;
 
             dxrdom.copyTo(Jkk.colRange(18, 21).rowRange(2 * n_points, 4 * n_points));
             dxrdT.copyTo(Jkk.colRange(21, 24).rowRange(2 * n_points, 4 * n_points));
@@ -1114,28 +1114,28 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
             ekk.copyTo(e.rowRange(image_idx * 4 * n_points, (image_idx + 1) * 4 * n_points));
         }
 
-        cv::Vec6d oldTom(Tcur[0], Tcur[1], Tcur[2], omcur[0], omcur[1], omcur[2]);
+        ncvslideio::Vec6d oldTom(Tcur[0], Tcur[1], Tcur[2], omcur[0], omcur[1], omcur[2]);
 
         //update all parameters
-        cv::subMatrix(J, J, selectedParams, std::vector<uchar>(J.rows, 1));
-        int a = cv::countNonZero(intrinsicLeft.isEstimate);
-        int b = cv::countNonZero(intrinsicRight.isEstimate);
-        cv::Mat deltas;
+        ncvslideio::subMatrix(J, J, selectedParams, std::vector<uchar>(J.rows, 1));
+        int a = ncvslideio::countNonZero(intrinsicLeft.isEstimate);
+        int b = ncvslideio::countNonZero(intrinsicRight.isEstimate);
+        ncvslideio::Mat deltas;
         solve(J.t() * J, J.t()*e, deltas);
         if (a > 0)
             intrinsicLeft = intrinsicLeft + deltas.rowRange(0, a);
         if (b > 0)
             intrinsicRight = intrinsicRight + deltas.rowRange(a, a + b);
-        omcur = omcur + cv::Vec3d(deltas.rowRange(a + b, a + b + 3));
-        Tcur = Tcur + cv::Vec3d(deltas.rowRange(a + b + 3, a + b + 6));
+        omcur = omcur + ncvslideio::Vec3d(deltas.rowRange(a + b, a + b + 3));
+        Tcur = Tcur + ncvslideio::Vec3d(deltas.rowRange(a + b + 3, a + b + 6));
         for (int image_idx = 0; image_idx < n_images; ++image_idx)
         {
-            rvecs1[image_idx] = cv::Mat(cv::Mat(rvecs1[image_idx]) + deltas.rowRange(a + b + 6 + image_idx * 6, a + b + 9 + image_idx * 6));
-            tvecs1[image_idx] = cv::Mat(cv::Mat(tvecs1[image_idx]) + deltas.rowRange(a + b + 9 + image_idx * 6, a + b + 12 + image_idx * 6));
+            rvecs1[image_idx] = ncvslideio::Mat(ncvslideio::Mat(rvecs1[image_idx]) + deltas.rowRange(a + b + 6 + image_idx * 6, a + b + 9 + image_idx * 6));
+            tvecs1[image_idx] = ncvslideio::Mat(ncvslideio::Mat(tvecs1[image_idx]) + deltas.rowRange(a + b + 9 + image_idx * 6, a + b + 12 + image_idx * 6));
         }
 
-        cv::Vec6d newTom(Tcur[0], Tcur[1], Tcur[2], omcur[0], omcur[1], omcur[2]);
-        change = cv::norm(newTom - oldTom) / cv::norm(newTom);
+        ncvslideio::Vec6d newTom(Tcur[0], Tcur[1], Tcur[2], omcur[0], omcur[1], omcur[2]);
+        change = ncvslideio::norm(newTom - oldTom) / ncvslideio::norm(newTom);
     }
 
     double rms = 0;
@@ -1159,12 +1159,12 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
     Mat _R;
     Rodrigues(omcur, _R);
 
-    if (K1.needed()) cv::Mat(_K1).convertTo(K1, K1.empty() ? CV_64FC1 : K1.type());
-    if (K2.needed()) cv::Mat(_K2).convertTo(K2, K2.empty() ? CV_64FC1 : K2.type());
-    if (D1.needed()) cv::Mat(intrinsicLeft.k).convertTo(D1, D1.empty() ? CV_64FC1 : D1.type());
-    if (D2.needed()) cv::Mat(intrinsicRight.k).convertTo(D2, D2.empty() ? CV_64FC1 : D2.type());
+    if (K1.needed()) ncvslideio::Mat(_K1).convertTo(K1, K1.empty() ? CV_64FC1 : K1.type());
+    if (K2.needed()) ncvslideio::Mat(_K2).convertTo(K2, K2.empty() ? CV_64FC1 : K2.type());
+    if (D1.needed()) ncvslideio::Mat(intrinsicLeft.k).convertTo(D1, D1.empty() ? CV_64FC1 : D1.type());
+    if (D2.needed()) ncvslideio::Mat(intrinsicRight.k).convertTo(D2, D2.empty() ? CV_64FC1 : D2.type());
     if (R.needed()) _R.convertTo(R, R.empty() ? CV_64FC1 : R.type());
-    if (T.needed()) cv::Mat(Tcur).convertTo(T, T.empty() ? CV_64FC1 : T.type());
+    if (T.needed()) ncvslideio::Mat(Tcur).convertTo(T, T.empty() ? CV_64FC1 : T.type());
     if (rvecs.isMatVector())
     {
         if(rvecs.empty())
@@ -1183,33 +1183,33 @@ double cv::fisheye::stereoCalibrate(InputArrayOfArrays objectPoints, InputArrayO
     }
     else
     {
-        if (rvecs.needed()) cv::Mat(rvecs1).convertTo(rvecs, rvecs.empty() ? CV_64FC3 : rvecs.type());
-        if (tvecs.needed()) cv::Mat(tvecs1).convertTo(tvecs, tvecs.empty() ? CV_64FC3 : tvecs.type());
+        if (rvecs.needed()) ncvslideio::Mat(rvecs1).convertTo(rvecs, rvecs.empty() ? CV_64FC3 : rvecs.type());
+        if (tvecs.needed()) ncvslideio::Mat(tvecs1).convertTo(tvecs, tvecs.empty() ? CV_64FC3 : tvecs.type());
     }
 
     return rms;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// cv::fisheye::solvePnP
+/// ncvslideio::fisheye::solvePnP
 
-bool cv::fisheye::solvePnP( InputArray opoints, InputArray ipoints,
+bool ncvslideio::fisheye::solvePnP( InputArray opoints, InputArray ipoints,
                InputArray cameraMatrix, InputArray distCoeffs,
                OutputArray rvec, OutputArray tvec, bool useExtrinsicGuess,
                int flags, TermCriteria criteria)
 {
 
     Mat imagePointsNormalized;
-    cv::fisheye::undistortPoints(ipoints, imagePointsNormalized, cameraMatrix, distCoeffs, noArray(), cameraMatrix, criteria);
-    return cv::solvePnP(opoints, imagePointsNormalized, cameraMatrix, noArray(), rvec, tvec, useExtrinsicGuess, flags);
+    ncvslideio::fisheye::undistortPoints(ipoints, imagePointsNormalized, cameraMatrix, distCoeffs, noArray(), cameraMatrix, criteria);
+    return ncvslideio::solvePnP(opoints, imagePointsNormalized, cameraMatrix, noArray(), rvec, tvec, useExtrinsicGuess, flags);
 }
 
-namespace cv{ namespace {
+namespace ncvslideio{ namespace {
 void subMatrix(const Mat& src, Mat& dst, const std::vector<uchar>& cols, const std::vector<uchar>& rows)
 {
     CV_Assert(src.channels() == 1);
 
-    int nonzeros_cols = cv::countNonZero(cols);
+    int nonzeros_cols = ncvslideio::countNonZero(cols);
     Mat tmp(src.rows, nonzeros_cols, CV_64F);
 
     for (int i = 0, j = 0; i < (int)cols.size(); i++)
@@ -1220,7 +1220,7 @@ void subMatrix(const Mat& src, Mat& dst, const std::vector<uchar>& cols, const s
         }
     }
 
-    int nonzeros_rows  = cv::countNonZero(rows);
+    int nonzeros_rows  = ncvslideio::countNonZero(rows);
     dst.create(nonzeros_rows, nonzeros_cols, CV_64F);
     for (int i = 0, j = 0; i < (int)rows.size(); i++)
     {
@@ -1233,17 +1233,17 @@ void subMatrix(const Mat& src, Mat& dst, const std::vector<uchar>& cols, const s
 
 }}
 
-cv::internal::IntrinsicParams::IntrinsicParams():
+ncvslideio::internal::IntrinsicParams::IntrinsicParams():
     f(Vec2d::all(0)), c(Vec2d::all(0)), k(Vec4d::all(0)), alpha(0), isEstimate(9,0)
 {
 }
 
-cv::internal::IntrinsicParams::IntrinsicParams(Vec2d _f, Vec2d _c, Vec4d _k, double _alpha):
+ncvslideio::internal::IntrinsicParams::IntrinsicParams(Vec2d _f, Vec2d _c, Vec4d _k, double _alpha):
     f(_f), c(_c), k(_k), alpha(_alpha), isEstimate(9,0)
 {
 }
 
-cv::internal::IntrinsicParams cv::internal::IntrinsicParams::operator+(const Mat& a)
+ncvslideio::internal::IntrinsicParams ncvslideio::internal::IntrinsicParams::operator+(const Mat& a)
 {
     CV_Assert(a.type() == CV_64FC1);
     IntrinsicParams tmp;
@@ -1264,7 +1264,7 @@ cv::internal::IntrinsicParams cv::internal::IntrinsicParams::operator+(const Mat
     return tmp;
 }
 
-cv::internal::IntrinsicParams& cv::internal::IntrinsicParams::operator =(const Mat& a)
+ncvslideio::internal::IntrinsicParams& ncvslideio::internal::IntrinsicParams::operator =(const Mat& a)
 {
     CV_Assert(a.type() == CV_64FC1);
     const double* ptr = a.ptr<double>();
@@ -1284,7 +1284,7 @@ cv::internal::IntrinsicParams& cv::internal::IntrinsicParams::operator =(const M
     return *this;
 }
 
-void cv::internal::IntrinsicParams::Init(const cv::Vec2d& _f, const cv::Vec2d& _c, const cv::Vec4d& _k, const double& _alpha)
+void ncvslideio::internal::IntrinsicParams::Init(const ncvslideio::Vec2d& _f, const ncvslideio::Vec2d& _c, const ncvslideio::Vec4d& _k, const double& _alpha)
 {
     this->c = _c;
     this->f = _f;
@@ -1292,9 +1292,9 @@ void cv::internal::IntrinsicParams::Init(const cv::Vec2d& _f, const cv::Vec2d& _
     this->alpha = _alpha;
 }
 
-void cv::internal::projectPoints(cv::InputArray objectPoints, cv::OutputArray imagePoints,
-                   cv::InputArray _rvec,cv::InputArray _tvec,
-                   const IntrinsicParams& param, cv::OutputArray jacobian)
+void ncvslideio::internal::projectPoints(ncvslideio::InputArray objectPoints, ncvslideio::OutputArray imagePoints,
+                   ncvslideio::InputArray _rvec,ncvslideio::InputArray _tvec,
+                   const IntrinsicParams& param, ncvslideio::OutputArray jacobian)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1305,7 +1305,7 @@ void cv::internal::projectPoints(cv::InputArray objectPoints, cv::OutputArray im
     fisheye::projectPoints(objectPoints, imagePoints, _rvec, _tvec, K, param.k, param.alpha, jacobian);
 }
 
-void cv::internal::ComputeExtrinsicRefine(const Mat& imagePoints, const Mat& objectPoints, Mat& rvec,
+void ncvslideio::internal::ComputeExtrinsicRefine(const Mat& imagePoints, const Mat& objectPoints, Mat& rvec,
                             Mat&  tvec, Mat& J, const int MaxIter,
                             const IntrinsicParams& param, const double thresh_cond)
 {
@@ -1349,7 +1349,7 @@ void cv::internal::ComputeExtrinsicRefine(const Mat& imagePoints, const Mat& obj
     }
 }
 
-cv::Mat cv::internal::ComputeHomography(Mat m, Mat M)
+ncvslideio::Mat ncvslideio::internal::ComputeHomography(Mat m, Mat M)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1450,7 +1450,7 @@ cv::Mat cv::internal::ComputeHomography(Mat m, Mat M)
     return H;
 }
 
-cv::Mat cv::internal::NormalizePixels(const Mat& imagePoints, const IntrinsicParams& param)
+ncvslideio::Mat ncvslideio::internal::NormalizePixels(const Mat& imagePoints, const IntrinsicParams& param)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1464,11 +1464,11 @@ cv::Mat cv::internal::NormalizePixels(const Mat& imagePoints, const IntrinsicPar
         ptr_d[i] = (ptr[i] - param.c).mul(Vec2d(1.0 / param.f[0], 1.0 / param.f[1]));
         ptr_d[i][0] -= param.alpha * ptr_d[i][1];
     }
-    cv::fisheye::undistortPoints(distorted, undistorted, Matx33d::eye(), param.k);
+    ncvslideio::fisheye::undistortPoints(distorted, undistorted, Matx33d::eye(), param.k);
     return undistorted;
 }
 
-void cv::internal::InitExtrinsics(const Mat& _imagePoints, const Mat& _objectPoints, const IntrinsicParams& param, Mat& omckk, Mat& Tckk)
+void ncvslideio::internal::InitExtrinsics(const Mat& _imagePoints, const Mat& _objectPoints, const IntrinsicParams& param, Mat& omckk, Mat& Tckk)
 {
     CV_Assert(!_objectPoints.empty() && _objectPoints.type() == CV_64FC3);
     CV_Assert(!_imagePoints.empty() && _imagePoints.type() == CV_64FC2);
@@ -1510,7 +1510,7 @@ void cv::internal::InitExtrinsics(const Mat& _imagePoints, const Mat& _objectPoi
     Rodrigues(Rckk, omckk);
 }
 
-void cv::internal::CalibrateExtrinsics(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
+void ncvslideio::internal::CalibrateExtrinsics(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
                          const IntrinsicParams& param, const int check_cond,
                          const double thresh_cond, InputOutputArray omc, InputOutputArray Tc)
 {
@@ -1541,14 +1541,14 @@ void cv::internal::CalibrateExtrinsics(InputArrayOfArrays objectPoints, InputArr
         {
             SVD svd(JJ_kk, SVD::NO_UV);
             if(svd.w.at<double>(0) / svd.w.at<double>((int)svd.w.total() - 1) > thresh_cond )
-                CV_Error( cv::Error::StsInternal, format("CALIB_CHECK_COND - Ill-conditioned matrix for input array %d",image_idx));
+                CV_Error( ncvslideio::Error::StsInternal, format("CALIB_CHECK_COND - Ill-conditioned matrix for input array %d",image_idx));
         }
         omckk.reshape(3,1).copyTo(omc.getMat().col(image_idx));
         Tckk.reshape(3,1).copyTo(Tc.getMat().col(image_idx));
     }
 }
 
-void cv::internal::ComputeJacobians(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
+void ncvslideio::internal::ComputeJacobians(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
                       const IntrinsicParams& param,  InputArray omc, InputArray Tc,
                       const int& check_cond, const double& thresh_cond, Mat& JJ2, Mat& ex3)
 {
@@ -1611,7 +1611,7 @@ void cv::internal::ComputeJacobians(InputArrayOfArrays objectPoints, InputArrayO
     subMatrix(ex3, ex3, std::vector<uchar>(1, 1), idxs);
 }
 
-void cv::internal::EstimateUncertainties(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
+void ncvslideio::internal::EstimateUncertainties(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,
                            const IntrinsicParams& params, InputArray omc, InputArray Tc,
                            IntrinsicParams& errors, Vec2d& std_err, double thresh_cond, int check_cond, double& rms)
 {
@@ -1666,7 +1666,7 @@ void cv::internal::EstimateUncertainties(InputArrayOfArrays objectPoints, InputA
     rms = sqrt(norm(ex, NORM_L2SQR)/ex.total());
 }
 
-void cv::internal::dAB(InputArray A, InputArray B, OutputArray dABdA, OutputArray dABdB)
+void ncvslideio::internal::dAB(InputArray A, InputArray B, OutputArray dABdA, OutputArray dABdB)
 {
     CV_Assert(A.getMat().cols == B.getMat().rows);
     CV_Assert(A.type() == CV_64FC1 && B.type() == CV_64FC1);
@@ -1700,7 +1700,7 @@ void cv::internal::dAB(InputArray A, InputArray B, OutputArray dABdA, OutputArra
     }
 }
 
-void cv::internal::JRodriguesMatlab(const Mat& src, Mat& dst)
+void ncvslideio::internal::JRodriguesMatlab(const Mat& src, Mat& dst)
 {
     Mat tmp(src.cols, src.rows, src.type());
     if (src.rows == 9)
@@ -1730,7 +1730,7 @@ void cv::internal::JRodriguesMatlab(const Mat& src, Mat& dst)
     dst = tmp.clone();
 }
 
-void cv::internal::compose_motion(InputArray _om1, InputArray _T1, InputArray _om2, InputArray _T2,
+void ncvslideio::internal::compose_motion(InputArray _om1, InputArray _T1, InputArray _om2, InputArray _T2,
                     Mat& om3, Mat& T3, Mat& dom3dom1, Mat& dom3dT1, Mat& dom3dom2,
                     Mat& dom3dT2, Mat& dT3dom1, Mat& dT3dT1, Mat& dT3dom2, Mat& dT3dT2)
 {
@@ -1768,7 +1768,7 @@ void cv::internal::compose_motion(InputArray _om1, InputArray _T1, InputArray _o
     dT3dom1 = Mat::zeros(3, 3, CV_64FC1);
 }
 
-double cv::internal::median(const Mat& row)
+double ncvslideio::internal::median(const Mat& row)
 {
     CV_Assert(row.type() == CV_64FC1);
     CV_Assert(!row.empty() && row.rows == 1);
@@ -1778,7 +1778,7 @@ double cv::internal::median(const Mat& row)
     else return 0.5 *(tmp.at<double>((int)tmp.total() / 2) + tmp.at<double>((int)tmp.total() / 2 - 1));
 }
 
-cv::Vec3d cv::internal::median3d(InputArray m)
+ncvslideio::Vec3d ncvslideio::internal::median3d(InputArray m)
 {
     CV_Assert(m.depth() == CV_64F && m.getMat().rows == 1);
     Mat M = Mat(m.getMat().t()).reshape(1).t();

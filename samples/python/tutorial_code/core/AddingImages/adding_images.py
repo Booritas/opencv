@@ -16,8 +16,8 @@ input_alpha = float(raw_input().strip())
 if 0 <= alpha <= 1:
     alpha = input_alpha
 # [load]
-src1 = cv.imread(cv.samples.findFile('LinuxLogo.jpg'))
-src2 = cv.imread(cv.samples.findFile('WindowsLogo.jpg'))
+src1 = ncvslideio.imread(ncvslideio.samples.findFile('LinuxLogo.jpg'))
+src2 = ncvslideio.imread(ncvslideio.samples.findFile('WindowsLogo.jpg'))
 # [load]
 if src1 is None:
     print("Error loading src1")
@@ -27,7 +27,7 @@ elif src2 is None:
     exit(-1)
 # [blend_images]
 beta = (1.0 - alpha)
-dst = cv.addWeighted(src1, alpha, src2, beta, 0.0)
+dst = ncvslideio.addWeighted(src1, alpha, src2, beta, 0.0)
 # [blend_images]
 # [display]
 cv.imshow('dst', dst)

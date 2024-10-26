@@ -31,7 +31,7 @@
 
 #endif // !defined(BUILD_PLUGIN)
 
-typedef cv::dnn_backend::NetworkBackend* CvPluginDNNNetworkBackend;
+typedef ncvslideio::dnn_backend::NetworkBackend* CvPluginDNNNetworkBackend;
 
 struct OpenCV_DNN_Plugin_API_v0_0_api_entries
 {

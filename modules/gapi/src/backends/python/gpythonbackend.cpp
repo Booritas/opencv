@@ -14,28 +14,28 @@
 #include "api/gbackend_priv.hpp"
 #include "backends/common/gbackend.hpp"
 
-cv::gapi::python::GPythonKernel::GPythonKernel(cv::gapi::python::Impl  runf,
-                                               cv::gapi::python::Setup setupf)
+ncvslideio::gapi::python::GPythonKernel::GPythonKernel(ncvslideio::gapi::python::Impl  runf,
+                                               ncvslideio::gapi::python::Setup setupf)
     : run(runf), setup(setupf), is_stateful(setup != nullptr)
 {
 }
 
-cv::gapi::python::GPythonFunctor::GPythonFunctor(const char* id,
-                                                 const cv::gapi::python::GPythonFunctor::Meta& meta,
-                                                 const cv::gapi::python::Impl& impl,
-                                                 const cv::gapi::python::Setup& setup)
+ncvslideio::gapi::python::GPythonFunctor::GPythonFunctor(const char* id,
+                                                 const ncvslideio::gapi::python::GPythonFunctor::Meta& meta,
+                                                 const ncvslideio::gapi::python::Impl& impl,
+                                                 const ncvslideio::gapi::python::Setup& setup)
     : gapi::GFunctor(id), impl_{GPythonKernel{impl, setup}, meta}
 {
 }
 
-cv::GKernelImpl cv::gapi::python::GPythonFunctor::impl() const
+ncvslideio::GKernelImpl ncvslideio::gapi::python::GPythonFunctor::impl() const
 {
     return impl_;
 }
 
-cv::gapi::GBackend cv::gapi::python::GPythonFunctor::backend() const
+ncvslideio::gapi::GBackend ncvslideio::gapi::python::GPythonFunctor::backend() const
 {
-    return cv::gapi::python::backend();
+    return ncvslideio::gapi::python::backend();
 }
 
 namespace {
@@ -43,20 +43,20 @@ namespace {
 struct PythonUnit
 {
     static const char *name() { return "PythonUnit"; }
-    cv::gapi::python::GPythonKernel kernel;
+    ncvslideio::gapi::python::GPythonKernel kernel;
 };
 
 using PythonModel = ade::TypedGraph
-    < cv::gimpl::Op
+    < ncvslideio::gimpl::Op
     , PythonUnit
     >;
 
 using ConstPythonModel = ade::ConstTypedGraph
-    < cv::gimpl::Op
+    < ncvslideio::gimpl::Op
     , PythonUnit
     >;
 
-class GPythonExecutable final: public cv::gimpl::GIslandExecutable
+class GPythonExecutable final: public ncvslideio::gimpl::GIslandExecutable
 {
     virtual void run(std::vector<InObj>  &&,
                      std::vector<OutObj> &&) override;
@@ -64,11 +64,11 @@ class GPythonExecutable final: public cv::gimpl::GIslandExecutable
     virtual bool allocatesOutputs() const override { return true; }
     // Return an empty RMat since we will reuse the input.
     // There is no need to allocate and copy 4k image here.
-    virtual cv::RMat allocate(const cv::GMatDesc&) const override { return {}; }
+    virtual ncvslideio::RMat allocate(const ncvslideio::GMatDesc&) const override { return {}; }
 
     virtual bool canReshape() const override { return true; }
     virtual void handleNewStream() override;
-    virtual void reshape(ade::Graph&, const cv::GCompileArgs&) override {
+    virtual void reshape(ade::Graph&, const ncvslideio::GCompileArgs&) override {
         // Do nothing here
     }
 
@@ -77,76 +77,76 @@ public:
                       const std::vector<ade::NodeHandle> &);
 
     const ade::Graph& m_g;
-    cv::gimpl::GModel::ConstGraph m_gm;
-    cv::gapi::python::GPythonKernel m_kernel;
+    ncvslideio::gimpl::GModel::ConstGraph m_gm;
+    ncvslideio::gapi::python::GPythonKernel m_kernel;
     ade::NodeHandle m_op;
-    cv::GArg m_node_state;
+    ncvslideio::GArg m_node_state;
 
-    cv::GTypesInfo m_out_info;
-    cv::GMetaArgs  m_in_metas;
-    cv::gimpl::Mag m_res;
+    ncvslideio::GTypesInfo m_out_info;
+    ncvslideio::GMetaArgs  m_in_metas;
+    ncvslideio::gimpl::Mag m_res;
 };
 
-static cv::GArg packArg(cv::gimpl::Mag& m_res, const cv::GArg &arg)
+static ncvslideio::GArg packArg(ncvslideio::gimpl::Mag& m_res, const ncvslideio::GArg &arg)
 {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                && arg.kind != cv::detail::ArgKind::GSCALAR
-                && arg.kind != cv::detail::ArgKind::GARRAY
-                && arg.kind != cv::detail::ArgKind::GOPAQUE
-                && arg.kind != cv::detail::ArgKind::GFRAME);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+                && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE
+                && arg.kind != ncvslideio::detail::ArgKind::GFRAME);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF)
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF)
     {
         // All other cases - pass as-is, with no transformations to GArg contents.
         return arg;
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case cv::GShape::GMAT:    return cv::GArg(m_res.slot<cv::Mat>()   [ref.id]);
-    case cv::GShape::GSCALAR: return cv::GArg(m_res.slot<cv::Scalar>()[ref.id]);
+    case ncvslideio::GShape::GMAT:    return ncvslideio::GArg(m_res.slot<ncvslideio::Mat>()   [ref.id]);
+    case ncvslideio::GShape::GSCALAR: return ncvslideio::GArg(m_res.slot<ncvslideio::Scalar>()[ref.id]);
     // Note: .at() is intentional for GArray and GOpaque as objects MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case cv::GShape::GARRAY:  return cv::GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
-    case cv::GShape::GOPAQUE: return cv::GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
-    case cv::GShape::GFRAME:  return cv::GArg(m_res.slot<cv::MediaFrame>().at(ref.id));
+    case ncvslideio::GShape::GARRAY:  return ncvslideio::GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
+    case ncvslideio::GShape::GOPAQUE: return ncvslideio::GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
+    case ncvslideio::GShape::GFRAME:  return ncvslideio::GArg(m_res.slot<ncvslideio::MediaFrame>().at(ref.id));
     default:
-        cv::util::throw_error(std::logic_error("Unsupported GShape type"));
+        ncvslideio::util::throw_error(std::logic_error("Unsupported GShape type"));
         break;
     }
 }
 
-static void writeBack(cv::GRunArg& arg, cv::GRunArgP& out)
+static void writeBack(ncvslideio::GRunArg& arg, ncvslideio::GRunArgP& out)
 {
     switch (arg.index())
     {
-        case cv::GRunArg::index_of<cv::Mat>():
+        case ncvslideio::GRunArg::index_of<ncvslideio::Mat>():
         {
-            auto& rmat = *cv::util::get<cv::RMat*>(out);
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(cv::util::get<cv::Mat>(arg));
+            auto& rmat = *ncvslideio::util::get<ncvslideio::RMat*>(out);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(ncvslideio::util::get<ncvslideio::Mat>(arg));
             break;
         }
-        case cv::GRunArg::index_of<cv::Scalar>():
+        case ncvslideio::GRunArg::index_of<ncvslideio::Scalar>():
         {
-            *cv::util::get<cv::Scalar*>(out) = cv::util::get<cv::Scalar>(arg);
+            *ncvslideio::util::get<ncvslideio::Scalar*>(out) = ncvslideio::util::get<ncvslideio::Scalar>(arg);
             break;
         }
-        case cv::GRunArg::index_of<cv::detail::OpaqueRef>():
+        case ncvslideio::GRunArg::index_of<ncvslideio::detail::OpaqueRef>():
         {
-            auto& oref = cv::util::get<cv::detail::OpaqueRef>(arg);
-            cv::util::get<cv::detail::OpaqueRef>(out).mov(oref);
+            auto& oref = ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(arg);
+            ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(out).mov(oref);
             break;
         }
-        case cv::GRunArg::index_of<cv::detail::VectorRef>():
+        case ncvslideio::GRunArg::index_of<ncvslideio::detail::VectorRef>():
         {
-            auto& vref = cv::util::get<cv::detail::VectorRef>(arg);
-            cv::util::get<cv::detail::VectorRef>(out).mov(vref);
+            auto& vref = ncvslideio::util::get<ncvslideio::detail::VectorRef>(arg);
+            ncvslideio::util::get<ncvslideio::detail::VectorRef>(out).mov(vref);
             break;
         }
         default:
@@ -159,28 +159,28 @@ void GPythonExecutable::handleNewStream()
     if (!m_kernel.is_stateful)
         return;
 
-    m_node_state = m_kernel.setup(cv::gimpl::GModel::collectInputMeta(m_gm, m_op),
-                                  m_gm.metadata(m_op).get<cv::gimpl::Op>().args);
+    m_node_state = m_kernel.setup(ncvslideio::gimpl::GModel::collectInputMeta(m_gm, m_op),
+                                  m_gm.metadata(m_op).get<ncvslideio::gimpl::Op>().args);
 }
 
 void GPythonExecutable::run(std::vector<InObj>  &&input_objs,
                             std::vector<OutObj> &&output_objs)
 {
-    const auto &op = m_gm.metadata(m_op).get<cv::gimpl::Op>();
-    for (auto& it : input_objs) cv::gimpl::magazine::bindInArg(m_res, it.first, it.second);
+    const auto &op = m_gm.metadata(m_op).get<ncvslideio::gimpl::Op>();
+    for (auto& it : input_objs) ncvslideio::gimpl::magazine::bindInArg(m_res, it.first, it.second);
 
     using namespace std::placeholders;
-    cv::GArgs inputs;
+    ncvslideio::GArgs inputs;
     ade::util::transform(op.args,
                          std::back_inserter(inputs),
                          std::bind(&packArg, std::ref(m_res), _1));
 
-    cv::gapi::python::GPythonContext ctx{inputs, m_in_metas, m_out_info, /*state*/{}};
+    ncvslideio::gapi::python::GPythonContext ctx{inputs, m_in_metas, m_out_info, /*state*/{}};
 
     // NB: For stateful kernel add state to its execution context
     if (m_kernel.is_stateful)
     {
-        ctx.m_state = cv::optional<cv::GArg>(m_node_state);
+        ctx.m_state = ncvslideio::optional<ncvslideio::GArg>(m_node_state);
     }
 
     auto outs = m_kernel.run(ctx);
@@ -191,19 +191,19 @@ void GPythonExecutable::run(std::vector<InObj>  &&input_objs,
     }
 }
 
-class GPythonBackendImpl final: public cv::gapi::GBackend::Priv
+class GPythonBackendImpl final: public ncvslideio::gapi::GBackend::Priv
 {
     virtual void unpackKernel(ade::Graph            &graph,
             const ade::NodeHandle &op_node,
-            const cv::GKernelImpl &impl) override
+            const ncvslideio::GKernelImpl &impl) override
     {
         PythonModel gm(graph);
-        const auto &kernel  = cv::util::any_cast<cv::gapi::python::GPythonKernel>(impl.opaque);
+        const auto &kernel  = ncvslideio::util::any_cast<ncvslideio::gapi::python::GPythonKernel>(impl.opaque);
         gm.metadata(op_node).set(PythonUnit{kernel});
     }
 
     virtual EPtr compile(const ade::Graph &graph,
-                         const cv::GCompileArgs &,
+                         const ncvslideio::GCompileArgs &,
                          const std::vector<ade::NodeHandle> &nodes) const override
     {
         return EPtr{new GPythonExecutable(graph, nodes)};
@@ -214,7 +214,7 @@ class GPythonBackendImpl final: public cv::gapi::GBackend::Priv
         return true;
     }
 
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &) const override
@@ -227,7 +227,7 @@ GPythonExecutable::GPythonExecutable(const ade::Graph& g,
                                      const std::vector<ade::NodeHandle>& nodes)
     : m_g(g), m_gm(m_g)
 {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
     const auto is_op = [this](const ade::NodeHandle &nh)
     {
         return m_gm.metadata(nh).get<NodeType>().t == NodeType::OP;
@@ -244,13 +244,13 @@ GPythonExecutable::GPythonExecutable(const ade::Graph& g,
     // If kernel is stateful then prepare storage for its state.
     if (m_kernel.is_stateful)
     {
-        m_node_state = cv::GArg{ };
+        m_node_state = ncvslideio::GArg{ };
     }
 
     // Ensure this the only op in the graph
     if (std::any_of(it+1, nodes.end(), is_op))
     {
-        cv::util::throw_error
+        ncvslideio::util::throw_error
             (std::logic_error
              ("Internal error: Python subgraph has multiple operations"));
     }
@@ -258,11 +258,11 @@ GPythonExecutable::GPythonExecutable(const ade::Graph& g,
     m_out_info.reserve(m_op->outEdges().size());
     for (const auto &e : m_op->outEdges())
     {
-        const auto& out_data = m_gm.metadata(e->dstNode()).get<cv::gimpl::Data>();
-        m_out_info.push_back(cv::GTypeInfo{out_data.shape, out_data.kind, out_data.ctor});
+        const auto& out_data = m_gm.metadata(e->dstNode()).get<ncvslideio::gimpl::Data>();
+        m_out_info.push_back(ncvslideio::GTypeInfo{out_data.shape, out_data.kind, out_data.ctor});
     }
 
-    const auto& op = m_gm.metadata(m_op).get<cv::gimpl::Op>();
+    const auto& op = m_gm.metadata(m_op).get<ncvslideio::gimpl::Op>();
     m_in_metas.resize(op.args.size());
     GAPI_Assert(m_op->inEdges().size() > 0);
     for (const auto &in_eh : m_op->inEdges())
@@ -276,8 +276,8 @@ GPythonExecutable::GPythonExecutable(const ade::Graph& g,
 
 } // anonymous namespace
 
-cv::gapi::GBackend cv::gapi::python::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::python::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GPythonBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GPythonBackendImpl>());
     return this_backend;
 }

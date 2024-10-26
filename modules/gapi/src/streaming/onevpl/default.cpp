@@ -15,7 +15,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -29,11 +29,11 @@ std::shared_ptr<IDeviceSelector> getDefaultDeviceSelector(const std::vector<CfgP
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else // HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -46,6 +46,6 @@ std::shared_ptr<IDeviceSelector> getDefaultDeviceSelector(const std::vector<CfgP
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL

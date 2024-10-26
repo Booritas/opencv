@@ -9,7 +9,7 @@
 
 #include <algorithm> // for std::max & std::min
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ScatterLayerImpl CV_FINAL : public ScatterLayer
 {
@@ -40,7 +40,7 @@ public:
         else if (reduction_name == "min")
             reduction = REDUCTION::MIN;
         else
-            CV_Error(cv::Error::StsBadArg, "Unkown reduction \"" + reduction_name + "\"");
+            CV_Error(ncvslideio::Error::StsBadArg, "Unkown reduction \"" + reduction_name + "\"");
     }
 
     virtual bool supportBackend(int backendId) CV_OVERRIDE
@@ -162,7 +162,7 @@ public:
                 reductionDispatch<float>(std::forward<Args>(args)...);
                 break;
             default:
-                CV_Error(cv::Error::BadDepth, "Unsupported type.");
+                CV_Error(ncvslideio::Error::BadDepth, "Unsupported type.");
         };
     }
 
@@ -237,4 +237,4 @@ Ptr<ScatterLayer> ScatterLayer::create(const LayerParams& params)
     return makePtr<ScatterLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

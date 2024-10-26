@@ -37,10 +37,10 @@
 
 
 // nb. implemented the newer IVideoCapture C++ interface so that we can work
-// directly with Mat, not the older C cv interface
+// directly with Mat, not the older C ncvslideio interface
 // (which may have added overhead for IPL file conversion)
 
-namespace cv {
+namespace ncvslideio {
 
     class VideoCapture_WinRT : public IVideoCapture
     {
@@ -53,7 +53,7 @@ namespace cv {
         virtual double getProperty(int) { return 0; }
         virtual bool setProperty(int, double);
         virtual bool grabFrame();
-        virtual bool retrieveFrame(int channel, cv::OutputArray outArray);
+        virtual bool retrieveFrame(int channel, ncvslideio::OutputArray outArray);
 
         virtual int getCaptureDomain() CV_OVERRIDE { return CAP_WINRT; }
 

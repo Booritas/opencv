@@ -33,7 +33,7 @@
 #include "obsensor_stream_channel_msmf.hpp"
 #endif // HAVE_OBSENSOR_V4L2
 
-namespace cv {
+namespace ncvslideio {
 namespace obsensor {
 const uint8_t OB_EXT_CMD0[16] = { 0x47, 0x4d, 0x04, 0x00, 0x02, 0x00, 0x52, 0x00, 0x5B, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 };
 const uint8_t OB_EXT_CMD1[16] = { 0x47, 0x4d, 0x04, 0x00, 0x02, 0x00, 0x54, 0x00, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -468,5 +468,5 @@ bool IUvcStreamChannel::initDepthFrameProcessor()
     }
     return false;
 }
-}} // namespace cv::obsensor::
+}} // namespace ncvslideio::obsensor::
 #endif // HAVE_OBSENSOR_V4L2 || HAVE_OBSENSOR_MSMF

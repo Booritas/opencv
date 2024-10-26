@@ -43,7 +43,7 @@ the use of this software, even if advised of the possibility of such damage.
 
 #include "opencv2/imgproc.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! type of the kernel
@@ -63,7 +63,7 @@ enum
  In particular, such filters are used for the "horizontal" filtering parts in separable filters.
 
  Several functions in OpenCV return Ptr<BaseRowFilter> for the specific types of filters,
- and those pointers can be used directly or within cv::FilterEngine.
+ and those pointers can be used directly or within ncvslideio::FilterEngine.
 */
 class BaseRowFilter
 {
@@ -87,11 +87,11 @@ public:
  Such filters are used for the "vertical" filtering parts in separable filters.
 
  Several functions in OpenCV return Ptr<BaseColumnFilter> for the specific types of filters,
- and those pointers can be used directly or within cv::FilterEngine.
+ and those pointers can be used directly or within ncvslideio::FilterEngine.
 
- Unlike cv::BaseRowFilter, cv::BaseColumnFilter may have some context information,
+ Unlike ncvslideio::BaseRowFilter, ncvslideio::BaseColumnFilter may have some context information,
  i.e. box filter keeps the sliding sum of elements. To reset the state BaseColumnFilter::reset()
- must be called (e.g. the method is called by cv::FilterEngine)
+ must be called (e.g. the method is called by ncvslideio::FilterEngine)
  */
 class BaseColumnFilter
 {
@@ -116,9 +116,9 @@ public:
  This is the base class for linear or non-linear 2D filters.
 
  Several functions in OpenCV return Ptr<BaseFilter> for the specific types of filters,
- and those pointers can be used directly or within cv::FilterEngine.
+ and those pointers can be used directly or within ncvslideio::FilterEngine.
 
- Similar to cv::BaseColumnFilter, the class may have some context information,
+ Similar to ncvslideio::BaseColumnFilter, the class may have some context information,
  that should be reset using BaseFilter::reset() method before processing the new array.
 */
 class BaseFilter
@@ -144,18 +144,18 @@ public:
  The class can be used to apply an arbitrary filtering operation to an image.
  It contains all the necessary intermediate buffers, it computes extrapolated values
  of the "virtual" pixels outside of the image etc.
- Pointers to the initialized cv::FilterEngine instances
- are returned by various OpenCV functions, such as cv::createSeparableLinearFilter(),
- cv::createLinearFilter(), cv::createGaussianFilter(), cv::createDerivFilter(),
- cv::createBoxFilter() and cv::createMorphologyFilter().
+ Pointers to the initialized ncvslideio::FilterEngine instances
+ are returned by various OpenCV functions, such as ncvslideio::createSeparableLinearFilter(),
+ ncvslideio::createLinearFilter(), ncvslideio::createGaussianFilter(), ncvslideio::createDerivFilter(),
+ ncvslideio::createBoxFilter() and ncvslideio::createMorphologyFilter().
 
  Using the class you can process large images by parts and build complex pipelines
  that include filtering as some of the stages. If all you need is to apply some pre-defined
- filtering operation, you may use cv::filter2D(), cv::erode(), cv::dilate() etc.
+ filtering operation, you may use ncvslideio::filter2D(), ncvslideio::erode(), ncvslideio::dilate() etc.
  functions that create FilterEngine internally.
 
  Here is the example on how to use the class to implement Laplacian operator, which is the sum of
- second-order derivatives. More complex variant for different types is implemented in cv::Laplacian().
+ second-order derivatives. More complex variant for different types is implemented in ncvslideio::Laplacian().
 
  \code
  void laplace_f(const Mat& src, Mat& dst)
@@ -236,14 +236,14 @@ public:
               const Scalar& _borderValue = Scalar());
 
     //! starts filtering of the specified ROI of an image of size wholeSize.
-    virtual int start(const cv::Size &wholeSize, const cv::Size &sz, const cv::Point &ofs);
+    virtual int start(const ncvslideio::Size &wholeSize, const ncvslideio::Size &sz, const ncvslideio::Point &ofs);
     //! starts filtering of the specified ROI of the specified image.
-    virtual int start(const Mat& src, const cv::Size &wsz, const cv::Point &ofs);
+    virtual int start(const Mat& src, const ncvslideio::Size &wsz, const ncvslideio::Point &ofs);
     //! processes the next srcCount rows of the image.
     virtual int proceed(const uchar* src, int srcStep, int srcCount,
                         uchar* dst, int dstStep);
     //! applies filter to the specified ROI of the image. if srcRoi=(0,0,-1,-1), the whole image is filtered.
-    virtual void apply(const Mat& src, Mat& dst, const cv::Size &wsz, const cv::Point &ofs);
+    virtual void apply(const Mat& src, Mat& dst, const ncvslideio::Size &wsz, const ncvslideio::Point &ofs);
 
     //! returns true if the filter is separable
     bool isSeparable() const { return !filter2D; }
@@ -376,9 +376,9 @@ void crossCorr( const Mat& src, const Mat& templ, Mat& dst,
 }
 
 #ifdef HAVE_IPP_IW
-static inline bool ippiCheckAnchor(cv::Point anchor, cv::Size ksize)
+static inline bool ippiCheckAnchor(ncvslideio::Point anchor, ncvslideio::Size ksize)
 {
-    anchor = cv::normalizeAnchor(anchor, ksize);
+    anchor = ncvslideio::normalizeAnchor(anchor, ksize);
     if(anchor.x != ((ksize.width-1)/2) || anchor.y != ((ksize.height-1)/2))
         return 0;
     else

@@ -144,7 +144,7 @@ void CV_DrawingTest_CPP::draw( Mat& img )
     ellipse2Poly( Point(430,180), Size(100,150), 30, 0, 150, 20, polyline );
     pts = &polyline[0];
     n = (int)polyline.size();
-    polylines( img, &pts, &n, 1, false, Scalar(0,0,150), 4, cv::LINE_AA );
+    polylines( img, &pts, &n, 1, false, Scalar(0,0,150), 4, ncvslideio::LINE_AA );
     n = 0;
     for( vector<Point>::const_iterator it = polyline.begin(); n < (int)polyline.size()-1; ++it, n++ )
     {
@@ -192,43 +192,43 @@ void CV_DrawingTest_CPP::draw( Mat& img )
 
     textSize = getTextSize( text2, FONT_HERSHEY_SIMPLEX, fontScale, thickness, &baseline);
     textOrg = Point(5,5)+Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 1;
     textSize = getTextSize( text2, FONT_HERSHEY_PLAIN, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_PLAIN, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_PLAIN, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 0.5;
     textSize = getTextSize( text2, FONT_HERSHEY_DUPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_DUPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_DUPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize( text2, FONT_HERSHEY_COMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize( text2, FONT_HERSHEY_TRIPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_TRIPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_TRIPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 1;
     textSize = getTextSize( text2, FONT_HERSHEY_COMPLEX_SMALL, fontScale, thickness, &baseline);
     textOrg += Point(0,180) + Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX_SMALL, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX_SMALL, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize( text2, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize( text2, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     dist = 15, fontScale = 0.5;
     textSize = getTextSize( text2, FONT_ITALIC, fontScale, thickness, &baseline);
     textOrg += Point(0,textSize.height+dist);
-    putText(img, text2, textOrg, FONT_ITALIC, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_ITALIC, fontScale, color, thickness, ncvslideio::LINE_AA);
 }
 
 int CV_DrawingTest_CPP::checkLineIterator( Mat& img )
@@ -262,7 +262,7 @@ int CV_DrawingTest_CPP::checkLineVirtualIterator(  )
         int x3 = randomGenerator.uniform(-512, 1024+1);
         int y3 = randomGenerator.uniform(-512, 1024+1);
         int channels = randomGenerator.uniform(1, 3+1);
-        Mat m(cv::Size(width, height), CV_MAKETYPE(8U, channels));
+        Mat m(ncvslideio::Size(width, height), CV_MAKETYPE(8U, channels));
         Point p1(x1, y1);
         Point p2(x2, y2);
         Point offset(x3, y3);
@@ -337,7 +337,7 @@ void CV_DrawingTest_Far::draw(Mat& img)
     ellipse2Poly(Point(32768 + 430, 180), Size(100, 150), 30, 0, 150, 20, polyline);
     pts = &polyline[0];
     n = (int)polyline.size();
-    polylines(img, &pts, &n, 1, false, Scalar(0, 0, 150), 4, cv::LINE_AA);
+    polylines(img, &pts, &n, 1, false, Scalar(0, 0, 150), 4, ncvslideio::LINE_AA);
     n = 0;
     for (vector<Point>::const_iterator it = polyline.begin(); n < (int)polyline.size() - 1; ++it, n++)
     {
@@ -385,43 +385,43 @@ void CV_DrawingTest_Far::draw(Mat& img)
 
     textSize = getTextSize(text2, FONT_HERSHEY_SIMPLEX, fontScale, thickness, &baseline);
     textOrg = Point(32768 + 5, 5) + Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 1;
     textSize = getTextSize(text2, FONT_HERSHEY_PLAIN, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_PLAIN, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_PLAIN, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 0.5;
     textSize = getTextSize(text2, FONT_HERSHEY_DUPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_DUPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_DUPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize(text2, FONT_HERSHEY_COMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize(text2, FONT_HERSHEY_TRIPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_TRIPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_TRIPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     fontScale = 1;
     textSize = getTextSize(text2, FONT_HERSHEY_COMPLEX_SMALL, fontScale, thickness, &baseline);
     textOrg += Point(0, 180) + Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX_SMALL, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_COMPLEX_SMALL, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize(text2, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     textSize = getTextSize(text2, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_HERSHEY_SCRIPT_COMPLEX, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     dist = 15, fontScale = 0.5;
     textSize = getTextSize(text2, FONT_ITALIC, fontScale, thickness, &baseline);
     textOrg += Point(0, textSize.height + dist);
-    putText(img, text2, textOrg, FONT_ITALIC, fontScale, color, thickness, cv::LINE_AA);
+    putText(img, text2, textOrg, FONT_ITALIC, fontScale, color, thickness, ncvslideio::LINE_AA);
 
     img = img(Rect(32768, 0, 600, 400)).clone();
 }
@@ -517,7 +517,7 @@ protected:
                     Size textSize = getTextSize(*line, *font | italic, fontScale, thickness, &baseline);
                     Point textOrg(0, textSize.height + 2);
                     Mat img(textSize + Size(0, baseline), CV_8UC3, Scalar(255, 255, 255));
-                    putText(img, *line, textOrg, *font | italic, fontScale, color, thickness, cv::LINE_AA);
+                    putText(img, *line, textOrg, *font | italic, fontScale, color, thickness, ncvslideio::LINE_AA);
 
                     results.push_back(img);
                     bigSize.width = max(bigSize.width, img.size().width);
@@ -588,8 +588,8 @@ TEST(Drawing, longline)
 {
     Mat mat = Mat::zeros(256, 256, CV_8UC1);
 
-    line(mat, cv::Point(34, 204), cv::Point(46400, 47400), cv::Scalar(255), 3);
-    EXPECT_EQ(310, cv::countNonZero(mat));
+    line(mat, ncvslideio::Point(34, 204), ncvslideio::Point(46400, 47400), ncvslideio::Scalar(255), 3);
+    EXPECT_EQ(310, ncvslideio::countNonZero(mat));
 
     Point pt[6];
     pt[0].x = 32;
@@ -604,9 +604,9 @@ TEST(Drawing, longline)
     pt[4].y = 210;
     pt[5].x = 37;
     pt[5].y = 209;
-    fillConvexPoly(mat, pt, 6, cv::Scalar(0));
+    fillConvexPoly(mat, pt, 6, ncvslideio::Scalar(0));
 
-    EXPECT_EQ(0, cv::countNonZero(mat));
+    EXPECT_EQ(0, ncvslideio::countNonZero(mat));
 }
 
 
@@ -618,10 +618,10 @@ TEST(Drawing, putText_no_garbage)
     mat = Scalar::all(0);
     putText(mat, "029", Point(10, 350), 0, 10, Scalar(128), 15);
 
-    EXPECT_EQ(0, cv::countNonZero(mat(Rect(0, 0,           10, sz.height))));
-    EXPECT_EQ(0, cv::countNonZero(mat(Rect(sz.width-10, 0, 10, sz.height))));
-    EXPECT_EQ(0, cv::countNonZero(mat(Rect(205, 0,         10, sz.height))));
-    EXPECT_EQ(0, cv::countNonZero(mat(Rect(405, 0,         10, sz.height))));
+    EXPECT_EQ(0, ncvslideio::countNonZero(mat(Rect(0, 0,           10, sz.height))));
+    EXPECT_EQ(0, ncvslideio::countNonZero(mat(Rect(sz.width-10, 0, 10, sz.height))));
+    EXPECT_EQ(0, ncvslideio::countNonZero(mat(Rect(205, 0,         10, sz.height))));
+    EXPECT_EQ(0, ncvslideio::countNonZero(mat(Rect(405, 0,         10, sz.height))));
 }
 
 
@@ -629,7 +629,7 @@ TEST(Drawing, line)
 {
     Mat mat = Mat::zeros(Size(100,100), CV_8UC1);
 
-    ASSERT_THROW(line(mat, Point(1,1),Point(99,99),Scalar(255),0), cv::Exception);
+    ASSERT_THROW(line(mat, Point(1,1),Point(99,99),Scalar(255),0), ncvslideio::Exception);
 }
 
 TEST(Drawing, regression_16308)
@@ -662,8 +662,8 @@ TEST(Drawing, fillpoly_circle)
     ellipse2Poly(center1, Size(radius, radius), 0, 0, 360, 1, vtx);
     fillConvexPoly(img_fcp, vtx, color);
     fillPoly(img_fp, vtx, color);
-    double diff_fp = cv::norm(img_c, img_fp, NORM_L1)/(255*radius*2*CV_PI);
-    double diff_fcp = cv::norm(img_c, img_fcp, NORM_L1)/(255*radius*2*CV_PI);
+    double diff_fp = ncvslideio::norm(img_c, img_fp, NORM_L1)/(255*radius*2*CV_PI);
+    double diff_fcp = ncvslideio::norm(img_c, img_fcp, NORM_L1)/(255*radius*2*CV_PI);
     EXPECT_LT(diff_fp, 1.);
     EXPECT_LT(diff_fcp, 1.);
 
@@ -676,7 +676,7 @@ TEST(Drawing, fillpoly_circle)
     ellipse2Poly(center2, Size(radius_small, radius_small), 0, 0, 360, 1, vtx3[1]);
     ellipse2Poly(center3, Size(radius_small, radius_small), 0, 0, 360, 1, vtx3[2]);
     fillPoly(img_fp3, vtx3, color);
-    double diff_fp3 = cv::norm(img_c, img_fp3, NORM_L1)/(255*(radius+radius_small*2)*2*CV_PI);
+    double diff_fp3 = ncvslideio::norm(img_c, img_fp3, NORM_L1)/(255*(radius+radius_small*2)*2*CV_PI);
     EXPECT_LT(diff_fp3, 1.);
 }
 
@@ -686,35 +686,35 @@ TEST(Drawing, fillpoly_contours)
     const int type = CV_8UC1;
     const int shift = 0;
     const Scalar cl = Scalar::all(255);
-    const cv::LineTypes lineType = LINE_8;
+    const ncvslideio::LineTypes lineType = LINE_8;
 
     // check that contours of fillPoly and polylines match
     {
-        cv::Mat img(imgSize, imgSize, type);
+        ncvslideio::Mat img(imgSize, imgSize, type);
         img = 0;
-        std::vector<std::vector<cv::Point>> polygonPoints{
+        std::vector<std::vector<ncvslideio::Point>> polygonPoints{
             { {44, 27}, {7, 37}, {7, 19}, {38, 19} }
         };
-        cv::fillPoly(img, polygonPoints, cl, lineType, shift);
-        cv::polylines(img, polygonPoints, true, 0, 1, lineType, shift);
+        ncvslideio::fillPoly(img, polygonPoints, cl, lineType, shift);
+        ncvslideio::polylines(img, polygonPoints, true, 0, 1, lineType, shift);
 
         {
-            cv::Mat labelImage(img.size(), CV_32S);
-            int labels = cv::connectedComponents(img, labelImage, 4);
+            ncvslideio::Mat labelImage(img.size(), CV_32S);
+            int labels = ncvslideio::connectedComponents(img, labelImage, 4);
             EXPECT_EQ(2, labels) << "filling went over the border";
         }
     }
 
     // check that line generated with fillPoly and polylines match
     {
-        cv::Mat img1(imgSize, imgSize, type), img2(imgSize, imgSize, type);
+        ncvslideio::Mat img1(imgSize, imgSize, type), img2(imgSize, imgSize, type);
         img1 = 0;
         img2 = 0;
-        std::vector<std::vector<cv::Point>> polygonPoints{
+        std::vector<std::vector<ncvslideio::Point>> polygonPoints{
             { {44, 27}, {38, 19} }
         };
-        cv::fillPoly(img1, polygonPoints, cl, lineType, shift);
-        cv::polylines(img2, polygonPoints, true, cl, 1, lineType, shift);
+        ncvslideio::fillPoly(img1, polygonPoints, cl, lineType, shift);
+        ncvslideio::polylines(img2, polygonPoints, true, cl, 1, lineType, shift);
         EXPECT_MAT_N_DIFF(img1, img2, 0);
     }
 }
@@ -725,8 +725,8 @@ TEST(Drawing, fillpoly_match_lines)
     const int type = CV_8UC1;
     const int shift = 0;
     const Scalar cl = Scalar::all(255);
-    const cv::LineTypes lineType = LINE_8;
-    cv::Mat img1(imgSize, imgSize, type), img2(imgSize, imgSize, type);
+    const ncvslideio::LineTypes lineType = LINE_8;
+    ncvslideio::Mat img1(imgSize, imgSize, type), img2(imgSize, imgSize, type);
     for (int x1 = 0; x1 < imgSize; x1 += imgSize / 2)
     {
         for (int y1 = 0; y1 < imgSize; y1 += imgSize / 2)
@@ -737,11 +737,11 @@ TEST(Drawing, fillpoly_match_lines)
                 {
                     img1 = 0;
                     img2 = 0;
-                    std::vector<std::vector<cv::Point>> polygonPoints{
+                    std::vector<std::vector<ncvslideio::Point>> polygonPoints{
                         { {x1, y1}, {x2, y2} }
                     };
-                    cv::fillPoly(img1, polygonPoints, cl, lineType, shift);
-                    cv::polylines(img2, polygonPoints, true, cl, 1, lineType, shift);
+                    ncvslideio::fillPoly(img1, polygonPoints, cl, lineType, shift);
+                    ncvslideio::polylines(img2, polygonPoints, true, cl, 1, lineType, shift);
                     EXPECT_MAT_N_DIFF(img1, img2, 0);
                 }
             }
@@ -756,39 +756,39 @@ TEST(Drawing, fillpoly_fully)
     int type = CV_8UC1;
     int shift = 0;
     Point offset(0, 0);
-    cv::LineTypes lineType = LINE_4;
+    ncvslideio::LineTypes lineType = LINE_4;
 
     int imageSizeOffset = 15;
 
-    cv::Mat img(imageHeight, imageWidth, type);
+    ncvslideio::Mat img(imageHeight, imageWidth, type);
     img = 0;
 
-    std::vector<cv::Point> polygonPoints;
-    polygonPoints.push_back(cv::Point(100, -50));
-    polygonPoints.push_back(cv::Point(imageSizeOffset, imageHeight - imageSizeOffset));
-    polygonPoints.push_back(cv::Point(imageSizeOffset, imageSizeOffset));
+    std::vector<ncvslideio::Point> polygonPoints;
+    polygonPoints.push_back(ncvslideio::Point(100, -50));
+    polygonPoints.push_back(ncvslideio::Point(imageSizeOffset, imageHeight - imageSizeOffset));
+    polygonPoints.push_back(ncvslideio::Point(imageSizeOffset, imageSizeOffset));
 
     // convert data
-    std::vector<const cv::Point*> polygonPointPointers(polygonPoints.size());
+    std::vector<const ncvslideio::Point*> polygonPointPointers(polygonPoints.size());
     for (size_t i = 0; i < polygonPoints.size(); i++)
     {
         polygonPointPointers[i] = &polygonPoints[i];
     }
 
-    const cv::Point** data = &polygonPointPointers.front();
+    const ncvslideio::Point** data = &polygonPointPointers.front();
     int size = (int)polygonPoints.size();
     const int* npts = &size;
     int ncontours = 1;
 
     // generate image
-    cv::fillPoly(img, data, npts, ncontours, 255, lineType, shift, offset);
+    ncvslideio::fillPoly(img, data, npts, ncontours, 255, lineType, shift, offset);
 
     // check for artifacts
     {
-        cv::Mat binary = img < 128;
-        cv::Mat labelImage(binary.size(), CV_32S);
-        cv::Mat labelCentroids;
-        int labels = cv::connectedComponents(binary, labelImage, 4);
+        ncvslideio::Mat binary = img < 128;
+        ncvslideio::Mat labelImage(binary.size(), CV_32S);
+        ncvslideio::Mat labelCentroids;
+        int labels = ncvslideio::connectedComponents(binary, labelImage, 4);
         EXPECT_EQ(2, labels) << "artifacts occured";
     }
 
@@ -811,7 +811,7 @@ TEST(Drawing, fillpoly_fully)
             t1.x = (t1.x + offset.x) << (xy_shift - shift);
             t1.y = (t1.y + delta) >> shift;
 
-            if (lineType < cv::LINE_AA)
+            if (lineType < ncvslideio::LINE_AA)
             {
                 t0.x = (t0.x + (xy_one >> 1)) >> xy_shift;
                 t1.x = (t1.x + (xy_one >> 1)) >> xy_shift;
@@ -827,21 +827,21 @@ TEST(Drawing, fillpoly_fully)
             }
 
         }
-        cv::Mat binary = img < 254;
-        cv::Mat labelImage(binary.size(), CV_32S);
-        int labels = cv::connectedComponents(binary, labelImage, 4);
+        ncvslideio::Mat binary = img < 254;
+        ncvslideio::Mat labelImage(binary.size(), CV_32S);
+        int labels = ncvslideio::connectedComponents(binary, labelImage, 4);
         EXPECT_EQ(2, labels) << "filling went over the border";
     }
 }
 
-PARAM_TEST_CASE(FillPolyFully, unsigned, unsigned, int, int, Point, cv::LineTypes)
+PARAM_TEST_CASE(FillPolyFully, unsigned, unsigned, int, int, Point, ncvslideio::LineTypes)
 {
     unsigned imageWidth;
     unsigned imageHeight;
     int type;
     int shift;
     Point offset;
-    cv::LineTypes lineType;
+    ncvslideio::LineTypes lineType;
 
     virtual void SetUp()
     {
@@ -853,35 +853,35 @@ PARAM_TEST_CASE(FillPolyFully, unsigned, unsigned, int, int, Point, cv::LineType
         lineType = GET_PARAM(5);
     }
 
-    void draw_polygon(cv::Mat& img, const std::vector<cv::Point>& polygonPoints)
+    void draw_polygon(ncvslideio::Mat& img, const std::vector<ncvslideio::Point>& polygonPoints)
     {
         // convert data
-        std::vector<const cv::Point*> polygonPointPointers(polygonPoints.size());
+        std::vector<const ncvslideio::Point*> polygonPointPointers(polygonPoints.size());
         for (size_t i = 0; i < polygonPoints.size(); i++)
         {
             polygonPointPointers[i] = &polygonPoints[i];
         }
 
-        const cv::Point** data = &polygonPointPointers.front();
+        const ncvslideio::Point** data = &polygonPointPointers.front();
         int size = (int)polygonPoints.size();
         const int* npts = &size;
         int ncontours = 1;
 
         // generate image
-        cv::fillPoly(img, data, npts, ncontours, 255, lineType, shift, offset);
+        ncvslideio::fillPoly(img, data, npts, ncontours, 255, lineType, shift, offset);
     }
 
-    void check_artifacts(cv::Mat& img)
+    void check_artifacts(ncvslideio::Mat& img)
     {
         // check for artifacts
-        cv::Mat binary = img < 128;
-        cv::Mat labelImage(binary.size(), CV_32S);
-        cv::Mat labelCentroids;
-        int labels = cv::connectedComponents(binary, labelImage, 4);
+        ncvslideio::Mat binary = img < 128;
+        ncvslideio::Mat labelImage(binary.size(), CV_32S);
+        ncvslideio::Mat labelCentroids;
+        int labels = ncvslideio::connectedComponents(binary, labelImage, 4);
         EXPECT_EQ(2, labels) << "artifacts occured";
     }
 
-    void check_filling_over_border(cv::Mat& img, const std::vector<cv::Point>& polygonPoints)
+    void check_filling_over_border(ncvslideio::Mat& img, const std::vector<ncvslideio::Point>& polygonPoints)
     {
         int xy_shift = 16, delta = offset.y + ((1 << shift) >> 1);
         int xy_one = 1 << xy_shift;
@@ -900,7 +900,7 @@ PARAM_TEST_CASE(FillPolyFully, unsigned, unsigned, int, int, Point, cv::LineType
             t1.x = (t1.x + offset.x) << (xy_shift - shift);
             t1.y = (t1.y + delta) >> shift;
 
-            if (lineType < cv::LINE_AA)
+            if (lineType < ncvslideio::LINE_AA)
             {
                 t0.x = (t0.x + (xy_one >> 1)) >> xy_shift;
                 t1.x = (t1.x + (xy_one >> 1)) >> xy_shift;
@@ -916,15 +916,15 @@ PARAM_TEST_CASE(FillPolyFully, unsigned, unsigned, int, int, Point, cv::LineType
             }
 
         }
-        cv::Mat binary = img < 254;
-        cv::Mat labelImage(binary.size(), CV_32S);
-        int labels = cv::connectedComponents(binary, labelImage, 4);
+        ncvslideio::Mat binary = img < 254;
+        ncvslideio::Mat labelImage(binary.size(), CV_32S);
+        int labels = ncvslideio::connectedComponents(binary, labelImage, 4);
         EXPECT_EQ(2, labels) << "filling went over the border";
     }
 
-    void run_test(const std::vector<cv::Point>& polygonPoints)
+    void run_test(const std::vector<ncvslideio::Point>& polygonPoints)
     {
-        cv::Mat img(imageHeight, imageWidth, type);
+        ncvslideio::Mat img(imageHeight, imageWidth, type);
         img = 0;
 
         draw_polygon(img, polygonPoints);
@@ -944,10 +944,10 @@ TEST_P(FillPolyFully, DISABLED_fillpoly_fully)
         for (int y = imageHeight + 50; y > -50; y -= 1)
         {
             // define polygon
-            std::vector<cv::Point> polygonPoints;
-            polygonPoints.push_back(cv::Point(100, imageHeight - y));
-            polygonPoints.push_back(cv::Point(positions1[i], positions1[1]));
-            polygonPoints.push_back(cv::Point(positions1[i], positions1[0]));
+            std::vector<ncvslideio::Point> polygonPoints;
+            polygonPoints.push_back(ncvslideio::Point(100, imageHeight - y));
+            polygonPoints.push_back(ncvslideio::Point(positions1[i], positions1[1]));
+            polygonPoints.push_back(ncvslideio::Point(positions1[i], positions1[0]));
 
             run_test(polygonPoints);
         }
@@ -960,10 +960,10 @@ TEST_P(FillPolyFully, DISABLED_fillpoly_fully)
         for (int x = imageWidth + 50; x > -50; x -= 1)
         {
             // define polygon
-            std::vector<cv::Point> polygonPoints;
-            polygonPoints.push_back(cv::Point(imageWidth - x, 100));
-            polygonPoints.push_back(cv::Point(positions2[1], positions2[i]));
-            polygonPoints.push_back(cv::Point(positions2[0], positions2[i]));
+            std::vector<ncvslideio::Point> polygonPoints;
+            polygonPoints.push_back(ncvslideio::Point(imageWidth - x, 100));
+            polygonPoints.push_back(ncvslideio::Point(positions2[1], positions2[i]));
+            polygonPoints.push_back(ncvslideio::Point(positions2[0], positions2[i]));
 
             run_test(polygonPoints);
         }
@@ -977,7 +977,7 @@ INSTANTIATE_TEST_CASE_P(
         testing::Values(256),
         testing::Values(CV_8UC1),
         testing::Values(0, 1, 2),
-        testing::Values(cv::Point(0, 0), cv::Point(10, 10)),
+        testing::Values(ncvslideio::Point(0, 0), ncvslideio::Point(10, 10)),
         testing::Values(LINE_4, LINE_8, LINE_AA)
     )
 );
@@ -985,16 +985,16 @@ INSTANTIATE_TEST_CASE_P(
 TEST(Drawing, circle_overflow)
 {
     applyTestTag(CV_TEST_TAG_VERYLONG);
-    cv::Mat1b matrix = cv::Mat1b::zeros(600, 600);
-    cv::Scalar kBlue = cv::Scalar(0, 0, 255);
-    cv::circle(matrix, cv::Point(275, -2147483318), 2147483647, kBlue, 1, 8, 0);
+    ncvslideio::Mat1b matrix = ncvslideio::Mat1b::zeros(600, 600);
+    ncvslideio::Scalar kBlue = ncvslideio::Scalar(0, 0, 255);
+    ncvslideio::circle(matrix, ncvslideio::Point(275, -2147483318), 2147483647, kBlue, 1, 8, 0);
 }
 
 TEST(Drawing, circle_memory_access)
 {
-    cv::Mat1b matrix = cv::Mat1b::zeros(10, 10);
-    cv::Scalar kBlue = cv::Scalar(0, 0, 255);
-    cv::circle(matrix, cv::Point(-1, -1), 0, kBlue, 2, 8, 16);
+    ncvslideio::Mat1b matrix = ncvslideio::Mat1b::zeros(10, 10);
+    ncvslideio::Scalar kBlue = ncvslideio::Scalar(0, 0, 255);
+    ncvslideio::circle(matrix, ncvslideio::Point(-1, -1), 0, kBlue, 2, 8, 16);
 }
 
 inline static Mat mosaic2x2(Mat &img)
@@ -1059,47 +1059,47 @@ TEST(Drawing, contours_filled)
     {
         // all contours
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
-        drawContours(res, contours, -1, white, -1, cv::LINE_8, hierarchy);
+        drawContours(res, contours, -1, white, -1, ncvslideio::LINE_8, hierarchy);
         EXPECT_LT(cvtest::norm(img, res, NORM_INF), 1);
     }
     {
         // all contours
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
-        drawContours(res, contours, -1, white, -1, cv::LINE_8, hierarchy, 3);
+        drawContours(res, contours, -1, white, -1, ncvslideio::LINE_8, hierarchy, 3);
         EXPECT_LT(cvtest::norm(img, res, NORM_INF), 1);
     }
     {
         // all contours
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
-        drawContours(res, contours, -1, white, -1, cv::LINE_8, hierarchy, 0);
+        drawContours(res, contours, -1, white, -1, ncvslideio::LINE_8, hierarchy, 0);
         EXPECT_LT(cvtest::norm(img, res, NORM_INF), 1);
     }
     {
         // all external contours one by one
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
         for (int idx : top_contours)
-            drawContours(res, contours, idx, white, -1, cv::LINE_8, hierarchy, 0);
+            drawContours(res, contours, idx, white, -1, ncvslideio::LINE_8, hierarchy, 0);
         EXPECT_LT(cvtest::norm(img1, res, NORM_INF), 1);
     }
     {
         // all external contours + 1-level deep hole (one by one)
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
         for (int idx : top_contours)
-            drawContours(res, contours, idx, white, -1, cv::LINE_8, hierarchy, 1);
+            drawContours(res, contours, idx, white, -1, ncvslideio::LINE_8, hierarchy, 1);
         EXPECT_LT(cvtest::norm(img2, res, NORM_INF), 1);
     }
     {
         // 2-level deep contours
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
         for (int idx : top_contours)
-            drawContours(res, contours, idx + 2, white, -1, cv::LINE_8, hierarchy);
+            drawContours(res, contours, idx + 2, white, -1, ncvslideio::LINE_8, hierarchy);
         EXPECT_LT(cvtest::norm(img3, res, NORM_INF), 1);
     }
     {
         // holes become inverted here, LINE_8 -> LINE_4
         Mat res(img.size(), CV_8UC1, Scalar::all(0));
         for (int idx : top_contours)
-            drawContours(res, contours, idx + 1, white, -1, cv::LINE_4, hierarchy);
+            drawContours(res, contours, idx + 1, white, -1, ncvslideio::LINE_4, hierarchy);
         EXPECT_LT(cvtest::norm(imgi, res, NORM_INF), 1);
     }
 }

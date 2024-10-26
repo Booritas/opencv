@@ -50,7 +50,7 @@ PERF_TEST(PNG, decode_rgb)
 PERF_TEST(PNG, encode)
 {
     String filename = getDataPath("perf/2560x1600.png");
-    cv::Mat src = imread(filename);
+    ncvslideio::Mat src = imread(filename);
 
     vector<uchar> buf;
     TEST_CYCLE() imencode(".png", src, buf);

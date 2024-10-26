@@ -35,48 +35,48 @@
 
 namespace
 {
-using namespace cv::gimpl::stream;
+using namespace ncvslideio::gimpl::stream;
 
 #if !defined(GAPI_STANDALONE)
-class VideoEmitter final: public cv::gimpl::GIslandEmitter {
-    cv::gapi::wip::IStreamSource::Ptr src;
+class VideoEmitter final: public ncvslideio::gimpl::GIslandEmitter {
+    ncvslideio::gapi::wip::IStreamSource::Ptr src;
 
     virtual void halt() override {
         src->halt();
     }
 
-    virtual bool pull(cv::GRunArg &arg) override {
+    virtual bool pull(ncvslideio::GRunArg &arg) override {
         // FIXME: probably we can maintain a pool of (then) pre-allocated
         // buffers to avoid runtime allocations.
         // Pool size can be determined given the internal queue size.
-        cv::gapi::wip::Data newData;
+        ncvslideio::gapi::wip::Data newData;
         if (!src->pull(newData)) {
             return false;
         }
-        arg = std::move(static_cast<cv::GRunArg&>(newData));
+        arg = std::move(static_cast<ncvslideio::GRunArg&>(newData));
         return true;
     }
 public:
-    explicit VideoEmitter(const cv::GRunArg &arg) {
-        src = cv::util::get<cv::gapi::wip::IStreamSource::Ptr>(arg);
+    explicit VideoEmitter(const ncvslideio::GRunArg &arg) {
+        src = ncvslideio::util::get<ncvslideio::gapi::wip::IStreamSource::Ptr>(arg);
     }
 };
 #endif // GAPI_STANDALONE
 
-class ConstEmitter final: public cv::gimpl::GIslandEmitter {
-    cv::GRunArg m_arg;
+class ConstEmitter final: public ncvslideio::gimpl::GIslandEmitter {
+    ncvslideio::GRunArg m_arg;
 
     virtual void halt() override {
         // Not used here, but in fact can be used.
     }
 
-    virtual bool pull(cv::GRunArg &arg) override {
-        arg = const_cast<const cv::GRunArg&>(m_arg); // FIXME: variant workaround
+    virtual bool pull(ncvslideio::GRunArg &arg) override {
+        arg = const_cast<const ncvslideio::GRunArg&>(m_arg); // FIXME: variant workaround
         return true;
     }
 public:
 
-    explicit ConstEmitter(const cv::GRunArg &arg) : m_arg(arg) {
+    explicit ConstEmitter(const ncvslideio::GRunArg &arg) : m_arg(arg) {
     }
 };
 
@@ -86,30 +86,30 @@ struct DataQueue {
 
     explicit DataQueue(std::size_t capacity) {
         // Note: `ptr` is shared<SyncQueue>, while the `q` is a shared<Q>
-        auto ptr = std::make_shared<cv::gimpl::stream::SyncQueue>();
+        auto ptr = std::make_shared<ncvslideio::gimpl::stream::SyncQueue>();
         if (capacity != 0) {
             ptr->set_capacity(capacity);
         }
         q = std::move(ptr);
     }
     explicit DataQueue(tag t)
-        : q(new cv::gimpl::stream::DesyncQueue()) {
+        : q(new ncvslideio::gimpl::stream::DesyncQueue()) {
         GAPI_Assert(t == DESYNC);
     }
 
     // FIXME: ADE metadata requires types to be copiable
-    std::shared_ptr<cv::gimpl::stream::Q> q;
+    std::shared_ptr<ncvslideio::gimpl::stream::Q> q;
 };
 
 struct DesyncSpecialCase {
     static const char *name() { return "DesyncSpecialCase"; }
 };
 
-std::vector<cv::gimpl::stream::Q*> reader_queues(      ade::Graph &g,
+std::vector<ncvslideio::gimpl::stream::Q*> reader_queues(      ade::Graph &g,
                                                  const ade::NodeHandle &obj)
 {
     ade::TypedGraph<DataQueue> qgr(g);
-    std::vector<cv::gimpl::stream::Q*> result;
+    std::vector<ncvslideio::gimpl::stream::Q*> result;
     for (auto &&out_eh : obj->outEdges())
     {
         result.push_back(qgr.metadata(out_eh).get<DataQueue>().q.get());
@@ -117,11 +117,11 @@ std::vector<cv::gimpl::stream::Q*> reader_queues(      ade::Graph &g,
     return result;
 }
 
-std::vector<cv::gimpl::stream::Q*> input_queues(      ade::Graph &g,
+std::vector<ncvslideio::gimpl::stream::Q*> input_queues(      ade::Graph &g,
                                                 const ade::NodeHandle &obj)
 {
     ade::TypedGraph<DataQueue> qgr(g);
-    std::vector<cv::gimpl::stream::Q*> result;
+    std::vector<ncvslideio::gimpl::stream::Q*> result;
     for (auto &&in_eh : obj->inEdges())
     {
         result.push_back(qgr.metadata(in_eh).contains<DataQueue>()
@@ -131,7 +131,7 @@ std::vector<cv::gimpl::stream::Q*> input_queues(      ade::Graph &g,
     return result;
 }
 
-void sync_data(cv::GRunArgs &results, cv::GRunArgsP &outputs)
+void sync_data(ncvslideio::GRunArgs &results, ncvslideio::GRunArgsP &outputs)
 {
     for (auto && it : ade::util::zip(ade::util::toRange(outputs),
                                      ade::util::toRange(results)))
@@ -140,29 +140,29 @@ void sync_data(cv::GRunArgs &results, cv::GRunArgsP &outputs)
         auto &res_obj = std::get<1>(it);
 
         // FIXME: this conversion should be unified
-        using T = cv::GRunArgP;
+        using T = ncvslideio::GRunArgP;
         switch (out_obj.index())
         {
-        case T::index_of<cv::Mat*>():
+        case T::index_of<ncvslideio::Mat*>():
         {
-            auto out_mat_p = cv::util::get<cv::Mat*>(out_obj);
-            auto view = cv::util::get<cv::RMat>(res_obj).access(cv::RMat::Access::R);
-            *out_mat_p = cv::gimpl::asMat(view).clone();
+            auto out_mat_p = ncvslideio::util::get<ncvslideio::Mat*>(out_obj);
+            auto view = ncvslideio::util::get<ncvslideio::RMat>(res_obj).access(ncvslideio::RMat::Access::R);
+            *out_mat_p = ncvslideio::gimpl::asMat(view).clone();
         } break;
-        case T::index_of<cv::RMat*>():
-            *cv::util::get<cv::RMat*>(out_obj) = std::move(cv::util::get<cv::RMat>(res_obj));
+        case T::index_of<ncvslideio::RMat*>():
+            *ncvslideio::util::get<ncvslideio::RMat*>(out_obj) = std::move(ncvslideio::util::get<ncvslideio::RMat>(res_obj));
             break;
-        case T::index_of<cv::Scalar*>():
-            *cv::util::get<cv::Scalar*>(out_obj) = std::move(cv::util::get<cv::Scalar>(res_obj));
+        case T::index_of<ncvslideio::Scalar*>():
+            *ncvslideio::util::get<ncvslideio::Scalar*>(out_obj) = std::move(ncvslideio::util::get<ncvslideio::Scalar>(res_obj));
             break;
-        case T::index_of<cv::detail::VectorRef>():
-            cv::util::get<cv::detail::VectorRef>(out_obj).mov(cv::util::get<cv::detail::VectorRef>(res_obj));
+        case T::index_of<ncvslideio::detail::VectorRef>():
+            ncvslideio::util::get<ncvslideio::detail::VectorRef>(out_obj).mov(ncvslideio::util::get<ncvslideio::detail::VectorRef>(res_obj));
             break;
-        case T::index_of<cv::detail::OpaqueRef>():
-            cv::util::get<cv::detail::OpaqueRef>(out_obj).mov(cv::util::get<cv::detail::OpaqueRef>(res_obj));
+        case T::index_of<ncvslideio::detail::OpaqueRef>():
+            ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(out_obj).mov(ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(res_obj));
             break;
-        case T::index_of<cv::MediaFrame*>():
-            *cv::util::get<cv::MediaFrame*>(out_obj) = std::move(cv::util::get<cv::MediaFrame>(res_obj));
+        case T::index_of<ncvslideio::MediaFrame*>():
+            *ncvslideio::util::get<ncvslideio::MediaFrame*>(out_obj) = std::move(ncvslideio::util::get<ncvslideio::MediaFrame>(res_obj));
             break;
         default:
             GAPI_Error("This value type is not supported!"); // ...maybe because of STANDALONE mode.
@@ -172,10 +172,10 @@ void sync_data(cv::GRunArgs &results, cv::GRunArgsP &outputs)
 }
 
 // FIXME: Is there a way to derive function from its GRunArgsP version?
-template<class C> using O = cv::util::optional<C>;
-void sync_data(cv::gimpl::stream::Result &r, cv::GOptRunArgsP &outputs)
+template<class C> using O = ncvslideio::util::optional<C>;
+void sync_data(ncvslideio::gimpl::stream::Result &r, ncvslideio::GOptRunArgsP &outputs)
 {
-    namespace own = cv::gapi::own;
+    namespace own = ncvslideio::gapi::own;
 
     for (auto && it : ade::util::zip(ade::util::toRange(outputs),
                                      ade::util::toRange(r.args),
@@ -185,50 +185,50 @@ void sync_data(cv::gimpl::stream::Result &r, cv::GOptRunArgsP &outputs)
         auto &res_obj  = std::get<1>(it);
         bool available = std::get<2>(it);
 
-        using T = cv::GOptRunArgP;
+        using T = ncvslideio::GOptRunArgP;
 #define HANDLE_CASE(Type)                                               \
         case T::index_of<O<Type>*>():                                   \
             if (available) {                                            \
-                *cv::util::get<O<Type>*>(out_obj)                       \
-                    = cv::util::make_optional(std::move(cv::util::get<Type>(res_obj))); \
+                *ncvslideio::util::get<O<Type>*>(out_obj)                       \
+                    = ncvslideio::util::make_optional(std::move(ncvslideio::util::get<Type>(res_obj))); \
             } else {                                                    \
-                cv::util::get<O<Type>*>(out_obj)->reset();              \
+                ncvslideio::util::get<O<Type>*>(out_obj)->reset();              \
             }
 
         // FIXME: this conversion should be unified
         switch (out_obj.index())
         {
-            HANDLE_CASE(cv::Scalar);     break;
-            HANDLE_CASE(cv::RMat);       break;
-            HANDLE_CASE(cv::MediaFrame); break;
+            HANDLE_CASE(ncvslideio::Scalar);     break;
+            HANDLE_CASE(ncvslideio::RMat);       break;
+            HANDLE_CASE(ncvslideio::MediaFrame); break;
 
-        case T::index_of<O<cv::Mat>*>(): {
+        case T::index_of<O<ncvslideio::Mat>*>(): {
             // Mat: special handling.
-            auto &mat_opt = *cv::util::get<O<cv::Mat>*>(out_obj);
+            auto &mat_opt = *ncvslideio::util::get<O<ncvslideio::Mat>*>(out_obj);
             if (available) {
-                auto q_map = cv::util::get<cv::RMat>(res_obj).access(cv::RMat::Access::R);
+                auto q_map = ncvslideio::util::get<ncvslideio::RMat>(res_obj).access(ncvslideio::RMat::Access::R);
                 // FIXME: Copy! Maybe we could do some optimization for this case!
                 // e.g. don't handle RMat for last ilsand in the graph.
                 // It is not always possible though.
-                mat_opt = cv::util::make_optional(cv::gimpl::asMat(q_map).clone());
+                mat_opt = ncvslideio::util::make_optional(ncvslideio::gimpl::asMat(q_map).clone());
             } else {
                 mat_opt.reset();
             }
         } break;
-        case T::index_of<cv::detail::OptionalVectorRef>(): {
+        case T::index_of<ncvslideio::detail::OptionalVectorRef>(): {
             // std::vector<>: special handling
-            auto &vec_opt = cv::util::get<cv::detail::OptionalVectorRef>(out_obj);
+            auto &vec_opt = ncvslideio::util::get<ncvslideio::detail::OptionalVectorRef>(out_obj);
             if (available) {
-                vec_opt.mov(cv::util::get<cv::detail::VectorRef>(res_obj));
+                vec_opt.mov(ncvslideio::util::get<ncvslideio::detail::VectorRef>(res_obj));
             } else {
                 vec_opt.reset();
             }
         } break;
-        case T::index_of<cv::detail::OptionalOpaqueRef>(): {
+        case T::index_of<ncvslideio::detail::OptionalOpaqueRef>(): {
             // std::vector<>: special handling
-            auto &opq_opt = cv::util::get<cv::detail::OptionalOpaqueRef>(out_obj);
+            auto &opq_opt = ncvslideio::util::get<ncvslideio::detail::OptionalOpaqueRef>(out_obj);
             if (available) {
-                opq_opt.mov(cv::util::get<cv::detail::OpaqueRef>(res_obj));
+                opq_opt.mov(ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(res_obj));
             } else {
                 opq_opt.reset();
             }
@@ -320,10 +320,10 @@ class QueueReader
                       const std::size_t  this_id);
 
 public:
-    cv::gimpl::StreamMsg getInputVector  (std::vector<Q*>   &in_queues,
-                                          cv::GRunArgs      &in_constants);
+    ncvslideio::gimpl::StreamMsg getInputVector  (std::vector<Q*>   &in_queues,
+                                          ncvslideio::GRunArgs      &in_constants);
 
-    using V = cv::util::variant<cv::GRunArgs, Stop, cv::gimpl::Exception>;
+    using V = ncvslideio::util::variant<ncvslideio::GRunArgs, Stop, ncvslideio::gimpl::Exception>;
     V getResultsVector(std::vector<Q*>         &in_queues,
                        const std::vector<int>  &in_mapping,
                        const std::size_t        out_size);
@@ -357,7 +357,7 @@ void rewindToStop(std::vector<Q*> &in_queues,
             while (q2 && got_cmd) {
                 Cmd cmd;
                 got_cmd = q2->try_pop(cmd);
-                if (got_cmd && cv::util::holds_alternative<Stop>(cmd)) {
+                if (got_cmd && ncvslideio::util::holds_alternative<Stop>(cmd)) {
                     got_stop_count ++;
                     GAPI_LOG_DEBUG(nullptr, "got stop from id: " << id2);
                     break;
@@ -378,8 +378,8 @@ void QueueReader::rewindToStop(std::vector<Q*>   &in_queues,
     ::rewindToStop(in_queues, this_id);
 }
 
-cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
-                                                 cv::GRunArgs    &in_constants)
+ncvslideio::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
+                                                 ncvslideio::GRunArgs    &in_constants)
 {
     // NB: Need to release resources from the previous step, to fetch new ones.
     // On some systems it might be impossible to allocate new memory
@@ -389,9 +389,9 @@ cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
     // lifetime, keep the whole cmd vector (of size == # of inputs)
     // in memory.
     m_cmd.resize(in_queues.size());
-    cv::GRunArgs isl_inputs(in_queues.size());
+    ncvslideio::GRunArgs isl_inputs(in_queues.size());
 
-    cv::optional<cv::gimpl::Exception> exception;
+    ncvslideio::optional<ncvslideio::gimpl::Exception> exception;
     for (auto &&it : ade::util::indexed(in_queues))
     {
        auto id = ade::util::index(it);
@@ -411,12 +411,12 @@ cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
        q->pop(m_cmd[id]);
        switch (m_cmd[id].index())
        {
-           case Cmd::index_of<cv::GRunArg>():
-               isl_inputs[id] = cv::util::get<cv::GRunArg>(m_cmd[id]);
+           case Cmd::index_of<ncvslideio::GRunArg>():
+               isl_inputs[id] = ncvslideio::util::get<ncvslideio::GRunArg>(m_cmd[id]);
                break;
            case Cmd::index_of<Stop>():
            {
-               const auto &stop = cv::util::get<Stop>(m_cmd[id]);
+               const auto &stop = ncvslideio::util::get<Stop>(m_cmd[id]);
                if (stop.kind == Stop::Kind::CNST)
                {
                    // We've got a Stop signal from a const source,
@@ -443,14 +443,14 @@ cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
                    rewindToStop(in_queues, id);
                    // After queues are read to the proper indicator,
                    // indicate end-of-stream
-                   return cv::gimpl::StreamMsg{cv::gimpl::EndOfStream{}};
+                   return ncvslideio::gimpl::StreamMsg{ncvslideio::gimpl::EndOfStream{}};
               } // if(Cnst)
               break;
           }
-          case Cmd::index_of<cv::gimpl::Exception>():
+          case Cmd::index_of<ncvslideio::gimpl::Exception>():
           {
               exception =
-                  cv::util::make_optional(cv::util::get<cv::gimpl::Exception>(m_cmd[id]));
+                  ncvslideio::util::make_optional(ncvslideio::util::get<ncvslideio::gimpl::Exception>(m_cmd[id]));
               break;
           }
           default:
@@ -459,7 +459,7 @@ cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
     } // for(in_queues)
 
     if (exception.has_value()) {
-        return cv::gimpl::StreamMsg{exception.value()};
+        return ncvslideio::gimpl::StreamMsg{exception.value()};
     }
 
     if (m_finishing)
@@ -469,18 +469,18 @@ cv::gimpl::StreamMsg QueueReader::getInputVector(std::vector<Q*> &in_queues,
         // inputs, its queues may all become nullptrs. Indicate it as
         // "no data".
         if (ade::util::all_of(in_queues, [](Q *ptr){return ptr == nullptr;})) {
-            return cv::gimpl::StreamMsg{cv::gimpl::EndOfStream{}};
+            return ncvslideio::gimpl::StreamMsg{ncvslideio::gimpl::EndOfStream{}};
         }
     }
     // A regular case - there is data to process
     for (auto& arg : isl_inputs) {
-        if (arg.index() == cv::GRunArg::index_of<cv::Mat>()) {
-            arg = cv::GRunArg{ cv::make_rmat<cv::gimpl::RMatOnMat>(cv::util::get<cv::Mat>(arg))
+        if (arg.index() == ncvslideio::GRunArg::index_of<ncvslideio::Mat>()) {
+            arg = ncvslideio::GRunArg{ ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(ncvslideio::util::get<ncvslideio::Mat>(arg))
                              , arg.meta
                              };
         }
     }
-    return cv::gimpl::StreamMsg{std::move(isl_inputs)};
+    return ncvslideio::gimpl::StreamMsg{std::move(isl_inputs)};
 }
 
 // This is a special method to obtain a result vector
@@ -513,9 +513,9 @@ QueueReader::V QueueReader::getResultsVector(std::vector<Q*>        &in_queues,
                                              const std::vector<int> &in_mapping,
                                              const std::size_t      out_size)
 {
-    cv::GRunArgs out_results(out_size);
+    ncvslideio::GRunArgs out_results(out_size);
     m_cmd.resize(out_size);
-    cv::optional<cv::gimpl::Exception> exception;
+    ncvslideio::optional<ncvslideio::gimpl::Exception> exception;
     for (auto &&it : ade::util::indexed(in_queues))
     {
         auto ii = ade::util::index(it);
@@ -524,8 +524,8 @@ QueueReader::V QueueReader::getResultsVector(std::vector<Q*>        &in_queues,
         q->pop(m_cmd[oi]);
 
         switch (m_cmd[oi].index()) {
-            case Cmd::index_of<cv::GRunArg>():
-                out_results[oi] = std::move(cv::util::get<cv::GRunArg>(m_cmd[oi]));
+            case Cmd::index_of<ncvslideio::GRunArg>():
+                out_results[oi] = std::move(ncvslideio::util::get<ncvslideio::GRunArg>(m_cmd[oi]));
                 break;
             case Cmd::index_of<Stop>():
                 // In theory, the CNST should never reach here.
@@ -534,12 +534,12 @@ QueueReader::V QueueReader::getResultsVector(std::vector<Q*>        &in_queues,
                 // islands in the graph).
                 rewindToStop(in_queues, ii);
                 return QueueReader::V(Stop{});
-            case Cmd::index_of<cv::gimpl::Exception>():
+            case Cmd::index_of<ncvslideio::gimpl::Exception>():
                 exception =
-                    cv::util::make_optional(cv::util::get<cv::gimpl::Exception>(m_cmd[oi]));
+                    ncvslideio::util::make_optional(ncvslideio::util::get<ncvslideio::gimpl::Exception>(m_cmd[oi]));
                 break;
             default:
-                cv::util::throw_error(
+                ncvslideio::util::throw_error(
                         std::logic_error("Unexpected cmd kind in getResultsVector"));
         } // switch
     } // for(in_queues)
@@ -556,7 +556,7 @@ QueueReader::V QueueReader::getResultsVector(std::vector<Q*>        &in_queues,
 // - Check input queue (the only one) for a control command
 // - Depending on the state, obtains next data object and pushes it to the
 //   pipeline.
-void emitterActorThread(std::shared_ptr<cv::gimpl::GIslandEmitter> emitter,
+void emitterActorThread(std::shared_ptr<ncvslideio::gimpl::GIslandEmitter> emitter,
                         Q& in_queue,
                         std::vector<Q*> out_queues,
                         std::function<void()> cb_completion)
@@ -565,9 +565,9 @@ void emitterActorThread(std::shared_ptr<cv::gimpl::GIslandEmitter> emitter,
     // ...or Stop command, this also happens.
     Cmd cmd;
     in_queue.pop(cmd);
-    GAPI_Assert(   cv::util::holds_alternative<Start>(cmd)
-                || cv::util::holds_alternative<Stop>(cmd));
-    if (cv::util::holds_alternative<Stop>(cmd))
+    GAPI_Assert(   ncvslideio::util::holds_alternative<Start>(cmd)
+                || ncvslideio::util::holds_alternative<Stop>(cmd));
+    if (ncvslideio::util::holds_alternative<Stop>(cmd))
     {
         for (auto &&oq : out_queues) {
             oq->push(cmd);
@@ -588,14 +588,14 @@ void emitterActorThread(std::shared_ptr<cv::gimpl::GIslandEmitter> emitter,
         if (in_queue.try_pop(cancel))
         {
             // if we just popped a cancellation command...
-            GAPI_Assert(cv::util::holds_alternative<Stop>(cancel));
+            GAPI_Assert(ncvslideio::util::holds_alternative<Stop>(cancel));
             // Broadcast it to the readers and quit.
             for (auto &&oq : out_queues) oq->push(cancel);
             return;
         }
 
         // Try to obtain next data chunk from the source
-        cv::GRunArg data;
+        ncvslideio::GRunArg data;
 
         bool result = false;
         try {
@@ -607,7 +607,7 @@ void emitterActorThread(std::shared_ptr<cv::gimpl::GIslandEmitter> emitter,
            auto eptr = std::current_exception();
            for (auto &&oq : out_queues)
            {
-               oq->push(Cmd{cv::gimpl::Exception{eptr}});
+               oq->push(Cmd{ncvslideio::gimpl::Exception{eptr}});
            }
            // NB: Go to the next iteration.
            continue;
@@ -677,7 +677,7 @@ void syncActorThread(std::vector<Q*> in_queues,
                     GAPI_ITT_AUTO_TRACE_GUARD(sync_pull_1_queue_hndl);
                     q->pop(cmd);
                 }
-                if (cv::util::holds_alternative<Stop>(cmd)) {
+                if (ncvslideio::util::holds_alternative<Stop>(cmd)) {
                     // We got a stop command from one of the input queues.
                     // Rewind all input queues till Stop command,
                     // Push Stop command down the graph, finish the thread
@@ -691,8 +691,8 @@ void syncActorThread(std::vector<Q*> in_queues,
                 }
 
                 // Extract the timestamp
-                auto& arg = cv::util::get<cv::GRunArg>(cmd);
-                auto ts = cv::util::any_cast<int64_t>(arg.meta[cv::gapi::streaming::meta_tag::timestamp]);
+                auto& arg = ncvslideio::util::get<ncvslideio::GRunArg>(cmd);
+                auto ts = ncvslideio::util::any_cast<int64_t>(arg.meta[ncvslideio::gapi::streaming::meta_tag::timestamp]);
                 GAPI_Assert(ts >= 0u);
 
                 // TODO: this whole drop logic can be imported via compile args
@@ -728,15 +728,15 @@ void syncActorThread(std::vector<Q*> in_queues,
     }
 }
 
-class StreamingInput final: public cv::gimpl::GIslandExecutable::IInput
+class StreamingInput final: public ncvslideio::gimpl::GIslandExecutable::IInput
 {
     QueueReader &qr;
     std::vector<Q*> &in_queues; // FIXME: This can be part of QueueReader
-    cv::GRunArgs &in_constants; // FIXME: This can be part of QueueReader
+    ncvslideio::GRunArgs &in_constants; // FIXME: This can be part of QueueReader
 
-    cv::optional<cv::gimpl::StreamMsg> last_read_msg;
+    ncvslideio::optional<ncvslideio::gimpl::StreamMsg> last_read_msg;
 
-    virtual cv::gimpl::StreamMsg try_get() override
+    virtual ncvslideio::gimpl::StreamMsg try_get() override
     {
         // FIXME: This is not very usable at the moment!
         return get();
@@ -744,25 +744,25 @@ class StreamingInput final: public cv::gimpl::GIslandExecutable::IInput
  public:
     explicit StreamingInput(QueueReader &rdr,
                             std::vector<Q*> &inq,
-                            cv::GRunArgs &inc,
-                            const std::vector<cv::gimpl::RcDesc> &in_descs)
+                            ncvslideio::GRunArgs &inc,
+                            const std::vector<ncvslideio::gimpl::RcDesc> &in_descs)
         : qr(rdr), in_queues(inq), in_constants(inc)
     {
         set(in_descs);
     }
 
-    const cv::gimpl::StreamMsg& read()
+    const ncvslideio::gimpl::StreamMsg& read()
     {
         GAPI_ITT_STATIC_LOCAL_HANDLE(inputs_get_hndl, "StreamingInput::read");
         GAPI_ITT_AUTO_TRACE_GUARD(inputs_get_hndl);
 
         last_read_msg =
-            cv::optional<cv::gimpl::StreamMsg>(
+            ncvslideio::optional<ncvslideio::gimpl::StreamMsg>(
                     qr.getInputVector(in_queues, in_constants));
         return last_read_msg.value();
     }
 
-    virtual cv::gimpl::StreamMsg get() override
+    virtual ncvslideio::gimpl::StreamMsg get() override
     {
         GAPI_ITT_STATIC_LOCAL_HANDLE(inputs_get_hndl, "StreamingInput::get");
         GAPI_ITT_AUTO_TRACE_GUARD(inputs_get_hndl);
@@ -771,19 +771,19 @@ class StreamingInput final: public cv::gimpl::GIslandExecutable::IInput
             (void)read();
         }
         auto msg = std::move(last_read_msg.value());
-        last_read_msg = cv::optional<cv::gimpl::StreamMsg>();
+        last_read_msg = ncvslideio::optional<ncvslideio::gimpl::StreamMsg>();
         return msg;
     }
 };
 
-class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
+class StreamingOutput final: public ncvslideio::gimpl::GIslandExecutable::IOutput
 {
     // These objects form an internal state of the StreamingOutput
     struct Posting
    {
-       using V = cv::util::variant<cv::GRunArg,
-                                   cv::gimpl::EndOfStream,
-                                   cv::gimpl::Exception>;
+       using V = ncvslideio::util::variant<ncvslideio::GRunArg,
+                                   ncvslideio::gimpl::EndOfStream,
+                                   ncvslideio::gimpl::Exception>;
        V data;
        bool ready = false;
    };
@@ -795,9 +795,9 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
     std::size_t m_stops_sent = 0u;
 
     // These objects are owned externally
-    const cv::GMetaArgs &m_metas;
+    const ncvslideio::GMetaArgs &m_metas;
     std::vector< std::vector<Q*> > &m_out_queues;
-    std::shared_ptr<cv::gimpl::GIslandExecutable> m_island;
+    std::shared_ptr<ncvslideio::gimpl::GIslandExecutable> m_island;
 
     // NB: StreamingOutput have to be thread-safe.
     // Now synchronization approach is quite poor and inefficient.
@@ -805,89 +805,89 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
 
     // Allocate a new data object for output under idx
     // Prepare this object for posting
-    virtual cv::GRunArgP get(int idx) override
+    virtual ncvslideio::GRunArgP get(int idx) override
     {
         GAPI_ITT_STATIC_LOCAL_HANDLE(outputs_get_hndl, "StreamingOutput::get (alloc)");
         GAPI_ITT_AUTO_TRACE_GUARD(outputs_get_hndl);
 
         std::lock_guard<std::mutex> lock{m_mutex};
 
-        using MatType = cv::Mat;
-        using SclType = cv::Scalar;
+        using MatType = ncvslideio::Mat;
+        using SclType = ncvslideio::Scalar;
 
         // Allocate a new posting first, then bind this GRunArgP to this item
         auto iter    = m_postings[idx].insert(m_postings[idx].end(), Posting{});
         const auto r = desc()[idx];
-        cv::GRunArg& out_arg = cv::util::get<cv::GRunArg>(iter->data);
-        cv::GRunArgP ret_val;
+        ncvslideio::GRunArg& out_arg = ncvslideio::util::get<ncvslideio::GRunArg>(iter->data);
+        ncvslideio::GRunArgP ret_val;
         switch (r.shape) {
             // Allocate a data object based on its shape & meta, and put it into our vectors.
-            // Yes, first we put a cv::Mat GRunArg, and then specify _THAT_
+            // Yes, first we put a ncvslideio::Mat GRunArg, and then specify _THAT_
             // pointer as an output parameter - to make sure that after island completes,
             // our GRunArg still has the right (up-to-date) value.
             // Same applies to other types.
             // FIXME: This is absolutely ugly but seem to work perfectly for its purpose.
-        case cv::GShape::GMAT:
+        case ncvslideio::GShape::GMAT:
             {
-                auto desc = cv::util::get<cv::GMatDesc>(m_metas[idx]);
+                auto desc = ncvslideio::util::get<ncvslideio::GMatDesc>(m_metas[idx]);
                 if (m_island->allocatesOutputs())
                 {
-                    out_arg = cv::GRunArg(m_island->allocate(desc));
+                    out_arg = ncvslideio::GRunArg(m_island->allocate(desc));
                 }
                 else
                 {
                     MatType newMat;
-                    cv::gimpl::createMat(desc, newMat);
-                    auto rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(newMat);
-                    out_arg = cv::GRunArg(std::move(rmat));
+                    ncvslideio::gimpl::createMat(desc, newMat);
+                    auto rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(newMat);
+                    out_arg = ncvslideio::GRunArg(std::move(rmat));
                 }
-                ret_val = cv::GRunArgP(&cv::util::get<cv::RMat>(out_arg));
+                ret_val = ncvslideio::GRunArgP(&ncvslideio::util::get<ncvslideio::RMat>(out_arg));
             }
             break;
-        case cv::GShape::GSCALAR:
+        case ncvslideio::GShape::GSCALAR:
             {
                 SclType newScl;
-                out_arg = cv::GRunArg(std::move(newScl));
-                ret_val = cv::GRunArgP(&cv::util::get<SclType>(out_arg));
+                out_arg = ncvslideio::GRunArg(std::move(newScl));
+                ret_val = ncvslideio::GRunArgP(&ncvslideio::util::get<SclType>(out_arg));
             }
             break;
-        case cv::GShape::GARRAY:
+        case ncvslideio::GShape::GARRAY:
             {
-                cv::detail::VectorRef newVec;
-                cv::util::get<cv::detail::ConstructVec>(r.ctor)(newVec);
-                out_arg = cv::GRunArg(std::move(newVec));
+                ncvslideio::detail::VectorRef newVec;
+                ncvslideio::util::get<ncvslideio::detail::ConstructVec>(r.ctor)(newVec);
+                out_arg = ncvslideio::GRunArg(std::move(newVec));
                 // VectorRef is implicitly shared so no pointer is taken here
                 // FIXME: that variant MOVE problem again
-                const auto &rr = cv::util::get<cv::detail::VectorRef>(out_arg);
-                ret_val = cv::GRunArgP(rr);
+                const auto &rr = ncvslideio::util::get<ncvslideio::detail::VectorRef>(out_arg);
+                ret_val = ncvslideio::GRunArgP(rr);
             }
             break;
-        case cv::GShape::GOPAQUE:
+        case ncvslideio::GShape::GOPAQUE:
             {
-                cv::detail::OpaqueRef newOpaque;
-                cv::util::get<cv::detail::ConstructOpaque>(r.ctor)(newOpaque);
-                out_arg = cv::GRunArg(std::move(newOpaque));
+                ncvslideio::detail::OpaqueRef newOpaque;
+                ncvslideio::util::get<ncvslideio::detail::ConstructOpaque>(r.ctor)(newOpaque);
+                out_arg = ncvslideio::GRunArg(std::move(newOpaque));
                 // OpaqueRef is implicitly shared so no pointer is taken here
                 // FIXME: that variant MOVE problem again
-                const auto &rr = cv::util::get<cv::detail::OpaqueRef>(out_arg);
-                ret_val = cv::GRunArgP(rr);
+                const auto &rr = ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(out_arg);
+                ret_val = ncvslideio::GRunArgP(rr);
             }
             break;
-        case cv::GShape::GFRAME:
+        case ncvslideio::GShape::GFRAME:
             {
-                cv::MediaFrame frame;
-                out_arg = cv::GRunArg(std::move(frame));
-                ret_val = cv::GRunArgP(&cv::util::get<cv::MediaFrame>(out_arg));
+                ncvslideio::MediaFrame frame;
+                out_arg = ncvslideio::GRunArg(std::move(frame));
+                ret_val = ncvslideio::GRunArgP(&ncvslideio::util::get<ncvslideio::MediaFrame>(out_arg));
             }
             break;
         default:
-            cv::util::throw_error(std::logic_error("Unsupported GShape"));
+            ncvslideio::util::throw_error(std::logic_error("Unsupported GShape"));
         }
-        m_postIdx[cv::gimpl::proto::ptr(ret_val)] = std::make_pair(idx, iter);
+        m_postIdx[ncvslideio::gimpl::proto::ptr(ret_val)] = std::make_pair(idx, iter);
         return ret_val;
     }
 
-    virtual void post(cv::GRunArgP&& argp, const std::exception_ptr& exptr) override
+    virtual void post(ncvslideio::GRunArgP&& argp, const std::exception_ptr& exptr) override
     {
         GAPI_ITT_STATIC_LOCAL_HANDLE(outputs_post_hndl, "StreamingOutput::post");
         GAPI_ITT_AUTO_TRACE_GUARD(outputs_post_hndl);
@@ -896,13 +896,13 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
 
         // Mark the output ready for posting. If it is the first in the line,
         // actually post it and all its successors which are ready for posting too.
-        auto it = m_postIdx.find(cv::gimpl::proto::ptr(argp));
+        auto it = m_postIdx.find(ncvslideio::gimpl::proto::ptr(argp));
         GAPI_Assert(it != m_postIdx.end());
         const int out_idx = it->second.first;
         const auto out_iter = it->second.second;
         out_iter->ready = true;
         if (exptr) {
-            out_iter->data = cv::gimpl::Exception{exptr};
+            out_iter->data = ncvslideio::gimpl::Exception{exptr};
         }
         m_postIdx.erase(it); // Drop the link from the cache anyway
         if (out_iter != m_postings[out_idx].begin())
@@ -917,13 +917,13 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
             Cmd cmd;
             switch (post_iter->data.index())
             {
-                case Posting::V::index_of<cv::GRunArg>():
-                    cmd = Cmd{cv::util::get<cv::GRunArg>(post_iter->data)};
+                case Posting::V::index_of<ncvslideio::GRunArg>():
+                    cmd = Cmd{ncvslideio::util::get<ncvslideio::GRunArg>(post_iter->data)};
                     break;
-                case Posting::V::index_of<cv::gimpl::Exception>():
-                    cmd = Cmd{cv::util::get<cv::gimpl::Exception>(post_iter->data)};
+                case Posting::V::index_of<ncvslideio::gimpl::Exception>():
+                    cmd = Cmd{ncvslideio::util::get<ncvslideio::gimpl::Exception>(post_iter->data)};
                     break;
-                case Posting::V::index_of<cv::gimpl::EndOfStream>():
+                case Posting::V::index_of<ncvslideio::gimpl::EndOfStream>():
                     cmd = Cmd{Stop{}};
                     m_stops_sent++;
                     break;
@@ -939,7 +939,7 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
         }
     }
 
-    virtual void post(cv::gimpl::EndOfStream&&) override
+    virtual void post(ncvslideio::gimpl::EndOfStream&&) override
     {
         std::lock_guard<std::mutex> lock{m_mutex};
         // If the posting list is empty, just broadcast the stop message.
@@ -959,28 +959,28 @@ class StreamingOutput final: public cv::gimpl::GIslandExecutable::IOutput
             else
             {
                 Posting p;
-                p.data = Posting::V{cv::gimpl::EndOfStream{}};
+                p.data = Posting::V{ncvslideio::gimpl::EndOfStream{}};
                 p.ready = true;
                 lst.push_back(std::move(p)); // FIXME: For some reason {}-ctor didn't work here
             }
         }
     }
 
-    void meta(const cv::GRunArgP &out, const cv::GRunArg::Meta &m) override
+    void meta(const ncvslideio::GRunArgP &out, const ncvslideio::GRunArg::Meta &m) override
     {
         std::lock_guard<std::mutex> lock{m_mutex};
-        const auto it = m_postIdx.find(cv::gimpl::proto::ptr(out));
+        const auto it = m_postIdx.find(ncvslideio::gimpl::proto::ptr(out));
         GAPI_Assert(it != m_postIdx.end());
 
         const auto out_iter = it->second.second;
-        cv::util::get<cv::GRunArg>(out_iter->data).meta = m;
+        ncvslideio::util::get<ncvslideio::GRunArg>(out_iter->data).meta = m;
     }
 
 public:
-    explicit StreamingOutput(const cv::GMetaArgs &metas,
+    explicit StreamingOutput(const ncvslideio::GMetaArgs &metas,
                              std::vector< std::vector<Q*> > &out_queues,
-                             const std::vector<cv::gimpl::RcDesc> &out_descs,
-                             std::shared_ptr<cv::gimpl::GIslandExecutable> island)
+                             const std::vector<ncvslideio::gimpl::RcDesc> &out_descs,
+                             std::shared_ptr<ncvslideio::gimpl::GIslandExecutable> island)
         : m_metas(metas)
         , m_out_queues(out_queues)
         , m_island(island)
@@ -997,7 +997,7 @@ public:
         return m_stops_sent == desc().size();
     }
 
-    virtual void post(cv::gimpl::Exception&& error) override
+    virtual void post(ncvslideio::gimpl::Exception&& error) override
     {
         std::lock_guard<std::mutex> lock{m_mutex};
         // If the posting list is empty, just broadcast the stop message.
@@ -1030,12 +1030,12 @@ public:
 //   executable for processing.
 // - Pushes processing results down to consumers - to the subsequent queues.
 //   Note: Every data object consumer has its own queue.
-void islandActorThread(std::vector<cv::gimpl::RcDesc> in_rcs,                     // FIXME: this is...
-                       std::vector<cv::gimpl::RcDesc> out_rcs,                    // FIXME: ...basically just...
-                       cv::GMetaArgs out_metas,                                   // ...
-                       std::shared_ptr<cv::gimpl::GIslandExecutable> island_exec, // FIXME: ...a copy of OpDesc{}.
+void islandActorThread(std::vector<ncvslideio::gimpl::RcDesc> in_rcs,                     // FIXME: this is...
+                       std::vector<ncvslideio::gimpl::RcDesc> out_rcs,                    // FIXME: ...basically just...
+                       ncvslideio::GMetaArgs out_metas,                                   // ...
+                       std::shared_ptr<ncvslideio::gimpl::GIslandExecutable> island_exec, // FIXME: ...a copy of OpDesc{}.
                        std::vector<Q*> in_queues,
-                       cv::GRunArgs in_constants,
+                       ncvslideio::GRunArgs in_constants,
                        std::vector< std::vector<Q*> > out_queues,
                        const std::string& island_meta_info)
 {
@@ -1050,12 +1050,12 @@ void islandActorThread(std::vector<cv::gimpl::RcDesc> in_rcs,                   
     while (!output.done())
     {
         GAPI_ITT_AUTO_TRACE_GUARD(island_hndl);
-        // NB: In case the input message is an cv::gimpl::Exception
+        // NB: In case the input message is an ncvslideio::gimpl::Exception
         // handle it in a general way.
-        if (cv::util::holds_alternative<cv::gimpl::Exception>(input.read()))
+        if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::Exception>(input.read()))
         {
             auto in_msg = input.get();
-            output.post(std::move(cv::util::get<cv::gimpl::Exception>(in_msg)));
+            output.post(std::move(ncvslideio::util::get<ncvslideio::gimpl::Exception>(in_msg)));
         }
         else
         {
@@ -1105,10 +1105,10 @@ void collectorThread(std::vector<Q*>   in_queues,
 
         switch (result.index())
         {
-            case QueueReader::V::index_of<cv::GRunArgs>():
+            case QueueReader::V::index_of<ncvslideio::GRunArgs>():
             {
                 GAPI_ITT_AUTO_TRACE_GUARD(collector_push_hndl);
-                auto this_result = cv::util::get<cv::GRunArgs>(result);
+                auto this_result = ncvslideio::util::get<ncvslideio::GRunArgs>(result);
                 out_queue.push(Cmd{Result{std::move(this_result), flags}});
                 break;
             }
@@ -1119,8 +1119,8 @@ void collectorThread(std::vector<Q*>   in_queues,
                 }
                 // Terminate the thread anyway
                 return;
-            case QueueReader::V::index_of<cv::gimpl::Exception>():
-                out_queue.push(Cmd{cv::util::get<cv::gimpl::Exception>(result)});
+            case QueueReader::V::index_of<ncvslideio::gimpl::Exception>():
+                out_queue.push(Cmd{ncvslideio::util::get<ncvslideio::gimpl::Exception>(result)});
                 break;
             default:
                 GAPI_Error("Unreachable code");
@@ -1128,8 +1128,8 @@ void collectorThread(std::vector<Q*>   in_queues,
     }
 }
 
-void check_DesyncObjectConsumedByMultipleIslands(const cv::gimpl::GIslandModel::Graph &gim) {
-    using namespace cv::gimpl;
+void check_DesyncObjectConsumedByMultipleIslands(const ncvslideio::gimpl::GIslandModel::Graph &gim) {
+    using namespace ncvslideio::gimpl;
 
     // Since the limitation exists only in this particular
     // implementation, the check is also done only here but not at the
@@ -1168,55 +1168,55 @@ void check_DesyncObjectConsumedByMultipleIslands(const cv::gimpl::GIslandModel::
     } // for(nodes)
 }
 
-// NB: Construct GRunArgsP based on passed info and store the memory in passed cv::GRunArgs.
+// NB: Construct GRunArgsP based on passed info and store the memory in passed ncvslideio::GRunArgs.
 // Needed for python bridge, because in case python user doesn't pass output arguments to apply.
-void constructOptGraphOutputs(const cv::GTypesInfo &out_info,
-                                    cv::GOptRunArgs &args,
-                                    cv::GOptRunArgsP &outs)
+void constructOptGraphOutputs(const ncvslideio::GTypesInfo &out_info,
+                                    ncvslideio::GOptRunArgs &args,
+                                    ncvslideio::GOptRunArgsP &outs)
 {
     for (auto&& info : out_info)
     {
         switch (info.shape)
         {
-            case cv::GShape::GMAT:
+            case ncvslideio::GShape::GMAT:
             {
-                args.emplace_back(cv::optional<cv::Mat>{});
-                outs.emplace_back(&cv::util::get<cv::optional<cv::Mat>>(args.back()));
+                args.emplace_back(ncvslideio::optional<ncvslideio::Mat>{});
+                outs.emplace_back(&ncvslideio::util::get<ncvslideio::optional<ncvslideio::Mat>>(args.back()));
                 break;
             }
-            case cv::GShape::GSCALAR:
+            case ncvslideio::GShape::GSCALAR:
             {
-                args.emplace_back(cv::optional<cv::Scalar>{});
-                outs.emplace_back(&cv::util::get<cv::optional<cv::Scalar>>(args.back()));
+                args.emplace_back(ncvslideio::optional<ncvslideio::Scalar>{});
+                outs.emplace_back(&ncvslideio::util::get<ncvslideio::optional<ncvslideio::Scalar>>(args.back()));
                 break;
             }
-            case cv::GShape::GARRAY:
+            case ncvslideio::GShape::GARRAY:
             {
-                cv::detail::VectorRef ref;
-                cv::util::get<cv::detail::ConstructVec>(info.ctor)(ref);
-                args.emplace_back(cv::util::make_optional(std::move(ref)));
-                outs.emplace_back(wrap_opt_arg(cv::util::get<cv::optional<cv::detail::VectorRef>>(args.back())));
+                ncvslideio::detail::VectorRef ref;
+                ncvslideio::util::get<ncvslideio::detail::ConstructVec>(info.ctor)(ref);
+                args.emplace_back(ncvslideio::util::make_optional(std::move(ref)));
+                outs.emplace_back(wrap_opt_arg(ncvslideio::util::get<ncvslideio::optional<ncvslideio::detail::VectorRef>>(args.back())));
                 break;
             }
-            case cv::GShape::GOPAQUE:
+            case ncvslideio::GShape::GOPAQUE:
             {
-                cv::detail::OpaqueRef ref;
-                cv::util::get<cv::detail::ConstructOpaque>(info.ctor)(ref);
-                args.emplace_back(cv::util::make_optional(std::move(ref)));
-                outs.emplace_back(wrap_opt_arg(cv::util::get<cv::optional<cv::detail::OpaqueRef>>(args.back())));
+                ncvslideio::detail::OpaqueRef ref;
+                ncvslideio::util::get<ncvslideio::detail::ConstructOpaque>(info.ctor)(ref);
+                args.emplace_back(ncvslideio::util::make_optional(std::move(ref)));
+                outs.emplace_back(wrap_opt_arg(ncvslideio::util::get<ncvslideio::optional<ncvslideio::detail::OpaqueRef>>(args.back())));
                 break;
             }
             default:
-                cv::util::throw_error(std::logic_error("Unsupported optional output shape for Python"));
+                ncvslideio::util::throw_error(std::logic_error("Unsupported optional output shape for Python"));
         }
     }
 }
 } // anonymous namespace
 
-class cv::gimpl::GStreamingExecutor::Synchronizer final {
+class ncvslideio::gimpl::GStreamingExecutor::Synchronizer final {
     gapi::streaming::sync_policy m_sync_policy = gapi::streaming::sync_policy::dont_sync;
     ade::Graph& m_island_graph;
-    cv::gimpl::GIslandModel::Graph m_gim;
+    ncvslideio::gimpl::GIslandModel::Graph m_gim;
     std::size_t m_queue_capacity = 0u;
     std::thread m_thread;
 
@@ -1241,7 +1241,7 @@ public:
     void registerVideoEmitters(std::vector<ade::NodeHandle>&& emitters) {
         // There is no point to make synchronization for the one video input
         // so do nothing in this case
-        if (   m_sync_policy == cv::gapi::streaming::sync_policy::drop
+        if (   m_sync_policy == ncvslideio::gapi::streaming::sync_policy::drop
             && emitters.size() > 1u) {
             m_synchronized_emitters = std::move(emitters);
             m_sync_queues.reserve(m_synchronized_emitters.size());
@@ -1294,7 +1294,7 @@ public:
 
 // GStreamingExecutor expects compile arguments as input to have possibility to do
 // proper graph reshape and islands recompilation
-cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
+ncvslideio::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
                                                   const GCompileArgs &comp_args)
     : GAbstractStreamingExecutor(std::move(g_model), comp_args)
 {
@@ -1316,7 +1316,7 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
 
     // Very rough estimation to limit internal queue sizes if not specified by the user.
     // Pipeline depth is equal to number of its (pipeline) steps.
-    auto has_queue_capacity = cv::gapi::getCompileArg<cv::gapi::streaming::queue_capacity>(m_comp_args);
+    auto has_queue_capacity = ncvslideio::gapi::getCompileArg<ncvslideio::gapi::streaming::queue_capacity>(m_comp_args);
     const auto queue_capacity = has_queue_capacity ? has_queue_capacity->capacity :
             3*std::count_if
             (m_gim.nodes().begin(),
@@ -1326,8 +1326,8 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
             });
     GAPI_Assert(queue_capacity != 0u);
 
-    auto sync_policy = cv::gimpl::getCompileArg<cv::gapi::streaming::sync_policy>(m_comp_args)
-                       .value_or(cv::gapi::streaming::sync_policy::dont_sync);
+    auto sync_policy = ncvslideio::gimpl::getCompileArg<ncvslideio::gapi::streaming::sync_policy>(m_comp_args)
+                       .value_or(ncvslideio::gapi::streaming::sync_policy::dont_sync);
     m_sync.reset(new Synchronizer(sync_policy, *m_island_graph, queue_capacity));
 
     // If metadata was not passed to compileStreaming, Islands are not compiled at this point.
@@ -1344,7 +1344,7 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
                 std::vector<RcDesc> input_rcs;
                 std::vector<RcDesc> output_rcs;
                 std::vector<GRunArg> in_constants;
-                cv::GMetaArgs output_metas;
+                ncvslideio::GMetaArgs output_metas;
                 input_rcs.reserve(nh->inNodes().size());
                 in_constants.reserve(nh->inNodes().size()); // FIXME: Ugly
                 output_rcs.reserve(nh->outNodes().size());
@@ -1363,17 +1363,17 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
                     if (orig_data_info.storage == Data::Storage::CONST_VAL) {
                         const_ins.insert(slot_nh);
                         // FIXME: Variant move issue
-                        in_constants.push_back(const_cast<const cv::GRunArg&>(gm.metadata(orig_data_nh).get<ConstValue>().arg));
-                    } else in_constants.push_back(cv::GRunArg{}); // FIXME: Make it in some smarter way pls
+                        in_constants.push_back(const_cast<const ncvslideio::GRunArg&>(gm.metadata(orig_data_nh).get<ConstValue>().arg));
+                    } else in_constants.push_back(ncvslideio::GRunArg{}); // FIXME: Make it in some smarter way pls
                     if (orig_data_info.shape == GShape::GARRAY) {
                         // FIXME: GArray lost host constructor problem
-                        GAPI_Assert(!cv::util::holds_alternative<cv::util::monostate>(orig_data_info.ctor));
+                        GAPI_Assert(!ncvslideio::util::holds_alternative<ncvslideio::util::monostate>(orig_data_info.ctor));
                     }
                     vec.emplace_back(RcDesc{ orig_data_info.rc
                                            , orig_data_info.shape
                                            , orig_data_info.ctor});
                 };
-                auto xtract_out = [&](ade::NodeHandle slot_nh, std::vector<RcDesc> &vec, cv::GMetaArgs &metas)
+                auto xtract_out = [&](ade::NodeHandle slot_nh, std::vector<RcDesc> &vec, ncvslideio::GMetaArgs &metas)
                 {
                     const auto orig_data_nh
                         = m_gim.metadata(slot_nh).get<DataSlot>().original_data_node;
@@ -1381,7 +1381,7 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
                         = gm.metadata(orig_data_nh).get<Data>();
                     if (orig_data_info.shape == GShape::GARRAY) {
                         // FIXME: GArray lost host constructor problem
-                        GAPI_Assert(!cv::util::holds_alternative<cv::util::monostate>(orig_data_info.ctor));
+                        GAPI_Assert(!ncvslideio::util::holds_alternative<ncvslideio::util::monostate>(orig_data_info.ctor));
                     }
                     vec.emplace_back(RcDesc{ orig_data_info.rc
                                            , orig_data_info.shape
@@ -1436,8 +1436,8 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
                     GAPI_Assert(isl->in_ops().size() == 1u);
                     GAPI_Assert(GModel::Graph(*m_orig_graph)
                                 .metadata(*isl->in_ops().begin())
-                                .get<cv::gimpl::Op>()
-                                .k.name == cv::gimpl::streaming::GCopy::id());
+                                .get<ncvslideio::gimpl::Op>()
+                                .k.name == ncvslideio::gimpl::streaming::GCopy::id());
                     for (auto out_nh : nh->outNodes()) {
                         for (auto out_eh : out_nh->outEdges()) {
                             qgr.metadata(out_eh).set(DesyncSpecialCase{});
@@ -1510,17 +1510,17 @@ cv::gimpl::GStreamingExecutor::GStreamingExecutor(std::unique_ptr<ade::Graph> &&
     m_out_queue.set_capacity(queue_capacity * m_collector_map.size());
 
     // FIXME: The code duplicates logic of collectGraphInfo()
-    cv::gimpl::GModel::ConstGraph cgr(*m_orig_graph);
-    auto meta = cgr.metadata().get<cv::gimpl::Protocol>().out_nhs;
+    ncvslideio::gimpl::GModel::ConstGraph cgr(*m_orig_graph);
+    auto meta = cgr.metadata().get<ncvslideio::gimpl::Protocol>().out_nhs;
     out_info.reserve(meta.size());
 
     ade::util::transform(meta, std::back_inserter(out_info), [&cgr](const ade::NodeHandle& nh) {
-        const auto& data = cgr.metadata(nh).get<cv::gimpl::Data>();
-        return cv::GTypeInfo{data.shape, data.kind, data.ctor};
+        const auto& data = cgr.metadata(nh).get<ncvslideio::gimpl::Data>();
+        return ncvslideio::GTypeInfo{data.shape, data.kind, data.ctor};
     });
 }
 
-cv::gimpl::GStreamingExecutor::~GStreamingExecutor()
+ncvslideio::gimpl::GStreamingExecutor::~GStreamingExecutor()
 {
     // FIXME: this is a temporary try-catch exception handling.
     // Need to eliminate throwings from stop()
@@ -1534,7 +1534,7 @@ cv::gimpl::GStreamingExecutor::~GStreamingExecutor()
     }
 }
 
-void cv::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
+void ncvslideio::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
 {
     GAPI_Assert(state == State::READY || state == State::STOPPED);
 
@@ -1567,7 +1567,7 @@ void cv::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
         }
     };
 
-    const auto new_meta = cv::descr_of(ins); // 0
+    const auto new_meta = ncvslideio::descr_of(ins); // 0
     if (gm.metadata().contains<OriginalInputMeta>()) // (1)
     {
         // NB: Metadata is tested in setSource() already - just put an assert here
@@ -1618,7 +1618,7 @@ void cv::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
         {
         // Create a streaming emitter.
         // Produces the next video frame when pulled.
-        case T::index_of<cv::gapi::wip::IStreamSource::Ptr>():
+        case T::index_of<ncvslideio::gapi::wip::IStreamSource::Ptr>():
 #if !defined(GAPI_STANDALONE)
             emitter.reset(new VideoEmitter{emit_arg});
             // Currently all video inputs are synchronized if sync policy is to drop,
@@ -1633,7 +1633,7 @@ void cv::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
             // Create a constant emitter.
             // Produces always the same ("constant") value when pulled.
             emitter.reset(new ConstEmitter{emit_arg});
-            m_const_vals.push_back(const_cast<cv::GRunArg &>(emit_arg)); // FIXME: move problem
+            m_const_vals.push_back(const_cast<ncvslideio::GRunArg &>(emit_arg)); // FIXME: move problem
             m_const_emitter_queues.push_back(&m_emitter_queues[emit_idx]);
             break;
         }
@@ -1747,7 +1747,7 @@ void cv::gimpl::GStreamingExecutor::setSource(GRunArgs &&ins)
     state = State::READY;
 }
 
-void cv::gimpl::GStreamingExecutor::start()
+void ncvslideio::gimpl::GStreamingExecutor::start()
 {
     if (state == State::STOPPED)
     {
@@ -1764,7 +1764,7 @@ void cv::gimpl::GStreamingExecutor::start()
     }
 }
 
-void cv::gimpl::GStreamingExecutor::wait_shutdown()
+void ncvslideio::gimpl::GStreamingExecutor::wait_shutdown()
 {
     // This utility is used by pull/try_pull/stop() to uniformly
     // shutdown the worker threads.
@@ -1795,7 +1795,7 @@ void cv::gimpl::GStreamingExecutor::wait_shutdown()
     state = State::STOPPED;
 }
 
-bool cv::gimpl::GStreamingExecutor::pull(cv::GRunArgsP &&outs)
+bool ncvslideio::gimpl::GStreamingExecutor::pull(ncvslideio::GRunArgsP &&outs)
 {
     GAPI_ITT_STATIC_LOCAL_HANDLE(pull_hndl, "GStreamingExecutor::pull");
     GAPI_ITT_AUTO_TRACE_GUARD(pull_hndl);
@@ -1809,7 +1809,7 @@ bool cv::gimpl::GStreamingExecutor::pull(cv::GRunArgsP &&outs)
         return false;
     GAPI_Assert(state == State::RUNNING);
     GAPI_Assert(m_sink_queues.size() == outs.size() &&
-                "Number of data objects in cv::gout() must match the number of graph outputs in cv::GOut()");
+                "Number of data objects in ncvslideio::gout() must match the number of graph outputs in ncvslideio::GOut()");
 
     Cmd cmd;
     m_out_queue.pop(cmd);
@@ -1818,13 +1818,13 @@ bool cv::gimpl::GStreamingExecutor::pull(cv::GRunArgsP &&outs)
             wait_shutdown();
             return false;
         case Cmd::index_of<Result>(): {
-            GAPI_Assert(cv::util::holds_alternative<Result>(cmd));
-            cv::GRunArgs &this_result = cv::util::get<Result>(cmd).args;
+            GAPI_Assert(ncvslideio::util::holds_alternative<Result>(cmd));
+            ncvslideio::GRunArgs &this_result = ncvslideio::util::get<Result>(cmd).args;
             sync_data(this_result, outs);
             return true;
         }
         case Cmd::index_of<Exception>(): {
-            std::rethrow_exception(cv::util::get<Exception>(cmd).eptr);
+            std::rethrow_exception(ncvslideio::util::get<Exception>(cmd).eptr);
             return true;
         }
         default:
@@ -1833,7 +1833,7 @@ bool cv::gimpl::GStreamingExecutor::pull(cv::GRunArgsP &&outs)
     GAPI_Error("Unreachable code");
 }
 
-bool cv::gimpl::GStreamingExecutor::pull(cv::GOptRunArgsP &&outs)
+bool ncvslideio::gimpl::GStreamingExecutor::pull(ncvslideio::GOptRunArgsP &&outs)
 {
     // This pull() can only be called in both cases: if there are
     // desyncrhonized parts or not.
@@ -1844,7 +1844,7 @@ bool cv::gimpl::GStreamingExecutor::pull(cv::GOptRunArgsP &&outs)
         return false;
     GAPI_Assert(state == State::RUNNING);
     GAPI_Assert(m_sink_queues.size() == outs.size() &&
-                "Number of data objects in cv::gout() must match the number of graph outputs in cv::GOut()");
+                "Number of data objects in ncvslideio::gout() must match the number of graph outputs in ncvslideio::GOut()");
 
     Cmd cmd;
     m_out_queue.pop(cmd);
@@ -1853,20 +1853,20 @@ bool cv::gimpl::GStreamingExecutor::pull(cv::GOptRunArgsP &&outs)
             wait_shutdown();
             return false;
         case Cmd::index_of<Result>(): {
-            sync_data(cv::util::get<Result>(cmd), outs);
+            sync_data(ncvslideio::util::get<Result>(cmd), outs);
             return true;
         }
         case Cmd::index_of<Exception>(): {
-            std::rethrow_exception(cv::util::get<Exception>(cmd).eptr);
+            std::rethrow_exception(ncvslideio::util::get<Exception>(cmd).eptr);
             return true;
         }
     }
     GAPI_Error("Unreachable code");
 }
 
-cv::gimpl::GAbstractStreamingExecutor::PyPullResult cv::gimpl::GStreamingExecutor::pull()
+ncvslideio::gimpl::GAbstractStreamingExecutor::PyPullResult ncvslideio::gimpl::GStreamingExecutor::pull()
 {
-    using RunArgs = cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>;
+    using RunArgs = ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>;
     bool is_over = false;
 
     if (m_desync) {
@@ -1890,7 +1890,7 @@ cv::gimpl::GAbstractStreamingExecutor::PyPullResult cv::gimpl::GStreamingExecuto
     return std::make_tuple(is_over, RunArgs(run_args));
 }
 
-bool cv::gimpl::GStreamingExecutor::try_pull(cv::GRunArgsP &&outs)
+bool ncvslideio::gimpl::GStreamingExecutor::try_pull(ncvslideio::GRunArgsP &&outs)
 {
     if (state == State::STOPPED)
         return false;
@@ -1901,19 +1901,19 @@ bool cv::gimpl::GStreamingExecutor::try_pull(cv::GRunArgsP &&outs)
     if (!m_out_queue.try_pop(cmd)) {
         return false;
     }
-    if (cv::util::holds_alternative<Stop>(cmd))
+    if (ncvslideio::util::holds_alternative<Stop>(cmd))
     {
         wait_shutdown();
         return false;
     }
 
-    GAPI_Assert(cv::util::holds_alternative<Result>(cmd));
-    cv::GRunArgs &this_result = cv::util::get<Result>(cmd).args;
+    GAPI_Assert(ncvslideio::util::holds_alternative<Result>(cmd));
+    ncvslideio::GRunArgs &this_result = ncvslideio::util::get<Result>(cmd).args;
     sync_data(this_result, outs);
     return true;
 }
 
-void cv::gimpl::GStreamingExecutor::stop()
+void ncvslideio::gimpl::GStreamingExecutor::stop()
 {
     if (state == State::STOPPED)
         return;
@@ -1934,15 +1934,15 @@ void cv::gimpl::GStreamingExecutor::stop()
 
     // Pull messages from the final queue to ensure completion
     Cmd cmd;
-    while (!cv::util::holds_alternative<Stop>(cmd))
+    while (!ncvslideio::util::holds_alternative<Stop>(cmd))
     {
         m_out_queue.pop(cmd);
     }
-    GAPI_Assert(cv::util::holds_alternative<Stop>(cmd));
+    GAPI_Assert(ncvslideio::util::holds_alternative<Stop>(cmd));
     wait_shutdown();
 }
 
-bool cv::gimpl::GStreamingExecutor::running() const
+bool ncvslideio::gimpl::GStreamingExecutor::running() const
 {
     return (state == State::RUNNING);
 }

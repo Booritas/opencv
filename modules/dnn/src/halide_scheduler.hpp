@@ -10,7 +10,7 @@
 
 #include <opencv2/dnn.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -32,6 +32,6 @@ private:
 };
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // __OPENCV_DNN_HALIDE_SCHEDULER_HPP__

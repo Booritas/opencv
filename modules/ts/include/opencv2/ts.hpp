@@ -164,19 +164,19 @@ using testing::Values;
 using testing::ValuesIn;
 using testing::Combine;
 
-using cv::Mat;
-using cv::Mat_;
-using cv::UMat;
-using cv::InputArray;
-using cv::OutputArray;
-using cv::noArray;
+using ncvslideio::Mat;
+using ncvslideio::Mat_;
+using ncvslideio::UMat;
+using ncvslideio::InputArray;
+using ncvslideio::OutputArray;
+using ncvslideio::noArray;
 
-using cv::Range;
-using cv::Point;
-using cv::Rect;
-using cv::Size;
-using cv::Scalar;
-using cv::RNG;
+using ncvslideio::Range;
+using ncvslideio::Point;
+using ncvslideio::Rect;
+using ncvslideio::Size;
+using ncvslideio::Scalar;
+using ncvslideio::RNG;
 
 // Tuple stuff from Google Tests
 using testing::get;
@@ -187,11 +187,11 @@ using testing::tuple_element;
 
 
 namespace details {
-class SkipTestExceptionBase: public cv::Exception
+class SkipTestExceptionBase: public ncvslideio::Exception
 {
 public:
     SkipTestExceptionBase(bool handlingTags);
-    SkipTestExceptionBase(const cv::String& message, bool handlingTags);
+    SkipTestExceptionBase(const ncvslideio::String& message, bool handlingTags);
 };
 }
 
@@ -200,7 +200,7 @@ class SkipTestException: public details::SkipTestExceptionBase
 public:
     int dummy; // workaround for MacOSX Xcode 7.3 bug (don't make class "empty")
     SkipTestException() : details::SkipTestExceptionBase(false), dummy(0) {}
-    SkipTestException(const cv::String& message) : details::SkipTestExceptionBase(message, false), dummy(0) { }
+    SkipTestException(const ncvslideio::String& message) : details::SkipTestExceptionBase(message, false), dummy(0) { }
 };
 
 /** Apply tag to the current test
@@ -295,7 +295,7 @@ double getMaxVal(int depth);
 
 Size randomSize(RNG& rng, double maxSizeLog);
 void randomSize(RNG& rng, int minDims, int maxDims, double maxSizeLog, vector<int>& sz);
-int randomType(RNG& rng, cv::_OutputArray::DepthMask typeMask, int minChannels, int maxChannels);
+int randomType(RNG& rng, ncvslideio::_OutputArray::DepthMask typeMask, int minChannels, int maxChannels);
 Mat randomMat(RNG& rng, Size size, int type, double minVal, double maxVal, bool useRoi);
 Mat randomMat(RNG& rng, const vector<int>& size, int type, double minVal, double maxVal, bool useRoi);
 void add(const Mat& a, double alpha, const Mat& b, double beta,
@@ -303,7 +303,7 @@ void add(const Mat& a, double alpha, const Mat& b, double beta,
 void multiply(const Mat& a, const Mat& b, Mat& c, double alpha=1, int ctype=-1);
 void divide(const Mat& a, const Mat& b, Mat& c, double alpha=1, int ctype=-1);
 
-void convert(const Mat& src, cv::OutputArray dst, int dtype, double alpha=1, double beta=0);
+void convert(const Mat& src, ncvslideio::OutputArray dst, int dtype, double alpha=1, double beta=0);
 void copy(const Mat& src, Mat& dst, const Mat& mask=Mat(), bool invertMask=false);
 void set(Mat& dst, const Scalar& gamma, const Mat& mask=Mat());
 
@@ -429,7 +429,7 @@ protected:
     int test_case_count; // the total number of test cases
 
     // read test params
-    virtual int read_params( const cv::FileStorage& fs );
+    virtual int read_params( const ncvslideio::FileStorage& fs );
 
     // returns the number of tests or -1 if it is unknown a-priori
     virtual int get_test_case_count();
@@ -450,7 +450,7 @@ protected:
     virtual void dump_test_case(int test_case_idx, std::ostream* out);
 
     // finds test parameter
-    cv::FileNode find_param( const cv::FileStorage& fs, const char* param_name );
+    ncvslideio::FileNode find_param( const ncvslideio::FileStorage& fs, const char* param_name );
 
     // name of the test (it is possible to locate a test by its name)
     string name;
@@ -611,7 +611,7 @@ public:
     };
 
     // get RNG to generate random input data for a test
-    RNG& get_rng() { return cv::theRNG(); }
+    RNG& get_rng() { return ncvslideio::theRNG(); }
 
     // returns the current error code
     TS::FailureCode get_err_code() { return TS::FailureCode(current_test_info.code); }
@@ -656,7 +656,7 @@ public:
 
 protected:
 
-    virtual int read_params( const cv::FileStorage& fs ) CV_OVERRIDE;
+    virtual int read_params( const ncvslideio::FileStorage& fs ) CV_OVERRIDE;
     virtual int prepare_test_case( int test_case_idx ) CV_OVERRIDE;
     virtual int validate_test_results( int test_case_idx ) CV_OVERRIDE;
 
@@ -705,10 +705,10 @@ protected:
         {
             f();
         }
-        catch(const cv::Exception& e)
+        catch(const ncvslideio::Exception& e)
         {
             thrown = true;
-            if( e.code != expected_code && e.code != cv::Error::StsAssert && e.code != cv::Error::StsError )
+            if( e.code != expected_code && e.code != ncvslideio::Error::StsAssert && e.code != ncvslideio::Error::StsError )
             {
                 ts->printf(TS::LOG, "%s (test case #%d): the error code %d is different from the expected %d\n",
                     descr, test_case_idx, e.code, expected_code);
@@ -740,8 +740,8 @@ struct DefaultRngAuto
 {
     const uint64 old_state;
 
-    DefaultRngAuto() : old_state(cv::theRNG().state) { cv::theRNG().state = cvtest::param_seed; }
-    ~DefaultRngAuto() { cv::theRNG().state = old_state; }
+    DefaultRngAuto() : old_state(ncvslideio::theRNG().state) { ncvslideio::theRNG().state = cvtest::param_seed; }
+    ~DefaultRngAuto() { ncvslideio::theRNG().state = old_state; }
 
     DefaultRngAuto& operator=(const DefaultRngAuto&);
 };
@@ -938,7 +938,7 @@ public:
 
 namespace opencv_test {
 using namespace cvtest;
-using namespace cv;
+using namespace ncvslideio;
 
 #define CVTEST_GUARD_SYMBOL(name) \
     class required_namespace_specificatin_here_for_symbol_ ## name {}; \

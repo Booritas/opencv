@@ -28,9 +28,9 @@
 #  pragma GCC diagnostic ignored "-Wstrict-overflow"
 #endif
 
-using cv::gapi::own::saturate;
+using ncvslideio::gapi::own::saturate;
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -203,7 +203,7 @@ static inline v_float32 vx_load_f32(const SRC* ptr)
         return tmp;
     }
 
-    CV_Error(cv::Error::StsBadArg, "unsupported type");
+    CV_Error(ncvslideio::Error::StsBadArg, "unsupported type");
 }
 #endif  // CV_SIMD
 
@@ -474,7 +474,7 @@ void run_rgb2hsv_impl(uchar out[], const uchar in[], const int sdiv_table[],
         v = std::max({r, g, b});
         int _vr, _vg;
 
-        uchar diff = cv::saturate_cast<uchar>(v - vmin);
+        uchar diff = ncvslideio::saturate_cast<uchar>(v - vmin);
         _vr = v == r ? -1 : 0;
         _vg = v == g ? -1 : 0;
 
@@ -486,7 +486,7 @@ void run_rgb2hsv_impl(uchar out[], const uchar in[], const int sdiv_table[],
         h = (h * hdiv_table[diff] + (1 << (hsv_shift-1))) >> hsv_shift;
         h += h < 0 ? hr : 0;
 
-        out[j * 3    ] = cv::saturate_cast<uchar>(h);
+        out[j * 3    ] = ncvslideio::saturate_cast<uchar>(h);
         out[j * 3 + 1] = (uchar)(s);
         out[j * 3 + 2] = (uchar)(v);
     }
@@ -963,16 +963,16 @@ void run_rgb2yuv422_impl(uchar out[], const uchar in[], int width)
         short u =  c3*(b - y1) >> 16;
         short v =  c4*(r - y1) >> 16;
 
-        out[j]     = cv::saturate_cast<uchar>((u + (128 << 3) + (1 << 2)) >> 3); // u
-        out[j + 1] = cv::saturate_cast<uchar>((y1 + (1 << 6)) >> 7); // y1
-        out[j + 2] = cv::saturate_cast<uchar>((v + (128 << 3) + (1 << 2)) >> 3); // v
+        out[j]     = ncvslideio::saturate_cast<uchar>((u + (128 << 3) + (1 << 2)) >> 3); // u
+        out[j + 1] = ncvslideio::saturate_cast<uchar>((y1 + (1 << 6)) >> 7); // y1
+        out[j + 2] = ncvslideio::saturate_cast<uchar>((v + (128 << 3) + (1 << 2)) >> 3); // v
 
         r = in[w + 3] << 7;
         g = in[w + 4] << 7;
         b = in[w + 5] << 7;
         short y2 = (c0 * r + c1 * g + c2 * b) >> 16;
 
-        out[j + 3] = cv::saturate_cast<uchar>((y2 + (1 << 6)) >> 7); // y2
+        out[j + 3] = ncvslideio::saturate_cast<uchar>((y2 + (1 << 6)) >> 7); // y2
 
         // offset for output buffer
         j += 4;
@@ -2422,7 +2422,7 @@ static void run_morphology3x3_reference(T out[], const T *in[], int width, int c
         return;
     }
 
-    CV_Error(cv::Error::StsBadArg, "unsupported morphology");
+    CV_Error(ncvslideio::Error::StsBadArg, "unsupported morphology");
 }
 
 #if (CV_SIMD || CV_SIMD_SCALABLE)
@@ -2656,7 +2656,7 @@ static void run_morphology3x3_simd(T out[], const T *in[], int width, int chan,
         return;
     }
 
-    CV_Error(cv::Error::StsBadArg, "unsupported morphology");
+    CV_Error(ncvslideio::Error::StsBadArg, "unsupported morphology");
 }
 #endif
 
@@ -2908,6 +2908,6 @@ CV_CPU_OPTIMIZATION_NAMESPACE_END
 
 }  // namespace fluid
 }  // namespace gapi
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // !defined(GAPI_STANDALONE)

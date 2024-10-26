@@ -8,7 +8,7 @@
 #include "opencv2/highgui.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 //![variables]
 Mat src, src_gray;

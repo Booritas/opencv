@@ -7,7 +7,7 @@
 #include "../ie_ngraph.hpp"
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 static inline int calculateOffset(int outer_dim, const MatShape &shape_indices, int axis_skip, const MatStep &step_data) {
     int offset = 0;
@@ -147,7 +147,7 @@ public:
                 forward_impl<float>(std::forward<Args>(args)...);
                 break;
             default:
-                CV_Error(cv::Error::BadDepth, "DNN/GatherElements: Unsupported type.");
+                CV_Error(ncvslideio::Error::BadDepth, "DNN/GatherElements: Unsupported type.");
         };
     }
 
@@ -179,4 +179,4 @@ Ptr<GatherElementsLayer> GatherElementsLayer::create(const LayerParams& params)
     return makePtr<GatherElementsLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

@@ -24,7 +24,7 @@
 # endif // !_VA_H_
 #endif // HAVE_VA
 
-namespace cv { namespace va_intel {
+namespace ncvslideio { namespace va_intel {
 
 /** @addtogroup core_va_intel
 This section describes Intel VA-API/OpenCL (CL-VA) interoperability.
@@ -40,7 +40,7 @@ Check usage example for details: samples/va_intel/va_intel_interop.cpp
 /////////////////// CL-VA Interoperability Functions ///////////////////
 
 namespace ocl {
-using namespace cv::ocl;
+using namespace ncvslideio::ocl;
 
 // TODO static functions in the Context class
 /** @brief Creates OpenCL context from VA.
@@ -50,7 +50,7 @@ using namespace cv::ocl;
  */
 CV_EXPORTS Context& initializeContextFromVA(VADisplay display, bool tryInterop = true);
 
-} // namespace cv::va_intel::ocl
+} // namespace ncvslideio::va_intel::ocl
 
 /** @brief Converts InputArray to VASurfaceID object.
 @param display - VADisplay object.
@@ -70,6 +70,6 @@ CV_EXPORTS void convertFromVASurface(VADisplay display, VASurfaceID surface, Siz
 
 //! @}
 
-}} // namespace cv::va_intel
+}} // namespace ncvslideio::va_intel
 
 #endif /* OPENCV_CORE_VA_INTEL_HPP */

@@ -8,7 +8,7 @@
 #include "opencv2/dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 TrackerGOTURN::TrackerGOTURN()
 {
@@ -133,8 +133,8 @@ Ptr<TrackerGOTURN> TrackerGOTURN::create(const TrackerGOTURN::Params& parameters
 Ptr<TrackerGOTURN> TrackerGOTURN::create(const TrackerGOTURN::Params& parameters)
 {
     (void)(parameters);
-    CV_Error(cv::Error::StsNotImplemented, "to use GOTURN, the tracking module needs to be built with opencv_dnn !");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "to use GOTURN, the tracking module needs to be built with opencv_dnn !");
 }
 #endif  // OPENCV_HAVE_DNN
 
-}  // namespace cv
+}  // namespace ncvslideio

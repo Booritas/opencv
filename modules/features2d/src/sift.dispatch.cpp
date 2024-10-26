@@ -77,7 +77,7 @@
 #include "sift.simd.hpp"
 #include "sift.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 /*!
  SIFT implementation.
@@ -199,7 +199,7 @@ static Mat createInitialImage( const Mat& img, bool doubleImageSize, float sigma
             H.at<float>(0, 0) = 0.5f;
             H.at<float>(1, 1) = 0.5f;
 
-            cv::warpAffine(gray_fpt, dbl, H, dbl.size(), INTER_LINEAR | WARP_INVERSE_MAP, BORDER_REFLECT);
+            ncvslideio::warpAffine(gray_fpt, dbl, H, dbl.size(), INTER_LINEAR | WARP_INVERSE_MAP, BORDER_REFLECT);
         } else {
 #if DoG_TYPE_SHORT
             resize(gray_fpt, dbl, Size(gray_fpt.cols*2, gray_fpt.rows*2), 0, 0, INTER_LINEAR_EXACT);
@@ -274,7 +274,7 @@ public:
           gpyr(_gpyr),
           dogpyr(_dogpyr) { }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
 
@@ -340,7 +340,7 @@ public:
           gauss_pyr(_gauss_pyr),
           dog_pyr(_dog_pyr),
           tls_kpts_struct(_tls_kpts_struct) { }
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
 
@@ -428,7 +428,7 @@ public:
           nOctaveLayers(_nOctaveLayers),
           firstOctave(_firstOctave) { }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
 

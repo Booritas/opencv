@@ -11,7 +11,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static const char* opencl_kernel_src =
 "__kernel void magnutude_filter_8u(\n"
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         "{ i input    | | specify input image }"
         "{ h help     | | print help message }";
 
-    cv::CommandLineParser args(argc, argv, keys);
+    ncvslideio::CommandLineParser args(argc, argv, keys);
     if (args.has("help"))
     {
         cout << "Usage : " << argv[0] << " [options]" << endl;
@@ -53,13 +53,13 @@ int main(int argc, char** argv)
         return EXIT_SUCCESS;
     }
 
-    cv::ocl::Context ctx = cv::ocl::Context::getDefault();
+    ncvslideio::ocl::Context ctx = ncvslideio::ocl::Context::getDefault();
     if (!ctx.ptr())
     {
         cerr << "OpenCL is not available" << endl;
         return 1;
     }
-    cv::ocl::Device device = cv::ocl::Device::getDefault();
+    ncvslideio::ocl::Device device = ncvslideio::ocl::Device::getDefault();
     if (!device.compilerAvailable())
     {
         cerr << "OpenCL compiler is not available" << endl;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
         }
         else
         {
-            Mat frame(cv::Size(640, 480), CV_8U, Scalar::all(128));
+            Mat frame(ncvslideio::Size(640, 480), CV_8U, Scalar::all(128));
             Point p(frame.cols / 2, frame.rows / 2);
             line(frame, Point(0, frame.rows / 2), Point(frame.cols, frame.rows / 2), 1);
             circle(frame, p, 200, Scalar(32, 32, 32), 8, LINE_AA);
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     }
 
 
-    cv::String module_name; // empty to disable OpenCL cache
+    ncvslideio::String module_name; // empty to disable OpenCL cache
 
     {
         cout << "OpenCL program source: " << endl;
@@ -104,12 +104,12 @@ int main(int argc, char** argv)
         cout << opencl_kernel_src << endl;
         cout << "======================================================================================================" << endl;
         //! [Define OpenCL program source]
-        cv::ocl::ProgramSource source(module_name, "simple", opencl_kernel_src, "");
+        ncvslideio::ocl::ProgramSource source(module_name, "simple", opencl_kernel_src, "");
         //! [Define OpenCL program source]
 
         //! [Compile/build OpenCL for current OpenCL device]
-        cv::String errmsg;
-        cv::ocl::Program program(source, "", errmsg);
+        ncvslideio::String errmsg;
+        ncvslideio::ocl::Program program(source, "", errmsg);
         if (program.ptr() == NULL)
         {
             cerr << "Can't compile OpenCL program:" << endl << errmsg << endl;
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
         }
 
         //! [Get OpenCL kernel by name]
-        cv::ocl::Kernel k("magnutude_filter_8u", program);
+        ncvslideio::ocl::Kernel k("magnutude_filter_8u", program);
         if (k.empty())
         {
             cerr << "Can't get OpenCL kernel" << endl;
@@ -138,8 +138,8 @@ int main(int argc, char** argv)
         size_t localSize[2] = {8, 8};
         bool executionResult = k
             .args(
-                cv::ocl::KernelArg::ReadOnlyNoSize(src), // size is not used (similar to 'dst' size)
-                cv::ocl::KernelArg::WriteOnly(result),
+                ncvslideio::ocl::KernelArg::ReadOnlyNoSize(src), // size is not used (similar to 'dst' size)
+                ncvslideio::ocl::KernelArg::WriteOnly(result),
                 (float)2.0
             )
             .run(2, globalSize, localSize, true);

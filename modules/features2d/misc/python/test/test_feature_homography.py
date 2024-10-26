@@ -28,8 +28,8 @@ def intersectionRate(s1, s2):
     x1, y1, x2, y2 = s1
     s1 = np.array([[x1, y1], [x2,y1], [x2, y2], [x1, y2]])
 
-    area, _intersection = cv.intersectConvexConvex(s1, np.array(s2))
-    return 2 * area / (cv.contourArea(s1) + cv.contourArea(np.array(s2)))
+    area, _intersection = ncvslideio.intersectConvexConvex(s1, np.array(s2))
+    return 2 * area / (ncvslideio.contourArea(s1) + ncvslideio.contourArea(np.array(s2)))
 
 from tests_common import NewOpenCVTests
 
@@ -92,8 +92,8 @@ TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad')
 
 class PlaneTracker:
     def __init__(self):
-        self.detector = cv.AKAZE_create(threshold = 0.003)
-        self.matcher = cv.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
+        self.detector = ncvslideio.AKAZE_create(threshold = 0.003)
+        self.matcher = ncvslideio.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
         self.targets = []
         self.frame_points = []
 
@@ -137,7 +137,7 @@ class PlaneTracker:
             p0 = [target.keypoints[m.trainIdx].pt for m in matches]
             p1 = [self.frame_points[m.queryIdx].pt for m in matches]
             p0, p1 = np.float32((p0, p1))
-            H, status = cv.findHomography(p0, p1, cv.RANSAC, 3.0)
+            H, status = ncvslideio.findHomography(p0, p1, ncvslideio.RANSAC, 3.0)
             status = status.ravel() != 0
             if status.sum() < MIN_MATCH_COUNT:
                 continue
@@ -145,7 +145,7 @@ class PlaneTracker:
 
             x0, y0, x1, y1 = target.rect
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-            quad = cv.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
+            quad = ncvslideio.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
 
             track = TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad)
             tracked.append(track)

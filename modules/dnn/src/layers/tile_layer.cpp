@@ -9,7 +9,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class TileLayerImpl CV_FINAL : public TileLayer
 {
@@ -79,7 +79,7 @@ public:
             if (rep_i != 1)
             {
                 tmp = tmp.reshape(0, dims);
-                tmp = cv::repeat(tmp, 1, rep_i);
+                tmp = ncvslideio::repeat(tmp, 1, rep_i);
                 dims *= out_shape[i];
             }
         }
@@ -107,4 +107,4 @@ Ptr<TileLayer> TileLayer::create(const LayerParams& params)
     return makePtr<TileLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

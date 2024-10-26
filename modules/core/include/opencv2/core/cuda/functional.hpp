@@ -54,7 +54,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     // Function Objects
     template<typename Argument, typename Result> struct unary_function
@@ -798,7 +798,7 @@ namespace cv { namespace cuda { namespace device
 
 #define OPENCV_CUDA_TRANSFORM_FUNCTOR_TRAITS(type) \
     template <> struct TransformFunctorTraits< type > : DefaultTransformFunctorTraits< type >
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

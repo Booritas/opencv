@@ -18,10 +18,10 @@
 
 #include <cstddef>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
 namespace raw {
     template <class T>
@@ -255,4 +255,4 @@ template void normalize_mean_variance_layernorm(const Stream&, Span<__half> /*ou
 #endif
 template void normalize_mean_variance_layernorm(const Stream&, Span<float> /*output*/, View<float> /*input*/, View<float> /*scale*/, View<float> /*bias*/, View<float> /*means*/, View<float> /*inv_stddev*/, std::size_t);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

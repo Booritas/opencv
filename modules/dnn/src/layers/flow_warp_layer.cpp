@@ -9,7 +9,7 @@
 #include "layers_common.hpp"
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class FlowWarpLayerImpl CV_FINAL : public FlowWarpLayer
 {
@@ -114,4 +114,4 @@ Ptr<FlowWarpLayer> FlowWarpLayer::create(const LayerParams& params)
     return Ptr<FlowWarpLayer>(new FlowWarpLayerImpl(params));
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

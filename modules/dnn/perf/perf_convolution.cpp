@@ -786,7 +786,7 @@ struct ConvParamGenerator
 };
 static inline void PrintTo(const ConvParam_t& p, std::ostream* os)
 {
-    *os << "GFLOPS=" << cv::format("%.3f", p.declared_flops * 1e-9)
+    *os << "GFLOPS=" << ncvslideio::format("%.3f", p.declared_flops * 1e-9)
         << ", K=" << (Size)p.kernel
         << ", IN={" << p.shapeIn.dims[0] << ", " << p.shapeIn.dims[1] << ", " << p.shapeIn.dims[2] << ", " << p.shapeIn.dims[3] << "}"
         << ", OCN=" << p.outCN;

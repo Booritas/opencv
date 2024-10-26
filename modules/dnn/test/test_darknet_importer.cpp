@@ -149,11 +149,11 @@ public:
             Mat out2 = net2.forward();
             if (backend == DNN_BACKEND_INFERENCE_ENGINE_NGRAPH)
             {
-                EXPECT_LT(cv::norm(out2(ranges0), out2(ranges1), NORM_INF), 1e-4) << "Batch result is not similar: " << name;
+                EXPECT_LT(ncvslideio::norm(out2(ranges0), out2(ranges1), NORM_INF), 1e-4) << "Batch result is not similar: " << name;
             }
             else
             {
-                EXPECT_EQ(0, cv::norm(out2(ranges0), out2(ranges1), NORM_INF)) << "Batch result is not equal: " << name;
+                EXPECT_EQ(0, ncvslideio::norm(out2(ranges0), out2(ranges1), NORM_INF)) << "Batch result is not equal: " << name;
             }
 
             Mat ref2 = ref;
@@ -191,12 +191,12 @@ public:
 
         Mat img1 = imread(_tf("dog416.png"));
         Mat img2 = imread(_tf("street.png"));
-        cv::resize(img2, img2, Size(416, 416));
+        ncvslideio::resize(img2, img2, Size(416, 416));
 
         // Pad images by black pixel at the right to test not equal width and height sizes
         if (zeroPadW) {
-            cv::copyMakeBorder(img1, img1, 0, 0, 0, zeroPadW, BORDER_CONSTANT);
-            cv::copyMakeBorder(img2, img2, 0, 0, 0, zeroPadW, BORDER_CONSTANT);
+            ncvslideio::copyMakeBorder(img1, img1, 0, 0, 0, zeroPadW, BORDER_CONSTANT);
+            ncvslideio::copyMakeBorder(img2, img2, 0, 0, 0, zeroPadW, BORDER_CONSTANT);
         }
 
         std::vector<Mat> samples(2);
@@ -316,7 +316,7 @@ public:
     }
 
     void testDarknetModel(const std::string& cfg, const std::string& weights,
-                          const cv::Mat& ref, double scoreDiff, double iouDiff,
+                          const ncvslideio::Mat& ref, double scoreDiff, double iouDiff,
                           float confThreshold = 0.24, float nmsThreshold = 0.4, bool useWinograd = true,
                           int zeroPadW = 0)
     {

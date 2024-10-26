@@ -46,7 +46,7 @@
 #include "opencv2/core.hpp"
 
 #ifdef __cplusplus
-namespace cv
+namespace ncvslideio
 {
 
 CV_EXPORTS_W bool initAll();

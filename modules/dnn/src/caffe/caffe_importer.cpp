@@ -55,7 +55,7 @@
 
 #include <opencv2/core/utils/fp_control_utils.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -70,7 +70,7 @@ namespace
 {
 
 template<typename T>
-static cv::String toString(const T &v)
+static ncvslideio::String toString(const T &v)
 {
     std::ostringstream ss;
     ss << v;
@@ -118,7 +118,7 @@ public:
             ReadNetParamsFromBinaryBufferOrDie(dataModel, lenModel, &netBinary);
     }
 
-    void extractCustomParams(const google::protobuf::UnknownFieldSet& unknownFields, cv::dnn::LayerParams &params)
+    void extractCustomParams(const google::protobuf::UnknownFieldSet& unknownFields, ncvslideio::dnn::LayerParams &params)
     {
         const int numFields = unknownFields.field_count();
         for (int i = 0; i < numFields; ++i)
@@ -132,7 +132,7 @@ public:
         }
     }
 
-    void addParam(const Message &msg, const FieldDescriptor *field, cv::dnn::LayerParams &params)
+    void addParam(const Message &msg, const FieldDescriptor *field, ncvslideio::dnn::LayerParams &params)
     {
         const Reflection *refl = msg.GetReflection();
         int type = field->cpp_type();
@@ -183,7 +183,7 @@ public:
         case FieldDescriptor::CPPTYPE_ENUM:
             if (isRepeated) {
                 int size = refl->FieldSize(msg, field);
-                std::vector<cv::String> buf(size);
+                std::vector<ncvslideio::String> buf(size);
                 for (int i = 0; i < size; i++)
                     buf[i] = refl->GetRepeatedEnum(msg, field, i)->name();
                 params.set(name, DictValue::arrayString(buf.begin(), size));
@@ -203,7 +203,7 @@ public:
         return (str.size() >= _param.size()) && str.compare(str.size() - _param.size(), _param.size(), _param) == 0;
     }
 
-    void extractLayerParams(const Message &msg, cv::dnn::LayerParams &params, bool isInternal = false)
+    void extractLayerParams(const Message &msg, ncvslideio::dnn::LayerParams &params, bool isInternal = false)
     {
         const Descriptor *msgDesc = msg.GetDescriptor();
         const Reflection *msgRefl = msg.GetReflection();
@@ -256,7 +256,7 @@ public:
             shape.resize(1, 1);  // Is a scalar.
     }
 
-    void blobFromProto(const caffe::BlobProto &pbBlob, cv::Mat &dstBlob)
+    void blobFromProto(const caffe::BlobProto &pbBlob, ncvslideio::Mat &dstBlob)
     {
         MatShape shape;
         blobShapeFromProto(pbBlob, shape);

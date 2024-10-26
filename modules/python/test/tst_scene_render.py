@@ -88,14 +88,14 @@ class TestSceneRender():
             self.currentRect = self.initialRect + int( 30*cos(self.time) + 50*sin(self.time/3))
             if self.deformation:
                 self.currentRect[1:3] += int(self.h/20*cos(self.time))
-            cv.fillConvexPoly(img, self.currentRect, (0, 0, 255))
+            ncvslideio.fillConvexPoly(img, self.currentRect, (0, 0, 255))
 
         self.time += self.timeStep
 
         if self.noise:
             noise = np.zeros(self.sceneBg.shape, np.int8)
-            cv.randn(noise, np.zeros(3), np.ones(3)*255*self.noise)
-            img = cv.add(img, noise, dtype=cv.CV_8UC3)
+            ncvslideio.randn(noise, np.zeros(3), np.ones(3)*255*self.noise)
+            img = ncvslideio.add(img, noise, dtype=ncvslideio.CV_8UC3)
         return img
 
     def resetTime(self):
@@ -104,16 +104,16 @@ class TestSceneRender():
 
 if __name__ == '__main__':
 
-    backGr = cv.imread('../../../samples/data/lena.jpg')
+    backGr = ncvslideio.imread('../../../samples/data/lena.jpg')
 
     render = TestSceneRender(backGr, noise = 0.5)
 
     while True:
 
         img = render.getNextFrame()
-        cv.imshow('img', img)
+        ncvslideio.imshow('img', img)
 
-        ch = cv.waitKey(3)
+        ch = ncvslideio.waitKey(3)
         if ch == 27:
             break
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -8,7 +8,7 @@
 #include <opencv2/core/utils/logger.hpp>
 
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -131,7 +131,7 @@ void blobFromImagesWithParamsImpl(InputArrayOfArrays images_, Tmat& blob_, const
 {
     CV_TRACE_FUNCTION();
     if(!std::is_same<Tmat, UMat>::value && !std::is_same<Tmat, Mat>::value) {
-        String error_message = "The template parameter is expected to be either a cv::Mat or a cv::UMat";
+        String error_message = "The template parameter is expected to be either a ncvslideio::Mat or a ncvslideio::UMat";
         CV_Error(Error::StsBadArg, error_message);
     }
 
@@ -298,23 +298,23 @@ void blobFromImagesWithParams(InputArrayOfArrays images, OutputArray blob, const
     if (images.kind() == _InputArray::STD_VECTOR_UMAT) {
         if(blob.kind() == _InputArray::UMAT) {
             UMat& u = blob.getUMatRef();
-            blobFromImagesWithParamsImpl<cv::UMat>(images, u, param);
+            blobFromImagesWithParamsImpl<ncvslideio::UMat>(images, u, param);
             return;
         } else if(blob.kind() == _InputArray::MAT) {
             UMat u = blob.getMatRef().getUMat(ACCESS_WRITE);
-            blobFromImagesWithParamsImpl<cv::UMat>(images, u, param);
+            blobFromImagesWithParamsImpl<ncvslideio::UMat>(images, u, param);
             u.copyTo(blob);
             return;
         }
     } else if (images.kind() == _InputArray::STD_VECTOR_MAT) {
         if(blob.kind() == _InputArray::UMAT) {
             Mat m = blob.getUMatRef().getMat(ACCESS_WRITE);
-            blobFromImagesWithParamsImpl<cv::Mat>(images, m, param);
+            blobFromImagesWithParamsImpl<ncvslideio::Mat>(images, m, param);
             m.copyTo(blob);
             return;
         } else if(blob.kind() == _InputArray::MAT) {
             Mat& m = blob.getMatRef();
-            blobFromImagesWithParamsImpl<cv::Mat>(images, m, param);
+            blobFromImagesWithParamsImpl<ncvslideio::Mat>(images, m, param);
             return;
         }
     }
@@ -330,12 +330,12 @@ void blobFromImageWithParams(InputArray image, OutputArray blob, const Image2Blo
         if(blob.kind() == _InputArray::UMAT) {
             UMat& u = blob.getUMatRef();
             std::vector<UMat> images(1, image.getUMat());
-            blobFromImagesWithParamsImpl<cv::UMat>(images, u, param);
+            blobFromImagesWithParamsImpl<ncvslideio::UMat>(images, u, param);
             return;
         } else if(blob.kind() == _InputArray::MAT) {
             UMat u = blob.getMatRef().getUMat(ACCESS_RW);
             std::vector<UMat> images(1, image.getUMat());
-            blobFromImagesWithParamsImpl<cv::UMat>(images, u, param);
+            blobFromImagesWithParamsImpl<ncvslideio::UMat>(images, u, param);
             u.copyTo(blob);
             return;
         }
@@ -343,13 +343,13 @@ void blobFromImageWithParams(InputArray image, OutputArray blob, const Image2Blo
         if(blob.kind() == _InputArray::UMAT) {
             Mat m = blob.getUMatRef().getMat(ACCESS_RW);
             std::vector<Mat> images(1, image.getMat());
-            blobFromImagesWithParamsImpl<cv::Mat>(images, m, param);
+            blobFromImagesWithParamsImpl<ncvslideio::Mat>(images, m, param);
             m.copyTo(blob);
             return;
         } else if(blob.kind() == _InputArray::MAT) {
             Mat& m = blob.getMatRef();
             std::vector<Mat> images(1, image.getMat());
-            blobFromImagesWithParamsImpl<cv::Mat>(images, m, param);
+            blobFromImagesWithParamsImpl<ncvslideio::Mat>(images, m, param);
             return;
         }
     }
@@ -357,7 +357,7 @@ void blobFromImageWithParams(InputArray image, OutputArray blob, const Image2Blo
     CV_Error(Error::StsBadArg, "Image an Blob are expected to be either a Mat or UMat");
 }
 
-void imagesFromBlob(const cv::Mat& blob_, OutputArrayOfArrays images_)
+void imagesFromBlob(const ncvslideio::Mat& blob_, OutputArrayOfArrays images_)
 {
     CV_TRACE_FUNCTION();
 
@@ -369,7 +369,7 @@ void imagesFromBlob(const cv::Mat& blob_, OutputArrayOfArrays images_)
     CV_Assert(blob_.depth() == CV_32F);
     CV_Assert(blob_.dims == 4);
 
-    images_.create(cv::Size(1, blob_.size[0]), blob_.depth());
+    images_.create(ncvslideio::Size(1, blob_.size[0]), blob_.depth());
 
     std::vector<Mat> vectorOfChannels(blob_.size[1]);
     for (int n = 0; n < blob_.size[0]; ++n)
@@ -378,7 +378,7 @@ void imagesFromBlob(const cv::Mat& blob_, OutputArrayOfArrays images_)
         {
             vectorOfChannels[c] = getPlane(blob_, n, c);
         }
-        cv::merge(vectorOfChannels, images_.getMatRef(n));
+        ncvslideio::merge(vectorOfChannels, images_.getMatRef(n));
     }
 }
 
@@ -438,10 +438,10 @@ void Image2BlobParams::blobRectsToImageRects(const std::vector<Rect> &rBlob, std
             }
         }
         else
-            CV_Error(cv::Error::StsBadArg, "Unknown padding mode");
+            CV_Error(ncvslideio::Error::StsBadArg, "Unknown padding mode");
     }
 }
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

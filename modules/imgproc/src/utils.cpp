@@ -51,19 +51,19 @@ CV_IMPL CvSeq* cvPointSeqFromMat( int seq_kind, const CvArr* arr,
     CvMat* mat = (CvMat*)arr;
 
     if( !CV_IS_MAT( mat ))
-        CV_Error( cv::Error::StsBadArg, "Input array is not a valid matrix" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Input array is not a valid matrix" );
 
     if( CV_MAT_CN(mat->type) == 1 && mat->width == 2 )
         mat = cvReshape(mat, &hdr, 2);
 
     eltype = CV_MAT_TYPE( mat->type );
     if( eltype != CV_32SC2 && eltype != CV_32FC2 )
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
         "The matrix can not be converted to point sequence because of "
         "inappropriate element type" );
 
     if( (mat->width != 1 && mat->height != 1) || !CV_IS_MAT_CONT(mat->type))
-        CV_Error( cv::Error::StsBadArg,
+        CV_Error( ncvslideio::Error::StsBadArg,
         "The matrix converted to point sequence must be "
         "1-dimensional and continuous" );
 
@@ -79,12 +79,12 @@ CV_IMPL void
 cvCopyMakeBorder( const CvArr* srcarr, CvArr* dstarr, CvPoint offset,
                   int borderType, CvScalar value )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     int left = offset.x, right = dst.cols - src.cols - left;
     int top = offset.y, bottom = dst.rows - src.rows - top;
 
     CV_Assert( dst.type() == src.type() );
-    cv::copyMakeBorder( src, dst, top, bottom, left, right, borderType, value );
+    ncvslideio::copyMakeBorder( src, dst, top, bottom, left, right, borderType, value );
 }
 
 /* End of file. */

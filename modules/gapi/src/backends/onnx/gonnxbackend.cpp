@@ -26,7 +26,7 @@ namespace {
 struct ONNXCallContext;
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace onnx {
 
@@ -92,13 +92,13 @@ struct TensorInfo {
     bool is_grayscale = false;
 
     struct MeanStdev {
-        cv::Scalar mean;
-        cv::Scalar stdev;
+        ncvslideio::Scalar mean;
+        ncvslideio::Scalar stdev;
     };
-    cv::util::optional<MeanStdev> mstd;
+    ncvslideio::util::optional<MeanStdev> mstd;
 };
 
-using Views = std::vector<std::unique_ptr<cv::MediaFrame::View>>;
+using Views = std::vector<std::unique_ptr<ncvslideio::MediaFrame::View>>;
 
 class ONNXCompiled {
     // ONNX Resources
@@ -119,35 +119,35 @@ class ONNXCompiled {
     std::vector<TensorInfo> getTensorInfo(TensorPosition pos);
 
     // Run-time data structures
-    std::vector<cv::Mat> in_data;
-    std::vector<cv::Mat> out_data;
+    std::vector<ncvslideio::Mat> in_data;
+    std::vector<ncvslideio::Mat> out_data;
 
-    void Run(const std::vector<cv::Mat>& ins,
-             std::vector<cv::Mat>& outs);
+    void Run(const std::vector<ncvslideio::Mat>& ins,
+             std::vector<ncvslideio::Mat>& outs);
 
     std::vector<std::string> in_names_without_const;
 public:
     explicit ONNXCompiled(const gapi::onnx::detail::ParamDesc &pp);
 
     // Extract the information about output layer #i
-    cv::GMatDesc outMeta(int i) const;
+    ncvslideio::GMatDesc outMeta(int i) const;
 
     // Assign input/output info
     std::size_t numInputs() const { return params.num_in; }
     std::size_t numOutputs() const { return params.num_out; }
-    void setInput(int i, const cv::Mat &m);
-    void setOutput(int idx, cv::Mat &m);
-    cv::Mat allocOutput(int i) const;
+    void setInput(int i, const ncvslideio::Mat &m);
+    void setOutput(int idx, ncvslideio::Mat &m);
+    ncvslideio::Mat allocOutput(int i) const;
     // Gets exMat from input
     void extractMat(ONNXCallContext &ctx, const size_t in_idx, Views &views);
-    // Extracted cv::Mat from input cv::Mat/cv::MediaFrame
-    cv::Mat exMat;
+    // Extracted ncvslideio::Mat from input ncvslideio::Mat/ncvslideio::MediaFrame
+    ncvslideio::Mat exMat;
     // Run with the assigned inputs/outputs
     void run();
 };
 
 static void addCUDAExecutionProvider(Ort::SessionOptions *session_options,
-                                     const cv::gapi::onnx::ep::CUDA &cuda_ep) {
+                                     const ncvslideio::gapi::onnx::ep::CUDA &cuda_ep) {
      OrtCUDAProviderOptions options{};
      options.device_id = cuda_ep.device_id;
 
@@ -157,12 +157,12 @@ static void addCUDAExecutionProvider(Ort::SessionOptions *session_options,
          std::stringstream ss;
          ss << "ONNX Backend: Failed to enable CUDA"
             << " Execution Provider: " << e.what();
-         cv::util::throw_error(std::runtime_error(ss.str()));
+         ncvslideio::util::throw_error(std::runtime_error(ss.str()));
      }
 }
 
 static void addTensorRTExecutionProvider(Ort::SessionOptions *session_options,
-                                         const cv::gapi::onnx::ep::TensorRT &trt_ep) {
+                                         const ncvslideio::gapi::onnx::ep::TensorRT &trt_ep) {
      OrtTensorRTProviderOptions options{};
      options.device_id = trt_ep.device_id;
 
@@ -172,12 +172,12 @@ static void addTensorRTExecutionProvider(Ort::SessionOptions *session_options,
          std::stringstream ss;
          ss << "ONNX Backend: Failed to enable TensorRT"
             << " Execution Provider: " << e.what();
-         cv::util::throw_error(std::runtime_error(ss.str()));
+         ncvslideio::util::throw_error(std::runtime_error(ss.str()));
      }
 }
 
 static void addOpenVINOExecutionProvider(Ort::SessionOptions *session_options,
-                                         const cv::gapi::onnx::ep::OpenVINO &ov_ep) {
+                                         const ncvslideio::gapi::onnx::ep::OpenVINO &ov_ep) {
      std::unordered_map<std::string, std::string> options;
 
      try {
@@ -202,41 +202,41 @@ static void addOpenVINOExecutionProvider(Ort::SessionOptions *session_options,
          std::stringstream ss;
          ss << "ONNX Backend: Failed to enable OpenVINO"
             << " Execution Provider: " << e.what();
-         cv::util::throw_error(std::runtime_error(ss.str()));
+         ncvslideio::util::throw_error(std::runtime_error(ss.str()));
      }
 }
 
 static void addExecutionProvider(Ort::SessionOptions          *session_options,
-                                 const cv::gapi::onnx::ep::EP &execution_provider) {
-    namespace ep = cv::gapi::onnx::ep;
+                                 const ncvslideio::gapi::onnx::ep::EP &execution_provider) {
+    namespace ep = ncvslideio::gapi::onnx::ep;
     switch (execution_provider.index()) {
         case ep::EP::index_of<ep::OpenVINO>(): {
              GAPI_LOG_INFO(NULL, "OpenVINO Execution Provider is added.");
-             const auto &ov_ep = cv::util::get<ep::OpenVINO>(execution_provider);
+             const auto &ov_ep = ncvslideio::util::get<ep::OpenVINO>(execution_provider);
              addOpenVINOExecutionProvider(session_options, ov_ep);
              break;
         }
         case ep::EP::index_of<ep::DirectML>(): {
             GAPI_LOG_INFO(NULL, "DirectML Execution Provider is added.");
-            const auto &dml_ep = cv::util::get<ep::DirectML>(execution_provider);
+            const auto &dml_ep = ncvslideio::util::get<ep::DirectML>(execution_provider);
             addDMLExecutionProvider(session_options, dml_ep);
             break;
         }
         case ep::EP::index_of<ep::CoreML>(): {
             GAPI_LOG_INFO(NULL, "CoreML Execution Provider is added.");
-            const auto &coreml_ep = cv::util::get<ep::CoreML>(execution_provider);
+            const auto &coreml_ep = ncvslideio::util::get<ep::CoreML>(execution_provider);
             addCoreMLExecutionProvider(session_options, coreml_ep);
             break;
         }
         case ep::EP::index_of<ep::CUDA>(): {
             GAPI_LOG_INFO(NULL, "CUDA Execution Provider is added.");
-            const auto &cuda_ep = cv::util::get<ep::CUDA>(execution_provider);
+            const auto &cuda_ep = ncvslideio::util::get<ep::CUDA>(execution_provider);
             addCUDAExecutionProvider(session_options, cuda_ep);
             break;
         }
         case ep::EP::index_of<ep::TensorRT>(): {
             GAPI_LOG_INFO(NULL, "TensorRT Execution Provider is added.");
-            const auto &trt_ep = cv::util::get<ep::TensorRT>(execution_provider);
+            const auto &trt_ep = ncvslideio::util::get<ep::TensorRT>(execution_provider);
             addTensorRTExecutionProvider(session_options, trt_ep);
             break;
         }
@@ -248,7 +248,7 @@ static void addExecutionProvider(Ort::SessionOptions          *session_options,
 
 } // namespace onnx
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 namespace {
 
@@ -260,9 +260,9 @@ inline std::vector<const char*> getCharNames(const std::vector<std::string>& nam
     return out_vec;
 }
 
-inline int getIdxByName(const std::vector<cv::gimpl::onnx::TensorInfo>& info, const std::string& name) {
+inline int getIdxByName(const std::vector<ncvslideio::gimpl::onnx::TensorInfo>& info, const std::string& name) {
     // FIXME: Cache the ordering
-    const auto it = ade::util::find_if(info, [&](const cv::gimpl::onnx::TensorInfo &i) {
+    const auto it = ade::util::find_if(info, [&](const ncvslideio::gimpl::onnx::TensorInfo &i) {
             return i.name == name;
         });
     GAPI_Assert(it != info.end());
@@ -289,7 +289,7 @@ inline std::vector<int> toCV(const std::vector<int64_t> &vsz) {
     return result;
 }
 
-inline void copyFromONNX(Ort::Value &v, cv::Mat& mat) {
+inline void copyFromONNX(Ort::Value &v, ncvslideio::Mat& mat) {
     const auto info = v.GetTensorTypeAndShapeInfo();
     const auto prec = info.GetElementType();
     const auto shape = toCV(info.GetShape());
@@ -305,8 +305,8 @@ inline void copyFromONNX(Ort::Value &v, cv::Mat& mat) {
         HANDLE(ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32, int);
 #undef HANDLE
         case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64: {
-            GAPI_LOG_WARNING(NULL, "INT64 isn't supported for cv::Mat. Conversion to INT32 is used.");
-            cv::gimpl::convertInt64ToInt32(v.GetTensorMutableData<int64_t>(),
+            GAPI_LOG_WARNING(NULL, "INT64 isn't supported for ncvslideio::Mat. Conversion to INT32 is used.");
+            ncvslideio::gimpl::convertInt64ToInt32(v.GetTensorMutableData<int64_t>(),
                                            reinterpret_cast<int*>(mat.data),
                                            mat.total());
             break;
@@ -315,13 +315,13 @@ inline void copyFromONNX(Ort::Value &v, cv::Mat& mat) {
     }
 }
 
-inline std::vector<int64_t> toORT(const cv::MatSize &sz) {
-    return cv::to_own<int64_t>(sz);
+inline std::vector<int64_t> toORT(const ncvslideio::MatSize &sz) {
+    return ncvslideio::to_own<int64_t>(sz);
 }
 
-inline void preprocess(const cv::Mat& src,
-                       const cv::gimpl::onnx::TensorInfo& ti,
-                             cv::Mat& dst) {
+inline void preprocess(const ncvslideio::Mat& src,
+                       const ncvslideio::gimpl::onnx::TensorInfo& ti,
+                             ncvslideio::Mat& dst) {
     // CNN input type
     const auto type = toCV(ti.type);
     if (src.depth() != CV_8U) {
@@ -356,13 +356,13 @@ inline void preprocess(const cv::Mat& src,
             if (ti.is_grayscale)               return false; // 1,1,h,w
             else if (ti.dims[3 - shift] == ch) return true;  // ?,_,_,c
             else if (ti.dims[1 - shift] == ch) return false; // ?,c,_,_
-            else cv::util::throw_error(std::logic_error("Couldn't identify input tensor layout"));
+            else ncvslideio::util::throw_error(std::logic_error("Couldn't identify input tensor layout"));
         } (src.channels());
 
         int new_c = src.channels();
-        cv::Mat csc;
+        ncvslideio::Mat csc;
         if (ti.is_grayscale && new_c == 3) {
-            cv::cvtColor(src, csc, cv::COLOR_BGR2GRAY);
+            ncvslideio::cvtColor(src, csc, ncvslideio::COLOR_BGR2GRAY);
             new_c = 1;
         } else {
             csc = src;
@@ -381,8 +381,8 @@ inline void preprocess(const cv::Mat& src,
         }
         GAPI_Assert(new_h != -1 && new_w != -1);
 
-        cv::Mat rsz, pp;
-        cv::resize(csc, rsz, cv::Size(new_w, new_h));
+        ncvslideio::Mat rsz, pp;
+        ncvslideio::resize(csc, rsz, ncvslideio::Size(new_w, new_h));
         if (src.depth() == CV_8U && type == CV_32F) {
             rsz.convertTo(pp, type, ti.normalize ? 1.f / 255 : 1.f);
 
@@ -396,12 +396,12 @@ inline void preprocess(const cv::Mat& src,
 
         if (!is_hwc && new_c > 1) {
             // Convert to CHW
-            dst.create(cv::Size(new_w, new_h * new_c), type);
-            std::vector<cv::Mat> planes(new_c);
+            dst.create(ncvslideio::Size(new_w, new_h * new_c), type);
+            std::vector<ncvslideio::Mat> planes(new_c);
             for (int ch = 0; ch < new_c; ++ch) {
                 planes[ch] = dst.rowRange(ch * new_h, (ch + 1) * new_h);
             }
-            cv::split(pp, planes);
+            ncvslideio::split(pp, planes);
         } else {
             // Keep HWC
             dst = pp;
@@ -425,19 +425,19 @@ inline void preprocess(const cv::Mat& src,
     }
 }
 
-void preprocess(const cv::MediaFrame::View& view,
-                const cv::GFrameDesc& desc,
-                      cv::Mat& dst) {
-    // This overload constructs cv::Mat from cv::MediaFrame
+void preprocess(const ncvslideio::MediaFrame::View& view,
+                const ncvslideio::GFrameDesc& desc,
+                      ncvslideio::Mat& dst) {
+    // This overload constructs ncvslideio::Mat from ncvslideio::MediaFrame
     switch (desc.fmt) {
-        case cv::MediaFormat::BGR: {
-            dst = cv::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
+        case ncvslideio::MediaFormat::BGR: {
+            dst = ncvslideio::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
             break;
         }
-        case cv::MediaFormat::NV12: {
-            const auto y_plane  = cv::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
-            const auto uv_plane = cv::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
-            cvtColorTwoPlane(y_plane, uv_plane, dst, cv::COLOR_YUV2BGR_NV12);
+        case ncvslideio::MediaFormat::NV12: {
+            const auto y_plane  = ncvslideio::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+            const auto uv_plane = ncvslideio::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
+            cvtColorTwoPlane(y_plane, uv_plane, dst, ncvslideio::COLOR_YUV2BGR_NV12);
             break;
         }
         default:
@@ -447,8 +447,8 @@ void preprocess(const cv::MediaFrame::View& view,
 
 template <typename T>
 inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
-                               const cv::gimpl::onnx::TensorInfo& tensor_params,
-                               const cv::Mat& data) {
+                               const ncvslideio::gimpl::onnx::TensorInfo& tensor_params,
+                               const ncvslideio::Mat& data) {
     (void) tensor_params;
     auto ort_dims = toORT(data.size);
     return Ort::Value::CreateTensor<T>(memory_info,
@@ -459,8 +459,8 @@ inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
 }
 
 inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
-                               const cv::gimpl::onnx::TensorInfo& tensor_params,
-                               const cv::Mat& data) {
+                               const ncvslideio::gimpl::onnx::TensorInfo& tensor_params,
+                               const ncvslideio::Mat& data) {
     GAPI_Assert(data.isContinuous ());
     switch (tensor_params.type) {
     case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:
@@ -470,8 +470,8 @@ inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
     case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32:
         return createTensor<int32_t>(memory_info, tensor_params, data);
     case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64:{
-        // cv::Mat does not support int64 data directly.
-        // Following steps are applied to create an ONNX tensor from cv::Mat data:
+        // ncvslideio::Mat does not support int64 data directly.
+        // Following steps are applied to create an ONNX tensor from ncvslideio::Mat data:
         // - First create a new ONNX tensor 'i64_tensor' with data type int64_t using the default allocator
         // - Next retrieve a pointer to the mutable data buffer of 'i64_tensor'
         // - Convert the data from int32 (see toCV function) to int64 and deep copy it into 'i64_tensor'
@@ -483,7 +483,7 @@ inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
                                                                   ort_dims.size());
         int64_t* tensor_data = i64_tensor.GetTensorMutableData<int64_t>();
 
-        cv::gimpl::convertInt32ToInt64(data.ptr<int>(),
+        ncvslideio::gimpl::convertInt32ToInt64(data.ptr<int>(),
                                        tensor_data,
                                        data.total());
         return i64_tensor;
@@ -497,45 +497,45 @@ inline Ort::Value createTensor(const Ort::MemoryInfo& memory_info,
 struct ONNXUnit {
     static const char *name() { return "ONNXModelConfig"; }
 
-    std::shared_ptr<cv::gimpl::onnx::ONNXCompiled> oc;
+    std::shared_ptr<ncvslideio::gimpl::onnx::ONNXCompiled> oc;
 
-    explicit ONNXUnit(const cv::gapi::onnx::detail::ParamDesc &pp)
-        : oc(new cv::gimpl::onnx::ONNXCompiled(pp)) {
+    explicit ONNXUnit(const ncvslideio::gapi::onnx::detail::ParamDesc &pp)
+        : oc(new ncvslideio::gimpl::onnx::ONNXCompiled(pp)) {
     }
 };
 
 struct ONNXCallContext {
     // Input parameters passed to an inference operation.
-    std::vector<cv::GArg> args;
-    cv::GShapes in_shapes;
+    std::vector<ncvslideio::GArg> args;
+    ncvslideio::GShapes in_shapes;
     //FIXME: avoid conversion of arguments from internal representation to OpenCV one on each call
     //to OCV kernel. (This can be achieved by a two single time conversions in GCPUExecutable::run,
     //once on enter for input and output arguments, and once before return for output arguments only
     //FIXME: check if the above applies to this backend (taken from CPU)
-    std::unordered_map<std::size_t, cv::GRunArgP> results;
+    std::unordered_map<std::size_t, ncvslideio::GRunArgP> results;
 
     // Generic accessor API
     template<typename T>
     const T& inArg(std::size_t input) { return args.at(input).get<T>(); }
 
     // Syntax sugar
-    const cv::Mat&   inMat(std::size_t input) {
-        return inArg<cv::Mat>(input);
+    const ncvslideio::Mat&   inMat(std::size_t input) {
+        return inArg<ncvslideio::Mat>(input);
     }
 
-    const cv::MediaFrame& inFrame(std::size_t input) {
-        return inArg<cv::MediaFrame>(input);
+    const ncvslideio::MediaFrame& inFrame(std::size_t input) {
+        return inArg<ncvslideio::MediaFrame>(input);
     }
 
-    cv::Mat&         outMatR(std::size_t output) {
-        return *cv::util::get<cv::Mat*>(results.at(output));
+    ncvslideio::Mat&         outMatR(std::size_t output) {
+        return *ncvslideio::util::get<ncvslideio::Mat*>(results.at(output));
     }
 
     template<typename T> std::vector<T>& outVecR(std::size_t output) { // FIXME: the same issue
         return outVecRef(output).wref<T>();
     }
-    cv::detail::VectorRef& outVecRef(std::size_t output) {
-        return cv::util::get<cv::detail::VectorRef>(results.at(output));
+    ncvslideio::detail::VectorRef& outVecRef(std::size_t output) {
+        return ncvslideio::util::get<ncvslideio::detail::VectorRef>(results.at(output));
     }
 };
 
@@ -546,7 +546,7 @@ struct ONNXCallable {
 };
 
 struct KImpl {
-    cv::gimpl::CustomMetaFunction::CM customMetaFunc;
+    ncvslideio::gimpl::CustomMetaFunction::CM customMetaFunc;
     ONNXCallable::Run run;
 };
 
@@ -557,27 +557,27 @@ struct KImpl {
 //
 // If not, we need to introduce that!
 using GONNXModel = ade::TypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , ONNXUnit
     , ONNXCallable
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGONNXModel = ade::ConstTypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , ONNXUnit
     , ONNXCallable
     >;
 } // anonymous namespace
 
 // GCPUExcecutable implementation //////////////////////////////////////////////
-cv::gimpl::onnx::GONNXExecutable::GONNXExecutable(const ade::Graph &g,
+ncvslideio::gimpl::onnx::GONNXExecutable::GONNXExecutable(const ade::Graph &g,
                                                   const std::vector<ade::NodeHandle> &nodes)
     : m_g(g), m_gm(m_g) {
     // FIXME: Currently this backend is capable to run a single inference node only.
@@ -612,36 +612,36 @@ cv::gimpl::onnx::GONNXExecutable::GONNXExecutable(const ade::Graph &g,
 }
 
 // FIXME: Document what it does
-cv::GArg cv::gimpl::onnx::GONNXExecutable::packArg(const cv::GArg &arg) {
+ncvslideio::GArg ncvslideio::gimpl::onnx::GONNXExecutable::packArg(const ncvslideio::GArg &arg) {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                && arg.kind != cv::detail::ArgKind::GSCALAR
-                && arg.kind != cv::detail::ArgKind::GARRAY
-                && arg.kind != cv::detail::ArgKind::GOPAQUE
-                && arg.kind != cv::detail::ArgKind::GFRAME);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+                && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE
+                && arg.kind != ncvslideio::detail::ArgKind::GFRAME);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF) {
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF) {
         util::throw_error(std::logic_error("Inference supports G-types ONLY!"));
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case GShape::GMAT:    return GArg(m_res.slot<cv::Mat>()[ref.id]);
+    case GShape::GMAT:    return GArg(m_res.slot<ncvslideio::Mat>()[ref.id]);
 
     // Note: .at() is intentional for GArray as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case GShape::GARRAY:  return GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
+    case GShape::GARRAY:  return GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
 
     // Note: .at() is intentional for GOpaque as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case GShape::GOPAQUE:  return GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
+    case GShape::GOPAQUE:  return GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
 
-    case GShape::GFRAME:   return GArg(m_res.slot<cv::MediaFrame>().at(ref.id));
+    case GShape::GFRAME:   return GArg(m_res.slot<ncvslideio::MediaFrame>().at(ref.id));
 
     default:
         util::throw_error(std::logic_error("Unsupported GShape type"));
@@ -649,7 +649,7 @@ cv::GArg cv::gimpl::onnx::GONNXExecutable::packArg(const cv::GArg &arg) {
     }
 }
 
-void cv::gimpl::onnx::GONNXExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::onnx::GONNXExecutable::run(std::vector<InObj>  &&input_objs,
                                            std::vector<OutObj> &&output_objs) {
     // Update resources with run-time information - what this Island
     // has received from user (or from another Island, or mix...)
@@ -676,8 +676,8 @@ void cv::gimpl::onnx::GONNXExecutable::run(std::vector<InObj>  &&input_objs,
     context.in_shapes.reserve(op.args.size());
     ade::util::transform(op.args,
                          std::back_inserter(context.in_shapes),
-                         [](const cv::GArg& arg) {
-                             return arg.get<cv::gimpl::RcDesc>().shape;
+                         [](const ncvslideio::GArg& arg) {
+                             return arg.get<ncvslideio::gimpl::RcDesc>().shape;
                          });
 
     // - Output parameters.
@@ -697,7 +697,7 @@ void cv::gimpl::onnx::GONNXExecutable::run(std::vector<InObj>  &&input_objs,
     for (auto &it : output_objs) magazine::writeBack(m_res, it.first, it.second);
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace onnx {
 
@@ -716,7 +716,7 @@ static GraphOptimizationLevel convertToGraphOptimizationLevel(const int opt_leve
             return ORT_ENABLE_ALL;
         }
         else {
-            cv::util::throw_error(std::invalid_argument("Invalid argument opt_level = " + std::to_string(opt_level)));
+            ncvslideio::util::throw_error(std::invalid_argument("Invalid argument opt_level = " + std::to_string(opt_level)));
         }
     }
 }
@@ -725,18 +725,18 @@ ONNXCompiled::ONNXCompiled(const gapi::onnx::detail::ParamDesc &pp)
     : params(pp) {
     // Validate input parameters before allocating any resources
     if (params.num_in > 1u && params.num_in != params.input_names.size()) {
-        cv::util::throw_error(std::logic_error("Please specify input layer names for "
+        ncvslideio::util::throw_error(std::logic_error("Please specify input layer names for "
                                                + params.model_path));
     }
     if (params.num_out > 1u && params.num_out != params.output_names.size()) {
-        cv::util::throw_error(std::logic_error("Please specify output layer names for "
+        ncvslideio::util::throw_error(std::logic_error("Please specify output layer names for "
                                                + params.model_path));
     }
     // Create and initialize the ONNX session
     Ort::SessionOptions session_options;
     GAPI_LOG_INFO(NULL, "Adding Execution Providers for \"" << pp.model_path << "\"");
     for (const auto &ep : pp.execution_providers) {
-        cv::gimpl::onnx::addExecutionProvider(&session_options, ep);
+        ncvslideio::gimpl::onnx::addExecutionProvider(&session_options, ep);
     }
 
     for (const auto &option : pp.session_options) {
@@ -786,7 +786,7 @@ ONNXCompiled::ONNXCompiled(const gapi::onnx::detail::ParamDesc &pp)
     // Validate what is supported currently
     GAPI_Assert(std::all_of(in_tensor_info.begin(),
                             in_tensor_info.end(),
-                            [](const cv::gimpl::onnx::TensorInfo &p) {
+                            [](const ncvslideio::gimpl::onnx::TensorInfo &p) {
                                 return p.type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT
                                     || p.type == ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8
                                     || p.type == ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32
@@ -856,18 +856,18 @@ std::vector<TensorInfo> ONNXCompiled::getTensorInfo(TensorPosition pos) {
     return tensor_info;
 }
 
-cv::GMatDesc ONNXCompiled::outMeta(int idx) const {
+ncvslideio::GMatDesc ONNXCompiled::outMeta(int idx) const {
     if (is_dynamic || is_postproc) {
         GAPI_Assert(!params.out_metas.empty()
                     && "Metadata must be specified if NN has dynamic inputs or post-processing function is used!");
         return params.out_metas.at(idx);
     }
     const auto ort_idx = getIdxByName(out_tensor_info, params.output_names[idx]);
-    return cv::GMatDesc(toCV(out_tensor_info[ort_idx].type),
+    return ncvslideio::GMatDesc(toCV(out_tensor_info[ort_idx].type),
                         toCV(out_tensor_info[ort_idx].dims));
 }
 
-void ONNXCompiled::setInput(int in_idx, const cv::Mat &m) {
+void ONNXCompiled::setInput(int in_idx, const ncvslideio::Mat &m) {
     GAPI_Assert(!m.empty() && "Input data can't be empty!");
     const auto in_name = params.input_names[in_idx];
     const auto ort_idx = getIdxByName(in_tensor_info, in_name);
@@ -876,14 +876,14 @@ void ONNXCompiled::setInput(int in_idx, const cv::Mat &m) {
 
 void ONNXCompiled::extractMat(ONNXCallContext &ctx, const size_t in_idx, Views& views) {
     switch (ctx.in_shapes[in_idx]) {
-        case cv::GShape::GFRAME: {
-            const cv::MediaFrame& frame = ctx.inFrame(in_idx);
-            views.emplace_back(new cv::MediaFrame::View(frame.access(cv::MediaFrame::Access::R)));
+        case ncvslideio::GShape::GFRAME: {
+            const ncvslideio::MediaFrame& frame = ctx.inFrame(in_idx);
+            views.emplace_back(new ncvslideio::MediaFrame::View(frame.access(ncvslideio::MediaFrame::Access::R)));
             GAPI_Assert(views.size() <= numInputs());
             preprocess(*views.back(), frame.desc(), exMat);
             break;
         }
-        case cv::GShape::GMAT: {
+        case ncvslideio::GShape::GMAT: {
             exMat = ctx.inMat(in_idx);
             break;
         }
@@ -893,21 +893,21 @@ void ONNXCompiled::extractMat(ONNXCallContext &ctx, const size_t in_idx, Views& 
     }
 }
 
-void ONNXCompiled::setOutput(int i, cv::Mat &m)
+void ONNXCompiled::setOutput(int i, ncvslideio::Mat &m)
 {
     // FIXME: No need in double-indexing?
     out_data[i] = m;
 }
 
-cv::Mat ONNXCompiled::allocOutput(int i) const {
-    cv::Mat m;
+ncvslideio::Mat ONNXCompiled::allocOutput(int i) const {
+    ncvslideio::Mat m;
     m.create(toCV(out_tensor_info[i].dims),
              toCV(out_tensor_info[i].type));
     return m;
 }
 
-void ONNXCompiled::Run(const std::vector<cv::Mat>& ins,
-                       std::vector<cv::Mat>& outs) {
+void ONNXCompiled::Run(const std::vector<ncvslideio::Mat>& ins,
+                       std::vector<ncvslideio::Mat>& outs) {
     std::vector<Ort::Value> in_tensors, out_tensors;
 
     // Layer names order for run
@@ -953,7 +953,7 @@ void ONNXCompiled::Run(const std::vector<cv::Mat>& ins,
                          &out_tensors.front(),
                          params.output_names.size());
         if (out_tensor_info[0].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64) {
-            // cv::Mat does not support int64 output data.
+            // ncvslideio::Mat does not support int64 output data.
             // Conversion from int 64 to int 32 is carried in the copyFromONNX function
             // The output is written to out_mat
             for (auto &&iter : ade::util::zip(ade::util::toRange(out_tensors),
@@ -980,8 +980,8 @@ void ONNXCompiled::Run(const std::vector<cv::Mat>& ins,
                                         input_names.size(),
                                         out_names.data(),
                                         out_names.size());
-        std::unordered_map<std::string, cv::Mat> onnx_outputs;
-        std::unordered_map<std::string, cv::Mat> gapi_outputs;
+        std::unordered_map<std::string, ncvslideio::Mat> onnx_outputs;
+        std::unordered_map<std::string, ncvslideio::Mat> gapi_outputs;
 
         GAPI_Assert(outputs.size() == out_names.size());
         // Fill in ONNX tensors
@@ -1005,7 +1005,7 @@ void ONNXCompiled::Run(const std::vector<cv::Mat>& ins,
             const auto &original_data = std::get<0>(iter);
             const auto &received_data = gapi_outputs.at(std::get<1>(iter)).data;
             if (original_data != received_data) {
-                cv::util::throw_error
+                ncvslideio::util::throw_error
                     (std::logic_error
                      ("OpenCV kernel output parameter was reallocated after remapping of ONNX output. \n"
                       "Incorrect logic in remapping function?"));
@@ -1018,14 +1018,14 @@ void ONNXCompiled::run() {
     Run(in_data, out_data);
 }
 
-static void checkInputMeta(const cv::GMetaArg mm) {
+static void checkInputMeta(const ncvslideio::GMetaArg mm) {
     switch (mm.index()) {
-        case cv::GMetaArg::index_of<cv::GMatDesc>(): break;
-        case cv::GMetaArg::index_of<cv::GFrameDesc>(): {
-            const auto &meta = util::get<cv::GFrameDesc>(mm);
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>(): break;
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GFrameDesc>(): {
+            const auto &meta = util::get<ncvslideio::GFrameDesc>(mm);
             switch (meta.fmt) {
-                case cv::MediaFormat::NV12: break;
-                case cv::MediaFormat::BGR:  break;
+                case ncvslideio::MediaFormat::NV12: break;
+                case ncvslideio::MediaFormat::BGR:  break;
                 default:
                     GAPI_Error("Unsupported media format for ONNX backend");
             } break;
@@ -1035,16 +1035,16 @@ static void checkInputMeta(const cv::GMetaArg mm) {
     }
 }
 
-struct Infer: public cv::detail::KernelTag {
-    using API = cv::GInferBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::onnx::backend(); }
+struct Infer: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::onnx::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
-        cv::GMetaArgs result;
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
+        ncvslideio::GMetaArgs result;
 
         GConstGONNXModel gm(gr);
         const auto &uu = gm.metadata(nh).get<ONNXUnit>();
@@ -1073,16 +1073,16 @@ struct Infer: public cv::detail::KernelTag {
     }
 };
 
-struct InferROI: public cv::detail::KernelTag {
-    using API = cv::GInferROIBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::onnx::backend(); }
+struct InferROI: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferROIBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::onnx::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
-        cv::GMetaArgs result;
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
+        ncvslideio::GMetaArgs result;
 
         GConstGONNXModel gm(gr);
         const auto &uu = gm.metadata(nh).get<ONNXUnit>();
@@ -1099,7 +1099,7 @@ struct InferROI: public cv::detail::KernelTag {
         Views views;
         // non-generic version for now, per the InferROI's definition
         GAPI_Assert(uu.oc->numInputs() == 1u);
-        const auto& this_roi = ctx.inArg<cv::detail::OpaqueRef>(0).rref<cv::Rect>();
+        const auto& this_roi = ctx.inArg<ncvslideio::detail::OpaqueRef>(0).rref<ncvslideio::Rect>();
         uu.oc->extractMat(ctx, 1, views);
         uu.oc->setInput(0, uu.oc->exMat(this_roi));
         for (auto &&idx : ade::util::iota(uu.oc->numOutputs())) {
@@ -1109,15 +1109,15 @@ struct InferROI: public cv::detail::KernelTag {
     }
 };
 
-struct InferList: public cv::detail::KernelTag {
-    using API = cv::GInferListBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::onnx::backend(); }
+struct InferList: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferListBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::onnx::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         GConstGONNXModel gm(gr);
         const auto &uu = gm.metadata(nh).get<ONNXUnit>();
 
@@ -1135,8 +1135,8 @@ struct InferList: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.oc->numOutputs(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.oc->numOutputs(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(const ONNXUnit &uu, ONNXCallContext &ctx) {
@@ -1146,37 +1146,37 @@ struct InferList: public cv::detail::KernelTag {
         // - assumes all inputs/outputs are always Mats
         GAPI_Assert(uu.oc->numInputs() == 1); // roi list is not counted in net's inputs
 
-        const auto& in_roi_vec = ctx.inArg<cv::detail::VectorRef>(0u).rref<cv::Rect>();
+        const auto& in_roi_vec = ctx.inArg<ncvslideio::detail::VectorRef>(0u).rref<ncvslideio::Rect>();
 
         for (auto i : ade::util::iota(uu.oc->numOutputs())) {
-            ctx.outVecR<cv::Mat>(i).clear();
+            ctx.outVecR<ncvslideio::Mat>(i).clear();
         }
         uu.oc->extractMat(ctx, 1, views);
         for (const auto &rc : in_roi_vec) {
             uu.oc->setInput(0, uu.oc->exMat(rc));
-            std::vector<cv::Mat> out_mats(uu.oc->numOutputs());
+            std::vector<ncvslideio::Mat> out_mats(uu.oc->numOutputs());
             for (auto i : ade::util::iota(uu.oc->numOutputs())) {
                 out_mats[i] = uu.oc->allocOutput(i);
                 uu.oc->setOutput(i, out_mats[i]);
             }
             uu.oc->run();
             for (auto i : ade::util::iota(uu.oc->numOutputs())) {
-                std::vector<cv::Mat> &out_vec = ctx.outVecR<cv::Mat>(i);
+                std::vector<ncvslideio::Mat> &out_vec = ctx.outVecR<ncvslideio::Mat>(i);
                 out_vec.push_back(std::move(out_mats[i]));
             }
         }
     }
 };
 
-struct InferList2: public cv::detail::KernelTag {
-    using API = cv::GInferList2Base;
-    static cv::gapi::GBackend backend()  { return cv::gapi::onnx::backend(); }
+struct InferList2: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferList2Base;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::onnx::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
 
         GConstGONNXModel gm(gr);
         const auto &uu = gm.metadata(nh).get<ONNXUnit>();
@@ -1195,32 +1195,32 @@ struct InferList2: public cv::detail::KernelTag {
         // no hint for type!
         const auto &mm_0   = in_metas[0u];
         switch (in_metas[0u].index()) {
-            case cv::GMetaArg::index_of<cv::GMatDesc>(): {
-                const auto &meta_0 = util::get<cv::GMatDesc>(mm_0);
+            case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>(): {
+                const auto &meta_0 = util::get<ncvslideio::GMatDesc>(mm_0);
                 GAPI_Assert(   !meta_0.isND()
                             && !meta_0.planar
                             && "Only images are supported as the 0th argument");
                 break;
             }
-            case cv::GMetaArg::index_of<cv::GFrameDesc>(): {
-                const auto &meta_0 = util::get<cv::GFrameDesc>(mm_0);
-                GAPI_Assert(   (meta_0.fmt == cv::MediaFormat::BGR)
-                            || (meta_0.fmt == cv::MediaFormat::NV12));
+            case ncvslideio::GMetaArg::index_of<ncvslideio::GFrameDesc>(): {
+                const auto &meta_0 = util::get<ncvslideio::GFrameDesc>(mm_0);
+                GAPI_Assert(   (meta_0.fmt == ncvslideio::MediaFormat::BGR)
+                            || (meta_0.fmt == ncvslideio::MediaFormat::NV12));
                 GAPI_Assert((meta_0.size.height !=0) && (meta_0.size.width !=0));
                 break;
             }
             default:
                 util::throw_error(std::runtime_error("Unsupported input meta for ONNX backend"));
         }
-        if (util::holds_alternative<cv::GMatDesc>(mm_0)) {
-            const auto &meta_0 = util::get<cv::GMatDesc>(mm_0);
+        if (util::holds_alternative<ncvslideio::GMatDesc>(mm_0)) {
+            const auto &meta_0 = util::get<ncvslideio::GMatDesc>(mm_0);
             GAPI_Assert(   !meta_0.isND()
                         && !meta_0.planar
                         && "Only images are supported as the 0th argument");
         }
         for (auto i : ade::util::iota(uu.oc->numInputs())) {
             const auto &mm = in_metas[i + 1];
-            GAPI_Assert(util::holds_alternative<cv::GArrayDesc>(mm)
+            GAPI_Assert(util::holds_alternative<ncvslideio::GArrayDesc>(mm)
                         && "Non-array inputs are not supported");
         }
 
@@ -1228,8 +1228,8 @@ struct InferList2: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.oc->numOutputs(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.oc->numOutputs(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(const ONNXUnit &uu, ONNXCallContext &ctx) {
@@ -1241,33 +1241,33 @@ struct InferList2: public cv::detail::KernelTag {
         // Take the next argument, which must be vector (of any kind).
         // Use this only to obtain the ROI list size (sizes of all
         // other vectors must be equal to this one)
-        const auto list_size = ctx.inArg<cv::detail::VectorRef>(1u).size();
+        const auto list_size = ctx.inArg<ncvslideio::detail::VectorRef>(1u).size();
 
         for (auto i : ade::util::iota(uu.oc->numOutputs())) {
-            ctx.outVecR<cv::Mat>(i).clear();
+            ctx.outVecR<ncvslideio::Mat>(i).clear();
         }
         // For every ROI in the list {{{
         for (const auto &list_idx : ade::util::iota(list_size)) {
             std::vector<Ort::Value> in_tensors, out_tensors;
-            std::vector<cv::Mat> in_mats(uu.oc->numInputs());
+            std::vector<ncvslideio::Mat> in_mats(uu.oc->numInputs());
             // For every input of the net {{{
             for (auto in_idx : ade::util::iota(uu.oc->numInputs())) {
-                const auto &this_vec = ctx.inArg<cv::detail::VectorRef>(in_idx+1u);
+                const auto &this_vec = ctx.inArg<ncvslideio::detail::VectorRef>(in_idx+1u);
                 GAPI_Assert(this_vec.size() == list_size);
                 // Prepare input {{{
                 //   FIXME: Terrible run-time logic based on RTTI!
                 //   FIXME: Will never work on non-RTTI systems!
                 //   FIXME: Need to replace with a static type tags
                 //   (like with serialization) instead!
-                if (this_vec.holds<cv::Rect>()) {
+                if (this_vec.holds<ncvslideio::Rect>()) {
                     // ROI case - create an ROI blob
-                    const auto &vec = this_vec.rref<cv::Rect>();
+                    const auto &vec = this_vec.rref<ncvslideio::Rect>();
                     uu.oc->setInput(in_idx, uu.oc->exMat(vec[list_idx]));
-                } else if (this_vec.holds<cv::Mat>()) {
+                } else if (this_vec.holds<ncvslideio::Mat>()) {
                     // Mat case - create a regular blob
                     // FIXME: NOW Assume Mats are always BLOBS (not
                     // images)
-                    const auto &vec = this_vec.rref<cv::Mat>();
+                    const auto &vec = this_vec.rref<ncvslideio::Mat>();
                     uu.oc->setInput(in_idx, vec[list_idx]);
                 } else {
                     GAPI_Error("Only Rect and Mat types are supported for infer list 2!");
@@ -1275,7 +1275,7 @@ struct InferList2: public cv::detail::KernelTag {
                 // }}} (Prepare input)
             } // }}} (For every input of the net)
 
-            std::vector<cv::Mat> out_mats(uu.oc->numOutputs());
+            std::vector<ncvslideio::Mat> out_mats(uu.oc->numOutputs());
             for (auto i : ade::util::iota(uu.oc->numOutputs())) {
                 out_mats[i] = uu.oc->allocOutput(i);
                 uu.oc->setOutput(i, out_mats[i]);
@@ -1283,7 +1283,7 @@ struct InferList2: public cv::detail::KernelTag {
             uu.oc->run();
 
             for (auto i : ade::util::iota(uu.oc->numOutputs())) {
-                std::vector<cv::Mat> &out_vec = ctx.outVecR<cv::Mat>(i);
+                std::vector<ncvslideio::Mat> &out_vec = ctx.outVecR<ncvslideio::Mat>(i);
                 out_vec.push_back(std::move(out_mats[i]));
             }
         } // }}} (For every ROI in the list)
@@ -1292,25 +1292,25 @@ struct InferList2: public cv::detail::KernelTag {
 
 } // namespace onnx
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 namespace {
-    class GONNXBackendImpl final: public cv::gapi::GBackend::Priv {
+    class GONNXBackendImpl final: public ncvslideio::gapi::GBackend::Priv {
         virtual void unpackKernel(ade::Graph            &gr,
                                   const ade::NodeHandle &nh,
-                                  const cv::GKernelImpl &ii) override {
-            using namespace cv::gimpl;
+                                  const ncvslideio::GKernelImpl &ii) override {
+            using namespace ncvslideio::gimpl;
             // FIXME: Introduce a DNNBackend interface which'd specify
             // the framework for this???
             GONNXModel gm(gr);
             auto &np = gm.metadata(nh).get<NetworkParams>();
-            auto &pp = cv::util::any_cast<cv::gapi::onnx::detail::ParamDesc>(np.opaque);
-            const auto &ki = cv::util::any_cast<KImpl>(ii.opaque);
+            auto &pp = ncvslideio::util::any_cast<ncvslideio::gapi::onnx::detail::ParamDesc>(np.opaque);
+            const auto &ki = ncvslideio::util::any_cast<KImpl>(ii.opaque);
 
             GModel::Graph model(gr);
             auto& op = model.metadata(nh).get<Op>();
             if (pp.is_generic) {
-                auto& info = cv::util::any_cast<cv::detail::InOutInfo>(op.params);
+                auto& info = ncvslideio::util::any_cast<ncvslideio::detail::InOutInfo>(op.params);
 
                 for (const auto& layer_name : info.in_names)
                 {
@@ -1344,28 +1344,28 @@ namespace {
         }
 
         virtual EPtr compile(const ade::Graph &graph,
-                             const cv::GCompileArgs &,
+                             const ncvslideio::GCompileArgs &,
                              const std::vector<ade::NodeHandle> &nodes) const override {
-            return EPtr{new cv::gimpl::onnx::GONNXExecutable(graph, nodes)};
+            return EPtr{new ncvslideio::gimpl::onnx::GONNXExecutable(graph, nodes)};
         }
 
-        virtual cv::GKernelPackage auxiliaryKernels() const override {
-            return cv::gapi::kernels< cv::gimpl::onnx::Infer
-                                    , cv::gimpl::onnx::InferROI
-                                    , cv::gimpl::onnx::InferList
-                                    , cv::gimpl::onnx::InferList2
+        virtual ncvslideio::GKernelPackage auxiliaryKernels() const override {
+            return ncvslideio::gapi::kernels< ncvslideio::gimpl::onnx::Infer
+                                    , ncvslideio::gimpl::onnx::InferROI
+                                    , ncvslideio::gimpl::onnx::InferList
+                                    , ncvslideio::gimpl::onnx::InferList2
                                     >();
         }
     };
 }
 
-cv::gapi::GBackend cv::gapi::onnx::backend() {
-    static cv::gapi::GBackend this_backend(std::make_shared<GONNXBackendImpl>());
+ncvslideio::gapi::GBackend ncvslideio::gapi::onnx::backend() {
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GONNXBackendImpl>());
     return this_backend;
 }
 #else // HAVE_ONNX
 
-cv::gapi::GBackend cv::gapi::onnx::backend() {
+ncvslideio::gapi::GBackend ncvslideio::gapi::onnx::backend() {
     // Still provide this symbol to avoid linking issues
     util::throw_error(std::runtime_error("G-API has been compiled without ONNX support"));
 }

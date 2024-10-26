@@ -28,7 +28,7 @@ GAPI_OCV_KERNEL(GCPUMinScalar, GMinScalar) {
     }
 };
 
-inline void initTrackingPointsArray(std::vector<cv::Point2f>& points, int width, int height,
+inline void initTrackingPointsArray(std::vector<ncvslideio::Point2f>& points, int width, int height,
                                     int nPointsX, int nPointsY)
 {
     if (nPointsX > width || nPointsY > height)
@@ -67,12 +67,12 @@ struct OptFlowLKTestInput
 {
     Type& prevData;
     Type& nextData;
-    std::vector<cv::Point2f>& prevPoints;
+    std::vector<ncvslideio::Point2f>& prevPoints;
 };
 
 struct OptFlowLKTestOutput
 {
-    std::vector<cv::Point2f> &nextPoints;
+    std::vector<ncvslideio::Point2f> &nextPoints;
     std::vector<uchar>       &statuses;
     std::vector<float>       &errors;
 };
@@ -97,7 +97,7 @@ struct BuildOpticalFlowPyramidTestParams
     int pyrBorder           = -1;
     int derivBorder         = -1;
     bool tryReuseInputImage = false;
-    cv::GCompileArgs compileArgs;
+    ncvslideio::GCompileArgs compileArgs;
 };
 
 struct OptFlowLKTestParams
@@ -107,7 +107,7 @@ struct OptFlowLKTestParams
 
     OptFlowLKTestParams(const std::string& namePat, int chans,
                         const std::tuple<int,int>& ptsNum, int winSz,
-                        const cv::TermCriteria& crit, const cv::GCompileArgs& compArgs,
+                        const ncvslideio::TermCriteria& crit, const ncvslideio::GCompileArgs& compArgs,
                         int flgs = 0, int fmt = 1, int maxLvl = 3, double minEigThresh = 1e-4):
 
                         fileNamePattern(namePat), format(fmt), channels(chans),
@@ -121,9 +121,9 @@ struct OptFlowLKTestParams
     std::tuple<int,int> pointsNum = std::make_tuple(0, 0);
     int winSize                   = 0;
     int maxLevel                  = 3;
-    cv::TermCriteria criteria;
+    ncvslideio::TermCriteria criteria;
     double minEigThreshold        = 1e-4;
-    cv::GCompileArgs compileArgs;
+    ncvslideio::GCompileArgs compileArgs;
     int flags                     = 0;
 };
 
@@ -154,17 +154,17 @@ inline void compareOutputsOptFlow(const OptFlowLKTestOutput& outGAPI,
     EXPECT_TRUE(compareVectorsAbsExactForOptFlow(outGAPI.errors,     outOCV.errors));
 }
 
-inline std::ostream& operator<<(std::ostream& os, const cv::TermCriteria& criteria)
+inline std::ostream& operator<<(std::ostream& os, const ncvslideio::TermCriteria& criteria)
 {
     os << "{";
     switch (criteria.type) {
-    case cv::TermCriteria::COUNT:
+    case ncvslideio::TermCriteria::COUNT:
         os << "COUNT; ";
         break;
-    case cv::TermCriteria::EPS:
+    case ncvslideio::TermCriteria::EPS:
         os << "EPS; ";
         break;
-    case cv::TermCriteria::COUNT | cv::TermCriteria::EPS:
+    case ncvslideio::TermCriteria::COUNT | ncvslideio::TermCriteria::EPS:
         os << "COUNT | EPS; ";
         break;
     default:
@@ -186,7 +186,7 @@ inline GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional& testInst,
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        outOCV.maxLevel = cv::buildOpticalFlowPyramid(testInst.in_mat1, outOCV.pyramid,
+        outOCV.maxLevel = ncvslideio::buildOpticalFlowPyramid(testInst.in_mat1, outOCV.pyramid,
                                                       Size(params.winSize, params.winSize),
                                                       params.maxLevel, params.withDerivatives,
                                                       params.pyrBorder, params.derivBorder,
@@ -198,7 +198,7 @@ inline GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional& testInst,
     GArray<GMat> out;
     GScalar      outMaxLevel;
     std::tie(out, outMaxLevel) =
-         cv::gapi::buildOpticalFlowPyramid(in, Size(params.winSize, params.winSize),
+         ncvslideio::gapi::buildOpticalFlowPyramid(in, Size(params.winSize, params.winSize),
                                            params.maxLevel, params.withDerivatives,
                                            params.pyrBorder, params.derivBorder,
                                            params.tryReuseInputImage);
@@ -214,7 +214,7 @@ inline GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional& testInst,
 }
 
 template<typename GType, typename Type>
-cv::GComputation runOCVnGAPIOptFlowLK(OptFlowLKTestInput<Type>& in,
+ncvslideio::GComputation runOCVnGAPIOptFlowLK(OptFlowLKTestInput<Type>& in,
                                       int width, int height,
                                       const OptFlowLKTestParams& params,
                                       OptFlowLKTestOutput& ocvOut,
@@ -226,11 +226,11 @@ cv::GComputation runOCVnGAPIOptFlowLK(OptFlowLKTestInput<Type>& in,
 
     initTrackingPointsArray(in.prevPoints, width, height, nPointsX, nPointsY);
 
-    cv::Size winSize(params.winSize, params.winSize);
+    ncvslideio::Size winSize(params.winSize, params.winSize);
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::calcOpticalFlowPyrLK(in.prevData, in.nextData, in.prevPoints,
+        ncvslideio::calcOpticalFlowPyrLK(in.prevData, in.nextData, in.prevPoints,
                                  ocvOut.nextPoints, ocvOut.statuses, ocvOut.errors,
                                  winSize, params.maxLevel, params.criteria,
                                  params.flags, params.minEigThreshold);
@@ -239,28 +239,28 @@ cv::GComputation runOCVnGAPIOptFlowLK(OptFlowLKTestInput<Type>& in,
     // G-API code //////////////////////////////////////////////////////////////
     {
         GType               inPrev,  inNext;
-        GArray<cv::Point2f> prevPts, predPts, nextPts;
+        GArray<ncvslideio::Point2f> prevPts, predPts, nextPts;
         GArray<uchar>       statuses;
         GArray<float>       errors;
-        std::tie(nextPts, statuses, errors) = cv::gapi::calcOpticalFlowPyrLK(
+        std::tie(nextPts, statuses, errors) = ncvslideio::gapi::calcOpticalFlowPyrLK(
                                                     inPrev, inNext,
                                                     prevPts, predPts, winSize,
                                                     params.maxLevel, params.criteria,
                                                     params.flags, params.minEigThreshold);
 
-        cv::GComputation c(cv::GIn(inPrev, inNext, prevPts, predPts),
-                           cv::GOut(nextPts, statuses, errors));
+        ncvslideio::GComputation c(ncvslideio::GIn(inPrev, inNext, prevPts, predPts),
+                           ncvslideio::GOut(nextPts, statuses, errors));
 
-        c.apply(cv::gin(in.prevData, in.nextData, in.prevPoints, std::vector<cv::Point2f>{ }),
-                cv::gout(gapiOut.nextPoints, gapiOut.statuses, gapiOut.errors),
-                std::move(const_cast<cv::GCompileArgs&>(params.compileArgs)));
+        c.apply(ncvslideio::gin(in.prevData, in.nextData, in.prevPoints, std::vector<ncvslideio::Point2f>{ }),
+                ncvslideio::gout(gapiOut.nextPoints, gapiOut.statuses, gapiOut.errors),
+                std::move(const_cast<ncvslideio::GCompileArgs&>(params.compileArgs)));
 
         return c;
     }
 }
 
-inline cv::GComputation runOCVnGAPIOptFlowLK(TestFunctional& testInst,
-                                             std::vector<cv::Point2f>& inPts,
+inline ncvslideio::GComputation runOCVnGAPIOptFlowLK(TestFunctional& testInst,
+                                             std::vector<ncvslideio::Point2f>& inPts,
                                              const OptFlowLKTestParams& params,
                                              OptFlowLKTestOutput& ocvOut,
                                              OptFlowLKTestOutput& gapiOut)
@@ -269,9 +269,9 @@ inline cv::GComputation runOCVnGAPIOptFlowLK(TestFunctional& testInst,
                                 params.fileNamePattern,
                                 params.format);
 
-    OptFlowLKTestInput<cv::Mat> in{ testInst.in_mat1, testInst.in_mat2, inPts };
+    OptFlowLKTestInput<ncvslideio::Mat> in{ testInst.in_mat1, testInst.in_mat2, inPts };
 
-    return runOCVnGAPIOptFlowLK<cv::GMat>(in,
+    return runOCVnGAPIOptFlowLK<ncvslideio::GMat>(in,
                                           testInst.in_mat1.cols,
                                           testInst.in_mat1.rows,
                                           params,
@@ -279,8 +279,8 @@ inline cv::GComputation runOCVnGAPIOptFlowLK(TestFunctional& testInst,
                                           gapiOut);
 }
 
-inline cv::GComputation runOCVnGAPIOptFlowLKForPyr(TestFunctional& testInst,
-                                                   OptFlowLKTestInput<std::vector<cv::Mat>>& in,
+inline ncvslideio::GComputation runOCVnGAPIOptFlowLKForPyr(TestFunctional& testInst,
+                                                   OptFlowLKTestInput<std::vector<ncvslideio::Mat>>& in,
                                                    const OptFlowLKTestParams& params,
                                                    bool withDeriv,
                                                    OptFlowLKTestOutput& ocvOut,
@@ -290,16 +290,16 @@ inline cv::GComputation runOCVnGAPIOptFlowLKForPyr(TestFunctional& testInst,
                                 params.fileNamePattern,
                                 params.format);
 
-    cv::Size winSize(params.winSize, params.winSize);
+    ncvslideio::Size winSize(params.winSize, params.winSize);
 
     OptFlowLKTestParams updatedParams(params);
-    updatedParams.maxLevel = cv::buildOpticalFlowPyramid(testInst.in_mat1, in.prevData,
+    updatedParams.maxLevel = ncvslideio::buildOpticalFlowPyramid(testInst.in_mat1, in.prevData,
                                                          winSize, params.maxLevel, withDeriv);
-    updatedParams.maxLevel = cv::buildOpticalFlowPyramid(testInst.in_mat2, in.nextData,
+    updatedParams.maxLevel = ncvslideio::buildOpticalFlowPyramid(testInst.in_mat2, in.nextData,
                                                          winSize, params.maxLevel, withDeriv);
 
 
-    return runOCVnGAPIOptFlowLK<cv::GArray<cv::GMat>>(in,
+    return runOCVnGAPIOptFlowLK<ncvslideio::GArray<ncvslideio::GMat>>(in,
                                                       testInst.in_mat1.cols,
                                                       testInst.in_mat1.rows,
                                                       updatedParams,
@@ -322,15 +322,15 @@ inline GComputation runOCVnGAPIOptFlowPipeline(TestFunctional& testInst,
     // OpenCV code /////////////////////////////////////////////////////////////
     {
         std::vector<Mat> pyr1, pyr2;
-        int maxLevel1 = cv::buildOpticalFlowPyramid(testInst.in_mat1, pyr1, winSize,
+        int maxLevel1 = ncvslideio::buildOpticalFlowPyramid(testInst.in_mat1, pyr1, winSize,
                                                     params.maxLevel, params.withDerivatives,
                                                     params.pyrBorder, params.derivBorder,
                                                     params.tryReuseInputImage);
-        int maxLevel2 = cv::buildOpticalFlowPyramid(testInst.in_mat2, pyr2, winSize,
+        int maxLevel2 = ncvslideio::buildOpticalFlowPyramid(testInst.in_mat2, pyr2, winSize,
                                                     params.maxLevel, params.withDerivatives,
                                                     params.pyrBorder, params.derivBorder,
                                                     params.tryReuseInputImage);
-        cv::calcOpticalFlowPyrLK(pyr1, pyr2, prevPoints,
+        ncvslideio::calcOpticalFlowPyrLK(pyr1, pyr2, prevPoints,
                                  outOCV.nextPoints, outOCV.statuses, outOCV.errors,
                                  winSize, std::min(maxLevel1, maxLevel2));
     }
@@ -339,41 +339,41 @@ inline GComputation runOCVnGAPIOptFlowPipeline(TestFunctional& testInst,
     GMat                in1,        in2;
     GArray<GMat>        gpyr1,      gpyr2;
     GScalar             gmaxLevel1, gmaxLevel2;
-    GArray<cv::Point2f> gprevPts, gpredPts, gnextPts;
+    GArray<ncvslideio::Point2f> gprevPts, gpredPts, gnextPts;
     GArray<uchar>       gstatuses;
     GArray<float>       gerrors;
 
-    std::tie(gpyr1, gmaxLevel1) = cv::gapi::buildOpticalFlowPyramid(
+    std::tie(gpyr1, gmaxLevel1) = ncvslideio::gapi::buildOpticalFlowPyramid(
                                       in1, winSize, params.maxLevel,
                                       params.withDerivatives, params.pyrBorder,
                                       params.derivBorder, params.tryReuseInputImage);
 
-    std::tie(gpyr2, gmaxLevel2) = cv::gapi::buildOpticalFlowPyramid(
+    std::tie(gpyr2, gmaxLevel2) = ncvslideio::gapi::buildOpticalFlowPyramid(
                                       in2, winSize, params.maxLevel,
                                       params.withDerivatives, params.pyrBorder,
                                       params.derivBorder, params.tryReuseInputImage);
 
     GScalar gmaxLevel = GMinScalar::on(gmaxLevel1, gmaxLevel2);
 
-    std::tie(gnextPts, gstatuses, gerrors) = cv::gapi::calcOpticalFlowPyrLK(
+    std::tie(gnextPts, gstatuses, gerrors) = ncvslideio::gapi::calcOpticalFlowPyrLK(
                                               gpyr1, gpyr2, gprevPts, gpredPts, winSize,
                                               gmaxLevel);
 
-    cv::GComputation c(GIn(in1, in2, gprevPts, gpredPts), cv::GOut(gnextPts, gstatuses, gerrors));
+    ncvslideio::GComputation c(GIn(in1, in2, gprevPts, gpredPts), ncvslideio::GOut(gnextPts, gstatuses, gerrors));
 
-    c.apply(cv::gin(testInst.in_mat1, testInst.in_mat2, prevPoints, std::vector<cv::Point2f>{ }),
-            cv::gout(outGAPI.nextPoints, outGAPI.statuses, outGAPI.errors),
-            std::move(const_cast<cv::GCompileArgs&>(params.compileArgs)));
+    c.apply(ncvslideio::gin(testInst.in_mat1, testInst.in_mat2, prevPoints, std::vector<ncvslideio::Point2f>{ }),
+            ncvslideio::gout(outGAPI.nextPoints, outGAPI.statuses, outGAPI.errors),
+            std::move(const_cast<ncvslideio::GCompileArgs&>(params.compileArgs)));
 
     return c;
 }
 
-inline void testBackgroundSubtractorStreaming(cv::GStreamingCompiled& gapiBackSub,
-                                              const cv::Ptr<cv::BackgroundSubtractor>& pOCVBackSub,
+inline void testBackgroundSubtractorStreaming(ncvslideio::GStreamingCompiled& gapiBackSub,
+                                              const ncvslideio::Ptr<ncvslideio::BackgroundSubtractor>& pOCVBackSub,
                                               const int diffPercent, const int tolerance,
                                               const double lRate, const std::size_t testNumFrames)
 {
-    cv::Mat frame, gapiForeground, ocvForeground;
+    ncvslideio::Mat frame, gapiForeground, ocvForeground;
     double numDiff = diffPercent / 100.0;
 
     gapiBackSub.start();
@@ -383,7 +383,7 @@ inline void testBackgroundSubtractorStreaming(cv::GStreamingCompiled& gapiBackSu
 
     // Comparison of G-API and OpenCV substractors
     std::size_t frames = 0u;
-    while (frames <= testNumFrames && gapiBackSub.pull(cv::gout(frame, gapiForeground)))
+    while (frames <= testNumFrames && gapiBackSub.pull(ncvslideio::gout(frame, gapiForeground)))
     {
         pOCVBackSub->apply(frame, ocvForeground, lRate);
         EXPECT_TRUE(cmpF(gapiForeground, ocvForeground));
@@ -398,10 +398,10 @@ inline void testBackgroundSubtractorStreaming(cv::GStreamingCompiled& gapiBackSu
 }
 
 inline void initKalmanParams(const int type, const int dDim, const int mDim, const int cDim,
-                             cv::gapi::KalmanParams& kp)
+                             ncvslideio::gapi::KalmanParams& kp)
 {
     kp.state = Mat::zeros(dDim, 1, type);
-    cv::randu(kp.state, Scalar::all(0), Scalar::all(0.1));
+    ncvslideio::randu(kp.state, Scalar::all(0), Scalar::all(0.1));
     kp.errorCov = Mat::eye(dDim, dDim, type);
 
     kp.transitionMatrix = Mat::ones(dDim, dDim, type) * 2;
@@ -413,8 +413,8 @@ inline void initKalmanParams(const int type, const int dDim, const int mDim, con
         kp.controlMatrix = Mat::eye(dDim, cDim, type) * (1e-3);
 }
 
-inline void initKalmanFilter(const cv::gapi::KalmanParams& kp, const bool control,
-                             cv::KalmanFilter& ocvKalman)
+inline void initKalmanFilter(const ncvslideio::gapi::KalmanParams& kp, const bool control,
+                             ncvslideio::KalmanFilter& ocvKalman)
 {
     kp.state.copyTo(ocvKalman.statePost);
     kp.errorCov.copyTo(ocvKalman.errorCovPost);
@@ -430,7 +430,7 @@ inline void initKalmanFilter(const cv::gapi::KalmanParams& kp, const bool contro
 
 #else // !HAVE_OPENCV_VIDEO
 
-inline cv::GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional&,
+inline ncvslideio::GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional&,
                                                        const BuildOpticalFlowPyramidTestParams&,
                                                        BuildOpticalFlowPyramidTestOutput&,
                                                        BuildOpticalFlowPyramidTestOutput&)
@@ -438,8 +438,8 @@ inline cv::GComputation runOCVnGAPIBuildOptFlowPyramid(TestFunctional&,
     GAPI_Error("This function shouldn't be called without opencv_video");
 }
 
-inline cv::GComputation runOCVnGAPIOptFlowLK(TestFunctional&,
-                                             std::vector<cv::Point2f>&,
+inline ncvslideio::GComputation runOCVnGAPIOptFlowLK(TestFunctional&,
+                                             std::vector<ncvslideio::Point2f>&,
                                              const OptFlowLKTestParams&,
                                              OptFlowLKTestOutput&,
                                              OptFlowLKTestOutput&)
@@ -447,8 +447,8 @@ inline cv::GComputation runOCVnGAPIOptFlowLK(TestFunctional&,
     GAPI_Error("This function shouldn't be called without opencv_video");
 }
 
-inline cv::GComputation runOCVnGAPIOptFlowLKForPyr(TestFunctional&,
-                                                   OptFlowLKTestInput<std::vector<cv::Mat>>&,
+inline ncvslideio::GComputation runOCVnGAPIOptFlowLKForPyr(TestFunctional&,
+                                                   OptFlowLKTestInput<std::vector<ncvslideio::Mat>>&,
                                                    const OptFlowLKTestParams&,
                                                    bool,
                                                    OptFlowLKTestOutput&,
@@ -472,7 +472,7 @@ inline GComputation runOCVnGAPIOptFlowPipeline(TestFunctional&,
 } // namespace opencv_test
 
 // Note: namespace must match the namespace of the type of the printed object
-namespace cv { namespace gapi { namespace video
+namespace ncvslideio { namespace gapi { namespace video
 {
 inline std::ostream& operator<<(std::ostream& os, const BackgroundSubtractorType op)
 {
@@ -486,6 +486,6 @@ inline std::ostream& operator<<(std::ostream& os, const BackgroundSubtractorType
 #undef CASE
     return os;
 }
-}}} // namespace cv::gapi::video
+}}} // namespace ncvslideio::gapi::video
 
 #endif // OPENCV_GAPI_VIDEO_TESTS_COMMON_HPP

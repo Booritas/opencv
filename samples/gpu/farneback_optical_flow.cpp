@@ -11,8 +11,8 @@
 #include "opencv2/cudaarithm.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 template <typename T>
 inline T mapVal(T x, T a, T b, T c, T d)
@@ -24,9 +24,9 @@ inline T mapVal(T x, T a, T b, T c, T d)
 static void colorizeFlow(const Mat &u, const Mat &v, Mat &dst)
 {
     double uMin, uMax;
-    cv::minMaxLoc(u, &uMin, &uMax, 0, 0);
+    ncvslideio::minMaxLoc(u, &uMin, &uMax, 0, 0);
     double vMin, vMax;
-    cv::minMaxLoc(v, &vMin, &vMax, 0, 0);
+    ncvslideio::minMaxLoc(v, &vMin, &vMax, 0, 0);
     uMin = ::abs(uMin); uMax = ::abs(uMax);
     vMin = ::abs(vMin); vMax = ::abs(vMax);
     float dMax = static_cast<float>(::max(::max(uMin, uMax), ::max(vMin, vMax)));

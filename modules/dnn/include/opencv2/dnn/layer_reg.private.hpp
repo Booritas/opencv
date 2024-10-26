@@ -6,7 +6,7 @@
 #define OPENCV_DNN_LAYER_REG_HPP
 #include <opencv2/dnn.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 //! @addtogroup dnn

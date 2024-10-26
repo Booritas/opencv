@@ -6,7 +6,7 @@
 #include "../usac.hpp"
 #include <atomic>
 
-namespace cv {
+namespace ncvslideio {
 UsacParams::UsacParams() {
     confidence=0.99;
     isParallel=false;
@@ -31,7 +31,7 @@ void setParameters (int flag, Ptr<Model> &params, EstimationMethod estimator, do
 class RansacOutputImpl : public RansacOutput {
 private:
     std::vector<int> inliers;
-    cv::Mat model, K1, K2;
+    ncvslideio::Mat model, K1, K2;
     // vector of number_inliers size
     // vector of points size, true if inlier, false - outlier
     std::vector<bool> inliers_mask;
@@ -40,7 +40,7 @@ private:
     int number_inliers, number_iterations;
     ModelConfidence conf;
 public:
-    RansacOutputImpl (const cv::Mat &model_, const std::vector<bool> &inliers_mask_, int number_inliers_,
+    RansacOutputImpl (const ncvslideio::Mat &model_, const std::vector<bool> &inliers_mask_, int number_inliers_,
             int number_iterations_, ModelConfidence conf_, const std::vector<float> &errors_) {
         model_.copyTo(model);
         inliers_mask = inliers_mask_;
@@ -83,7 +83,7 @@ public:
     }
 };
 
-Ptr<RansacOutput> RansacOutput::create(const cv::Mat &model_, const std::vector<bool> &inliers_mask_, int number_inliers_,
+Ptr<RansacOutput> RansacOutput::create(const ncvslideio::Mat &model_, const std::vector<bool> &inliers_mask_, int number_inliers_,
             int number_iterations_, ModelConfidence conf, const std::vector<float> &errors_) {
     return makePtr<RansacOutputImpl>(model_, inliers_mask_, number_inliers_,
             number_iterations_, conf, errors_);
@@ -134,8 +134,8 @@ public:
     Ptr<NeighborhoodGraph> graph;
     std::vector<Ptr<NeighborhoodGraph>> layers;
 
-    Ransac (const Ptr<const Model> &params_, cv::InputArray points1, cv::InputArray points2,
-            cv::InputArray K1_, cv::InputArray K2_, cv::InputArray dist_coeff1, cv::InputArray dist_coeff2) : params(params_) {
+    Ransac (const Ptr<const Model> &params_, ncvslideio::InputArray points1, ncvslideio::InputArray points2,
+            ncvslideio::InputArray K1_, ncvslideio::InputArray K2_, ncvslideio::InputArray dist_coeff1, ncvslideio::InputArray dist_coeff2) : params(params_) {
         _state = params->getRandomGeneratorState();
         threshold = params->getThreshold();
         max_thr = std::max(threshold, params->getMaximumThreshold());
@@ -190,7 +190,7 @@ public:
                 graph = FlannNeighborhoodGraph::create(points, points_size,params->getKNN(), false, 5, 1);
             } else if (params->getNeighborsSearch() == NeighborSearchMethod::NEIGH_FLANN_RADIUS) {
                 graph = RadiusSearchNeighborhoodGraph::create(points, points_size, params->getGraphRadius(), 5, 1);
-            } else CV_Error(cv::Error::StsNotImplemented, "Graph type is not implemented!");
+            } else CV_Error(ncvslideio::Error::StsNotImplemented, "Graph type is not implemented!");
         }
 
         if (params->getSampler() == SamplingMethod::SAMPLING_PROGRESSIVE_NAPSAC) {
@@ -210,7 +210,7 @@ public:
                 const int cell_number = cell_number_per_layer[layer_idx];
                 if (layer_idx > 0)
                     if (cell_number_per_layer[layer_idx-1] <= cell_number)
-                        CV_Error(cv::Error::StsError, "Progressive NAPSAC sampler: "
+                        CV_Error(ncvslideio::Error::StsError, "Progressive NAPSAC sampler: "
                                                       "Cell number in layers must be in decreasing order!");
                 layers.emplace_back(GridNeighborhoodGraph::create(points, points_size,
             (int)(img1_width / (float)cell_number), (int)(img1_height / (float)cell_number),
@@ -279,7 +279,7 @@ public:
                 error = SymmetricGeometricDistance::create(points); break;
             case ErrorMetric::RERPOJ:
                 error = ReprojectionErrorPmatrix::create(points); break;
-            default: CV_Error(cv::Error::StsNotImplemented , "Error metric is not implemented!");
+            default: CV_Error(ncvslideio::Error::StsNotImplemented , "Error metric is not implemented!");
         }
 
         const double k_mlesac = params->getKmlesac ();
@@ -294,7 +294,7 @@ public:
                     params->getUpperIncompleteOfSigmaQuantile()); break;
             case ScoreMethod::SCORE_METHOD_LMEDS :
                 quality = LMedsQuality::create(points_size, threshold, error); break;
-            default: CV_Error(cv::Error::StsNotImplemented, "Score is not implemented!");
+            default: CV_Error(ncvslideio::Error::StsNotImplemented, "Score is not implemented!");
         }
 
         const auto is_ge_solver = params->getRansacSolver() == GEM_SOLVER;
@@ -357,14 +357,14 @@ public:
         } else if (params->getEstimator() == EstimationMethod::AFFINE) {
             degeneracy = makePtr<Degeneracy>();
             min_solver = AffineMinimalSolver::create(points);
-            non_min_solver = AffineNonMinimalSolver::create(points, cv::noArray(), cv::noArray());
+            non_min_solver = AffineNonMinimalSolver::create(points, ncvslideio::noArray(), ncvslideio::noArray());
             estimator = AffineEstimator::create(min_solver, non_min_solver);
             if (!parallel_call && params->getFinalPolisher() != NONE_POLISHER) {
                 if (params->getFinalPolisher() == COV_POLISHER)
                     _fo_solver = CovarianceAffineSolver::create(points);
                 else _fo_solver = non_min_solver;
             }
-        } else CV_Error(cv::Error::StsNotImplemented, "Estimator not implemented!");
+        } else CV_Error(ncvslideio::Error::StsNotImplemented, "Estimator not implemented!");
 
         switch (params->getSampler()) {
             case SamplingMethod::SAMPLING_UNIFORM:
@@ -378,7 +378,7 @@ public:
                 sampler = ProgressiveNapsac::create(state++, points_size, min_sample_size, layers, 20); break;
             case SamplingMethod::SAMPLING_NAPSAC:
                 sampler = NapsacSampler::create(state++, points_size, min_sample_size, graph); break;
-            default: CV_Error(cv::Error::StsNotImplemented, "Sampler is not implemented!");
+            default: CV_Error(ncvslideio::Error::StsNotImplemented, "Sampler is not implemented!");
         }
 
         const bool is_sprt = params->getVerifier() == VerificationMethod::SPRT_VERIFIER || params->getVerifier() == VerificationMethod::ASPRT;
@@ -388,7 +388,7 @@ public:
                 params->getSPRTavgNumModels(), params->getScore(), k_mlesac, params->getVerifier() == VerificationMethod::ASPRT);
         else if (params->getVerifier() == VerificationMethod::NULL_VERIFIER)
             verifier = ModelVerifier::create(quality);
-        else CV_Error(cv::Error::StsNotImplemented, "Verifier is not imeplemented!");
+        else CV_Error(ncvslideio::Error::StsNotImplemented, "Verifier is not imeplemented!");
 
         if (params->getSampler() == SamplingMethod::SAMPLING_PROSAC) {
             if (parallel_call) {
@@ -431,7 +431,7 @@ public:
                 case LocalOptimMethod::LOCAL_OPTIM_GC:
                     lo = GraphCut::create(estimator, quality, graph, lo_sampler, threshold,
                        params->getGraphCutSpatialCoherenceTerm(), params->getLOInnerMaxIters(), lo_termination); break;
-                default: CV_Error(cv::Error::StsNotImplemented , "Local Optimization is not implemented!");
+                default: CV_Error(ncvslideio::Error::StsNotImplemented , "Local Optimization is not implemented!");
             }
         }
     }
@@ -450,7 +450,7 @@ public:
             sample_size = 5;
         } else if (params->isPnP() || params->getEstimator() == EstimationMethod::AFFINE) sample_size = 3;
         else
-            CV_Error(cv::Error::StsNotImplemented, "Method for independent inliers is not implemented for this problem");
+            CV_Error(ncvslideio::Error::StsNotImplemented, "Method for independent inliers is not implemented for this problem");
         if (num_inliers_ <= sample_size) return 0; // minimal sample size generates model
         model.convertTo(model, CV_32F);
         int num_inliers = num_inliers_, num_pts_near_ep = 0,
@@ -1126,7 +1126,7 @@ void setParameters (int flag, Ptr<Model> &params, EstimationMethod estimator, do
                     conf, max_iters,ScoreMethod::SCORE_METHOD_MSAC);
             params->setLocalOptimization(LocalOptimMethod ::LOCAL_OPTIM_INNER_LO);
             break;
-        default: CV_Error(cv::Error::StsBadFlag, "Incorrect flag for USAC!");
+        default: CV_Error(ncvslideio::Error::StsBadFlag, "Incorrect flag for USAC!");
     }
     // do not do too many iterations for PnP
     if (estimator == EstimationMethod::P3P) {
@@ -1335,7 +1335,7 @@ public:
             case (EstimationMethod::P6P):
                 avg_num_models = 1; model_est_to_ver_time = 300;
                 sample_size = 6; est_error = ErrorMetric ::RERPOJ; break;
-            default: CV_Error(cv::Error::StsNotImplemented, "Estimator has not implemented yet!");
+            default: CV_Error(ncvslideio::Error::StsNotImplemented, "Estimator has not implemented yet!");
         }
 
         if (score_ == ScoreMethod::SCORE_METHOD_MAGSAC)

@@ -158,17 +158,17 @@ int CV_ColorCvtBaseTest::prepare_test_case( int test_case_idx )
 
 void CV_ColorCvtBaseTest::run_func()
 {
-    cv::Mat out0 = test_mat[OUTPUT][0];
-    cv::Mat _out0 = out0, _out1 = test_mat[OUTPUT][1];
+    ncvslideio::Mat out0 = test_mat[OUTPUT][0];
+    ncvslideio::Mat _out0 = out0, _out1 = test_mat[OUTPUT][1];
 
-    cv::cvtColor( inplace ? out0 : test_mat[INPUT][0], _out0, fwd_code, _out0.channels());
+    ncvslideio::cvtColor( inplace ? out0 : test_mat[INPUT][0], _out0, fwd_code, _out0.channels());
 
     if( inplace )
     {
         out0.copyTo(test_mat[OUTPUT][1]);
         out0 = test_mat[OUTPUT][1];
     }
-    cv::cvtColor(out0, _out1, inv_code, _out1.channels());
+    ncvslideio::cvtColor(out0, _out1, inv_code, _out1.channels());
 }
 
 
@@ -1721,8 +1721,8 @@ double CV_ColorBayerTest::get_success_error_level( int /*test_case_idx*/, int /*
 
 void CV_ColorBayerTest::run_func()
 {
-    cv::Mat _out = test_mat[OUTPUT][0];
-    cv::cvtColor(test_mat[INPUT][0], _out, fwd_code, _out.channels());
+    ncvslideio::Mat _out = test_mat[OUTPUT][0];
+    ncvslideio::cvtColor(test_mat[INPUT][0], _out, fwd_code, _out.channels());
 }
 
 
@@ -1810,7 +1810,7 @@ void CV_ColorBayerTest::prepare_to_validation( int /*test_case_idx*/ )
     else if( depth == CV_16U )
         bayer2BGR_<ushort>(src, dst, fwd_code);
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 }
 
 
@@ -1880,7 +1880,7 @@ TEST(Imgproc_ColorBayer2Gray, regression_25823)
     cvtColor(src, dst, COLOR_BayerBG2GRAY);
 
     Mat gold(n, n, CV_8UC1, Scalar(1));
-    EXPECT_EQ(0, cv::norm(dst, gold, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(dst, gold, NORM_INF));
 }
 
 TEST(Imgproc_ColorBayerVNG, regression)
@@ -2061,7 +2061,7 @@ static void getTestMatrix(Mat& src)
             if (b < 0) b = 0; else if (b > 1) b = 1;
             if (g < 0) g = 0; else if (g > 1) g = 1;
             if (r < 0) r = 0; else if (r > 1) r = 1;
-            src.at<cv::Vec3f>(i, j) = cv::Vec3f(b, g, r);
+            src.at<ncvslideio::Vec3f>(i, j) = ncvslideio::Vec3f(b, g, r);
         }
     }
 }
@@ -2094,11 +2094,11 @@ static void validateResult(const Mat& reference, const Mat& actual, const Mat& s
 
                 if (mode >= 0)
                 {
-                    cv::Mat lab;
-                    cv::cvtColor(src, lab, mode);
-                    std::cout << "lab: " << lab(cv::Rect(y, x / cn, 1, 1)) << std::endl;
+                    ncvslideio::Mat lab;
+                    ncvslideio::cvtColor(src, lab, mode);
+                    std::cout << "lab: " << lab(ncvslideio::Rect(y, x / cn, 1, 1)) << std::endl;
                 }
-                std::cout << "src: " << src(cv::Rect(y, x / cn, 1, 1)) << std::endl;
+                std::cout << "src: " << src(ncvslideio::Rect(y, x / cn, 1, 1)) << std::endl;
 
                 ts->set_failed_test_info(cvtest::TS::FAIL_BAD_ACCURACY);
                 ts->set_gtest_status();
@@ -2119,13 +2119,13 @@ TEST(Imgproc_ColorLab_Full, accuracy)
         bool srgb = i > 1;
 
         // Convert test image to LAB
-        cv::Mat lab;
+        ncvslideio::Mat lab;
         int forward_code = blueInd ? srgb ? COLOR_BGR2Lab : COLOR_LBGR2Lab : srgb ? COLOR_RGB2Lab : COLOR_LRGB2Lab;
         int inverse_code = blueInd ? srgb ? COLOR_Lab2BGR : COLOR_Lab2LBGR : srgb ? COLOR_Lab2RGB : COLOR_Lab2LRGB;
-        cv::cvtColor(src, lab, forward_code);
+        ncvslideio::cvtColor(src, lab, forward_code);
         // Convert LAB image back to BGR(RGB)
-        cv::Mat recons;
-        cv::cvtColor(lab, recons, inverse_code);
+        ncvslideio::Mat recons;
+        ncvslideio::cvtColor(lab, recons, inverse_code);
 
         validateResult(src, recons, src, forward_code);
     }
@@ -2828,18 +2828,18 @@ void runCvtColorBitExactCheck(ColorConversionCodes code, int inputType, uint32_t
     Mat dst;
     rng.fill(src, RNG::UNIFORM, 0, 255, true);
 
-    cv::cvtColor(src, dst, code, 0, ALGO_HINT_ACCURATE);
+    ncvslideio::cvtColor(src, dst, code, 0, ALGO_HINT_ACCURATE);
 
     uint32_t dst_hash = adler32(dst);
 
-    EXPECT_EQ(hash, dst_hash) << cv::format("0x%08llx", (long long int)dst_hash);
+    EXPECT_EQ(hash, dst_hash) << ncvslideio::format("0x%08llx", (long long int)dst_hash);
 
     if (cvtest::debugLevel > 0)
     {
         const ::testing::TestInfo* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
         CV_Assert(test_info);
         std::string name = (std::string(test_info->test_case_name()) + "--" + test_info->name() + ".xml");
-        cv::FileStorage fs(name, cv::FileStorage::WRITE);
+        ncvslideio::FileStorage fs(name, ncvslideio::FileStorage::WRITE);
         fs << "dst" << dst;
     }
 }
@@ -3075,7 +3075,7 @@ TEST(ImgProc_BayerEdgeAwareDemosaicing, accuracy)
             CV_Assert(!bayer.empty() && (bayer.type() == CV_8UC1 || bayer.type() == CV_16UC1));
 
             Mat actual;
-            cv::demosaicing(bayer, actual, COLOR_BayerBG2BGR_EA + i);
+            ncvslideio::demosaicing(bayer, actual, COLOR_BayerBG2BGR_EA + i);
 
             if (t == 0)
                 checkData<unsigned char>(actual, reference, ts, types[i], next, "CV_8U");
@@ -3208,11 +3208,11 @@ TEST(ImgProc_cvtColorTwoPlane, y_plane_padding_differs_from_uv_plane_padding_170
 TEST(ImgProc_RGB2Lab, NaN_21111)
 {
     const float kNaN = std::numeric_limits<float>::quiet_NaN();
-    cv::Mat3f src(1, 111, Vec3f::all(kNaN)), dst;
+    ncvslideio::Mat3f src(1, 111, Vec3f::all(kNaN)), dst;
     // Make some entries with only one NaN.
-    src(0, 0) = src(0, 27) = src(0, 81) = src(0, 108) = cv::Vec3f(0, 0, kNaN);
-    src(0, 1) = src(0, 28) = src(0, 82) = src(0, 109) = cv::Vec3f(0, kNaN, 0);
-    src(0, 2) = src(0, 29) = src(0, 83) = src(0, 110) = cv::Vec3f(kNaN, 0, 0);
+    src(0, 0) = src(0, 27) = src(0, 81) = src(0, 108) = ncvslideio::Vec3f(0, 0, kNaN);
+    src(0, 1) = src(0, 28) = src(0, 82) = src(0, 109) = ncvslideio::Vec3f(0, kNaN, 0);
+    src(0, 2) = src(0, 29) = src(0, 83) = src(0, 110) = ncvslideio::Vec3f(kNaN, 0, 0);
     EXPECT_NO_THROW(cvtColor(src, dst, COLOR_RGB2Lab));
     EXPECT_NO_THROW(cvtColor(src, dst, COLOR_RGB2Luv));
     EXPECT_NO_THROW(cvtColor(src, dst, COLOR_Luv2RGB));
@@ -3229,16 +3229,16 @@ TEST(ImgProc_RGB2Lab, NaN_21111)
 }
 
 // See https://github.com/opencv/opencv/issues/25971
-// If num of channels is not suitable for selected cv::ColorConversionCodes,
-// e.code must be cv::Error::BadNumChannels.
+// If num of channels is not suitable for selected ncvslideio::ColorConversionCodes,
+// e.code must be ncvslideio::Error::BadNumChannels.
 TEST(ImgProc_cvtColor_InvalidNumOfChannels, regression_25971)
 {
     try {
-        cv::Mat src = cv::Mat::zeros(100, 100, CV_8UC1);
-        cv::Mat dst;
-        EXPECT_THROW(cv::cvtColor(src, dst, COLOR_RGB2GRAY), cv::Exception);
-    }catch(const cv::Exception& e) {
-        EXPECT_EQ(e.code, cv::Error::BadNumChannels);
+        ncvslideio::Mat src = ncvslideio::Mat::zeros(100, 100, CV_8UC1);
+        ncvslideio::Mat dst;
+        EXPECT_THROW(ncvslideio::cvtColor(src, dst, COLOR_RGB2GRAY), ncvslideio::Exception);
+    }catch(const ncvslideio::Exception& e) {
+        EXPECT_EQ(e.code, ncvslideio::Error::BadNumChannels);
     }catch(...) {
         FAIL() << "Unexpected exception is happened.";
     }

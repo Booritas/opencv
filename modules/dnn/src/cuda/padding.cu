@@ -22,10 +22,10 @@
 #include <vector>
 #include <utility>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     namespace raw {
         template <class T, std::size_t Rank>
@@ -198,4 +198,4 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
 #endif
     template void copy_with_reflection101(const Stream&, TensorSpan<float>, TensorView<float>, std::vector<std::pair<std::size_t, std::size_t>> ranges);
 
-}}}} /* namespace namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace namespace ncvslideio::dnn::cuda4dnn::kernels */

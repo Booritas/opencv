@@ -22,8 +22,8 @@
 #include "opencv2/highgui.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 const int win_width = 800;
 const int win_height = 640;
@@ -33,9 +33,9 @@ struct DrawData
     GLuint vao, vbo, program, textureID;
 };
 
-static cv::Mat rot(float angle)
+static ncvslideio::Mat rot(float angle)
 {
-    cv::Mat R_y = (cv::Mat_<float>(4,4) <<
+    ncvslideio::Mat R_y = (ncvslideio::Mat_<float>(4,4) <<
         cos(angle), 0, sin(angle), 0,
         0, 1, 0, 0,
         -sin(angle), 0, cos(angle), 0,
@@ -56,7 +56,7 @@ static void draw(void* userdata) {
     static float angle = 0.0f;
     angle += 1.f;
 
-    cv::Mat trans = rot(CV_PI * angle / 360.f);
+    ncvslideio::Mat trans = rot(CV_PI * angle / 360.f);
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

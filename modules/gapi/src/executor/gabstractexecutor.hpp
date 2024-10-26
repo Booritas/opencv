@@ -17,7 +17,7 @@
 
 #include "backends/common/gbackend.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
 // Graph-level executor interface.
@@ -43,14 +43,14 @@ namespace gimpl {
 //    are met.
 //
 // By default G-API stores all data on host, and cross-Island
-// exchange happens via host buffers (and CV data objects).
+// exchange happens via host buffers (and ncvslideio data objects).
 //
 // Today's exchange data objects are:
-// - cv::Mat, cv::RMat     - for image buffers
-// - cv::Scalar            - for single values (with up to four components inside)
-// - cv::detail::VectorRef - an untyped wrapper over std::vector<T>
-// - cv::detail::OpaqueRef - an untyped wrapper over T
-// - cv::MediaFrame        - for image textures and surfaces (e.g. in planar format)
+// - ncvslideio::Mat, ncvslideio::RMat     - for image buffers
+// - ncvslideio::Scalar            - for single values (with up to four components inside)
+// - ncvslideio::detail::VectorRef - an untyped wrapper over std::vector<T>
+// - ncvslideio::detail::OpaqueRef - an untyped wrapper over T
+// - ncvslideio::MediaFrame        - for image textures and surfaces (e.g. in planar format)
 
 class GAbstractExecutor
 {
@@ -58,13 +58,13 @@ protected:
     std::unique_ptr<ade::Graph> m_orig_graph;
     std::shared_ptr<ade::Graph> m_island_graph;
 
-    cv::gimpl::GModel::Graph       m_gm;  // FIXME: make const?
-    cv::gimpl::GIslandModel::Graph m_gim; // FIXME: make const?
+    ncvslideio::gimpl::GModel::Graph       m_gm;  // FIXME: make const?
+    ncvslideio::gimpl::GIslandModel::Graph m_gim; // FIXME: make const?
 
 public:
     explicit GAbstractExecutor(std::unique_ptr<ade::Graph> &&g_model);
     virtual ~GAbstractExecutor() = default;
-    virtual void run(cv::gimpl::GRuntimeArgs &&args) = 0;
+    virtual void run(ncvslideio::gimpl::GRuntimeArgs &&args) = 0;
 
     virtual bool canReshape() const = 0;
     virtual void reshape(const GMetaArgs& inMetas, const GCompileArgs& args) = 0;
@@ -75,6 +75,6 @@ public:
 };
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GABSTRACT_EXECUTOR_HPP

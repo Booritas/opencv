@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cv
+namespace ncvslideio
 {
 namespace detail
 {
@@ -45,4 +45,4 @@ namespace detail
     };
 
 }// namespace detail
-}// namespace cv
+}// namespace ncvslideio

@@ -50,7 +50,7 @@ detector. To build the program, create a console application project in Visual S
 #include <opencv2/imgproc/imgproc.hpp>     // cv::Canny()
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 void help()
 {

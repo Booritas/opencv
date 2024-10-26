@@ -6,7 +6,7 @@
 #include "opencv2/videoio/container_avi.private.hpp"
 #include <cstdio>
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace opencv_test { namespace {
 
@@ -35,7 +35,7 @@ TEST(videoio_builtin, invalid_avi)
 
 TEST(videoio_builtin, read_write_avi)
 {
-    const String filename = cv::tempfile("test.avi");
+    const String filename = ncvslideio::tempfile("test.avi");
     const double fps = 100;
     const Size sz(800, 600);
     const size_t count = 10;

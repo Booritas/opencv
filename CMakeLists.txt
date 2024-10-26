@@ -1,3 +1,13 @@
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_opencv_js OFF)
+set(BUILD_opencv_apps OFF)
+set(BUILD_DOCS OFF)
+set(BUILD_TESTS OFF)
+set(BUILD_JAVA OFF)
+set(BUILD_OBJC OFF)
+set(BUILD_opencv_python2 OFF)
+set(BUILD_opencv_python3 OFF)
+set(BUILD_SHARED_LIBS OFF)
 # ----------------------------------------------------------------------------
 #  Root CMake file for OpenCV
 #

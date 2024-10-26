@@ -4,4 +4,4 @@
     #include <hpx/hpx_main.hpp>
 #endif
 
-CV_TEST_MAIN("cv")
+CV_TEST_MAIN("ncvslideio")

@@ -29,7 +29,7 @@ PERF_TEST_P(Size_MatType, addWeighted, TYPICAL_MATS_ADWEIGHTED)
         src2 /= 2048;
     }
 
-    TEST_CYCLE() cv::addWeighted( src1, alpha, src2, beta, gamma, dst, dst.type() );
+    TEST_CYCLE() ncvslideio::addWeighted( src1, alpha, src2, beta, gamma, dst, dst.type() );
 
     SANITY_CHECK(dst, depth == CV_32S ? 4 : 1);
 }

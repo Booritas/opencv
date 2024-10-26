@@ -54,57 +54,57 @@ def split2d(img, cell_size, flatten=True):
     return cells
 
 def load_digits(fn):
-    fn = cv.samples.findFile(fn)
+    fn = ncvslideio.samples.findFile(fn)
     print('loading "%s" ...' % fn)
-    digits_img = cv.imread(fn, cv.IMREAD_GRAYSCALE)
+    digits_img = ncvslideio.imread(fn, ncvslideio.IMREAD_GRAYSCALE)
     digits = split2d(digits_img, (SZ, SZ))
     labels = np.repeat(np.arange(CLASS_N), len(digits)/CLASS_N)
     return digits, labels
 
 def deskew(img):
-    m = cv.moments(img)
+    m = ncvslideio.moments(img)
     if abs(m['mu02']) < 1e-2:
         return img.copy()
     skew = m['mu11']/m['mu02']
     M = np.float32([[1, skew, -0.5*SZ*skew], [0, 1, 0]])
-    img = cv.warpAffine(img, M, (SZ, SZ), flags=cv.WARP_INVERSE_MAP | cv.INTER_LINEAR)
+    img = ncvslideio.warpAffine(img, M, (SZ, SZ), flags=ncvslideio.WARP_INVERSE_MAP | ncvslideio.INTER_LINEAR)
     return img
 
 
 class KNearest(object):
     def __init__(self, k = 3):
         self.k = k
-        self.model = cv.ml.KNearest_create()
+        self.model = ncvslideio.ml.KNearest_create()
 
     def train(self, samples, responses):
-        self.model.train(samples, cv.ml.ROW_SAMPLE, responses)
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, responses)
 
     def predict(self, samples):
         _retval, results, _neigh_resp, _dists = self.model.findNearest(samples, self.k)
         return results.ravel()
 
     def load(self, fn):
-        self.model = cv.ml.KNearest_load(fn)
+        self.model = ncvslideio.ml.KNearest_load(fn)
 
     def save(self, fn):
         self.model.save(fn)
 
 class SVM(object):
     def __init__(self, C = 1, gamma = 0.5):
-        self.model = cv.ml.SVM_create()
+        self.model = ncvslideio.ml.SVM_create()
         self.model.setGamma(gamma)
         self.model.setC(C)
-        self.model.setKernel(cv.ml.SVM_RBF)
-        self.model.setType(cv.ml.SVM_C_SVC)
+        self.model.setKernel(ncvslideio.ml.SVM_RBF)
+        self.model.setType(ncvslideio.ml.SVM_C_SVC)
 
     def train(self, samples, responses):
-        self.model.train(samples, cv.ml.ROW_SAMPLE, responses)
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, responses)
 
     def predict(self, samples):
         return self.model.predict(samples)[1].ravel()
 
     def load(self, fn):
-        self.model = cv.ml.SVM_load(fn)
+        self.model = ncvslideio.ml.SVM_load(fn)
 
     def save(self, fn):
         self.model.save(fn)
@@ -123,7 +123,7 @@ def evaluate_model(model, digits, samples, labels):
 
     vis = []
     for img, flag in zip(digits, resp == labels):
-        img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
+        img = ncvslideio.cvtColor(img, ncvslideio.COLOR_GRAY2BGR)
         if not flag:
             img[...,:2] = 0
         vis.append(img)
@@ -135,9 +135,9 @@ def preprocess_simple(digits):
 def preprocess_hog(digits):
     samples = []
     for img in digits:
-        gx = cv.Sobel(img, cv.CV_32F, 1, 0)
-        gy = cv.Sobel(img, cv.CV_32F, 0, 1)
-        mag, ang = cv.cartToPolar(gx, gy)
+        gx = ncvslideio.Sobel(img, ncvslideio.CV_32F, 1, 0)
+        gy = ncvslideio.Sobel(img, ncvslideio.CV_32F, 0, 1)
+        mag, ang = ncvslideio.cartToPolar(gx, gy)
         bin_n = 16
         bin = np.int32(bin_n*ang/(2*np.pi))
         bin_cells = bin[:10,:10], bin[10:,:10], bin[:10,10:], bin[10:,10:]
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     samples = preprocess_hog(digits2)
 
     train_n = int(0.9*len(samples))
-    cv.imshow('test set', mosaic(25, digits[train_n:]))
+    ncvslideio.imshow('test set', mosaic(25, digits[train_n:]))
     digits_train, digits_test = np.split(digits2, [train_n])
     samples_train, samples_test = np.split(samples, [train_n])
     labels_train, labels_test = np.split(labels, [train_n])
@@ -180,15 +180,15 @@ if __name__ == '__main__':
     model = KNearest(k=4)
     model.train(samples_train, labels_train)
     vis = evaluate_model(model, digits_test, samples_test, labels_test)
-    cv.imshow('KNearest test', vis)
+    ncvslideio.imshow('KNearest test', vis)
 
     print('training SVM...')
     model = SVM(C=2.67, gamma=5.383)
     model.train(samples_train, labels_train)
     vis = evaluate_model(model, digits_test, samples_test, labels_test)
-    cv.imshow('SVM test', vis)
+    ncvslideio.imshow('SVM test', vis)
     print('saving SVM as "digits_svm.dat"...')
     model.save('digits_svm.dat')
 
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    ncvslideio.waitKey(0)
+    ncvslideio.destroyAllWindows()

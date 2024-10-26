@@ -49,7 +49,7 @@
 
 #include "grfmt_base.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 // DICOM image reader using GDCM

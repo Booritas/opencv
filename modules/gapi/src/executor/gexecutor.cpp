@@ -15,7 +15,7 @@
 #include "executor/gexecutor.hpp"
 #include "compiler/passes/passes.hpp"
 
-cv::gimpl::GExecutor::GExecutor(std::unique_ptr<ade::Graph> &&g_model)
+ncvslideio::gimpl::GExecutor::GExecutor(std::unique_ptr<ade::Graph> &&g_model)
     : GAbstractExecutor(std::move(g_model))
 {
     // NB: Right now GIslandModel is acyclic, so for a naive execution,
@@ -84,7 +84,7 @@ cv::gimpl::GExecutor::GExecutor(std::unique_ptr<ade::Graph> &&g_model)
     prepareForNewStream();
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace magazine {
 namespace {
@@ -96,18 +96,18 @@ void bindInArgExec(Mag& mag, const RcDesc &rc, const GRunArg &arg)
         bindInArg(mag, rc, arg);
         return;
     }
-    auto& mag_rmat = mag.template slot<cv::RMat>()[rc.id];
+    auto& mag_rmat = mag.template slot<ncvslideio::RMat>()[rc.id];
     switch (arg.index())
     {
     case GRunArg::index_of<Mat>() :
         mag_rmat = make_rmat<RMatOnMat>(util::get<Mat>(arg)); break;
-    case GRunArg::index_of<cv::RMat>() :
-        mag_rmat = util::get<cv::RMat>(arg); break;
+    case GRunArg::index_of<ncvslideio::RMat>() :
+        mag_rmat = util::get<ncvslideio::RMat>(arg); break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
     // FIXME: has to take extra care about meta here for this particuluar
     // case, just because this function exists at all
-    mag.meta<cv::RMat>()[rc.id] = arg.meta;
+    mag.meta<ncvslideio::RMat>()[rc.id] = arg.meta;
 }
 
 void bindOutArgExec(Mag& mag, const RcDesc &rc, const GRunArgP &arg)
@@ -117,24 +117,24 @@ void bindOutArgExec(Mag& mag, const RcDesc &rc, const GRunArgP &arg)
         bindOutArg(mag, rc, arg);
         return;
     }
-    auto& mag_rmat = mag.template slot<cv::RMat>()[rc.id];
+    auto& mag_rmat = mag.template slot<ncvslideio::RMat>()[rc.id];
     switch (arg.index())
     {
     case GRunArgP::index_of<Mat*>() :
         mag_rmat = make_rmat<RMatOnMat>(*util::get<Mat*>(arg)); break;
-    case GRunArgP::index_of<cv::RMat*>() :
-        mag_rmat = *util::get<cv::RMat*>(arg); break;
+    case GRunArgP::index_of<ncvslideio::RMat*>() :
+        mag_rmat = *util::get<ncvslideio::RMat*>(arg); break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
 }
 
-cv::GRunArgP getObjPtrExec(Mag& mag, const RcDesc &rc)
+ncvslideio::GRunArgP getObjPtrExec(Mag& mag, const RcDesc &rc)
 {
     if (rc.shape != GShape::GMAT)
     {
         return getObjPtr(mag, rc);
     }
-    return GRunArgP(&mag.slot<cv::RMat>()[rc.id]);
+    return GRunArgP(&mag.slot<ncvslideio::RMat>()[rc.id]);
 }
 
 void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
@@ -147,7 +147,7 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
 
     switch (g_arg.index())
     {
-    case GRunArgP::index_of<cv::Mat*>() : {
+    case GRunArgP::index_of<ncvslideio::Mat*>() : {
         // If there is a copy intrinsic at the end of the graph
         // we need to actually copy the data to the user buffer
         // since output runarg was optimized to simply point
@@ -157,8 +157,8 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
         // a real copy (add a pass to StreamingBackend?)
         // NB: In case RMat adapter not equal to "RMatOnMat" need to
         // copy data back to the host as well.
-        auto& out_mat = *util::get<cv::Mat*>(g_arg);
-        const auto& rmat = mag.template slot<cv::RMat>().at(rc.id);
+        auto& out_mat = *util::get<ncvslideio::Mat*>(g_arg);
+        const auto& rmat = mag.template slot<ncvslideio::RMat>().at(rc.id);
         auto* adapter = rmat.get<RMatOnMat>();
         if ((adapter != nullptr && out_mat.data != adapter->data()) ||
             (adapter == nullptr)) {
@@ -167,23 +167,23 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
         }
         break;
     }
-    case GRunArgP::index_of<cv::RMat*>() : /* do nothing */ break;
+    case GRunArgP::index_of<ncvslideio::RMat*>() : /* do nothing */ break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
 }
 
-void assignMetaStubExec(Mag& mag, const RcDesc &rc, const cv::GRunArg::Meta &meta) {
+void assignMetaStubExec(Mag& mag, const RcDesc &rc, const ncvslideio::GRunArg::Meta &meta) {
     switch (rc.shape)
     {
-    case GShape::GARRAY:  mag.meta<cv::detail::VectorRef>()[rc.id] = meta; break;
-    case GShape::GOPAQUE: mag.meta<cv::detail::OpaqueRef>()[rc.id] = meta; break;
-    case GShape::GSCALAR: mag.meta<cv::Scalar>()[rc.id]            = meta; break;
-    case GShape::GFRAME:  mag.meta<cv::MediaFrame>()[rc.id]        = meta; break;
+    case GShape::GARRAY:  mag.meta<ncvslideio::detail::VectorRef>()[rc.id] = meta; break;
+    case GShape::GOPAQUE: mag.meta<ncvslideio::detail::OpaqueRef>()[rc.id] = meta; break;
+    case GShape::GSCALAR: mag.meta<ncvslideio::Scalar>()[rc.id]            = meta; break;
+    case GShape::GFRAME:  mag.meta<ncvslideio::MediaFrame>()[rc.id]        = meta; break;
     case GShape::GMAT:
-        mag.meta<cv::Mat>() [rc.id] = meta;
-        mag.meta<cv::RMat>()[rc.id] = meta;
+        mag.meta<ncvslideio::Mat>() [rc.id] = meta;
+        mag.meta<ncvslideio::RMat>()[rc.id] = meta;
 #if !defined(GAPI_STANDALONE)
-        mag.meta<cv::UMat>()[rc.id] = meta;
+        mag.meta<ncvslideio::UMat>()[rc.id] = meta;
 #endif
         break;
     default: util::throw_error(std::logic_error("Unsupported GShape type")); break;
@@ -191,10 +191,10 @@ void assignMetaStubExec(Mag& mag, const RcDesc &rc, const cv::GRunArg::Meta &met
 }
 
 } // anonymous namespace
-}}} // namespace cv::gimpl::magazine
+}}} // namespace ncvslideio::gimpl::magazine
 
 
-void cv::gimpl::GExecutor::initResource(const ade::NodeHandle & nh, const ade::NodeHandle &orig_nh)
+void ncvslideio::gimpl::GExecutor::initResource(const ade::NodeHandle & nh, const ade::NodeHandle &orig_nh)
 {
     const Data &d = m_gm.metadata(orig_nh).get<Data>();
 
@@ -216,11 +216,11 @@ void cv::gimpl::GExecutor::initResource(const ade::NodeHandle & nh, const ade::N
         else
         {
             // Let island allocate it's outputs if it can,
-            // allocate cv::Mat and wrap it with RMat otherwise
+            // allocate ncvslideio::Mat and wrap it with RMat otherwise
             GAPI_Assert(!nh->inNodes().empty());
-            const auto desc = util::get<cv::GMatDesc>(d.meta);
+            const auto desc = util::get<ncvslideio::GMatDesc>(d.meta);
             auto& exec = m_gim.metadata(nh->inNodes().front()).get<IslandExec>().object;
-            auto& rmat = m_res.slot<cv::RMat>()[d.rc];
+            auto& rmat = m_res.slot<ncvslideio::RMat>()[d.rc];
             if (exec->allocatesOutputs()) {
                 rmat = exec->allocate(desc);
             } else {
@@ -258,23 +258,23 @@ void cv::gimpl::GExecutor::initResource(const ade::NodeHandle & nh, const ade::N
     }
 }
 
-class cv::gimpl::GExecutor::Input final: public cv::gimpl::GIslandExecutable::IInput
+class ncvslideio::gimpl::GExecutor::Input final: public ncvslideio::gimpl::GIslandExecutable::IInput
 {
-    cv::gimpl::Mag &mag;
+    ncvslideio::gimpl::Mag &mag;
     virtual StreamMsg get() override
     {
-        cv::GRunArgs res;
+        ncvslideio::GRunArgs res;
         for (const auto &rc : desc()) { res.emplace_back(magazine::getArg(mag, rc)); }
         return StreamMsg{std::move(res)};
     }
     virtual StreamMsg try_get() override { return get(); }
 public:
-    Input(cv::gimpl::Mag &m, const std::vector<RcDesc> &rcs) : mag(m) { set(rcs); }
+    Input(ncvslideio::gimpl::Mag &m, const std::vector<RcDesc> &rcs) : mag(m) { set(rcs); }
 };
 
-class cv::gimpl::GExecutor::Output final: public cv::gimpl::GIslandExecutable::IOutput
+class ncvslideio::gimpl::GExecutor::Output final: public ncvslideio::gimpl::GIslandExecutable::IOutput
 {
-    cv::gimpl::Mag &mag;
+    ncvslideio::gimpl::Mag &mag;
     std::unordered_map<const void*, int> out_idx;
     std::exception_ptr eptr;
 
@@ -282,7 +282,7 @@ class cv::gimpl::GExecutor::Output final: public cv::gimpl::GIslandExecutable::I
     {
         auto r = magazine::getObjPtrExec(mag, desc()[idx]);
         // Remember the output port for this output object
-        out_idx[cv::gimpl::proto::ptr(r)] = idx;
+        out_idx[ncvslideio::gimpl::proto::ptr(r)] = idx;
         return r;
     }
     void post(GRunArgP&&, const std::exception_ptr& e) override
@@ -299,11 +299,11 @@ class cv::gimpl::GExecutor::Output final: public cv::gimpl::GIslandExecutable::I
     }
     void meta(const GRunArgP &out, const GRunArg::Meta &m) override
     {
-        const auto idx = out_idx.at(cv::gimpl::proto::ptr(out));
+        const auto idx = out_idx.at(ncvslideio::gimpl::proto::ptr(out));
         magazine::assignMetaStubExec(mag, desc()[idx], m);
     }
 public:
-    Output(cv::gimpl::Mag &m, const std::vector<RcDesc> &rcs)
+    Output(ncvslideio::gimpl::Mag &m, const std::vector<RcDesc> &rcs)
         : mag(m)
     {
         set(rcs);
@@ -318,7 +318,7 @@ public:
     }
 };
 
-void cv::gimpl::GExecutor::run(cv::gimpl::GRuntimeArgs &&args)
+void ncvslideio::gimpl::GExecutor::run(ncvslideio::gimpl::GRuntimeArgs &&args)
 {
     // (2)
     const auto proto = m_gm.metadata().get<Protocol>();
@@ -348,22 +348,22 @@ void cv::gimpl::GExecutor::run(cv::gimpl::GRuntimeArgs &&args)
         const Data &d = m_gm.metadata(nh).get<Data>();
         if (d.shape == GShape::GMAT)
         {
-            using cv::util::get;
-            const auto desc = get<cv::GMatDesc>(d.meta);
+            using ncvslideio::util::get;
+            const auto desc = get<ncvslideio::GMatDesc>(d.meta);
 
             auto check_rmat = [&desc, &args, &index]()
             {
-                auto& out_mat = *get<cv::RMat*>(args.outObjs.at(index));
+                auto& out_mat = *get<ncvslideio::RMat*>(args.outObjs.at(index));
                 GAPI_Assert(desc.canDescribe(out_mat));
             };
 
 #if !defined(GAPI_STANDALONE)
             // Building as part of OpenCV - follow OpenCV behavior In
-            // the case of cv::Mat if output buffer is not enough to
+            // the case of ncvslideio::Mat if output buffer is not enough to
             // hold the result, reallocate it
-            if (cv::util::holds_alternative<cv::Mat*>(args.outObjs.at(index)))
+            if (ncvslideio::util::holds_alternative<ncvslideio::Mat*>(args.outObjs.at(index)))
             {
-                auto& out_mat = *get<cv::Mat*>(args.outObjs.at(index));
+                auto& out_mat = *get<ncvslideio::Mat*>(args.outObjs.at(index));
                 createMat(desc, out_mat);
             }
             // In the case of RMat check to fit required meta
@@ -374,9 +374,9 @@ void cv::gimpl::GExecutor::run(cv::gimpl::GRuntimeArgs &&args)
 #else
             // Building standalone - output buffer should always exist,
             // and _exact_ match our inferred metadata
-            if (cv::util::holds_alternative<cv::Mat*>(args.outObjs.at(index)))
+            if (ncvslideio::util::holds_alternative<ncvslideio::Mat*>(args.outObjs.at(index)))
             {
-                auto& out_mat = *get<cv::Mat*>(args.outObjs.at(index));
+                auto& out_mat = *get<ncvslideio::Mat*>(args.outObjs.at(index));
                 GAPI_Assert(out_mat.data != nullptr &&
                         desc.canDescribe(out_mat));
             }
@@ -426,7 +426,7 @@ void cv::gimpl::GExecutor::run(cv::gimpl::GRuntimeArgs &&args)
     }
 }
 
-bool cv::gimpl::GExecutor::canReshape() const
+bool ncvslideio::gimpl::GExecutor::canReshape() const
 {
     // FIXME: Introduce proper reshaping support on GExecutor level
     // for all cases!
@@ -434,7 +434,7 @@ bool cv::gimpl::GExecutor::canReshape() const
                        [](const OpDesc& op) { return op.isl_exec->canReshape(); });
 }
 
-void cv::gimpl::GExecutor::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
+void ncvslideio::gimpl::GExecutor::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
 {
     GAPI_Assert(canReshape());
     auto& g = *m_orig_graph.get();
@@ -454,7 +454,7 @@ void cv::gimpl::GExecutor::reshape(const GMetaArgs& inMetas, const GCompileArgs&
     }
 }
 
-void cv::gimpl::GExecutor::prepareForNewStream()
+void ncvslideio::gimpl::GExecutor::prepareForNewStream()
 {
     for (auto &op : m_ops)
     {

@@ -13,7 +13,7 @@
 #include "vkcom/include/vkcom.hpp"
 #endif  // HAVE_VULKAN
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -76,6 +76,6 @@ void forwardVkCom(std::vector<Ptr<BackendWrapper> > &outputs, const Ptr<BackendN
 
 bool haveVulkan();
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // OPENCV_DNN_OP_VKCOM_HPP

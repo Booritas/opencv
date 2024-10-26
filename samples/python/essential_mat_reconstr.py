@@ -1,4 +1,4 @@
-import numpy as np, cv2 as cv, matplotlib.pyplot as plt, time, sys, os
+import numpy as np, cv2 as ncvslideio, matplotlib.pyplot as plt, time, sys, os
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 
 def getEpipolarError(F, pts1_, pts2_, inliers):
@@ -27,8 +27,8 @@ if __name__ == '__main__':
         exit(1)
 
     with open(data_file, 'r') as f:
-        image1 = cv.imread(image_dir+f.readline()[:-1]) # remove '\n'
-        image2 = cv.imread(image_dir+f.readline()[:-1])
+        image1 = ncvslideio.imread(image_dir+f.readline()[:-1]) # remove '\n'
+        image2 = ncvslideio.imread(image_dir+f.readline()[:-1])
         K = np.array([[float(x) for x in f.readline().split(' ')],
                       [float(x) for x in f.readline().split(' ')],
                       [float(x) for x in f.readline().split(' ')]])
@@ -41,11 +41,11 @@ if __name__ == '__main__':
         exit(1)
 
     print('find keypoints and compute descriptors')
-    detector = cv.SIFT_create(nfeatures=20000)
-    keypoints1, descriptors1 = detector.detectAndCompute(cv.cvtColor(image1, cv.COLOR_BGR2GRAY), None)
-    keypoints2, descriptors2 = detector.detectAndCompute(cv.cvtColor(image2, cv.COLOR_BGR2GRAY), None)
+    detector = ncvslideio.SIFT_create(nfeatures=20000)
+    keypoints1, descriptors1 = detector.detectAndCompute(ncvslideio.cvtColor(image1, ncvslideio.COLOR_BGR2GRAY), None)
+    keypoints2, descriptors2 = detector.detectAndCompute(ncvslideio.cvtColor(image2, ncvslideio.COLOR_BGR2GRAY), None)
 
-    matcher = cv.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=32))
+    matcher = ncvslideio.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=32))
     print('match with FLANN, size of descriptors', descriptors1.shape, descriptors2.shape)
     matches_vector = matcher.knnMatch(descriptors1, descriptors2, k=2)
 
@@ -61,14 +61,14 @@ if __name__ == '__main__':
 
     print('Essential matrix RANSAC')
     start = time.time()
-    E, inliers = cv.findEssentialMat(pts1, pts2, K, cv.RANSAC, 0.999, 1.0)
+    E, inliers = ncvslideio.findEssentialMat(pts1, pts2, K, ncvslideio.RANSAC, 0.999, 1.0)
     print('RANSAC time', time.time() - start, 'seconds')
     print('Median error to epipolar lines', getEpipolarError
           (np.dot(np.linalg.inv(K).T, np.dot(E, np.linalg.inv(K))), pts1, pts2, inliers.squeeze()),
            'number of inliers', inliers.sum())
 
     print('Decompose essential matrix')
-    R1, R2, t = cv.decomposeEssentialMat(E)
+    R1, R2, t = ncvslideio.decomposeEssentialMat(E)
 
     # Assume relative pose. Fix the first camera
     P1 = np.concatenate((K, np.zeros((3,1))), axis=1) #   K [I | 0]
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             if not inliers[i]:
                 continue
             # find object point by triangulation of image points by projection matrices
-            obj_pt = cv.triangulatePoints(P1, P2, pt1, pt2)
+            obj_pt = ncvslideio.triangulatePoints(P1, P2, pt1, pt2)
             obj_pt /= obj_pt[3]
             # check if reprojected point has positive depth
             if obj_pt[2] > 0:
@@ -108,14 +108,14 @@ if __name__ == '__main__':
     # visualize image points
     for i, (pt1, pt2) in enumerate(zip(pts1, pts2)):
         if inliers[i]:
-            cv.circle(image1, (int(pt1[0]), int(pt1[1])), 7, (255,0,0), -1)
-            cv.circle(image2, (int(pt2[0]), int(pt2[1])), 7, (255,0,0), -1)
+            ncvslideio.circle(image1, (int(pt1[0]), int(pt1[1])), 7, (255,0,0), -1)
+            ncvslideio.circle(image2, (int(pt2[0]), int(pt2[1])), 7, (255,0,0), -1)
 
     # concatenate two images
     image1 = np.concatenate((image1, image2), axis=1)
     # resize concatenated image
     new_img_size = 1200. * 800.
-    image1 = cv.resize(image1, (int(np.sqrt(image1.shape[1] * new_img_size / image1.shape[0])),
+    image1 = ncvslideio.resize(image1, (int(np.sqrt(image1.shape[1] * new_img_size / image1.shape[0])),
                                  int(np.sqrt (image1.shape[0] * new_img_size / image1.shape[1]))))
 
     # plot object points
@@ -129,9 +129,9 @@ if __name__ == '__main__':
     ax.view_init(azim=-80, elev=110)
 
     # save figures
-    cv.imshow("matches", image1)
-    cv.imwrite('matches_E.png', image1)
+    ncvslideio.imshow("matches", image1)
+    ncvslideio.imwrite('matches_E.png', image1)
     plt.savefig('reconstruction_3D.png')
 
-    cv.waitKey(0)
+    ncvslideio.waitKey(0)
     plt.show()

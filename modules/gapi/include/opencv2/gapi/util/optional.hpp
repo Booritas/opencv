@@ -11,7 +11,7 @@
 #include <opencv2/gapi/util/variant.hpp>
 
 // A poor man's `optional` implementation, incompletely modeled against C++17 spec.
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {
@@ -173,6 +173,6 @@ namespace util
         return optional<typename std::decay<T>::type>(std::forward<T>(value));
     }
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_UTIL_OPTIONAL_HPP

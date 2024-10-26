@@ -64,7 +64,7 @@ OCL_PERF_TEST_P(EqualizeHistFixture, EqualizeHist, OCL_TEST_SIZES)
     UMat src(srcSize, CV_8UC1), dst(srcSize, CV_8UC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::equalizeHist(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::equalizeHist(src, dst);
 
     SANITY_CHECK(dst, eps);
 }
@@ -88,7 +88,7 @@ OCL_PERF_TEST_P(CalcHistFixture, CalcHist, OCL_TEST_SIZES)
     UMat src(srcSize, CV_8UC1), hist(256, 1, CV_32FC1);
     declare.in(src, WARMUP_RNG).out(hist);
 
-    OCL_TEST_CYCLE() cv::calcHist(std::vector<UMat>(1, src), channels, noArray(), hist, histSize, ranges, false);
+    OCL_TEST_CYCLE() ncvslideio::calcHist(std::vector<UMat>(1, src), channels, noArray(), hist, histSize, ranges, false);
 
     SANITY_CHECK(hist);
 }
@@ -112,10 +112,10 @@ OCL_PERF_TEST_P(CalcBackProjFixture, CalcBackProj, OCL_TEST_SIZES)
     UMat src(srcSize, CV_8UC1), hist(256, 1, CV_32FC1), dst(srcSize, CV_8UC1);
     declare.in(src, WARMUP_RNG).out(hist);
 
-    cv::calcHist(std::vector<UMat>(1, src), channels, noArray(), hist, histSize, ranges, false);
+    ncvslideio::calcHist(std::vector<UMat>(1, src), channels, noArray(), hist, histSize, ranges, false);
 
     declare.in(src, WARMUP_RNG).out(dst);
-    OCL_TEST_CYCLE() cv::calcBackProject(std::vector<UMat>(1,src), channels, hist, dst, ranges, 1);
+    OCL_TEST_CYCLE() ncvslideio::calcBackProject(std::vector<UMat>(1,src), channels, hist, dst, ranges, 1);
 
     SANITY_CHECK_NOTHING();
 }
@@ -142,7 +142,7 @@ OCL_PERF_TEST_P(CopyMakeBorderFixture, CopyMakeBorder,
     dst.create(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::copyMakeBorder(src, dst, 7, 5, 5, 7, borderType, cv::Scalar(1.0));
+    OCL_TEST_CYCLE() ncvslideio::copyMakeBorder(src, dst, 7, 5, 5, 7, borderType, ncvslideio::Scalar(1.0));
 
     SANITY_CHECK(dst);
 }
@@ -164,7 +164,7 @@ OCL_PERF_TEST_P(CornerMinEigenValFixture, CornerMinEigenVal,
     UMat src(srcSize, type), dst(srcSize, CV_32FC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::cornerMinEigenVal(src, dst, blockSize, apertureSize, borderType);
+    OCL_TEST_CYCLE() ncvslideio::cornerMinEigenVal(src, dst, blockSize, apertureSize, borderType);
 
 #ifdef HAVE_OPENCL
     bool strictCheck = !ocl::useOpenCL() || ocl::Device::getDefault().isIntel();
@@ -195,7 +195,7 @@ OCL_PERF_TEST_P(CornerHarrisFixture, CornerHarris,
     UMat src(srcSize, type), dst(srcSize, CV_32FC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::cornerHarris(src, dst, 5, 7, 0.1, borderType);
+    OCL_TEST_CYCLE() ncvslideio::cornerHarris(src, dst, 5, 7, 0.1, borderType);
 
     SANITY_CHECK(dst, 5e-6, ERROR_RELATIVE);
 }
@@ -216,7 +216,7 @@ OCL_PERF_TEST_P(PreCornerDetectFixture, PreCornerDetect,
     UMat src(srcSize, type), dst(srcSize, CV_32FC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::preCornerDetect(src, dst, 3, borderType);
+    OCL_TEST_CYCLE() ncvslideio::preCornerDetect(src, dst, 3, borderType);
 
     SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);
 }
@@ -237,7 +237,7 @@ OCL_PERF_TEST_P(IntegralFixture, Integral1, ::testing::Combine(OCL_TEST_SIZES, O
     UMat src(srcSize, CV_8UC1), dst(srcSize + Size(1, 1), ddepth);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::integral(src, dst, ddepth);
+    OCL_TEST_CYCLE() ncvslideio::integral(src, dst, ddepth);
 
     SANITY_CHECK(dst, 2e-6, ERROR_RELATIVE);
 }
@@ -253,7 +253,7 @@ OCL_PERF_TEST_P(IntegralFixture, Integral2, ::testing::Combine(OCL_TEST_SIZES, O
     UMat src(srcSize, CV_8UC1), sum(srcSize + Size(1, 1), ddepth), sqsum(srcSize + Size(1, 1), CV_32F);
     declare.in(src, WARMUP_RNG).out(sum, sqsum);
 
-    OCL_TEST_CYCLE() cv::integral(src, sum, sqsum, ddepth, CV_32F);
+    OCL_TEST_CYCLE() ncvslideio::integral(src, sum, sqsum, ddepth, CV_32F);
 
     SANITY_CHECK(sum, 2e-4, ERROR_RELATIVE);
     SANITY_CHECK(sqsum, 5e-5, ERROR_RELATIVE);
@@ -280,7 +280,7 @@ OCL_PERF_TEST_P(ThreshFixture, Threshold,
     UMat src(srcSize, srcType), dst(srcSize, srcType);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::threshold(src, dst, threshold, maxValue, threshType);
+    OCL_TEST_CYCLE() ncvslideio::threshold(src, dst, threshold, maxValue, threshType);
 
     SANITY_CHECK(dst);
 }
@@ -299,7 +299,7 @@ OCL_PERF_TEST_P(CLAHEFixture, CLAHE, OCL_TEST_SIZES)
     const double clipLimit = 40.0;
     declare.in(src, WARMUP_RNG).out(dst);
 
-    cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(clipLimit);
+    ncvslideio::Ptr<ncvslideio::CLAHE> clahe = ncvslideio::createCLAHE(clipLimit);
     OCL_TEST_CYCLE() clahe->apply(src, dst);
 
     SANITY_CHECK(dst);
@@ -313,21 +313,21 @@ typedef TestBaseWithParam<CannyParams> CannyFixture;
 OCL_PERF_TEST_P(CannyFixture, Canny, ::testing::Combine(OCL_TEST_SIZES, OCL_PERF_ENUM(3, 5), Bool()))
 {
     const CannyParams& params = GetParam();
-    cv::Size imgSize = get<0>(params);
+    ncvslideio::Size imgSize = get<0>(params);
     int apertureSize = get<1>(params);
     bool L2Grad = get<2>(params);
 
-    Mat _img = imread(getDataPath("gpu/stereobm/aloe-L.png"), cv::IMREAD_GRAYSCALE);
+    Mat _img = imread(getDataPath("gpu/stereobm/aloe-L.png"), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_TRUE(!_img.empty()) << "can't open aloe-L.png";
 
     UMat img;
-    cv::resize(_img, img, imgSize, 0, 0, INTER_LINEAR_EXACT);
+    ncvslideio::resize(_img, img, imgSize, 0, 0, INTER_LINEAR_EXACT);
     UMat edges(img.size(), CV_8UC1);
 
     declare.in(img).out(edges);
 
     PERF_SAMPLE_BEGIN();
-        cv::Canny(img, edges, 50.0, 100.0, apertureSize, L2Grad);
+        ncvslideio::Canny(img, edges, 50.0, 100.0, apertureSize, L2Grad);
     PERF_SAMPLE_END();
 
     SANITY_CHECK_NOTHING();

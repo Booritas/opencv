@@ -219,9 +219,9 @@ struct SkipThisTest : public ::testing::Test {
     try { \
       GTEST_SUPPRESS_UNREACHABLE_CODE_WARNING_BELOW_(statement); \
     } \
-    catch (const cv::Exception& e) { \
+    catch (const ncvslideio::Exception& e) { \
       if (NULL == strstr(e.what(), msg_)) \
-        ADD_FAILURE() << "Unexpected cv::Exception is raised: " << #statement << "\n  Expected message substring: '" << msg_ << "'. Actual message:\n" << e.what(); \
+        ADD_FAILURE() << "Unexpected ncvslideio::Exception is raised: " << #statement << "\n  Expected message substring: '" << msg_ << "'. Actual message:\n" << e.what(); \
       hasException = true; \
     } \
     catch (const std::exception& e) { \

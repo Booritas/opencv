@@ -15,7 +15,7 @@
 /** \defgroup gapi_video G-API Video processing functionality
  */
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 /** @brief Structure for the Kalman filter's initialization parameters.*/
 
@@ -50,9 +50,9 @@ namespace  video
 {
 using GBuildPyrOutput  = std::tuple<GArray<GMat>, GScalar>;
 
-using GOptFlowLKOutput = std::tuple<cv::GArray<cv::Point2f>,
-                                    cv::GArray<uchar>,
-                                    cv::GArray<float>>;
+using GOptFlowLKOutput = std::tuple<ncvslideio::GArray<ncvslideio::Point2f>,
+                                    ncvslideio::GArray<uchar>,
+                                    ncvslideio::GArray<float>>;
 
 G_TYPED_KERNEL(GBuildOptFlowPyramid, <GBuildPyrOutput(GMat,Size,GScalar,bool,int,int,bool)>,
                "org.opencv.video.buildOpticalFlowPyramid")
@@ -65,7 +65,7 @@ G_TYPED_KERNEL(GBuildOptFlowPyramid, <GBuildPyrOutput(GMat,Size,GScalar,bool,int
 };
 
 G_TYPED_KERNEL(GCalcOptFlowLK,
-               <GOptFlowLKOutput(GMat,GMat,cv::GArray<cv::Point2f>,cv::GArray<cv::Point2f>,Size,
+               <GOptFlowLKOutput(GMat,GMat,ncvslideio::GArray<ncvslideio::Point2f>,ncvslideio::GArray<ncvslideio::Point2f>,Size,
                                  GScalar,TermCriteria,int,double)>,
                "org.opencv.video.calcOpticalFlowPyrLK")
 {
@@ -79,8 +79,8 @@ G_TYPED_KERNEL(GCalcOptFlowLK,
 };
 
 G_TYPED_KERNEL(GCalcOptFlowLKForPyr,
-               <GOptFlowLKOutput(cv::GArray<cv::GMat>,cv::GArray<cv::GMat>,
-                                 cv::GArray<cv::Point2f>,cv::GArray<cv::Point2f>,Size,GScalar,
+               <GOptFlowLKOutput(ncvslideio::GArray<ncvslideio::GMat>,ncvslideio::GArray<ncvslideio::GMat>,
+                                 ncvslideio::GArray<ncvslideio::Point2f>,ncvslideio::GArray<ncvslideio::Point2f>,Size,GScalar,
                                  TermCriteria,int,double)>,
                "org.opencv.video.calcOpticalFlowPyrLKForPyr")
 {
@@ -159,8 +159,8 @@ G_TYPED_KERNEL(GBackgroundSubtractor, <GMat(GMat, BackgroundSubtractorParams)>,
     }
 };
 
-void checkParams(const cv::gapi::KalmanParams& kfParams,
-                 const cv::GMatDesc& measurement, const cv::GMatDesc& control = {});
+void checkParams(const ncvslideio::gapi::KalmanParams& kfParams,
+                 const ncvslideio::GMatDesc& measurement, const ncvslideio::GMatDesc& control = {});
 
 G_TYPED_KERNEL(GKalmanFilter, <GMat(GMat, GOpaque<bool>, GMat, KalmanParams)>,
                "org.opencv.video.KalmanFilter")
@@ -300,7 +300,7 @@ The operation generates a foreground mask.
 @param src input image: Floating point frame is used without scaling and should be in range [0,255].
 @param bsParams Set of initialization parameters for Background Subtractor kernel.
 */
-GAPI_EXPORTS GMat BackgroundSubtractor(const GMat& src, const cv::gapi::video::BackgroundSubtractorParams& bsParams);
+GAPI_EXPORTS GMat BackgroundSubtractor(const GMat& src, const ncvslideio::gapi::video::BackgroundSubtractorParams& bsParams);
 
 /** @brief Standard Kalman filter algorithm <http://en.wikipedia.org/wiki/Kalman_filter>.
 
@@ -318,13 +318,13 @@ for changing dynamic system.
 
 @details If measurement matrix is given (haveMeasurements == true), corrected state will
 be returned which corresponds to the pipeline
-cv::KalmanFilter::predict(control) -> cv::KalmanFilter::correct(measurement).
+ncvslideio::KalmanFilter::predict(control) -> ncvslideio::KalmanFilter::correct(measurement).
 Otherwise, predicted state will be returned which corresponds to the call of
-cv::KalmanFilter::predict(control).
-@sa cv::KalmanFilter
+ncvslideio::KalmanFilter::predict(control).
+@sa ncvslideio::KalmanFilter
 */
 GAPI_EXPORTS GMat KalmanFilter(const GMat& measurement, const GOpaque<bool>& haveMeasurement,
-                               const GMat& control, const cv::gapi::KalmanParams& kfParams);
+                               const GMat& control, const ncvslideio::gapi::KalmanParams& kfParams);
 
 /** @overload
 The case of Standard Kalman filter algorithm when there is no control in a dynamic system.
@@ -340,18 +340,18 @@ at a particular iteration.
 @return Output matrix is predicted or corrected state. They can be 32-bit or 64-bit float
 1-channel matrix @ref CV_32FC1 or @ref CV_64FC1.
 
-@sa cv::KalmanFilter
+@sa ncvslideio::KalmanFilter
  */
 GAPI_EXPORTS GMat KalmanFilter(const GMat& measurement, const GOpaque<bool>& haveMeasurement,
-                               const cv::gapi::KalmanParams& kfParams);
+                               const ncvslideio::gapi::KalmanParams& kfParams);
 
 //! @} gapi_video
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio
 
 
-namespace cv { namespace detail {
-template<> struct CompileArgTag<cv::gapi::video::BackgroundSubtractorParams>
+namespace ncvslideio { namespace detail {
+template<> struct CompileArgTag<ncvslideio::gapi::video::BackgroundSubtractorParams>
 {
     static const char* tag()
     {
@@ -359,6 +359,6 @@ template<> struct CompileArgTag<cv::gapi::video::BackgroundSubtractorParams>
     }
 };
 }  // namespace detail
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // OPENCV_GAPI_VIDEO_HPP

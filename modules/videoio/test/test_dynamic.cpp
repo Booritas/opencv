@@ -19,7 +19,7 @@ TEST(videoio_dynamic, basic_write)
 {
     const Size FRAME_SIZE(640, 480);
     const double FPS = 100;
-    const String filename = cv::tempfile(".avi");
+    const String filename = ncvslideio::tempfile(".avi");
     const int fourcc = VideoWriter::fourcc('M', 'J', 'P', 'G');
 
     bool fileExists = false;
@@ -85,7 +85,7 @@ TEST(videoio_dynamic, write_invalid)
     for (VideoCaptureAPIs be : backends)
     {
         SCOPED_TRACE(be);
-        const string filename = cv::tempfile(".mkv");
+        const string filename = ncvslideio::tempfile(".mkv");
         VideoWriter writer;
         bool res = true;
 

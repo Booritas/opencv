@@ -20,7 +20,7 @@
 
 #include "compiler/gobjref.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // FIXME: GAPI_EXPORTS only because of tests!
 class GAPI_EXPORTS GIsland
@@ -99,8 +99,8 @@ protected:
 class GAPI_EXPORTS GIslandExecutable
 {
 public:
-    using InObj  = std::pair<RcDesc, cv::GRunArg>;
-    using OutObj = std::pair<RcDesc, cv::GRunArgP>;
+    using InObj  = std::pair<RcDesc, ncvslideio::GRunArg>;
+    using OutObj = std::pair<RcDesc, ncvslideio::GRunArgP>;
 
     class  IODesc;
     struct IInput;
@@ -122,7 +122,7 @@ public:
     virtual bool canReshape() const = 0;
     virtual void reshape(ade::Graph& g, const GCompileArgs& args) = 0;
     virtual bool allocatesOutputs() const { return false; }
-    virtual cv::RMat allocate(const cv::GMatDesc&) const { GAPI_Error("should never be called"); }
+    virtual ncvslideio::RMat allocate(const ncvslideio::GMatDesc&) const { GAPI_Error("should never be called"); }
 
     // This method is called when the GStreamingCompiled gets a new
     // input source to process. Normally this method is called once
@@ -154,11 +154,11 @@ public:
 };
 
 class GIslandExecutable::IODesc {
-    std::vector<cv::gimpl::RcDesc> d;
+    std::vector<ncvslideio::gimpl::RcDesc> d;
 public:
-    void set(std::vector<cv::gimpl::RcDesc> &&newd)      { d = std::move(newd); }
-    void set(const std::vector<cv::gimpl::RcDesc> &newd) { d = newd; }
-    const std::vector<cv::gimpl::RcDesc> &desc() const   { return d; }
+    void set(std::vector<ncvslideio::gimpl::RcDesc> &&newd)      { d = std::move(newd); }
+    void set(const std::vector<ncvslideio::gimpl::RcDesc> &newd) { d = newd; }
+    const std::vector<ncvslideio::gimpl::RcDesc> &desc() const   { return d; }
 };
 struct EndOfStream {};
 
@@ -166,7 +166,7 @@ struct Exception {
     std::exception_ptr eptr;
 };
 
-using StreamMsg = cv::util::variant<EndOfStream, cv::GRunArgs, Exception>;
+using StreamMsg = ncvslideio::util::variant<EndOfStream, ncvslideio::GRunArgs, Exception>;
 struct GIslandExecutable::IInput: public GIslandExecutable::IODesc {
     virtual ~IInput() = default;
     virtual StreamMsg get() = 0;     // Get a new input vector (blocking)
@@ -305,6 +305,6 @@ namespace GIslandModel
     std::string traceIslandName(const ade::NodeHandle& op_nh, const Graph& g);
 } // namespace GIslandModel
 
-}} // namespace cv::gimpl
+}} // namespace ncvslideio::gimpl
 
 #endif // OPENCV_GAPI_GISLANDMODEL_HPP

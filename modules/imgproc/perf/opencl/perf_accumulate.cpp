@@ -67,7 +67,7 @@ OCL_PERF_TEST_P(AccumulateFixture, Accumulate,
     UMat src(srcSize, srcType), dst(srcSize, dstType);
     declare.in(src, dst, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::accumulate(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::accumulate(src, dst);
 
     SANITY_CHECK_NOTHING();
 }
@@ -88,7 +88,7 @@ OCL_PERF_TEST_P(AccumulateSquareFixture, AccumulateSquare,
     UMat src(srcSize, srcType), dst(srcSize, dstType);
     declare.in(src, dst, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::accumulateSquare(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::accumulateSquare(src, dst);
 
     SANITY_CHECK_NOTHING();
 }
@@ -109,7 +109,7 @@ OCL_PERF_TEST_P(AccumulateProductFixture, AccumulateProduct,
     UMat src1(srcSize, srcType), src2(srcSize, srcType), dst(srcSize, dstType);
     declare.in(src1, src2, dst, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::accumulateProduct(src1, src2, dst);
+    OCL_TEST_CYCLE() ncvslideio::accumulateProduct(src1, src2, dst);
 
     SANITY_CHECK_NOTHING();
 }
@@ -130,7 +130,7 @@ OCL_PERF_TEST_P(AccumulateWeightedFixture, AccumulateWeighted,
     UMat src(srcSize, srcType), dst(srcSize, dstType);
     declare.in(src, dst, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::accumulateWeighted(src, dst, 2.0);
+    OCL_TEST_CYCLE() ncvslideio::accumulateWeighted(src, dst, 2.0);
 
     SANITY_CHECK_NOTHING();
 }

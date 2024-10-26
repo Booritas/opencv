@@ -32,7 +32,7 @@ from video import presets
 
 lk_params = dict( winSize  = (19, 19),
                   maxLevel = 2,
-                  criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
+                  criteria = (ncvslideio.TERM_CRITERIA_EPS | ncvslideio.TERM_CRITERIA_COUNT, 10, 0.03))
 
 feature_params = dict( maxCorners = 1000,
                        qualityLevel = 0.01,
@@ -40,8 +40,8 @@ feature_params = dict( maxCorners = 1000,
                        blockSize = 19 )
 
 def checkedTrace(img0, img1, p0, back_threshold = 1.0):
-    p1, _st, _err = cv.calcOpticalFlowPyrLK(img0, img1, p0, None, **lk_params)
-    p0r, _st, _err = cv.calcOpticalFlowPyrLK(img1, img0, p1, None, **lk_params)
+    p1, _st, _err = ncvslideio.calcOpticalFlowPyrLK(img0, img1, p0, None, **lk_params)
+    p0r, _st, _err = ncvslideio.calcOpticalFlowPyrLK(img1, img0, p1, None, **lk_params)
     d = abs(p0-p0r).reshape(-1, 2).max(-1)
     status = d < back_threshold
     return p1, status
@@ -58,7 +58,7 @@ class App:
     def run(self):
         while True:
             _ret, frame = self.cam.read()
-            frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            frame_gray = ncvslideio.cvtColor(frame, ncvslideio.COLOR_BGR2GRAY)
             vis = frame.copy()
             if self.p0 is not None:
                 p2, trace_status = checkedTrace(self.gray1, frame_gray, self.p1)
@@ -70,33 +70,33 @@ class App:
                 if len(self.p0) < 4:
                     self.p0 = None
                     continue
-                H, status = cv.findHomography(self.p0, self.p1, (0, cv.RANSAC)[self.use_ransac], 10.0)
+                H, status = ncvslideio.findHomography(self.p0, self.p1, (0, ncvslideio.RANSAC)[self.use_ransac], 10.0)
                 h, w = frame.shape[:2]
-                overlay = cv.warpPerspective(self.frame0, H, (w, h))
-                vis = cv.addWeighted(vis, 0.5, overlay, 0.5, 0.0)
+                overlay = ncvslideio.warpPerspective(self.frame0, H, (w, h))
+                vis = ncvslideio.addWeighted(vis, 0.5, overlay, 0.5, 0.0)
 
                 for (x0, y0), (x1, y1), good in zip(self.p0[:,0], self.p1[:,0], status[:,0]):
                     if good:
-                        cv.line(vis, (int(x0), int(y0)), (int(x1), int(y1)), (0, 128, 0))
-                    cv.circle(vis, (int(x1), int(y1)), 2, (red, green)[good], -1)
+                        ncvslideio.line(vis, (int(x0), int(y0)), (int(x1), int(y1)), (0, 128, 0))
+                    ncvslideio.circle(vis, (int(x1), int(y1)), 2, (red, green)[good], -1)
                 draw_str(vis, (20, 20), 'track count: %d' % len(self.p1))
                 if self.use_ransac:
                     draw_str(vis, (20, 40), 'RANSAC')
             else:
-                p = cv.goodFeaturesToTrack(frame_gray, **feature_params)
+                p = ncvslideio.goodFeaturesToTrack(frame_gray, **feature_params)
                 if p is not None:
                     for x, y in p[:,0]:
-                        cv.circle(vis, (int(x), int(y)), 2, green, -1)
+                        ncvslideio.circle(vis, (int(x), int(y)), 2, green, -1)
                     draw_str(vis, (20, 20), 'feature count: %d' % len(p))
 
-            cv.imshow('lk_homography', vis)
+            ncvslideio.imshow('lk_homography', vis)
 
-            ch = cv.waitKey(1)
+            ch = ncvslideio.waitKey(1)
             if ch == 27:
                 break
             if ch == ord(' '):
                 self.frame0 = frame.copy()
-                self.p0 = cv.goodFeaturesToTrack(frame_gray, **feature_params)
+                self.p0 = ncvslideio.goodFeaturesToTrack(frame_gray, **feature_params)
                 if self.p0 is not None:
                     self.p1 = self.p0
                     self.gray0 = frame_gray
@@ -120,4 +120,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

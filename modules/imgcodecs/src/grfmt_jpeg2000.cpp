@@ -65,7 +65,7 @@
 #undef uchar
 #undef ulong
 
-namespace cv
+namespace ncvslideio
 {
 
 struct JasperInitializer
@@ -347,7 +347,7 @@ bool  Jpeg2KDecoder::readData( Mat& img )
 #ifndef _WIN32
     if (!clr.empty())
     {
-        cv::cvtColor(clr, img, COLOR_BGR2GRAY);
+        ncvslideio::cvtColor(clr, img, COLOR_BGR2GRAY);
     }
 #endif
 
@@ -388,26 +388,26 @@ bool  Jpeg2KDecoder::readComponent8u( uchar *data, void *_buffer,
                 for( x = 0; x < xend - xstart; x++ )
                 {
                     int pix = pix_row[x];
-                    dst[x*ncmpts] = cv::saturate_cast<uchar>(pix);
+                    dst[x*ncmpts] = ncvslideio::saturate_cast<uchar>(pix);
                 }
             else
                 for( x = 0; x < xend - xstart; x++ )
                 {
                     int pix = ((pix_row[x] + delta) >> rshift) << lshift;
-                    dst[x*ncmpts] = cv::saturate_cast<uchar>(pix);
+                    dst[x*ncmpts] = ncvslideio::saturate_cast<uchar>(pix);
                 }
         }
         else if( xstep == 2 && offset == 0 )
             for( x = 0, j = 0; x < xend - xstart; x += 2, j++ )
             {
                 int pix = ((pix_row[j] + delta) >> rshift) << lshift;
-                dst[x*ncmpts] = dst[(x+1)*ncmpts] = cv::saturate_cast<uchar>(pix);
+                dst[x*ncmpts] = dst[(x+1)*ncmpts] = ncvslideio::saturate_cast<uchar>(pix);
             }
         else
             for( x = 0, j = 0; x < xend - xstart; j++ )
             {
                 int pix = ((pix_row[j] + delta) >> rshift) << lshift;
-                pix = cv::saturate_cast<uchar>(pix);
+                pix = ncvslideio::saturate_cast<uchar>(pix);
                 for( x1 = x + xstep; x < x1; x++ )
                     dst[x*ncmpts] = (uchar)pix;
             }
@@ -454,26 +454,26 @@ bool  Jpeg2KDecoder::readComponent16u( unsigned short *data, void *_buffer,
                 for( x = 0; x < xend - xstart; x++ )
                 {
                     int pix = pix_row[x];
-                    dst[x*ncmpts] = cv::saturate_cast<ushort>(pix);
+                    dst[x*ncmpts] = ncvslideio::saturate_cast<ushort>(pix);
                 }
             else
                 for( x = 0; x < xend - xstart; x++ )
                 {
                     int pix = ((pix_row[x] + delta) >> rshift) << lshift;
-                    dst[x*ncmpts] = cv::saturate_cast<ushort>(pix);
+                    dst[x*ncmpts] = ncvslideio::saturate_cast<ushort>(pix);
                 }
         }
         else if( xstep == 2 && offset == 0 )
             for( x = 0, j = 0; x < xend - xstart; x += 2, j++ )
             {
                 int pix = ((pix_row[j] + delta) >> rshift) << lshift;
-                dst[x*ncmpts] = dst[(x+1)*ncmpts] = cv::saturate_cast<ushort>(pix);
+                dst[x*ncmpts] = dst[(x+1)*ncmpts] = ncvslideio::saturate_cast<ushort>(pix);
             }
         else
             for( x = 0, j = 0; x < xend - xstart; j++ )
             {
                 int pix = ((pix_row[j] + delta) >> rshift) << lshift;
-                pix = cv::saturate_cast<ushort>(pix);
+                pix = ncvslideio::saturate_cast<ushort>(pix);
                 for( x1 = x + xstep; x < x1; x++ )
                     dst[x*ncmpts] = (ushort)pix;
             }
@@ -528,7 +528,7 @@ bool  Jpeg2KEncoder::write( const Mat& _img, const std::vector<int>& params )
     {
         switch(params[i])
         {
-        case cv::IMWRITE_JPEG2000_COMPRESSION_X1000:
+        case ncvslideio::IMWRITE_JPEG2000_COMPRESSION_X1000:
             target_compression_rate = std::min(std::max(params[i+1], 0), 1000) / 1000.0;
             break;
         }

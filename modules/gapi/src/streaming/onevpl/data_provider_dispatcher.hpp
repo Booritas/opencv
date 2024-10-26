@@ -11,7 +11,7 @@
 #include <opencv2/gapi/streaming/onevpl/data_provider_interface.hpp>
 #include <opencv2/gapi/streaming/onevpl/cfg_params.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -24,6 +24,6 @@ struct GAPI_EXPORTS DataProviderDispatcher {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_DATA_PROVIDER_DISPATCHER_HPP

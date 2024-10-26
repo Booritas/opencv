@@ -41,7 +41,7 @@
 //M*/
 #include "precomp.hpp"
 
-int cv::meanShift( InputArray _probImage, Rect& window, TermCriteria criteria )
+int ncvslideio::meanShift( InputArray _probImage, Rect& window, TermCriteria criteria )
 {
     CV_INSTRUMENT_REGION();
 
@@ -107,7 +107,7 @@ int cv::meanShift( InputArray _probImage, Rect& window, TermCriteria criteria )
 }
 
 
-cv::RotatedRect cv::CamShift( InputArray _probImage, Rect& window,
+ncvslideio::RotatedRect ncvslideio::CamShift( InputArray _probImage, Rect& window,
                               TermCriteria criteria )
 {
     CV_INSTRUMENT_REGION();

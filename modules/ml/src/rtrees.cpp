@@ -41,7 +41,7 @@
 //M*/
 
 #include "precomp.hpp"
-namespace cv {
+namespace ncvslideio {
 namespace ml {
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -309,7 +309,7 @@ public:
     {
         CV_TRACE_FUNCTION();
         if( roots.empty() )
-            CV_Error( cv::Error::StsBadArg, "RTrees have not been trained" );
+            CV_Error( ncvslideio::Error::StsBadArg, "RTrees have not been trained" );
 
         writeFormat(fs);
         writeParams(fs);
@@ -461,8 +461,8 @@ public:
     inline void setTruncatePrunedTree(bool val) CV_OVERRIDE { impl.params.setTruncatePrunedTree(val); }
     inline float getRegressionAccuracy() const CV_OVERRIDE { return impl.params.getRegressionAccuracy(); }
     inline void setRegressionAccuracy(float val) CV_OVERRIDE { impl.params.setRegressionAccuracy(val); }
-    inline cv::Mat getPriors() const CV_OVERRIDE { return impl.params.getPriors(); }
-    inline void setPriors(const cv::Mat& val) CV_OVERRIDE { impl.params.setPriors(val); }
+    inline ncvslideio::Mat getPriors() const CV_OVERRIDE { return impl.params.getPriors(); }
+    inline void setPriors(const ncvslideio::Mat& val) CV_OVERRIDE { impl.params.setPriors(val); }
     inline void getVotes(InputArray input, OutputArray output, int flags) const CV_OVERRIDE {return impl.getVotes(input,output,flags);}
 
     RTreesImpl() {}

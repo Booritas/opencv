@@ -10,11 +10,11 @@
 #include "opencv2/opencv_modules.hpp"
 #include "opencv2/core.hpp"
 
-jobject vector_String_to_List(JNIEnv* env, std::vector<cv::String>& vs);
+jobject vector_String_to_List(JNIEnv* env, std::vector<ncvslideio::String>& vs);
 
-std::vector<cv::String> List_to_vector_String(JNIEnv* env, jobject list);
+std::vector<ncvslideio::String> List_to_vector_String(JNIEnv* env, jobject list);
 
-void Copy_vector_String_to_List(JNIEnv* env, std::vector<cv::String>& vs, jobject list);
+void Copy_vector_String_to_List(JNIEnv* env, std::vector<ncvslideio::String>& vs, jobject list);
 
 
 jobject vector_string_to_List(JNIEnv* env, std::vector<std::string>& vs);

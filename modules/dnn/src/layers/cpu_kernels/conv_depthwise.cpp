@@ -8,7 +8,7 @@
 #include "conv_depthwise.simd.hpp"
 #include "layers/cpu_kernels/conv_depthwise.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 void depthWiseBlockConv2D(const float* wptr,
                                  int kernel_h, int kernel_w,
@@ -456,4 +456,4 @@ void depthWiseBlockConv1D(const float* wptr,
 }
 
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace cv {
+namespace ncvslideio {
 namespace ml {
 
 class LrParams
@@ -109,15 +109,15 @@ bool LogisticRegressionImpl::train(const Ptr<TrainData>& trainData, int)
     CV_Assert( !_labels_i.empty() && !_data_i.empty());
     if(_labels_i.cols != 1)
     {
-        CV_Error( cv::Error::StsBadArg, "labels should be a column matrix" );
+        CV_Error( ncvslideio::Error::StsBadArg, "labels should be a column matrix" );
     }
     if(_data_i.type() != CV_32FC1 || _labels_i.type() != CV_32FC1)
     {
-        CV_Error( cv::Error::StsBadArg, "data and labels must be a floating point matrix" );
+        CV_Error( ncvslideio::Error::StsBadArg, "data and labels must be a floating point matrix" );
     }
     if(_labels_i.rows != _data_i.rows)
     {
-        CV_Error( cv::Error::StsBadArg, "number of rows in data and labels should be equal" );
+        CV_Error( ncvslideio::Error::StsBadArg, "number of rows in data and labels should be equal" );
     }
 
     // class labels
@@ -126,12 +126,12 @@ bool LogisticRegressionImpl::train(const Ptr<TrainData>& trainData, int)
     int num_classes = (int) this->forward_mapper.size();
     if(num_classes < 2)
     {
-        CV_Error( cv::Error::StsBadArg, "data should have at least 2 classes" );
+        CV_Error( ncvslideio::Error::StsBadArg, "data should have at least 2 classes" );
     }
 
     // add a column of ones to the data (bias/intercept term)
     Mat data_t;
-    hconcat( cv::Mat::ones( _data_i.rows, 1, CV_32F ), _data_i, data_t );
+    hconcat( ncvslideio::Mat::ones( _data_i.rows, 1, CV_32F ), _data_i, data_t );
 
     // coefficient matrix (zero-initialized)
     Mat thetas;
@@ -174,7 +174,7 @@ bool LogisticRegressionImpl::train(const Ptr<TrainData>& trainData, int)
     this->learnt_thetas = thetas.clone();
     if( cvIsNaN( (double)sum(this->learnt_thetas)[0] ) )
     {
-        CV_Error( cv::Error::StsBadArg, "check training parameters. Invalid training classifier" );
+        CV_Error( ncvslideio::Error::StsBadArg, "check training parameters. Invalid training classifier" );
     }
 
     // success
@@ -187,7 +187,7 @@ float LogisticRegressionImpl::predict(InputArray samples, OutputArray results, i
     // check if learnt_mats array is populated
     if(!this->isTrained())
     {
-        CV_Error( cv::Error::StsBadArg, "classifier should be trained first" );
+        CV_Error( ncvslideio::Error::StsBadArg, "classifier should be trained first" );
     }
 
     // coefficient matrix
@@ -206,12 +206,12 @@ float LogisticRegressionImpl::predict(InputArray samples, OutputArray results, i
     Mat data = samples.getMat();
     if(data.type() != CV_32F)
     {
-        CV_Error( cv::Error::StsBadArg, "data must be of floating type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "data must be of floating type" );
     }
 
     // add a column of ones to the data (bias/intercept term)
     Mat data_t;
-    hconcat( cv::Mat::ones( data.rows, 1, CV_32F ), data, data_t );
+    hconcat( ncvslideio::Mat::ones( data.rows, 1, CV_32F ), data, data_t );
     CV_Assert(data_t.cols == thetas.cols);
 
     // predict class labels for samples (handles binary and multiclass cases)
@@ -327,7 +327,7 @@ double LogisticRegressionImpl::compute_cost(const Mat& _data, const Mat& _labels
 
     if(cvIsNaN( cost ) == 1)
     {
-        CV_Error( cv::Error::StsBadArg, "check training parameters. Invalid training classifier" );
+        CV_Error( ncvslideio::Error::StsBadArg, "check training parameters. Invalid training classifier" );
     }
 
     return cost;
@@ -351,7 +351,7 @@ struct LogisticRegressionImpl_ComputeDradient_Impl : ParallelLoopBody
 
     }
 
-    void operator()(const cv::Range& r) const CV_OVERRIDE
+    void operator()(const ncvslideio::Range& r) const CV_OVERRIDE
     {
         const Mat& _data  = *data;
         const Mat &_theta = *theta;
@@ -388,7 +388,7 @@ void LogisticRegressionImpl::compute_gradient(const Mat& _data, const Mat& _labe
 
     //cout<<"for each training data entry"<<endl;
     LogisticRegressionImpl_ComputeDradient_Impl invoker(_data, _theta, pcal_a, _lambda, _gradient);
-    cv::parallel_for_(cv::Range(1, _gradient.rows), invoker);
+    ncvslideio::parallel_for_(ncvslideio::Range(1, _gradient.rows), invoker);
 }
 
 
@@ -398,12 +398,12 @@ Mat LogisticRegressionImpl::batch_gradient_descent(const Mat& _data, const Mat& 
     // implements batch gradient descent
     if(this->params.alpha<=0)
     {
-        CV_Error( cv::Error::StsBadArg, "check training parameters (learning rate) for the classifier" );
+        CV_Error( ncvslideio::Error::StsBadArg, "check training parameters (learning rate) for the classifier" );
     }
 
     if(this->params.num_iters <= 0)
     {
-        CV_Error( cv::Error::StsBadArg, "number of iterations cannot be zero or a negative number" );
+        CV_Error( ncvslideio::Error::StsBadArg, "number of iterations cannot be zero or a negative number" );
     }
 
     int llambda = 0;
@@ -439,12 +439,12 @@ Mat LogisticRegressionImpl::mini_batch_gradient_descent(const Mat& _data, const 
 
     if(this->params.mini_batch_size <= 0 || this->params.alpha == 0)
     {
-        CV_Error( cv::Error::StsBadArg, "check training parameters for the classifier" );
+        CV_Error( ncvslideio::Error::StsBadArg, "check training parameters for the classifier" );
     }
 
     if(this->params.num_iters <= 0)
     {
-        CV_Error( cv::Error::StsBadArg, "number of iterations cannot be zero or a negative number" );
+        CV_Error( ncvslideio::Error::StsBadArg, "number of iterations cannot be zero or a negative number" );
     }
 
     Mat theta_p = _init_theta.clone();
@@ -551,7 +551,7 @@ void LogisticRegressionImpl::write(FileStorage& fs) const
     // check if open
     if(fs.isOpened() == 0)
     {
-        CV_Error(cv::Error::StsBadArg,"file can't open. Check file path");
+        CV_Error(ncvslideio::Error::StsBadArg,"file can't open. Check file path");
     }
     writeFormat(fs);
     string desc = "Logistic Regression Classifier";
@@ -574,7 +574,7 @@ void LogisticRegressionImpl::read(const FileNode& fn)
     // check if empty
     if(fn.empty())
     {
-        CV_Error( cv::Error::StsBadArg, "empty FileNode object" );
+        CV_Error( ncvslideio::Error::StsBadArg, "empty FileNode object" );
     }
 
     this->params.alpha = (double)fn["alpha"];

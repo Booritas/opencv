@@ -125,7 +125,7 @@ struct AddOp : public BaseAddOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::add(src[0], src[1], dst, mask, dtype);
+        ncvslideio::add(src[0], src[1], dst, mask, dtype);
     }
 };
 
@@ -136,7 +136,7 @@ struct SubOp : public BaseAddOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::subtract(src[0], src[1], dst, mask, dtype);
+        ncvslideio::subtract(src[0], src[1], dst, mask, dtype);
     }
 };
 
@@ -147,7 +147,7 @@ struct AddSOp : public BaseAddOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::add(src[0], gamma, dst, mask, dtype);
+        ncvslideio::add(src[0], gamma, dst, mask, dtype);
     }
 };
 
@@ -158,7 +158,7 @@ struct SubRSOp : public BaseAddOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::subtract(gamma, src[0], dst, mask, dtype);
+        ncvslideio::subtract(gamma, src[0], dst, mask, dtype);
     }
 };
 
@@ -168,7 +168,7 @@ struct ScaleAddOp : public BaseAddOp
     ScaleAddOp() : BaseAddOp(2, FIX_BETA+FIX_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::scaleAdd(src[0], alpha, src[1], dst);
+        ncvslideio::scaleAdd(src[0], alpha, src[1], dst);
     }
     double getMaxErr(int depth)
     {
@@ -183,7 +183,7 @@ struct AddWeightedOp : public BaseAddOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::addWeighted(src[0], alpha, src[1], beta, gamma[0], dst, dtype);
+        ncvslideio::addWeighted(src[0], alpha, src[1], beta, gamma[0], dst, dtype);
     }
 };
 
@@ -200,7 +200,7 @@ struct MulOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::multiply(src[0], src[1], dst, alpha, dtype);
+        ncvslideio::multiply(src[0], src[1], dst, alpha, dtype);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -222,7 +222,7 @@ struct MulSOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::multiply(src[0], alpha, dst, /* scale */ 1.0, dtype);
+        ncvslideio::multiply(src[0], alpha, dst, /* scale */ 1.0, dtype);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -237,7 +237,7 @@ struct DivOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::divide(src[0], src[1], dst, alpha, dtype);
+        ncvslideio::divide(src[0], src[1], dst, alpha, dtype);
         if (flags & MIXED_TYPE)
         {
             // div by zero result is implementation-defined
@@ -259,7 +259,7 @@ struct RecipOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         int dtype = (flags & MIXED_TYPE) ? dst.type() : -1;
-        cv::divide(alpha, src[0], dst, dtype);
+        ncvslideio::divide(alpha, src[0], dst, dtype);
         if (flags & MIXED_TYPE)
         {
             // div by zero result is implementation-defined
@@ -307,11 +307,11 @@ struct LogicOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         if( opcode == '&' )
-            cv::bitwise_and(src[0], src[1], dst, mask);
+            ncvslideio::bitwise_and(src[0], src[1], dst, mask);
         else if( opcode == '|' )
-            cv::bitwise_or(src[0], src[1], dst, mask);
+            ncvslideio::bitwise_or(src[0], src[1], dst, mask);
         else
-            cv::bitwise_xor(src[0], src[1], dst, mask);
+            ncvslideio::bitwise_xor(src[0], src[1], dst, mask);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -338,13 +338,13 @@ struct LogicSOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         if( opcode == '&' )
-            cv::bitwise_and(src[0], gamma, dst, mask);
+            ncvslideio::bitwise_and(src[0], gamma, dst, mask);
         else if( opcode == '|' )
-            cv::bitwise_or(src[0], gamma, dst, mask);
+            ncvslideio::bitwise_or(src[0], gamma, dst, mask);
         else if( opcode == '^' )
-            cv::bitwise_xor(src[0], gamma, dst, mask);
+            ncvslideio::bitwise_xor(src[0], gamma, dst, mask);
         else
-            cv::bitwise_not(src[0], dst);
+            ncvslideio::bitwise_not(src[0], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -369,7 +369,7 @@ struct MinOp : public BaseElemWiseOp
     MinOp() : BaseElemWiseOp(2, FIX_ALPHA+FIX_BETA+FIX_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::min(src[0], src[1], dst);
+        ncvslideio::min(src[0], src[1], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -386,7 +386,7 @@ struct MaxOp : public BaseElemWiseOp
     MaxOp() : BaseElemWiseOp(2, FIX_ALPHA+FIX_BETA+FIX_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::max(src[0], src[1], dst);
+        ncvslideio::max(src[0], src[1], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -403,7 +403,7 @@ struct MinSOp : public BaseElemWiseOp
     MinSOp() : BaseElemWiseOp(1, FIX_ALPHA+FIX_BETA+REAL_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::min(src[0], gamma[0], dst);
+        ncvslideio::min(src[0], gamma[0], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -420,7 +420,7 @@ struct MaxSOp : public BaseElemWiseOp
     MaxSOp() : BaseElemWiseOp(1, FIX_ALPHA+FIX_BETA+REAL_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::max(src[0], gamma[0], dst);
+        ncvslideio::max(src[0], gamma[0], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -442,7 +442,7 @@ struct CmpOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::compare(src[0], src[1], dst, cmpop);
+        ncvslideio::compare(src[0], src[1], dst, cmpop);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -472,7 +472,7 @@ struct CmpSOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::compare(src[0], gamma[0], dst, cmpop);
+        ncvslideio::compare(src[0], gamma[0], dst, cmpop);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -618,7 +618,7 @@ static void inRange(const Mat& src, const Mat& lb, const Mat& rb, Mat& dst)
             inRange_((const double*)sptr, (const double*)aptr, (const double*)bptr, dptr, total, cn);
             break;
         default:
-            CV_Error(cv::Error::StsUnsupportedFormat, "");
+            CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
         }
     }
 }
@@ -667,7 +667,7 @@ static void inRangeS(const Mat& src, const Scalar& lb, const Scalar& rb, Mat& ds
             inRangeS_((const double*)sptr, lbuf.d, rbuf.d, dptr, total, cn);
             break;
         default:
-            CV_Error(cv::Error::StsUnsupportedFormat, "");
+            CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
         }
     }
 }
@@ -680,7 +680,7 @@ struct InRangeSOp : public BaseElemWiseOp
     InRangeSOp() : BaseElemWiseOp(1, FIX_ALPHA+FIX_BETA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::inRange(src[0], gamma, gamma1, dst);
+        ncvslideio::inRange(src[0], gamma, gamma1, dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -714,7 +714,7 @@ struct InRangeOp : public BaseElemWiseOp
         cvtest::min(src[1], src[2], lb);
         cvtest::max(src[1], src[2], rb);
 
-        cv::inRange(src[0], lb, rb, dst);
+        ncvslideio::inRange(src[0], lb, rb, dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -827,7 +827,7 @@ struct ConvertScaleAbsOp : public BaseElemWiseOp
     ConvertScaleAbsOp() : BaseElemWiseOp(1, FIX_BETA+REAL_GAMMA, 1, 1, Scalar::all(0)) {}
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::convertScaleAbs(src[0], dst, alpha, gamma[0]);
+        ncvslideio::convertScaleAbs(src[0], dst, alpha, gamma[0]);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -927,7 +927,7 @@ struct FlipOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::flip(src[0], dst, flipcode);
+        ncvslideio::flip(src[0], dst, flipcode);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -953,7 +953,7 @@ struct RotateOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::rotate(src[0], dst, rotatecode);
+        ncvslideio::rotate(src[0], dst, rotatecode);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -979,7 +979,7 @@ struct TransposeOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::transpose(src[0], dst);
+        ncvslideio::transpose(src[0], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -1000,7 +1000,7 @@ struct SetIdentityOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>&, Mat& dst, const Mat&)
     {
-        cv::setIdentity(dst, gamma);
+        ncvslideio::setIdentity(dst, gamma);
     }
     void refop(const vector<Mat>&, Mat& dst, const Mat&)
     {
@@ -1104,7 +1104,7 @@ struct ExpOp : public BaseElemWiseOp
     }
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
-        cv::exp(src[0], dst);
+        ncvslideio::exp(src[0], dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -1133,7 +1133,7 @@ struct LogOp : public BaseElemWiseOp
     {
         Mat temp;
         reference::exp(src[0], temp);
-        cv::log(temp, dst);
+        ncvslideio::log(temp, dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -1216,13 +1216,13 @@ struct CartToPolarToCartOp : public BaseElemWiseOp
     {
         Mat mag, angle, x, y;
 
-        cv::cartToPolar(src[0], src[1], mag, angle, angleInDegrees);
-        cv::polarToCart(mag, angle, x, y, angleInDegrees);
+        ncvslideio::cartToPolar(src[0], src[1], mag, angle, angleInDegrees);
+        ncvslideio::polarToCart(mag, angle, x, y, angleInDegrees);
 
         Mat msrc[] = {mag, angle, x, y};
         int pairs[] = {0, 0, 1, 1, 2, 2, 3, 3};
         dst.create(src[0].dims, src[0].size, CV_MAKETYPE(src[0].depth(), 4));
-        cv::mixChannels(msrc, 4, &dst, 1, pairs, 4);
+        ncvslideio::mixChannels(msrc, 4, &dst, 1, pairs, 4);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -1231,7 +1231,7 @@ struct CartToPolarToCartOp : public BaseElemWiseOp
         Mat msrc[] = {mag, angle, src[0], src[1]};
         int pairs[] = {0, 0, 1, 1, 2, 2, 3, 3};
         dst.create(src[0].dims, src[0].size, CV_MAKETYPE(src[0].depth(), 4));
-        cv::mixChannels(msrc, 4, &dst, 1, pairs, 4);
+        ncvslideio::mixChannels(msrc, 4, &dst, 1, pairs, 4);
     }
     void generateScalars(int, RNG& rng)
     {
@@ -1254,7 +1254,7 @@ struct MeanOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         dst.create(1, 1, CV_64FC4);
-        dst.at<Scalar>(0,0) = cv::mean(src[0], mask);
+        dst.at<Scalar>(0,0) = ncvslideio::mean(src[0], mask);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -1277,7 +1277,7 @@ struct SumOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat&)
     {
         dst.create(1, 1, CV_64FC4);
-        dst.at<Scalar>(0,0) = cv::sum(src[0]);
+        dst.at<Scalar>(0,0) = ncvslideio::sum(src[0]);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&)
     {
@@ -1306,7 +1306,7 @@ struct CountNonZeroOp : public BaseElemWiseOp
         if( !mask.empty() )
             temp.setTo(Scalar::all(0), mask);
         dst.create(1, 1, CV_32S);
-        dst.at<int>(0,0) = cv::countNonZero(temp);
+        dst.at<int>(0,0) = ncvslideio::countNonZero(temp);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -1337,7 +1337,7 @@ struct MeanStdDevOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         dst.create(1, 2, CV_64FC4);
-        cv::meanStdDev(src[0], dst.at<Scalar>(0,0), dst.at<Scalar>(0,1), mask);
+        ncvslideio::meanStdDev(src[0], dst.at<Scalar>(0,0), dst.at<Scalar>(0,1), mask);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -1395,8 +1395,8 @@ struct NormOp : public BaseElemWiseOp
     void op(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
         dst.create(1, 2, CV_64FC1);
-        dst.at<double>(0,0) = cv::norm(src[0], normType, mask);
-        dst.at<double>(0,1) = cv::norm(src[0], src[1], normType, mask);
+        dst.at<double>(0,0) = ncvslideio::norm(src[0], normType, mask);
+        dst.at<double>(0,1) = ncvslideio::norm(src[0], src[1], normType, mask);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
     {
@@ -1444,7 +1444,7 @@ struct MinMaxLocOp : public BaseElemWiseOp
         int ndims = src[0].dims;
         vector<int> minidx(ndims), maxidx(ndims);
         double minval=0, maxval=0;
-        cv::minMaxIdx(src[0], &minval, &maxval, &minidx[0], &maxidx[0], mask);
+        ncvslideio::minMaxIdx(src[0], &minval, &maxval, &minidx[0], &maxidx[0], mask);
         saveOutput(minidx, maxidx, minval, maxval, dst);
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat& mask)
@@ -1494,11 +1494,11 @@ struct reduceArgMinMaxOp : public BaseElemWiseOp
         const int axis_ = getAxis(inp);
         if (isMax)
         {
-            cv::reduceArgMax(inp, dst, axis_, isLast);
+            ncvslideio::reduceArgMax(inp, dst, axis_, isLast);
         }
         else
         {
-            cv::reduceArgMin(inp, dst, axis_, isLast);
+            ncvslideio::reduceArgMin(inp, dst, axis_, isLast);
         }
     }
     void refop(const vector<Mat>& src, Mat& dst, const Mat&) override
@@ -1769,7 +1769,7 @@ TEST(Core_ArithmMask, uninitialized)
                 {
                     sizes[k] = k < dims ? rng.uniform(1, 30) : 0;
                 }
-                SCOPED_TRACE(cv::format("iter=%d dims=%d depth=%d cn=%d type=%d op=%d depth1=%d dims=[%d; %d; %d]",
+                SCOPED_TRACE(ncvslideio::format("iter=%d dims=%d depth=%d cn=%d type=%d op=%d depth1=%d dims=[%d; %d; %d]",
                                          iter,   dims,   depth,   cn,   type,   op,   depth1, sizes[0], sizes[1], sizes[2]));
 
                 Mat a(dims, sizes, type), a1;
@@ -1789,34 +1789,34 @@ TEST(Core_ArithmMask, uninitialized)
                 a.convertTo(a1, depth1);
                 b.convertTo(b1, depth1);
                 // invert the mask
-                cv::compare(mask, 0, mask1, CMP_EQ);
+                ncvslideio::compare(mask, 0, mask1, CMP_EQ);
                 a1.setTo(0, mask1);
                 b1.setTo(0, mask1);
 
                 if( op == 0 )
                 {
-                    cv::add(a, b, c, mask);
-                    cv::add(a1, b1, d);
+                    ncvslideio::add(a, b, c, mask);
+                    ncvslideio::add(a1, b1, d);
                 }
                 else if( op == 1 )
                 {
-                    cv::subtract(a, b, c, mask);
-                    cv::subtract(a1, b1, d);
+                    ncvslideio::subtract(a, b, c, mask);
+                    ncvslideio::subtract(a1, b1, d);
                 }
                 else if( op == 2 )
                 {
-                    cv::bitwise_and(a, b, c, mask);
-                    cv::bitwise_and(a1, b1, d);
+                    ncvslideio::bitwise_and(a, b, c, mask);
+                    ncvslideio::bitwise_and(a1, b1, d);
                 }
                 else if( op == 3 )
                 {
-                    cv::bitwise_or(a, b, c, mask);
-                    cv::bitwise_or(a1, b1, d);
+                    ncvslideio::bitwise_or(a, b, c, mask);
+                    ncvslideio::bitwise_or(a1, b1, d);
                 }
                 else if( op == 4 )
                 {
-                    cv::bitwise_xor(a, b, c, mask);
-                    cv::bitwise_xor(a1, b1, d);
+                    ncvslideio::bitwise_xor(a, b, c, mask);
+                    ncvslideio::bitwise_xor(a1, b1, d);
                 }
                 Mat d1;
                 d.convertTo(d1, depth);
@@ -1834,30 +1834,30 @@ TEST(Core_ArithmMask, uninitialized)
 
 TEST(Multiply, FloatingPointRounding)
 {
-    cv::Mat src(1, 1, CV_8UC1, cv::Scalar::all(110)), dst;
-    cv::Scalar s(147.286359696927, 1, 1 ,1);
+    ncvslideio::Mat src(1, 1, CV_8UC1, ncvslideio::Scalar::all(110)), dst;
+    ncvslideio::Scalar s(147.286359696927, 1, 1 ,1);
 
-    cv::multiply(src, s, dst, 1, CV_16U);
+    ncvslideio::multiply(src, s, dst, 1, CV_16U);
     // with CV_32F this produce result 16202
     ASSERT_EQ(dst.at<ushort>(0,0), 16201);
 }
 
 TEST(Core_Add, AddToColumnWhen3Rows)
 {
-    cv::Mat m1 = (cv::Mat_<double>(3, 2) << 1, 2, 3, 4, 5, 6);
+    ncvslideio::Mat m1 = (ncvslideio::Mat_<double>(3, 2) << 1, 2, 3, 4, 5, 6);
     m1.col(1) += 10;
 
-    cv::Mat m2 = (cv::Mat_<double>(3, 2) << 1, 12, 3, 14, 5, 16);
+    ncvslideio::Mat m2 = (ncvslideio::Mat_<double>(3, 2) << 1, 12, 3, 14, 5, 16);
 
     ASSERT_EQ(0, countNonZero(m1 - m2));
 }
 
 TEST(Core_Add, AddToColumnWhen4Rows)
 {
-    cv::Mat m1 = (cv::Mat_<double>(4, 2) << 1, 2, 3, 4, 5, 6, 7, 8);
+    ncvslideio::Mat m1 = (ncvslideio::Mat_<double>(4, 2) << 1, 2, 3, 4, 5, 6, 7, 8);
     m1.col(1) += 10;
 
-    cv::Mat m2 = (cv::Mat_<double>(4, 2) << 1, 12, 3, 14, 5, 16, 7, 18);
+    ncvslideio::Mat m2 = (ncvslideio::Mat_<double>(4, 2) << 1, 12, 3, 14, 5, 16, 7, 18);
 
     ASSERT_EQ(0, countNonZero(m1 - m2));
 }
@@ -1881,20 +1881,20 @@ typedef testing::TestWithParam<Size> Mul1;
 TEST_P(Mul1, One)
 {
     Size size = GetParam();
-    cv::Mat src(size, CV_32FC1, cv::Scalar::all(2)), dst,
-            ref_dst(size, CV_32FC1, cv::Scalar::all(6));
+    ncvslideio::Mat src(size, CV_32FC1, ncvslideio::Scalar::all(2)), dst,
+            ref_dst(size, CV_32FC1, ncvslideio::Scalar::all(6));
 
-    cv::multiply(3, src, dst);
+    ncvslideio::multiply(3, src, dst);
 
-    ASSERT_EQ(0, cvtest::norm(dst, ref_dst, cv::NORM_INF));
+    ASSERT_EQ(0, cvtest::norm(dst, ref_dst, ncvslideio::NORM_INF));
 }
 
 INSTANTIATE_TEST_CASE_P(Arithm, Mul1, testing::Values(Size(2, 2), Size(1, 1)));
 
-class SubtractOutputMatNotEmpty : public testing::TestWithParam< tuple<cv::Size, perf::MatType, perf::MatDepth, bool> >
+class SubtractOutputMatNotEmpty : public testing::TestWithParam< tuple<ncvslideio::Size, perf::MatType, perf::MatDepth, bool> >
 {
 public:
-    cv::Size size;
+    ncvslideio::Size size;
     int src_type;
     int dst_depth;
     bool fixed;
@@ -1910,19 +1910,19 @@ public:
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Mat)
 {
-    cv::Mat src1(size, src_type, cv::Scalar::all(16));
-    cv::Mat src2(size, src_type, cv::Scalar::all(16));
+    ncvslideio::Mat src1(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat src2(size, src_type, ncvslideio::Scalar::all(16));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(src1, src2, dst, cv::noArray(), dst_depth);
+        ncvslideio::subtract(src1, src2, dst, ncvslideio::noArray(), dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
-        cv::subtract(src1, src2, fixed_dst, cv::noArray(), dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
+        ncvslideio::subtract(src1, src2, fixed_dst, ncvslideio::noArray(), dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -1930,25 +1930,25 @@ TEST_P(SubtractOutputMatNotEmpty, Mat_Mat)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src1.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src1.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Mat_WithMask)
 {
-    cv::Mat src1(size, src_type, cv::Scalar::all(16));
-    cv::Mat src2(size, src_type, cv::Scalar::all(16));
-    cv::Mat mask(size, CV_8UC1, cv::Scalar::all(255));
+    ncvslideio::Mat src1(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat src2(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat mask(size, CV_8UC1, ncvslideio::Scalar::all(255));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(src1, src2, dst, mask, dst_depth);
+        ncvslideio::subtract(src1, src2, dst, mask, dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
-        cv::subtract(src1, src2, fixed_dst, mask, dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
+        ncvslideio::subtract(src1, src2, fixed_dst, mask, dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -1956,36 +1956,36 @@ TEST_P(SubtractOutputMatNotEmpty, Mat_Mat_WithMask)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src1.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src1.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Mat_Expr)
 {
-    cv::Mat src1(size, src_type, cv::Scalar::all(16));
-    cv::Mat src2(size, src_type, cv::Scalar::all(16));
+    ncvslideio::Mat src1(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat src2(size, src_type, ncvslideio::Scalar::all(16));
 
-    cv::Mat dst = src1 - src2;
+    ncvslideio::Mat dst = src1 - src2;
 
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src1.size(), dst.size());
     ASSERT_EQ(src1.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Scalar)
 {
-    cv::Mat src(size, src_type, cv::Scalar::all(16));
+    ncvslideio::Mat src(size, src_type, ncvslideio::Scalar::all(16));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(src, cv::Scalar::all(16), dst, cv::noArray(), dst_depth);
+        ncvslideio::subtract(src, ncvslideio::Scalar::all(16), dst, ncvslideio::noArray(), dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
-        cv::subtract(src, cv::Scalar::all(16), fixed_dst, cv::noArray(), dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
+        ncvslideio::subtract(src, ncvslideio::Scalar::all(16), fixed_dst, ncvslideio::noArray(), dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -1993,24 +1993,24 @@ TEST_P(SubtractOutputMatNotEmpty, Mat_Scalar)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Scalar_WithMask)
 {
-    cv::Mat src(size, src_type, cv::Scalar::all(16));
-    cv::Mat mask(size, CV_8UC1, cv::Scalar::all(255));
+    ncvslideio::Mat src(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat mask(size, CV_8UC1, ncvslideio::Scalar::all(255));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(src, cv::Scalar::all(16), dst, mask, dst_depth);
+        ncvslideio::subtract(src, ncvslideio::Scalar::all(16), dst, mask, dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
-        cv::subtract(src, cv::Scalar::all(16), fixed_dst, mask, dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
+        ncvslideio::subtract(src, ncvslideio::Scalar::all(16), fixed_dst, mask, dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -2018,23 +2018,23 @@ TEST_P(SubtractOutputMatNotEmpty, Mat_Scalar_WithMask)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Scalar_Mat)
 {
-    cv::Mat src(size, src_type, cv::Scalar::all(16));
+    ncvslideio::Mat src(size, src_type, ncvslideio::Scalar::all(16));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(cv::Scalar::all(16), src, dst, cv::noArray(), dst_depth);
+        ncvslideio::subtract(ncvslideio::Scalar::all(16), src, dst, ncvslideio::noArray(), dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
-        cv::subtract(cv::Scalar::all(16), src, fixed_dst, cv::noArray(), dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
+        ncvslideio::subtract(ncvslideio::Scalar::all(16), src, fixed_dst, ncvslideio::noArray(), dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -2042,24 +2042,24 @@ TEST_P(SubtractOutputMatNotEmpty, Scalar_Mat)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Scalar_Mat_WithMask)
 {
-    cv::Mat src(size, src_type, cv::Scalar::all(16));
-    cv::Mat mask(size, CV_8UC1, cv::Scalar::all(255));
+    ncvslideio::Mat src(size, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat mask(size, CV_8UC1, ncvslideio::Scalar::all(255));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(cv::Scalar::all(16), src, dst, mask, dst_depth);
+        ncvslideio::subtract(ncvslideio::Scalar::all(16), src, dst, mask, dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
-        cv::subtract(cv::Scalar::all(16), src, fixed_dst, mask, dst_depth);
+        const ncvslideio::Mat fixed_dst(size, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src.channels()));
+        ncvslideio::subtract(ncvslideio::Scalar::all(16), src, fixed_dst, mask, dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -2067,26 +2067,26 @@ TEST_P(SubtractOutputMatNotEmpty, Scalar_Mat_WithMask)
     ASSERT_FALSE(dst.empty());
     ASSERT_EQ(src.size(), dst.size());
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 TEST_P(SubtractOutputMatNotEmpty, Mat_Mat_3d)
 {
     int dims[] = {5, size.height, size.width};
 
-    cv::Mat src1(3, dims, src_type, cv::Scalar::all(16));
-    cv::Mat src2(3, dims, src_type, cv::Scalar::all(16));
+    ncvslideio::Mat src1(3, dims, src_type, ncvslideio::Scalar::all(16));
+    ncvslideio::Mat src2(3, dims, src_type, ncvslideio::Scalar::all(16));
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
 
     if (!fixed)
     {
-        cv::subtract(src1, src2, dst, cv::noArray(), dst_depth);
+        ncvslideio::subtract(src1, src2, dst, ncvslideio::noArray(), dst_depth);
     }
     else
     {
-        const cv::Mat fixed_dst(3, dims, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
-        cv::subtract(src1, src2, fixed_dst, cv::noArray(), dst_depth);
+        const ncvslideio::Mat fixed_dst(3, dims, CV_MAKE_TYPE((dst_depth > 0 ? dst_depth : CV_16S), src1.channels()));
+        ncvslideio::subtract(src1, src2, fixed_dst, ncvslideio::noArray(), dst_depth);
         dst = fixed_dst;
         dst_depth = fixed_dst.depth();
     }
@@ -2095,11 +2095,11 @@ TEST_P(SubtractOutputMatNotEmpty, Mat_Mat_3d)
     ASSERT_EQ(src1.dims, dst.dims);
     ASSERT_EQ(src1.size, dst.size);
     ASSERT_EQ(dst_depth > 0 ? dst_depth : src1.depth(), dst.depth());
-    ASSERT_EQ(0, cv::countNonZero(dst.reshape(1)));
+    ASSERT_EQ(0, ncvslideio::countNonZero(dst.reshape(1)));
 }
 
 INSTANTIATE_TEST_CASE_P(Arithm, SubtractOutputMatNotEmpty, testing::Combine(
-    testing::Values(cv::Size(16, 16), cv::Size(13, 13), cv::Size(16, 13), cv::Size(13, 16)),
+    testing::Values(ncvslideio::Size(16, 16), ncvslideio::Size(13, 13), ncvslideio::Size(16, 13), ncvslideio::Size(13, 16)),
     testing::Values(perf::MatType(CV_8UC1), CV_8UC3, CV_8UC4, CV_16SC1, CV_16SC3),
     testing::Values(-1, CV_16S, CV_32S, CV_32F),
     testing::Bool()));
@@ -2166,7 +2166,7 @@ TEST(Core_BoolVector, support)
         nz += (int)test[i];
     }
     ASSERT_EQ( nz, countNonZero(test) );
-    ASSERT_FLOAT_EQ((float)nz/n, (float)(cv::mean(test)[0]));
+    ASSERT_FLOAT_EQ((float)nz/n, (float)(ncvslideio::mean(test)[0]));
 }
 
 TEST(MinMaxLoc, Mat_UcharMax_Without_Loc)
@@ -2237,37 +2237,37 @@ TEST(Normalize, regression_6125)
 
 TEST(MinMaxLoc, regression_4955_nans)
 {
-    cv::Mat one_mat(2, 2, CV_32F, cv::Scalar(1));
-    cv::minMaxLoc(one_mat, NULL, NULL, NULL, NULL);
+    ncvslideio::Mat one_mat(2, 2, CV_32F, ncvslideio::Scalar(1));
+    ncvslideio::minMaxLoc(one_mat, NULL, NULL, NULL, NULL);
 
-    cv::Mat nan_mat(2, 2, CV_32F, cv::Scalar(std::numeric_limits<float>::quiet_NaN()));
-    cv::minMaxLoc(nan_mat, NULL, NULL, NULL, NULL);
+    ncvslideio::Mat nan_mat(2, 2, CV_32F, ncvslideio::Scalar(std::numeric_limits<float>::quiet_NaN()));
+    ncvslideio::minMaxLoc(nan_mat, NULL, NULL, NULL, NULL);
 }
 
 TEST(Subtract, scalarc1_matc3)
 {
     int scalar = 255;
-    cv::Mat srcImage(5, 5, CV_8UC3, cv::Scalar::all(5)), destImage;
-    cv::subtract(scalar, srcImage, destImage);
+    ncvslideio::Mat srcImage(5, 5, CV_8UC3, ncvslideio::Scalar::all(5)), destImage;
+    ncvslideio::subtract(scalar, srcImage, destImage);
 
-    ASSERT_EQ(0, cv::norm(cv::Mat(5, 5, CV_8UC3, cv::Scalar::all(250)), destImage, cv::NORM_INF));
+    ASSERT_EQ(0, ncvslideio::norm(ncvslideio::Mat(5, 5, CV_8UC3, ncvslideio::Scalar::all(250)), destImage, ncvslideio::NORM_INF));
 }
 
 TEST(Subtract, scalarc4_matc4)
 {
-    cv::Scalar sc(255, 255, 255, 255);
-    cv::Mat srcImage(5, 5, CV_8UC4, cv::Scalar::all(5)), destImage;
-    cv::subtract(sc, srcImage, destImage);
+    ncvslideio::Scalar sc(255, 255, 255, 255);
+    ncvslideio::Mat srcImage(5, 5, CV_8UC4, ncvslideio::Scalar::all(5)), destImage;
+    ncvslideio::subtract(sc, srcImage, destImage);
 
-    ASSERT_EQ(0, cv::norm(cv::Mat(5, 5, CV_8UC4, cv::Scalar::all(250)), destImage, cv::NORM_INF));
+    ASSERT_EQ(0, ncvslideio::norm(ncvslideio::Mat(5, 5, CV_8UC4, ncvslideio::Scalar::all(250)), destImage, ncvslideio::NORM_INF));
 }
 
 TEST(Compare, empty)
 {
-    cv::Mat temp, dst1, dst2;
-    EXPECT_NO_THROW(cv::compare(temp, temp, dst1, cv::CMP_EQ));
+    ncvslideio::Mat temp, dst1, dst2;
+    EXPECT_NO_THROW(ncvslideio::compare(temp, temp, dst1, ncvslideio::CMP_EQ));
     EXPECT_TRUE(dst1.empty());
-    EXPECT_THROW(dst2 = temp > 5, cv::Exception);
+    EXPECT_THROW(dst2 = temp > 5, ncvslideio::Exception);
 }
 
 TEST(Compare, regression_8999)
@@ -2275,15 +2275,15 @@ TEST(Compare, regression_8999)
     Mat_<double> A(4,1); A << 1, 3, 2, 4;
     Mat_<double> B(1,1); B << 2;
     Mat C;
-    EXPECT_THROW(cv::compare(A, B, C, CMP_LT), cv::Exception);
+    EXPECT_THROW(ncvslideio::compare(A, B, C, CMP_LT), ncvslideio::Exception);
 }
 
 TEST(Compare, regression_16F_do_not_crash)
 {
-    cv::Mat mat1(2, 2, CV_16F, cv::Scalar(1));
-    cv::Mat mat2(2, 2, CV_16F, cv::Scalar(2));
-    cv::Mat dst;
-    EXPECT_THROW(cv::compare(mat1, mat2, dst, cv::CMP_EQ), cv::Exception);
+    ncvslideio::Mat mat1(2, 2, CV_16F, ncvslideio::Scalar(1));
+    ncvslideio::Mat mat2(2, 2, CV_16F, ncvslideio::Scalar(2));
+    ncvslideio::Mat dst;
+    EXPECT_THROW(ncvslideio::compare(mat1, mat2, dst, ncvslideio::CMP_EQ), ncvslideio::Exception);
 }
 
 
@@ -2307,7 +2307,7 @@ TEST(Core_minMaxIdx, regression_9207_1)
     Mat src(Size(cols, rows), CV_8UC1, src_);
     double minVal = -0.0, maxVal = -0.0;
     int minIdx[2] = { -2, -2 }, maxIdx[2] = { -2, -2 };
-    cv::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx, mask);
+    ncvslideio::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx, mask);
     EXPECT_EQ(0, minIdx[0]);
     EXPECT_EQ(0, minIdx[1]);
     EXPECT_EQ(0, maxIdx[0]);
@@ -2360,7 +2360,7 @@ TEST_P(TransposeND, basic)
     do
     {
         Mat out;
-        cv::transposeND(inp, order, out);
+        ncvslideio::transposeND(inp, order, out);
         std::vector<int> id(order.size());
         for (size_t i = 0; i < inp.total(); ++i)
         {
@@ -2428,7 +2428,7 @@ TEST_P(FlipND, basic)
     {
         int axis = axes[i];
         Mat out;
-        cv::flipND(inp, out, axis);
+        ncvslideio::flipND(inp, out, axis);
         // check values
         std::vector<int> indices(ndim, 0);
         for (size_t j = 0; j < inp.total(); ++j)
@@ -2625,7 +2625,7 @@ TEST(Core_minMaxIdx, regression_9207_2)
     Mat src(Size(cols, rows), CV_8UC1, src_);
     double minVal = -0.0, maxVal = -0.0;
     int minIdx[2] = { -2, -2 }, maxIdx[2] = { -2, -2 };
-    cv::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx, mask);
+    ncvslideio::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx, mask);
     EXPECT_EQ(0, minIdx[0]);
     EXPECT_EQ(14, minIdx[1]);
     EXPECT_EQ(0, maxIdx[0]);
@@ -2635,7 +2635,7 @@ TEST(Core_minMaxIdx, regression_9207_2)
 TEST(Core_MinMaxIdx, MatND)
 {
     const int shape[3] = {5,5,3};
-    cv::Mat src = cv::Mat(3, shape, CV_8UC1);
+    ncvslideio::Mat src = ncvslideio::Mat(3, shape, CV_8UC1);
     src.setTo(1);
     src.data[1] = 0;
     src.data[5*5*3-2] = 2;
@@ -2644,7 +2644,7 @@ TEST(Core_MinMaxIdx, MatND)
     int maxIdx[3];
     double minVal, maxVal;
 
-    cv::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx);
+    ncvslideio::minMaxIdx(src, &minVal, &maxVal, minIdx, maxIdx);
 
     EXPECT_EQ(0, minVal);
     EXPECT_EQ(2, maxVal);
@@ -2717,18 +2717,18 @@ TEST(Core_Norm, IPP_regression_NORM_L1_16UC3_small)
 };
     Mat mask(sz, CV_8UC1, mask_);
 
-    EXPECT_EQ((double)9*4*cn, cv::norm(a, b, NORM_L1)); // without mask, IPP works well
-    EXPECT_EQ((double)20*cn, cv::norm(a, b, NORM_L1, mask));
+    EXPECT_EQ((double)9*4*cn, ncvslideio::norm(a, b, NORM_L1)); // without mask, IPP works well
+    EXPECT_EQ((double)20*cn, ncvslideio::norm(a, b, NORM_L1, mask));
 }
 
 TEST(Core_Norm, NORM_L2_8UC4)
 {
     // Tests there is no integer overflow in norm computation for multiple channels.
     const int kSide = 100;
-    cv::Mat4b a(kSide, kSide, cv::Scalar(255, 255, 255, 255));
-    cv::Mat4b b = cv::Mat4b::zeros(kSide, kSide);
+    ncvslideio::Mat4b a(kSide, kSide, ncvslideio::Scalar(255, 255, 255, 255));
+    ncvslideio::Mat4b b = ncvslideio::Mat4b::zeros(kSide, kSide);
     const double kNorm = 2.*kSide*255.;
-    EXPECT_EQ(kNorm, cv::norm(a, b, NORM_L2));
+    EXPECT_EQ(kNorm, ncvslideio::norm(a, b, NORM_L2));
 }
 
 TEST(Core_ConvertTo, regression_12121)
@@ -2809,8 +2809,8 @@ TEST(Core_MeanStdDev, regression_multichannel)
         Mat ref_sd(8, 1, CV_64FC1, ref_buf + 8);
         Mat dst_m, dst_sd;
         meanStdDev(src, dst_m, dst_sd);
-        EXPECT_EQ(0, cv::norm(dst_m, ref_m, NORM_L1));
-        EXPECT_EQ(0, cv::norm(dst_sd, ref_sd, NORM_L1));
+        EXPECT_EQ(0, ncvslideio::norm(dst_m, ref_m, NORM_L1));
+        EXPECT_EQ(0, ncvslideio::norm(dst_sd, ref_sd, NORM_L1));
     }
 }
 
@@ -2932,14 +2932,14 @@ void testDivide(bool isUMat, double scale, bool largeSize, bool tailProcessing, 
     Mat dst;
     if (!isUMat)
     {
-        cv::divide(src1, src2, dst, scale);
+        ncvslideio::divide(src1, src2, dst, scale);
     }
     else
     {
         UMat usrc1, usrc2, udst;
         src1.copyTo(usrc1);
         src2.copyTo(usrc2);
-        cv::divide(usrc1, usrc2, udst, scale);
+        ncvslideio::divide(usrc1, usrc2, udst, scale);
         udst.copyTo(dst);
     }
 
@@ -3005,13 +3005,13 @@ TEST(Core_MinMaxIdx, rows_overflow)
         randu(m, -100, 100);
         double minVal = 0, maxVal = 0;
         int minIdx[CV_MAX_DIM] = { 0 }, maxIdx[CV_MAX_DIM] = { 0 };
-        cv::minMaxIdx(m, &minVal, &maxVal, minIdx, maxIdx);
+        ncvslideio::minMaxIdx(m, &minVal, &maxVal, minIdx, maxIdx);
 
         double minVal0 = 0, maxVal0 = 0;
         int minIdx0[CV_MAX_DIM] = { 0 }, maxIdx0[CV_MAX_DIM] = { 0 };
-        cv::ipp::setUseIPP(false);
-        cv::minMaxIdx(m, &minVal0, &maxVal0, minIdx0, maxIdx0);
-        cv::ipp::setUseIPP(true);
+        ncvslideio::ipp::setUseIPP(false);
+        ncvslideio::minMaxIdx(m, &minVal0, &maxVal0, minIdx0, maxIdx0);
+        ncvslideio::ipp::setUseIPP(true);
 
         EXPECT_FALSE(fabs(minVal0 - minVal) > 1e-6 || fabs(maxVal0 - maxVal) > 1e-6) << "NxM=" << N << "x" << M <<
             "    min=" << minVal0 << " vs " <<  minVal <<
@@ -3045,11 +3045,11 @@ PARAM_TEST_CASE(Core_CartPolar_reverse, int, bool)
 TEST_P(Core_CartPolar_reverse, reverse)
 {
     const int type = CV_MAKETYPE(depth, 1);
-    cv::Mat A[2] = {cv::Mat(10, 10, type), cv::Mat(10, 10, type)};
-    cv::Mat B[2], C[2];
-    cv::UMat uA[2];
-    cv::UMat uB[2];
-    cv::UMat uC[2];
+    ncvslideio::Mat A[2] = {ncvslideio::Mat(10, 10, type), ncvslideio::Mat(10, 10, type)};
+    ncvslideio::Mat B[2], C[2];
+    ncvslideio::UMat uA[2];
+    ncvslideio::UMat uB[2];
+    ncvslideio::UMat uC[2];
 
     for(int i = 0; i < 2; ++i)
     {
@@ -3058,8 +3058,8 @@ TEST_P(Core_CartPolar_reverse, reverse)
     }
 
     // Reverse
-    cv::cartToPolar(A[0], A[1], B[0], B[1], angleInDegrees);
-    cv::polarToCart(B[0], B[1], C[0], C[1], angleInDegrees);
+    ncvslideio::cartToPolar(A[0], A[1], B[0], B[1], angleInDegrees);
+    ncvslideio::polarToCart(B[0], B[1], C[0], C[1], angleInDegrees);
     EXPECT_MAT_NEAR(A[0], C[0], 2);
     EXPECT_MAT_NEAR(A[1], C[1], 2);
 }
@@ -3086,11 +3086,11 @@ PARAM_TEST_CASE(Core_CartToPolar_inplace, int, bool)
 TEST_P(Core_CartToPolar_inplace, inplace)
 {
     const int type = CV_MAKETYPE(depth, 1);
-    cv::Mat A[2] = {cv::Mat(10, 10, type), cv::Mat(10, 10, type)};
-    cv::Mat B[2], C[2];
-    cv::UMat uA[2];
-    cv::UMat uB[2];
-    cv::UMat uC[2];
+    ncvslideio::Mat A[2] = {ncvslideio::Mat(10, 10, type), ncvslideio::Mat(10, 10, type)};
+    ncvslideio::Mat B[2], C[2];
+    ncvslideio::UMat uA[2];
+    ncvslideio::UMat uB[2];
+    ncvslideio::UMat uC[2];
 
     for(int i = 0; i < 2; ++i)
     {
@@ -3101,32 +3101,32 @@ TEST_P(Core_CartToPolar_inplace, inplace)
     // Inplace x<->mag y<->angle
     for(int i = 0; i < 2; ++i)
         A[i].copyTo(B[i]);
-    cv::cartToPolar(A[0], A[1], C[0], C[1], angleInDegrees);
-    cv::cartToPolar(B[0], B[1], B[0], B[1], angleInDegrees);
+    ncvslideio::cartToPolar(A[0], A[1], C[0], C[1], angleInDegrees);
+    ncvslideio::cartToPolar(B[0], B[1], B[0], B[1], angleInDegrees);
     EXPECT_MAT_NEAR(C[0], B[0], 2);
     EXPECT_MAT_NEAR(C[1], B[1], 2);
 
     // Inplace x<->angle y<->mag
     for(int i = 0; i < 2; ++i)
         A[i].copyTo(B[i]);
-    cv::cartToPolar(A[0], A[1], C[0], C[1], angleInDegrees);
-    cv::cartToPolar(B[0], B[1], B[1], B[0], angleInDegrees);
+    ncvslideio::cartToPolar(A[0], A[1], C[0], C[1], angleInDegrees);
+    ncvslideio::cartToPolar(B[0], B[1], B[1], B[0], angleInDegrees);
     EXPECT_MAT_NEAR(C[0], B[1], 2);
     EXPECT_MAT_NEAR(C[1], B[0], 2);
 
     // Inplace OCL x<->mag y<->angle
     for(int i = 0; i < 2; ++i)
         uA[i].copyTo(uB[i]);
-    cv::cartToPolar(uA[0], uA[1], uC[0], uC[1], angleInDegrees);
-    cv::cartToPolar(uB[0], uB[1], uB[0], uB[1], angleInDegrees);
+    ncvslideio::cartToPolar(uA[0], uA[1], uC[0], uC[1], angleInDegrees);
+    ncvslideio::cartToPolar(uB[0], uB[1], uB[0], uB[1], angleInDegrees);
     EXPECT_MAT_NEAR(uC[0], uB[0], 2);
     EXPECT_MAT_NEAR(uC[1], uB[1], 2);
 
     // Inplace OCL x<->angle y<->mag
     for(int i = 0; i < 2; ++i)
         uA[i].copyTo(uB[i]);
-    cv::cartToPolar(uA[0], uA[1], uC[0], uC[1], angleInDegrees);
-    cv::cartToPolar(uB[0], uB[1], uB[1], uB[0], angleInDegrees);
+    ncvslideio::cartToPolar(uA[0], uA[1], uC[0], uC[1], angleInDegrees);
+    ncvslideio::cartToPolar(uB[0], uB[1], uB[1], uB[0], angleInDegrees);
     EXPECT_MAT_NEAR(uC[0], uB[1], 2);
     EXPECT_MAT_NEAR(uC[1], uB[0], 2);
 }
@@ -3155,11 +3155,11 @@ PARAM_TEST_CASE(Core_PolarToCart_inplace, int, bool, bool)
 TEST_P(Core_PolarToCart_inplace, inplace)
 {
     const int type = CV_MAKETYPE(depth, 1);
-    cv::Mat A[2] = {cv::Mat(10, 10, type), cv::Mat(10, 10, type)};
-    cv::Mat B[2], C[2];
-    cv::UMat uA[2];
-    cv::UMat uB[2];
-    cv::UMat uC[2];
+    ncvslideio::Mat A[2] = {ncvslideio::Mat(10, 10, type), ncvslideio::Mat(10, 10, type)};
+    ncvslideio::Mat B[2], C[2];
+    ncvslideio::UMat uA[2];
+    ncvslideio::UMat uB[2];
+    ncvslideio::UMat uC[2];
 
     for(int i = 0; i < 2; ++i)
     {
@@ -3170,32 +3170,32 @@ TEST_P(Core_PolarToCart_inplace, inplace)
     // Inplace OCL x<->mag y<->angle
     for(int i = 0; i < 2; ++i)
         A[i].copyTo(B[i]);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : A[0], A[1], C[0], C[1], angleInDegrees);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : B[0], B[1], B[0], B[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : A[0], A[1], C[0], C[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : B[0], B[1], B[0], B[1], angleInDegrees);
     EXPECT_MAT_NEAR(C[0], B[0], 2);
     EXPECT_MAT_NEAR(C[1], B[1], 2);
 
     // Inplace OCL x<->angle y<->mag
     for(int i = 0; i < 2; ++i)
         A[i].copyTo(B[i]);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : A[0], A[1], C[0], C[1], angleInDegrees);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : B[0], B[1], B[1], B[0], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : A[0], A[1], C[0], C[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : B[0], B[1], B[1], B[0], angleInDegrees);
     EXPECT_MAT_NEAR(C[0], B[1], 2);
     EXPECT_MAT_NEAR(C[1], B[0], 2);
 
     // Inplace OCL x<->mag y<->angle
     for(int i = 0; i < 2; ++i)
         uA[i].copyTo(uB[i]);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : uA[0], uA[1], uC[0], uC[1], angleInDegrees);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : uB[0], uB[1], uB[0], uB[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : uA[0], uA[1], uC[0], uC[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : uB[0], uB[1], uB[0], uB[1], angleInDegrees);
     EXPECT_MAT_NEAR(uC[0], uB[0], 2);
     EXPECT_MAT_NEAR(uC[1], uB[1], 2);
 
     // Inplace OCL x<->angle y<->mag
     for(int i = 0; i < 2; ++i)
         uA[i].copyTo(uB[i]);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : uA[0], uA[1], uC[0], uC[1], angleInDegrees);
-    cv::polarToCart(implicitMagnitude ? cv::noArray() : uB[0], uB[1], uB[1], uB[0], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : uA[0], uA[1], uC[0], uC[1], angleInDegrees);
+    ncvslideio::polarToCart(implicitMagnitude ? ncvslideio::noArray() : uB[0], uB[1], uB[1], uB[0], angleInDegrees);
     EXPECT_MAT_NEAR(uC[0], uB[1], 2);
     EXPECT_MAT_NEAR(uC[1], uB[0], 2);
 }
@@ -3213,9 +3213,9 @@ CV_ENUM(LutMatType, CV_8U, CV_16U, CV_16F, CV_32S, CV_32F, CV_64F)
 struct Core_LUT: public testing::TestWithParam<LutMatType>
 {
     template<typename T, int ch>
-    cv::Mat referenceWithType(cv::Mat input, cv::Mat table)
+    ncvslideio::Mat referenceWithType(ncvslideio::Mat input, ncvslideio::Mat table)
     {
-        cv::Mat ref(input.size(), CV_MAKE_TYPE(table.type(), ch));
+        ncvslideio::Mat ref(input.size(), CV_MAKE_TYPE(table.type(), ch));
         for (int i = 0; i < input.rows; i++)
         {
             for (int j = 0; j < input.cols; j++)
@@ -3239,7 +3239,7 @@ struct Core_LUT: public testing::TestWithParam<LutMatType>
     }
 
     template<int ch = 1>
-    cv::Mat reference(cv::Mat input, cv::Mat table)
+    ncvslideio::Mat reference(ncvslideio::Mat input, ncvslideio::Mat table)
     {
         if (table.type() == CV_8U)
         {
@@ -3266,42 +3266,42 @@ struct Core_LUT: public testing::TestWithParam<LutMatType>
             return referenceWithType<double, ch>(input, table);
         }
 
-        return cv::Mat();
+        return ncvslideio::Mat();
     }
 };
 
 TEST_P(Core_LUT, accuracy)
 {
     int type = GetParam();
-    cv::Mat input(117, 113, CV_8UC1);
+    ncvslideio::Mat input(117, 113, CV_8UC1);
     randu(input, 0, 256);
 
-    cv::Mat table(1, 256, CV_MAKE_TYPE(type, 1));
+    ncvslideio::Mat table(1, 256, CV_MAKE_TYPE(type, 1));
     randu(table, 0, 127);
 
-    cv::Mat output;
-    cv::LUT(input, table, output);
+    ncvslideio::Mat output;
+    ncvslideio::LUT(input, table, output);
 
-    cv::Mat gt = reference(input, table);
+    ncvslideio::Mat gt = reference(input, table);
 
-    ASSERT_EQ(0, cv::norm(output, gt, cv::NORM_INF));
+    ASSERT_EQ(0, ncvslideio::norm(output, gt, ncvslideio::NORM_INF));
 }
 
 TEST_P(Core_LUT, accuracy_multi)
 {
     int type = (int)GetParam();
-    cv::Mat input(117, 113, CV_8UC3);
+    ncvslideio::Mat input(117, 113, CV_8UC3);
     randu(input, 0, 256);
 
-    cv::Mat table(1, 256, CV_MAKE_TYPE(type, 1));
+    ncvslideio::Mat table(1, 256, CV_MAKE_TYPE(type, 1));
     randu(table, 0, 127);
 
-    cv::Mat output;
-    cv::LUT(input, table, output);
+    ncvslideio::Mat output;
+    ncvslideio::LUT(input, table, output);
 
-    cv::Mat gt = reference<3>(input, table);
+    ncvslideio::Mat gt = reference<3>(input, table);
 
-    ASSERT_EQ(0, cv::norm(output, gt, cv::NORM_INF));
+    ASSERT_EQ(0, ncvslideio::norm(output, gt, ncvslideio::NORM_INF));
 }
 
 

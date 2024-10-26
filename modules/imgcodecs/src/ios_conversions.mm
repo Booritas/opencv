@@ -45,11 +45,11 @@
 #import <UIKit/UIKit.h>
 #include "apple_conversions.h"
 
-CV_EXPORTS UIImage* MatToUIImage(const cv::Mat& image);
-CV_EXPORTS void UIImageToMat(const UIImage* image, cv::Mat& m, bool alphaExist);
+CV_EXPORTS UIImage* MatToUIImage(const ncvslideio::Mat& image);
+CV_EXPORTS void UIImageToMat(const UIImage* image, ncvslideio::Mat& m, bool alphaExist);
 
-UIImage* MatToUIImage(const cv::Mat& image) {
-    // Creating CGImage from cv::Mat
+UIImage* MatToUIImage(const ncvslideio::Mat& image) {
+    // Creating CGImage from ncvslideio::Mat
     CGImageRef imageRef = MatToCGImage(image);
 
     // Getting UIImage from CGImage
@@ -59,7 +59,7 @@ UIImage* MatToUIImage(const cv::Mat& image) {
     return uiImage;
 }
 
-void UIImageToMat(const UIImage* image, cv::Mat& m, bool alphaExist) {
+void UIImageToMat(const UIImage* image, ncvslideio::Mat& m, bool alphaExist) {
     CGImageRef imageRef = image.CGImage;
     CGImageToMat(imageRef, m, alphaExist);
 }

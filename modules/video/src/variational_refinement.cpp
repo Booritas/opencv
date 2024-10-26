@@ -45,7 +45,7 @@
 
 using namespace std;
 
-namespace cv
+namespace ncvslideio
 {
 
 class VariationalRefinementImpl CV_FINAL : public VariationalRefinement

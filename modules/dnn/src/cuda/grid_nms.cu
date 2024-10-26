@@ -17,10 +17,10 @@
 #include "../cuda4dnn/csl/span.hpp"
 #include "../cuda4dnn/csl/tensor.hpp"
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
 namespace raw {
 
@@ -464,4 +464,4 @@ std::size_t getGridNMSWorkspaceSizePerBatchItem(std::size_t num_classes, std::si
 template void grid_nms(const Stream& stream, Span<unsigned int> workspace, TensorSpan<int> indices, TensorSpan<int> count, TensorView<__half> bboxes, int, bool normalized_bbox, float nms_threshold);
 template void grid_nms(const Stream& stream, Span<unsigned int> workspace, TensorSpan<int> indices, TensorSpan<int> count, TensorView<float> bboxes, int, bool normalized_bbox, float nms_threshold);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

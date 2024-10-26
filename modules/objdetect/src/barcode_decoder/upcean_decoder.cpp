@@ -7,7 +7,7 @@
 #include "upcean_decoder.hpp"
 #include <map>
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 static constexpr int DIVIDE_PART = 15;
@@ -36,8 +36,8 @@ void UPCEANDecoder::drawDebugLine(Mat &debug_img, const Point2i &begin, const Po
     }
     if (result.format == Result::BARCODE_NONE)
     {
-        cv::line(debug_img, begin, end, Scalar(0), 2);
-        cv::putText(debug_img, result.result, begin, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 0, 255), 1);
+        ncvslideio::line(debug_img, begin, end, Scalar(0), 2);
+        ncvslideio::putText(debug_img, result.result, begin, ncvslideio::FONT_HERSHEY_PLAIN, 1, ncvslideio::Scalar(0, 0, 255), 1);
     }
 }
 #endif
@@ -287,4 +287,4 @@ const std::array<char, 32> &FIRST_CHAR_ARRAY()
 }
 }
 
-} // namespace cv
+} // namespace ncvslideio

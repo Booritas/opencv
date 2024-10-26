@@ -6,15 +6,15 @@
 namespace opencv_test { namespace {
 
 // Dummy allocator implementation copied from the default OpenCV allocator with some simplifications
-struct DummyAllocator: public cv::MatAllocator
+struct DummyAllocator: public ncvslideio::MatAllocator
 {
 public:
     DummyAllocator() {};
     ~DummyAllocator() {};
 
-    cv::UMatData* allocate(int dims, const int* sizes, int type,
-                    void* data0, size_t* step, cv::AccessFlag flags,
-                    cv::UMatUsageFlags usageFlags) const
+    ncvslideio::UMatData* allocate(int dims, const int* sizes, int type,
+                    void* data0, size_t* step, ncvslideio::AccessFlag flags,
+                    ncvslideio::UMatUsageFlags usageFlags) const
     {
         CV_UNUSED(flags);
         CV_UNUSED(usageFlags);
@@ -46,16 +46,16 @@ public:
             DummyAllocator::allocatedBytes += total;
             DummyAllocator::allocations++;
         }
-        cv::UMatData* u = new cv::UMatData(this);
+        ncvslideio::UMatData* u = new ncvslideio::UMatData(this);
         u->data = u->origdata = data;
         u->size = total;
         if(data0)
-            u->flags |= cv::UMatData::USER_ALLOCATED;
+            u->flags |= ncvslideio::UMatData::USER_ALLOCATED;
 
         return u;
     }
 
-    bool allocate(cv::UMatData* u, cv::AccessFlag accessFlags, cv::UMatUsageFlags usageFlags) const
+    bool allocate(ncvslideio::UMatData* u, ncvslideio::AccessFlag accessFlags, ncvslideio::UMatUsageFlags usageFlags) const
     {
         CV_UNUSED(accessFlags);
         CV_UNUSED(usageFlags);
@@ -64,14 +64,14 @@ public:
         return true;
     }
 
-    void deallocate(cv::UMatData* u) const
+    void deallocate(ncvslideio::UMatData* u) const
     {
         if(!u)
             return;
 
         CV_Assert(u->urefcount == 0);
         CV_Assert(u->refcount == 0);
-        if( !(u->flags & cv::UMatData::USER_ALLOCATED) )
+        if( !(u->flags & ncvslideio::UMatData::USER_ALLOCATED) )
         {
             delete[] u->origdata;
             DummyAllocator::deallocations++;
@@ -89,43 +89,43 @@ size_t DummyAllocator::allocatedBytes = 0;
 int  DummyAllocator::allocations = 0;
 int  DummyAllocator::deallocations = 0;
 
-cv::MatAllocator* getDummyAllocator()
+ncvslideio::MatAllocator* getDummyAllocator()
 {
-    static cv::MatAllocator* allocator = new DummyAllocator;
+    static ncvslideio::MatAllocator* allocator = new DummyAllocator;
     return allocator;
 }
 
 struct AllocatorTest : public testing::Test {
     void SetUp() override {
-        cv::MatAllocator* allocator = getDummyAllocator();
+        ncvslideio::MatAllocator* allocator = getDummyAllocator();
         EXPECT_TRUE(allocator != nullptr);
-        cv::Mat::setDefaultAllocator(allocator);
+        ncvslideio::Mat::setDefaultAllocator(allocator);
     }
 
     void TearDown() override {
-        cv::Mat::setDefaultAllocator(cv::Mat::getStdAllocator());
+        ncvslideio::Mat::setDefaultAllocator(ncvslideio::Mat::getStdAllocator());
     }
 };
 
 TEST_F(AllocatorTest, DummyAllocator)
 {
-    cv::MatAllocator* dummy = getDummyAllocator();
+    ncvslideio::MatAllocator* dummy = getDummyAllocator();
 
     DummyAllocator::allocatedBytes = 0;
     DummyAllocator::allocations = 0;
     DummyAllocator::deallocations = 0;
 
     {
-        cv::Mat src1 = cv::Mat::ones (16, 16, CV_8UC1);
+        ncvslideio::Mat src1 = ncvslideio::Mat::ones (16, 16, CV_8UC1);
         EXPECT_TRUE(!src1.empty());
         EXPECT_EQ(src1.allocator, dummy);
 
-        cv::Mat src1_roi = src1(cv::Rect(2,2,8,8));
+        ncvslideio::Mat src1_roi = src1(ncvslideio::Rect(2,2,8,8));
         EXPECT_EQ(src1_roi.allocator, dummy);
 
-        cv::MatAllocator* standard = cv::Mat::getStdAllocator();
-        cv::Mat::setDefaultAllocator(standard);
-        cv::Mat src2 = cv::Mat::ones (16, 16, CV_8UC1);
+        ncvslideio::MatAllocator* standard = ncvslideio::Mat::getStdAllocator();
+        ncvslideio::Mat::setDefaultAllocator(standard);
+        ncvslideio::Mat src2 = ncvslideio::Mat::ones (16, 16, CV_8UC1);
         EXPECT_TRUE(!src2.empty());
         EXPECT_EQ(src2.allocator, standard);
 

@@ -252,7 +252,7 @@ TEST(Photo_CalibrateRobertson, regression)
 TEST(Photo_CalibrateRobertson, bug_18180)
 {
     vector<Mat> images;
-    vector<cv::String> fn;
+    vector<ncvslideio::String> fn;
     string test_path = cvtest::TS::ptr()->get_data_path() + "hdr/exposures/bug_18180/";
     for(int i = 1; i <= 4; ++i)
         images.push_back(imread(test_path + std::to_string(i) + ".jpg"));
@@ -263,7 +263,7 @@ TEST(Photo_CalibrateRobertson, bug_18180)
     Mat response_no_nans = response.clone();
     patchNaNs(response_no_nans);
     // since there should be no NaNs, original response vs. response with NaNs patched should be identical
-    EXPECT_EQ(0.0, cv::norm(response, response_no_nans, NORM_L2));
+    EXPECT_EQ(0.0, ncvslideio::norm(response, response_no_nans, NORM_L2));
 }
 
 }} // namespace

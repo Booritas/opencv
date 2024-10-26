@@ -5,13 +5,13 @@
 QUnit.module('Camera Calibration and 3D Reconstruction', {});
 
 QUnit.test('constants', function(assert) {
-  assert.strictEqual(typeof cv.LMEDS, 'number');
-  assert.strictEqual(typeof cv.RANSAC, 'number');
-  assert.strictEqual(typeof cv.RHO, 'number');
+  assert.strictEqual(typeof ncvslideio.LMEDS, 'number');
+  assert.strictEqual(typeof ncvslideio.RANSAC, 'number');
+  assert.strictEqual(typeof ncvslideio.RHO, 'number');
 });
 
 QUnit.test('findHomography', function(assert) {
-  let srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+  let srcPoints = ncvslideio.matFromArray(4, 1, ncvslideio.CV_32FC2, [
     56,
     65,
     368,
@@ -21,7 +21,7 @@ QUnit.test('findHomography', function(assert) {
     389,
     390,
   ]);
-  let dstPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+  let dstPoints = ncvslideio.matFromArray(4, 1, ncvslideio.CV_32FC2, [
     0,
     0,
     300,
@@ -32,29 +32,29 @@ QUnit.test('findHomography', function(assert) {
     300,
   ]);
 
-  const mat = cv.findHomography(srcPoints, dstPoints);
+  const mat = ncvslideio.findHomography(srcPoints, dstPoints);
 
-  assert.ok(mat instanceof cv.Mat);
+  assert.ok(mat instanceof ncvslideio.Mat);
 });
 
 QUnit.test('Rodrigues', function(assert) {
   // Converts a rotation matrix to a rotation vector and vice versa
   // data64F is the output array
-  const rvec0 = cv.matFromArray(1, 3, cv.CV_64F, [1,1,1]);
-  let rMat0 = new cv.Mat();
-  let rvec1 = new cv.Mat();
+  const rvec0 = ncvslideio.matFromArray(1, 3, ncvslideio.CV_64F, [1,1,1]);
+  let rMat0 = new ncvslideio.Mat();
+  let rvec1 = new ncvslideio.Mat();
 
   // Args: input Mat, output Mat. The function mutates the output Mat, so the function does not return anything.
-  // cv.Rodrigues (InputArray=src, OutputArray=dst, jacobian=0)
+  // ncvslideio.Rodrigues (InputArray=src, OutputArray=dst, jacobian=0)
   // https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#void%20Rodrigues(InputArray%20src,%20OutputArray%20dst,%20OutputArray%20jacobian)
   // vec to Mat, starting number is 3 long and each element is 1.
-  cv.Rodrigues(rvec0, rMat0);
+  ncvslideio.Rodrigues(rvec0, rMat0);
 
   assert.ok(rMat0.data64F.length == 9);
   assert.ok(0.23 > rMat0.data64F[0] > 0.22);
 
   // convert Mat to Vec, should be same as what we started with, 3 long and each item should be a 1.
-  cv.Rodrigues(rMat0, rvec1);
+  ncvslideio.Rodrigues(rMat0, rvec1);
 
   assert.ok(rvec1.data64F.length == 3);
   assert.ok(1.01 > rvec1.data64F[0] > 0.9);
@@ -62,20 +62,20 @@ QUnit.test('Rodrigues', function(assert) {
 });
 
 QUnit.test('estimateAffine2D', function(assert) {
-   const inputs = cv.matFromArray(4, 1, cv.CV_32FC2, [
+   const inputs = ncvslideio.matFromArray(4, 1, ncvslideio.CV_32FC2, [
     1, 1,
     80, 0,
     0, 80,
     80, 80
   ]);
-  const outputs = cv.matFromArray(4, 1, cv.CV_32FC2, [
+  const outputs = ncvslideio.matFromArray(4, 1, ncvslideio.CV_32FC2, [
     21, 51,
     70, 77,
     40, 40,
     10, 70
   ]);
-  const M = cv.estimateAffine2D(inputs, outputs);
-  assert.ok(M instanceof cv.Mat);
+  const M = ncvslideio.estimateAffine2D(inputs, outputs);
+  assert.ok(M instanceof ncvslideio.Mat);
   assert.deepEqual(Array.from(M.data), [
      23,  55,  97, 126,  87, 139, 227,  63,   0,   0,
       0,   0,   0,   0, 232, 191,  71, 246,  12,  68,

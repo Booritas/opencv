@@ -22,7 +22,7 @@
 #include "cuda4dnn/init.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -45,7 +45,7 @@ private:
 #ifdef HAVE_HALIDE
         backends.push_back(std::make_pair(DNN_BACKEND_HALIDE, DNN_TARGET_CPU));
 #ifdef HAVE_OPENCL
-        if (cv::ocl::useOpenCL())
+        if (ncvslideio::ocl::useOpenCL())
             backends.push_back(std::make_pair(DNN_BACKEND_HALIDE, DNN_TARGET_OPENCL));
 #endif
 #endif  // HAVE_HALIDE
@@ -83,7 +83,7 @@ private:
             backends.push_back(std::make_pair(DNN_BACKEND_INFERENCE_ENGINE_NGRAPH, DNN_TARGET_HDDL));
         }
 #ifdef HAVE_OPENCL
-        if (cv::ocl::useOpenCL() && ocl::Device::getDefault().isIntel())
+        if (ncvslideio::ocl::useOpenCL() && ocl::Device::getDefault().isIntel())
         {
             if (haveBackendOpenVINO && openvino::checkTarget(DNN_TARGET_OPENCL))
             {
@@ -104,7 +104,7 @@ private:
 #endif  // HAVE_WEBNN
 
 #ifdef HAVE_OPENCL
-        if (cv::ocl::useOpenCL())
+        if (ncvslideio::ocl::useOpenCL())
         {
             backends.push_back(std::make_pair(DNN_BACKEND_OPENCV, DNN_TARGET_OPENCL));
             backends.push_back(std::make_pair(DNN_BACKEND_OPENCV, DNN_TARGET_OPENCL_FP16));
@@ -188,4 +188,4 @@ std::vector<Target> getAvailableTargets(Backend be)
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

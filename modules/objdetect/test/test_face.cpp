@@ -101,14 +101,14 @@ TEST(Objdetect_face_detection, regression)
 
             bool boxMatched = false;
             std::vector<bool> lmMatched(numLM, false);
-            cv::Rect2f resBox(faces.at<float>(i, 0), faces.at<float>(i, 1), faces.at<float>(i, 2), faces.at<float>(i, 3));
+            ncvslideio::Rect2f resBox(faces.at<float>(i, 0), faces.at<float>(i, 1), faces.at<float>(i, 2), faces.at<float>(i, 3));
             for (int j = 0; j < item.second.rows && !boxMatched; j++)
             {
                 if (matchedItem[j])
                     continue;
 
                 // Retrieve bbox and compare IoU
-                cv::Rect2f gtBox(item.second.at<float>(j, 0), item.second.at<float>(j, 1), item.second.at<float>(j, 2), item.second.at<float>(j, 3));
+                ncvslideio::Rect2f gtBox(item.second.at<float>(j, 0), item.second.at<float>(j, 1), item.second.at<float>(j, 2), item.second.at<float>(j, 3));
                 double interArea = (resBox & gtBox).area();
                 double iou = interArea / (resBox.area() + gtBox.area() - interArea);
                 if (iou >= matchThreshold)
@@ -126,7 +126,7 @@ TEST(Objdetect_face_detection, regression)
                     float gtY = item.second.at<float>(j, 4 + 2 * lmIdx + 1);
                     float resX = faces.at<float>(i, 4 + 2 * lmIdx);
                     float resY = faces.at<float>(i, 4 + 2 * lmIdx + 1);
-                    float l2dis = cv::sqrt((gtX - resX) * (gtX - resX) + (gtY - resY) * (gtY - resY));
+                    float l2dis = ncvslideio::sqrt((gtX - resX) * (gtX - resX) + (gtY - resY) * (gtY - resY));
 
                     if (l2dis <= l2disThreshold)
                     {

@@ -162,7 +162,7 @@ void Core_RandTest::run( int )
             hist[c].create(1, hsz, CV_32S);
         }
 
-        cv::RNG saved_rng = tested_rng;
+        ncvslideio::RNG saved_rng = tested_rng;
         int maxk = fast_algo ? 0 : 1;
         for( k = 0; k <= maxk; k++ )
         {
@@ -344,7 +344,7 @@ TEST(Core_Rand, range) { Core_RandRangeTest test; test.safe_run(); }
 
 TEST(Core_RNG_MT19937, regression)
 {
-    cv::RNG_MT19937 rng;
+    ncvslideio::RNG_MT19937 rng;
     int actual[61] = {0, };
     const size_t length = (sizeof(actual) / sizeof(actual[0]));
     for (int i = 0; i < 10000; ++i )
@@ -374,32 +374,32 @@ TEST(Core_Rand, Regression_Stack_Corruption)
     int bufsz = 128; //enough for 14 doubles
     AutoBuffer<uchar> buffer(bufsz);
     size_t offset = 0;
-    cv::Mat_<cv::Point2d> x(2, 3, (cv::Point2d*)(buffer.data()+offset));
+    ncvslideio::Mat_<ncvslideio::Point2d> x(2, 3, (ncvslideio::Point2d*)(buffer.data()+offset));
     offset += x.total()*x.elemSize();
     double& param1 = *(double*)(buffer.data()+offset);
     offset += sizeof(double);
     double& param2 = *(double*)(buffer.data()+offset);
     param1 = -9; param2 = 2;
 
-    cv::theRNG().fill(x, cv::RNG::NORMAL, param1, param2);
+    ncvslideio::theRNG().fill(x, ncvslideio::RNG::NORMAL, param1, param2);
 
     ASSERT_EQ(param1, -9);
     ASSERT_EQ(param2,  2);
 }
 
 
-class RandRowFillParallelLoopBody : public cv::ParallelLoopBody
+class RandRowFillParallelLoopBody : public ncvslideio::ParallelLoopBody
 {
 public:
     RandRowFillParallelLoopBody(Mat& dst) : dst_(dst) {}
     ~RandRowFillParallelLoopBody() {}
-    void operator()(const cv::Range& r) const
+    void operator()(const ncvslideio::Range& r) const
     {
-        cv::RNG rng = cv::theRNG(); // copy state
+        ncvslideio::RNG rng = ncvslideio::theRNG(); // copy state
         for (int y = r.start; y < r.end; y++)
         {
-            cv::theRNG() = cv::RNG(rng.state + y); // seed is based on processed row
-            cv::randu(dst_.row(y), Scalar(-100), Scalar(100));
+            ncvslideio::theRNG() = ncvslideio::RNG(rng.state + y); // seed is based on processed row
+            ncvslideio::randu(dst_.row(y), Scalar(-100), Scalar(100));
         }
         // theRNG() state is changed here (but state collision has low probability, so we don't check this)
     }
@@ -409,13 +409,13 @@ protected:
 
 TEST(Core_Rand, parallel_for_stable_results)
 {
-    cv::RNG rng = cv::theRNG(); // save rng state
+    ncvslideio::RNG rng = ncvslideio::theRNG(); // save rng state
     Mat dst1(1000, 100, CV_8SC1);
-    parallel_for_(cv::Range(0, dst1.rows), RandRowFillParallelLoopBody(dst1));
+    parallel_for_(ncvslideio::Range(0, dst1.rows), RandRowFillParallelLoopBody(dst1));
 
-    cv::theRNG() = rng; // restore rng state
+    ncvslideio::theRNG() = rng; // restore rng state
     Mat dst2(1000, 100, CV_8SC1);
-    parallel_for_(cv::Range(0, dst2.rows), RandRowFillParallelLoopBody(dst2));
+    parallel_for_(ncvslideio::Range(0, dst2.rows), RandRowFillParallelLoopBody(dst2));
 
     ASSERT_EQ(0, countNonZero(dst1 != dst2));
 }

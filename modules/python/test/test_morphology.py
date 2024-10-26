@@ -43,8 +43,8 @@ class morphology_test(NewOpenCVTests):
             str_name = 'MORPH_' + cur_str_mode.upper()
             oper_name = 'MORPH_' + op.upper()
 
-            st = cv.getStructuringElement(getattr(cv, str_name), (sz, sz))
-            return cv.morphologyEx(img, getattr(cv, oper_name), st, iterations=iters)
+            st = ncvslideio.getStructuringElement(getattr(ncvslideio, str_name), (sz, sz))
+            return ncvslideio.morphologyEx(img, getattr(ncvslideio, oper_name), st, iterations=iters)
 
         for mode in modes:
             res = update(mode)

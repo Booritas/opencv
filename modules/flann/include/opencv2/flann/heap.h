@@ -185,14 +185,14 @@ public:
      * \returns pointer to the heap
      */
     template <typename HashableT>
-    static cv::Ptr<Heap<T>> getPooledInstance(
+    static ncvslideio::Ptr<Heap<T>> getPooledInstance(
         const HashableT& poolId, const int capacity, int iterThreshold = 0)
     {
-        static cv::Mutex mutex;
-        const cv::AutoLock lock(mutex);
+        static ncvslideio::Mutex mutex;
+        const ncvslideio::AutoLock lock(mutex);
 
         struct HeapMapValueType {
-            cv::Ptr<Heap<T>> heapPtr;
+            ncvslideio::Ptr<Heap<T>> heapPtr;
             int iterCounter;
         };
         typedef std::unordered_map<HashableT, HeapMapValueType> HeapMapType;
@@ -203,7 +203,7 @@ public:
         if (heapIt == heapsPool.end())
         {
             // Construct the heap as it does not already exists
-            HeapMapValueType heapAndTimePair = {cv::makePtr<Heap<T>>(capacity), 0};
+            HeapMapValueType heapAndTimePair = {ncvslideio::makePtr<Heap<T>>(capacity), 0};
             const std::pair<typename HeapMapType::iterator, bool>& emplaceResult = heapsPool.emplace(poolId, std::move(heapAndTimePair));
             CV_CheckEQ(static_cast<int>(emplaceResult.second), 1, "Failed to insert the heap into its memory pool");
             heapIt = emplaceResult.first;
@@ -217,7 +217,7 @@ public:
         }
 
         if (iterThreshold <= 1) {
-            iterThreshold = 2 * cv::getNumThreads();
+            iterThreshold = 2 * ncvslideio::getNumThreads();
         }
 
         // Remove heaps that were not reused for more than given iterThreshold

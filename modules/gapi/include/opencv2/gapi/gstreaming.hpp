@@ -17,9 +17,9 @@
 #include <opencv2/gapi/garg.hpp>
 #include <opencv2/gapi/streaming/source.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
-template<class T> using optional = cv::util::optional<T>;
+template<class T> using optional = ncvslideio::util::optional<T>;
 
 namespace detail {
 template<typename T> struct wref_spec {
@@ -38,47 +38,47 @@ struct OptRef {
         using Ptr = std::shared_ptr<OptHolder>;
     };
     template<class T> struct Holder final: OptHolder {
-        std::reference_wrapper<cv::optional<T> > m_opt_ref;
+        std::reference_wrapper<ncvslideio::optional<T> > m_opt_ref;
 
-        explicit Holder(cv::optional<T>& opt) : m_opt_ref(std::ref(opt)) {
+        explicit Holder(ncvslideio::optional<T>& opt) : m_opt_ref(std::ref(opt)) {
         }
         virtual void mov(RefHolder &h) override {
             using U = typename wref_spec<T>::type;
-            m_opt_ref.get() = cv::util::make_optional(std::move(h.template wref<U>()));
+            m_opt_ref.get() = ncvslideio::util::make_optional(std::move(h.template wref<U>()));
         }
         virtual void reset() override {
             m_opt_ref.get().reset();
         }
     };
     template<class T>
-    explicit OptRef(cv::optional<T>& t) : m_opt{new Holder<T>(t)} {}
+    explicit OptRef(ncvslideio::optional<T>& t) : m_opt{new Holder<T>(t)} {}
     void mov(RefHolder &h) { m_opt->mov(h); }
     void reset()           { m_opt->reset();}
 private:
     typename OptHolder::Ptr m_opt;
 };
-using OptionalVectorRef = OptRef<cv::detail::VectorRef>;
-using OptionalOpaqueRef = OptRef<cv::detail::OpaqueRef>;
+using OptionalVectorRef = OptRef<ncvslideio::detail::VectorRef>;
+using OptionalOpaqueRef = OptRef<ncvslideio::detail::OpaqueRef>;
 } // namespace detail
 
 // TODO: Keep it in sync with GRunArgP (derive the type automatically?)
 using GOptRunArgP = util::variant<
-    optional<cv::Mat>*,
-    optional<cv::RMat>*,
-    optional<cv::MediaFrame>*,
-    optional<cv::Scalar>*,
-    cv::detail::OptionalVectorRef,
-    cv::detail::OptionalOpaqueRef
+    optional<ncvslideio::Mat>*,
+    optional<ncvslideio::RMat>*,
+    optional<ncvslideio::MediaFrame>*,
+    optional<ncvslideio::Scalar>*,
+    ncvslideio::detail::OptionalVectorRef,
+    ncvslideio::detail::OptionalOpaqueRef
 >;
 using GOptRunArgsP = std::vector<GOptRunArgP>;
 
 using GOptRunArg = util::variant<
-    optional<cv::Mat>,
-    optional<cv::RMat>,
-    optional<cv::MediaFrame>,
-    optional<cv::Scalar>,
-    optional<cv::detail::VectorRef>,
-    optional<cv::detail::OpaqueRef>
+    optional<ncvslideio::Mat>,
+    optional<ncvslideio::RMat>,
+    optional<ncvslideio::MediaFrame>,
+    optional<ncvslideio::Scalar>,
+    optional<ncvslideio::detail::VectorRef>,
+    optional<ncvslideio::detail::OpaqueRef>
 >;
 using GOptRunArgs = std::vector<GOptRunArg>;
 
@@ -93,25 +93,25 @@ template<typename T> inline GOptRunArgP wrap_opt_arg(optional<std::vector<T> >& 
     return GOptRunArgP{OptionalVectorRef(arg)};
 }
 
-template<> inline GOptRunArgP wrap_opt_arg(optional<cv::Mat> &m) {
+template<> inline GOptRunArgP wrap_opt_arg(optional<ncvslideio::Mat> &m) {
     return GOptRunArgP{&m};
 }
 
-template<> inline GOptRunArgP wrap_opt_arg(optional<cv::RMat> &m) {
+template<> inline GOptRunArgP wrap_opt_arg(optional<ncvslideio::RMat> &m) {
     return GOptRunArgP{&m};
 }
 
-template<> inline GOptRunArgP wrap_opt_arg(optional<cv::MediaFrame> &f) {
+template<> inline GOptRunArgP wrap_opt_arg(optional<ncvslideio::MediaFrame> &f) {
     return GOptRunArgP{&f};
 }
 
-template<> inline GOptRunArgP wrap_opt_arg(optional<cv::Scalar> &s) {
+template<> inline GOptRunArgP wrap_opt_arg(optional<ncvslideio::Scalar> &s) {
     return GOptRunArgP{&s};
 }
 
 } // namespace detail
 
-// Now cv::gout() may produce an empty vector (see "dynamic graphs"), so
+// Now ncvslideio::gout() may produce an empty vector (see "dynamic graphs"), so
 // there may be a conflict between these two. State here that Opt version
 // _must_ have at least one input for this overload
 template<typename T, typename... Ts>
@@ -128,7 +128,7 @@ inline GOptRunArgsP gout(optional<T>&arg, optional<Ts>&... args)
  * @brief Represents a computation (graph) compiled for streaming.
  *
  * This class represents a product of graph compilation (calling
- * cv::GComputation::compileStreaming()). Objects of this class
+ * ncvslideio::GComputation::compileStreaming()). Objects of this class
  * actually do stream processing, and the whole pipeline execution
  * complexity is incapsulated into objects of this class. Execution
  * model has two levels: at the very top, the execution of a
@@ -166,9 +166,9 @@ public:
      * Use gin() to create an input parameter vector.
      *
      * Input vectors must have the same number of elements as defined
-     * in the cv::GComputation protocol (at the moment of its
+     * in the ncvslideio::GComputation protocol (at the moment of its
      * construction). Shapes of elements also must conform to protocol
-     * (e.g. cv::Mat needs to be passed where cv::GMat has been
+     * (e.g. ncvslideio::Mat needs to be passed where ncvslideio::GMat has been
      * declared as input, and so on). Run-time exception is generated
      * on type mismatch.
      *
@@ -202,7 +202,7 @@ public:
     void setSource(GRunArgs &&ins);
 
     /// @private -- Exclude this function from OpenCV documentation
-    GAPI_WRAP void setSource(const cv::detail::ExtractArgsCallback& callback);
+    GAPI_WRAP void setSource(const ncvslideio::detail::ExtractArgsCallback& callback);
 
     /**
      * @brief Specify an input video stream for a single-input
@@ -230,7 +230,7 @@ public:
      */
     template<typename T, typename... Args>
     void setSource(Args&&... args) {
-        setSource(cv::gapi::wip::make_src<T>(std::forward<Args>(args)...));
+        setSource(ncvslideio::gapi::wip::make_src<T>(std::forward<Args>(args)...));
     }
 
     /**
@@ -256,9 +256,9 @@ public:
      * Use gout() to create an output parameter vector.
      *
      * Output vectors must have the same number of elements as defined
-     * in the cv::GComputation protocol (at the moment of its
+     * in the ncvslideio::GComputation protocol (at the moment of its
      * construction). Shapes of elements also must conform to protocol
-     * (e.g. cv::Mat needs to be passed where cv::GMat has been
+     * (e.g. ncvslideio::Mat needs to be passed where ncvslideio::GMat has been
      * declared as output, and so on). Run-time exception is generated
      * on type mismatch.
      *
@@ -270,16 +270,16 @@ public:
      * @return true if next result has been obtained,
      *    false marks end of the stream.
      */
-    bool pull(cv::GRunArgsP &&outs);
+    bool pull(ncvslideio::GRunArgsP &&outs);
 
     // NB: Used from python
     /// @private -- Exclude this function from OpenCV documentation
-    GAPI_WRAP std::tuple<bool, cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>> pull();
+    GAPI_WRAP std::tuple<bool, ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>> pull();
 
     /**
      * @brief Get some next available data from the pipeline.
      *
-     * This method takes a vector of cv::optional object. An object is
+     * This method takes a vector of ncvslideio::optional object. An object is
      * assigned to some value if this value is available (ready) at
      * the time of the call, and resets the object to empty() if it is
      * not.
@@ -288,7 +288,7 @@ public:
      * been written to the output vector on return.
      *
      * Using this method only makes sense if the graph has
-     * desynchronized parts (see cv::gapi::desync). If there is no
+     * desynchronized parts (see ncvslideio::gapi::desync). If there is no
      * desynchronized parts in the graph, the behavior of this
      * method is identical to the regular pull() (all data objects are
      * produced synchronously in the output vector).
@@ -296,9 +296,9 @@ public:
      * Use gout() to create an output parameter vector.
      *
      * Output vectors must have the same number of elements as defined
-     * in the cv::GComputation protocol (at the moment of its
+     * in the ncvslideio::GComputation protocol (at the moment of its
      * construction). Shapes of elements also must conform to protocol
-     * (e.g. cv::optional<cv::Mat> needs to be passed where cv::GMat
+     * (e.g. ncvslideio::optional<ncvslideio::Mat> needs to be passed where ncvslideio::GMat
      * has been declared as output, and so on). Run-time exception is
      * generated on type mismatch.
      *
@@ -310,9 +310,9 @@ public:
      * @return true if next result has been obtained,
      *    false marks end of the stream.
      *
-     * @sa cv::gapi::desync
+     * @sa ncvslideio::gapi::desync
      */
-    bool pull(cv::GOptRunArgsP &&outs);
+    bool pull(ncvslideio::GOptRunArgsP &&outs);
 
     /**
      * @brief Try to get the next processed frame from the pipeline.
@@ -326,7 +326,7 @@ public:
      * @return true if data has been obtained, and false if it was
      *    not. Note: false here doesn't mark the end of the stream.
      */
-    bool try_pull(cv::GRunArgsP &&outs);
+    bool try_pull(ncvslideio::GRunArgsP &&outs);
 
     /**
      * @brief Stop (abort) processing the pipeline.
@@ -364,7 +364,7 @@ public:
      * @brief Vector of metadata this graph was compiled for.
      *
      * @return Unless _reshape_ is not supported, return value is the
-     * same vector which was passed to cv::GComputation::compile() to
+     * same vector which was passed to ncvslideio::GComputation::compile() to
      * produce this compiled object. Otherwise, it is the latest
      * metadata vector passed to reshape() (if that call was
      * successful).
@@ -379,7 +379,7 @@ public:
      * operations which form this computation.
      *
      * @note GCompiled objects produced from the same
-     * cv::GComputiation graph with different input metas may return
+     * ncvslideio::GComputiation graph with different input metas may return
      * different values in this vector.
      */
     const GMetaArgs& outMetas() const;
@@ -417,7 +417,7 @@ struct GAPI_EXPORTS_W_SIMPLE queue_capacity
 
 namespace detail
 {
-template<> struct CompileArgTag<cv::gapi::streaming::queue_capacity>
+template<> struct CompileArgTag<ncvslideio::gapi::streaming::queue_capacity>
 {
     static const char* tag() { return "gapi.queue_capacity"; }
 };

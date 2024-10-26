@@ -331,7 +331,7 @@ public:
     void clear();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void run_func(void);
     void set_error_context( const char* condition,
                            const char* err_msg,
@@ -389,7 +389,7 @@ void Core_DynStructBaseTest::clear()
 }
 
 
-int Core_DynStructBaseTest::read_params( const cv::FileStorage& fs )
+int Core_DynStructBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::BaseTest::read_params( fs );
     double sqrt_scale = sqrt(ts->get_test_case_count_scale());
@@ -433,11 +433,11 @@ void Core_DynStructBaseTest::update_progressbar()
     if( test_progress < 0 )
     {
         test_progress = 0;
-        cpu_freq = cv::getTickFrequency();
-        start_time = cv::getTickCount();
+        cpu_freq = ncvslideio::getTickFrequency();
+        start_time = ncvslideio::getTickCount();
     }
 
-    t = cv::getTickCount();
+    t = ncvslideio::getTickCount();
     test_progress = update_progress( test_progress, 0, 0, (double)(t - start_time)/cpu_freq );
 }
 

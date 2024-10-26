@@ -44,7 +44,7 @@
 
 namespace opencv_test { namespace {
 
-using namespace cv;
+using namespace ncvslideio;
 
 class CV_TrackBaseTest : public cvtest::BaseTest
 {
@@ -54,7 +54,7 @@ public:
     void clear();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void run_func(void);
     int prepare_test_case( int test_case_idx );
     int validate_test_results( int test_case_idx );
@@ -91,7 +91,7 @@ void CV_TrackBaseTest::clear()
 }
 
 
-int CV_TrackBaseTest::read_params( const cv::FileStorage& fs )
+int CV_TrackBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::BaseTest::read_params( fs );
     if( code < 0 )

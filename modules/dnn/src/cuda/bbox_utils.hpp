@@ -9,7 +9,7 @@
 
 #include <cuda_runtime.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     struct BoundingBox
     {
@@ -34,6 +34,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
         return mul_ftz(width, height);
     }
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA_BBOX_UTILS_HPP */

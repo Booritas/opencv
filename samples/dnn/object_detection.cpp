@@ -45,7 +45,7 @@ std::string keys =
     "{ async       | 0 | Number of asynchronous forwards at the same time. "
                         "Choose 0 for synchronous mode }";
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace dnn;
 
 float confThreshold, nmsThreshold;

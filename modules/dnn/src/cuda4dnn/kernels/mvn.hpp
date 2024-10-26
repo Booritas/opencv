@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
 template <class T>
 void reduce_mean(const csl::Stream& stream, csl::Span<float> means, csl::View<T> input, std::size_t inner_size);
@@ -39,6 +39,6 @@ template <class T>
 void normalize_mean_variance_groupwise(const csl::Stream &stream, csl::Span<T> output, csl::View<T> input, csl::View<T> scale, csl::View<T> bias, csl::View<float> means, csl::View<float> inv_stddev, std::size_t inner_size, std::size_t C, std::size_t num_groups, std::size_t group_size);
 
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_MVN_HPP */

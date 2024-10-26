@@ -73,7 +73,7 @@
 #define mingw_getsp(...) 0
 #define __builtin_frame_address(...) 0
 
-namespace cv
+namespace ncvslideio
 {
 
 /////////////////////// PngDecoder ///////////////////

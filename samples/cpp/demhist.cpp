@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int _brightness = 100;

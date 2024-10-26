@@ -105,7 +105,7 @@
 #include "caffe_io.hpp"
 #include "glog_emulator.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 using std::string;

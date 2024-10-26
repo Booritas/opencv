@@ -8,7 +8,7 @@
 #include "../ie_ngraph.hpp"
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -65,7 +65,7 @@ public:
             else if (operation == "max")
                 op = MAX;
             else
-                CV_Error(cv::Error::StsBadArg, "Unknown operation type \"" + operation + "\"");
+                CV_Error(ncvslideio::Error::StsBadArg, "Unknown operation type \"" + operation + "\"");
         }
 
         if (params.has("coeff"))
@@ -124,10 +124,10 @@ public:
             {
                 channelsModeInput = ELTWISE_CHANNNELS_USE_MAX;
                 if (op != SUM)
-                    CV_Error(cv::Error::StsBadArg, "[" + type + "]:(" + name + ") 'max' channels mode is limited to SUM operation only");
+                    CV_Error(ncvslideio::Error::StsBadArg, "[" + type + "]:(" + name + ") 'max' channels mode is limited to SUM operation only");
             }
             else
-                CV_Error(cv::Error::StsBadArg, "[" + type + "]:(" + name + ") unknown channels mode: \"" + v + "\"");
+                CV_Error(ncvslideio::Error::StsBadArg, "[" + type + "]:(" + name + ") unknown channels mode: \"" + v + "\"");
         }
         channelsMode = channelsModeInput;
 

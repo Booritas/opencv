@@ -43,7 +43,7 @@ class App:
         self.paused = False
         self.tracker = PlaneTracker()
 
-        cv.namedWindow('plane')
+        ncvslideio.namedWindow('plane')
         self.rect_sel = common.RectSelector('plane', self.on_rect)
 
     def on_rect(self, rect):
@@ -67,20 +67,20 @@ class App:
                 vis[:,w:] = target.image
                 draw_keypoints(vis[:,w:], target.keypoints)
                 x0, y0, x1, y1 = target.rect
-                cv.rectangle(vis, (x0+w, y0), (x1+w, y1), (0, 255, 0), 2)
+                ncvslideio.rectangle(vis, (x0+w, y0), (x1+w, y1), (0, 255, 0), 2)
 
             if playing:
                 tracked = self.tracker.track(self.frame)
                 if len(tracked) > 0:
                     tracked = tracked[0]
-                    cv.polylines(vis, [np.int32(tracked.quad)], True, (255, 255, 255), 2)
+                    ncvslideio.polylines(vis, [np.int32(tracked.quad)], True, (255, 255, 255), 2)
                     for (x0, y0), (x1, y1) in zip(np.int32(tracked.p0), np.int32(tracked.p1)):
-                        cv.line(vis, (x0+w, y0), (x1, y1), (0, 255, 0))
+                        ncvslideio.line(vis, (x0+w, y0), (x1, y1), (0, 255, 0))
             draw_keypoints(vis, self.tracker.frame_points)
 
             self.rect_sel.draw(vis)
-            cv.imshow('plane', vis)
-            ch = cv.waitKey(1)
+            ncvslideio.imshow('plane', vis)
+            ch = ncvslideio.waitKey(1)
             if ch == ord(' '):
                 self.paused = not self.paused
             if ch == 27:

@@ -42,12 +42,12 @@
 namespace cvflann
 {
 
-class FLANNException : public cv::Exception
+class FLANNException : public ncvslideio::Exception
 {
 public:
-    FLANNException(const char* message) : cv::Exception(0, message, "", __FILE__, __LINE__) { }
+    FLANNException(const char* message) : ncvslideio::Exception(0, message, "", __FILE__, __LINE__) { }
 
-    FLANNException(const cv::String& message) : cv::Exception(0, message, "", __FILE__, __LINE__) { }
+    FLANNException(const ncvslideio::String& message) : ncvslideio::Exception(0, message, "", __FILE__, __LINE__) { }
 };
 
 }

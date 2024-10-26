@@ -75,12 +75,12 @@ PARAM_TEST_CASE(BruteForceMatcher, int, int)
         queryDescCount = 300; // must be even number because we split train data in some cases in two
         countFactor = 4; // do not change it
 
-        cv::Mat queryBuf, trainBuf;
+        ncvslideio::Mat queryBuf, trainBuf;
 
         // Generate query descriptors randomly.
         // Descriptor vector elements are integer values.
         queryBuf.create(queryDescCount, dim, CV_32SC1);
-        rng.fill(queryBuf, cv::RNG::UNIFORM, cv::Scalar::all(0), cv::Scalar::all(3));
+        rng.fill(queryBuf, ncvslideio::RNG::UNIFORM, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(3));
         queryBuf.convertTo(queryBuf, CV_32FC1);
 
         // Generate train descriptors as follows:
@@ -92,11 +92,11 @@ PARAM_TEST_CASE(BruteForceMatcher, int, int)
         float step = 1.f / countFactor;
         for (int qIdx = 0; qIdx < queryDescCount; qIdx++)
         {
-            cv::Mat queryDescriptor = queryBuf.row(qIdx);
+            ncvslideio::Mat queryDescriptor = queryBuf.row(qIdx);
             for (int c = 0; c < countFactor; c++)
             {
                 int tIdx = qIdx * countFactor + c;
-                cv::Mat trainDescriptor = trainBuf.row(tIdx);
+                ncvslideio::Mat trainDescriptor = trainBuf.row(tIdx);
                 queryDescriptor.copyTo(trainDescriptor);
                 int elem = rng(dim);
                 float diff = rng.uniform(step * c, step * (c + 1));
@@ -119,7 +119,7 @@ OCL_TEST_P(BruteForceMatcher, Match_Single)
 {
     BFMatcher matcher(distType);
 
-    std::vector<cv::DMatch> matches;
+    std::vector<ncvslideio::DMatch> matches;
     matcher.match(uquery, utrain,  matches);
 
     ASSERT_EQ(static_cast<size_t>(queryDescCount), matches.size());
@@ -127,7 +127,7 @@ OCL_TEST_P(BruteForceMatcher, Match_Single)
     int badCount = 0;
     for (size_t i = 0; i < matches.size(); i++)
     {
-        cv::DMatch match = matches[i];
+        ncvslideio::DMatch match = matches[i];
         if ((match.queryIdx != (int)i) || (match.trainIdx != (int)i * countFactor) || (match.imgIdx != 0))
             badCount++;
     }
@@ -145,7 +145,7 @@ OCL_TEST_P(BruteForceMatcher, KnnMatch_2_Single)
 
     BFMatcher matcher(distType);
 
-    std::vector< std::vector<cv::DMatch> > matches;
+    std::vector< std::vector<ncvslideio::DMatch> > matches;
     matcher.knnMatch(uquery, utrain, matches, knn);
 
     ASSERT_EQ(static_cast<size_t>(queryDescCount), matches.size());
@@ -160,7 +160,7 @@ OCL_TEST_P(BruteForceMatcher, KnnMatch_2_Single)
             int localBadCount = 0;
             for (int k = 0; k < knn; k++)
             {
-                cv::DMatch match = matches[i][k];
+                ncvslideio::DMatch match = matches[i][k];
                 if ((match.queryIdx != (int)i) || (match.trainIdx != (int)i * countFactor + k) || (match.imgIdx != 0))
                     localBadCount++;
             }
@@ -181,7 +181,7 @@ OCL_TEST_P(BruteForceMatcher, RadiusMatch_Single)
 
     BFMatcher matcher(distType);
 
-    std::vector< std::vector<cv::DMatch> > matches;
+    std::vector< std::vector<ncvslideio::DMatch> > matches;
     matcher.radiusMatch(uquery, utrain, matches, radius);
 
     ASSERT_EQ(static_cast<size_t>(queryDescCount), matches.size());
@@ -195,7 +195,7 @@ OCL_TEST_P(BruteForceMatcher, RadiusMatch_Single)
         }
         else
         {
-            cv::DMatch match = matches[i][0];
+            ncvslideio::DMatch match = matches[i][0];
             if ((match.queryIdx != (int)i) || (match.trainIdx != (int)i * countFactor) || (match.imgIdx != 0))
                 badCount++;
         }

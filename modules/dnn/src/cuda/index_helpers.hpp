@@ -9,7 +9,7 @@
 
 #include <cuda_runtime.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
 namespace detail {
     using dim3_member_type = decltype(dim3::x);
@@ -36,6 +36,6 @@ template <> inline __device__ detail::uint3_member_type getThreadIdx<0>() { retu
 template <> inline __device__ detail::uint3_member_type getThreadIdx<1>() { return threadIdx.y; }
 template <> inline __device__ detail::uint3_member_type getThreadIdx<2>() { return threadIdx.z; }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_INDEX_HELPERS_HPP */

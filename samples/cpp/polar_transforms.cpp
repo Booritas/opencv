@@ -3,7 +3,7 @@
 #include "opencv2/videoio.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main( int argc, char** argv )
 {

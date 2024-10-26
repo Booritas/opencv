@@ -31,7 +31,7 @@
 #include "compiler/gobjref.hpp"
 #include "compiler/gislandmodel.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // TODO: Document all metadata types
 
@@ -56,12 +56,12 @@ struct Output
 struct Op
 {
     static const char *name() { return "Op"; }
-    cv::GKernel         k;
+    ncvslideio::GKernel         k;
     std::vector<GArg>   args; // TODO: Introduce a new type for internal args?
     std::vector<RcDesc> outs; // TODO: Introduce a new type for resource references
 
-    cv::gapi::GBackend  backend;
-    cv::util::any params; // Operation specific information
+    ncvslideio::gapi::GBackend  backend;
+    ncvslideio::util::any params; // Operation specific information
 };
 
 struct Data
@@ -73,7 +73,7 @@ struct Data
     int      rc;    // rc is unique but local to shape
     GMetaArg meta;
     HostCtor ctor;  // T-specific helper to deal with unknown types in our code
-    cv::detail::OpaqueKind kind; // FIXME: is needed to store GArray/GOpaque type
+    ncvslideio::detail::OpaqueKind kind; // FIXME: is needed to store GArray/GOpaque type
     // FIXME: Why rc+shape+meta is not represented as RcDesc here?
 
     enum class Storage: int
@@ -144,7 +144,7 @@ public:
 
     // NB: private!!! but used in the serialization
     // couldn't get the `friend` stuff working correctly -- DM
-    std::unordered_map<cv::GShape, int> m_next_data_id;
+    std::unordered_map<ncvslideio::GShape, int> m_next_data_id;
 };
 
 // A projected graph of Islands (generated from graph of Operations)
@@ -158,7 +158,7 @@ struct IslandModel
 struct ActiveBackends
 {
     static const char *name() { return "ActiveBackends"; }
-    std::unordered_set<cv::gapi::GBackend> backends;
+    std::unordered_set<ncvslideio::gapi::GBackend> backends;
 };
 
 // This is a graph-global flag indicating this graph is compiled for
@@ -193,7 +193,7 @@ struct Deserialized
 struct NetworkParams
 {
     static const char *name() { return "NetworkParams"; }
-    cv::util::any opaque;
+    ncvslideio::util::any opaque;
 };
 
 // This is a custom metadata handling operator.
@@ -204,10 +204,10 @@ struct NetworkParams
 struct CustomMetaFunction
 {
     static const char *name() { return "CustomMetaFunction"; }
-    using CM = std::function< cv::GMetaArgs( const ade::Graph      &,
+    using CM = std::function< ncvslideio::GMetaArgs( const ade::Graph      &,
                                              const ade::NodeHandle &,
-                                             const cv::GMetaArgs   &,
-                                             const cv::GArgs       &)>;
+                                             const ncvslideio::GMetaArgs   &,
+                                             const ncvslideio::GArgs       &)>;
     CM customOutMeta;
 };
 
@@ -328,7 +328,7 @@ namespace GModel
     GAPI_EXPORTS ade::NodeHandle mkOpNode(Graph &g,
                                           const GKernel &k,
                                           const std::vector<GArg>& args,
-                                          const cv::util::any& params,
+                                          const ncvslideio::util::any& params,
                                           const std::string &island);
     // Isn't used by the framework or default backends, required for external backend development
     GAPI_EXPORTS ade::NodeHandle mkDataNode(Graph &g, const GShape shape);
@@ -359,10 +359,10 @@ namespace GModel
     GAPI_EXPORTS ade::EdgeHandle getInEdgeByPort(const GModel::ConstGraph& cg, const ade::NodeHandle& nh, std::size_t in_port);
 
     // Returns true if the given backend participates in the execution
-    GAPI_EXPORTS bool isActive(const GModel::Graph &cg, const cv::gapi::GBackend &backend);
+    GAPI_EXPORTS bool isActive(const GModel::Graph &cg, const ncvslideio::gapi::GBackend &backend);
 } // namespace GModel
 
 
-}} // namespace cv::gimpl
+}} // namespace ncvslideio::gimpl
 
 #endif // OPENCV_GAPI_GMODEL_HPP

@@ -28,7 +28,7 @@
 
 #include <opencv2/gapi/oak/infer.hpp> // infer params
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // Forward declaration
 class GOAKContext;
@@ -69,12 +69,12 @@ class GOAKExecutable final: public GIslandExecutable {
         size_t gapi_out_data_index;
     };
 
-    cv::GArg packInArg(const GArg &arg, std::vector<ExtractTypeHelper::InputPtr>& oak_ins);
+    ncvslideio::GArg packInArg(const GArg &arg, std::vector<ExtractTypeHelper::InputPtr>& oak_ins);
     void packOutArg(const RcDesc &rc, std::vector<ExtractTypeHelper::OutputPtr>& oak_outs);
 
     const ade::Graph& m_g;
     GModel::ConstGraph m_gm;
-    cv::GCompileArgs m_args;
+    ncvslideio::GCompileArgs m_args;
 
     std::unordered_map<ade::NodeHandle,
                        OAKNodeInfo,
@@ -82,7 +82,7 @@ class GOAKExecutable final: public GIslandExecutable {
 
     // Will be reworked later when XLinkIn will be introduced as input
     std::shared_ptr<dai::node::ColorCamera> m_camera_input;
-    cv::Size m_camera_size;
+    ncvslideio::Size m_camera_size;
 
     // Backend outputs
     std::unordered_map<ade::NodeHandle,
@@ -103,19 +103,19 @@ class GOAKExecutable final: public GIslandExecutable {
     std::unique_ptr<dai::Pipeline> m_pipeline;
 
     // Camera config
-    cv::gapi::oak::ColorCameraParams m_ccp;
+    ncvslideio::gapi::oak::ColorCameraParams m_ccp;
 
     // Infer info
     std::unordered_map<ade::NodeHandle,
-                       cv::gapi::oak::detail::ParamDesc,
+                       ncvslideio::gapi::oak::detail::ParamDesc,
                        ade::HandleHasher<ade::Node>> m_oak_infer_info;
 
 public:
     GOAKExecutable(const ade::Graph& g,
-                   const cv::GCompileArgs& args,
+                   const ncvslideio::GCompileArgs& args,
                    const std::vector<ade::NodeHandle>& nodes,
-                   const std::vector<cv::gimpl::Data>& ins_data,
-                   const std::vector<cv::gimpl::Data>& outs_data);
+                   const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                   const std::vector<ncvslideio::gimpl::Data>& outs_data);
     ~GOAKExecutable() = default;
 
     // FIXME: could it reshape?
@@ -137,14 +137,14 @@ public:
     using OutputPtr = GOAKExecutable::ExtractTypeHelper::Output*;
 
     GOAKContext(const std::unique_ptr<dai::Pipeline>& pipeline,
-                const cv::Size& camera_size,
-                std::vector<cv::GArg>& args,
+                const ncvslideio::Size& camera_size,
+                std::vector<ncvslideio::GArg>& args,
                 std::vector<OutputPtr>& results);
 
     GOAKContext(const std::unique_ptr<dai::Pipeline>& pipeline,
-                const cv::Size& camera_size,
-                const cv::gapi::oak::detail::ParamDesc& infer_info,
-                std::vector<cv::GArg>& args,
+                const ncvslideio::Size& camera_size,
+                const ncvslideio::gapi::oak::detail::ParamDesc& infer_info,
+                std::vector<ncvslideio::GArg>& args,
                 std::vector<OutputPtr>& results);
 
     // Generic accessor API
@@ -156,28 +156,28 @@ public:
     OutputPtr& out(int output);
 
     const std::unique_ptr<dai::Pipeline>& pipeline() const;
-    const cv::Size& camera_size() const;
-    const cv::gapi::oak::detail::ParamDesc& ii() const;
+    const ncvslideio::Size& camera_size() const;
+    const ncvslideio::gapi::oak::detail::ParamDesc& ii() const;
 
 private:
     const std::unique_ptr<dai::Pipeline>& m_pipeline;
-    const cv::Size m_camera_size;
-    const cv::gapi::oak::detail::ParamDesc m_infer_info;
-    std::vector<cv::GArg>& m_args;
+    const ncvslideio::Size m_camera_size;
+    const ncvslideio::gapi::oak::detail::ParamDesc m_infer_info;
+    std::vector<ncvslideio::GArg>& m_args;
     std::vector<OutputPtr>& m_outputs;
 };
 
 GOAKContext::GOAKContext(const std::unique_ptr<dai::Pipeline>& pipeline,
-                         const cv::Size& camera_size,
-                         std::vector<cv::GArg>& args,
+                         const ncvslideio::Size& camera_size,
+                         std::vector<ncvslideio::GArg>& args,
                          std::vector<OutputPtr>& results)
     : m_pipeline(pipeline), m_camera_size(camera_size),
       m_args(args), m_outputs(results) {}
 
 GOAKContext::GOAKContext(const std::unique_ptr<dai::Pipeline>& pipeline,
-                         const cv::Size& camera_size,
-                         const cv::gapi::oak::detail::ParamDesc& infer_info,
-                         std::vector<cv::GArg>& args,
+                         const ncvslideio::Size& camera_size,
+                         const ncvslideio::gapi::oak::detail::ParamDesc& infer_info,
+                         std::vector<ncvslideio::GArg>& args,
                          std::vector<OutputPtr>& results)
     : m_pipeline(pipeline), m_camera_size(camera_size),
       m_infer_info(infer_info), m_args(args), m_outputs(results) {}
@@ -186,11 +186,11 @@ const std::unique_ptr<dai::Pipeline>& GOAKContext::pipeline() const {
     return m_pipeline;
 }
 
-const cv::Size& GOAKContext::camera_size() const {
+const ncvslideio::Size& GOAKContext::camera_size() const {
     return m_camera_size;
 }
 
-const cv::gapi::oak::detail::ParamDesc& GOAKContext::ii() const {
+const ncvslideio::gapi::oak::detail::ParamDesc& GOAKContext::ii() const {
     return m_infer_info;
 }
 
@@ -205,14 +205,14 @@ GOAKContext::OutputPtr& GOAKContext::out(int output) {
 class OAKKernelParams {
 public:
     const std::unique_ptr<dai::Pipeline>& pipeline;
-    const cv::Size& camera_size;
-    const cv::gapi::oak::detail::ParamDesc& infer_info;
+    const ncvslideio::Size& camera_size;
+    const ncvslideio::gapi::oak::detail::ParamDesc& infer_info;
     std::vector<std::pair<std::string, dai::Buffer>>& in_queues;
 };
 
 namespace detail {
 template<class T> struct get_in;
-template<> struct get_in<cv::GFrame> {
+template<> struct get_in<ncvslideio::GFrame> {
     static GOAKContext::InputPtr& get(GOAKContext &ctx, int idx) { return ctx.in(idx); }
 };
 template<class T> struct get_in {
@@ -221,13 +221,13 @@ template<class T> struct get_in {
 // FIXME: add support of other types
 
 template<class T> struct get_out;
-template<> struct get_out<cv::GFrame> {
+template<> struct get_out<ncvslideio::GFrame> {
     static GOAKContext::OutputPtr& get(GOAKContext &ctx, int idx) { return ctx.out(idx); }
 };
-template<typename U> struct get_out<cv::GArray<U>> {
+template<typename U> struct get_out<ncvslideio::GArray<U>> {
     static GOAKContext::OutputPtr& get(GOAKContext &ctx, int idx) { return ctx.out(idx); }
 };
-template<> struct get_out<cv::GMat> {
+template<> struct get_out<ncvslideio::GMat> {
     static GOAKContext::OutputPtr& get(GOAKContext &ctx, int idx) { return ctx.out(idx); }
 };
 // FIXME: add support of other types
@@ -241,8 +241,8 @@ struct OAKCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...> > {
     static std::shared_ptr<dai::Node> construct_impl(  GOAKContext &ctx
                                                      , std::vector<std::pair<std::string,
                                                                              dai::Buffer>>& in_queues_params
-                                                     , cv::detail::Seq<IIs...>
-                                                     , cv::detail::Seq<OIs...>) {
+                                                     , ncvslideio::detail::Seq<IIs...>
+                                                     , ncvslideio::detail::Seq<OIs...>) {
         return Impl::put(OAKKernelParams{ctx.pipeline(),
                                          ctx.camera_size(),
                                          ctx.ii(),
@@ -256,8 +256,8 @@ struct OAKCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...> > {
                                                                       dai::Buffer>>& in_queues_params) {
         return construct_impl(ctx,
                               in_queues_params,
-                              typename cv::detail::MkSeq<sizeof...(Ins)>::type(),
-                              typename cv::detail::MkSeq<sizeof...(Outs)>::type());
+                              typename ncvslideio::detail::MkSeq<sizeof...(Ins)>::type(),
+                              typename ncvslideio::detail::MkSeq<sizeof...(Outs)>::type());
     }
 };
 
@@ -276,30 +276,30 @@ struct OAKComponent
     GOAKKernel k;
 };
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 using OAKGraph = ade::TypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     // OAK specific
-    , cv::gimpl::OAKComponent
+    , ncvslideio::gimpl::OAKComponent
     >;
 
 using ConstOAKGraph = ade::ConstTypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     // OAK specific
-    , cv::gimpl::OAKComponent
+    , ncvslideio::gimpl::OAKComponent
     >;
 
 namespace
 {
 std::pair<dai::TensorInfo, dai::TensorInfo>
-parseDaiInferMeta(const cv::gapi::oak::detail::ParamDesc& pd) {
+parseDaiInferMeta(const ncvslideio::gapi::oak::detail::ParamDesc& pd) {
     dai::OpenVINO::Blob blob(pd.blob_file);
 
     GAPI_Assert(blob.networkInputs.size() == 1);
@@ -310,7 +310,7 @@ parseDaiInferMeta(const cv::gapi::oak::detail::ParamDesc& pd) {
 }
 
 std::string
-getDaiInferOutLayerName(const cv::gapi::oak::detail::ParamDesc& pd) {
+getDaiInferOutLayerName(const ncvslideio::gapi::oak::detail::ParamDesc& pd) {
     dai::OpenVINO::Blob blob(pd.blob_file);
 
     GAPI_Assert(blob.networkInputs.size() == 1);
@@ -321,13 +321,13 @@ getDaiInferOutLayerName(const cv::gapi::oak::detail::ParamDesc& pd) {
 } // anonymous namespace
 
 // Custom meta function for OAK backend for infer
-static cv::GMetaArgs customOutMeta(const ade::Graph      &gr,
+static ncvslideio::GMetaArgs customOutMeta(const ade::Graph      &gr,
                                    const ade::NodeHandle &nh,
-                                   const cv::GMetaArgs   &/*in_metas*/,
-                                   const cv::GArgs       &/*in_args*/) {
-    cv::GMetaArgs result;
-    const auto &np = ConstOAKGraph(gr).metadata(nh).get<cv::gimpl::NetworkParams>();
-    const auto &pd = cv::util::any_cast<cv::gapi::oak::detail::ParamDesc>(np.opaque);
+                                   const ncvslideio::GMetaArgs   &/*in_metas*/,
+                                   const ncvslideio::GArgs       &/*in_args*/) {
+    ncvslideio::GMetaArgs result;
+    const auto &np = ConstOAKGraph(gr).metadata(nh).get<ncvslideio::gimpl::NetworkParams>();
+    const auto &pd = ncvslideio::util::any_cast<ncvslideio::gapi::oak::detail::ParamDesc>(np.opaque);
 
     // FIXME: Infer kernel and backend does rather the same
     auto in_out_tensor_info = parseDaiInferMeta(pd);
@@ -344,7 +344,7 @@ static cv::GMetaArgs customOutMeta(const ade::Graph      &gr,
     for (const auto& d : in_out_tensor_info.second.dims) {
         wrapped_dims.push_back(d);
     }
-    result = {cv::GMetaArg{cv::GMatDesc(CV_16F, 1, cv::Size(wrapped_dims[1], wrapped_dims[0]), false)}};
+    result = {ncvslideio::GMetaArg{ncvslideio::GMatDesc(CV_16F, 1, ncvslideio::Size(wrapped_dims[1], wrapped_dims[0]), false)}};
 
     return result;
 }
@@ -352,7 +352,7 @@ static cv::GMetaArgs customOutMeta(const ade::Graph      &gr,
 // This function links DAI operation nodes - parent's output to child's input.
 // It utilizes G-API graph to search for operation's node it's previous operation in graph
 // when links them in DAI graph.
-void cv::gimpl::GOAKExecutable::linkToParent(ade::NodeHandle handle)
+void ncvslideio::gimpl::GOAKExecutable::linkToParent(ade::NodeHandle handle)
 {
     ade::NodeHandle parent;
     for (const auto& data_nh : handle.get()->inNodes()) {
@@ -384,7 +384,7 @@ void cv::gimpl::GOAKExecutable::linkToParent(ade::NodeHandle handle)
 }
 
 // This function links DAI operations for Copy OP in G-API graph
-void cv::gimpl::GOAKExecutable::linkCopy(ade::NodeHandle handle) {
+void ncvslideio::gimpl::GOAKExecutable::linkCopy(ade::NodeHandle handle) {
     // 1. Check that there are no back-to-back Copy OPs in graph
     auto copy_out = handle.get()->outNodes();
     GAPI_Assert(copy_out.size() == 1);
@@ -466,20 +466,20 @@ void cv::gimpl::GOAKExecutable::linkCopy(ade::NodeHandle handle) {
     }
 }
 
-cv::GArg
-cv::gimpl::GOAKExecutable::packInArg(const GArg &arg,
+ncvslideio::GArg
+ncvslideio::gimpl::GOAKExecutable::packInArg(const GArg &arg,
                                      std::vector<ExtractTypeHelper::InputPtr>& oak_ins) {
-    if (arg.kind != cv::detail::ArgKind::GOBJREF) {
-        GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                    && arg.kind != cv::detail::ArgKind::GSCALAR
-                    && arg.kind != cv::detail::ArgKind::GARRAY
-                    && arg.kind != cv::detail::ArgKind::GOPAQUE
-                    && arg.kind != cv::detail::ArgKind::GFRAME);
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF) {
+        GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                    && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                    && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+                    && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE
+                    && arg.kind != ncvslideio::detail::ArgKind::GFRAME);
         // All other cases - pass as-is, with no transformations to
         // GArg contents.
-        return const_cast<cv::GArg&>(arg);
+        return const_cast<ncvslideio::GArg&>(arg);
     }
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape) {
     case GShape::GFRAME:
         oak_ins.push_back(nullptr);
@@ -491,7 +491,7 @@ cv::gimpl::GOAKExecutable::packInArg(const GArg &arg,
     }
 }
 
-void cv::gimpl::GOAKExecutable::packOutArg(const RcDesc &rc,
+void ncvslideio::gimpl::GOAKExecutable::packOutArg(const RcDesc &rc,
                                            std::vector<ExtractTypeHelper::OutputPtr>& oak_outs) {
     switch (rc.shape) {
     case GShape::GFRAME:
@@ -506,9 +506,9 @@ void cv::gimpl::GOAKExecutable::packOutArg(const RcDesc &rc,
 }
 
 namespace {
-static dai::CameraBoardSocket extractCameraBoardSocket(cv::gapi::oak::ColorCameraParams ccp) {
+static dai::CameraBoardSocket extractCameraBoardSocket(ncvslideio::gapi::oak::ColorCameraParams ccp) {
     switch (ccp.board_socket) {
-        case cv::gapi::oak::ColorCameraParams::BoardSocket::RGB:
+        case ncvslideio::gapi::oak::ColorCameraParams::BoardSocket::RGB:
             return dai::CameraBoardSocket::RGB;
         // FIXME: extend
         default:
@@ -519,9 +519,9 @@ static dai::CameraBoardSocket extractCameraBoardSocket(cv::gapi::oak::ColorCamer
 }
 
 static dai::ColorCameraProperties::SensorResolution
-extractCameraResolution(cv::gapi::oak::ColorCameraParams ccp) {
+extractCameraResolution(ncvslideio::gapi::oak::ColorCameraParams ccp) {
     switch (ccp.resolution) {
-        case cv::gapi::oak::ColorCameraParams::Resolution::THE_1080_P:
+        case ncvslideio::gapi::oak::ColorCameraParams::Resolution::THE_1080_P:
             return dai::ColorCameraProperties::SensorResolution::THE_1080_P;
         // FIXME: extend
         default:
@@ -532,11 +532,11 @@ extractCameraResolution(cv::gapi::oak::ColorCameraParams ccp) {
 }
 } // anonymous namespace
 
-cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
-                                          const cv::GCompileArgs &args,
+ncvslideio::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
+                                          const ncvslideio::GCompileArgs &args,
                                           const std::vector<ade::NodeHandle>& nodes,
-                                          const std::vector<cv::gimpl::Data>& ins_data,
-                                          const std::vector<cv::gimpl::Data>& outs_data)
+                                          const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                                          const std::vector<ncvslideio::gimpl::Data>& outs_data)
     : m_g(g), m_gm(m_g), m_args(args),
       m_device(nullptr), m_pipeline(new dai::Pipeline)
     {
@@ -555,7 +555,7 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
             if (gim.metadata(nh).get<NodeKind>().k == NodeKind::ISLAND)
             {
                 const auto isl = gim.metadata(nh).get<FusedIsland>().object;
-                if (isl->backend() == cv::gapi::oak::backend())
+                if (isl->backend() == ncvslideio::gapi::oak::backend())
                 {
                     ++oak_islands;
                 }
@@ -567,8 +567,8 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
             }
         }
 
-        m_ccp = cv::gimpl::getCompileArg<cv::gapi::oak::ColorCameraParams>(args)
-                    .value_or(cv::gapi::oak::ColorCameraParams{});
+        m_ccp = ncvslideio::gimpl::getCompileArg<ncvslideio::gapi::oak::ColorCameraParams>(args)
+                    .value_or(ncvslideio::gapi::oak::ColorCameraParams{});
 
         // FIXME: change the hard-coded behavior (XLinkIn path)
         auto camRgb = m_pipeline->create<dai::node::ColorCamera>();
@@ -580,9 +580,9 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
         // Extract infer params
         for (const auto& nh : nodes) {
             if (m_gm.metadata(nh).get<NodeType>().t == NodeType::OP) {
-                if (ConstOAKGraph(m_g).metadata(nh).contains<cv::gimpl::NetworkParams>()) {
-                    const auto &np = ConstOAKGraph(m_g).metadata(nh).get<cv::gimpl::NetworkParams>();
-                    const auto &pp = cv::util::any_cast<cv::gapi::oak::detail::ParamDesc>(np.opaque);
+                if (ConstOAKGraph(m_g).metadata(nh).contains<ncvslideio::gimpl::NetworkParams>()) {
+                    const auto &np = ConstOAKGraph(m_g).metadata(nh).get<ncvslideio::gimpl::NetworkParams>();
+                    const auto &pp = ncvslideio::util::any_cast<ncvslideio::gapi::oak::detail::ParamDesc>(np.opaque);
                     m_oak_infer_info[nh] = pp;
                     break;
                 }
@@ -613,7 +613,7 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
         m_camera_input = camRgb;
         // FIXME: change when other camera censors are introduced
         std::tuple<int, int> video_size = m_camera_input->getVideoSize();
-        m_camera_size = cv::Size{std::get<0>(video_size), std::get<1>(video_size)};
+        m_camera_size = ncvslideio::Size{std::get<0>(video_size), std::get<1>(video_size)};
 
         // Prepare XLinkOut nodes for each output object in graph
         for (size_t i = 0; i < outs_data.size(); ++i) {
@@ -626,8 +626,8 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
             for (const auto& nh : nodes) {
                 for (const auto& outdata : nh.get()->outNodes()) {
                     if (m_gm.metadata(outdata).get<NodeType>().t == NodeType::DATA) {
-                        auto rc = m_gm.metadata(outdata).get<cv::gimpl::Data>().rc;
-                        auto shape = m_gm.metadata(outdata).get<cv::gimpl::Data>().shape;
+                        auto rc = m_gm.metadata(outdata).get<ncvslideio::gimpl::Data>().rc;
+                        auto shape = m_gm.metadata(outdata).get<ncvslideio::gimpl::Data>().shape;
                         // Match outs_data with the actual operation
                         if (rc == outs_data[i].rc && shape == outs_data[i].shape) {
                             parent_op_nh = nh;
@@ -672,7 +672,7 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
                     }
                 }
 
-                std::vector<cv::GArg> in_ctx_args;
+                std::vector<ncvslideio::GArg> in_ctx_args;
                 in_ctx_args.reserve(op.args.size());
                 for (auto &op_arg : op.args) in_ctx_args.push_back(packInArg(op_arg,
                                                                              m_oak_nodes.at(nh).inputs));
@@ -680,7 +680,7 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
                 GAPI_Assert(!m_oak_nodes.at(nh).inputs.empty());
                 GAPI_Assert(!m_oak_nodes.at(nh).outputs.empty());
 
-                if (ConstOAKGraph(m_g).metadata(nh).contains<cv::gimpl::NetworkParams>()) {
+                if (ConstOAKGraph(m_g).metadata(nh).contains<ncvslideio::gimpl::NetworkParams>()) {
                     GOAKContext ctx(m_pipeline, m_camera_size, m_oak_infer_info[nh],
                                     in_ctx_args, m_oak_nodes.at(nh).outputs);
                     m_oak_nodes.at(nh).node = u.k.m_put_f(ctx, m_in_queues);
@@ -738,8 +738,8 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
             // Fill input op nodes
             for (const auto& d : ins_data) {
                 for (const auto& indata : nh.get()->inNodes()) {
-                    auto rc = m_gm.metadata(indata).get<cv::gimpl::Data>().rc;
-                    auto shape = m_gm.metadata(indata).get<cv::gimpl::Data>().shape;
+                    auto rc = m_gm.metadata(indata).get<ncvslideio::gimpl::Data>().rc;
+                    auto shape = m_gm.metadata(indata).get<ncvslideio::gimpl::Data>().shape;
                     if (rc == d.rc && shape == d.shape) {
                         in_nodes.insert(nh);
                     }
@@ -748,8 +748,8 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
             // Fill output op nodes
             for (const auto& d : outs_data) {
                 for (const auto& outdata : nh.get()->outNodes()) {
-                    auto rc = m_gm.metadata(outdata).get<cv::gimpl::Data>().rc;
-                    auto shape = m_gm.metadata(outdata).get<cv::gimpl::Data>().shape;
+                    auto rc = m_gm.metadata(outdata).get<ncvslideio::gimpl::Data>().rc;
+                    auto shape = m_gm.metadata(outdata).get<ncvslideio::gimpl::Data>().shape;
                     if (rc == d.rc && shape == d.shape) {
                         out_nodes.insert(nh);
                     }
@@ -810,20 +810,20 @@ cv::gimpl::GOAKExecutable::GOAKExecutable(const ade::Graph& g,
         }
     }
 
-void cv::gimpl::GOAKExecutable::handleNewStream() {
+void ncvslideio::gimpl::GOAKExecutable::handleNewStream() {
     // do nothing
 }
 
-void cv::gimpl::GOAKExecutable::handleStopStream() {
+void ncvslideio::gimpl::GOAKExecutable::handleStopStream() {
     // do nothing
 }
 
-void cv::gimpl::GOAKExecutable::run(GIslandExecutable::IInput  &in,
+void ncvslideio::gimpl::GOAKExecutable::run(GIslandExecutable::IInput  &in,
                                     GIslandExecutable::IOutput &out) {
     const auto in_msg = in.get();
 
-    if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg)) {
-        out.post(cv::gimpl::EndOfStream{});
+    if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg)) {
+        out.post(ncvslideio::gimpl::EndOfStream{});
         return;
     }
 
@@ -844,39 +844,39 @@ void cv::gimpl::GOAKExecutable::run(GIslandExecutable::IInput  &in,
         auto out_arg = out.get(out_q.gapi_out_data_index);
 
         // FIXME: misc info to be utilized in switch below
-        cv::GRunArg::Meta meta;
+        ncvslideio::GRunArg::Meta meta;
         std::shared_ptr<dai::ImgFrame> oak_frame;
 
         switch(out_arg.index()) {
-        case cv::GRunArgP::index_of<cv::MediaFrame*>():
+        case ncvslideio::GRunArgP::index_of<ncvslideio::MediaFrame*>():
         {
             oak_frame = q->get<dai::ImgFrame>();
             // FIXME: hard-coded NV12
-            *cv::util::get<cv::MediaFrame*>(out_arg) =
-                    cv::MediaFrame::Create<cv::gapi::oak::OAKMediaAdapter>(
-                            cv::Size(static_cast<int>(oak_frame->getWidth()),
+            *ncvslideio::util::get<ncvslideio::MediaFrame*>(out_arg) =
+                    ncvslideio::MediaFrame::Create<ncvslideio::gapi::oak::OAKMediaAdapter>(
+                            ncvslideio::Size(static_cast<int>(oak_frame->getWidth()),
                                      static_cast<int>(oak_frame->getHeight())),
-                            cv::MediaFormat::NV12,
+                            ncvslideio::MediaFormat::NV12,
                             std::move(oak_frame->getData()));
 
-            using namespace cv::gapi::streaming::meta_tag;
+            using namespace ncvslideio::gapi::streaming::meta_tag;
             meta[timestamp] = oak_frame->getTimestamp();
             meta[seq_id]    = oak_frame->getSequenceNum();
 
             break;
         }
-        case cv::GRunArgP::index_of<cv::detail::VectorRef>():
+        case ncvslideio::GRunArgP::index_of<ncvslideio::detail::VectorRef>():
         {
             oak_frame = q->get<dai::ImgFrame>();
-            cv::util::get<cv::detail::VectorRef>(out_arg).wref<uint8_t>() = std::move(oak_frame->getData());
+            ncvslideio::util::get<ncvslideio::detail::VectorRef>(out_arg).wref<uint8_t>() = std::move(oak_frame->getData());
 
-            using namespace cv::gapi::streaming::meta_tag;
+            using namespace ncvslideio::gapi::streaming::meta_tag;
             meta[timestamp] = oak_frame->getTimestamp();
             meta[seq_id]    = oak_frame->getSequenceNum();
 
             break;
         }
-        case cv::GRunArgP::index_of<cv::RMat*>(): // only supported for infer
+        case ncvslideio::GRunArgP::index_of<ncvslideio::RMat*>(): // only supported for infer
         {
             auto nn_data = q->get<dai::NNData>();
 
@@ -891,15 +891,15 @@ void cv::gimpl::GOAKExecutable::run(GIslandExecutable::IInput  &in,
             // FIMXE: only 1-channel data is supported for now
             GAPI_Assert(in_out_tensor_info.second.dims[2] == 1);
 
-            *cv::util::get<cv::RMat*>(out_arg) =
-                    cv::make_rmat<cv::gapi::oak::OAKRMatAdapter>(
-                        cv::Size(in_out_tensor_info.second.dims[1],
+            *ncvslideio::util::get<ncvslideio::RMat*>(out_arg) =
+                    ncvslideio::make_rmat<ncvslideio::gapi::oak::OAKRMatAdapter>(
+                        ncvslideio::Size(in_out_tensor_info.second.dims[1],
                                  in_out_tensor_info.second.dims[0]),
                         CV_16F, // FIXME: cover other precisions
                         std::move(layer)
                     );
 
-            using namespace cv::gapi::streaming::meta_tag;
+            using namespace ncvslideio::gapi::streaming::meta_tag;
             meta[timestamp] = nn_data->getTimestamp();
             meta[seq_id]    = nn_data->getSequenceNum();
 
@@ -915,22 +915,22 @@ void cv::gimpl::GOAKExecutable::run(GIslandExecutable::IInput  &in,
     }
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace oak {
 
 namespace {
-static dai::VideoEncoderProperties::Profile convertEncProfile(cv::gapi::oak::EncoderConfig::Profile pf) {
+static dai::VideoEncoderProperties::Profile convertEncProfile(ncvslideio::gapi::oak::EncoderConfig::Profile pf) {
     switch (pf) {
-        case cv::gapi::oak::EncoderConfig::Profile::H264_BASELINE:
+        case ncvslideio::gapi::oak::EncoderConfig::Profile::H264_BASELINE:
             return dai::VideoEncoderProperties::Profile::H264_BASELINE;
-        case cv::gapi::oak::EncoderConfig::Profile::H264_HIGH:
+        case ncvslideio::gapi::oak::EncoderConfig::Profile::H264_HIGH:
             return dai::VideoEncoderProperties::Profile::H264_HIGH;
-        case cv::gapi::oak::EncoderConfig::Profile::H264_MAIN:
+        case ncvslideio::gapi::oak::EncoderConfig::Profile::H264_MAIN:
             return dai::VideoEncoderProperties::Profile::H264_MAIN;
-        case cv::gapi::oak::EncoderConfig::Profile::H265_MAIN:
+        case ncvslideio::gapi::oak::EncoderConfig::Profile::H265_MAIN:
             return dai::VideoEncoderProperties::Profile::H265_MAIN;
-        case cv::gapi::oak::EncoderConfig::Profile::MJPEG:
+        case ncvslideio::gapi::oak::EncoderConfig::Profile::MJPEG:
             return dai::VideoEncoderProperties::Profile::MJPEG;
         default:
             // basically unreachable
@@ -947,23 +947,23 @@ static dai::VideoEncoderProperties::Profile convertEncProfile(cv::gapi::oak::Enc
 //        like in streaming/infer backends (mainly infer and copy operations)
 template<class Impl, class K, class InArgs = typename K::InArgs, class OutArgs = typename K::OutArgs>
 class GOAKKernelImpl: public detail::OAKCallHelper<Impl, InArgs, OutArgs>
-                    , public cv::detail::KernelTag {
+                    , public ncvslideio::detail::KernelTag {
     using P = detail::OAKCallHelper<Impl, InArgs, OutArgs>;
 public:
     using API = K;
-    static cv::gapi::GBackend   backend() { return cv::gapi::oak::backend();  }
+    static ncvslideio::gapi::GBackend   backend() { return ncvslideio::gapi::oak::backend();  }
     static GOAKKernel kernel()  { return GOAKKernel(&P::construct); }
 };
 
 #define GAPI_OAK_KERNEL(Name, API) \
-    struct Name: public cv::gimpl::oak::GOAKKernelImpl<Name, API>
+    struct Name: public ncvslideio::gimpl::oak::GOAKKernelImpl<Name, API>
 
 #define GAPI_OAK_FIXED_API_KERNEL(Name, API, InArgs, OutArgs) \
-    struct Name: public cv::gimpl::oak::GOAKKernelImpl<Name, API, InArgs, OutArgs>
+    struct Name: public ncvslideio::gimpl::oak::GOAKKernelImpl<Name, API, InArgs, OutArgs>
 
 namespace {
-GAPI_OAK_FIXED_API_KERNEL(GOAKInfer, cv::GInferBase, std::tuple<cv::GFrame>, std::tuple<cv::GMat>) {
-    static std::shared_ptr<dai::Node> put(const cv::gimpl::OAKKernelParams& params,
+GAPI_OAK_FIXED_API_KERNEL(GOAKInfer, ncvslideio::GInferBase, std::tuple<ncvslideio::GFrame>, std::tuple<ncvslideio::GMat>) {
+    static std::shared_ptr<dai::Node> put(const ncvslideio::gimpl::OAKKernelParams& params,
                                           GOAKContext::InputPtr& in,
                                           GOAKContext::OutputPtr& out) {
         auto nn = params.pipeline->create<dai::node::NeuralNetwork>();
@@ -984,8 +984,8 @@ GAPI_OAK_FIXED_API_KERNEL(GOAKInfer, cv::GInferBase, std::tuple<cv::GFrame>, std
     }
 };
 
-GAPI_OAK_KERNEL(GOAKCopy, cv::gapi::oak::GCopy) {
-    static std::shared_ptr<dai::Node> put(const cv::gimpl::OAKKernelParams&,
+GAPI_OAK_KERNEL(GOAKCopy, ncvslideio::gapi::oak::GCopy) {
+    static std::shared_ptr<dai::Node> put(const ncvslideio::gimpl::OAKKernelParams&,
                                           GOAKContext::InputPtr&,
                                           GOAKContext::OutputPtr&) {
         // Do nothing in Copy OP since it's either already represented
@@ -994,10 +994,10 @@ GAPI_OAK_KERNEL(GOAKCopy, cv::gapi::oak::GCopy) {
     }
 };
 
-GAPI_OAK_KERNEL(GOAKEncFrame, cv::gapi::oak::GEncFrame) {
-    static std::shared_ptr<dai::Node> put(const cv::gimpl::OAKKernelParams& params,
+GAPI_OAK_KERNEL(GOAKEncFrame, ncvslideio::gapi::oak::GEncFrame) {
+    static std::shared_ptr<dai::Node> put(const ncvslideio::gimpl::OAKKernelParams& params,
                                           GOAKContext::InputPtr& in,
-                                          const cv::gapi::oak::EncoderConfig& cfg,
+                                          const ncvslideio::gapi::oak::EncoderConfig& cfg,
                                           GOAKContext::OutputPtr& out) {
         auto videoEnc = params.pipeline->create<dai::node::VideoEncoder>();
 
@@ -1012,11 +1012,11 @@ GAPI_OAK_KERNEL(GOAKEncFrame, cv::gapi::oak::GEncFrame) {
     }
 };
 
-GAPI_OAK_KERNEL(GOAKSobelXY, cv::gapi::oak::GSobelXY) {
-    static std::shared_ptr<dai::Node> put(const cv::gimpl::OAKKernelParams& params,
+GAPI_OAK_KERNEL(GOAKSobelXY, ncvslideio::gapi::oak::GSobelXY) {
+    static std::shared_ptr<dai::Node> put(const ncvslideio::gimpl::OAKKernelParams& params,
                                           GOAKContext::InputPtr& in,
-                                          const cv::Mat& hk,
-                                          const cv::Mat& vk,
+                                          const ncvslideio::Mat& hk,
+                                          const ncvslideio::Mat& vk,
                                           GOAKContext::OutputPtr& out) {
         auto edgeDetector = params.pipeline->create<dai::node::EdgeDetector>();
 
@@ -1025,7 +1025,7 @@ GAPI_OAK_KERNEL(GOAKSobelXY, cv::gapi::oak::GSobelXY) {
         auto xinEdgeCfg = params.pipeline->create<dai::node::XLinkIn>();
         xinEdgeCfg->setStreamName("sobel_cfg");
 
-        auto mat2vec = [&](cv::Mat m) {
+        auto mat2vec = [&](ncvslideio::Mat m) {
             std::vector<std::vector<int>> v(m.rows);
             for (int i = 0; i < m.rows; ++i)
             {
@@ -1051,82 +1051,82 @@ GAPI_OAK_KERNEL(GOAKSobelXY, cv::gapi::oak::GSobelXY) {
 } // anonymous namespace
 } // namespace oak
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
-class GOAKBackendImpl final : public cv::gapi::GBackend::Priv {
+class GOAKBackendImpl final : public ncvslideio::gapi::GBackend::Priv {
     virtual void unpackKernel(ade::Graph            &graph,
                               const ade::NodeHandle &op_node,
-                              const cv::GKernelImpl &impl) override {
-        using namespace cv::gimpl;
+                              const ncvslideio::GKernelImpl &impl) override {
+        using namespace ncvslideio::gimpl;
 
         OAKGraph gm(graph);
 
-        const auto &kimpl  = cv::util::any_cast<GOAKKernel>(impl.opaque);
+        const auto &kimpl  = ncvslideio::util::any_cast<GOAKKernel>(impl.opaque);
         gm.metadata(op_node).set(OAKComponent{kimpl});
 
         // Set custom meta for infer
-        if (gm.metadata(op_node).contains<cv::gimpl::NetworkParams>()) {
+        if (gm.metadata(op_node).contains<ncvslideio::gimpl::NetworkParams>()) {
             gm.metadata(op_node).set(CustomMetaFunction{customOutMeta});
         }
     }
 
     virtual EPtr compile(const ade::Graph &graph,
-                         const cv::GCompileArgs &args,
+                         const ncvslideio::GCompileArgs &args,
                          const std::vector<ade::NodeHandle> &nodes,
-                         const std::vector<cv::gimpl::Data>& ins_data,
-                         const std::vector<cv::gimpl::Data>& outs_data) const override {
-        cv::gimpl::GModel::ConstGraph gm(graph);
+                         const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                         const std::vector<ncvslideio::gimpl::Data>& outs_data) const override {
+        ncvslideio::gimpl::GModel::ConstGraph gm(graph);
         // FIXME: pass streaming/non-streaming option to support non-camera case
         // NB: how could we have non-OAK source in streaming mode, then OAK backend in
         //     streaming mode but without camera input?
-        if (!gm.metadata().contains<cv::gimpl::Streaming>()) {
+        if (!gm.metadata().contains<ncvslideio::gimpl::Streaming>()) {
             GAPI_Error("OAK backend only supports Streaming mode for now");
         }
-        return EPtr{new cv::gimpl::GOAKExecutable(graph, args, nodes, ins_data, outs_data)};
+        return EPtr{new ncvslideio::gimpl::GOAKExecutable(graph, args, nodes, ins_data, outs_data)};
     }
 
-    virtual cv::GKernelPackage auxiliaryKernels() const override {
-        return cv::gapi::kernels< cv::gimpl::oak::GOAKInfer
+    virtual ncvslideio::GKernelPackage auxiliaryKernels() const override {
+        return ncvslideio::gapi::kernels< ncvslideio::gimpl::oak::GOAKInfer
                                 >();
     }
 };
 
-cv::gapi::GBackend cv::gapi::oak::backend() {
-    static cv::gapi::GBackend this_backend(std::make_shared<GOAKBackendImpl>());
+ncvslideio::gapi::GBackend ncvslideio::gapi::oak::backend() {
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GOAKBackendImpl>());
     return this_backend;
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace oak {
 
-cv::gapi::GKernelPackage kernels() {
-    return cv::gapi::kernels< cv::gimpl::oak::GOAKEncFrame
-                            , cv::gimpl::oak::GOAKSobelXY
-                            , cv::gimpl::oak::GOAKCopy
+ncvslideio::gapi::GKernelPackage kernels() {
+    return ncvslideio::gapi::kernels< ncvslideio::gimpl::oak::GOAKEncFrame
+                            , ncvslideio::gimpl::oak::GOAKSobelXY
+                            , ncvslideio::gimpl::oak::GOAKCopy
                             >();
 }
 
 } // namespace oak
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace oak {
 
-cv::gapi::GKernelPackage kernels() {
+ncvslideio::gapi::GKernelPackage kernels() {
     GAPI_Error("Built without OAK support");
 }
 
-cv::gapi::GBackend backend() {
+ncvslideio::gapi::GBackend backend() {
     GAPI_Error("Built without OAK support");
 }
 
 } // namespace oak
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_OAK

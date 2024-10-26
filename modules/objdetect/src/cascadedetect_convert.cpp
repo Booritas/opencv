@@ -45,7 +45,7 @@
 #include "cascadedetect.hpp"
 #include <stdio.h>
 
-namespace cv
+namespace ncvslideio
 {
 
 /* field names */

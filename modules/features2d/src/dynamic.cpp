@@ -41,7 +41,7 @@
  //M*/
 
 #include "precomp.hpp"
-namespace cv
+namespace ncvslideio
 {
 
 }

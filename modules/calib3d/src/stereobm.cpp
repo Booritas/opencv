@@ -53,7 +53,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include "opencv2/core/utils/buffer_area.private.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 struct StereoBMParams
@@ -105,7 +105,7 @@ struct StereoBMParams
 #ifdef HAVE_OPENCL
 static bool ocl_prefilter_norm(InputArray _input, OutputArray _output, int winsize, int prefilterCap)
 {
-    ocl::Kernel k("prefilter_norm", ocl::calib3d::stereobm_oclsrc, cv::format("-D WSZ=%d", winsize));
+    ocl::Kernel k("prefilter_norm", ocl::calib3d::stereobm_oclsrc, ncvslideio::format("-D WSZ=%d", winsize));
     if(k.empty())
         return false;
 
@@ -1019,7 +1019,7 @@ static bool ocl_stereobm( InputArray _left, InputArray _right,
         sizeY = sizeX - 1,
         N = ndisp * 2;
 
-    cv::String opt = cv::format("-D DEFINE_KERNEL_STEREOBM -D MIN_DISP=%d -D NUM_DISP=%d"
+    ncvslideio::String opt = ncvslideio::format("-D DEFINE_KERNEL_STEREOBM -D MIN_DISP=%d -D NUM_DISP=%d"
                                 " -D BLOCK_SIZE_X=%d -D BLOCK_SIZE_Y=%d -D WSZ=%d",
                                 mindisp, ndisp,
                                 sizeX, sizeY, wsz);

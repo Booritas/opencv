@@ -8,7 +8,7 @@
 #include <opencv2/gapi/own/assert.hpp>
 #include <opencv2/gapi/streaming/onevpl/data_provider_interface.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -26,6 +26,6 @@ struct IDataProvider::mfx_bitstream {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_DATA_PROVIDER_DEFINES_HPP

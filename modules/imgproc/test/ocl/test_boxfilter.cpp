@@ -106,8 +106,8 @@ OCL_TEST_P(BoxFilter, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::boxFilter(src_roi, dst_roi, -1, ksize, anchor, normalize, borderType));
-        OCL_ON(cv::boxFilter(usrc_roi, udst_roi, -1, ksize, anchor, normalize, borderType));
+        OCL_OFF(ncvslideio::boxFilter(src_roi, dst_roi, -1, ksize, anchor, normalize, borderType));
+        OCL_ON(ncvslideio::boxFilter(usrc_roi, udst_roi, -1, ksize, anchor, normalize, borderType));
 
         Near(depth <= CV_32S ? 1 : 3e-3);
     }
@@ -123,8 +123,8 @@ OCL_TEST_P(SqrBoxFilter, Mat)
 
         int ddepth = depth == CV_8U ? CV_32S : CV_64F;
 
-        OCL_OFF(cv::sqrBoxFilter(src_roi, dst_roi, ddepth, ksize, anchor, normalize, borderType));
-        OCL_ON(cv::sqrBoxFilter(usrc_roi, udst_roi, ddepth, ksize, anchor, normalize, borderType));
+        OCL_OFF(ncvslideio::sqrBoxFilter(src_roi, dst_roi, ddepth, ksize, anchor, normalize, borderType));
+        OCL_ON(ncvslideio::sqrBoxFilter(usrc_roi, udst_roi, ddepth, ksize, anchor, normalize, borderType));
 
         Near(depth <= CV_32S ? 1 : 7e-2);
     }
@@ -211,8 +211,8 @@ OCL_TEST_P(BoxFilter3x3_cols16_rows2, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::boxFilter(src_roi, dst_roi, -1, ksize, anchor, normalize, borderType));
-        OCL_ON(cv::boxFilter(usrc_roi, udst_roi, -1, ksize, anchor, normalize, borderType));
+        OCL_OFF(ncvslideio::boxFilter(src_roi, dst_roi, -1, ksize, anchor, normalize, borderType));
+        OCL_ON(ncvslideio::boxFilter(usrc_roi, udst_roi, -1, ksize, anchor, normalize, borderType));
 
         Near(depth <= CV_32S ? 1 : 3e-3);
     }

@@ -20,7 +20,7 @@ Below is the original copyright:
 #include "internal.hpp"
 #include "../include/pipeline.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -139,7 +139,7 @@ Pipeline::Pipeline(const uint32_t* spv, size_t length,
     pipelineCreateInfo.stage = stageCreateInfo;
     pipelineCreateInfo.layout = pipelineLayout;
 
-    cv::AutoLock lock(kContextMtx);
+    ncvslideio::AutoLock lock(kContextMtx);
     VK_CHECK_RESULT(vkCreateComputePipelines(kDevice, cache, 1, &pipelineCreateInfo, 0, &pipelineVK));
 
     // Step5: destroy shaderModule
@@ -279,7 +279,7 @@ Ptr<Pipeline> PipelineFactory::getPipeline(const std::string& key, const std::ve
     // retrieve spv from SPVMaps with given key
     auto iterSPV  = SPVMaps.find(key);
     if (iterSPV == SPVMaps.end())
-        CV_Error(cv::Error::StsError, "Can not create SPV with the given name:"+key+"!");
+        CV_Error(ncvslideio::Error::StsError, "Can not create SPV with the given name:"+key+"!");
 
     const uint32_t* spv = iterSPV->second.first;
     size_t length = iterSPV->second.second;
@@ -292,7 +292,7 @@ Ptr<Pipeline> PipelineFactory::getPipeline(const std::string& key, const std::ve
     }
     else
     {
-        CV_Error(cv::Error::StsError, "Can not Created the VkPipeline "+key);
+        CV_Error(ncvslideio::Error::StsError, "Can not Created the VkPipeline "+key);
     }
 
     return pipeline;
@@ -306,4 +306,4 @@ Ptr<PipelineFactory> PipelineFactory::create()
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

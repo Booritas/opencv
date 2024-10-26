@@ -39,7 +39,7 @@ std::string weights_path(const std::string &model_path) {
     CV_Assert(sz > EXT_LEN);
 
     const auto ext = model_path.substr(sz - EXT_LEN);
-    CV_Assert(cv::toLowerCase(ext) == ".xml");
+    CV_Assert(ncvslideio::toLowerCase(ext) == ".xml");
     return model_path.substr(0u, sz - EXT_LEN) + ".bin";
 }
 
@@ -207,50 +207,50 @@ namespace {
 
 //////////////////////////////////////////////////////////////////////
 // Define networks for this sample
-using GMat2 = std::tuple<cv::GMat, cv::GMat>;
+using GMat2 = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
 G_API_NET(TextDetection,
-          <GMat2(cv::GMat)>,
+          <GMat2(ncvslideio::GMat)>,
           "sample.custom.text_detect");
 
 G_API_NET(TextRecognition,
-          <cv::GMat(cv::GMat)>,
+          <ncvslideio::GMat(ncvslideio::GMat)>,
           "sample.custom.text_recogn");
 
 // Define custom operations
-using GSize = cv::GOpaque<cv::Size>;
-using GRRects = cv::GArray<cv::RotatedRect>;
+using GSize = ncvslideio::GOpaque<ncvslideio::Size>;
+using GRRects = ncvslideio::GArray<ncvslideio::RotatedRect>;
 G_API_OP(PostProcess,
-        <GRRects(cv::GMat,cv::GMat,GSize,float,float)>,
+        <GRRects(ncvslideio::GMat,ncvslideio::GMat,GSize,float,float)>,
         "sample.custom.text.post_proc") {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc &,
-                                  const cv::GMatDesc &,
-                                  const cv::GOpaqueDesc &,
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &,
+                                  const ncvslideio::GMatDesc &,
+                                  const ncvslideio::GOpaqueDesc &,
                                   float,
                                   float) {
-        return cv::empty_array_desc();
+        return ncvslideio::empty_array_desc();
     }
 };
 
-using GMats = cv::GArray<cv::GMat>;
+using GMats = ncvslideio::GArray<ncvslideio::GMat>;
 G_API_OP(CropLabels,
-         <GMats(cv::GMat,GRRects,GSize)>,
+         <GMats(ncvslideio::GMat,GRRects,GSize)>,
          "sample.custom.text.crop") {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc &,
-                                  const cv::GArrayDesc &,
-                                  const cv::GOpaqueDesc &) {
-        return cv::empty_array_desc();
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &,
+                                  const ncvslideio::GArrayDesc &,
+                                  const ncvslideio::GOpaqueDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
 //////////////////////////////////////////////////////////////////////
 // Implement custom operations
 GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
-    static void run(const cv::Mat &link,
-                    const cv::Mat &segm,
-                    const cv::Size &img_size,
+    static void run(const ncvslideio::Mat &link,
+                    const ncvslideio::Mat &segm,
+                    const ncvslideio::Size &img_size,
                     const float link_threshold,
                     const float segm_threshold,
-                    std::vector<cv::RotatedRect> &out) {
+                    std::vector<ncvslideio::RotatedRect> &out) {
         // NOTE: Taken from the OMZ text detection sample almost as-is
         const int kMinArea = 300;
         const int kMinHeight = 10;
@@ -287,12 +287,12 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
                           img_size);
     }
 
-    static std::vector<std::size_t> dimsToShape(const cv::MatSize &sz) {
+    static std::vector<std::size_t> dimsToShape(const ncvslideio::MatSize &sz) {
         const int n_dims = sz.dims();
         std::vector<std::size_t> result;
         result.reserve(n_dims);
 
-        // cv::MatSize is not iterable...
+        // ncvslideio::MatSize is not iterable...
         for (int i = 0; i < n_dims; i++) {
             result.emplace_back(static_cast<std::size_t>(sz[i]));
         }
@@ -368,7 +368,7 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
         }
     }
 
-    static cv::Mat decodeImageByJoin(const std::vector<float> &cls_data,
+    static ncvslideio::Mat decodeImageByJoin(const std::vector<float> &cls_data,
                                      const std::vector<int>   &cls_data_shape,
                                      const std::vector<float> &link_data,
                                      const std::vector<int>   &link_data_shape,
@@ -380,7 +380,7 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
 
         std::vector<uchar> pixel_mask(h * w, 0);
         std::unordered_map<int, int> group_mask;
-        std::vector<cv::Point> points;
+        std::vector<ncvslideio::Point> points;
         for (int i = 0; i < static_cast<int>(pixel_mask.size()); i++) {
             pixel_mask[i] = cls_data[i] >= cls_conf_threshold;
             if (pixel_mask[i]) {
@@ -414,13 +414,13 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
         return get_all(points, w, h, group_mask);
     }
 
-    static cv::Mat get_all(const std::vector<cv::Point> &points,
+    static ncvslideio::Mat get_all(const std::vector<ncvslideio::Point> &points,
                            const int w,
                            const int h,
                            std::unordered_map<int, int> &group_mask) {
         // NOTE: Taken from the OMZ text detection sample almost as-is
         std::unordered_map<int, int> root_map;
-        cv::Mat mask(h, w, CV_32S, cv::Scalar(0));
+        ncvslideio::Mat mask(h, w, CV_32S, ncvslideio::Scalar(0));
         for (const auto &point : points) {
             int point_root = findRoot(point.x + point.y * w, group_mask);
             if (root_map.find(point_root) == root_map.end()) {
@@ -446,27 +446,27 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
         return root;
     }
 
-    static std::vector<cv::RotatedRect> maskToBoxes(const cv::Mat &mask,
+    static std::vector<ncvslideio::RotatedRect> maskToBoxes(const ncvslideio::Mat &mask,
                                                     const float min_area,
                                                     const float min_height,
-                                                    const cv::Size &image_size) {
+                                                    const ncvslideio::Size &image_size) {
         // NOTE: Taken from the OMZ text detection sample almost as-is
-        std::vector<cv::RotatedRect> bboxes;
+        std::vector<ncvslideio::RotatedRect> bboxes;
         double min_val = 0.;
         double max_val = 0.;
-        cv::minMaxLoc(mask, &min_val, &max_val);
+        ncvslideio::minMaxLoc(mask, &min_val, &max_val);
         int max_bbox_idx = static_cast<int>(max_val);
-        cv::Mat resized_mask;
-        cv::resize(mask, resized_mask, image_size, 0, 0, cv::INTER_NEAREST);
+        ncvslideio::Mat resized_mask;
+        ncvslideio::resize(mask, resized_mask, image_size, 0, 0, ncvslideio::INTER_NEAREST);
 
         for (int i = 1; i <= max_bbox_idx; i++) {
-            cv::Mat bbox_mask = resized_mask == i;
-            std::vector<std::vector<cv::Point>> contours;
+            ncvslideio::Mat bbox_mask = resized_mask == i;
+            std::vector<std::vector<ncvslideio::Point>> contours;
 
-            cv::findContours(bbox_mask, contours, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
+            ncvslideio::findContours(bbox_mask, contours, ncvslideio::RETR_CCOMP, ncvslideio::CHAIN_APPROX_SIMPLE);
             if (contours.empty())
                 continue;
-            cv::RotatedRect r = cv::minAreaRect(contours[0]);
+            ncvslideio::RotatedRect r = ncvslideio::minAreaRect(contours[0]);
             if (std::min(r.size.width, r.size.height) < min_height)
                 continue;
             if (r.size.area() < min_area)
@@ -478,47 +478,47 @@ GAPI_OCV_KERNEL(OCVPostProcess, PostProcess) {
 }; // GAPI_OCV_KERNEL(PostProcess)
 
 GAPI_OCV_KERNEL(OCVCropLabels, CropLabels) {
-    static void run(const cv::Mat &image,
-                    const std::vector<cv::RotatedRect> &detections,
-                    const cv::Size &outSize,
-                    std::vector<cv::Mat> &out) {
+    static void run(const ncvslideio::Mat &image,
+                    const std::vector<ncvslideio::RotatedRect> &detections,
+                    const ncvslideio::Size &outSize,
+                    std::vector<ncvslideio::Mat> &out) {
         out.clear();
         out.reserve(detections.size());
-        cv::Mat crop(outSize, CV_8UC3, cv::Scalar(0));
-        cv::Mat gray(outSize, CV_8UC1, cv::Scalar(0));
+        ncvslideio::Mat crop(outSize, CV_8UC3, ncvslideio::Scalar(0));
+        ncvslideio::Mat gray(outSize, CV_8UC1, ncvslideio::Scalar(0));
         std::vector<int> blob_shape = {1,1,outSize.height,outSize.width};
 
         for (auto &&rr : detections) {
-            std::vector<cv::Point2f> points(4);
+            std::vector<ncvslideio::Point2f> points(4);
             rr.points(points.data());
 
             const auto top_left_point_idx = topLeftPointIdx(points);
-            cv::Point2f point0 = points[static_cast<size_t>(top_left_point_idx)];
-            cv::Point2f point1 = points[(top_left_point_idx + 1) % 4];
-            cv::Point2f point2 = points[(top_left_point_idx + 2) % 4];
+            ncvslideio::Point2f point0 = points[static_cast<size_t>(top_left_point_idx)];
+            ncvslideio::Point2f point1 = points[(top_left_point_idx + 1) % 4];
+            ncvslideio::Point2f point2 = points[(top_left_point_idx + 2) % 4];
 
-            std::vector<cv::Point2f> from{point0, point1, point2};
-            std::vector<cv::Point2f> to{
-                cv::Point2f(0.0f, 0.0f),
-                cv::Point2f(static_cast<float>(outSize.width-1), 0.0f),
-                cv::Point2f(static_cast<float>(outSize.width-1),
+            std::vector<ncvslideio::Point2f> from{point0, point1, point2};
+            std::vector<ncvslideio::Point2f> to{
+                ncvslideio::Point2f(0.0f, 0.0f),
+                ncvslideio::Point2f(static_cast<float>(outSize.width-1), 0.0f),
+                ncvslideio::Point2f(static_cast<float>(outSize.width-1),
                             static_cast<float>(outSize.height-1))
             };
-            cv::Mat M = cv::getAffineTransform(from, to);
-            cv::warpAffine(image, crop, M, outSize);
-            cv::cvtColor(crop, gray, cv::COLOR_BGR2GRAY);
+            ncvslideio::Mat M = ncvslideio::getAffineTransform(from, to);
+            ncvslideio::warpAffine(image, crop, M, outSize);
+            ncvslideio::cvtColor(crop, gray, ncvslideio::COLOR_BGR2GRAY);
 
-            cv::Mat blob;
+            ncvslideio::Mat blob;
             gray.convertTo(blob, CV_32F);
             out.push_back(blob.reshape(1, blob_shape)); // pass as 1,1,H,W instead of H,W
         }
     }
 
-    static int topLeftPointIdx(const std::vector<cv::Point2f> &points) {
+    static int topLeftPointIdx(const std::vector<ncvslideio::Point2f> &points) {
         // NOTE: Taken from the OMZ text detection sample almost as-is
-        cv::Point2f most_left(std::numeric_limits<float>::max(),
+        ncvslideio::Point2f most_left(std::numeric_limits<float>::max(),
                               std::numeric_limits<float>::max());
-        cv::Point2f almost_most_left(std::numeric_limits<float>::max(),
+        ncvslideio::Point2f almost_most_left(std::numeric_limits<float>::max(),
                                      std::numeric_limits<float>::max());
         int most_left_idx = -1;
         int almost_most_left_idx = -1;
@@ -553,38 +553,38 @@ GAPI_OCV_KERNEL(OCVCropLabels, CropLabels) {
 namespace vis {
 namespace {
 
-void drawRotatedRect(cv::Mat &m, const cv::RotatedRect &rc) {
-    std::vector<cv::Point2f> tmp_points(5);
+void drawRotatedRect(ncvslideio::Mat &m, const ncvslideio::RotatedRect &rc) {
+    std::vector<ncvslideio::Point2f> tmp_points(5);
     rc.points(tmp_points.data());
     tmp_points[4] = tmp_points[0];
     auto prev = tmp_points.begin(), it = prev+1;
     for (; it != tmp_points.end(); ++it) {
-        cv::line(m, *prev, *it, cv::Scalar(50, 205, 50), 2);
+        ncvslideio::line(m, *prev, *it, ncvslideio::Scalar(50, 205, 50), 2);
         prev = it;
     }
 }
 
-void drawText(cv::Mat &m, const cv::RotatedRect &rc, const std::string &str) {
-    const int    fface   = cv::FONT_HERSHEY_SIMPLEX;
+void drawText(ncvslideio::Mat &m, const ncvslideio::RotatedRect &rc, const std::string &str) {
+    const int    fface   = ncvslideio::FONT_HERSHEY_SIMPLEX;
     const double scale   = 0.7;
     const int    thick   = 1;
           int    base    = 0;
-    const auto text_size = cv::getTextSize(str, fface, scale, thick, &base);
+    const auto text_size = ncvslideio::getTextSize(str, fface, scale, thick, &base);
 
-    std::vector<cv::Point2f> tmp_points(4);
+    std::vector<ncvslideio::Point2f> tmp_points(4);
     rc.points(tmp_points.data());
     const auto tl_point_idx = custom::OCVCropLabels::topLeftPointIdx(tmp_points);
-    cv::Point text_pos = tmp_points[tl_point_idx];
+    ncvslideio::Point text_pos = tmp_points[tl_point_idx];
     text_pos.x = std::max(0, text_pos.x);
     text_pos.y = std::max(text_size.height, text_pos.y);
 
-    cv::rectangle(m,
-                  text_pos + cv::Point{0, base},
-                  text_pos + cv::Point{text_size.width, -text_size.height},
+    ncvslideio::rectangle(m,
+                  text_pos + ncvslideio::Point{0, base},
+                  text_pos + ncvslideio::Point{text_size.width, -text_size.height},
                   CV_RGB(50, 205, 50),
-                  cv::FILLED);
+                  ncvslideio::FILLED);
     const auto white = CV_RGB(255, 255, 255);
-    cv::putText(m, str, text_pos, fface, scale, white, thick, 8);
+    ncvslideio::putText(m, str, text_pos, fface, scale, white, thick, 8);
 }
 
 } // anonymous namespace
@@ -592,7 +592,7 @@ void drawText(cv::Mat &m, const cv::RotatedRect &rc, const std::string &str) {
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -609,64 +609,64 @@ int main(int argc, char *argv[])
     const auto pad_symbol      = '#';
     const auto symbol_set      = cmd.get<std::string>("sset") + pad_symbol;
 
-    cv::GMat in;
-    cv::GOpaque<cv::Size> in_rec_sz;
-    cv::GMat link, segm;
-    std::tie(link, segm) = cv::gapi::infer<custom::TextDetection>(in);
-    cv::GOpaque<cv::Size> size = cv::gapi::streaming::size(in);
-    cv::GArray<cv::RotatedRect> rrs = custom::PostProcess::on(link, segm, size, 0.8f, 0.8f);
-    cv::GArray<cv::GMat> labels = custom::CropLabels::on(in, rrs, in_rec_sz);
-    cv::GArray<cv::GMat> text = cv::gapi::infer2<custom::TextRecognition>(in, labels);
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Size> in_rec_sz;
+    ncvslideio::GMat link, segm;
+    std::tie(link, segm) = ncvslideio::gapi::infer<custom::TextDetection>(in);
+    ncvslideio::GOpaque<ncvslideio::Size> size = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GArray<ncvslideio::RotatedRect> rrs = custom::PostProcess::on(link, segm, size, 0.8f, 0.8f);
+    ncvslideio::GArray<ncvslideio::GMat> labels = custom::CropLabels::on(in, rrs, in_rec_sz);
+    ncvslideio::GArray<ncvslideio::GMat> text = ncvslideio::gapi::infer2<custom::TextRecognition>(in, labels);
 
-    cv::GComputation graph(cv::GIn(in, in_rec_sz),
-                           cv::GOut(cv::gapi::copy(in), rrs, text));
+    ncvslideio::GComputation graph(ncvslideio::GIn(in, in_rec_sz),
+                           ncvslideio::GOut(ncvslideio::gapi::copy(in), rrs, text));
 
     // Text detection network
-    auto tdet_net = cv::gapi::ie::Params<custom::TextDetection> {
+    auto tdet_net = ncvslideio::gapi::ie::Params<custom::TextDetection> {
         tdet_model_path,                // path to topology IR
         weights_path(tdet_model_path),  // path to weights
         tdet_target_dev,                // device specifier
     }.cfgOutputLayers({"model/link_logits_/add", "model/segm_logits/add"});
 
-    auto trec_net = cv::gapi::ie::Params<custom::TextRecognition> {
+    auto trec_net = ncvslideio::gapi::ie::Params<custom::TextRecognition> {
         trec_model_path,                // path to topology IR
         weights_path(trec_model_path),  // path to weights
         trec_target_dev,                // device specifier
     };
-    auto networks = cv::gapi::networks(tdet_net, trec_net);
+    auto networks = ncvslideio::gapi::networks(tdet_net, trec_net);
 
-    auto kernels = cv::gapi::kernels< custom::OCVPostProcess
+    auto kernels = ncvslideio::gapi::kernels< custom::OCVPostProcess
                                     , custom::OCVCropLabels
                                     >();
-    auto pipeline = graph.compileStreaming(cv::compile_args(kernels, networks));
+    auto pipeline = graph.compileStreaming(ncvslideio::compile_args(kernels, networks));
 
     std::cout << "Reading " << input_file_name << std::endl;
 
     // Input stream
-    auto in_src = cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input_file_name);
+    auto in_src = ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input_file_name);
 
     // Text recognition input size (also an input parameter to the graph)
-    auto in_rsz = cv::Size{ 120, 32 };
+    auto in_rsz = ncvslideio::Size{ 120, 32 };
 
     // Set the pipeline source & start the pipeline
-    pipeline.setSource(cv::gin(in_src, in_rsz));
+    pipeline.setSource(ncvslideio::gin(in_src, in_rsz));
     pipeline.start();
 
     // Declare the output data & run the processing loop
-    cv::TickMeter tm;
-    cv::Mat image;
-    std::vector<cv::RotatedRect> out_rcs;
-    std::vector<cv::Mat> out_text;
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat image;
+    std::vector<ncvslideio::RotatedRect> out_rcs;
+    std::vector<ncvslideio::Mat> out_text;
 
     tm.start();
     int frames = 0;
-    while (pipeline.pull(cv::gout(image, out_rcs, out_text))) {
+    while (pipeline.pull(ncvslideio::gout(image, out_rcs, out_text))) {
         frames++;
 
         CV_Assert(out_rcs.size() == out_text.size());
         const auto num_labels = out_rcs.size();
 
-        std::vector<cv::Point2f> tmp_points(4);
+        std::vector<ncvslideio::Point2f> tmp_points(4);
         for (std::size_t l = 0; l < num_labels; l++) {
             // Decode the recognized text in the rectangle
             const auto &blob = out_text[l];
@@ -687,8 +687,8 @@ int main(int argc, char *argv[])
             }
         }
         tm.stop();
-        cv::imshow("Out", image);
-        cv::waitKey(1);
+        ncvslideio::imshow("Out", image);
+        ncvslideio::waitKey(1);
         tm.start();
     }
     tm.stop();

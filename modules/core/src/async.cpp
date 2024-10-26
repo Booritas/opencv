@@ -19,7 +19,7 @@
 #include <condition_variable>
 #include <chrono>
 
-namespace cv {
+namespace ncvslideio {
 
 /**
 Manages shared state of asynchronous result
@@ -39,15 +39,15 @@ struct AsyncArray::Impl
 
     mutable bool has_result; // Mat, UMat or exception
 
-    mutable cv::Ptr<Mat> result_mat;
-    mutable cv::Ptr<UMat> result_umat;
+    mutable ncvslideio::Ptr<Mat> result_mat;
+    mutable ncvslideio::Ptr<UMat> result_umat;
 
 
     bool has_exception;
 #if CV__EXCEPTION_PTR
     std::exception_ptr exception;
 #endif
-    cv::Exception cv_exception;
+    ncvslideio::Exception cv_exception;
 
     mutable bool result_is_fetched;
 
@@ -191,7 +191,7 @@ struct AsyncArray::Impl
     }
 #endif
 
-    void setException(const cv::Exception e)
+    void setException(const ncvslideio::Exception e)
     {
         if (future_is_returned && refcount_future == 0)
             CV_Error(Error::StsError, "Associated AsyncArray has been destroyed");
@@ -208,7 +208,7 @@ struct AsyncArray::Impl
 
 #else  // OPENCV_DISABLE_THREAD_SUPPORT
 
-namespace cv {
+namespace ncvslideio {
 
 // no threading
 struct AsyncArray::Impl
@@ -223,15 +223,15 @@ struct AsyncArray::Impl
 
     mutable bool has_result; // Mat, UMat or exception
 
-    mutable cv::Ptr<Mat> result_mat;
-    mutable cv::Ptr<UMat> result_umat;
+    mutable ncvslideio::Ptr<Mat> result_mat;
+    mutable ncvslideio::Ptr<UMat> result_umat;
 
 
     bool has_exception;
 #if CV__EXCEPTION_PTR
     std::exception_ptr exception;
 #endif
-    cv::Exception cv_exception;
+    ncvslideio::Exception cv_exception;
 
     mutable bool result_is_fetched;
 
@@ -353,7 +353,7 @@ struct AsyncArray::Impl
     }
 #endif
 
-    void setException(const cv::Exception e)
+    void setException(const ncvslideio::Exception e)
     {
         if (future_is_returned && refcount_future == 0)
             CV_Error(Error::StsError, "Associated AsyncArray has been destroyed");
@@ -368,7 +368,7 @@ struct AsyncArray::Impl
 
 #endif  // OPENCV_DISABLE_THREAD_SUPPORT
 
-namespace cv {
+namespace ncvslideio {
 
 AsyncArray::AsyncArray() CV_NOEXCEPT
     : p(NULL)
@@ -482,7 +482,7 @@ void AsyncPromise::setValue(InputArray value)
     return p->setValue(value);
 }
 
-void AsyncPromise::setException(const cv::Exception& exception)
+void AsyncPromise::setException(const ncvslideio::Exception& exception)
 {
     CV_Assert(p);
     return p->setException(exception);

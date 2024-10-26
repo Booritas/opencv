@@ -21,12 +21,12 @@ int main(void)
     int no_runs = 2;
 
     // https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html
-    cv::Mat src(IMG_ROWS, IMG_COLS, CV_8UC1, (void *)raw_pixels);
+    ncvslideio::Mat src(IMG_ROWS, IMG_COLS, CV_8UC1, (void *)raw_pixels);
 
     // Run calc Hist
     for(int i=0; i < no_runs; i++){
         std::cout << "Running iteration # "<< i << std::endl;
-        cv::norm(src);
+        ncvslideio::norm(src);
     }
 
     return 0;

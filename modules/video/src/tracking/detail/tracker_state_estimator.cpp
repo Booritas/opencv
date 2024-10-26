@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "opencv2/video/detail/tracking.detail.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -34,4 +34,4 @@ String TrackerStateEstimator::getClassName() const
     return className;
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

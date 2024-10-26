@@ -46,7 +46,7 @@
 #include <google/protobuf/stubs/common.h>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 

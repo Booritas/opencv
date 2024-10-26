@@ -9,7 +9,7 @@
 #include "layers_common.hpp"
 #include "cpu_kernels/fast_gemm.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -59,7 +59,7 @@ static Mat Transpose(
     Mat output;
     MatShape order(permutation.begin(), permutation.end());
 
-    cv::transposeND((reshape ? input_reshaped : input), order, output);
+    ncvslideio::transposeND((reshape ? input_reshaped : input), order, output);
     return output;
 }
 
@@ -186,7 +186,7 @@ Mat Diagonal(const Mat& input, int dim1, int dim2)
                                                     [](const std::string& a, int b) {
                                                         return a + ' ' + std::to_string(b);
                                                     });
-        CV_Error(Error::StsError, cv::format("Cannot parse the diagonal elements along dims %d and %d for input shape %s",dim1, dim2, input_dims_str.c_str()));
+        CV_Error(Error::StsError, ncvslideio::format("Cannot parse the diagonal elements along dims %d and %d for input shape %s",dim1, dim2, input_dims_str.c_str()));
     }
 
     int first_dim = std::min(dim1, dim2);
@@ -387,7 +387,7 @@ public:
 
         // get the input shapes from onnx importer
         for (int i=0; i < numInputs; i++){
-            auto param = params.get("inputShapes" + cv::format("%d", i));
+            auto param = params.get("inputShapes" + ncvslideio::format("%d", i));
             int inputDims = param.size();
             std::vector<int> shape;
             for (int i = 0; i < inputDims; ++i)
@@ -470,7 +470,7 @@ public:
         // homogenize inputs
         preProcessInputs(inputs_arr);
 
-        std::vector<cv::Mat> rawInputs, outputs;
+        std::vector<ncvslideio::Mat> rawInputs, outputs;
         inputs_arr.getMatVector(rawInputs);
         outputs_arr.getMatVector(outputs);
         Mat result;
@@ -603,7 +603,7 @@ Mat LayerEinsumImpl::reduceSum(Mat& src, MatShape& reduceAxis)
 
 void LayerEinsumImpl::preProcessInputs(InputArrayOfArrays& inputs_arr)
 {
-    std::vector<cv::Mat> inputs;
+    std::vector<ncvslideio::Mat> inputs;
     inputs_arr.getMatVector(inputs);
 
     preProcessedInputs.resize(inputs.size());
@@ -901,7 +901,7 @@ void LayerEinsumImpl::processEquation(const std::vector<MatShape>& inputs)
                 // there should not be more than 3 '.'s in the current subscript
                 if (++ellipsisCharCount > 3)
                 {
-                    CV_Error(Error::StsError, cv::format("Found a '.' not part of an ellipsis in input: %d", inputIdx));
+                    CV_Error(Error::StsError, ncvslideio::format("Found a '.' not part of an ellipsis in input: %d", inputIdx));
                 }
 
                 // We have seen all 3 '.'s. We can safely process the ellipsis now.
@@ -944,7 +944,7 @@ void LayerEinsumImpl::processEquation(const std::vector<MatShape>& inputs)
             } else {
                 if (middleOfellipsis){
                     CV_Error(Error::StsAssert,
-                    cv::format(
+                    ncvslideio::format(
                         "Encountered '.' character that is not part of an ellipsis in the input: [%d]",
                         inputIdx));
                 }
@@ -970,10 +970,10 @@ void LayerEinsumImpl::processEquation(const std::vector<MatShape>& inputs)
 
                     if (subscriptIndicesToDimValue[mappedIndx] != dimValue) {
                         if (dimValue != 1) {
-                            CV_Error(Error::StsError, cv::format("Einsum operands can not be broadcasted."
+                            CV_Error(Error::StsError, ncvslideio::format("Einsum operands can not be broadcasted."
                                                                 "Check input shapes/equation passed."
                                                                 "Input shape of operand [%d]", inputIdx) +
-                                                    cv::format(" is incompatible in the dimention [%zu].", static_cast<size_t>(dim_count)));
+                                                    ncvslideio::format(" is incompatible in the dimention [%zu].", static_cast<size_t>(dim_count)));
                         }
                     }
                 }
@@ -1378,4 +1378,4 @@ Ptr<EinsumLayer> EinsumLayer::create(const LayerParams& params)
     return makePtr<LayerEinsumImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

@@ -48,7 +48,7 @@
        Some backward compatibility stuff, to be moved to legacy or compat module
 \************************************************************************************/
 
-using cv::Ptr;
+using ncvslideio::Ptr;
 
 ////////////////// Levenberg-Marquardt engine (the old variant) ////////////////////////
 
@@ -59,7 +59,7 @@ CvLevMarq::CvLevMarq()
     iters = 0;
     completeSymmFlag = false;
     errNorm = prevErrNorm = DBL_MAX;
-    solveMethod = cv::DECOMP_SVD;
+    solveMethod = ncvslideio::DECOMP_SVD;
 }
 
 CvLevMarq::CvLevMarq( int nparams, int nerrs, CvTermCriteria criteria0, bool _completeSymmFlag )
@@ -115,7 +115,7 @@ void CvLevMarq::init( int nparams, int nerrs, CvTermCriteria criteria0, bool _co
     state = STARTED;
     iters = 0;
     completeSymmFlag = _completeSymmFlag;
-    solveMethod = cv::DECOMP_SVD;
+    solveMethod = ncvslideio::DECOMP_SVD;
 }
 
 bool CvLevMarq::update( const CvMat*& _param, CvMat*& matJ, CvMat*& _err )
@@ -259,10 +259,10 @@ bool CvLevMarq::updateAlt( const CvMat*& _param, CvMat*& _JtJ, CvMat*& _JtErr, d
 }
 
 namespace {
-static void subMatrix(const cv::Mat& src, cv::Mat& dst, const std::vector<uchar>& cols,
+static void subMatrix(const ncvslideio::Mat& src, ncvslideio::Mat& dst, const std::vector<uchar>& cols,
                       const std::vector<uchar>& rows) {
-    int nonzeros_cols = cv::countNonZero(cols);
-    cv::Mat tmp(src.rows, nonzeros_cols, CV_64FC1);
+    int nonzeros_cols = ncvslideio::countNonZero(cols);
+    ncvslideio::Mat tmp(src.rows, nonzeros_cols, CV_64FC1);
 
     for (int i = 0, j = 0; i < (int)cols.size(); i++)
     {
@@ -272,7 +272,7 @@ static void subMatrix(const cv::Mat& src, cv::Mat& dst, const std::vector<uchar>
         }
     }
 
-    int nonzeros_rows  = cv::countNonZero(rows);
+    int nonzeros_rows  = ncvslideio::countNonZero(rows);
     dst.create(nonzeros_rows, nonzeros_cols, CV_64FC1);
     for (int i = 0, j = 0; i < (int)rows.size(); i++)
     {
@@ -288,7 +288,7 @@ static void subMatrix(const cv::Mat& src, cv::Mat& dst, const std::vector<uchar>
 
 void CvLevMarq::step()
 {
-    using namespace cv;
+    using namespace ncvslideio;
     const double LOG10 = log(10.);
     double lambda = exp(lambdaLg10*LOG10);
     int nparams = param->rows;
@@ -324,7 +324,7 @@ void CvLevMarq::step()
 
 CV_IMPL int cvRANSACUpdateNumIters( double p, double ep, int modelPoints, int maxIters )
 {
-    return cv::RANSACUpdateNumIters(p, ep, modelPoints, maxIters);
+    return ncvslideio::RANSACUpdateNumIters(p, ep, modelPoints, maxIters);
 }
 
 
@@ -332,12 +332,12 @@ CV_IMPL int cvFindHomography( const CvMat* _src, const CvMat* _dst, CvMat* __H, 
                               double ransacReprojThreshold, CvMat* _mask, int maxIters,
                               double confidence)
 {
-    cv::Mat src = cv::cvarrToMat(_src), dst = cv::cvarrToMat(_dst);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(_src), dst = ncvslideio::cvarrToMat(_dst);
 
     if( src.channels() == 1 && (src.rows == 2 || src.rows == 3) && src.cols > 3 )
-        cv::transpose(src, src);
+        ncvslideio::transpose(src, src);
     if( dst.channels() == 1 && (dst.rows == 2 || dst.rows == 3) && dst.cols > 3 )
-        cv::transpose(dst, dst);
+        ncvslideio::transpose(dst, dst);
 
     if ( maxIters < 0 )
         maxIters = 0;
@@ -349,15 +349,15 @@ CV_IMPL int cvFindHomography( const CvMat* _src, const CvMat* _dst, CvMat* __H, 
     if ( confidence > 1 )
         confidence = 1;
 
-    const cv::Mat H = cv::cvarrToMat(__H), mask = cv::cvarrToMat(_mask);
-    cv::Mat H0 = cv::findHomography(src, dst, method, ransacReprojThreshold,
-                                    _mask ? cv::_OutputArray(mask) : cv::_OutputArray(), maxIters,
+    const ncvslideio::Mat H = ncvslideio::cvarrToMat(__H), mask = ncvslideio::cvarrToMat(_mask);
+    ncvslideio::Mat H0 = ncvslideio::findHomography(src, dst, method, ransacReprojThreshold,
+                                    _mask ? ncvslideio::_OutputArray(mask) : ncvslideio::_OutputArray(), maxIters,
                                     confidence);
 
     if( H0.empty() )
     {
-        cv::Mat Hz = cv::cvarrToMat(__H);
-        Hz.setTo(cv::Scalar::all(0));
+        ncvslideio::Mat Hz = ncvslideio::cvarrToMat(__H);
+        Hz.setTo(ncvslideio::Scalar::all(0));
         return 0;
     }
     H0.convertTo(H, H.type());
@@ -369,26 +369,26 @@ CV_IMPL int cvFindFundamentalMat( const CvMat* points1, const CvMat* points2,
                                   CvMat* fmatrix, int method,
                                   double param1, double param2, CvMat* _mask )
 {
-    cv::Mat m1 = cv::cvarrToMat(points1), m2 = cv::cvarrToMat(points2);
+    ncvslideio::Mat m1 = ncvslideio::cvarrToMat(points1), m2 = ncvslideio::cvarrToMat(points2);
 
     if( m1.channels() == 1 && (m1.rows == 2 || m1.rows == 3) && m1.cols > 3 )
-        cv::transpose(m1, m1);
+        ncvslideio::transpose(m1, m1);
     if( m2.channels() == 1 && (m2.rows == 2 || m2.rows == 3) && m2.cols > 3 )
-        cv::transpose(m2, m2);
+        ncvslideio::transpose(m2, m2);
 
-    const cv::Mat FM = cv::cvarrToMat(fmatrix), mask = cv::cvarrToMat(_mask);
-    cv::Mat FM0 = cv::findFundamentalMat(m1, m2, method, param1, param2,
-                                         _mask ? cv::_OutputArray(mask) : cv::_OutputArray());
+    const ncvslideio::Mat FM = ncvslideio::cvarrToMat(fmatrix), mask = ncvslideio::cvarrToMat(_mask);
+    ncvslideio::Mat FM0 = ncvslideio::findFundamentalMat(m1, m2, method, param1, param2,
+                                         _mask ? ncvslideio::_OutputArray(mask) : ncvslideio::_OutputArray());
 
     if( FM0.empty() )
     {
-        cv::Mat FM0z = cv::cvarrToMat(fmatrix);
-        FM0z.setTo(cv::Scalar::all(0));
+        ncvslideio::Mat FM0z = ncvslideio::cvarrToMat(fmatrix);
+        FM0z.setTo(ncvslideio::Scalar::all(0));
         return 0;
     }
 
     CV_Assert( FM0.cols == 3 && FM0.rows % 3 == 0 && FM.cols == 3 && FM.rows % 3 == 0 && FM.channels() == 1 );
-    cv::Mat FM1 = FM.rowRange(0, MIN(FM0.rows, FM.rows));
+    ncvslideio::Mat FM1 = FM.rowRange(0, MIN(FM0.rows, FM.rows));
     FM0.rowRange(0, FM1.rows).convertTo(FM1, FM1.type());
     return FM1.rows / 3;
 }
@@ -397,14 +397,14 @@ CV_IMPL int cvFindFundamentalMat( const CvMat* points1, const CvMat* points2,
 CV_IMPL void cvComputeCorrespondEpilines( const CvMat* points, int pointImageID,
                                           const CvMat* fmatrix, CvMat* _lines )
 {
-    cv::Mat pt = cv::cvarrToMat(points), fm = cv::cvarrToMat(fmatrix);
-    cv::Mat lines = cv::cvarrToMat(_lines);
-    const cv::Mat lines0 = lines;
+    ncvslideio::Mat pt = ncvslideio::cvarrToMat(points), fm = ncvslideio::cvarrToMat(fmatrix);
+    ncvslideio::Mat lines = ncvslideio::cvarrToMat(_lines);
+    const ncvslideio::Mat lines0 = lines;
 
     if( pt.channels() == 1 && (pt.rows == 2 || pt.rows == 3) && pt.cols > 3 )
-        cv::transpose(pt, pt);
+        ncvslideio::transpose(pt, pt);
 
-    cv::computeCorrespondEpilines(pt, pointImageID, fm, lines);
+    ncvslideio::computeCorrespondEpilines(pt, pointImageID, fm, lines);
 
     bool tflag = lines0.channels() == 1 && lines0.rows == 3 && lines0.cols > 3;
     lines = lines.reshape(lines0.channels(), (tflag ? lines0.cols : lines0.rows));
@@ -431,22 +431,22 @@ CV_IMPL void cvComputeCorrespondEpilines( const CvMat* points, int pointImageID,
 
 CV_IMPL void cvConvertPointsHomogeneous( const CvMat* _src, CvMat* _dst )
 {
-    cv::Mat src = cv::cvarrToMat(_src), dst = cv::cvarrToMat(_dst);
-    const cv::Mat dst0 = dst;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(_src), dst = ncvslideio::cvarrToMat(_dst);
+    const ncvslideio::Mat dst0 = dst;
 
     int d0 = src.channels() > 1 ? src.channels() : MIN(src.cols, src.rows);
 
     if( src.channels() == 1 && src.cols > d0 )
-        cv::transpose(src, src);
+        ncvslideio::transpose(src, src);
 
     int d1 = dst.channels() > 1 ? dst.channels() : MIN(dst.cols, dst.rows);
 
     if( d0 == d1 )
         src.copyTo(dst);
     else if( d0 < d1 )
-        cv::convertPointsToHomogeneous(src, dst);
+        ncvslideio::convertPointsToHomogeneous(src, dst);
     else
-        cv::convertPointsFromHomogeneous(src, dst);
+        ncvslideio::convertPointsFromHomogeneous(src, dst);
 
     bool tflag = dst0.channels() == 1 && dst0.cols > d1;
     dst = dst.reshape(dst0.channels(), (tflag ? dst0.cols : dst0.rows));

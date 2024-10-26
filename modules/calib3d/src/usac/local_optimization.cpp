@@ -6,7 +6,7 @@
 #include "../usac.hpp"
 #include "opencv2/imgproc/detail/gcgraph.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class GraphCutImpl : public GraphCut {
 protected:
     const Ptr<NeighborhoodGraph> neighborhood_graph;
@@ -347,7 +347,7 @@ private:
     int points_size, max_lo_iters, non_min_sample_size, current_ransac_iter;
     std::vector<double> weights;
     std::vector<int> inliers;
-    std::vector<cv::Mat> models;
+    std::vector<ncvslideio::Mat> models;
     double inlier_threshold_sqr;
     int num_lo_optimizations = 0;
     bool updated_lo = false;
@@ -361,7 +361,7 @@ public:
         non_min_sample_size = random_generator->getSubsetSize();
         current_ransac_iter = 0;
         inliers = std::vector<int>(quality_->getPointsSize());
-        models = std::vector<cv::Mat>(estimator_->getMaxNumberOfSolutions());
+        models = std::vector<ncvslideio::Mat>(estimator_->getMaxNumberOfSolutions());
         points_size = quality_->getPointsSize();
         inlier_threshold_sqr = inlier_threshold_sqr_;
         if (weight_fnc != nullptr) weights = std::vector<double>(points_size);
@@ -519,7 +519,7 @@ public:
         points_size = quality_->getPointsSize();
         threshold = quality_->getThreshold();
         iou_thr = iou_thr_;
-        is_covariance = dynamic_cast<const cv::usac::CovarianceSolver*>(solver_.get()) != nullptr;
+        is_covariance = dynamic_cast<const ncvslideio::usac::CovarianceSolver*>(solver_.get()) != nullptr;
         mask = std::vector<bool>(points_size);
         mask_best = std::vector<bool>(points_size);
         inliers = std::vector<int>(points_size);
@@ -527,7 +527,7 @@ public:
             weights = std::vector<double>(points_size);
             max_thr = weight_fnc->getThreshold();
             if (is_covariance)
-                CV_Error(cv::Error::StsBadArg, "Covariance polisher cannot be combined with weights!");
+                CV_Error(ncvslideio::Error::StsBadArg, "Covariance polisher cannot be combined with weights!");
         }
     }
 

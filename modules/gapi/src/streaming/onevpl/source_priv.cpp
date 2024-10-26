@@ -20,11 +20,11 @@
 #include "logger.hpp"
 
 #ifndef HAVE_ONEVPL
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
-bool GSource::Priv::pull(cv::gapi::wip::Data&) {
+bool GSource::Priv::pull(ncvslideio::gapi::wip::Data&) {
     return true;
 }
 GMetaArg GSource::Priv::descr_of() const {
@@ -33,7 +33,7 @@ GMetaArg GSource::Priv::descr_of() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else // HAVE_ONEVPL
 
@@ -41,7 +41,7 @@ GMetaArg GSource::Priv::descr_of() const {
 mfxLoader mfx_handle = MFXLoad();
 int impl_number = 0;
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -246,14 +246,14 @@ GSource::Priv::Priv(std::shared_ptr<IDataProvider> provider,
     const mfxFrameInfo& video_param = engine_session_ptr->get_video_param();
 
     // set valid description
-    description.size = cv::Size {
+    description.size = ncvslideio::Size {
                             video_param.Width,
                             video_param.Height};
     switch(video_param.FourCC) {
         case MFX_FOURCC_I420:
             throw std::runtime_error("Cannot parse GMetaArg description: MediaFrame doesn't support I420 type");
         case MFX_FOURCC_NV12:
-            description.fmt = cv::MediaFormat::NV12;
+            description.fmt = ncvslideio::MediaFormat::NV12;
             break;
         default:
             throw std::runtime_error("Cannot parse GMetaArg description: MediaFrame unknown 'fmt' type: " +
@@ -344,7 +344,7 @@ const std::vector<CfgParam>& GSource::Priv::getCfgParams() const
     return cfg_params;
 }
 
-bool GSource::Priv::pull(cv::gapi::wip::Data& data)
+bool GSource::Priv::pull(ncvslideio::gapi::wip::Data& data)
 {
     ProcessingEngineBase::ExecutionStatus status = ProcessingEngineBase::ExecutionStatus::Continue;
     while (0 == engine->get_ready_frames_count() &&
@@ -370,6 +370,6 @@ GMetaArg GSource::Priv::descr_of() const
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL

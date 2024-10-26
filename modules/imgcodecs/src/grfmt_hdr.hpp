@@ -47,7 +47,7 @@
 
 #ifdef HAVE_IMGCODEC_HDR
 
-namespace cv
+namespace ncvslideio
 {
 
 // Radiance rgbe (.hdr) reader

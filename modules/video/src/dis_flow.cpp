@@ -48,7 +48,7 @@ using namespace std;
 #define EPS 0.001F
 #define INF 1E+10F
 
-namespace cv {
+namespace ncvslideio {
 
 class DISOpticalFlowImpl CV_FINAL : public DISOpticalFlow
 {
@@ -1100,7 +1100,7 @@ bool DISOpticalFlowImpl::ocl_PatchInverseSearch(UMat &src_U,
     if (ocl::Device::getDefault().isExtensionSupported("cl_khr_subgroups"))
         subgroups_build_options = " -DCV_USE_SUBGROUPS=1";
 
-    String build_options = cv::format(
+    String build_options = ncvslideio::format(
                 "-DDIS_BORDER_SIZE=%d -DDIS_PATCH_SIZE=%d -DDIS_PATCH_STRIDE=%d",
                 border_size, patch_size, patch_stride
             ) + subgroups_build_options;
@@ -1195,7 +1195,7 @@ bool DISOpticalFlowImpl::ocl_Densification(UMat &dst_U, UMat &src_S, UMat &_I0, 
     size_t globalSize[] = {(size_t)w, (size_t)h};
     size_t localSize[]  = {16, 16};
 
-    String build_options = cv::format(
+    String build_options = ncvslideio::format(
                 "-DDIS_PATCH_SIZE=%d -DDIS_PATCH_STRIDE=%d",
                 patch_size, patch_stride
             );
@@ -1318,7 +1318,7 @@ bool DISOpticalFlowImpl::ocl_precomputeStructureTensor(UMat &dst_I0xx, UMat &dst
     dst_I0y = Scalar::all(0);
 #endif
 
-    String build_options = cv::format(
+    String build_options = ncvslideio::format(
                 "-DDIS_PATCH_SIZE=%d -DDIS_PATCH_STRIDE=%d",
                 patch_size, patch_stride
             );
@@ -1371,7 +1371,7 @@ bool DISOpticalFlowImpl::ocl_calc(InputArray I0, InputArray I1, InputOutputArray
                          (int)(log(min(I0Mat.cols, I0Mat.rows) / patch_size) / log(2.0)));              /* Deepest pyramid level greater or equal than patch*/
 
     if (coarsest_scale<0)
-        CV_Error(cv::Error::StsBadSize, "The input image must have either width or height >= 12");
+        CV_Error(ncvslideio::Error::StsBadSize, "The input image must have either width or height >= 12");
 
     if (coarsest_scale<finest_scale)
     {
@@ -1453,7 +1453,7 @@ void DISOpticalFlowImpl::calc(InputArray I0, InputArray I1, InputOutputArray flo
                          (int)(log(min(I0Mat.cols, I0Mat.rows) / patch_size) / log(2.0)));              /* Deepest pyramid level greater or equal than patch*/
 
     if (coarsest_scale<0)
-        CV_Error(cv::Error::StsBadSize, "The input image must have either width or height >= 12");
+        CV_Error(ncvslideio::Error::StsBadSize, "The input image must have either width or height >= 12");
 
     if (coarsest_scale<finest_scale)
     {

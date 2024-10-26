@@ -42,20 +42,20 @@ namespace video_capture_xaml
         Window::Current->VisibilityChanged += ref new Windows::UI::Xaml::WindowVisibilityChangedEventHandler(this, &video_capture_xaml::MainPage::OnVisibilityChanged);
 
         // attach XAML elements
-        cv::winrt_setFrameContainer(cvImage);
+        ncvslideio::winrt_setFrameContainer(cvImage);
 
         // start (1) frame-grabbing loop and (2) message loop
         //
         // 1. Function passed as an argument must implement common OCV reading frames
-        //    pattern (see cv::VideoCapture documentation) AND call cv::winrt_imgshow().
+        //    pattern (see ncvslideio::VideoCapture documentation) AND call ncvslideio::winrt_imgshow().
         // 2. Message processing loop required to overcome WinRT container and type
         //    conversion restrictions. OCV provides default implementation
-        cv::winrt_startMessageLoop(cvMain);
+        ncvslideio::winrt_startMessageLoop(cvMain);
     }
 }
 
 void video_capture_xaml::MainPage::OnVisibilityChanged(Platform::Object ^sender,
     Windows::UI::Core::VisibilityChangedEventArgs ^e)
 {
-    cv::winrt_onVisibilityChanged(e->Visible);
+    ncvslideio::winrt_onVisibilityChanged(e->Visible);
 }

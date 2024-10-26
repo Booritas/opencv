@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if (isNodeJs) {
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
 } else {
   var paramsElement = document.getElementById('params');
   var runButton = document.getElementById('runButton');
@@ -13,7 +13,7 @@ function perf() {
 
   console.log('opencv.js loaded');
   if (isNodeJs) {
-    global.cv = cv;
+    global.ncvslideio = ncvslideio;
   } else {
     runButton.removeAttribute('disabled');
     runButton.setAttribute('class', 'btn btn-primary');
@@ -24,11 +24,11 @@ function perf() {
 
   function addCountNonZeroCase(suite) {
     suite.add('countNonZero', function() {
-      cv.countNonZero(mat);
+      ncvslideio.countNonZero(mat);
     }, {
       'setup': function() {
         let size = this.params.size;
-        let mat = cv.Mat.eye(size[0], size[1], cv.CV_64F);
+        let mat = ncvslideio.Mat.eye(size[0], size[1], ncvslideio.CV_64F);
       }, 'teardown': function() {
         mat.delete();
       }
@@ -41,7 +41,7 @@ function perf() {
     }, {
       'setup': function() {
         let size = this.params.size;
-        let mat = cv.Mat.ones(size[0], size[1], cv.CV_64FC1);
+        let mat = ncvslideio.Mat.ones(size[0], size[1], ncvslideio.CV_64FC1);
         let matT = mat.t();
       }, 'teardown': function() {
         mat.delete();
@@ -52,12 +52,12 @@ function perf() {
 
   function addSplitCase(suite) {
     suite.add('Split', function() {
-      cv.split(mat, planes);
+      ncvslideio.split(mat, planes);
     }, {
       'setup': function() {
         let size = this.params.size;
-        let mat = cv.Mat.ones(size[0], size[1], cv.CV_64FC3);
-        let planes = new cv.MatVector();
+        let mat = ncvslideio.Mat.ones(size[0], size[1], ncvslideio.CV_64FC3);
+        let planes = new ncvslideio.MatVector();
       }, 'teardown': function() {
         mat.delete();
         planes.delete();
@@ -67,14 +67,14 @@ function perf() {
 
   function addMergeCase(suite) {
     suite.add('Merge', function() {
-      cv.merge(planes, mat);
+      ncvslideio.merge(planes, mat);
     }, {
       'setup': function() {
         let size = this.params.size;
-        let mat = new cv.Mat();
-        let mat1 = cv.Mat.ones(size[0], size[1], cv.CV_64FC3);
-        let planes = new cv.MatVector();
-        cv.split(mat1, planes);
+        let mat = new ncvslideio.Mat();
+        let mat1 = ncvslideio.Mat.ones(size[0], size[1], ncvslideio.CV_64FC3);
+        let planes = new ncvslideio.MatVector();
+        ncvslideio.split(mat1, planes);
       }, 'teardown': function() {
         mat.delete();
         mat1.delete();
@@ -169,11 +169,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

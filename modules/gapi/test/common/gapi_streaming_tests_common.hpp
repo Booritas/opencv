@@ -19,7 +19,7 @@ namespace opencv_test {
 namespace streaming {
 namespace onevpl {
 
-struct StreamDataProvider : public cv::gapi::wip::onevpl::IDataProvider {
+struct StreamDataProvider : public ncvslideio::gapi::wip::onevpl::IDataProvider {
 
     StreamDataProvider(std::istream& in) : data_stream (in) {
         EXPECT_TRUE(in);

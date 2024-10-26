@@ -8,7 +8,7 @@
 #ifndef __OPENCV_DNN_TEST_NPY_BLOB_HPP__
 #define __OPENCV_DNN_TEST_NPY_BLOB_HPP__
 
-namespace cv
+namespace ncvslideio
 {
 
 // Parse serialized NumPy array by np.save(...)

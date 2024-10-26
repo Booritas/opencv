@@ -7,7 +7,7 @@
 #include "../op_timvx.hpp"
 #include "../ie_ngraph.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -318,4 +318,4 @@ Ptr<BatchNormLayerInt8> BatchNormLayerInt8::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

@@ -18,7 +18,7 @@
 #include <gst/video/video-frame.h>
 #endif // HAVE_GSTREAMER
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -33,7 +33,7 @@ public:
     Priv(std::shared_ptr<GStreamerPipelineFacade> pipeline, const std::string& appsinkName,
          const GStreamerSource::OutputType outputType);
 
-    bool pull(cv::gapi::wip::Data& data);
+    bool pull(ncvslideio::gapi::wip::Data& data);
 
     // non-const in difference with GStreamerSource, because contains delayed meta initialization
     GMetaArg descr_of() noexcept;
@@ -68,8 +68,8 @@ protected:
     int64_t computeTimestamp();
 
     bool pullBuffer();
-    bool retrieveFrame(cv::Mat& data);
-    bool retrieveFrame(cv::MediaFrame& data);
+    bool retrieveFrame(ncvslideio::Mat& data);
+    bool retrieveFrame(ncvslideio::MediaFrame& data);
 };
 
 #else // HAVE_GSTREAMER
@@ -80,7 +80,7 @@ public:
     Priv(const std::string& pipeline, const GStreamerSource::OutputType outputType);
     Priv(std::shared_ptr<GStreamerPipelineFacade> pipeline, const std::string& appsinkName,
          const GStreamerSource::OutputType outputType);
-    bool pull(cv::gapi::wip::Data& data);
+    bool pull(ncvslideio::gapi::wip::Data& data);
     GMetaArg descr_of() const noexcept;
     virtual ~Priv();
 };
@@ -90,6 +90,6 @@ public:
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMERSOURCE_PRIV_HPP

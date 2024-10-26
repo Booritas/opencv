@@ -14,7 +14,7 @@
 #define CV_LOG_STRIP_LEVEL CV_LOG_LEVEL_VERBOSE + 1
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -184,7 +184,7 @@ void TFLiteImporter::populateNet()
         layerIds[idx] = std::make_pair(0, i);
         const auto tensor = modelTensors->Get(idx);
         if (!tensor)
-            CV_Error(Error::StsError, cv::format("DNN/TFLite: subgraph input %d (%d) is NULL", (int)i, idx));
+            CV_Error(Error::StsError, ncvslideio::format("DNN/TFLite: subgraph input %d (%d) is NULL", (int)i, idx));
         layouts[idx] = estimateLayout(*tensor);
 
         // Keep info about origin inputs names and shapes
@@ -225,7 +225,7 @@ void TFLiteImporter::populateNet()
         }
 
         CV_LOG_DEBUG(NULL, "DNN/TFLite: processing operator (" << op_idx << "/" << all_operators_size << ") with " << op_inputs->size() << " inputs: "
-                           << cv::format("[%s]:(%s)", type.c_str(), layerParams.name.c_str()));
+                           << ncvslideio::format("[%s]:(%s)", type.c_str(), layerParams.name.c_str()));
 
         try
         {
@@ -247,10 +247,10 @@ void TFLiteImporter::populateNet()
 
             CALL_MEMBER_FN(*this, iter->second)(*op, type, layerParams);
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             CV_LOG_ERROR(NULL, "DNN/TFLite: Problem during import of operator "
-                               << cv::format("[%s]:(%s)", type.c_str(), layerParams.name.c_str())
+                               << ncvslideio::format("[%s]:(%s)", type.c_str(), layerParams.name.c_str())
                                << " (" << op_idx << "/" << all_operators_size << "). Exception: " << e.what());
             if (DNN_DIAGNOSTICS_RUN)
             {
@@ -424,7 +424,7 @@ void TFLiteImporter::parseConvolution(const Operator& op, const std::string& opc
             Mat weights_2d = layerParams.blobs[0].reshape(1, oc);
             for (int i = 0; i < oc; i++)
             {
-                bias.at<int>(i) -= inpZero * (cv::sum(weights_2d.row(i))[0]);
+                bias.at<int>(i) -= inpZero * (ncvslideio::sum(weights_2d.row(i))[0]);
             }
         }
     }
@@ -486,7 +486,7 @@ void TFLiteImporter::parseDWConvolution(const Operator& op, const std::string& o
             Mat weights_2d = layerParams.blobs[0].reshape(1, oc);
             for (int i = 0; i < oc; i++)
             {
-                bias.at<int>(i) -= inpZero * (cv::sum(weights_2d.row(i))[0]);
+                bias.at<int>(i) -= inpZero * (ncvslideio::sum(weights_2d.row(i))[0]);
             }
         }
     }
@@ -1144,7 +1144,7 @@ Net readNetFromTFLite(const String &modelPath) {
     const std::ios::openmode mode = std::ios::in | std::ios::binary;
     std::ifstream ifs(modelPath, mode);
     if (!ifs.is_open())
-        CV_Error(Error::StsError, cv::format("DNN/TFLite: can't open model file '%s'", modelPath.c_str()));
+        CV_Error(Error::StsError, ncvslideio::format("DNN/TFLite: can't open model file '%s'", modelPath.c_str()));
 
     ifs.seekg(0, std::ios::end);
     const size_t sz = ifs.tellg();
@@ -1188,4 +1188,4 @@ Net readNetFromTFLite(const char *, size_t) {
 #endif  // HAVE_FLATBUFFERS
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

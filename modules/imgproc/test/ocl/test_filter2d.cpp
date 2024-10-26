@@ -76,7 +76,7 @@ PARAM_TEST_CASE(Filter2D, MatDepth, Channels, int, int, BorderType, bool, bool)
         borderType = GET_PARAM(4) | (GET_PARAM(5) ? BORDER_ISOLATED : 0);
         useRoi = GET_PARAM(6);
         Mat temp = randomMat(ksize, CV_MAKE_TYPE(((CV_64F == CV_MAT_DEPTH(type)) ? CV_64F : CV_32F), 1), -MAX_VALUE, MAX_VALUE);
-        cv::normalize(temp, kernel, 1.0, 0.0, NORM_L1);
+        ncvslideio::normalize(temp, kernel, 1.0, 0.0, NORM_L1);
     }
 
     void random_roi()
@@ -114,8 +114,8 @@ OCL_TEST_P(Filter2D, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::filter2D(src_roi, dst_roi, -1, kernel, anchor, delta, borderType));
-        OCL_ON(cv::filter2D(usrc_roi, udst_roi, -1, kernel, anchor, delta, borderType));
+        OCL_OFF(ncvslideio::filter2D(src_roi, dst_roi, -1, kernel, anchor, delta, borderType));
+        OCL_ON(ncvslideio::filter2D(usrc_roi, udst_roi, -1, kernel, anchor, delta, borderType));
 
         Near(1.0);
     }

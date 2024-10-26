@@ -10,10 +10,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/crop_and_resize.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class CropAndResizeLayerImpl CV_FINAL : public CropAndResizeLayer
 {
@@ -119,7 +119,7 @@ public:
         if (boxes.rows < out.size[0])
         {
             // left = top = right = bottom = 0
-            std::vector<cv::Range> dstRanges(4, Range::all());
+            std::vector<ncvslideio::Range> dstRanges(4, Range::all());
             dstRanges[0] = Range(boxes.rows, out.size[0]);
             out(dstRanges).setTo(inp.ptr<float>(0, 0, 0)[0]);
         }
@@ -183,4 +183,4 @@ Ptr<Layer> CropAndResizeLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

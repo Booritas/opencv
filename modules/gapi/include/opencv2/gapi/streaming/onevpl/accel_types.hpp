@@ -12,7 +12,7 @@
 
 #include "opencv2/gapi/own/exports.hpp" // GAPI_EXPORTS
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -71,6 +71,6 @@ GAPI_EXPORTS Context create_vaapi_context(Context::Ptr ctx_ptr);
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_ACCEL_TYPES_HPP

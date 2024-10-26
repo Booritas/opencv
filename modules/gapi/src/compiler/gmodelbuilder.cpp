@@ -59,16 +59,16 @@ private:
 
 } // namespace
 
-cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
+ncvslideio::gimpl::Unrolled ncvslideio::gimpl::unrollExpr(const GProtoArgs &ins,
                                           const GProtoArgs &outs)
 {
     // FIXME: Who's gonna check if ins/outs are not EMPTY?
     // FIXME: operator== for GObjects? (test if the same object or not)
-    using GObjId = const cv::GOrigin*;
+    using GObjId = const ncvslideio::GOrigin*;
 
-    GVisitedTracker<const GNode::Priv*, cv::GNode> ops;
+    GVisitedTracker<const GNode::Priv*, ncvslideio::GNode> ops;
     GVisited<GObjId> reached_sources;
-    cv::GOriginSet   origins;
+    ncvslideio::GOriginSet   origins;
 
     // Cache input argument objects for a faster look-up
     // While the only reliable way to identify a Data object is Origin
@@ -85,7 +85,7 @@ cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
     }
 
     // Recursive expression traversal
-    std::stack<cv::GProtoArg> data_objs(std::deque<cv::GProtoArg>(outs.begin(), outs.end()));
+    std::stack<ncvslideio::GProtoArg> data_objs(std::deque<ncvslideio::GProtoArg>(outs.begin(), outs.end()));
     while (!data_objs.empty())
     {
         const auto  obj   = data_objs.top();
@@ -104,16 +104,16 @@ cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
             continue;
         }
 
-        const cv::GNode &node = origin.node;
+        const ncvslideio::GNode &node = origin.node;
         switch (node.shape())
         {
-        case cv::GNode::NodeShape::EMPTY:
+        case ncvslideio::GNode::NodeShape::EMPTY:
             // TODO: Own exception type?
             util::throw_error(std::logic_error("Empty node reached!"));
             break;
 
-        case cv::GNode::NodeShape::PARAM:
-        case cv::GNode::NodeShape::CONST_BOUNDED:
+        case ncvslideio::GNode::NodeShape::PARAM:
+        case ncvslideio::GNode::NodeShape::CONST_BOUNDED:
             // No preceding operation to this data object - so the data object is either a GComputation
             // parameter or a constant (compile-time) value
             // Record it to check if protocol matches expression tree later
@@ -121,15 +121,15 @@ cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
                 reached_sources.visit(&obj_p);
             break;
 
-        case cv::GNode::NodeShape::CALL:
+        case ncvslideio::GNode::NodeShape::CALL:
             if (!ops.visited(&node.priv()))
             {
                 // This operation hasn't been visited yet - mark it so,
                 // then add its operands to stack to continue recursion.
                 ops.visit(&node.priv(), node);
 
-                const cv::GCall&        call   = origin.node.call();
-                const cv::GCall::Priv&  call_p = call.priv();
+                const ncvslideio::GCall&        call   = origin.node.call();
+                const ncvslideio::GCall::Priv&  call_p = call.priv();
 
                 // Put the outputs object description of the node
                 // so that they are not lost if they are not consumed by other operations
@@ -180,7 +180,7 @@ cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
 
     // Check if there endpoint (parameter) data_objs which are not listed in protocol
     const auto missing_in_proto = [&in_objs_p](GObjId p) {
-        return p->node.shape() != cv::GNode::NodeShape::CONST_BOUNDED &&
+        return p->node.shape() != ncvslideio::GNode::NodeShape::CONST_BOUNDED &&
                in_objs_p.find(p) == in_objs_p.end();
     };
     if (ade::util::any_of(reached_sources.visited(), missing_in_proto))
@@ -190,19 +190,19 @@ cv::gimpl::Unrolled cv::gimpl::unrollExpr(const GProtoArgs &ins,
                                      "wasn\'t found in Protocol"));
     }
 
-    return cv::gimpl::Unrolled{ops.tracked(), origins};
+    return ncvslideio::gimpl::Unrolled{ops.tracked(), origins};
 }
 
 
-cv::gimpl::GModelBuilder::GModelBuilder(ade::Graph &g)
+ncvslideio::gimpl::GModelBuilder::GModelBuilder(ade::Graph &g)
     : m_g(g), m_gm(g)
 {
 }
 
-cv::gimpl::GModelBuilder::ProtoSlots
-cv::gimpl::GModelBuilder::put(const GProtoArgs &ins, const GProtoArgs &outs)
+ncvslideio::gimpl::GModelBuilder::ProtoSlots
+ncvslideio::gimpl::GModelBuilder::put(const GProtoArgs &ins, const GProtoArgs &outs)
 {
-    const auto unrolled = cv::gimpl::unrollExpr(ins, outs);
+    const auto unrolled = ncvslideio::gimpl::unrollExpr(ins, outs);
 
     // First, put all operations and its arguments into graph.
     for (const auto &op_expr_node : unrolled.all_ops)
@@ -220,7 +220,7 @@ cv::gimpl::GModelBuilder::put(const GProtoArgs &ins, const GProtoArgs &outs)
             if (proto::is_dynamic(in_arg))
             {
                 ade::NodeHandle data_h = put_DataNode(proto::origin_of(in_arg));
-                cv::gimpl::GModel::linkIn(m_gm, call_h, data_h, in_port);
+                ncvslideio::gimpl::GModel::linkIn(m_gm, call_h, data_h, in_port);
             }
         }
     }
@@ -229,14 +229,14 @@ cv::gimpl::GModelBuilder::put(const GProtoArgs &ins, const GProtoArgs &outs)
     // and connect these nodes with their producers in graph
     for (const auto &origin : unrolled.all_data)
     {
-        const cv::GNode& prod = origin.node;
-        GAPI_Assert(prod.shape() != cv::GNode::NodeShape::EMPTY);
+        const ncvslideio::GNode& prod = origin.node;
+        GAPI_Assert(prod.shape() != ncvslideio::GNode::NodeShape::EMPTY);
 
         ade::NodeHandle data_h = put_DataNode(origin);
-        if (prod.shape() == cv::GNode::NodeShape::CALL)
+        if (prod.shape() == ncvslideio::GNode::NodeShape::CALL)
         {
             ade::NodeHandle call_h = put_OpNode(prod);
-            cv::gimpl::GModel::linkOut(m_gm, call_h, data_h, origin.port);
+            ncvslideio::gimpl::GModel::linkOut(m_gm, call_h, data_h, origin.port);
         }
     }
 
@@ -285,7 +285,7 @@ cv::gimpl::GModelBuilder::put(const GProtoArgs &ins, const GProtoArgs &outs)
                       in_slots.second, out_slots.second};
 }
 
-ade::NodeHandle cv::gimpl::GModelBuilder::put_OpNode(const cv::GNode &node)
+ade::NodeHandle ncvslideio::gimpl::GModelBuilder::put_OpNode(const ncvslideio::GNode &node)
 {
     const auto& node_p = node.priv();
     const auto  it     = m_graph_ops.find(&node_p);
@@ -293,7 +293,7 @@ ade::NodeHandle cv::gimpl::GModelBuilder::put_OpNode(const cv::GNode &node)
     {
         GAPI_Assert(node.shape() == GNode::NodeShape::CALL);
         const auto &call_p = node.call().priv();
-        auto nh = cv::gimpl::GModel::mkOpNode(m_gm, call_p.m_k, call_p.m_args, call_p.m_params, node_p.m_island);
+        auto nh = ncvslideio::gimpl::GModel::mkOpNode(m_gm, call_p.m_k, call_p.m_args, call_p.m_params, node_p.m_island);
         m_graph_ops[&node_p] = nh;
         return nh;
     }
@@ -301,20 +301,20 @@ ade::NodeHandle cv::gimpl::GModelBuilder::put_OpNode(const cv::GNode &node)
 }
 
 // FIXME: rename to get_DataNode (and same for Op)
-ade::NodeHandle cv::gimpl::GModelBuilder::put_DataNode(const GOrigin &origin)
+ade::NodeHandle ncvslideio::gimpl::GModelBuilder::put_DataNode(const GOrigin &origin)
 {
     const auto it = m_graph_data.find(origin);
     if (it == m_graph_data.end())
     {
-        auto nh = cv::gimpl::GModel::mkDataNode(m_gm, origin);
+        auto nh = ncvslideio::gimpl::GModel::mkDataNode(m_gm, origin);
         m_graph_data[origin] = nh;
         return nh;
     }
     else
     {
         // FIXME: One of the ugliest workarounds ever
-        if (it->first.ctor.index() == it->first.ctor.index_of<cv::util::monostate>()
-            && origin.ctor.index() !=    origin.ctor.index_of<cv::util::monostate>()) {
+        if (it->first.ctor.index() == it->first.ctor.index_of<ncvslideio::util::monostate>()
+            && origin.ctor.index() !=    origin.ctor.index_of<ncvslideio::util::monostate>()) {
             // meanwhile update existing object
             m_gm.metadata(it->second).get<Data>().ctor = origin.ctor;
         }

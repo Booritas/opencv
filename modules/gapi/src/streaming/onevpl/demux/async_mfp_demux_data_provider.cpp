@@ -10,7 +10,7 @@
 #include "streaming/onevpl/demux/async_mfp_demux_data_provider.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -808,6 +808,6 @@ bool MFPAsyncDemuxDataProvider::empty() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL

@@ -4,7 +4,7 @@
 
 #include "../../precomp.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 extern const unsigned int conv_depthwise_3x3_spv[1977] = {
     0x07230203,0x00010000,0x0008000b,0x0000012f,0x00000000,0x00020011,0x00000001,0x0006000b,
@@ -257,4 +257,4 @@ extern const unsigned int conv_depthwise_3x3_spv[1977] = {
     0x00010038
 };
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

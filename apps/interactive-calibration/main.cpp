@@ -51,7 +51,7 @@ const std::string keys  =
 bool calib::showOverlayMessage(const std::string& message)
 {
 #ifdef HAVE_QT
-    cv::displayOverlay(mainWindowName, message, OVERLAY_DELAY);
+    ncvslideio::displayOverlay(mainWindowName, message, OVERLAY_DELAY);
     return true;
 #else
     std::cout << message << std::endl;
@@ -61,32 +61,32 @@ bool calib::showOverlayMessage(const std::string& message)
 
 static void deleteButton(int, void* data)
 {
-    (static_cast<cv::Ptr<calibDataController>*>(data))->get()->deleteLastFrame();
+    (static_cast<ncvslideio::Ptr<calibDataController>*>(data))->get()->deleteLastFrame();
     calib::showOverlayMessage("Last frame deleted");
 }
 
 static void deleteAllButton(int, void* data)
 {
-    (static_cast<cv::Ptr<calibDataController>*>(data))->get()->deleteAllData();
+    (static_cast<ncvslideio::Ptr<calibDataController>*>(data))->get()->deleteAllData();
     calib::showOverlayMessage("All frames deleted");
 }
 
 static void saveCurrentParamsButton(int, void* data)
 {
-    if((static_cast<cv::Ptr<calibDataController>*>(data))->get()->saveCurrentCameraParameters())
+    if((static_cast<ncvslideio::Ptr<calibDataController>*>(data))->get()->saveCurrentCameraParameters())
         calib::showOverlayMessage("Calibration parameters saved");
 }
 
 #ifdef HAVE_QT
 static void switchVisualizationModeButton(int, void* data)
 {
-    ShowProcessor* processor = static_cast<ShowProcessor*>(((cv::Ptr<FrameProcessor>*)data)->get());
+    ShowProcessor* processor = static_cast<ShowProcessor*>(((ncvslideio::Ptr<FrameProcessor>*)data)->get());
     processor->switchVisualizationMode();
 }
 
 static void undistortButton(int state, void* data)
 {
-    ShowProcessor* processor = static_cast<ShowProcessor*>(((cv::Ptr<FrameProcessor>*)data)->get());
+    ShowProcessor* processor = static_cast<ShowProcessor*>(((ncvslideio::Ptr<FrameProcessor>*)data)->get());
     processor->setUndistort(static_cast<bool>(state));
     calib::showOverlayMessage(std::string("Undistort is ") +
                        (static_cast<bool>(state) ? std::string("on") : std::string("off")));
@@ -95,7 +95,7 @@ static void undistortButton(int state, void* data)
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     if(parser.has("help")) {
         parser.printMessage();
         return 0;
@@ -109,48 +109,48 @@ int main(int argc, char** argv)
     captureParameters capParams = paramsController.getCaptureParameters();
     internalParameters intParams = paramsController.getInternalParameters();
 
-    cv::TermCriteria solverTermCrit = cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS,
+    ncvslideio::TermCriteria solverTermCrit = ncvslideio::TermCriteria(ncvslideio::TermCriteria::COUNT+ncvslideio::TermCriteria::EPS,
                                                        intParams.solverMaxIters, intParams.solverEps);
-    cv::Ptr<calibrationData> globalData(new calibrationData);
+    ncvslideio::Ptr<calibrationData> globalData(new calibrationData);
     if(!parser.has("v")) globalData->imageSize = capParams.cameraResolution;
 
     int calibrationFlags = 0;
-    if(intParams.fastSolving) calibrationFlags |= cv::CALIB_USE_QR;
-    cv::Ptr<calibController> controller(new calibController(globalData, calibrationFlags,
+    if(intParams.fastSolving) calibrationFlags |= ncvslideio::CALIB_USE_QR;
+    ncvslideio::Ptr<calibController> controller(new calibController(globalData, calibrationFlags,
                                                          parser.get<bool>("ft"), capParams.minFramesNum));
-    cv::Ptr<calibDataController> dataController(new calibDataController(globalData, capParams.maxFramesNum,
+    ncvslideio::Ptr<calibDataController> dataController(new calibDataController(globalData, capParams.maxFramesNum,
                                                                      intParams.filterAlpha));
     dataController->setParametersFileName(parser.get<std::string>("of"));
 
-    cv::Ptr<FrameProcessor> capProcessor, showProcessor;
+    ncvslideio::Ptr<FrameProcessor> capProcessor, showProcessor;
 
-    capProcessor = cv::Ptr<FrameProcessor>(new CalibProcessor(globalData, capParams));
-    showProcessor = cv::Ptr<FrameProcessor>(new ShowProcessor(globalData, controller, capParams.board));
+    capProcessor = ncvslideio::Ptr<FrameProcessor>(new CalibProcessor(globalData, capParams));
+    showProcessor = ncvslideio::Ptr<FrameProcessor>(new ShowProcessor(globalData, controller, capParams.board));
 
     if(parser.get<std::string>("vis").find("window") == 0) {
         static_cast<ShowProcessor*>(showProcessor.get())->setVisualizationMode(Window);
-        cv::namedWindow(gridWindowName);
-        cv::moveWindow(gridWindowName, 1280, 500);
+        ncvslideio::namedWindow(gridWindowName);
+        ncvslideio::moveWindow(gridWindowName, 1280, 500);
     }
 
-    cv::Ptr<CalibPipeline> pipeline(new CalibPipeline(capParams));
-    std::vector<cv::Ptr<FrameProcessor> > processors;
+    ncvslideio::Ptr<CalibPipeline> pipeline(new CalibPipeline(capParams));
+    std::vector<ncvslideio::Ptr<FrameProcessor> > processors;
     processors.push_back(capProcessor);
     processors.push_back(showProcessor);
 
-    cv::namedWindow(mainWindowName);
-    cv::moveWindow(mainWindowName, 10, 10);
+    ncvslideio::namedWindow(mainWindowName);
+    ncvslideio::moveWindow(mainWindowName, 10, 10);
 #ifdef HAVE_QT
-    cv::createButton("Delete last frame", deleteButton, &dataController,
-                     cv::QT_PUSH_BUTTON | cv::QT_NEW_BUTTONBAR);
-    cv::createButton("Delete all frames", deleteAllButton, &dataController,
-                     cv::QT_PUSH_BUTTON | cv::QT_NEW_BUTTONBAR);
-    cv::createButton("Undistort", undistortButton, &showProcessor,
-                     cv::QT_CHECKBOX | cv::QT_NEW_BUTTONBAR, false);
-    cv::createButton("Save current parameters", saveCurrentParamsButton, &dataController,
-                     cv::QT_PUSH_BUTTON | cv::QT_NEW_BUTTONBAR);
-    cv::createButton("Switch visualisation mode", switchVisualizationModeButton, &showProcessor,
-                     cv::QT_PUSH_BUTTON | cv::QT_NEW_BUTTONBAR);
+    ncvslideio::createButton("Delete last frame", deleteButton, &dataController,
+                     ncvslideio::QT_PUSH_BUTTON | ncvslideio::QT_NEW_BUTTONBAR);
+    ncvslideio::createButton("Delete all frames", deleteAllButton, &dataController,
+                     ncvslideio::QT_PUSH_BUTTON | ncvslideio::QT_NEW_BUTTONBAR);
+    ncvslideio::createButton("Undistort", undistortButton, &showProcessor,
+                     ncvslideio::QT_CHECKBOX | ncvslideio::QT_NEW_BUTTONBAR, false);
+    ncvslideio::createButton("Save current parameters", saveCurrentParamsButton, &dataController,
+                     ncvslideio::QT_PUSH_BUTTON | ncvslideio::QT_NEW_BUTTONBAR);
+    ncvslideio::createButton("Switch visualisation mode", switchVisualizationModeButton, &showProcessor,
+                     ncvslideio::QT_PUSH_BUTTON | ncvslideio::QT_NEW_BUTTONBAR);
 #endif //HAVE_QT
     try {
         bool pipelineFinished = false;
@@ -170,10 +170,10 @@ int main(int argc, char** argv)
                 calibrationFlags = controller->getNewFlags();
 
                 globalData->totalAvgErr =
-                        cv::calibrateCamera(globalData->objectPoints, globalData->imagePoints,
+                        ncvslideio::calibrateCamera(globalData->objectPoints, globalData->imagePoints,
                                             globalData->imageSize, globalData->cameraMatrix,
-                                            globalData->distCoeffs, cv::noArray(), cv::noArray(),
-                                            globalData->stdDeviations, cv::noArray(), globalData->perViewErrors,
+                                            globalData->distCoeffs, ncvslideio::noArray(), ncvslideio::noArray(),
+                                            globalData->stdDeviations, ncvslideio::noArray(), globalData->perViewErrors,
                                             calibrationFlags, solverTermCrit);
                 dataController->updateUndistortMap();
                 dataController->printParametersToConsole(std::cout);
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
             else if (exitStatus == SwitchVisualisation)
                 static_cast<ShowProcessor*>(showProcessor.get())->switchVisualizationMode();
 
-            for (std::vector<cv::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
+            for (std::vector<ncvslideio::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
                 (*it)->resetState();
         }
     }

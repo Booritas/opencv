@@ -14,7 +14,7 @@ def main(argv):
     imageName = argv[0] if len(argv) > 0 else 'lena.jpg'
 
     # Loads an image
-    src = cv.imread(cv.samples.findFile(imageName), cv.IMREAD_COLOR)
+    src = ncvslideio.imread(ncvslideio.samples.findFile(imageName), ncvslideio.IMREAD_COLOR)
 
     # Check if image is loaded fine
     if src is None:
@@ -37,11 +37,11 @@ def main(argv):
         ## [update_kernel]
         ## [apply_filter]
         # Apply filter
-        dst = cv.filter2D(src, ddepth, kernel)
+        dst = ncvslideio.filter2D(src, ddepth, kernel)
         ## [apply_filter]
-        cv.imshow(window_name, dst)
+        ncvslideio.imshow(window_name, dst)
 
-        c = cv.waitKey(500)
+        c = ncvslideio.waitKey(500)
         if c == 27:
             break
 

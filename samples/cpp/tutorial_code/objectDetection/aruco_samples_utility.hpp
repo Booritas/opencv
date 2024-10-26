@@ -4,8 +4,8 @@
 #include <ctime>
 
 namespace {
-inline static bool readCameraParameters(const std::string& filename, cv::Mat &camMatrix, cv::Mat &distCoeffs) {
-    cv::FileStorage fs(filename, cv::FileStorage::READ);
+inline static bool readCameraParameters(const std::string& filename, ncvslideio::Mat &camMatrix, ncvslideio::Mat &distCoeffs) {
+    ncvslideio::FileStorage fs(filename, ncvslideio::FileStorage::READ);
     if (!fs.isOpened())
         return false;
     fs["camera_matrix"] >> camMatrix;
@@ -13,9 +13,9 @@ inline static bool readCameraParameters(const std::string& filename, cv::Mat &ca
     return true;
 }
 
-inline static bool saveCameraParams(const std::string &filename, cv::Size imageSize, float aspectRatio, int flags,
-                                    const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs, double totalAvgErr) {
-    cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+inline static bool saveCameraParams(const std::string &filename, ncvslideio::Size imageSize, float aspectRatio, int flags,
+                                    const ncvslideio::Mat &cameraMatrix, const ncvslideio::Mat &distCoeffs, double totalAvgErr) {
+    ncvslideio::FileStorage fs(filename, ncvslideio::FileStorage::WRITE);
     if (!fs.isOpened())
         return false;
 
@@ -29,14 +29,14 @@ inline static bool saveCameraParams(const std::string &filename, cv::Size imageS
     fs << "image_width" << imageSize.width;
     fs << "image_height" << imageSize.height;
 
-    if (flags & cv::CALIB_FIX_ASPECT_RATIO) fs << "aspectRatio" << aspectRatio;
+    if (flags & ncvslideio::CALIB_FIX_ASPECT_RATIO) fs << "aspectRatio" << aspectRatio;
 
     if (flags != 0) {
         sprintf(buf, "flags: %s%s%s%s",
-                flags & cv::CALIB_USE_INTRINSIC_GUESS ? "+use_intrinsic_guess" : "",
-                flags & cv::CALIB_FIX_ASPECT_RATIO ? "+fix_aspectRatio" : "",
-                flags & cv::CALIB_FIX_PRINCIPAL_POINT ? "+fix_principal_point" : "",
-                flags & cv::CALIB_ZERO_TANGENT_DIST ? "+zero_tangent_dist" : "");
+                flags & ncvslideio::CALIB_USE_INTRINSIC_GUESS ? "+use_intrinsic_guess" : "",
+                flags & ncvslideio::CALIB_FIX_ASPECT_RATIO ? "+fix_aspectRatio" : "",
+                flags & ncvslideio::CALIB_FIX_PRINCIPAL_POINT ? "+fix_principal_point" : "",
+                flags & ncvslideio::CALIB_ZERO_TANGENT_DIST ? "+zero_tangent_dist" : "");
     }
     fs << "flags" << flags;
     fs << "camera_matrix" << cameraMatrix;
@@ -45,10 +45,10 @@ inline static bool saveCameraParams(const std::string &filename, cv::Size imageS
     return true;
 }
 
-inline static cv::aruco::DetectorParameters readDetectorParamsFromCommandLine(cv::CommandLineParser &parser) {
-    cv::aruco::DetectorParameters detectorParams;
+inline static ncvslideio::aruco::DetectorParameters readDetectorParamsFromCommandLine(ncvslideio::CommandLineParser &parser) {
+    ncvslideio::aruco::DetectorParameters detectorParams;
     if (parser.has("dp")) {
-        cv::FileStorage fs(parser.get<std::string>("dp"), cv::FileStorage::READ);
+        ncvslideio::FileStorage fs(parser.get<std::string>("dp"), ncvslideio::FileStorage::READ);
         bool readOk = detectorParams.readDetectorParameters(fs.root());
         if(!readOk) {
             throw std::runtime_error("Invalid detector parameters file\n");
@@ -57,7 +57,7 @@ inline static cv::aruco::DetectorParameters readDetectorParamsFromCommandLine(cv
     return detectorParams;
 }
 
-inline static void readCameraParamsFromCommandLine(cv::CommandLineParser &parser, cv::Mat& camMatrix, cv::Mat& distCoeffs) {
+inline static void readCameraParamsFromCommandLine(ncvslideio::CommandLineParser &parser, ncvslideio::Mat& camMatrix, ncvslideio::Mat& distCoeffs) {
     //! [camDistCoeffs]
     if(parser.has("c")) {
         bool readOk = readCameraParameters(parser.get<std::string>("c"), camMatrix, distCoeffs);
@@ -68,22 +68,22 @@ inline static void readCameraParamsFromCommandLine(cv::CommandLineParser &parser
     //! [camDistCoeffs]
 }
 
-inline static cv::aruco::Dictionary readDictionatyFromCommandLine(cv::CommandLineParser &parser) {
-    cv::aruco::Dictionary dictionary;
+inline static ncvslideio::aruco::Dictionary readDictionatyFromCommandLine(ncvslideio::CommandLineParser &parser) {
+    ncvslideio::aruco::Dictionary dictionary;
     if (parser.has("cd")) {
-        cv::FileStorage fs(parser.get<std::string>("cd"), cv::FileStorage::READ);
+        ncvslideio::FileStorage fs(parser.get<std::string>("cd"), ncvslideio::FileStorage::READ);
         bool readOk = dictionary.readDictionary(fs.root());
         if(!readOk) {
             throw std::runtime_error("Invalid dictionary file\n");
         }
     }
     else {
-        int dictionaryId = parser.has("d") ? parser.get<int>("d"): cv::aruco::DICT_4X4_50;
+        int dictionaryId = parser.has("d") ? parser.get<int>("d"): ncvslideio::aruco::DICT_4X4_50;
         if (!parser.has("d")) {
             std::cout << "The default DICT_4X4_50 dictionary has been selected, you could "
                          "select the specific dictionary using flags -d or -cd." << std::endl;
         }
-        dictionary = cv::aruco::getPredefinedDictionary(dictionaryId);
+        dictionary = ncvslideio::aruco::getPredefinedDictionary(dictionaryId);
     }
     return dictionary;
 }

@@ -3,13 +3,13 @@
 #include <iomanip>  // for controlling float print precision
 #include <sstream>  // string to number conversion
 
-#include <opencv2/core.hpp>     // Basic OpenCV structures (cv::Mat, Scalar)
+#include <opencv2/core.hpp>     // Basic OpenCV structures (ncvslideio::Mat, Scalar)
 #include <opencv2/imgproc.hpp>  // Gaussian Blur
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>  // OpenCV window I/O
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 double getPSNR ( const Mat& I1, const Mat& I2);
 Scalar getMSSIM( const Mat& I1, const Mat& I2);

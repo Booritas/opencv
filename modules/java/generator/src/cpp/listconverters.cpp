@@ -8,14 +8,14 @@
 #include "common.h"
 
 
-jobject vector_String_to_List(JNIEnv* env, std::vector<cv::String>& vs) {
+jobject vector_String_to_List(JNIEnv* env, std::vector<ncvslideio::String>& vs) {
 
     static jclass juArrayList   = ARRAYLIST(env);
     static jmethodID m_create   = CONSTRUCTOR(env, juArrayList);
     jmethodID m_add       = LIST_ADD(env, juArrayList);
 
     jobject result = env->NewObject(juArrayList, m_create, vs.size());
-    for (std::vector<cv::String>::iterator it = vs.begin(); it != vs.end(); ++it) {
+    for (std::vector<ncvslideio::String>::iterator it = vs.begin(); it != vs.end(); ++it) {
         jstring element = env->NewStringUTF((*it).c_str());
         env->CallBooleanMethod(result, m_add, element);
         env->DeleteLocalRef(element);
@@ -23,14 +23,14 @@ jobject vector_String_to_List(JNIEnv* env, std::vector<cv::String>& vs) {
     return result;
 }
 
-std::vector<cv::String> List_to_vector_String(JNIEnv* env, jobject list)
+std::vector<ncvslideio::String> List_to_vector_String(JNIEnv* env, jobject list)
 {
     static jclass juArrayList       = ARRAYLIST(env);
     jmethodID m_size       = LIST_SIZE(env,juArrayList);
     jmethodID m_get        = LIST_GET(env, juArrayList);
 
     jint len = env->CallIntMethod(list, m_size);
-    std::vector<cv::String> result;
+    std::vector<ncvslideio::String> result;
     result.reserve(len);
     for (jint i=0; i<len; i++)
     {
@@ -43,14 +43,14 @@ std::vector<cv::String> List_to_vector_String(JNIEnv* env, jobject list)
     return result;
 }
 
-void Copy_vector_String_to_List(JNIEnv* env, std::vector<cv::String>& vs, jobject list)
+void Copy_vector_String_to_List(JNIEnv* env, std::vector<ncvslideio::String>& vs, jobject list)
 {
     static jclass juArrayList       = ARRAYLIST(env);
     jmethodID m_clear     = LIST_CLEAR(env, juArrayList);
     jmethodID m_add       = LIST_ADD(env, juArrayList);
 
     env->CallVoidMethod(list, m_clear);
-    for (std::vector<cv::String>::iterator it = vs.begin(); it != vs.end(); ++it)
+    for (std::vector<ncvslideio::String>::iterator it = vs.begin(); it != vs.end(); ++it)
     {
         jstring element = env->NewStringUTF((*it).c_str());
         env->CallBooleanMethod(list, m_add, element);

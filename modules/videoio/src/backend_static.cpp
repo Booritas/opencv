@@ -6,7 +6,7 @@
 
 #include "backend.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 
 void applyParametersFallback(const Ptr<IVideoCapture>& cap, const VideoCaptureParameters& params)
@@ -19,11 +19,11 @@ void applyParametersFallback(const Ptr<IVideoCapture>& cap, const VideoCapturePa
     {
         double value = params.get<double>(prop, -1);
         CV_LOG_INFO(NULL, "VIDEOIO: apply parameter: [" << prop << "]=" <<
-                          cv::format("%g / %lld / 0x%016llx", value, (long long)value, (long long)value));
+                          ncvslideio::format("%g / %lld / 0x%016llx", value, (long long)value, (long long)value));
         if (!cap->setProperty(prop, value))
         {
             if (prop != CAP_PROP_HW_ACCELERATION && prop != CAP_PROP_HW_DEVICE) { // optional parameters
-                CV_Error_(cv::Error::StsNotImplemented, ("VIDEOIO: Failed to apply invalid or unsupported parameter: [%d]=%g / %lld / 0x%08llx", prop, value, (long long)value, (long long)value));
+                CV_Error_(ncvslideio::Error::StsNotImplemented, ("VIDEOIO: Failed to apply invalid or unsupported parameter: [%d]=%g / %lld / 0x%08llx", prop, value, (long long)value, (long long)value));
             }
         }
     }
@@ -73,7 +73,7 @@ public:
         return Ptr<IVideoCapture>();
     }
     Ptr<IVideoWriter> createWriter(const std::string& filename, int fourcc, double fps,
-                                   const cv::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE
+                                   const ncvslideio::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE
     {
         if (fn_createWriter_)
             return fn_createWriter_(filename, fourcc, fps, sz, params);
@@ -141,7 +141,7 @@ public:
         return Ptr<IVideoCapture>();
     }
     Ptr<IVideoWriter> createWriter(const std::string& filename, int fourcc, double fps,
-                                   const cv::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE
+                                   const ncvslideio::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE
     {
         if (fn_createWriter_)
             return fn_createWriter_(filename, fourcc, fps, sz, params);

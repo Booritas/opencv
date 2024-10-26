@@ -19,8 +19,8 @@ TEST(Features2D_KeypointUtils, retainBest_issue_12594)
     const size_t NBEST  = 3u;
     const size_t ANSWER = 6u;
 
-    std::vector<cv::KeyPoint> sorted_cv(N);
-    std::vector<cv::KeyPoint> unsorted_cv(N);
+    std::vector<ncvslideio::KeyPoint> sorted_cv(N);
+    std::vector<ncvslideio::KeyPoint> unsorted_cv(N);
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -28,8 +28,8 @@ TEST(Features2D_KeypointUtils, retainBest_issue_12594)
         unsorted_cv[i].response = problem[i];
     }
 
-    cv::KeyPointsFilter::retainBest(sorted_cv, NBEST);
-    cv::KeyPointsFilter::retainBest(unsorted_cv, NBEST);
+    ncvslideio::KeyPointsFilter::retainBest(sorted_cv, NBEST);
+    ncvslideio::KeyPointsFilter::retainBest(unsorted_cv, NBEST);
 
     EXPECT_EQ(ANSWER, sorted_cv.size());
     EXPECT_EQ(ANSWER, unsorted_cv.size());

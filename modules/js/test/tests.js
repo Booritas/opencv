@@ -43,7 +43,7 @@ testrunner.options.maxBlockDuration = 20000; // cause opencv_js.js need time to 
 
 testrunner.run(
     {
-        code: {path: "opencv.js", namespace: "cv"},
+        code: {path: "opencv.js", namespace: "ncvslideio"},
         tests: ['init_cv.js',
                 'test_mat.js',
                 'test_utils.js',

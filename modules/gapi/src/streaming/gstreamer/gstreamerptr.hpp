@@ -15,7 +15,7 @@
 #include <gst/gst.h>
 #include <gst/video/video-frame.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -172,6 +172,6 @@ public:
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMERPTR_HPP

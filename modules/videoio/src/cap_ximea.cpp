@@ -8,7 +8,7 @@
 #endif
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 /**********************************************************************************/
 
@@ -44,7 +44,7 @@ private:
 
 /**********************************************************************************/
 
-cv::Ptr<cv::IVideoCapture> cv::create_XIMEA_capture_cam( int index )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_XIMEA_capture_cam( int index )
 {
     Ptr<CvCaptureCAM_XIMEA> capture = makePtr<CvCaptureCAM_XIMEA>();
     if( capture->open( index ))
@@ -52,7 +52,7 @@ cv::Ptr<cv::IVideoCapture> cv::create_XIMEA_capture_cam( int index )
     return 0;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::create_XIMEA_capture_file( const std::string &serialNumber )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_XIMEA_capture_file( const std::string &serialNumber )
 {
     Ptr<CvCaptureCAM_XIMEA> capture = makePtr<CvCaptureCAM_XIMEA>();
     if( capture->open( serialNumber.c_str() ))

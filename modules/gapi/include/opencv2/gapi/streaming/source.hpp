@@ -13,7 +13,7 @@
 #include <opencv2/gapi/gmetaarg.hpp>   // GMetaArg
 
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 struct Data; // forward-declaration of Data to avoid circular dependencies
@@ -25,16 +25,16 @@ struct Data; // forward-declaration of Data to avoid circular dependencies
  * streaming into GStreamingCompiled.
  *
  * Objects implementing this interface can be passed to
- * GStreamingCompiled using setSource() with cv::gin(). Regular
+ * GStreamingCompiled using setSource() with ncvslideio::gin(). Regular
  * compiled graphs (GCompiled) don't support input objects of this
  * type.
  *
- * Default cv::VideoCapture-based implementation is available, see
- * cv::gapi::wip::GCaptureSource.
+ * Default ncvslideio::VideoCapture-based implementation is available, see
+ * ncvslideio::gapi::wip::GCaptureSource.
  *
  * @note stream sources are passed to G-API via shared pointers, so
  *  please use ptr() when passing a IStreamSource implementation to
- *  cv::gin().
+ *  ncvslideio::gin().
  */
 class IStreamSource: public std::enable_shared_from_this<IStreamSource>
 {
@@ -55,13 +55,13 @@ template<class T, class... Args>
 IStreamSource::Ptr inline make_src(Args&&... args)
 {
     static_assert(std::is_base_of<IStreamSource, T>::value,
-                  "T must implement the cv::gapi::IStreamSource interface!");
+                  "T must implement the ncvslideio::gapi::IStreamSource interface!");
     auto src_ptr = std::make_shared<T>(std::forward<Args>(args)...);
     return src_ptr->ptr();
 }
 
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_SOURCE_HPP

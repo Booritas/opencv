@@ -57,10 +57,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/slice.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -86,7 +86,7 @@ Range normalizeRange(const Range& input_range, int n)
     return range;
 }
 
-// TODO: support cv::Range with steps and negative steps to get rid of this transformation
+// TODO: support ncvslideio::Range with steps and negative steps to get rid of this transformation
 void tranformForNegSteps(const MatShape& inpShape, std::vector<std::vector<Range> >& sliceRanges, std::vector<std::vector<int> >& sliceSteps)
 {
     // in case of negative steps,
@@ -114,10 +114,10 @@ void tranformForNegSteps(const MatShape& inpShape, std::vector<std::vector<Range
     }
 }
 
-std::vector<std::vector<cv::Range> > finalizeSliceRange(const MatShape& inpShape, int& axis,
-                                                        const std::vector<std::vector<cv::Range> >& inputSliceRanges)
+std::vector<std::vector<ncvslideio::Range> > finalizeSliceRange(const MatShape& inpShape, int& axis,
+                                                        const std::vector<std::vector<ncvslideio::Range> >& inputSliceRanges)
 {
-    std::vector<std::vector<cv::Range> > sliceRanges = inputSliceRanges;
+    std::vector<std::vector<ncvslideio::Range> > sliceRanges = inputSliceRanges;
     CV_Assert(inpShape.size() > 0);
     bool axisNeg = (axis < 0);
     axis = (axis + static_cast<int>(inpShape.size())) % inpShape.size();
@@ -246,12 +246,12 @@ public:
         MatShape inpShape = inputs[0];
 
         std::vector<std::vector<int> > sliceSteps_ = sliceSteps;
-        std::vector<std::vector<cv::Range> > sliceRanges_ = sliceRanges;
+        std::vector<std::vector<ncvslideio::Range> > sliceRanges_ = sliceRanges;
         if (hasSteps && !neg_step_dims.empty())
             tranformForNegSteps(inpShape, sliceRanges_, sliceSteps_);
 
         int axis_rw = axis;
-        std::vector<std::vector<cv::Range> > sliceRanges_rw = finalizeSliceRange(inpShape, axis_rw, sliceRanges_);
+        std::vector<std::vector<ncvslideio::Range> > sliceRanges_rw = finalizeSliceRange(inpShape, axis_rw, sliceRanges_);
 
         if (!sliceRanges_rw.empty())
         {
@@ -381,13 +381,13 @@ public:
         size_t WSZ = 128;
 
         const int elemSize = (int)input.elemSize();
-        String opts0 = cv::format(
+        String opts0 = ncvslideio::format(
                 "-DDIMS=%d -DELEMSIZE=%d",
                 dims, elemSize
             );
         for (int d = 0; d < dims; d++)
         {
-            opts0 += cv::format(" -DSRC_STEP_%d=%d", d, (int)input.step[dims - 1 - d]);
+            opts0 += ncvslideio::format(" -DSRC_STEP_%d=%d", d, (int)input.step[dims - 1 - d]);
         }
         for (size_t i = 0; i < outputs.size(); i++)
         {
@@ -401,7 +401,7 @@ public:
             CV_CheckEQ(output.dims, dims, "");
             for (int d = 0; d < dims; d++)
             {
-                opts += cv::format(" -DDST_STEP_%d=%d -DDST_SZ_%d=%d -DSRC_START_%d=%d",
+                opts += ncvslideio::format(" -DDST_STEP_%d=%d -DDST_SZ_%d=%d -DSRC_START_%d=%d",
                         d, (int)output.step[dims - 1 - d],
                         d, (int)output.size[dims - 1 - d],
                         d, (int)range[dims - 1 - d].start
@@ -429,13 +429,13 @@ public:
             if ((num_blocks <= 8 && block_size >= WSZ * 4) || (block_size >= param_LIMIT_BLOCK_SIZE_PER_WG))
             {
                 // use 1D copy mode
-                opts += cv::format(" -DUSE_COPY_1D=1");
+                opts += ncvslideio::format(" -DUSE_COPY_1D=1");
 
-                opts += cv::format(" -DBLOCK_DIMS=%d", block_dims);
-                opts += cv::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims);
-                opts += cv::format(" -DBLOCK_SIZE=%d", (int)block_size);
+                opts += ncvslideio::format(" -DBLOCK_DIMS=%d", block_dims);
+                opts += ncvslideio::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims);
+                opts += ncvslideio::format(" -DBLOCK_SIZE=%d", (int)block_size);
 
-                opts += cv::format(" -DBLOCK_COLS=%d", (int)block_size);
+                opts += ncvslideio::format(" -DBLOCK_COLS=%d", (int)block_size);
             }
             else
             {
@@ -460,25 +460,25 @@ public:
 
                 if (block_rows > 1)
                 {
-                    opts += cv::format(" -DBLOCK_DIMS=%d", block_dims);
-                    opts += cv::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims_contiguous);
-                    opts += cv::format(" -DBLOCK_SIZE=%d", (int)block_size);
+                    opts += ncvslideio::format(" -DBLOCK_DIMS=%d", block_dims);
+                    opts += ncvslideio::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims_contiguous);
+                    opts += ncvslideio::format(" -DBLOCK_SIZE=%d", (int)block_size);
 
-                    opts += cv::format(" -DBLOCK_COLS=%d", (int)block_cols);
+                    opts += ncvslideio::format(" -DBLOCK_COLS=%d", (int)block_cols);
 
-                    opts += cv::format(" -DBLOCK_ROWS=%d", (int)block_rows);
-                    opts += cv::format(" -DBLOCK_SRC_STRIDE=%d", (int)input_base_step);
+                    opts += ncvslideio::format(" -DBLOCK_ROWS=%d", (int)block_rows);
+                    opts += ncvslideio::format(" -DBLOCK_SRC_STRIDE=%d", (int)input_base_step);
                 }
                 else
                 {
                     // use 1D copy mode
-                    opts += cv::format(" -DUSE_COPY_1D=1");
+                    opts += ncvslideio::format(" -DUSE_COPY_1D=1");
 
-                    opts += cv::format(" -DBLOCK_DIMS=%d", block_dims_contiguous);
-                    opts += cv::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims_contiguous);
-                    opts += cv::format(" -DBLOCK_SIZE=%d", (int)block_size);
+                    opts += ncvslideio::format(" -DBLOCK_DIMS=%d", block_dims_contiguous);
+                    opts += ncvslideio::format(" -DBLOCK_DIMS_CONTIGUOUS=%d", block_dims_contiguous);
+                    opts += ncvslideio::format(" -DBLOCK_SIZE=%d", (int)block_size);
 
-                    opts += cv::format(" -DBLOCK_COLS=%d", (int)block_size);
+                    opts += ncvslideio::format(" -DBLOCK_COLS=%d", (int)block_size);
                 }
             }
 
@@ -494,7 +494,7 @@ public:
             else if (block_size <= 64 * MIN_WORK_ITEMS)
                 WSZ = 64;
 
-            opts += cv::format(" -DWSZ=%d", (int)WSZ);
+            opts += ncvslideio::format(" -DWSZ=%d", (int)WSZ);
 
             std::ostringstream kernel_suffix;
             kernel_suffix << dims << 'x' << elemSize << "_bsz" << block_size;
@@ -531,9 +531,9 @@ public:
             }
 
             std::string kernel_suffix_str = kernel_suffix.str();
-            opts += cv::format(" -DSLICE_KERNEL_SUFFIX=%s", kernel_suffix_str.c_str());
+            opts += ncvslideio::format(" -DSLICE_KERNEL_SUFFIX=%s", kernel_suffix_str.c_str());
 
-            ocl.kernel_name = cv::format("slice_%s", kernel_suffix_str.c_str());
+            ocl.kernel_name = ncvslideio::format("slice_%s", kernel_suffix_str.c_str());
             ocl.build_opts = opts;
             ocl.local_size[0] = WSZ;
             ocl.local_size[1] = 1;
@@ -674,13 +674,13 @@ public:
             size_splits[n_split - 1] = shape_x[axis] - cnt_split;
             std::vector<int> shape_size_splits{(int)size_splits.size()};
             Mat size_splits_mat(shape_size_splits, CV_32S, size_splits.data());
-            auto op_const_size_splits = std::make_shared<CannConstOp>(size_splits_mat.data, size_splits_mat.type(), shape_size_splits, cv::format("%s_size_splits", name.c_str()));
+            auto op_const_size_splits = std::make_shared<CannConstOp>(size_splits_mat.data, size_splits_mat.type(), shape_size_splits, ncvslideio::format("%s_size_splits", name.c_str()));
             op->set_input_size_splits(*(op_const_size_splits->getOp()));
             op->update_input_desc_size_splits(*(op_const_size_splits->getTensorDesc()));
             // set inputs : split_dim
             Mat split_dim_mat(1, 1, CV_32S, Scalar(axis));
             std::vector<int> split_dim_shape{1};
-            auto op_const_split_dim = std::make_shared<CannConstOp>(split_dim_mat.data, split_dim_mat.type(), split_dim_shape, cv::format("%s_split_dim", name.c_str()));
+            auto op_const_split_dim = std::make_shared<CannConstOp>(split_dim_mat.data, split_dim_mat.type(), split_dim_shape, ncvslideio::format("%s_split_dim", name.c_str()));
             op->set_input_split_dim(*(op_const_split_dim->getOp()));
             op->update_input_desc_split_dim(*(op_const_split_dim->getTensorDesc()));
 
@@ -730,22 +730,22 @@ public:
         op->update_input_desc_x(*x_desc);
         // set inputs : begin
         Mat begin_mat(shape_, CV_32S, &begins[0]);
-        auto op_const_begin = std::make_shared<CannConstOp>(begin_mat.data, begin_mat.type(), shape_, cv::format("%s_begin", name.c_str()));
+        auto op_const_begin = std::make_shared<CannConstOp>(begin_mat.data, begin_mat.type(), shape_, ncvslideio::format("%s_begin", name.c_str()));
         op->set_input_begin(*(op_const_begin->getOp()));
         op->update_input_desc_begin(*(op_const_begin->getTensorDesc()));
         // set inputs : end
         Mat end_mat(shape_, CV_32S, &ends[0]);
-        auto op_const_end = std::make_shared<CannConstOp>(end_mat.data, end_mat.type(), shape_, cv::format("%s_end", name.c_str()));
+        auto op_const_end = std::make_shared<CannConstOp>(end_mat.data, end_mat.type(), shape_, ncvslideio::format("%s_end", name.c_str()));
         op->set_input_end(*(op_const_end->getOp()));
         op->update_input_desc_end(*(op_const_end->getTensorDesc()));
         // set inputs : axes
         Mat axes_mat(shape_, CV_32S, &axes[0]);
-        auto op_const_axes = std::make_shared<CannConstOp>(axes_mat.data, axes_mat.type(), shape_, cv::format("%s_axes", name.c_str()));
+        auto op_const_axes = std::make_shared<CannConstOp>(axes_mat.data, axes_mat.type(), shape_, ncvslideio::format("%s_axes", name.c_str()));
         op->set_input_axes(*(op_const_axes->getOp()));
         op->update_input_desc_axes(*(op_const_axes->getTensorDesc()));
         // set inputs : strides
         Mat strides_mat(shape_, CV_32S, &steps[0]);
-        auto op_const_strides = std::make_shared<CannConstOp>(strides_mat.data, strides_mat.type(), shape_, cv::format("%s_strides", name.c_str()));
+        auto op_const_strides = std::make_shared<CannConstOp>(strides_mat.data, strides_mat.type(), shape_, ncvslideio::format("%s_strides", name.c_str()));
         op->set_input_strides(*(op_const_strides->getOp()));
         op->update_input_desc_strides(*(op_const_strides->getTensorDesc()));
 
@@ -848,7 +848,7 @@ private:
     void flip(Mat& output) // break if 1d tensor?
     {
         for (int i = 0; i < neg_step_dims.size(); ++i)
-                cv::flipND(output, output, neg_step_dims[i]);
+                ncvslideio::flipND(output, output, neg_step_dims[i]);
     }
 protected:
     // The actual non-negative values determined from @p sliceRanges depends on input size.

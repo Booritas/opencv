@@ -7,7 +7,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 void fftshift(const Mat& inputImg, Mat& outputImg);

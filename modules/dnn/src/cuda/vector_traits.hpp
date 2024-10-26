@@ -14,7 +14,7 @@
 
 #include <type_traits>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
     /** \file vector_traits.hpp
      *  \brief utility classes and functions for vectorized memory loads/stores
@@ -115,6 +115,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace de
     template <class T, size_type N>
     using get_vector_type_t = typename get_vector_type<T, N>::type;
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_VECTOR_TRAITS_HPP */

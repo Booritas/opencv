@@ -12,7 +12,7 @@
 #include <gst/app/gstappsink.h>
 #endif // HAVE_GSTREAMER
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -41,13 +41,13 @@ IStreamSource::Ptr GStreamerPipeline::Priv::getStreamingSource(
     auto appsinkNameIt = m_appsinkNamesToUse.find(appsinkName);
     if (appsinkNameIt == m_appsinkNamesToUse.end())
     {
-        cv::util::throw_error(std::logic_error(std::string("There is no appsink element in the "
+        ncvslideio::util::throw_error(std::logic_error(std::string("There is no appsink element in the "
             "pipeline with the name '") + appsinkName + "'."));
     }
 
     if (!appsinkNameIt->second)
     {
-        cv::util::throw_error(std::logic_error(std::string("appsink element with the name '") +
+        ncvslideio::util::throw_error(std::logic_error(std::string("appsink element with the name '") +
             appsinkName + "' has been already used to create a GStreamerSource!"));
     }
 
@@ -55,12 +55,12 @@ IStreamSource::Ptr GStreamerPipeline::Priv::getStreamingSource(
 
     IStreamSource::Ptr src;
     try {
-        src = cv::gapi::wip::make_src<cv::gapi::wip::GStreamerSource>(m_pipeline, appsinkName,
+        src = ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GStreamerSource>(m_pipeline, appsinkName,
                                                                       outputType);
     }
     catch(...) {
         m_appsinkNamesToUse[appsinkName] = true; /* free */
-        cv::util::throw_error(std::runtime_error(std::string("Error during creation of ") +
+        ncvslideio::util::throw_error(std::runtime_error(std::string("Error during creation of ") +
             "GStreamerSource on top of '" + appsinkName + "' appsink element!"));
     }
 
@@ -109,4 +109,4 @@ GStreamerPipeline::GStreamerPipeline(std::unique_ptr<Priv> priv):
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

@@ -17,7 +17,7 @@
 #include "compiler/gislandmodel.hpp"
 
 // GBackend private implementation /////////////////////////////////////////////
-void cv::gapi::GBackend::Priv::unpackKernel(ade::Graph             & /*graph  */ ,
+void ncvslideio::gapi::GBackend::Priv::unpackKernel(ade::Graph             & /*graph  */ ,
                                             const ade::NodeHandle  & /*op_node*/ ,
                                             const GKernelImpl      & /*impl   */ )
 {
@@ -29,8 +29,8 @@ void cv::gapi::GBackend::Priv::unpackKernel(ade::Graph             & /*graph  */
     // FIXME: Do something with this! Ideally this function should be "=0";
 }
 
-std::unique_ptr<cv::gimpl::GIslandExecutable>
-cv::gapi::GBackend::Priv::compile(const ade::Graph&,
+std::unique_ptr<ncvslideio::gimpl::GIslandExecutable>
+ncvslideio::gapi::GBackend::Priv::compile(const ade::Graph&,
                                   const GCompileArgs&,
                                   const std::vector<ade::NodeHandle> &) const
 {
@@ -38,40 +38,40 @@ cv::gapi::GBackend::Priv::compile(const ade::Graph&,
     GAPI_Error("InternalError");
 }
 
-std::unique_ptr<cv::gimpl::GIslandExecutable>
-cv::gapi::GBackend::Priv::compile(const ade::Graph& graph,
+std::unique_ptr<ncvslideio::gimpl::GIslandExecutable>
+ncvslideio::gapi::GBackend::Priv::compile(const ade::Graph& graph,
                                   const GCompileArgs& args,
                                   const std::vector<ade::NodeHandle>& nodes,
-                                  const std::vector<cv::gimpl::Data>&,
-                                  const std::vector<cv::gimpl::Data>&) const
+                                  const std::vector<ncvslideio::gimpl::Data>&,
+                                  const std::vector<ncvslideio::gimpl::Data>&) const
 {
     return compile(graph, args, nodes);
 }
 
-void cv::gapi::GBackend::Priv::addBackendPasses(ade::ExecutionEngineSetupContext &)
+void ncvslideio::gapi::GBackend::Priv::addBackendPasses(ade::ExecutionEngineSetupContext &)
 {
     // Do nothing by default, plugins may override this to
     // add custom (backend-specific) graph transformations
 }
 
-void cv::gapi::GBackend::Priv::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupContext &)
+void ncvslideio::gapi::GBackend::Priv::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupContext &)
 {
     // Do nothing by default, plugins may override this to
     // add custom (backend-specific) graph transformations
     // which are sensitive to metadata
 }
 
-cv::GKernelPackage cv::gapi::GBackend::Priv::auxiliaryKernels() const
+ncvslideio::GKernelPackage ncvslideio::gapi::GBackend::Priv::auxiliaryKernels() const
 {
     return {};
 }
 
-bool cv::gapi::GBackend::Priv::controlsMerge() const
+bool ncvslideio::gapi::GBackend::Priv::controlsMerge() const
 {
     return false;
 }
 
-bool cv::gapi::GBackend::Priv::allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+bool ncvslideio::gapi::GBackend::Priv::allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                                            const ade::NodeHandle &,
                                            const ade::NodeHandle &,
                                            const ade::NodeHandle &) const
@@ -80,55 +80,55 @@ bool cv::gapi::GBackend::Priv::allowsMerge(const cv::gimpl::GIslandModel::Graph 
     return true;
 }
 
-bool cv::gapi::GBackend::Priv::supportsConst(cv::GShape) const {
+bool ncvslideio::gapi::GBackend::Priv::supportsConst(ncvslideio::GShape) const {
     return false;
 }
 
 // GBackend public implementation //////////////////////////////////////////////
-cv::gapi::GBackend::GBackend()
+ncvslideio::gapi::GBackend::GBackend()
 {
 }
 
-cv::gapi::GBackend::GBackend(std::shared_ptr<cv::gapi::GBackend::Priv> &&p)
+ncvslideio::gapi::GBackend::GBackend(std::shared_ptr<ncvslideio::gapi::GBackend::Priv> &&p)
     : m_priv(std::move(p))
 {
 }
 
-cv::gapi::GBackend::Priv& cv::gapi::GBackend::priv()
+ncvslideio::gapi::GBackend::Priv& ncvslideio::gapi::GBackend::priv()
 {
     return *m_priv;
 }
 
-const cv::gapi::GBackend::Priv& cv::gapi::GBackend::priv() const
+const ncvslideio::gapi::GBackend::Priv& ncvslideio::gapi::GBackend::priv() const
 {
     return *m_priv;
 }
 
-std::size_t cv::gapi::GBackend::hash() const
+std::size_t ncvslideio::gapi::GBackend::hash() const
 {
-    return std::hash<const cv::gapi::GBackend::Priv*>{}(m_priv.get());
+    return std::hash<const ncvslideio::gapi::GBackend::Priv*>{}(m_priv.get());
 }
 
-bool cv::gapi::GBackend::operator== (const cv::gapi::GBackend &rhs) const
+bool ncvslideio::gapi::GBackend::operator== (const ncvslideio::gapi::GBackend &rhs) const
 {
     return m_priv == rhs.m_priv;
 }
 
 // Abstract Host-side data manipulation ////////////////////////////////////////
 // Reused between CPU backend and more generic GExecutor
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace magazine {
 
 namespace {
 // Utility function, used in both bindInArg and bindOutArg,
 // implements default RMat bind behaviour (if backend doesn't handle RMats in specific way):
-// view + wrapped cv::Mat are placed into the magazine
-void bindRMat(Mag& mag, const RcDesc& rc, const cv::RMat& rmat, RMat::Access a)
+// view + wrapped ncvslideio::Mat are placed into the magazine
+void bindRMat(Mag& mag, const RcDesc& rc, const ncvslideio::RMat& rmat, RMat::Access a)
 {
     auto& matv = mag.template slot<RMat::View>()[rc.id];
     matv = rmat.access(a);
-    mag.template slot<cv::Mat>()[rc.id] = asMat(matv);
+    mag.template slot<ncvslideio::Mat>()[rc.id] = asMat(matv);
 }
 } // anonymous namespace
 
@@ -143,44 +143,44 @@ void bindInArg(Mag& mag, const RcDesc &rc, const GRunArg &arg, HandleRMat handle
         // We assume that backend can work with some device-specific RMats
         // and will handle them in some specific way, so just return
         if (handleRMat == HandleRMat::SKIP) return;
-        GAPI_Assert(arg.index() == GRunArg::index_of<cv::RMat>());
-        bindRMat(mag, rc, util::get<cv::RMat>(arg), RMat::Access::R);
+        GAPI_Assert(arg.index() == GRunArg::index_of<ncvslideio::RMat>());
+        bindRMat(mag, rc, util::get<ncvslideio::RMat>(arg), RMat::Access::R);
 
         // FIXME: Here meta may^WWILL be copied multiple times!
         // Replace it is reference-counted object?
-        mag.meta<cv::RMat>()[rc.id] = arg.meta;
-        mag.meta<cv::Mat>()[rc.id] = arg.meta;
+        mag.meta<ncvslideio::RMat>()[rc.id] = arg.meta;
+        mag.meta<ncvslideio::Mat>()[rc.id] = arg.meta;
 #if !defined(GAPI_STANDALONE)
-        mag.meta<cv::UMat>()[rc.id] = arg.meta;
+        mag.meta<ncvslideio::UMat>()[rc.id] = arg.meta;
 #endif
         break;
     }
 
     case GShape::GSCALAR:
     {
-        auto& mag_scalar = mag.template slot<cv::Scalar>()[rc.id];
+        auto& mag_scalar = mag.template slot<ncvslideio::Scalar>()[rc.id];
         switch (arg.index())
         {
-        case GRunArg::index_of<cv::Scalar>() : mag_scalar = util::get<cv::Scalar>(arg);    break;
+        case GRunArg::index_of<ncvslideio::Scalar>() : mag_scalar = util::get<ncvslideio::Scalar>(arg);    break;
         default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
         }
-        mag.meta<cv::Scalar>()[rc.id] = arg.meta;
+        mag.meta<ncvslideio::Scalar>()[rc.id] = arg.meta;
         break;
     }
 
     case GShape::GARRAY:
-        mag.slot<cv::detail::VectorRef>()[rc.id] = util::get<cv::detail::VectorRef>(arg);
-        mag.meta<cv::detail::VectorRef>()[rc.id] = arg.meta;
+        mag.slot<ncvslideio::detail::VectorRef>()[rc.id] = util::get<ncvslideio::detail::VectorRef>(arg);
+        mag.meta<ncvslideio::detail::VectorRef>()[rc.id] = arg.meta;
         break;
 
     case GShape::GOPAQUE:
-        mag.slot<cv::detail::OpaqueRef>()[rc.id] = util::get<cv::detail::OpaqueRef>(arg);
-        mag.meta<cv::detail::OpaqueRef>()[rc.id] = arg.meta;
+        mag.slot<ncvslideio::detail::OpaqueRef>()[rc.id] = util::get<ncvslideio::detail::OpaqueRef>(arg);
+        mag.meta<ncvslideio::detail::OpaqueRef>()[rc.id] = arg.meta;
         break;
 
     case GShape::GFRAME:
-        mag.slot<cv::MediaFrame>()[rc.id] = util::get<cv::MediaFrame>(arg);
-        mag.meta<cv::MediaFrame>()[rc.id] = arg.meta;
+        mag.slot<ncvslideio::MediaFrame>()[rc.id] = util::get<ncvslideio::MediaFrame>(arg);
+        mag.meta<ncvslideio::MediaFrame>()[rc.id] = arg.meta;
         break;
 
     default:
@@ -198,30 +198,30 @@ void bindOutArg(Mag& mag, const RcDesc &rc, const GRunArgP &arg, HandleRMat hand
         // We assume that backend can work with some device-specific RMats
         // and will handle them in some specific way, so just return
         if (handleRMat == HandleRMat::SKIP) return;
-        GAPI_Assert(arg.index() == GRunArgP::index_of<cv::RMat*>());
-        bindRMat(mag, rc, *util::get<cv::RMat*>(arg), RMat::Access::W);
+        GAPI_Assert(arg.index() == GRunArgP::index_of<ncvslideio::RMat*>());
+        bindRMat(mag, rc, *util::get<ncvslideio::RMat*>(arg), RMat::Access::W);
         break;
     }
 
     case GShape::GSCALAR:
     {
-        auto& mag_scalar = mag.template slot<cv::Scalar>()[rc.id];
+        auto& mag_scalar = mag.template slot<ncvslideio::Scalar>()[rc.id];
         switch (arg.index())
         {
-        case GRunArgP::index_of<cv::Scalar*>() : mag_scalar = *util::get<cv::Scalar*>(arg); break;
+        case GRunArgP::index_of<ncvslideio::Scalar*>() : mag_scalar = *util::get<ncvslideio::Scalar*>(arg); break;
         default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
         }
         break;
     }
     case GShape::GFRAME:
-        mag.template slot<cv::MediaFrame>()[rc.id] = *util::get<cv::MediaFrame*>(arg);
+        mag.template slot<ncvslideio::MediaFrame>()[rc.id] = *util::get<ncvslideio::MediaFrame*>(arg);
         break;
     case GShape::GARRAY:
-        mag.template slot<cv::detail::VectorRef>()[rc.id] = util::get<cv::detail::VectorRef>(arg);
+        mag.template slot<ncvslideio::detail::VectorRef>()[rc.id] = util::get<ncvslideio::detail::VectorRef>(arg);
         break;
 
     case GShape::GOPAQUE:
-        mag.template slot<cv::detail::OpaqueRef>()[rc.id] = util::get<cv::detail::OpaqueRef>(arg);
+        mag.template slot<ncvslideio::detail::OpaqueRef>()[rc.id] = util::get<ncvslideio::detail::OpaqueRef>(arg);
         break;
 
     default:
@@ -237,17 +237,17 @@ void resetInternalData(Mag& mag, const Data &d)
     switch (d.shape)
     {
     case GShape::GARRAY:
-        util::get<cv::detail::ConstructVec>(d.ctor)
-            (mag.template slot<cv::detail::VectorRef>()[d.rc]);
+        util::get<ncvslideio::detail::ConstructVec>(d.ctor)
+            (mag.template slot<ncvslideio::detail::VectorRef>()[d.rc]);
         break;
 
     case GShape::GOPAQUE:
-        util::get<cv::detail::ConstructOpaque>(d.ctor)
-            (mag.template slot<cv::detail::OpaqueRef>()[d.rc]);
+        util::get<ncvslideio::detail::ConstructOpaque>(d.ctor)
+            (mag.template slot<ncvslideio::detail::OpaqueRef>()[d.rc]);
         break;
 
     case GShape::GSCALAR:
-        mag.template slot<cv::Scalar>()[d.rc] = cv::Scalar();
+        mag.template slot<ncvslideio::Scalar>()[d.rc] = ncvslideio::Scalar();
         break;
 
     case GShape::GMAT:
@@ -260,34 +260,34 @@ void resetInternalData(Mag& mag, const Data &d)
     }
 }
 
-cv::GRunArg getArg(const Mag& mag, const RcDesc &ref)
+ncvslideio::GRunArg getArg(const Mag& mag, const RcDesc &ref)
 {
     // Wrap associated CPU object (either host or an internal one)
     switch (ref.shape)
     {
     case GShape::GMAT:
-        return GRunArg(mag.slot<cv::RMat>().at(ref.id),
-                       mag.meta<cv::RMat>().at(ref.id));
+        return GRunArg(mag.slot<ncvslideio::RMat>().at(ref.id),
+                       mag.meta<ncvslideio::RMat>().at(ref.id));
     case GShape::GSCALAR:
-        return GRunArg(mag.slot<cv::Scalar>().at(ref.id),
-                       mag.meta<cv::Scalar>().at(ref.id));
+        return GRunArg(mag.slot<ncvslideio::Scalar>().at(ref.id),
+                       mag.meta<ncvslideio::Scalar>().at(ref.id));
     // Note: .at() is intentional for GArray and GOpaque as objects MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
     case GShape::GARRAY:
-        return GRunArg(mag.slot<cv::detail::VectorRef>().at(ref.id),
-                       mag.meta<cv::detail::VectorRef>().at(ref.id));
+        return GRunArg(mag.slot<ncvslideio::detail::VectorRef>().at(ref.id),
+                       mag.meta<ncvslideio::detail::VectorRef>().at(ref.id));
     case GShape::GOPAQUE:
-        return GRunArg(mag.slot<cv::detail::OpaqueRef>().at(ref.id),
-                       mag.meta<cv::detail::OpaqueRef>().at(ref.id));
+        return GRunArg(mag.slot<ncvslideio::detail::OpaqueRef>().at(ref.id),
+                       mag.meta<ncvslideio::detail::OpaqueRef>().at(ref.id));
     case GShape::GFRAME:
-        return GRunArg(mag.slot<cv::MediaFrame>().at(ref.id),
-                       mag.meta<cv::MediaFrame>().at(ref.id));
+        return GRunArg(mag.slot<ncvslideio::MediaFrame>().at(ref.id),
+                       mag.meta<ncvslideio::MediaFrame>().at(ref.id));
     default:
         util::throw_error(std::logic_error("Unsupported GShape type"));
     }
 }
 
-cv::GRunArgP getObjPtr(Mag& mag, const RcDesc &rc, bool is_umat)
+ncvslideio::GRunArgP getObjPtr(Mag& mag, const RcDesc &rc, bool is_umat)
 {
     switch (rc.shape)
     {
@@ -295,14 +295,14 @@ cv::GRunArgP getObjPtr(Mag& mag, const RcDesc &rc, bool is_umat)
         if (is_umat)
         {
 #if !defined(GAPI_STANDALONE)
-            return GRunArgP(&mag.template slot<cv::UMat>()[rc.id]);
+            return GRunArgP(&mag.template slot<ncvslideio::UMat>()[rc.id]);
 #else
             util::throw_error(std::logic_error("UMat is not supported in standalone build"));
 #endif //  !defined(GAPI_STANDALONE)
         }
         else
-            return GRunArgP(&mag.template slot<cv::Mat>()[rc.id]);
-    case GShape::GSCALAR: return GRunArgP(&mag.template slot<cv::Scalar>()[rc.id]);
+            return GRunArgP(&mag.template slot<ncvslideio::Mat>()[rc.id]);
+    case GShape::GSCALAR: return GRunArgP(&mag.template slot<ncvslideio::Scalar>()[rc.id]);
     // Note: .at() is intentional for GArray and GOpaque as objects MUST be already there
     //   (and constructor by either bindIn/Out or resetInternal)
     case GShape::GARRAY:
@@ -312,7 +312,7 @@ cv::GRunArgP getObjPtr(Mag& mag, const RcDesc &rc, bool is_umat)
         // map with broken value I've spent few late Friday hours
         // debugging this!!!1
         return GRunArgP(const_cast<const Mag&>(mag)
-                        .template slot<cv::detail::VectorRef>().at(rc.id));
+                        .template slot<ncvslideio::detail::VectorRef>().at(rc.id));
     case GShape::GOPAQUE:
         // FIXME(DM): For some absolutely unknown to me reason, move
         // semantics is involved here without const_cast to const (and
@@ -320,9 +320,9 @@ cv::GRunArgP getObjPtr(Mag& mag, const RcDesc &rc, bool is_umat)
         // map with broken value I've spent few late Friday hours
         // debugging this!!!1
         return GRunArgP(const_cast<const Mag&>(mag)
-                        .template slot<cv::detail::OpaqueRef>().at(rc.id));
+                        .template slot<ncvslideio::detail::OpaqueRef>().at(rc.id));
     case GShape::GFRAME:
-        return GRunArgP(&mag.template slot<cv::MediaFrame>()[rc.id]);
+        return GRunArgP(&mag.template slot<ncvslideio::MediaFrame>()[rc.id]);
 
     default:
         util::throw_error(std::logic_error("Unsupported GShape type"));
@@ -343,7 +343,7 @@ void writeBack(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
     {
         switch (g_arg.index())
         {
-        case GRunArgP::index_of<cv::Scalar*>() : *util::get<cv::Scalar*>(g_arg) = mag.template slot<cv::Scalar>().at(rc.id); break;
+        case GRunArgP::index_of<ncvslideio::Scalar*>() : *util::get<ncvslideio::Scalar*>(g_arg) = mag.template slot<ncvslideio::Scalar>().at(rc.id); break;
         default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
         }
         break;
@@ -351,7 +351,7 @@ void writeBack(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg)
 
     case GShape::GFRAME:
     {
-        *util::get<cv::MediaFrame*>(g_arg) = mag.template slot<cv::MediaFrame>().at(rc.id);
+        *util::get<ncvslideio::MediaFrame*>(g_arg) = mag.template slot<ncvslideio::MediaFrame>().at(rc.id);
         break;
     }
 
@@ -371,20 +371,20 @@ void unbind(Mag& mag, const RcDesc &rc)
         break;
 
     case GShape::GMAT:
-        // Clean-up everything - a cv::Mat, cv::RMat::View, a cv::UMat, and cv::RMat
+        // Clean-up everything - a ncvslideio::Mat, ncvslideio::RMat::View, a ncvslideio::UMat, and ncvslideio::RMat
         // if applicable
-        mag.slot<cv::Mat>().erase(rc.id);
+        mag.slot<ncvslideio::Mat>().erase(rc.id);
 #if !defined(GAPI_STANDALONE)
-        mag.slot<cv::UMat>().erase(rc.id);
+        mag.slot<ncvslideio::UMat>().erase(rc.id);
 #endif
-        mag.slot<cv::RMat::View>().erase(rc.id);
-        mag.slot<cv::RMat>().erase(rc.id);
+        mag.slot<ncvslideio::RMat::View>().erase(rc.id);
+        mag.slot<ncvslideio::RMat>().erase(rc.id);
         break;
 
     case GShape::GFRAME:
         // MediaFrame can also be associated with external memory,
         // so requires a special handling here.
-        mag.slot<cv::MediaFrame>().erase(rc.id);
+        mag.slot<ncvslideio::MediaFrame>().erase(rc.id);
         break;
 
     default:
@@ -394,13 +394,13 @@ void unbind(Mag& mag, const RcDesc &rc)
 
 } // namespace magazine
 
-void createMat(const cv::GMatDesc &desc, cv::Mat& mat)
+void createMat(const ncvslideio::GMatDesc &desc, ncvslideio::Mat& mat)
 {
     // FIXME: Refactor (probably start supporting N-Dimensional blobs natively
     if (desc.dims.empty())
     {
         const auto type = desc.planar ? desc.depth : CV_MAKETYPE(desc.depth, desc.chan);
-        const auto size = desc.planar ? cv::Size{desc.size.width, desc.size.height*desc.chan}
+        const auto size = desc.planar ? ncvslideio::Size{desc.size.width, desc.size.height*desc.chan}
                                       : desc.size;
         mat.create(size, type);
     }
@@ -418,4 +418,4 @@ void createMat(const cv::GMatDesc &desc, cv::Mat& mat)
 }
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio

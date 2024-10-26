@@ -15,7 +15,7 @@ namespace ocl {
 
 OCL_PERF_TEST(Photo, DenoisingGrayscale)
 {
-    Mat _original = imread(getDataPath("cv/denoising/lena_noised_gaussian_sigma=10.png"), IMREAD_GRAYSCALE);
+    Mat _original = imread(getDataPath("ncvslideio/denoising/lena_noised_gaussian_sigma=10.png"), IMREAD_GRAYSCALE);
     ASSERT_FALSE(_original.empty()) << "Could not load input image";
 
     UMat result(_original.size(), _original.type()), original;
@@ -24,14 +24,14 @@ OCL_PERF_TEST(Photo, DenoisingGrayscale)
     declare.in(original).out(result).iterations(10);
 
     OCL_TEST_CYCLE()
-            cv::fastNlMeansDenoising(original, result, 10);
+            ncvslideio::fastNlMeansDenoising(original, result, 10);
 
     SANITY_CHECK(result, 1);
 }
 
 OCL_PERF_TEST(Photo, DenoisingColored)
 {
-    Mat _original = imread(getDataPath("cv/denoising/lena_noised_gaussian_sigma=10.png"));
+    Mat _original = imread(getDataPath("ncvslideio/denoising/lena_noised_gaussian_sigma=10.png"));
     ASSERT_FALSE(_original.empty()) << "Could not load input image";
 
     UMat result(_original.size(), _original.type()), original;
@@ -40,7 +40,7 @@ OCL_PERF_TEST(Photo, DenoisingColored)
     declare.in(original).out(result).iterations(10);
 
     OCL_TEST_CYCLE()
-            cv::fastNlMeansDenoisingColored(original, result, 10, 10);
+            ncvslideio::fastNlMeansDenoisingColored(original, result, 10, 10);
 
     SANITY_CHECK(result, 2);
 }
@@ -53,7 +53,7 @@ OCL_PERF_TEST(Photo, DISABLED_DenoisingGrayscaleMulti)
     Mat tmp;
     for (int i = 0; i < imgs_count; i++)
     {
-        string original_path = format("cv/denoising/lena_noised_gaussian_sigma=20_multi_%d.png", i);
+        string original_path = format("ncvslideio/denoising/lena_noised_gaussian_sigma=20_multi_%d.png", i);
         tmp = imread(getDataPath(original_path), IMREAD_GRAYSCALE);
         ASSERT_FALSE(tmp.empty()) << "Could not load input image " << original_path;
         tmp.copyTo(original[i]);
@@ -63,7 +63,7 @@ OCL_PERF_TEST(Photo, DISABLED_DenoisingGrayscaleMulti)
     declare.out(result).iterations(10);
 
     OCL_TEST_CYCLE()
-            cv::fastNlMeansDenoisingMulti(original, result, imgs_count / 2, imgs_count, 15);
+            ncvslideio::fastNlMeansDenoisingMulti(original, result, imgs_count / 2, imgs_count, 15);
 
     SANITY_CHECK(result);
 }
@@ -76,7 +76,7 @@ OCL_PERF_TEST(Photo, DISABLED_DenoisingColoredMulti)
     Mat tmp;
     for (int i = 0; i < imgs_count; i++)
     {
-        string original_path = format("cv/denoising/lena_noised_gaussian_sigma=20_multi_%d.png", i);
+        string original_path = format("ncvslideio/denoising/lena_noised_gaussian_sigma=20_multi_%d.png", i);
         tmp = imread(getDataPath(original_path), IMREAD_COLOR);
         ASSERT_FALSE(tmp.empty()) << "Could not load input image " << original_path;
 
@@ -87,7 +87,7 @@ OCL_PERF_TEST(Photo, DISABLED_DenoisingColoredMulti)
     declare.out(result).iterations(10);
 
     OCL_TEST_CYCLE()
-            cv::fastNlMeansDenoisingColoredMulti(original, result, imgs_count / 2, imgs_count, 10, 15);
+            ncvslideio::fastNlMeansDenoisingColoredMulti(original, result, imgs_count / 2, imgs_count, 10, 15);
 
     SANITY_CHECK(result);
 }

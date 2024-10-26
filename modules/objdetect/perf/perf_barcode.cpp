@@ -7,19 +7,19 @@
 
 namespace opencv_test{namespace{
 
-typedef ::perf::TestBaseWithParam< tuple<string, cv::Size> > Perf_Barcode_multi;
-typedef ::perf::TestBaseWithParam< tuple<string, cv::Size> > Perf_Barcode_single;
+typedef ::perf::TestBaseWithParam< tuple<string, ncvslideio::Size> > Perf_Barcode_multi;
+typedef ::perf::TestBaseWithParam< tuple<string, ncvslideio::Size> > Perf_Barcode_single;
 
 PERF_TEST_P_(Perf_Barcode_multi, detect)
 {
-    const string root = "cv/barcode/multiple/";
+    const string root = "ncvslideio/barcode/multiple/";
     const string name_current_image = get<0>(GetParam());
-    const cv::Size sz = get<1>(GetParam());
+    const ncvslideio::Size sz = get<1>(GetParam());
     const string image_path = findDataFile(root + name_current_image);
 
     Mat src = imread(image_path);
     ASSERT_FALSE(src.empty()) << "Can't read image: " << image_path;
-    cv::resize(src, src, sz);
+    ncvslideio::resize(src, src, sz);
 
     vector< Point > corners;
     auto bardet = barcode::BarcodeDetector();
@@ -35,14 +35,14 @@ PERF_TEST_P_(Perf_Barcode_multi, detect)
 
 PERF_TEST_P_(Perf_Barcode_multi, detect_decode)
 {
-    const string root = "cv/barcode/multiple/";
+    const string root = "ncvslideio/barcode/multiple/";
     const string name_current_image = get<0>(GetParam());
-    const cv::Size sz = get<1>(GetParam());
+    const ncvslideio::Size sz = get<1>(GetParam());
     const string image_path = findDataFile(root + name_current_image);
 
     Mat src = imread(image_path);
     ASSERT_FALSE(src.empty()) << "Can't read image: " << image_path;
-    cv::resize(src, src, sz);
+    ncvslideio::resize(src, src, sz);
 
     vector<std::string> decoded_info;
     vector<std::string> decoded_type;
@@ -61,14 +61,14 @@ PERF_TEST_P_(Perf_Barcode_multi, detect_decode)
 
 PERF_TEST_P_(Perf_Barcode_single, detect)
 {
-    const string root = "cv/barcode/single/";
+    const string root = "ncvslideio/barcode/single/";
     const string name_current_image = get<0>(GetParam());
-    const cv::Size sz = get<1>(GetParam());
+    const ncvslideio::Size sz = get<1>(GetParam());
     const string image_path = findDataFile(root + name_current_image);
 
     Mat src = imread(image_path);
     ASSERT_FALSE(src.empty()) << "Can't read image: " << image_path;
-    cv::resize(src, src, sz);
+    ncvslideio::resize(src, src, sz);
 
     vector< Point > corners;
     auto bardet = barcode::BarcodeDetector();
@@ -84,14 +84,14 @@ PERF_TEST_P_(Perf_Barcode_single, detect)
 
 PERF_TEST_P_(Perf_Barcode_single, detect_decode)
 {
-    const string root = "cv/barcode/single/";
+    const string root = "ncvslideio/barcode/single/";
     const string name_current_image = get<0>(GetParam());
-    const cv::Size sz = get<1>(GetParam());
+    const ncvslideio::Size sz = get<1>(GetParam());
     const string image_path = findDataFile(root + name_current_image);
 
     Mat src = imread(image_path);
     ASSERT_FALSE(src.empty()) << "Can't read image: " << image_path;
-    cv::resize(src, src, sz);
+    ncvslideio::resize(src, src, sz);
 
     vector<std::string> decoded_info;
     vector<std::string> decoded_type;
@@ -111,10 +111,10 @@ PERF_TEST_P_(Perf_Barcode_single, detect_decode)
 INSTANTIATE_TEST_CASE_P(/*nothing*/, Perf_Barcode_multi,
     testing::Combine(
         testing::Values("4_barcodes.jpg"),
-        testing::Values(cv::Size(2041, 2722), cv::Size(1361, 1815), cv::Size(680, 907))));
+        testing::Values(ncvslideio::Size(2041, 2722), ncvslideio::Size(1361, 1815), ncvslideio::Size(680, 907))));
 INSTANTIATE_TEST_CASE_P(/*nothing*/, Perf_Barcode_single,
     testing::Combine(
         testing::Values("book.jpg", "bottle_1.jpg", "bottle_2.jpg"),
-        testing::Values(cv::Size(480, 360), cv::Size(640, 480), cv::Size(800, 600))));
+        testing::Values(ncvslideio::Size(480, 360), ncvslideio::Size(640, 480), ncvslideio::Size(800, 600))));
 
 }} //namespace

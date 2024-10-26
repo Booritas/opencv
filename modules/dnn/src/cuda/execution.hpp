@@ -14,7 +14,7 @@
 
 #include <cstddef>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     struct execution_policy {
         execution_policy(dim3 grid_size, dim3 block_size)
@@ -76,6 +76,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
         kernel <<<policy.grid, policy.block, policy.sharedMem, policy.stream>>> (args...);
     }
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA_EXECUTION_HPP */

@@ -11,7 +11,7 @@ namespace opencv_test { namespace {
 
 // NOTE: using factory function (function<Ptr<Type>()>) instead of object instance (Ptr<Type>) as a
 // test parameter, because parameters exist during whole test program run and consume a lot of memory
-typedef std::function<cv::Ptr<cv::FeatureDetector>()> DetectorFactory;
+typedef std::function<ncvslideio::Ptr<ncvslideio::FeatureDetector>()> DetectorFactory;
 typedef tuple<std::string, DetectorFactory, float, float> String_FeatureDetector_Float_Float_t;
 
 

@@ -6,7 +6,7 @@
 
 #include "net_impl.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -19,7 +19,7 @@ void getQuantizationParams(const Mat& src, std::vector<float>& scales, std::vect
     const int qmax = 127;  // INT8_MAX
 
     double rmin, rmax, sc, zp;
-    cv::minMaxIdx(src, &rmin, &rmax);
+    ncvslideio::minMaxIdx(src, &rmin, &rmax);
 
     // 0 must be present in the range [rmin, rmax]
     rmin = std::min(rmin, 0.0);
@@ -216,8 +216,8 @@ Net Net::Impl::quantize(Net& net, InputArrayOfArrays calibData, int inputsDtype,
             pin.lid = inpLd.id;
             if (inpLd.dtype != ld.dtype)
             {
-                String layerName = (inpLd.dtype == CV_32F && ld.dtype == CV_8S) ? cv::format("quantize/%s/%d", inpLd.name.c_str(), pin.oid)
-                                                                                : cv::format("dequantize/%s/%d", inpLd.name.c_str(), pin.oid);
+                String layerName = (inpLd.dtype == CV_32F && ld.dtype == CV_8S) ? ncvslideio::format("quantize/%s/%d", inpLd.name.c_str(), pin.oid)
+                                                                                : ncvslideio::format("dequantize/%s/%d", inpLd.name.c_str(), pin.oid);
                 // Check if quantize/dequantize node for the input layer already exists
                 if (dstNet.getLayerId(layerName) >= 0)
                 {
@@ -301,4 +301,4 @@ void Net::Impl::getOutputDetails(std::vector<float>& scales, std::vector<int>& z
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

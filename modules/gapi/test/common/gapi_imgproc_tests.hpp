@@ -23,14 +23,14 @@ namespace opencv_test
 // cmpF, kernSize, borderType - test-specific parameters (names)
 //
 // We get:
-// 1. Default parameters: int type, cv::Size sz, int dtype, getCompileArgs() function
+// 1. Default parameters: int type, ncvslideio::Size sz, int dtype, getCompileArgs() function
 //      - available in test body
 // 2. Input/output matrices will be initialized by initMatrixRandN (in this fixture)
 // 3. Specific parameters: cmpF, kernSize, borderType of corresponding types
 //      - created (and initialized) automatically
 //      - available in test body
 // Note: all parameter _values_ (e.g. type CV_8UC3) are set via INSTANTIATE_TEST_CASE_P macro
-GAPI_TEST_FIXTURE(Filter2DTest, initMatrixRandN, FIXTURE_API(CompareMats,cv::Size,int), 3,
+GAPI_TEST_FIXTURE(Filter2DTest, initMatrixRandN, FIXTURE_API(CompareMats,ncvslideio::Size,int), 3,
     cmpF, filterSize, borderType)
 GAPI_TEST_FIXTURE(BoxFilterTest, initMatrixRandN, FIXTURE_API(CompareMats,int,int), 3,
     cmpF, filterSize, borderType)
@@ -46,7 +46,7 @@ GAPI_TEST_FIXTURE(Erode3x3Test, initMatrixRandN, FIXTURE_API(CompareMats,int), 2
 GAPI_TEST_FIXTURE(DilateTest, initMatrixRandN, FIXTURE_API(CompareMats,int,int), 3,
     cmpF, kernSize, kernType)
 GAPI_TEST_FIXTURE(Dilate3x3Test, initMatrixRandN, FIXTURE_API(CompareMats,int), 2, cmpF, numIters)
-GAPI_TEST_FIXTURE(MorphologyExTest, initMatrixRandN, FIXTURE_API(CompareMats,cv::MorphTypes),
+GAPI_TEST_FIXTURE(MorphologyExTest, initMatrixRandN, FIXTURE_API(CompareMats,ncvslideio::MorphTypes),
                   2, cmpF, op)
 GAPI_TEST_FIXTURE(SobelTest, initMatrixRandN, FIXTURE_API(CompareMats,int,int,int), 4,
     cmpF, kernSize, dx, dy)
@@ -62,40 +62,40 @@ GAPI_TEST_FIXTURE(EqHistTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF
 GAPI_TEST_FIXTURE(CannyTest, initMatrixRandN, FIXTURE_API(CompareMats,double,double,int,bool), 5,
     cmpF, thrLow, thrUp, apSize, l2gr)
 GAPI_TEST_FIXTURE_SPEC_PARAMS(GoodFeaturesTest,
-                              FIXTURE_API(CompareVectors<cv::Point2f>,std::string,int,int,double,
+                              FIXTURE_API(CompareVectors<ncvslideio::Point2f>,std::string,int,int,double,
                                           double,int,bool),
                               8, cmpF, fileName, type, maxCorners, qualityLevel, minDistance,
                               blockSize, useHarrisDetector)
 GAPI_TEST_FIXTURE_SPEC_PARAMS(FindContoursNoOffsetTest,
-                              FIXTURE_API(cv::Size,MatType2,cv::RetrievalModes,
-                                          cv::ContourApproximationModes, CompareMats),
+                              FIXTURE_API(ncvslideio::Size,MatType2,ncvslideio::RetrievalModes,
+                                          ncvslideio::ContourApproximationModes, CompareMats),
                               5, sz, type, mode, method, cmpF)
 GAPI_TEST_FIXTURE_SPEC_PARAMS(FindContoursOffsetTest, <>, 0)
 GAPI_TEST_FIXTURE_SPEC_PARAMS(FindContoursHNoOffsetTest,
-                              FIXTURE_API(cv::Size,MatType2,cv::RetrievalModes,
-                                          cv::ContourApproximationModes, CompareMats),
+                              FIXTURE_API(ncvslideio::Size,MatType2,ncvslideio::RetrievalModes,
+                                          ncvslideio::ContourApproximationModes, CompareMats),
                               5, sz, type, mode, method, cmpF)
 GAPI_TEST_FIXTURE_SPEC_PARAMS(FindContoursHOffsetTest, <>, 0)
 GAPI_TEST_FIXTURE(BoundingRectMatTest, initNothing, FIXTURE_API(CompareRects,bool),
                   2, cmpF, initByVector)
 GAPI_TEST_FIXTURE(BoundingRectVector32STest, initNothing, FIXTURE_API(CompareRects), 1, cmpF)
 GAPI_TEST_FIXTURE(BoundingRectVector32FTest, initNothing, FIXTURE_API(CompareRects), 1, cmpF)
-GAPI_TEST_FIXTURE(FitLine2DMatVectorTest, initMatByPointsVectorRandU<cv::Point_>,
-                  FIXTURE_API(CompareVecs<float, 4>,cv::DistanceTypes), 2, cmpF, distType)
+GAPI_TEST_FIXTURE(FitLine2DMatVectorTest, initMatByPointsVectorRandU<ncvslideio::Point_>,
+                  FIXTURE_API(CompareVecs<float, 4>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine2DVector32STest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 4>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 4>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine2DVector32FTest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 4>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 4>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine2DVector64FTest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 4>,cv::DistanceTypes), 2, cmpF, distType)
-GAPI_TEST_FIXTURE(FitLine3DMatVectorTest, initMatByPointsVectorRandU<cv::Point3_>,
-                  FIXTURE_API(CompareVecs<float, 6>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 4>,ncvslideio::DistanceTypes), 2, cmpF, distType)
+GAPI_TEST_FIXTURE(FitLine3DMatVectorTest, initMatByPointsVectorRandU<ncvslideio::Point3_>,
+                  FIXTURE_API(CompareVecs<float, 6>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine3DVector32STest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 6>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 6>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine3DVector32FTest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 6>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 6>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(FitLine3DVector64FTest, initNothing,
-                  FIXTURE_API(CompareVecs<float, 6>,cv::DistanceTypes), 2, cmpF, distType)
+                  FIXTURE_API(CompareVecs<float, 6>,ncvslideio::DistanceTypes), 2, cmpF, distType)
 GAPI_TEST_FIXTURE(BGR2RGBTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
 GAPI_TEST_FIXTURE(RGB2GrayTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
 GAPI_TEST_FIXTURE(BGR2GrayTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
@@ -119,9 +119,9 @@ GAPI_TEST_FIXTURE(YUV2BGRTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmp
 GAPI_TEST_FIXTURE(RGB2HSVTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
 GAPI_TEST_FIXTURE(BayerGR2RGBTest, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
 GAPI_TEST_FIXTURE(RGB2YUV422Test, initMatrixRandN, FIXTURE_API(CompareMats), 1, cmpF)
-GAPI_TEST_FIXTURE(ResizeTest, initNothing, FIXTURE_API(CompareMats,int,cv::Size), 3,
+GAPI_TEST_FIXTURE(ResizeTest, initNothing, FIXTURE_API(CompareMats,int,ncvslideio::Size), 3,
     cmpF, interp, sz_out)
-GAPI_TEST_FIXTURE(ResizePTest, initNothing, FIXTURE_API(CompareMats,int,cv::Size), 3,
+GAPI_TEST_FIXTURE(ResizePTest, initNothing, FIXTURE_API(CompareMats,int,ncvslideio::Size), 3,
     cmpF, interp, sz_out)
 GAPI_TEST_FIXTURE(ResizeTestFxFy, initNothing, FIXTURE_API(CompareMats,int,double,double), 4,
     cmpF, interp, fx, fy)

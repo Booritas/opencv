@@ -44,7 +44,7 @@
 #include "grfmt_base.hpp"
 #include "bitstrm.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 BaseImageDecoder::BaseImageDecoder()

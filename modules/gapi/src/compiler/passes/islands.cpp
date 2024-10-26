@@ -17,7 +17,7 @@
 
 namespace
 {
-    bool is_within_same_island(const cv::gimpl::GModel::Graph &gr,
+    bool is_within_same_island(const ncvslideio::gimpl::GModel::Graph &gr,
                                const ade::NodeHandle          &dataNode,
                                const std::string              &island)
     {
@@ -41,7 +41,7 @@ namespace
         // In the above example, Data object is assigned to "island0" as
         // it is surrounded by operations assigned to "island0"
 
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
 
         if (   gr.metadata(dataNode).contains<Island>()
             && gr.metadata(dataNode).get<Island>().island != island)
@@ -69,7 +69,7 @@ namespace
 // to all data objects within an Island.
 // A data object is considered within an Island if and only if
 // its reader and writer are assigned to this Island (see above).
-void cv::gimpl::passes::initIslands(ade::passes::PassContext &ctx)
+void ncvslideio::gimpl::passes::initIslands(ade::passes::PassContext &ctx)
 {
     GModel::Graph gr(ctx.graph);
     for (const auto &nh : gr.nodes())
@@ -97,7 +97,7 @@ void cv::gimpl::passes::initIslands(ade::passes::PassContext &ctx)
 // This may occur if user assigns the same islands name to multiple ranges
 // in the graph.
 // FIXME: How it could be avoided on an earlier stage?
-void cv::gimpl::passes::checkIslands(ade::passes::PassContext &ctx)
+void ncvslideio::gimpl::passes::checkIslands(ade::passes::PassContext &ctx)
 {
     GModel::ConstGraph gr(ctx.graph);
 
@@ -197,14 +197,14 @@ void cv::gimpl::passes::checkIslands(ade::passes::PassContext &ctx)
         util::throw_error
             (std::logic_error("There are multiple distinct islands "
                               "with the same name: [" + ss.str() + "], "
-                              "please check your cv::gapi::island() parameters!"));
+                              "please check your ncvslideio::gapi::island() parameters!"));
     }
 }
 
-void cv::gimpl::passes::checkIslandsContent(ade::passes::PassContext &ctx)
+void ncvslideio::gimpl::passes::checkIslandsContent(ade::passes::PassContext &ctx)
 {
     GModel::ConstGraph gr(ctx.graph);
-    std::unordered_map<std::string, cv::gapi::GBackend> backends_of_islands;
+    std::unordered_map<std::string, ncvslideio::gapi::GBackend> backends_of_islands;
     for (const auto& nh : gr.nodes())
     {
         if (NodeType::OP == gr.metadata(nh).get<NodeType>().t &&

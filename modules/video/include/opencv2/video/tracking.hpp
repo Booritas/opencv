@@ -47,7 +47,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup video_track
@@ -249,8 +249,8 @@ where src[i] and dst[i] are the i-th points in src and dst, respectively
 \f[\begin{bmatrix} a_{11} & a_{12} & b_1  \\ -a_{12} & a_{11} & b_2  \end{bmatrix}\f]
 when fullAffine=false.
 
-@deprecated Use cv::estimateAffine2D, cv::estimateAffinePartial2D instead. If you are using this function
-with images, extract points using cv::calcOpticalFlowPyrLK and then use the estimation functions.
+@deprecated Use ncvslideio::estimateAffine2D, ncvslideio::estimateAffinePartial2D instead. If you are using this function
+with images, extract points using ncvslideio::calcOpticalFlowPyrLK and then use the estimation functions.
 
 @sa
 estimateAffine2D, estimateAffinePartial2D, getAffineTransform, getPerspectiveTransform, findHomography
@@ -466,7 +466,7 @@ public:
     CV_WRAP virtual void calc(InputArray prevImg, InputArray nextImg,
                       InputArray prevPts, InputOutputArray nextPts,
                       OutputArray status,
-                      OutputArray err = cv::noArray()) = 0;
+                      OutputArray err = ncvslideio::noArray()) = 0;
 };
 
 

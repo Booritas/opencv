@@ -73,11 +73,11 @@ void CV_ChessboardDetectorTimingTest::run( int start_from )
     int  idx, max_idx;
     int  progress = 0;
 
-    filepath = cv::format("%scv/cameracalibration/", ts->get_data_path().c_str() );
-    filename = cv::format("%schessboard_timing_list.dat", filepath.c_str() );
-    cv::FileStorage fs( filename, FileStorage::READ );
-    cv::FileNode board_list = fs["boards"];
-    cv::FileNodeIterator bl_it = board_list.begin();
+    filepath = ncvslideio::format("%scv/cameracalibration/", ts->get_data_path().c_str() );
+    filename = ncvslideio::format("%schessboard_timing_list.dat", filepath.c_str() );
+    ncvslideio::FileStorage fs( filename, FileStorage::READ );
+    ncvslideio::FileNode board_list = fs["boards"];
+    ncvslideio::FileNodeIterator bl_it = board_list.begin();
 
     if( !fs.isOpened() || !board_list.isSeq() || board_list.size() % 4 != 0 )
     {
@@ -105,9 +105,9 @@ void CV_ChessboardDetectorTimingTest::run( int start_from )
         ts->update_context( this, idx-1, true );
 
         /* read the image */
-        filename = cv::format("%s%s", filepath.c_str(), imgname.c_str() );
+        filename = ncvslideio::format("%s%s", filepath.c_str(), imgname.c_str() );
 
-        img = cv::imread( filename );
+        img = ncvslideio::imread( filename );
         if( img.empty() )
         {
             ts->printf( cvtest::TS::LOG, "one of chessboard images can't be read: %s\n", filename.c_str() );
@@ -119,11 +119,11 @@ void CV_ChessboardDetectorTimingTest::run( int start_from )
 
         cvtColor(img, gray, COLOR_BGR2GRAY);
 
-        int64 _time0 = cv::getTickCount();
-        bool result = cv::checkChessboard(gray, pattern_size);
-        int64 _time01 = cv::getTickCount();
+        int64 _time0 = ncvslideio::getTickCount();
+        bool result = ncvslideio::checkChessboard(gray, pattern_size);
+        int64 _time01 = ncvslideio::getTickCount();
         bool result1 = findChessboardCorners(gray, pattern_size, v, 15);
-        int64 _time1 = cv::getTickCount();
+        int64 _time1 = ncvslideio::getTickCount();
 
         if( result != (is_chessboard != 0))
         {
@@ -139,11 +139,11 @@ void CV_ChessboardDetectorTimingTest::run( int start_from )
         }
 
         int num_pixels = gray.cols*gray.rows;
-        float check_chessboard_time = float(_time01 - _time0)/(float)cv::getTickFrequency(); // in s
+        float check_chessboard_time = float(_time01 - _time0)/(float)ncvslideio::getTickFrequency(); // in s
         ts->printf(cvtest::TS::LOG, "    cvCheckChessboard time s: %f, us per pixel: %f\n",
                    check_chessboard_time, check_chessboard_time*1e6/num_pixels);
 
-        float find_chessboard_time = float(_time1 - _time01)/(float)cv::getTickFrequency();
+        float find_chessboard_time = float(_time1 - _time01)/(float)ncvslideio::getTickFrequency();
         ts->printf(cvtest::TS::LOG, "    cvFindChessboard time s: %f, us per pixel: %f\n",
                    find_chessboard_time, find_chessboard_time*1e6/num_pixels);
         progress = update_progress( progress, idx-1, max_idx, 0 );

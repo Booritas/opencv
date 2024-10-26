@@ -17,7 +17,7 @@
 # include <android/log.h>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 
@@ -190,14 +190,14 @@ static int getShowTimestampMode()
 
 void writeLogMessage(LogLevel logLevel, const char* message)
 {
-    const int threadID = cv::utils::getThreadID();
+    const int threadID = ncvslideio::utils::getThreadID();
 
     std::string message_id;
     switch (getShowTimestampMode())
     {
-        case 1: message_id = cv::format("%d@%0.3f", threadID, getTimestampNS() * 1e-9); break;
-        case 1+2: message_id = cv::format("%d@%llu", threadID, (long long unsigned int)getTimestampNS()); break;
-        default: message_id = cv::format("%d", threadID); break;
+        case 1: message_id = ncvslideio::format("%d@%0.3f", threadID, getTimestampNS() * 1e-9); break;
+        case 1+2: message_id = ncvslideio::format("%d@%llu", threadID, (long long unsigned int)getTimestampNS()); break;
+        default: message_id = ncvslideio::format("%d", threadID); break;
     }
 
     std::ostringstream ss;

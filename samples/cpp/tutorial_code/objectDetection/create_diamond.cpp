@@ -5,7 +5,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Create a ChArUco marker image";

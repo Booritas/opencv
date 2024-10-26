@@ -46,7 +46,7 @@
 
 #include "usac.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static inline double scaleFor(double x){
@@ -274,9 +274,9 @@ public:
 
     Mat src, dst;
 };
-} // end namespace cv
+} // end namespace ncvslideio
 
-namespace cv{
+namespace ncvslideio{
 static bool createAndRunRHORegistrator(double confidence,
                                        int    maxIters,
                                        double ransacReprojThreshold,
@@ -354,7 +354,7 @@ static bool createAndRunRHORegistrator(double confidence,
 }
 
 
-cv::Mat cv::findHomography( InputArray _points1, InputArray _points2,
+ncvslideio::Mat ncvslideio::findHomography( InputArray _points1, InputArray _points2,
                             int method, double ransacReprojThreshold, OutputArray _mask,
                             const int maxIters, const double confidence)
 {
@@ -447,14 +447,14 @@ cv::Mat cv::findHomography( InputArray _points1, InputArray _points2,
     return H;
 }
 
-cv::Mat cv::findHomography( InputArray _points1, InputArray _points2,
+ncvslideio::Mat ncvslideio::findHomography( InputArray _points1, InputArray _points2,
                            OutputArray _mask, int method, double ransacReprojThreshold )
 {
-    return cv::findHomography(_points1, _points2, method, ransacReprojThreshold, _mask);
+    return ncvslideio::findHomography(_points1, _points2, method, ransacReprojThreshold, _mask);
 }
 
 
-cv::Mat cv::findHomography(InputArray srcPoints, InputArray dstPoints, OutputArray mask,
+ncvslideio::Mat ncvslideio::findHomography(InputArray srcPoints, InputArray dstPoints, OutputArray mask,
                    const UsacParams &params) {
     Ptr<usac::Model> model;
     usac::setParameters(model, usac::EstimationMethod::HOMOGRAPHY, params, mask.needed());
@@ -476,7 +476,7 @@ cv::Mat cv::findHomography(InputArray srcPoints, InputArray dstPoints, OutputArr
    that can be found at http://www-sop.inria.fr/robotvis/personnel/zzhang/zzhang-eng.html */
 
 /************************************** 7-point algorithm *******************************/
-namespace cv
+namespace ncvslideio
 {
 
 /**
@@ -834,7 +834,7 @@ public:
 
 }
 
-cv::Mat cv::findFundamentalMat( InputArray _points1, InputArray _points2,
+ncvslideio::Mat ncvslideio::findFundamentalMat( InputArray _points1, InputArray _points2,
                                 int method, double ransacReprojThreshold, double confidence,
                                 int maxIters, OutputArray _mask )
 {
@@ -903,20 +903,20 @@ cv::Mat cv::findFundamentalMat( InputArray _points1, InputArray _points2,
     return F;
 }
 
-cv::Mat cv::findFundamentalMat( cv::InputArray points1, cv::InputArray points2,
+ncvslideio::Mat ncvslideio::findFundamentalMat( ncvslideio::InputArray points1, ncvslideio::InputArray points2,
                                      int method, double ransacReprojThreshold, double confidence,
-                                     cv::OutputArray mask )
+                                     ncvslideio::OutputArray mask )
 {
-    return cv::findFundamentalMat(points1, points2, method, ransacReprojThreshold, confidence, 1000, mask);
+    return ncvslideio::findFundamentalMat(points1, points2, method, ransacReprojThreshold, confidence, 1000, mask);
 }
 
-cv::Mat cv::findFundamentalMat( cv::InputArray points1, cv::InputArray points2, cv::OutputArray mask,
+ncvslideio::Mat ncvslideio::findFundamentalMat( ncvslideio::InputArray points1, ncvslideio::InputArray points2, ncvslideio::OutputArray mask,
                                 int method, double ransacReprojThreshold, double confidence )
 {
-    return cv::findFundamentalMat(points1, points2, method, ransacReprojThreshold, confidence, 1000, mask);
+    return ncvslideio::findFundamentalMat(points1, points2, method, ransacReprojThreshold, confidence, 1000, mask);
 }
 
-cv::Mat cv::findFundamentalMat( InputArray points1, InputArray points2,
+ncvslideio::Mat ncvslideio::findFundamentalMat( InputArray points1, InputArray points2,
                         OutputArray mask, const UsacParams &params) {
     Ptr<usac::Model> model;
     setParameters(model, usac::EstimationMethod::FUNDAMENTAL, params, mask.needed());
@@ -932,7 +932,7 @@ cv::Mat cv::findFundamentalMat( InputArray points1, InputArray points2,
 
 
 
-void cv::computeCorrespondEpilines( InputArray _points, int whichImage,
+void ncvslideio::computeCorrespondEpilines( InputArray _points, int whichImage,
                                     InputArray _Fmat, OutputArray _lines )
 {
     CV_INSTRUMENT_REGION();
@@ -1008,7 +1008,7 @@ void cv::computeCorrespondEpilines( InputArray _points, int whichImage,
     }
 }
 
-void cv::convertPointsFromHomogeneous( InputArray _src, OutputArray _dst )
+void ncvslideio::convertPointsFromHomogeneous( InputArray _src, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1109,7 +1109,7 @@ void cv::convertPointsFromHomogeneous( InputArray _src, OutputArray _dst )
 }
 
 
-void cv::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
+void ncvslideio::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1192,7 +1192,7 @@ void cv::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
 }
 
 
-void cv::convertPointsHomogeneous( InputArray _src, OutputArray _dst )
+void ncvslideio::convertPointsHomogeneous( InputArray _src, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1205,7 +1205,7 @@ void cv::convertPointsHomogeneous( InputArray _src, OutputArray _dst )
         convertPointsToHomogeneous(_src, _dst);
 }
 
-double cv::sampsonDistance(InputArray _pt1, InputArray _pt2, InputArray _F)
+double ncvslideio::sampsonDistance(InputArray _pt1, InputArray _pt2, InputArray _F)
 {
     CV_INSTRUMENT_REGION();
 

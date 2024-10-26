@@ -6,7 +6,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 //! @addtogroup objdetect_aruco
 //! @{
@@ -61,17 +61,17 @@ public:
      * image points and object points, can be used in solvePnP()
      *
      * @param detectedCorners List of detected marker corners of the board.
-     * For cv::Board and cv::GridBoard the method expects std::vector<std::vector<Point2f>> or std::vector<Mat> with Aruco marker corners.
-     * For cv::CharucoBoard the method expects std::vector<Point2f> or Mat with ChAruco corners (chess board corners matched with Aruco markers).
+     * For ncvslideio::Board and ncvslideio::GridBoard the method expects std::vector<std::vector<Point2f>> or std::vector<Mat> with Aruco marker corners.
+     * For ncvslideio::CharucoBoard the method expects std::vector<Point2f> or Mat with ChAruco corners (chess board corners matched with Aruco markers).
      *
      * @param detectedIds List of identifiers for each marker or charuco corner.
      * For any Board class the method expects std::vector<int> or Mat.
      *
      * @param objPoints Vector of marker points in the board coordinate space.
-     * For any Board class the method expects std::vector<cv::Point3f> objectPoints or cv::Mat
+     * For any Board class the method expects std::vector<ncvslideio::Point3f> objectPoints or ncvslideio::Mat
      *
      * @param imgPoints Vector of marker points in the image coordinate space.
-     * For any Board class the method expects std::vector<cv::Point2f> objectPoints or cv::Mat
+     * For any Board class the method expects std::vector<ncvslideio::Point2f> objectPoints or ncvslideio::Mat
      *
      * @sa solvePnP
      */

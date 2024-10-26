@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string>
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {
@@ -59,7 +59,7 @@ static void ErodeDilate(int, void*)
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}{ @image | baboon.jpg | }");
+    ncvslideio::CommandLineParser parser(argc, argv, "{help h||}{ @image | baboon.jpg | }");
     if (parser.has("help"))
     {
         help(argv);

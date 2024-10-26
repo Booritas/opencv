@@ -15,19 +15,19 @@ namespace cvtest {
 template <class Cmp, typename T>
 struct reduceMinMaxImpl
 {
-    void operator()(const cv::Mat& src, cv::Mat& dst, const int axis) const
+    void operator()(const ncvslideio::Mat& src, ncvslideio::Mat& dst, const int axis) const
     {
         Cmp cmp;
         std::vector<int> sizes(src.dims);
         std::copy(src.size.p, src.size.p + src.dims, sizes.begin());
 
-        std::vector<cv::Range> idx(sizes.size(), cv::Range(0, 1));
-        idx[axis] = cv::Range::all();
+        std::vector<ncvslideio::Range> idx(sizes.size(), ncvslideio::Range(0, 1));
+        idx[axis] = ncvslideio::Range::all();
         const int n = std::accumulate(begin(sizes), end(sizes), 1, std::multiplies<int>());
         const std::vector<int> newShape{1, src.size[axis]};
         for (int i = 0; i < n ; ++i)
         {
-            cv::Mat sub = src(idx);
+            ncvslideio::Mat sub = src(idx);
 
             auto begin = sub.begin<T>();
             auto it = std::min_element(begin, sub.end<T>(), cmp);
@@ -43,10 +43,10 @@ struct reduceMinMaxImpl
                 const int new_s = (old_s + 1) % sizes[j];
                 if (new_s > old_s)
                 {
-                    idx[j] = cv::Range(new_s, new_s + 1);
+                    idx[j] = ncvslideio::Range(new_s, new_s + 1);
                     break;
                 }
-                idx[j] = cv::Range(0, 1);
+                idx[j] = ncvslideio::Range(0, 1);
             }
         }
     }
@@ -67,9 +67,9 @@ struct MinMaxReducer{
         sizes[axis] = 1;
 
         dst.create(sizes, CV_32SC1); // indices
-        dst.setTo(cv::Scalar::all(0));
+        dst.setTo(ncvslideio::Scalar::all(0));
 
-        cv::detail::depthDispatch<Impl>(src.depth(), src, dst, axis);
+        ncvslideio::detail::depthDispatch<Impl>(src.depth(), src, dst, axis);
     }
 };
 

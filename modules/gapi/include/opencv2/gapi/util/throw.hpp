@@ -15,7 +15,7 @@
 #include <stdio.h>
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {
@@ -31,6 +31,6 @@ template <class ExceptionType>
 #endif
 }
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_UTIL_THROW_HPP

@@ -11,7 +11,7 @@
 #ifdef HAVE_ONEVPL
 #include "streaming/onevpl/onevpl_export.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -39,7 +39,7 @@ BaseFrameAdapter::BaseFrameAdapter(std::shared_ptr<Surface> surface,
             throw std::runtime_error("MediaFrame unknown 'fmt' type: " + std::to_string(info.FourCC));
     }
 
-    frame_desc.size = cv::Size{info.Width, info.Height};
+    frame_desc.size = ncvslideio::Size{info.Width, info.Height};
     parent_surface_ptr->obtain_lock();
 }
 
@@ -63,7 +63,7 @@ BaseFrameAdapter::SessionHandle BaseFrameAdapter::get_session_handle() const {
     return parent_handle;
 }
 
-cv::GFrameDesc BaseFrameAdapter::meta() const {
+ncvslideio::GFrameDesc BaseFrameAdapter::meta() const {
     return frame_desc;
 }
 AccelType BaseFrameAdapter::accel_type() const {
@@ -73,5 +73,5 @@ AccelType BaseFrameAdapter::accel_type() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

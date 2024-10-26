@@ -45,7 +45,7 @@
 #include <vector>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 class Decolor
 {

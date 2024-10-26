@@ -55,30 +55,30 @@ std::ostream& operator<< (std::ostream &os, const KernelPackage &e)
 }
 
 struct GAPI_Streaming: public ::testing::TestWithParam<std::tuple<KernelPackage,
-                                                                  cv::optional<size_t>>> {
+                                                                  ncvslideio::optional<size_t>>> {
     GAPI_Streaming() {
         KernelPackage pkg_kind;
         std::tie(pkg_kind, cap) = GetParam();
         pkg = getKernelPackage(pkg_kind);
     }
 
-    const cv::optional<size_t>& getQueueCapacity()
+    const ncvslideio::optional<size_t>& getQueueCapacity()
     {
         return cap;
     }
 
-    cv::GKernelPackage getKernelPackage(KernelPackage pkg_kind)
+    ncvslideio::GKernelPackage getKernelPackage(KernelPackage pkg_kind)
     {
-        using namespace cv::gapi;
+        using namespace ncvslideio::gapi;
         switch (pkg_kind)
         {
         case KernelPackage::OCV:
-            return cv::gapi::combine(core::cpu::kernels(),
+            return ncvslideio::gapi::combine(core::cpu::kernels(),
                                      imgproc::cpu::kernels());
             break;
 
         case KernelPackage::OCV_FLUID:
-            return cv::gapi::combine(core::cpu::kernels(),
+            return ncvslideio::gapi::combine(core::cpu::kernels(),
                                      imgproc::cpu::kernels(),
                                      core::fluid::kernels());
             break;
@@ -89,12 +89,12 @@ struct GAPI_Streaming: public ::testing::TestWithParam<std::tuple<KernelPackage,
         // Need to customize the comparison function in tests where OpenCL
         // is involved.
         case KernelPackage::OCL:
-            return cv::gapi::combine(core::ocl::kernels(),
+            return ncvslideio::gapi::combine(core::ocl::kernels(),
                                      imgproc::ocl::kernels());
             break;
 
         case KernelPackage::OCL_FLUID:
-            return cv::gapi::combine(core::ocl::kernels(),
+            return ncvslideio::gapi::combine(core::ocl::kernels(),
                                      imgproc::ocl::kernels(),
                                      core::fluid::kernels());
             break;
@@ -102,115 +102,115 @@ struct GAPI_Streaming: public ::testing::TestWithParam<std::tuple<KernelPackage,
         throw std::logic_error("Unknown package");
     }
 
-    cv::GCompileArgs getCompileArgs() {
-        using namespace cv::gapi;
-        auto args = cv::compile_args(use_only{pkg});
+    ncvslideio::GCompileArgs getCompileArgs() {
+        using namespace ncvslideio::gapi;
+        auto args = ncvslideio::compile_args(use_only{pkg});
         if (cap) {
-            args += cv::compile_args(cv::gapi::streaming::queue_capacity{cap.value()});
+            args += ncvslideio::compile_args(ncvslideio::gapi::streaming::queue_capacity{cap.value()});
         }
         return args;
     }
 
-    cv::GKernelPackage       pkg;
-    cv::optional<size_t>     cap;
+    ncvslideio::GKernelPackage       pkg;
+    ncvslideio::optional<size_t>     cap;
 };
 
-G_API_OP(Delay, <cv::GMat(cv::GMat, int)>, "org.opencv.test.delay") {
-    static cv::GMatDesc outMeta(const cv::GMatDesc &in, int) { return in; }
+G_API_OP(Delay, <ncvslideio::GMat(ncvslideio::GMat, int)>, "org.opencv.test.delay") {
+    static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in, int) { return in; }
 };
 GAPI_OCV_KERNEL(OCVDelay, Delay) {
-    static void run(const cv::Mat &in, int ms, cv::Mat &out) {
+    static void run(const ncvslideio::Mat &in, int ms, ncvslideio::Mat &out) {
         std::this_thread::sleep_for(std::chrono::milliseconds{ms});
         in.copyTo(out);
     }
 };
 
-class TestMediaBGR final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_mat;
-    using Cb = cv::MediaFrame::View::Callback;
+class TestMediaBGR final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_mat;
+    using Cb = ncvslideio::MediaFrame::View::Callback;
     Cb m_cb;
 
     public:
-    explicit TestMediaBGR(cv::Mat m, Cb cb = [](){})
+    explicit TestMediaBGR(ncvslideio::Mat m, Cb cb = [](){})
         : m_mat(m), m_cb(cb) {
         }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::BGR, cv::Size(m_mat.cols, m_mat.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, ncvslideio::Size(m_mat.cols, m_mat.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
     }
 };
 
-class TestMediaNV12 final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_y;
-    cv::Mat m_uv;
+class TestMediaNV12 final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_y;
+    ncvslideio::Mat m_uv;
 public:
-    TestMediaNV12(cv::Mat y, cv::Mat uv) : m_y(y), m_uv(uv) {
+    TestMediaNV12(ncvslideio::Mat y, ncvslideio::Mat uv) : m_y(y), m_uv(uv) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::NV12, m_y.size()};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::NV12, m_y.size()};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = {
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = {
             m_y.ptr(), m_uv.ptr(), nullptr, nullptr
         };
-        cv::MediaFrame::View::Strides ss = {
+        ncvslideio::MediaFrame::View::Strides ss = {
             m_y.step, m_uv.step, 0u, 0u
         };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
     }
 };
 
-class TestMediaGRAY final : public cv::MediaFrame::IAdapter {
-    cv::Mat m_mat;
-    using Cb = cv::MediaFrame::View::Callback;
+class TestMediaGRAY final : public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_mat;
+    using Cb = ncvslideio::MediaFrame::View::Callback;
     Cb m_cb;
 
 public:
-    explicit TestMediaGRAY(cv::Mat m, Cb cb = []() {})
+    explicit TestMediaGRAY(ncvslideio::Mat m, Cb cb = []() {})
         : m_mat(m), m_cb(cb) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{ cv::MediaFormat::GRAY, cv::Size(m_mat.cols, m_mat.rows) };
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ ncvslideio::MediaFormat::GRAY, ncvslideio::Size(m_mat.cols, m_mat.rows) };
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss), Cb{ m_cb });
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), Cb{ m_cb });
     }
 };
 
 
-class BGRSource : public cv::gapi::wip::GCaptureSource {
+class BGRSource : public ncvslideio::gapi::wip::GCaptureSource {
 public:
     explicit BGRSource(const std::string& pipeline)
-        : cv::gapi::wip::GCaptureSource(pipeline) {
+        : ncvslideio::gapi::wip::GCaptureSource(pipeline) {
     }
 
-    bool pull(cv::gapi::wip::Data& data) override {
-        if (cv::gapi::wip::GCaptureSource::pull(data)) {
-            data = cv::MediaFrame::Create<TestMediaBGR>(cv::util::get<cv::Mat>(data));
+    bool pull(ncvslideio::gapi::wip::Data& data) override {
+        if (ncvslideio::gapi::wip::GCaptureSource::pull(data)) {
+            data = ncvslideio::MediaFrame::Create<TestMediaBGR>(ncvslideio::util::get<ncvslideio::Mat>(data));
             return true;
         }
         return false;
     }
 
     GMetaArg descr_of() const override {
-        return cv::GMetaArg{cv::GFrameDesc{cv::MediaFormat::BGR,
-                                           cv::util::get<cv::GMatDesc>(
-                                                   cv::gapi::wip::GCaptureSource::descr_of()).size}};
+        return ncvslideio::GMetaArg{ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR,
+                                           ncvslideio::util::get<ncvslideio::GMatDesc>(
+                                                   ncvslideio::gapi::wip::GCaptureSource::descr_of()).size}};
     }
 };
 
-void cvtBGR2NV12(const cv::Mat& bgr, cv::Mat& y, cv::Mat& uv) {
-    cv::Size frame_sz = bgr.size();
-    cv::Size half_sz  = frame_sz / 2;
+void cvtBGR2NV12(const ncvslideio::Mat& bgr, ncvslideio::Mat& y, ncvslideio::Mat& uv) {
+    ncvslideio::Size frame_sz = bgr.size();
+    ncvslideio::Size half_sz  = frame_sz / 2;
 
-    cv::Mat yuv;
-    cv::cvtColor(bgr, yuv, cv::COLOR_BGR2YUV_I420);
+    ncvslideio::Mat yuv;
+    ncvslideio::cvtColor(bgr, yuv, ncvslideio::COLOR_BGR2YUV_I420);
 
     // Copy Y plane
     yuv.rowRange(0, frame_sz.height).copyTo(y);
@@ -219,81 +219,81 @@ void cvtBGR2NV12(const cv::Mat& bgr, cv::Mat& y, cv::Mat& uv) {
     std::vector<int> dims = {half_sz.height, half_sz.width};
     auto start = frame_sz.height;
     auto range_h = half_sz.height/2;
-    std::vector<cv::Mat> uv_planes = {
+    std::vector<ncvslideio::Mat> uv_planes = {
         yuv.rowRange(start,           start + range_h)  .reshape(0, dims),
         yuv.rowRange(start + range_h, start + range_h*2).reshape(0, dims)
     };
-    cv::merge(uv_planes, uv);
+    ncvslideio::merge(uv_planes, uv);
 }
 
-class NV12Source : public cv::gapi::wip::GCaptureSource {
+class NV12Source : public ncvslideio::gapi::wip::GCaptureSource {
 public:
     explicit NV12Source(const std::string& pipeline)
-        : cv::gapi::wip::GCaptureSource(pipeline) {
+        : ncvslideio::gapi::wip::GCaptureSource(pipeline) {
     }
 
-    bool pull(cv::gapi::wip::Data& data) override {
-        if (cv::gapi::wip::GCaptureSource::pull(data)) {
-            cv::Mat bgr = cv::util::get<cv::Mat>(data);
-            cv::Mat y, uv;
+    bool pull(ncvslideio::gapi::wip::Data& data) override {
+        if (ncvslideio::gapi::wip::GCaptureSource::pull(data)) {
+            ncvslideio::Mat bgr = ncvslideio::util::get<ncvslideio::Mat>(data);
+            ncvslideio::Mat y, uv;
             cvtBGR2NV12(bgr, y, uv);
-            data = cv::MediaFrame::Create<TestMediaNV12>(y, uv);
+            data = ncvslideio::MediaFrame::Create<TestMediaNV12>(y, uv);
             return true;
         }
         return false;
     }
 
     GMetaArg descr_of() const override {
-        return cv::GMetaArg{cv::GFrameDesc{cv::MediaFormat::NV12,
-            cv::util::get<cv::GMatDesc>(
-                    cv::gapi::wip::GCaptureSource::descr_of()).size}};
+        return ncvslideio::GMetaArg{ncvslideio::GFrameDesc{ncvslideio::MediaFormat::NV12,
+            ncvslideio::util::get<ncvslideio::GMatDesc>(
+                    ncvslideio::gapi::wip::GCaptureSource::descr_of()).size}};
     }
 };
 
-class GRAYSource : public cv::gapi::wip::GCaptureSource {
+class GRAYSource : public ncvslideio::gapi::wip::GCaptureSource {
 public:
     explicit GRAYSource(const std::string& pipeline)
-        : cv::gapi::wip::GCaptureSource(pipeline) {
+        : ncvslideio::gapi::wip::GCaptureSource(pipeline) {
     }
 
-    bool pull(cv::gapi::wip::Data& data) override {
-        if (cv::gapi::wip::GCaptureSource::pull(data)) {
-            cv::Mat bgr = cv::util::get<cv::Mat>(data);
-            cv::Mat gray;
-            cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
-            data = cv::MediaFrame::Create<TestMediaGRAY>(gray);
+    bool pull(ncvslideio::gapi::wip::Data& data) override {
+        if (ncvslideio::gapi::wip::GCaptureSource::pull(data)) {
+            ncvslideio::Mat bgr = ncvslideio::util::get<ncvslideio::Mat>(data);
+            ncvslideio::Mat gray;
+            cvtColor(bgr, gray, ncvslideio::COLOR_BGR2GRAY);
+            data = ncvslideio::MediaFrame::Create<TestMediaGRAY>(gray);
             return true;
         }
         return false;
     }
 
     GMetaArg descr_of() const override {
-        return cv::GMetaArg{ cv::GFrameDesc{cv::MediaFormat::GRAY,
-                                            cv::util::get<cv::GMatDesc>(
-                                            cv::gapi::wip::GCaptureSource::descr_of()).size} };
+        return ncvslideio::GMetaArg{ ncvslideio::GFrameDesc{ncvslideio::MediaFormat::GRAY,
+                                            ncvslideio::util::get<ncvslideio::GMatDesc>(
+                                            ncvslideio::gapi::wip::GCaptureSource::descr_of()).size} };
     }
 };
 
 
-void checkPullOverload(const cv::Mat& ref,
+void checkPullOverload(const ncvslideio::Mat& ref,
                        const bool has_output,
-                       cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>& args) {
+                       ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>& args) {
     EXPECT_TRUE(has_output);
-    using runArgs = cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>;
-    cv::Mat out_mat;
+    using runArgs = ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>;
+    ncvslideio::Mat out_mat;
     switch (args.index()) {
-        case runArgs::index_of<cv::GRunArgs>():
+        case runArgs::index_of<ncvslideio::GRunArgs>():
         {
-            auto outputs = util::get<cv::GRunArgs>(args);
+            auto outputs = util::get<ncvslideio::GRunArgs>(args);
             EXPECT_EQ(1u, outputs.size());
-            out_mat = cv::util::get<cv::Mat>(outputs[0]);
+            out_mat = ncvslideio::util::get<ncvslideio::Mat>(outputs[0]);
             break;
         }
-        case runArgs::index_of<cv::GOptRunArgs>():
+        case runArgs::index_of<ncvslideio::GOptRunArgs>():
         {
-            auto outputs = util::get<cv::GOptRunArgs>(args);
+            auto outputs = util::get<ncvslideio::GOptRunArgs>(args);
             EXPECT_EQ(1u, outputs.size());
-            auto opt_mat = cv::util::get<cv::optional<cv::Mat>>(outputs[0]);
+            auto opt_mat = ncvslideio::util::get<ncvslideio::optional<ncvslideio::Mat>>(outputs[0]);
             ASSERT_TRUE(opt_mat.has_value());
             out_mat = *opt_mat;
             break;
@@ -301,10 +301,10 @@ void checkPullOverload(const cv::Mat& ref,
         default: GAPI_Error("Incorrect type of Args");
     }
 
-    EXPECT_EQ(0., cv::norm(ref, out_mat, cv::NORM_INF));
+    EXPECT_EQ(0., ncvslideio::norm(ref, out_mat, ncvslideio::NORM_INF));
 }
 
-class InvalidSource : public cv::gapi::wip::IStreamSource {
+class InvalidSource : public ncvslideio::gapi::wip::IStreamSource {
 public:
     InvalidSource(const size_t throw_every_nth_frame,
                   const size_t num_frames)
@@ -319,7 +319,7 @@ public:
         return "InvalidSource successfully failed!";
     }
 
-    bool pull(cv::gapi::wip::Data& d) override {
+    bool pull(ncvslideio::gapi::wip::Data& d) override {
         ++m_curr_frame_id;
         if (m_curr_frame_id > m_num_frames) {
             return false;
@@ -329,21 +329,21 @@ public:
             throw std::logic_error(InvalidSource::exception_msg());
             return true;
         } else {
-            d = cv::Mat(m_mat);
+            d = ncvslideio::Mat(m_mat);
         }
 
         return true;
     }
 
-    cv::GMetaArg descr_of() const override {
-        return cv::GMetaArg{cv::descr_of(m_mat)};
+    ncvslideio::GMetaArg descr_of() const override {
+        return ncvslideio::GMetaArg{ncvslideio::descr_of(m_mat)};
     }
 
 private:
     size_t m_throw_every_nth_frame;
     size_t m_curr_frame_id;
     size_t m_num_frames;
-    cv::Mat m_mat;
+    ncvslideio::Mat m_mat;
 };
 
 G_TYPED_KERNEL(GThrowExceptionOp, <GMat(GMat)>, "org.opencv.test.throw_error_op")
@@ -358,7 +358,7 @@ GAPI_OCV_KERNEL(GThrowExceptionKernel, GThrowExceptionOp)
         return "GThrowExceptionKernel successfully failed";
     }
 
-    static void run(const cv::Mat&, cv::Mat&)
+    static void run(const ncvslideio::Mat&, ncvslideio::Mat&)
     {
         throw std::logic_error(GThrowExceptionKernel::exception_msg());
     }
@@ -379,35 +379,35 @@ TEST_P(GAPI_Streaming, SmokeTest_ConstInput_GMat)
     //
     // [Capture] --> Crop --> Resize --> Canny --> [out]
 
-    const auto crop_rc = cv::Rect(13, 75, 377, 269);
-    const auto resample_sz = cv::Size(224, 224);
+    const auto crop_rc = ncvslideio::Rect(13, 75, 377, 269);
+    const auto resample_sz = ncvslideio::Size(224, 224);
     const auto thr_lo = 64.;
     const auto thr_hi = 192.;
 
-    cv::GMat in;
-    auto roi = cv::gapi::crop(in, crop_rc);
-    auto res = cv::gapi::resize(roi, resample_sz);
-    auto out = cv::gapi::Canny(res, thr_lo, thr_hi);
-    cv::GComputation c(in, out);
+    ncvslideio::GMat in;
+    auto roi = ncvslideio::gapi::crop(in, crop_rc);
+    auto res = ncvslideio::gapi::resize(roi, resample_sz);
+    auto out = ncvslideio::gapi::Canny(res, thr_lo, thr_hi);
+    ncvslideio::GComputation c(in, out);
 
     // Input data
-    cv::Mat in_mat = cv::imread(findDataFile("cv/edgefilter/kodim23.png"));
-    cv::Mat out_mat_gapi;
+    ncvslideio::Mat in_mat = ncvslideio::imread(findDataFile("ncvslideio/edgefilter/kodim23.png"));
+    ncvslideio::Mat out_mat_gapi;
 
     // OpenCV reference image
-    cv::Mat out_mat_ocv;
+    ncvslideio::Mat out_mat_ocv;
     {
-        cv::Mat tmp;
-        cv::resize(in_mat(crop_rc), tmp, resample_sz);
-        cv::Canny(tmp, out_mat_ocv, thr_lo, thr_hi);
+        ncvslideio::Mat tmp;
+        ncvslideio::resize(in_mat(crop_rc), tmp, resample_sz);
+        ncvslideio::Canny(tmp, out_mat_ocv, thr_lo, thr_hi);
     }
 
     // Compilation & testing
-    auto ccomp = c.compileStreaming(cv::descr_of(in_mat), getCompileArgs());
+    auto ccomp = c.compileStreaming(ncvslideio::descr_of(in_mat), getCompileArgs());
     EXPECT_TRUE(ccomp);
     EXPECT_FALSE(ccomp.running());
 
-    ccomp.setSource(cv::gin(in_mat));
+    ccomp.setSource(ncvslideio::gin(in_mat));
 
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
@@ -416,7 +416,7 @@ TEST_P(GAPI_Streaming, SmokeTest_ConstInput_GMat)
     for (int i = 0; i < 15; i++) {
         // With constant inputs, the stream is endless so
         // the blocking pull() should never return `false`.
-        EXPECT_TRUE(ccomp.pull(cv::gout(out_mat_gapi)));
+        EXPECT_TRUE(ccomp.pull(ncvslideio::gout(out_mat_gapi)));
         // Fluid's and OpenCV's Resizes aren't bit exact.
         // So 1% is here because it is max difference between them.
         EXPECT_TRUE(AbsSimilarPoints(0, 1).to_compare_f()(out_mat_gapi, out_mat_ocv));
@@ -430,33 +430,33 @@ TEST_P(GAPI_Streaming, SmokeTest_ConstInput_GMat)
 
 TEST_P(GAPI_Streaming, SmokeTest_VideoInput_GMat)
 {
-    const auto crop_rc = cv::Rect(13, 75, 377, 269);
-    const auto resample_sz = cv::Size(224, 224);
+    const auto crop_rc = ncvslideio::Rect(13, 75, 377, 269);
+    const auto resample_sz = ncvslideio::Size(224, 224);
     const auto thr_lo = 64.;
     const auto thr_hi = 192.;
 
-    cv::GMat in;
-    auto roi = cv::gapi::crop(in, crop_rc);
-    auto res = cv::gapi::resize(roi, resample_sz);
-    auto out = cv::gapi::Canny(res, thr_lo, thr_hi);
-    cv::GComputation c(cv::GIn(in), cv::GOut(cv::gapi::copy(in), out));
+    ncvslideio::GMat in;
+    auto roi = ncvslideio::gapi::crop(in, crop_rc);
+    auto res = ncvslideio::gapi::resize(roi, resample_sz);
+    auto out = ncvslideio::gapi::Canny(res, thr_lo, thr_hi);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(ncvslideio::gapi::copy(in), out));
 
     // OpenCV reference image code
-    auto opencv_ref = [&](const cv::Mat &in_mat, cv::Mat &out_mat) {
-        cv::Mat tmp;
-        cv::resize(in_mat(crop_rc), tmp, resample_sz);
-        cv::Canny(tmp, out_mat, thr_lo, thr_hi);
+    auto opencv_ref = [&](const ncvslideio::Mat &in_mat, ncvslideio::Mat &out_mat) {
+        ncvslideio::Mat tmp;
+        ncvslideio::resize(in_mat(crop_rc), tmp, resample_sz);
+        ncvslideio::Canny(tmp, out_mat, thr_lo, thr_hi);
     };
 
     // Compilation & testing
-    auto ccomp = c.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
+    auto ccomp = c.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
                                     getCompileArgs());
     EXPECT_TRUE(ccomp);
     EXPECT_FALSE(ccomp.running());
 
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        ccomp.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        ccomp.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
@@ -464,12 +464,12 @@ TEST_P(GAPI_Streaming, SmokeTest_VideoInput_GMat)
     EXPECT_TRUE(ccomp.running());
 
     // Process the full video
-    cv::Mat in_mat_gapi, out_mat_gapi;
+    ncvslideio::Mat in_mat_gapi, out_mat_gapi;
 
     std::size_t frames = 0u;
-    while (ccomp.pull(cv::gout(in_mat_gapi, out_mat_gapi))) {
+    while (ccomp.pull(ncvslideio::gout(in_mat_gapi, out_mat_gapi))) {
         frames++;
-        cv::Mat out_mat_ocv;
+        ncvslideio::Mat out_mat_ocv;
         opencv_ref(in_mat_gapi, out_mat_ocv);
         // Fluid's and OpenCV's Resizes aren't bit exact.
         // So 1% is here because it is max difference between them.
@@ -494,24 +494,24 @@ TEST_P(GAPI_Streaming, Regression_CompileTimeScalar)
     // data, no data were pushed to such queue what lead to a
     // deadlock.
 
-    cv::GMat in;
-    cv::GMat tmp = cv::gapi::copy(in);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp = ncvslideio::gapi::copy(in);
     for (int i = 0; i < 3; i++) {
-        tmp = tmp & cv::gapi::blur(in, cv::Size(3,3));
+        tmp = tmp & ncvslideio::gapi::blur(in, ncvslideio::Size(3,3));
     }
-    cv::GComputation c(cv::GIn(in), cv::GOut(tmp, tmp + 1));
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(tmp, tmp + 1));
 
-    auto ccomp = c.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,512}},
+    auto ccomp = c.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,512}},
                                     getCompileArgs());
 
-    cv::Mat in_mat = cv::imread(findDataFile("cv/edgefilter/kodim23.png"));
-    cv::Mat out_mat1, out_mat2;
+    ncvslideio::Mat in_mat = ncvslideio::imread(findDataFile("ncvslideio/edgefilter/kodim23.png"));
+    ncvslideio::Mat out_mat1, out_mat2;
 
     // Fetch the result 15 times
-    ccomp.setSource(cv::gin(in_mat));
+    ccomp.setSource(ncvslideio::gin(in_mat));
     ccomp.start();
     for (int i = 0; i < 15; i++) {
-        EXPECT_TRUE(ccomp.pull(cv::gout(out_mat1, out_mat2)));
+        EXPECT_TRUE(ccomp.pull(ncvslideio::gout(out_mat1, out_mat2)));
     }
 
     ccomp.stop();
@@ -519,42 +519,42 @@ TEST_P(GAPI_Streaming, Regression_CompileTimeScalar)
 
 TEST_P(GAPI_Streaming, SmokeTest_StartRestart)
 {
-    cv::GMat in;
-    auto res = cv::gapi::resize(in, cv::Size{300,200});
-    auto out = cv::gapi::Canny(res, 95, 220);
-    cv::GComputation c(cv::GIn(in), cv::GOut(cv::gapi::copy(in), out));
+    ncvslideio::GMat in;
+    auto res = ncvslideio::gapi::resize(in, ncvslideio::Size{300,200});
+    auto out = ncvslideio::gapi::Canny(res, 95, 220);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(ncvslideio::gapi::copy(in), out));
 
-    auto ccomp = c.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
+    auto ccomp = c.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
                                     getCompileArgs());
     EXPECT_TRUE(ccomp);
     EXPECT_FALSE(ccomp.running());
 
     // Run 1
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     std::size_t num_frames1 = 0u;
     try {
-        ccomp.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        ccomp.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
 
-    cv::Mat out1, out2;
-    while (ccomp.pull(cv::gout(out1, out2))) num_frames1++;
+    ncvslideio::Mat out1, out2;
+    while (ccomp.pull(ncvslideio::gout(out1, out2))) num_frames1++;
 
     EXPECT_FALSE(ccomp.running());
 
     // Run 2
     std::size_t num_frames2 = 0u;
     try {
-        ccomp.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        ccomp.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
-    while (ccomp.pull(cv::gout(out1, out2))) num_frames2++;
+    while (ccomp.pull(ncvslideio::gout(out1, out2))) num_frames2++;
 
     EXPECT_FALSE(ccomp.running());
 
@@ -567,152 +567,152 @@ TEST_P(GAPI_Streaming, SmokeTest_VideoConstSource_NoHang)
 {
     // A video source is a finite one, while const source is not.
     // Check that pipeline completes when a video source completes.
-    auto refc = cv::GComputation([](){
-        cv::GMat in;
-        return cv::GComputation(in, cv::gapi::copy(in));
-    }).compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}}, getCompileArgs());
+    auto refc = ncvslideio::GComputation([](){
+        ncvslideio::GMat in;
+        return ncvslideio::GComputation(in, ncvslideio::gapi::copy(in));
+    }).compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}}, getCompileArgs());
 
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        refc.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        refc.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     refc.start();
     std::size_t ref_frames = 0u;
-    cv::Mat tmp;
-    while (refc.pull(cv::gout(tmp))) ref_frames++;
+    ncvslideio::Mat tmp;
+    while (refc.pull(ncvslideio::gout(tmp))) ref_frames++;
     EXPECT_EQ(100u, ref_frames);
 
-    cv::GMat in;
-    cv::GMat in2;
-    cv::GMat roi = cv::gapi::crop(in2, cv::Rect{1,1,256,256});
-    cv::GMat blr = cv::gapi::blur(roi, cv::Size(3,3));
-    cv::GMat out = blr - in;
-    auto testc = cv::GComputation(cv::GIn(in, in2), cv::GOut(out))
-        .compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{256,256}},
-                          cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
+    ncvslideio::GMat in;
+    ncvslideio::GMat in2;
+    ncvslideio::GMat roi = ncvslideio::gapi::crop(in2, ncvslideio::Rect{1,1,256,256});
+    ncvslideio::GMat blr = ncvslideio::gapi::blur(roi, ncvslideio::Size(3,3));
+    ncvslideio::GMat out = blr - in;
+    auto testc = ncvslideio::GComputation(ncvslideio::GIn(in, in2), ncvslideio::GOut(out))
+        .compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{256,256}},
+                          ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
                           getCompileArgs());
 
-    cv::Mat in_const = cv::Mat::eye(cv::Size(256,256), CV_8UC3);
-    testc.setSource(cv::gin(in_const,
-                            gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+    ncvslideio::Mat in_const = ncvslideio::Mat::eye(ncvslideio::Size(256,256), CV_8UC3);
+    testc.setSource(ncvslideio::gin(in_const,
+                            gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     testc.start();
     std::size_t test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
 
     EXPECT_EQ(ref_frames, test_frames);
 }
 
 TEST_P(GAPI_Streaming, SmokeTest_AutoMeta)
 {
-    cv::GMat in;
-    cv::GMat in2;
-    cv::GMat roi = cv::gapi::crop(in2, cv::Rect{1,1,256,256});
-    cv::GMat blr = cv::gapi::blur(roi, cv::Size(3,3));
-    cv::GMat out = blr - in;
+    ncvslideio::GMat in;
+    ncvslideio::GMat in2;
+    ncvslideio::GMat roi = ncvslideio::gapi::crop(in2, ncvslideio::Rect{1,1,256,256});
+    ncvslideio::GMat blr = ncvslideio::gapi::blur(roi, ncvslideio::Size(3,3));
+    ncvslideio::GMat out = blr - in;
 
-    auto testc = cv::GComputation(cv::GIn(in, in2), cv::GOut(out))
+    auto testc = ncvslideio::GComputation(ncvslideio::GIn(in, in2), ncvslideio::GOut(out))
         .compileStreaming(getCompileArgs());
 
-    cv::Mat in_const = cv::Mat::eye(cv::Size(256,256), CV_8UC3);
-    cv::Mat tmp;
+    ncvslideio::Mat in_const = ncvslideio::Mat::eye(ncvslideio::Size(256,256), CV_8UC3);
+    ncvslideio::Mat tmp;
 
     // Test with one video source
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        testc.setSource(cv::gin(in_const, gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        testc.setSource(ncvslideio::gin(in_const, gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     std::size_t test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(100u, test_frames);
 
     // Now test with another one
-    path = findDataFile("cv/video/1920x1080.avi");
+    path = findDataFile("ncvslideio/video/1920x1080.avi");
     try {
-        testc.setSource(cv::gin(in_const, gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        testc.setSource(ncvslideio::gin(in_const, gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(165u, test_frames);
 }
 
 
 TEST_P(GAPI_Streaming, SmokeTest_AutoMeta_2xConstMat)
 {
-    cv::GMat in;
-    cv::GMat in2;
-    cv::GMat roi = cv::gapi::crop(in2, cv::Rect{1,1,256,256});
-    cv::GMat blr = cv::gapi::blur(roi, cv::Size(3,3));
-    cv::GMat out = blr - in;
+    ncvslideio::GMat in;
+    ncvslideio::GMat in2;
+    ncvslideio::GMat roi = ncvslideio::gapi::crop(in2, ncvslideio::Rect{1,1,256,256});
+    ncvslideio::GMat blr = ncvslideio::gapi::blur(roi, ncvslideio::Size(3,3));
+    ncvslideio::GMat out = blr - in;
 
-    auto testc = cv::GComputation(cv::GIn(in, in2), cv::GOut(out))
+    auto testc = ncvslideio::GComputation(ncvslideio::GIn(in, in2), ncvslideio::GOut(out))
         .compileStreaming(getCompileArgs());
 
-    cv::Mat in_const = cv::Mat::eye(cv::Size(256,256), CV_8UC3);
-    cv::Mat tmp;
+    ncvslideio::Mat in_const = ncvslideio::Mat::eye(ncvslideio::Size(256,256), CV_8UC3);
+    ncvslideio::Mat tmp;
 
     // Test with first image
-    auto in_src = cv::imread(findDataFile("cv/edgefilter/statue.png"));
-    testc.setSource(cv::gin(in_const, in_src));
+    auto in_src = ncvslideio::imread(findDataFile("ncvslideio/edgefilter/statue.png"));
+    testc.setSource(ncvslideio::gin(in_const, in_src));
     testc.start();
 
-    ASSERT_TRUE(testc.pull(cv::gout(tmp)));
+    ASSERT_TRUE(testc.pull(ncvslideio::gout(tmp)));
 
     testc.stop();
 
     // Now test with second image
-    in_src = cv::imread(findDataFile("cv/edgefilter/kodim23.png"));
-    testc.setSource(cv::gin(in_const, in_src));
+    in_src = ncvslideio::imread(findDataFile("ncvslideio/edgefilter/kodim23.png"));
+    testc.setSource(ncvslideio::gin(in_const, in_src));
     testc.start();
 
-    ASSERT_TRUE(testc.pull(cv::gout(tmp)));
+    ASSERT_TRUE(testc.pull(ncvslideio::gout(tmp)));
 
     testc.stop();
 }
 
 TEST_P(GAPI_Streaming, SmokeTest_AutoMeta_VideoScalar)
 {
-    cv::GMat in_m;
-    cv::GScalar in_s;
-    cv::GMat out_m = in_m * in_s;
+    ncvslideio::GMat in_m;
+    ncvslideio::GScalar in_s;
+    ncvslideio::GMat out_m = in_m * in_s;
 
-    auto testc = cv::GComputation(cv::GIn(in_m, in_s), cv::GOut(out_m))
+    auto testc = ncvslideio::GComputation(ncvslideio::GIn(in_m, in_s), ncvslideio::GOut(out_m))
         .compileStreaming(getCompileArgs());
 
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     // Test with one video source and scalar
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        testc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path), cv::Scalar{1.25}));
+        testc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path), ncvslideio::Scalar{1.25}));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     std::size_t test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(100u, test_frames);
 
     // Now test with another one video source and scalar
-    path = findDataFile("cv/video/1920x1080.avi");
+    path = findDataFile("ncvslideio/video/1920x1080.avi");
     try {
-        testc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path), cv::Scalar{0.75}));
+        testc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path), ncvslideio::Scalar{0.75}));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(165u, test_frames);
 }
 
@@ -720,7 +720,7 @@ TEST_P(GAPI_Streaming, SmokeTest_AutoMeta_VideoScalar)
 INSTANTIATE_TEST_CASE_P(TestStreaming, GAPI_Streaming,
                         Combine(Values( KernelPackage::OCV
                                       , KernelPackage::OCV_FLUID),
-                                Values(cv::optional<size_t>{})));
+                                Values(ncvslideio::optional<size_t>{})));
 
 // Instantiate tests with the same backend but various queue capacity
 INSTANTIATE_TEST_CASE_P(TestStreaming_QC, GAPI_Streaming,
@@ -729,19 +729,19 @@ INSTANTIATE_TEST_CASE_P(TestStreaming_QC, GAPI_Streaming,
 
 namespace TypesTest
 {
-    G_API_OP(SumV, <cv::GArray<int>(cv::GMat)>, "test.gapi.sumv") {
-        static cv::GArrayDesc outMeta(const cv::GMatDesc &) {
-            return cv::empty_array_desc();
+    G_API_OP(SumV, <ncvslideio::GArray<int>(ncvslideio::GMat)>, "test.gapi.sumv") {
+        static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &) {
+            return ncvslideio::empty_array_desc();
         }
     };
-    G_API_OP(AddV, <cv::GMat(cv::GMat,cv::GArray<int>)>, "test.gapi.addv") {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in, const cv::GArrayDesc &) {
+    G_API_OP(AddV, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GArray<int>)>, "test.gapi.addv") {
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in, const ncvslideio::GArrayDesc &) {
             return in;
         }
     };
 
     GAPI_OCV_KERNEL(OCVSumV, SumV) {
-        static void run(const cv::Mat &in, std::vector<int> &out) {
+        static void run(const ncvslideio::Mat &in, std::vector<int> &out) {
             CV_Assert(in.depth() == CV_8U);
             const auto length = in.cols * in.channels();
             out.resize(length);
@@ -760,7 +760,7 @@ namespace TypesTest
     };
 
     GAPI_OCV_KERNEL(OCVAddV, AddV) {
-        static void run(const cv::Mat &in, const std::vector<int> &inv, cv::Mat &out) {
+        static void run(const ncvslideio::Mat &in, const std::vector<int> &inv, ncvslideio::Mat &out) {
             CV_Assert(in.depth() == CV_8U);
             const auto length = in.cols * in.channels();
             CV_Assert(length == static_cast<int>(inv.size()));
@@ -770,7 +770,7 @@ namespace TypesTest
                 uchar *out_ptr = out.ptr(r);
 
                 for (int c = 0; c < length; c++) {
-                    out_ptr[c] = cv::saturate_cast<uchar>(in_ptr[c] + inv[c]);
+                    out_ptr[c] = ncvslideio::saturate_cast<uchar>(in_ptr[c] + inv[c]);
                 }
             }
         }
@@ -779,9 +779,9 @@ namespace TypesTest
     GAPI_FLUID_KERNEL(FluidAddV, AddV, false) {
         static const int Window = 1;
 
-        static void run(const cv::gapi::fluid::View &in,
+        static void run(const ncvslideio::gapi::fluid::View &in,
                         const std::vector<int> &inv,
-                        cv::gapi::fluid::Buffer &out) {
+                        ncvslideio::gapi::fluid::Buffer &out) {
             const uchar *in_ptr = in.InLineB(0);
             uchar *out_ptr = out.OutLineB(0);
 
@@ -789,7 +789,7 @@ namespace TypesTest
             CV_Assert(length == static_cast<int>(inv.size()));
 
             for (int c = 0; c < length; c++) {
-                out_ptr[c] = cv::saturate_cast<uchar>(in_ptr[c] + inv[c]);
+                out_ptr[c] = ncvslideio::saturate_cast<uchar>(in_ptr[c] + inv[c]);
             }
         }
     };
@@ -797,48 +797,48 @@ namespace TypesTest
 
 TEST_P(GAPI_Streaming, SmokeTest_AutoMeta_VideoArray)
 {
-    cv::GMat in_m;
-    cv::GArray<int> in_v;
-    cv::GMat out_m = TypesTest::AddV::on(in_m, in_v) - in_m;
+    ncvslideio::GMat in_m;
+    ncvslideio::GArray<int> in_v;
+    ncvslideio::GMat out_m = TypesTest::AddV::on(in_m, in_v) - in_m;
 
     // Run pipeline
-    auto args = cv::compile_args(cv::gapi::kernels<TypesTest::OCVAddV>());
+    auto args = ncvslideio::compile_args(ncvslideio::gapi::kernels<TypesTest::OCVAddV>());
     auto capacity = getQueueCapacity();
     if (capacity)
     {
-        args += cv::compile_args(
-                    cv::gapi::streaming::queue_capacity{capacity.value()});
+        args += ncvslideio::compile_args(
+                    ncvslideio::gapi::streaming::queue_capacity{capacity.value()});
     }
-    auto testc = cv::GComputation(cv::GIn(in_m, in_v), cv::GOut(out_m))
+    auto testc = ncvslideio::GComputation(ncvslideio::GIn(in_m, in_v), ncvslideio::GOut(out_m))
                     .compileStreaming(std::move(args));
 
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     // Test with one video source and vector
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     std::vector<int> first_in_vec(768*3, 1);
     try {
-        testc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path), first_in_vec));
+        testc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path), first_in_vec));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     std::size_t test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(100u, test_frames);
 
     // Now test with another one
-    path = findDataFile("cv/video/1920x1080.avi");
+    path = findDataFile("ncvslideio/video/1920x1080.avi");
     std::vector<int> second_in_vec(1920*3, 1);
     try {
-        testc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path), second_in_vec));
+        testc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path), second_in_vec));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     testc.start();
 
     test_frames = 0u;
-    while (testc.pull(cv::gout(tmp))) test_frames++;
+    while (testc.pull(ncvslideio::gout(tmp))) test_frames++;
     EXPECT_EQ(165u, test_frames);
 }
 
@@ -846,25 +846,25 @@ TEST(GAPI_Streaming_Types, InputScalar)
 {
     // This test verifies if Streaming works with Scalar data @ input.
 
-    cv::GMat in_m;
-    cv::GScalar in_s;
-    cv::GMat out_m = in_m * in_s;
-    cv::GComputation c(cv::GIn(in_m, in_s), cv::GOut(out_m));
+    ncvslideio::GMat in_m;
+    ncvslideio::GScalar in_s;
+    ncvslideio::GMat out_m = in_m * in_s;
+    ncvslideio::GComputation c(ncvslideio::GIn(in_m, in_s), ncvslideio::GOut(out_m));
 
     // Input data
-    cv::Mat in_mat = cv::Mat::eye(256, 256, CV_8UC1);
-    cv::Scalar in_scl = 32;
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(256, 256, CV_8UC1);
+    ncvslideio::Scalar in_scl = 32;
 
     // Run pipeline
-    auto sc = c.compileStreaming(cv::descr_of(in_mat), cv::descr_of(in_scl));
-    sc.setSource(cv::gin(in_mat, in_scl));
+    auto sc = c.compileStreaming(ncvslideio::descr_of(in_mat), ncvslideio::descr_of(in_scl));
+    sc.setSource(ncvslideio::gin(in_mat, in_scl));
     sc.start();
 
     for (int i = 0; i < 10; i++)
     {
-        cv::Mat out;
-        EXPECT_TRUE(sc.pull(cv::gout(out)));
-        EXPECT_EQ(0., cv::norm(out, in_mat.mul(in_scl), cv::NORM_INF));
+        ncvslideio::Mat out;
+        EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
+        EXPECT_EQ(0., ncvslideio::norm(out, in_mat.mul(in_scl), ncvslideio::NORM_INF));
     }
 }
 
@@ -872,38 +872,38 @@ TEST(GAPI_Streaming_Types, InputVector)
 {
     // This test verifies if Streaming works with Vector data @ input.
 
-    cv::GMat in_m;
-    cv::GArray<int> in_v;
-    cv::GMat out_m = TypesTest::AddV::on(in_m, in_v) - in_m;
-    cv::GComputation c(cv::GIn(in_m, in_v), cv::GOut(out_m));
+    ncvslideio::GMat in_m;
+    ncvslideio::GArray<int> in_v;
+    ncvslideio::GMat out_m = TypesTest::AddV::on(in_m, in_v) - in_m;
+    ncvslideio::GComputation c(ncvslideio::GIn(in_m, in_v), ncvslideio::GOut(out_m));
 
     // Input data
-    cv::Mat in_mat = cv::Mat::eye(256, 256, CV_8UC1);
+    ncvslideio::Mat in_mat = ncvslideio::Mat::eye(256, 256, CV_8UC1);
     std::vector<int> in_vec;
     TypesTest::OCVSumV::run(in_mat, in_vec);
     EXPECT_EQ(std::vector<int>(256,1), in_vec); // self-sanity-check
 
-    auto opencv_ref = [&](const cv::Mat &in, const std::vector<int> &inv, cv::Mat &out) {
-        cv::Mat tmp = in_mat.clone(); // allocate the same amount of memory as graph does
+    auto opencv_ref = [&](const ncvslideio::Mat &in, const std::vector<int> &inv, ncvslideio::Mat &out) {
+        ncvslideio::Mat tmp = in_mat.clone(); // allocate the same amount of memory as graph does
         TypesTest::OCVAddV::run(in, inv, tmp);
         out = tmp - in;
     };
 
     // Run pipeline
-    auto sc = c.compileStreaming(cv::descr_of(in_mat),
-                                 cv::descr_of(in_vec),
-                                 cv::compile_args(cv::gapi::kernels<TypesTest::OCVAddV>()));
-    sc.setSource(cv::gin(in_mat, in_vec));
+    auto sc = c.compileStreaming(ncvslideio::descr_of(in_mat),
+                                 ncvslideio::descr_of(in_vec),
+                                 ncvslideio::compile_args(ncvslideio::gapi::kernels<TypesTest::OCVAddV>()));
+    sc.setSource(ncvslideio::gin(in_mat, in_vec));
     sc.start();
 
     for (int i = 0; i < 10; i++)
     {
-        cv::Mat out_mat;
-        EXPECT_TRUE(sc.pull(cv::gout(out_mat)));
+        ncvslideio::Mat out_mat;
+        EXPECT_TRUE(sc.pull(ncvslideio::gout(out_mat)));
 
-        cv::Mat ref_mat;
+        ncvslideio::Mat ref_mat;
         opencv_ref(in_mat, in_vec, ref_mat);
-        EXPECT_EQ(0., cv::norm(ref_mat, out_mat, cv::NORM_INF));
+        EXPECT_EQ(0., ncvslideio::norm(ref_mat, out_mat, ncvslideio::NORM_INF));
     }
 }
 
@@ -912,32 +912,32 @@ TEST(GAPI_Streaming_Types, XChangeScalar)
     // This test verifies if Streaming works when pipeline steps
     // (islands) exchange Scalar data.
 
-    cv::GMat in;
-    cv::GScalar m = cv::gapi::mean(in);
-    cv::GMat tmp = cv::gapi::convertTo(in, CV_32F) - m;
-    cv::GMat out = cv::gapi::blur(tmp, cv::Size(3,3));
-    cv::GComputation c(cv::GIn(in), cv::GOut(cv::gapi::copy(in),
-                                             cv::gapi::convertTo(out, CV_8U)));
+    ncvslideio::GMat in;
+    ncvslideio::GScalar m = ncvslideio::gapi::mean(in);
+    ncvslideio::GMat tmp = ncvslideio::gapi::convertTo(in, CV_32F) - m;
+    ncvslideio::GMat out = ncvslideio::gapi::blur(tmp, ncvslideio::Size(3,3));
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(ncvslideio::gapi::copy(in),
+                                             ncvslideio::gapi::convertTo(out, CV_8U)));
 
-    auto ocv_ref = [](const cv::Mat &in_mat, cv::Mat &out_mat) {
-        cv::Scalar ocv_m = cv::mean(in_mat);
-        cv::Mat ocv_tmp;
+    auto ocv_ref = [](const ncvslideio::Mat &in_mat, ncvslideio::Mat &out_mat) {
+        ncvslideio::Scalar ocv_m = ncvslideio::mean(in_mat);
+        ncvslideio::Mat ocv_tmp;
         in_mat.convertTo(ocv_tmp, CV_32F);
         ocv_tmp -= ocv_m;
-        cv::blur(ocv_tmp, ocv_tmp, cv::Size(3,3));
+        ncvslideio::blur(ocv_tmp, ocv_tmp, ncvslideio::Size(3,3));
         ocv_tmp.convertTo(out_mat, CV_8U);
     };
 
     // Here we want mean & convertTo run on OCV
     // and subC & blur3x3 on Fluid.
     // FIXME: With the current API it looks quite awful:
-    auto ocv_kernels = cv::gapi::core::cpu::kernels(); // convertTo
-    ocv_kernels.remove<cv::gapi::core::GSubC>();
+    auto ocv_kernels = ncvslideio::gapi::core::cpu::kernels(); // convertTo
+    ocv_kernels.remove<ncvslideio::gapi::core::GSubC>();
 
-    auto fluid_kernels = cv::gapi::combine(cv::gapi::core::fluid::kernels(),     // subC
-                                           cv::gapi::imgproc::fluid::kernels()); // box3x3
-    fluid_kernels.remove<cv::gapi::core::GConvertTo>();
-    fluid_kernels.remove<cv::gapi::core::GMean>();
+    auto fluid_kernels = ncvslideio::gapi::combine(ncvslideio::gapi::core::fluid::kernels(),     // subC
+                                           ncvslideio::gapi::imgproc::fluid::kernels()); // box3x3
+    fluid_kernels.remove<ncvslideio::gapi::core::GConvertTo>();
+    fluid_kernels.remove<ncvslideio::gapi::core::GMean>();
 
     // FIXME: Now
     // - fluid kernels take over ocv kernels (including Copy, SubC, & Box3x3)
@@ -947,28 +947,28 @@ TEST(GAPI_Streaming_Types, XChangeScalar)
     // to an empty kernel package to craft his own but not do it via exclusion.
     // Need to expose kernel declarations to public headers to enable kernels<..>()
     // on user side.
-    auto kernels = cv::gapi::combine(ocv_kernels, fluid_kernels);
+    auto kernels = ncvslideio::gapi::combine(ocv_kernels, fluid_kernels);
 
     // Compile streaming pipeline
-    auto sc = c.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
-                                cv::compile_args(cv::gapi::use_only{kernels}));
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto sc = c.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
+                                ncvslideio::compile_args(ncvslideio::gapi::use_only{kernels}));
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        sc.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::Mat in_frame;
-    cv::Mat out_mat_gapi;
-    cv::Mat out_mat_ref;
+    ncvslideio::Mat in_frame;
+    ncvslideio::Mat out_mat_gapi;
+    ncvslideio::Mat out_mat_ref;
 
     std::size_t num_frames = 0u;
-    while (sc.pull(cv::gout(in_frame, out_mat_gapi))) {
+    while (sc.pull(ncvslideio::gout(in_frame, out_mat_gapi))) {
         num_frames++;
         ocv_ref(in_frame, out_mat_ref);
-        EXPECT_EQ(0., cv::norm(out_mat_gapi, out_mat_ref, cv::NORM_INF));
+        EXPECT_EQ(0., ncvslideio::norm(out_mat_gapi, out_mat_ref, ncvslideio::NORM_INF));
     }
     EXPECT_LT(0u, num_frames);
 }
@@ -978,61 +978,61 @@ TEST(GAPI_Streaming_Types, XChangeVector)
     // This test verifies if Streaming works when pipeline steps
     // (islands) exchange Vector data.
 
-    cv::GMat in1, in2;
-    cv::GMat in = cv::gapi::crop(in1, cv::Rect{0,0,576,576});
-    cv::GScalar m = cv::gapi::mean(in);
-    cv::GArray<int> s = TypesTest::SumV::on(in2); // (in2 = eye, so s = [1,0,0,1,..])
-    cv::GMat out = TypesTest::AddV::on(in - m, s);
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GMat in = ncvslideio::gapi::crop(in1, ncvslideio::Rect{0,0,576,576});
+    ncvslideio::GScalar m = ncvslideio::gapi::mean(in);
+    ncvslideio::GArray<int> s = TypesTest::SumV::on(in2); // (in2 = eye, so s = [1,0,0,1,..])
+    ncvslideio::GMat out = TypesTest::AddV::on(in - m, s);
 
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(cv::gapi::copy(in), out));
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(ncvslideio::gapi::copy(in), out));
 
-    auto ocv_ref = [](const cv::Mat &in_mat1, const cv::Mat &in_mat2, cv::Mat &out_mat) {
-        cv::Mat in_roi = in_mat1(cv::Rect{0,0,576,576});
-        cv::Scalar ocv_m = cv::mean(in_roi);
+    auto ocv_ref = [](const ncvslideio::Mat &in_mat1, const ncvslideio::Mat &in_mat2, ncvslideio::Mat &out_mat) {
+        ncvslideio::Mat in_roi = in_mat1(ncvslideio::Rect{0,0,576,576});
+        ncvslideio::Scalar ocv_m = ncvslideio::mean(in_roi);
         std::vector<int> ocv_v;
         TypesTest::OCVSumV::run(in_mat2, ocv_v);
 
-        out_mat.create(cv::Size(576,576), CV_8UC3);
-        cv::Mat in_tmp = in_roi - ocv_m;
+        out_mat.create(ncvslideio::Size(576,576), CV_8UC3);
+        ncvslideio::Mat in_tmp = in_roi - ocv_m;
         TypesTest::OCVAddV::run(in_tmp, ocv_v, out_mat);
     };
 
     // Let crop/mean/sumV be calculated via OCV,
     // and AddV/subC be calculated via Fluid
-    auto ocv_kernels = cv::gapi::core::cpu::kernels();
-    ocv_kernels.remove<cv::gapi::core::GSubC>();
+    auto ocv_kernels = ncvslideio::gapi::core::cpu::kernels();
+    ocv_kernels.remove<ncvslideio::gapi::core::GSubC>();
     ocv_kernels.include<TypesTest::OCVSumV>();
 
-    auto fluid_kernels = cv::gapi::core::fluid::kernels();
+    auto fluid_kernels = ncvslideio::gapi::core::fluid::kernels();
     fluid_kernels.include<TypesTest::FluidAddV>();
 
     // Here OCV takes precedense over Fluid, with SubC & SumV remaining
     // in Fluid.
-    auto kernels = cv::gapi::combine(fluid_kernels, ocv_kernels);
+    auto kernels = ncvslideio::gapi::combine(fluid_kernels, ocv_kernels);
 
     // Compile streaming pipeline
-    cv::Mat in_eye = cv::Mat::eye(cv::Size(576, 576), CV_8UC3);
-    auto sc = c.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
-                                 cv::GMatDesc{CV_8U,3,cv::Size{576,576}},
-                                 cv::compile_args(cv::gapi::use_only{kernels}));
-    auto path = findDataFile("cv/video/768x576.avi");
+    ncvslideio::Mat in_eye = ncvslideio::Mat::eye(ncvslideio::Size(576, 576), CV_8UC3);
+    auto sc = c.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
+                                 ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{576,576}},
+                                 ncvslideio::compile_args(ncvslideio::gapi::use_only{kernels}));
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path),
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path),
                              in_eye));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::Mat in_frame;
-    cv::Mat out_mat_gapi;
-    cv::Mat out_mat_ref;
+    ncvslideio::Mat in_frame;
+    ncvslideio::Mat out_mat_gapi;
+    ncvslideio::Mat out_mat_ref;
 
     std::size_t num_frames = 0u;
-    while (sc.pull(cv::gout(in_frame, out_mat_gapi))) {
+    while (sc.pull(ncvslideio::gout(in_frame, out_mat_gapi))) {
         num_frames++;
         ocv_ref(in_frame, in_eye, out_mat_ref);
-        EXPECT_EQ(0., cv::norm(out_mat_gapi, out_mat_ref, cv::NORM_INF));
+        EXPECT_EQ(0., ncvslideio::norm(out_mat_gapi, out_mat_ref, ncvslideio::NORM_INF));
     }
     EXPECT_LT(0u, num_frames);
 }
@@ -1042,33 +1042,33 @@ TEST(GAPI_Streaming_Types, OutputScalar)
     // This test verifies if Streaming works when pipeline
     // produces scalar data only
 
-    cv::GMat in;
-    cv::GScalar out = cv::gapi::mean(in);
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(out))
-        .compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}});
+    ncvslideio::GMat in;
+    ncvslideio::GScalar out = ncvslideio::gapi::mean(in);
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out))
+        .compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}});
 
     std::string video_path;
-    video_path = findDataFile("cv/video/768x576.avi");
+    video_path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(video_path));
+        sc.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(video_path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(video_path);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::Mat tmp;
-    cv::Scalar out_scl;
+    ncvslideio::Mat tmp;
+    ncvslideio::Scalar out_scl;
     std::size_t num_frames = 0u;
-    while (sc.pull(cv::gout(out_scl)))
+    while (sc.pull(ncvslideio::gout(out_scl)))
     {
         num_frames++;
         cap >> tmp;
-        cv::Scalar out_ref = cv::mean(tmp);
+        ncvslideio::Scalar out_ref = ncvslideio::mean(tmp);
         EXPECT_EQ(out_ref, out_scl);
     }
     EXPECT_LT(0u, num_frames);
@@ -1079,43 +1079,43 @@ TEST(GAPI_Streaming_Types, OutputVector)
     // This test verifies if Streaming works when pipeline
     // produces vector data only
 
-    auto pkg = cv::gapi::kernels<TypesTest::OCVSumV>();
+    auto pkg = ncvslideio::gapi::kernels<TypesTest::OCVSumV>();
 
-    cv::GMat in1, in2;
-    cv::GMat roi = cv::gapi::crop(in2, cv::Rect(3,3,256,256));
-    cv::GArray<int> out = TypesTest::SumV::on(cv::gapi::mul(roi, in1));
-    auto sc = cv::GComputation(cv::GIn(in1, in2), cv::GOut(out))
-        .compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{256,256}},
-                          cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
-                          cv::compile_args(pkg));
+    ncvslideio::GMat in1, in2;
+    ncvslideio::GMat roi = ncvslideio::gapi::crop(in2, ncvslideio::Rect(3,3,256,256));
+    ncvslideio::GArray<int> out = TypesTest::SumV::on(ncvslideio::gapi::mul(roi, in1));
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out))
+        .compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{256,256}},
+                          ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
+                          ncvslideio::compile_args(pkg));
 
-    auto ocv_ref = [](const cv::Mat &ocv_in1,
-                      const cv::Mat &ocv_in2,
+    auto ocv_ref = [](const ncvslideio::Mat &ocv_in1,
+                      const ncvslideio::Mat &ocv_in2,
                       std::vector<int> &ocv_out) {
-        auto ocv_roi = ocv_in2(cv::Rect{3,3,256,256});
+        auto ocv_roi = ocv_in2(ncvslideio::Rect{3,3,256,256});
         TypesTest::OCVSumV::run(ocv_roi.mul(ocv_in1), ocv_out);
     };
 
-    cv::Mat in_eye = cv::Mat::eye(cv::Size(256, 256), CV_8UC3);
+    ncvslideio::Mat in_eye = ncvslideio::Mat::eye(ncvslideio::Size(256, 256), CV_8UC3);
     std::string video_path;
-    video_path = findDataFile("cv/video/768x576.avi");
+    video_path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(in_eye, gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(video_path)));
+        sc.setSource(ncvslideio::gin(in_eye, gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(video_path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(video_path);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     std::vector<int> ref_vec;
     std::vector<int> out_vec;
     std::size_t num_frames = 0u;
-    while (sc.pull(cv::gout(out_vec)))
+    while (sc.pull(ncvslideio::gout(out_vec)))
     {
         num_frames++;
         cap >> tmp;
@@ -1127,16 +1127,16 @@ TEST(GAPI_Streaming_Types, OutputVector)
 }
 
 G_API_OP(DimsChans,
-         <std::tuple<cv::GArray<int>, cv::GOpaque<int>>(cv::GMat)>,
+         <std::tuple<ncvslideio::GArray<int>, ncvslideio::GOpaque<int>>(ncvslideio::GMat)>,
          "test.streaming.dims_chans") {
-    static std::tuple<cv::GArrayDesc, cv::GOpaqueDesc> outMeta(const cv::GMatDesc &) {
-        return std::make_tuple(cv::empty_array_desc(),
-                               cv::empty_gopaque_desc());
+    static std::tuple<ncvslideio::GArrayDesc, ncvslideio::GOpaqueDesc> outMeta(const ncvslideio::GMatDesc &) {
+        return std::make_tuple(ncvslideio::empty_array_desc(),
+                               ncvslideio::empty_gopaque_desc());
     }
 };
 
 GAPI_OCV_KERNEL(OCVDimsChans, DimsChans) {
-    static void run(const cv::Mat &in, std::vector<int> &ov, int &oi) {
+    static void run(const ncvslideio::Mat &in, std::vector<int> &ov, int &oi) {
         ov = {in.cols, in.rows};
         oi = in.channels();
     }
@@ -1153,39 +1153,39 @@ struct GAPI_Streaming_TemplateTypes: ::testing::Test {
     GAPI_Streaming_TemplateTypes() {
         // Prepare everything for the test:
         // Graph itself
-        blur = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+        blur = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-        cv::GMat blur_d = cv::gapi::streaming::desync(blur);
+        ncvslideio::GMat blur_d = ncvslideio::gapi::streaming::desync(blur);
         std::tie(vec, opq) = DimsChans::on(blur_d);
 
         // Kernel package
-        pkg = cv::gapi::kernels<OCVDimsChans>();
+        pkg = ncvslideio::gapi::kernels<OCVDimsChans>();
 
         // Input mat
-        in_mat = cv::Mat::eye(cv::Size(320,240), CV_8UC3);
+        in_mat = ncvslideio::Mat::eye(ncvslideio::Size(320,240), CV_8UC3);
     }
 
-    cv::GMat in;
-    cv::GMat blur;
-    cv::GArray<int> vec;
-    cv::GOpaque<int> opq;
-    cv::GKernelPackage pkg;
-    cv::Mat in_mat;
+    ncvslideio::GMat in;
+    ncvslideio::GMat blur;
+    ncvslideio::GArray<int> vec;
+    ncvslideio::GOpaque<int> opq;
+    ncvslideio::GKernelPackage pkg;
+    ncvslideio::Mat in_mat;
 };
 
 TEST_F(GAPI_Streaming_TemplateTypes, UnusedVectorIsOK)
 {
     // Declare graph without listing vec as output
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(blur, opq))
-        .compileStreaming(cv::compile_args(pkg));
-    sc.setSource(cv::gin(in_mat));
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(blur, opq))
+        .compileStreaming(ncvslideio::compile_args(pkg));
+    sc.setSource(ncvslideio::gin(in_mat));
     sc.start();
 
-    cv::optional<cv::Mat> out_mat;
-    cv::optional<int> out_int;
+    ncvslideio::optional<ncvslideio::Mat> out_mat;
+    ncvslideio::optional<int> out_int;
 
     int counter = 0;
-    while (sc.pull(cv::gout(out_mat, out_int))) {
+    while (sc.pull(ncvslideio::gout(out_mat, out_int))) {
         if (counter++ == 10) {
             // Stop the test after 10 iterations
             sc.stop();
@@ -1201,16 +1201,16 @@ TEST_F(GAPI_Streaming_TemplateTypes, UnusedVectorIsOK)
 TEST_F(GAPI_Streaming_TemplateTypes, UnusedOpaqueIsOK)
 {
     // Declare graph without listing opq as output
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(blur, vec))
-        .compileStreaming(cv::compile_args(pkg));
-    sc.setSource(cv::gin(in_mat));
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(blur, vec))
+        .compileStreaming(ncvslideio::compile_args(pkg));
+    sc.setSource(ncvslideio::gin(in_mat));
     sc.start();
 
-    cv::optional<cv::Mat> out_mat;
-    cv::optional<std::vector<int> > out_vec;
+    ncvslideio::optional<ncvslideio::Mat> out_mat;
+    ncvslideio::optional<std::vector<int> > out_vec;
 
     int counter = 0;
-    while (sc.pull(cv::gout(out_mat, out_vec))) {
+    while (sc.pull(ncvslideio::gout(out_mat, out_vec))) {
         if (counter++ == 10) {
             // Stop the test after 10 iterations
             sc.stop();
@@ -1225,24 +1225,24 @@ TEST_F(GAPI_Streaming_TemplateTypes, UnusedOpaqueIsOK)
 }
 
 struct GAPI_Streaming_Unit: public ::testing::Test {
-    cv::Mat m;
+    ncvslideio::Mat m;
 
-    cv::GComputation cc;
-    cv::GStreamingCompiled sc;
+    ncvslideio::GComputation cc;
+    ncvslideio::GStreamingCompiled sc;
 
-    cv::GCompiled ref;
+    ncvslideio::GCompiled ref;
 
     GAPI_Streaming_Unit()
-        : m(cv::Mat::ones(224,224,CV_8UC3))
+        : m(ncvslideio::Mat::ones(224,224,CV_8UC3))
         , cc([]{
-                cv::GMat a, b;
-                cv::GMat c = a + b*2;
-                return cv::GComputation(cv::GIn(a, b), cv::GOut(c));
+                ncvslideio::GMat a, b;
+                ncvslideio::GMat c = a + b*2;
+                return ncvslideio::GComputation(ncvslideio::GIn(a, b), ncvslideio::GOut(c));
             })
     {
 
-        const auto a_desc = cv::descr_of(m);
-        const auto b_desc = cv::descr_of(m);
+        const auto a_desc = ncvslideio::descr_of(m);
+        const auto b_desc = ncvslideio::descr_of(m);
         sc  = cc.compileStreaming(a_desc, b_desc);
         ref = cc.compile(a_desc, b_desc);
     }
@@ -1254,26 +1254,26 @@ struct GAPI_Streaming_Unit: public ::testing::Test {
 
 TEST(GAPI_Streaming, TestTwoVideosDifferentLength)
 {
-    auto desc = cv::GMatDesc{CV_8U,3,{768,576}};
-    auto path1 = findDataFile("cv/video/768x576.avi");
+    auto desc = ncvslideio::GMatDesc{CV_8U,3,{768,576}};
+    auto path1 = findDataFile("ncvslideio/video/768x576.avi");
     auto path2 = findDataFile("highgui/video/big_buck_bunny.avi");
 
-    cv::GMat in1, in2;
-    auto out = in1 + cv::gapi::resize(in2, desc.size);
+    ncvslideio::GMat in1, in2;
+    auto out = in1 + ncvslideio::gapi::resize(in2, desc.size);
 
-    cv::GComputation cc(cv::GIn(in1, in2), cv::GOut(out));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
     auto sc = cc.compileStreaming();
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path1),
-                             gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path2)));
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path1),
+                             gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path2)));
     } catch(...) {
         throw SkipTestException("Video file can not be found");
     }
     sc.start();
 
-    cv::Mat out_mat;
+    ncvslideio::Mat out_mat;
     std::size_t frames = 0u;
-    while(sc.pull(cv::gout(out_mat))) {
+    while(sc.pull(ncvslideio::gout(out_mat))) {
         frames++;
     }
 
@@ -1296,33 +1296,33 @@ TEST_F(GAPI_Streaming_Unit, TestStopWithoutStart1)
 TEST_F(GAPI_Streaming_Unit, TestStopWithoutStart2)
 {
     // It should be ok as well
-    sc.setSource(cv::gin(m, m));
+    sc.setSource(ncvslideio::gin(m, m));
     EXPECT_NO_THROW(sc.stop());
 }
 
 TEST_F(GAPI_Streaming_Unit, StopStartStop)
 {
-    cv::Mat out;
+    ncvslideio::Mat out;
     EXPECT_NO_THROW(sc.stop());
-    EXPECT_NO_THROW(sc.setSource(cv::gin(m, m)));
+    EXPECT_NO_THROW(sc.setSource(ncvslideio::gin(m, m)));
     EXPECT_NO_THROW(sc.start());
 
     std::size_t i = 0u;
-    while (i++ < 10u) {EXPECT_TRUE(sc.pull(cv::gout(out)));};
+    while (i++ < 10u) {EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));};
 
     EXPECT_NO_THROW(sc.stop());
 }
 
 TEST_F(GAPI_Streaming_Unit, ImplicitStop)
 {
-    EXPECT_NO_THROW(sc.setSource(cv::gin(m, m)));
+    EXPECT_NO_THROW(sc.setSource(ncvslideio::gin(m, m)));
     EXPECT_NO_THROW(sc.start());
     // No explicit stop here - pipeline stops successfully at the test exit
 }
 
 TEST_F(GAPI_Streaming_Unit, StartStopStart_NoSetSource)
 {
-    EXPECT_NO_THROW(sc.setSource(cv::gin(m, m)));
+    EXPECT_NO_THROW(sc.setSource(ncvslideio::gin(m, m)));
     EXPECT_NO_THROW(sc.start());
     EXPECT_NO_THROW(sc.stop());
     EXPECT_ANY_THROW(sc.start()); // Should fail since setSource was not called
@@ -1334,126 +1334,126 @@ TEST_F(GAPI_Streaming_Unit, StartStopStress_Const)
     for (int i = 0; i < 100; i++)
     {
         sc.stop();
-        sc.setSource(cv::gin(m, m));
+        sc.setSource(ncvslideio::gin(m, m));
         sc.start();
-        cv::Mat out;
-        for (int j = 0; j < 5; j++) EXPECT_TRUE(sc.pull(cv::gout(out)));
+        ncvslideio::Mat out;
+        for (int j = 0; j < 5; j++) EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
     }
 }
 
 TEST_F(GAPI_Streaming_Unit, StartStopStress_Video)
 {
     // Runs 100 times with no deadlock - assumed stable (robust) enough
-    sc = cc.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size{768,576}},
-                             cv::GMatDesc{CV_8U,3,cv::Size{768,576}});
-    m = cv::Mat::eye(cv::Size{768,576}, CV_8UC3);
-    auto path = findDataFile("cv/video/768x576.avi");
+    sc = cc.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}},
+                             ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{768,576}});
+    m = ncvslideio::Mat::eye(ncvslideio::Size{768,576}, CV_8UC3);
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     for (int i = 0; i < 100; i++)
     {
         sc.stop();
         try {
-            sc.setSource(cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path), m));
+            sc.setSource(ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path), m));
         } catch(...) {
             throw SkipTestException("Video file can not be opened");
         }
         sc.start();
-        cv::Mat out;
-        for (int j = 0; j < 5; j++) EXPECT_TRUE(sc.pull(cv::gout(out)));
+        ncvslideio::Mat out;
+        for (int j = 0; j < 5; j++) EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
     }
 }
 
 TEST_F(GAPI_Streaming_Unit, PullNoStart)
 {
-    sc.setSource(cv::gin(m, m));
+    sc.setSource(ncvslideio::gin(m, m));
 
-    cv::Mat out;
-    EXPECT_ANY_THROW(sc.pull(cv::gout(out)));
+    ncvslideio::Mat out;
+    EXPECT_ANY_THROW(sc.pull(ncvslideio::gout(out)));
 }
 
 
 TEST_F(GAPI_Streaming_Unit, SetSource_Multi_BeforeStart)
 {
-    cv::Mat eye = cv::Mat::eye  (224, 224, CV_8UC3);
-    cv::Mat zrs = cv::Mat::zeros(224, 224, CV_8UC3);
+    ncvslideio::Mat eye = ncvslideio::Mat::eye  (224, 224, CV_8UC3);
+    ncvslideio::Mat zrs = ncvslideio::Mat::zeros(224, 224, CV_8UC3);
 
     // Call setSource two times, data specified last time
     // should be actually processed.
-    sc.setSource(cv::gin(zrs, zrs));
-    sc.setSource(cv::gin(eye, eye));
+    sc.setSource(ncvslideio::gin(zrs, zrs));
+    sc.setSource(ncvslideio::gin(eye, eye));
 
     // Run the pipeline, acquire result once
     sc.start();
-    cv::Mat out, out_ref;
-    EXPECT_TRUE(sc.pull(cv::gout(out)));
+    ncvslideio::Mat out, out_ref;
+    EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
     sc.stop();
 
     // Pipeline should process `eye` mat, not `zrs`
-    ref(cv::gin(eye, eye), cv::gout(out_ref));
-    EXPECT_EQ(0., cv::norm(out, out_ref, cv::NORM_INF));
+    ref(ncvslideio::gin(eye, eye), ncvslideio::gout(out_ref));
+    EXPECT_EQ(0., ncvslideio::norm(out, out_ref, ncvslideio::NORM_INF));
 }
 
 TEST_F(GAPI_Streaming_Unit, SetSource_During_Execution)
 {
-    cv::Mat zrs = cv::Mat::zeros(224, 224, CV_8UC3);
+    ncvslideio::Mat zrs = ncvslideio::Mat::zeros(224, 224, CV_8UC3);
 
-    sc.setSource(cv::gin(m, m));
+    sc.setSource(ncvslideio::gin(m, m));
     sc.start();
-    EXPECT_ANY_THROW(sc.setSource(cv::gin(zrs, zrs)));
-    EXPECT_ANY_THROW(sc.setSource(cv::gin(zrs, zrs)));
-    EXPECT_ANY_THROW(sc.setSource(cv::gin(zrs, zrs)));
+    EXPECT_ANY_THROW(sc.setSource(ncvslideio::gin(zrs, zrs)));
+    EXPECT_ANY_THROW(sc.setSource(ncvslideio::gin(zrs, zrs)));
+    EXPECT_ANY_THROW(sc.setSource(ncvslideio::gin(zrs, zrs)));
     sc.stop();
 }
 
 TEST_F(GAPI_Streaming_Unit, SetSource_After_Completion)
 {
-    sc.setSource(cv::gin(m, m));
+    sc.setSource(ncvslideio::gin(m, m));
 
     // Test pipeline with `m` input
     sc.start();
-    cv::Mat out, out_ref;
-    EXPECT_TRUE(sc.pull(cv::gout(out)));
+    ncvslideio::Mat out, out_ref;
+    EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
     sc.stop();
 
     // Test against ref
-    ref(cv::gin(m, m), cv::gout(out_ref));
-    EXPECT_EQ(0., cv::norm(out, out_ref, cv::NORM_INF));
+    ref(ncvslideio::gin(m, m), ncvslideio::gout(out_ref));
+    EXPECT_EQ(0., ncvslideio::norm(out, out_ref, ncvslideio::NORM_INF));
 
     // Now set another source
-    cv::Mat eye = cv::Mat::eye(224, 224, CV_8UC3);
-    sc.setSource(cv::gin(eye, m));
+    ncvslideio::Mat eye = ncvslideio::Mat::eye(224, 224, CV_8UC3);
+    sc.setSource(ncvslideio::gin(eye, m));
     sc.start();
-    EXPECT_TRUE(sc.pull(cv::gout(out)));
+    EXPECT_TRUE(sc.pull(ncvslideio::gout(out)));
     sc.stop();
 
     // Test against new ref
-    ref(cv::gin(eye, m), cv::gout(out_ref));
-    EXPECT_EQ(0., cv::norm(out, out_ref, cv::NORM_INF));
+    ref(ncvslideio::gin(eye, m), ncvslideio::gout(out_ref));
+    EXPECT_EQ(0., ncvslideio::norm(out, out_ref, ncvslideio::NORM_INF));
 }
 
 // NB: Check pull overload for python
 TEST(Streaming, Python_Pull_Overload)
 {
-    cv::GMat in;
-    auto out = cv::gapi::copy(in);
-    cv::GComputation c(in, out);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::copy(in);
+    ncvslideio::GComputation c(in, out);
 
-    cv::Size sz(3,3);
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar(255));
+    ncvslideio::Size sz(3,3);
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar(255));
 
     auto ccomp = c.compileStreaming();
 
     EXPECT_TRUE(ccomp);
     EXPECT_FALSE(ccomp.running());
 
-    ccomp.setSource(cv::gin(in_mat));
+    ccomp.setSource(ncvslideio::gin(in_mat));
 
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
 
     bool has_output;
-    cv::GRunArgs outputs;
-    using RunArgs = cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>;
+    ncvslideio::GRunArgs outputs;
+    using RunArgs = ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>;
     RunArgs args;
 
     std::tie(has_output, args) = ccomp.pull();
@@ -1466,27 +1466,27 @@ TEST(Streaming, Python_Pull_Overload)
 
 TEST(GAPI_Streaming_Desync, Python_Pull_Overload)
 {
-    cv::GMat in;
-    cv::GMat out = cv::gapi::streaming::desync(in);
-    cv::GComputation c(in, out);
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::streaming::desync(in);
+    ncvslideio::GComputation c(in, out);
 
-    cv::Size sz(3,3);
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar(255));
+    ncvslideio::Size sz(3,3);
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar(255));
 
     auto ccomp = c.compileStreaming();
 
     EXPECT_TRUE(ccomp);
     EXPECT_FALSE(ccomp.running());
 
-    ccomp.setSource(cv::gin(in_mat));
+    ccomp.setSource(ncvslideio::gin(in_mat));
 
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
 
     bool has_output;
-    cv::GRunArgs outputs;
-    using RunArgs = cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>;
+    ncvslideio::GRunArgs outputs;
+    using RunArgs = ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>;
     RunArgs args;
 
     std::tie(has_output, args) = ccomp.pull();
@@ -1499,34 +1499,34 @@ TEST(GAPI_Streaming_Desync, Python_Pull_Overload)
 
 TEST(GAPI_Streaming_Desync, SmokeTest_Regular)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
-    cv::GMat out1 = cv::gapi::Canny(tmp1, 32, 128, 3);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
+    ncvslideio::GMat out1 = ncvslideio::gapi::Canny(tmp1, 32, 128, 3);
 
     // FIXME: Unary desync should not require tie!
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out2 = tmp2 / cv::gapi::Sobel(tmp2, CV_8U, 1, 1);;
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out2 = tmp2 / ncvslideio::gapi::Sobel(tmp2, CV_8U, 1, 1);;
 
-    cv::Mat test_in = cv::Mat::eye(cv::Size(32,32), CV_8UC3);
-    cv::Mat test_out1, test_out2;
-    cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
-        .apply(cv::gin(test_in), cv::gout(test_out1, test_out2));
+    ncvslideio::Mat test_in = ncvslideio::Mat::eye(ncvslideio::Size(32,32), CV_8UC3);
+    ncvslideio::Mat test_out1, test_out2;
+    ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
+        .apply(ncvslideio::gin(test_in), ncvslideio::gout(test_out1, test_out2));
 }
 
 TEST(GAPI_Streaming_Desync, SmokeTest_Streaming)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
-    cv::GMat out1 = cv::gapi::Canny(tmp1, 32, 128, 3);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
+    ncvslideio::GMat out1 = ncvslideio::gapi::Canny(tmp1, 32, 128, 3);
 
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out2 = Delay::on(tmp2,10) / cv::gapi::Sobel(tmp2, CV_8U, 1, 1);
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out2 = Delay::on(tmp2,10) / ncvslideio::gapi::Sobel(tmp2, CV_8U, 1, 1);
 
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<OCVDelay>()));
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<OCVDelay>()));
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
@@ -1534,8 +1534,8 @@ TEST(GAPI_Streaming_Desync, SmokeTest_Streaming)
 
     std::size_t out1_hits = 0u;
     std::size_t out2_hits = 0u;
-    cv::optional<cv::Mat> test_out1, test_out2;
-    while (sc.pull(cv::gout(test_out1, test_out2))) {
+    ncvslideio::optional<ncvslideio::Mat> test_out1, test_out2;
+    while (sc.pull(ncvslideio::gout(test_out1, test_out2))) {
         GAPI_Assert(test_out1 || test_out2);
         if (test_out1) out1_hits++;
         if (test_out2) out2_hits++;
@@ -1546,32 +1546,32 @@ TEST(GAPI_Streaming_Desync, SmokeTest_Streaming)
 
 TEST(GAPI_Streaming_Desync, SmokeTest_Streaming_TwoParts)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
-    cv::GMat out1 = cv::gapi::Canny(tmp1, 32, 128, 3);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
+    ncvslideio::GMat out1 = ncvslideio::gapi::Canny(tmp1, 32, 128, 3);
 
     // Desynchronized path 1
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out2 = tmp2 / cv::gapi::Sobel(tmp2, CV_8U, 1, 1);
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out2 = tmp2 / ncvslideio::gapi::Sobel(tmp2, CV_8U, 1, 1);
 
     // Desynchronized path 2
-    cv::GMat tmp3 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out3 = 0.5*tmp3 +  0.5*cv::gapi::medianBlur(tmp3, 7);
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out3 = 0.5*tmp3 +  0.5*ncvslideio::gapi::medianBlur(tmp3, 7);
 
     // The code should compile and execute well (desynchronized parts don't cross)
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2, out3))
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2, out3))
         .compileStreaming();
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
     std::size_t test_frames = 0u;
-    cv::optional<cv::Mat> test_out1, test_out2, test_out3;
-    while (sc.pull(cv::gout(test_out1, test_out2, test_out3))) {
+    ncvslideio::optional<ncvslideio::Mat> test_out1, test_out2, test_out3;
+    while (sc.pull(ncvslideio::gout(test_out1, test_out2, test_out3))) {
         GAPI_Assert(test_out1 || test_out2 || test_out3);
         if (test_out1) {
             // count frames only for synchronized output
@@ -1583,208 +1583,208 @@ TEST(GAPI_Streaming_Desync, SmokeTest_Streaming_TwoParts)
 
 TEST(GAPI_Streaming_Desync, Negative_NestedDesync_Tier0)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path 1
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = cv::gapi::medianBlur(tmp2, 3);
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = ncvslideio::gapi::medianBlur(tmp2, 3);
 
     // Desynchronized path 2, nested from 1 (directly from desync)
-    cv::GMat tmp3 = cv::gapi::streaming::desync(tmp2);
-    cv::GMat out2 = 0.5*tmp3;
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(tmp2);
+    ncvslideio::GMat out2 = 0.5*tmp3;
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
                      .compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_NestedDesync_Tier1)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path 1
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = cv::gapi::medianBlur(tmp2, 3);
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = ncvslideio::gapi::medianBlur(tmp2, 3);
 
     // Desynchronized path 2, nested from 1 (indirectly from desync)
-    cv::GMat tmp3 = cv::gapi::streaming::desync(out1);
-    cv::GMat out2 = 0.5*tmp3;
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(out1);
+    ncvslideio::GMat out2 = 0.5*tmp3;
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
                      .compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_CrossMainPart_Tier0)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path: depends on both tmp1 and tmp2
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = 0.5*tmp1 + 0.5*tmp2;
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = 0.5*tmp1 + 0.5*tmp2;
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(in, out1).compileStreaming());
+    EXPECT_ANY_THROW(ncvslideio::GComputation(in, out1).compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_CrossMainPart_Tier1)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path: depends on both tmp1 and tmp2
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = 0.5*tmp1 + 0.5*cv::gapi::medianBlur(tmp2, 3);
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = 0.5*tmp1 + 0.5*ncvslideio::gapi::medianBlur(tmp2, 3);
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(in, out1).compileStreaming());
+    EXPECT_ANY_THROW(ncvslideio::GComputation(in, out1).compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_CrossOtherDesync_Tier0)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path 1
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = 0.5*tmp2;
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = 0.5*tmp2;
 
     // Desynchronized path 2 (depends on 1)
-    cv::GMat tmp3 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out2 = 0.5*tmp3 + tmp2;
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out2 = 0.5*tmp3 + tmp2;
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
                      .compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_CrossOtherDesync_Tier1)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
     // Desynchronized path 1
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out1 = 0.5*tmp2;
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out1 = 0.5*tmp2;
 
     // Desynchronized path 2 (depends on 1)
-    cv::GMat tmp3 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat out2 = 0.5*cv::gapi::medianBlur(tmp3,3) + 1.0*tmp2;
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat out2 = 0.5*ncvslideio::gapi::medianBlur(tmp3,3) + 1.0*tmp2;
 
     // This shouldn't compile
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
                      .compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, Negative_SynchronizedPull)
 {
-    cv::GMat in;
-    cv::GMat out1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat out1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-    cv::GMat tmp1 = cv::gapi::streaming::desync(out1);
-    cv::GMat out2 = 0.5*tmp1;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::streaming::desync(out1);
+    ncvslideio::GMat out2 = 0.5*tmp1;
 
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
         .compileStreaming();
 
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::Mat o1, o2;
-    EXPECT_ANY_THROW(sc.pull(cv::gout(o1, o2)));
+    ncvslideio::Mat o1, o2;
+    EXPECT_ANY_THROW(sc.pull(ncvslideio::gout(o1, o2)));
 }
 
 TEST(GAPI_Streaming_Desync, UseSpecialPull)
 {
-    cv::GMat in;
-    cv::GMat out1 = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    ncvslideio::GMat in;
+    ncvslideio::GMat out1 = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-    cv::GMat tmp1 = cv::gapi::streaming::desync(out1);
-    cv::GMat out2 = 0.5*tmp1;
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::streaming::desync(out1);
+    ncvslideio::GMat out2 = 0.5*tmp1;
 
-    auto sc = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2))
+    auto sc = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2))
         .compileStreaming();
 
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        sc.setSource(cv::gin(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path)));
+        sc.setSource(ncvslideio::gin(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path)));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     sc.start();
 
-    cv::optional<cv::Mat> o1, o2;
+    ncvslideio::optional<ncvslideio::Mat> o1, o2;
     std::size_t num_frames = 0u;
 
-    while (sc.pull(cv::gout(o1, o2))) {
+    while (sc.pull(ncvslideio::gout(o1, o2))) {
         if (o1) num_frames++;
     }
     EXPECT_EQ(100u, num_frames);
 }
 
-G_API_OP(ProduceVector, <cv::GArray<int>(cv::GMat)>, "test.desync.vector") {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc &) {
-        return cv::empty_array_desc();
+G_API_OP(ProduceVector, <ncvslideio::GArray<int>(ncvslideio::GMat)>, "test.desync.vector") {
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
-G_API_OP(ProduceOpaque, <cv::GOpaque<int>(cv::GMat)>, "test.desync.opaque") {
-    static cv::GOpaqueDesc outMeta(const cv::GMatDesc &) {
-        return cv::empty_gopaque_desc();
+G_API_OP(ProduceOpaque, <ncvslideio::GOpaque<int>(ncvslideio::GMat)>, "test.desync.opaque") {
+    static ncvslideio::GOpaqueDesc outMeta(const ncvslideio::GMatDesc &) {
+        return ncvslideio::empty_gopaque_desc();
     }
 };
 
 GAPI_OCV_KERNEL(OCVVector, ProduceVector) {
-    static void run(const cv::Mat& in, std::vector<int> &out) {
+    static void run(const ncvslideio::Mat& in, std::vector<int> &out) {
         out = {in.cols, in.rows};
     }
 };
 
 GAPI_OCV_KERNEL(OCVOpaque, ProduceOpaque) {
-    static void run(const cv::Mat &in, int &v) {
+    static void run(const ncvslideio::Mat &in, int &v) {
         v = in.channels();
     }
 };
 
 namespace {
-cv::GStreamingCompiled desyncTestObject() {
-    cv::GMat in;
-    cv::GMat blur = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+ncvslideio::GStreamingCompiled desyncTestObject() {
+    ncvslideio::GMat in;
+    ncvslideio::GMat blur = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-    cv::GMat blur_d = cv::gapi::copy(cv::gapi::streaming::desync(blur));
-    cv::GMat d1 = Delay::on(blur_d, 10);
-    cv::GMat d2 = Delay::on(blur_d, 30);
+    ncvslideio::GMat blur_d = ncvslideio::gapi::copy(ncvslideio::gapi::streaming::desync(blur));
+    ncvslideio::GMat d1 = Delay::on(blur_d, 10);
+    ncvslideio::GMat d2 = Delay::on(blur_d, 30);
 
-    cv::GArray<int>  vec = ProduceVector::on(d1);
-    cv::GOpaque<int> opq = ProduceOpaque::on(d2);
+    ncvslideio::GArray<int>  vec = ProduceVector::on(d1);
+    ncvslideio::GOpaque<int> opq = ProduceOpaque::on(d2);
 
-    auto pkg = cv::gapi::kernels<OCVDelay, OCVVector, OCVOpaque>();
-    return cv::GComputation(cv::GIn(in), cv::GOut(blur, vec, opq))
-        .compileStreaming(cv::compile_args(pkg));
+    auto pkg = ncvslideio::gapi::kernels<OCVDelay, OCVVector, OCVOpaque>();
+    return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(blur, vec, opq))
+        .compileStreaming(ncvslideio::compile_args(pkg));
 }
 } // anonymous namespace
 
 TEST(GAPI_Streaming_Desync, MultipleDesyncOutputs_1) {
     auto sc = desyncTestObject();
-    const cv::Mat in_mat = cv::Mat::eye(cv::Size(320,240), CV_8UC3);
+    const ncvslideio::Mat in_mat = ncvslideio::Mat::eye(ncvslideio::Size(320,240), CV_8UC3);
 
-    sc.setSource(cv::gin(in_mat));
+    sc.setSource(ncvslideio::gin(in_mat));
     sc.start();
 
-    cv::optional<cv::Mat> out_mat;
-    cv::optional<std::vector<int> > out_vec;
-    cv::optional<int> out_int;
+    ncvslideio::optional<ncvslideio::Mat> out_mat;
+    ncvslideio::optional<std::vector<int> > out_vec;
+    ncvslideio::optional<int> out_int;
 
     int counter = 0;
-    while (sc.pull(cv::gout(out_mat, out_vec, out_int))) {
+    while (sc.pull(ncvslideio::gout(out_mat, out_vec, out_int))) {
         if (counter++ == 1000) {
             // Stop the test after 1000 iterations
             sc.stop();
@@ -1808,18 +1808,18 @@ TEST(GAPI_Streaming_Desync, MultipleDesyncOutputs_1) {
 
 TEST(GAPI_Streaming_Desync, StartStop_Stress) {
     auto sc = desyncTestObject();
-    const cv::Mat in_mat = cv::Mat::eye(cv::Size(320,240), CV_8UC3);
+    const ncvslideio::Mat in_mat = ncvslideio::Mat::eye(ncvslideio::Size(320,240), CV_8UC3);
 
-    cv::optional<cv::Mat> out_mat;
-    cv::optional<std::vector<int> > out_vec;
-    cv::optional<int> out_int;
+    ncvslideio::optional<ncvslideio::Mat> out_mat;
+    ncvslideio::optional<std::vector<int> > out_vec;
+    ncvslideio::optional<int> out_int;
 
     for (int i = 0; i < 10; i++) {
-        sc.setSource(cv::gin(in_mat));
+        sc.setSource(ncvslideio::gin(in_mat));
         sc.start();
         int counter = 0;
         while (counter++ < 100) {
-            sc.pull(cv::gout(out_mat, out_vec, out_int));
+            sc.pull(ncvslideio::gout(out_mat, out_vec, out_int));
             GAPI_Assert(out_mat || out_vec || out_int);
             if (out_vec) { ASSERT_TRUE(out_int.has_value()); }
             if (out_int) { ASSERT_TRUE(out_vec.has_value()); }
@@ -1829,43 +1829,43 @@ TEST(GAPI_Streaming_Desync, StartStop_Stress) {
 }
 
 TEST(GAPI_Streaming_Desync, DesyncObjectConsumedByTwoIslandsViaSeparateDesync) {
-    // See comment in the implementation of cv::gapi::streaming::desync (.cpp)
-    cv::GMat in;
-    cv::GMat tmp = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    // See comment in the implementation of ncvslideio::gapi::streaming::desync (.cpp)
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-    cv::GMat tmp1 = cv::gapi::streaming::desync(tmp);
-    cv::GMat out1 = cv::gapi::copy(tmp1); // ran via Streaming backend
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::streaming::desync(tmp);
+    ncvslideio::GMat out1 = ncvslideio::gapi::copy(tmp1); // ran via Streaming backend
 
-    cv::GMat tmp2 = cv::gapi::streaming::desync(tmp);
-    cv::GMat out2 = tmp2 * 0.5;           // ran via OCV backend
+    ncvslideio::GMat tmp2 = ncvslideio::gapi::streaming::desync(tmp);
+    ncvslideio::GMat out2 = tmp2 * 0.5;           // ran via OCV backend
 
-    auto c = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2));
+    auto c = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2));
 
     EXPECT_NO_THROW(c.compileStreaming());
 }
 
 TEST(GAPI_Streaming_Desync, DesyncObjectConsumedByTwoIslandsViaSameDesync) {
-    // See comment in the implementation of cv::gapi::streaming::desync (.cpp)
-    cv::GMat in;
-    cv::GMat tmp = cv::gapi::boxFilter(in, -1, cv::Size(3,3));
+    // See comment in the implementation of ncvslideio::gapi::streaming::desync (.cpp)
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp = ncvslideio::gapi::boxFilter(in, -1, ncvslideio::Size(3,3));
 
-    cv::GMat tmp1 = cv::gapi::streaming::desync(tmp);
-    cv::GMat out1 = cv::gapi::copy(tmp1); // ran via Streaming backend
-    cv::GMat out2 = out1 - 0.5*tmp1;      // ran via OCV backend
+    ncvslideio::GMat tmp1 = ncvslideio::gapi::streaming::desync(tmp);
+    ncvslideio::GMat out1 = ncvslideio::gapi::copy(tmp1); // ran via Streaming backend
+    ncvslideio::GMat out2 = out1 - 0.5*tmp1;      // ran via OCV backend
 
-    auto c = cv::GComputation(cv::GIn(in), cv::GOut(out1, out2));
+    auto c = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out1, out2));
 
     EXPECT_NO_THROW(c.compileStreaming());
 }
 
 TEST(GAPI_Streaming, CopyFrame)
 {
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::GFrame in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     try {
@@ -1874,21 +1874,21 @@ TEST(GAPI_Streaming, CopyFrame)
         throw SkipTestException("Video file can not be opened");
     }
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame;
-    cv::Mat ocv_mat;
+    ncvslideio::MediaFrame frame;
+    ncvslideio::Mat ocv_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame)) && num_frames < max_frames)
     {
-        auto view = frame.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame.desc().size, CV_8UC3, view.ptr[0]);
+        auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame.desc().size, CV_8UC3, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat;
 
@@ -1898,12 +1898,12 @@ TEST(GAPI_Streaming, CopyFrame)
 
 TEST(GAPI_Streaming, CopyFrameGray)
 {
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::GFrame in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     try {
@@ -1913,57 +1913,57 @@ TEST(GAPI_Streaming, CopyFrameGray)
         throw SkipTestException("Video file can not be opened");
     }
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame;
-    cv::Mat ocv_mat;
+    ncvslideio::MediaFrame frame;
+    ncvslideio::Mat ocv_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame)) && num_frames < max_frames)
     {
-        auto view = frame.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame.desc().size, CV_8UC1, view.ptr[0]);
+        auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame.desc().size, CV_8UC1, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat;
-        cv::Mat gray;
-        cvtColor(ocv_mat, gray, cv::COLOR_BGR2GRAY);
+        ncvslideio::Mat gray;
+        cvtColor(ocv_mat, gray, ncvslideio::COLOR_BGR2GRAY);
         EXPECT_EQ(0, cvtest::norm(gray, gapi_mat, NORM_INF));
     }
 }
 
 TEST(GAPI_Streaming, CopyMat)
 {
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::GMat in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     try {
-        cc.setSource<cv::gapi::wip::GCaptureSource>(filepath);
+        cc.setSource<ncvslideio::gapi::wip::GCaptureSource>(filepath);
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::Mat out_mat;
-    cv::Mat ocv_mat;
+    ncvslideio::Mat out_mat;
+    ncvslideio::Mat ocv_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (cc.pull(cv::gout(out_mat)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(out_mat)) && num_frames < max_frames)
     {
         num_frames++;
         cap >> ocv_mat;
@@ -1974,12 +1974,12 @@ TEST(GAPI_Streaming, CopyMat)
 
 TEST(GAPI_Streaming, Reshape)
 {
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::GFrame in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     try {
@@ -1988,21 +1988,21 @@ TEST(GAPI_Streaming, Reshape)
         throw SkipTestException("Video file can not be opened");
     }
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame;
-    cv::Mat ocv_mat;
+    ncvslideio::MediaFrame frame;
+    ncvslideio::Mat ocv_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame)) && num_frames < max_frames)
     {
-        auto view = frame.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame.desc().size, CV_8UC3, view.ptr[0]);
+        auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame.desc().size, CV_8UC3, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat;
 
@@ -2010,7 +2010,7 @@ TEST(GAPI_Streaming, Reshape)
     }
 
     // Reshape the graph meta
-    filepath = findDataFile("cv/video/1920x1080.avi");
+    filepath = findDataFile("ncvslideio/video/1920x1080.avi");
     cc.stop();
     try {
         cc.setSource<BGRSource>(filepath);
@@ -2022,16 +2022,16 @@ TEST(GAPI_Streaming, Reshape)
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame2;
-    cv::Mat ocv_mat2;
+    ncvslideio::MediaFrame frame2;
+    ncvslideio::Mat ocv_mat2;
 
     num_frames = 0u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame2)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame2)) && num_frames < max_frames)
     {
-        auto view = frame2.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame2.desc().size, CV_8UC3, view.ptr[0]);
+        auto view = frame2.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame2.desc().size, CV_8UC3, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat2;
 
@@ -2041,12 +2041,12 @@ TEST(GAPI_Streaming, Reshape)
 
 TEST(GAPI_Streaming, ReshapeGray)
 {
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::GFrame in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     try {
@@ -2056,30 +2056,30 @@ TEST(GAPI_Streaming, ReshapeGray)
         throw SkipTestException("Video file can not be opened");
     }
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame;
-    cv::Mat ocv_mat;
+    ncvslideio::MediaFrame frame;
+    ncvslideio::Mat ocv_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame)) && num_frames < max_frames)
     {
-        auto view = frame.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame.desc().size, CV_8UC1, view.ptr[0]);
+        auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame.desc().size, CV_8UC1, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat;
-        cv::Mat gray;
-        cvtColor(ocv_mat, gray, cv::COLOR_BGR2GRAY);
+        ncvslideio::Mat gray;
+        cvtColor(ocv_mat, gray, ncvslideio::COLOR_BGR2GRAY);
         EXPECT_EQ(0, cvtest::norm(gray, gapi_mat, NORM_INF));
     }
 
     // Reshape the graph meta
-    filepath = findDataFile("cv/video/1920x1080.avi");
+    filepath = findDataFile("ncvslideio/video/1920x1080.avi");
     cc.stop();
     try {
         cc.setSource<GRAYSource>(filepath);
@@ -2092,20 +2092,20 @@ TEST(GAPI_Streaming, ReshapeGray)
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::MediaFrame frame2;
-    cv::Mat ocv_mat2;
+    ncvslideio::MediaFrame frame2;
+    ncvslideio::Mat ocv_mat2;
 
     num_frames = 0u;
 
     cc.start();
-    while (cc.pull(cv::gout(frame2)) && num_frames < max_frames)
+    while (cc.pull(ncvslideio::gout(frame2)) && num_frames < max_frames)
     {
-        auto view = frame2.access(cv::MediaFrame::Access::R);
-        cv::Mat gapi_mat(frame2.desc().size, CV_8UC1, view.ptr[0]);
+        auto view = frame2.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat gapi_mat(frame2.desc().size, CV_8UC1, view.ptr[0]);
         num_frames++;
         cap >> ocv_mat2;
-        cv::Mat gray;
-        cvtColor(ocv_mat2, gray, cv::COLOR_BGR2GRAY);
+        ncvslideio::Mat gray;
+        cvtColor(ocv_mat2, gray, ncvslideio::COLOR_BGR2GRAY);
         EXPECT_EQ(0, cvtest::norm(gray, gapi_mat, NORM_INF));
     }
 }
@@ -2127,16 +2127,16 @@ namespace {
         }
     }
 
-    cv::gapi::wip::IStreamSource::Ptr createTestSource(TestSourceType sourceType,
+    ncvslideio::gapi::wip::IStreamSource::Ptr createTestSource(TestSourceType sourceType,
                                                        const std::string& pipeline) {
         assert(sourceType == TestSourceType::BGR || sourceType == TestSourceType::NV12 || sourceType == TestSourceType::GRAY);
 
-        cv::gapi::wip::IStreamSource::Ptr ptr { };
+        ncvslideio::gapi::wip::IStreamSource::Ptr ptr { };
 
         switch (sourceType) {
             case TestSourceType::BGR: {
                 try {
-                    ptr = cv::gapi::wip::make_src<BGRSource>(pipeline);
+                    ptr = ncvslideio::gapi::wip::make_src<BGRSource>(pipeline);
                 }
                 catch(...) {
                     throw SkipTestException(std::string("BGRSource for '") + pipeline +
@@ -2146,7 +2146,7 @@ namespace {
             }
             case TestSourceType::NV12: {
                 try {
-                    ptr = cv::gapi::wip::make_src<NV12Source>(pipeline);
+                    ptr = ncvslideio::gapi::wip::make_src<NV12Source>(pipeline);
                 }
                 catch(...) {
                     throw SkipTestException(std::string("NV12Source for '") + pipeline +
@@ -2156,7 +2156,7 @@ namespace {
             }
             case TestSourceType::GRAY: {
                 try {
-                    ptr = cv::gapi::wip::make_src<GRAYSource>(pipeline);
+                    ptr = ncvslideio::gapi::wip::make_src<GRAYSource>(pipeline);
                 }
                 catch (...) {
                     throw SkipTestException(std::string("GRAYSource for '") + pipeline +
@@ -2188,66 +2188,66 @@ namespace {
         }
     }
 
-    using GapiFunction = std::function<cv::GMat(const cv::GFrame&)>;
+    using GapiFunction = std::function<ncvslideio::GMat(const ncvslideio::GFrame&)>;
     static std::map<TestAccessType, GapiFunction> gapi_functions = {
-        { TestAccessType::BGR, cv::gapi::streaming::BGR },
-        { TestAccessType::Y,   cv::gapi::streaming::Y   },
-        { TestAccessType::UV,  cv::gapi::streaming::UV  }
+        { TestAccessType::BGR, ncvslideio::gapi::streaming::BGR },
+        { TestAccessType::Y,   ncvslideio::gapi::streaming::Y   },
+        { TestAccessType::UV,  ncvslideio::gapi::streaming::UV  }
     };
 
-    using RefFunction = std::function<cv::Mat(const cv::Mat&)>;
+    using RefFunction = std::function<ncvslideio::Mat(const ncvslideio::Mat&)>;
     static std::map<std::pair<TestSourceType,TestAccessType>, RefFunction> ref_functions = {
         { std::make_pair(TestSourceType::BGR, TestAccessType::BGR),
-          [](const cv::Mat& bgr) { return bgr; } },
+          [](const ncvslideio::Mat& bgr) { return bgr; } },
         { std::make_pair(TestSourceType::BGR, TestAccessType::Y),
-          [](const cv::Mat& bgr) {
-              cv::Mat y, uv;
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat y, uv;
               cvtBGR2NV12(bgr, y, uv);
               return y;
           } },
         { std::make_pair(TestSourceType::BGR, TestAccessType::UV),
-          [](const cv::Mat& bgr) {
-              cv::Mat y, uv;
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat y, uv;
               cvtBGR2NV12(bgr, y, uv);
               return uv;
           } },
         { std::make_pair(TestSourceType::NV12, TestAccessType::BGR),
-          [](const cv::Mat& bgr) {
-              cv::Mat y, uv, out_bgr;
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat y, uv, out_bgr;
               cvtBGR2NV12(bgr, y, uv);
-              cv::cvtColorTwoPlane(y, uv, out_bgr,
-                                   cv::COLOR_YUV2BGR_NV12);
+              ncvslideio::cvtColorTwoPlane(y, uv, out_bgr,
+                                   ncvslideio::COLOR_YUV2BGR_NV12);
               return out_bgr;
           } },
         { std::make_pair(TestSourceType::NV12, TestAccessType::Y),
-          [](const cv::Mat& bgr) {
-              cv::Mat y, uv;
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat y, uv;
               cvtBGR2NV12(bgr, y, uv);
               return y;
           } },
         { std::make_pair(TestSourceType::NV12, TestAccessType::UV),
-          [](const cv::Mat& bgr) {
-              cv::Mat y, uv;
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat y, uv;
               cvtBGR2NV12(bgr, y, uv);
               return uv;
           } },
         { std::make_pair(TestSourceType::GRAY, TestAccessType::BGR),
-          [](const cv::Mat& bgr) {
-              cv::Mat gray;
-              cv::cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
-              cv::Mat out_bgr;
-              cv::cvtColor(gray, out_bgr, cv::COLOR_GRAY2BGR);
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat gray;
+              ncvslideio::cvtColor(bgr, gray, ncvslideio::COLOR_BGR2GRAY);
+              ncvslideio::Mat out_bgr;
+              ncvslideio::cvtColor(gray, out_bgr, ncvslideio::COLOR_GRAY2BGR);
               return out_bgr;
           } },
         { std::make_pair(TestSourceType::GRAY, TestAccessType::Y),
-          [](const cv::Mat& bgr) {
-              cv::Mat gray;
-              cv::cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat gray;
+              ncvslideio::cvtColor(bgr, gray, ncvslideio::COLOR_BGR2GRAY);
               return gray;
           } },
         { std::make_pair(TestSourceType::GRAY, TestAccessType::UV),
-          [](const cv::Mat& bgr) {
-              cv::Mat uv(bgr.size() / 2, CV_8UC2, cv::Scalar::all(127));
+          [](const ncvslideio::Mat& bgr) {
+              ncvslideio::Mat uv(bgr.size() / 2, CV_8UC2, ncvslideio::Scalar::all(127));
               return uv;
           } },
     };
@@ -2269,25 +2269,25 @@ TEST_P(GAPI_Accessors_In_Streaming, AccuracyTest)
 
     const std::string& absFilePath = findDataFile(filepath);
 
-    cv::GFrame in;
-    cv::GMat out = accessor(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GFrame in;
+    ncvslideio::GMat out = accessor(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     auto cc = comp.compileStreaming();
     auto src = createTestSource(sourceType, absFilePath);
     cc.setSource(src);
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(absFilePath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::Mat cap_mat, ocv_mat, gapi_mat;
+    ncvslideio::Mat cap_mat, ocv_mat, gapi_mat;
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (num_frames < max_frames && cc.pull(cv::gout(gapi_mat)))
+    while (num_frames < max_frames && cc.pull(ncvslideio::gout(gapi_mat)))
     {
         num_frames++;
         cap >> cap_mat;
@@ -2300,7 +2300,7 @@ TEST_P(GAPI_Accessors_In_Streaming, AccuracyTest)
 }
 
 INSTANTIATE_TEST_CASE_P(TestAccessor, GAPI_Accessors_In_Streaming,
-                        Combine(Values("cv/video/768x576.avi"),
+                        Combine(Values("ncvslideio/video/768x576.avi"),
                                 Values(TestSourceType::BGR, TestSourceType::NV12, TestSourceType::GRAY),
                                 Values(TestAccessType::BGR, TestAccessType::Y, TestAccessType::UV)
                         ));
@@ -2321,23 +2321,23 @@ TEST_P(GAPI_Accessors_Meta_In_Streaming, AccuracyTest)
 
     const std::string& absFilePath = findDataFile(filepath);
 
-    cv::GFrame in;
-    cv::GMat gmat = accessor(in);
-    cv::GMat resized = cv::gapi::resize(gmat, cv::Size(1920, 1080));
-    cv::GOpaque<int64_t> outId = cv::gapi::streaming::seq_id(resized);
-    cv::GOpaque<int64_t> outTs = cv::gapi::streaming::timestamp(resized);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(resized, outId, outTs));
+    ncvslideio::GFrame in;
+    ncvslideio::GMat gmat = accessor(in);
+    ncvslideio::GMat resized = ncvslideio::gapi::resize(gmat, ncvslideio::Size(1920, 1080));
+    ncvslideio::GOpaque<int64_t> outId = ncvslideio::gapi::streaming::seq_id(resized);
+    ncvslideio::GOpaque<int64_t> outTs = ncvslideio::gapi::streaming::timestamp(resized);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(resized, outId, outTs));
 
     auto cc = comp.compileStreaming();
     auto src = createTestSource(sourceType, absFilePath);
     cc.setSource(src);
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(absFilePath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
-    cv::Mat cap_mat, req_mat, ocv_mat, gapi_mat;
+    ncvslideio::Mat cap_mat, req_mat, ocv_mat, gapi_mat;
     int64_t seq_id = 0, timestamp = 0;
     std::set<int64_t> all_seq_ids;
     std::vector<int64_t> all_timestamps;
@@ -2346,13 +2346,13 @@ TEST_P(GAPI_Accessors_Meta_In_Streaming, AccuracyTest)
     std::size_t max_frames = 10u;
 
     cc.start();
-    while (num_frames < max_frames && cc.pull(cv::gout(gapi_mat, seq_id, timestamp)))
+    while (num_frames < max_frames && cc.pull(ncvslideio::gout(gapi_mat, seq_id, timestamp)))
     {
         num_frames++;
 
         cap >> cap_mat;
         req_mat = fromBGR(cap_mat);
-        cv::resize(req_mat, ocv_mat, cv::Size(1920, 1080));
+        ncvslideio::resize(req_mat, ocv_mat, ncvslideio::Size(1920, 1080));
         EXPECT_EQ(0, cvtest::norm(ocv_mat, gapi_mat, NORM_INF));
 
         all_seq_ids.insert(seq_id);
@@ -2371,64 +2371,64 @@ TEST_P(GAPI_Accessors_Meta_In_Streaming, AccuracyTest)
 }
 
 INSTANTIATE_TEST_CASE_P(AccessorMeta, GAPI_Accessors_Meta_In_Streaming,
-                        Combine(Values("cv/video/768x576.avi"),
+                        Combine(Values("ncvslideio/video/768x576.avi"),
                                 Values(TestSourceType::BGR, TestSourceType::NV12, TestSourceType::GRAY),
                                 Values(TestAccessType::BGR, TestAccessType::Y, TestAccessType::UV)
                         ));
 
 TEST(GAPI_Streaming, TestPythonAPI)
 {
-    cv::Size sz(200, 200);
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar(255));
-    const auto crop_rc = cv::Rect(13, 75, 100, 100);
+    ncvslideio::Size sz(200, 200);
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar(255));
+    const auto crop_rc = ncvslideio::Rect(13, 75, 100, 100);
 
     // OpenCV reference image
-    cv::Mat ocv_mat;
+    ncvslideio::Mat ocv_mat;
     {
         ocv_mat = in_mat(crop_rc);
     }
 
-    cv::GMat in;
-    auto roi = cv::gapi::crop(in, crop_rc);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(roi));
+    ncvslideio::GMat in;
+    auto roi = ncvslideio::gapi::crop(in, crop_rc);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(roi));
 
     // NB: Used by python bridge
-    auto cc = comp.compileStreaming(cv::detail::ExtractMetaCallback{[&](const cv::GTypesInfo& info)
+    auto cc = comp.compileStreaming(ncvslideio::detail::ExtractMetaCallback{[&](const ncvslideio::GTypesInfo& info)
             {
                 GAPI_Assert(info.size() == 1u);
-                GAPI_Assert(info[0].shape == cv::GShape::GMAT);
-                return cv::GMetaArgs{cv::GMetaArg{cv::descr_of(in_mat)}};
+                GAPI_Assert(info[0].shape == ncvslideio::GShape::GMAT);
+                return ncvslideio::GMetaArgs{ncvslideio::GMetaArg{ncvslideio::descr_of(in_mat)}};
             }});
 
     // NB: Used by python bridge
-    cc.setSource(cv::detail::ExtractArgsCallback{[&](const cv::GTypesInfo& info)
+    cc.setSource(ncvslideio::detail::ExtractArgsCallback{[&](const ncvslideio::GTypesInfo& info)
             {
                 GAPI_Assert(info.size() == 1u);
-                GAPI_Assert(info[0].shape == cv::GShape::GMAT);
-                return cv::GRunArgs{in_mat};
+                GAPI_Assert(info[0].shape == ncvslideio::GShape::GMAT);
+                return ncvslideio::GRunArgs{in_mat};
             }});
 
     cc.start();
 
     bool is_over = false;
-    cv::GRunArgs out_args;
-    using RunArgs = cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>;
+    ncvslideio::GRunArgs out_args;
+    using RunArgs = ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>;
     RunArgs args;
 
     // NB: Used by python bridge
     std::tie(is_over, args) = cc.pull();
 
     switch (args.index()) {
-        case RunArgs::index_of<cv::GRunArgs>():
-            out_args = util::get<cv::GRunArgs>(args); break;
+        case RunArgs::index_of<ncvslideio::GRunArgs>():
+            out_args = util::get<ncvslideio::GRunArgs>(args); break;
         default: GAPI_Error("Incorrect type of return value");
     }
 
     ASSERT_EQ(1u, out_args.size());
-    ASSERT_TRUE(cv::util::holds_alternative<cv::Mat>(out_args[0]));
+    ASSERT_TRUE(ncvslideio::util::holds_alternative<ncvslideio::Mat>(out_args[0]));
 
-    EXPECT_EQ(0, cvtest::norm(ocv_mat, cv::util::get<cv::Mat>(out_args[0]), NORM_INF));
+    EXPECT_EQ(0, cvtest::norm(ocv_mat, ncvslideio::util::get<ncvslideio::Mat>(out_args[0]), NORM_INF));
     EXPECT_TRUE(is_over);
 
     cc.stop();
@@ -2438,7 +2438,7 @@ TEST(GAPI_Streaming, TestPythonAPI)
 
 TEST(OneVPL_Source, Init)
 {
-    using CfgParam = cv::gapi::wip::onevpl::CfgParam;
+    using CfgParam = ncvslideio::gapi::wip::onevpl::CfgParam;
 
     std::vector<CfgParam> src_params;
     src_params.push_back(CfgParam::create_implementation(MFX_IMPL_TYPE_HARDWARE));
@@ -2452,19 +2452,19 @@ TEST(OneVPL_Source, Init)
 
     EXPECT_TRUE(stream.write(reinterpret_cast<char*>(const_cast<unsigned char *>(streaming::onevpl::hevc_header)),
                              sizeof(streaming::onevpl::hevc_header)));
-    std::shared_ptr<cv::gapi::wip::onevpl::IDataProvider> stream_data_provider =
+    std::shared_ptr<ncvslideio::gapi::wip::onevpl::IDataProvider> stream_data_provider =
                 std::make_shared<streaming::onevpl::StreamDataProvider>(stream);
 
-    cv::Ptr<cv::gapi::wip::IStreamSource> cap;
+    ncvslideio::Ptr<ncvslideio::gapi::wip::IStreamSource> cap;
     bool cap_created = false;
     try {
-        cap = cv::gapi::wip::make_onevpl_src(stream_data_provider, src_params);
+        cap = ncvslideio::gapi::wip::make_onevpl_src(stream_data_provider, src_params);
         cap_created = true;
     } catch (const std::exception&) {
     }
     ASSERT_TRUE(cap_created);
 
-    cv::gapi::wip::Data out;
+    ncvslideio::gapi::wip::Data out;
     while (cap->pull(out)) {
         (void)out;
     }
@@ -2473,24 +2473,24 @@ TEST(OneVPL_Source, Init)
 #endif // HAVE_ONEVPL
 
 TEST(GAPI_Streaming, TestDesyncRMat) {
-    cv::GMat in;
-    auto blurred = cv::gapi::blur(in, cv::Size{3,3});
-    auto desynced = cv::gapi::streaming::desync(blurred);
+    ncvslideio::GMat in;
+    auto blurred = ncvslideio::gapi::blur(in, ncvslideio::Size{3,3});
+    auto desynced = ncvslideio::gapi::streaming::desync(blurred);
     auto out = in - blurred;
-    auto pipe = cv::GComputation(cv::GIn(in), cv::GOut(desynced, out)).compileStreaming();
+    auto pipe = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(desynced, out)).compileStreaming();
 
-    cv::Size sz(32,32);
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar(255));
-    pipe.setSource(cv::gin(in_mat));
+    ncvslideio::Size sz(32,32);
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar(255));
+    pipe.setSource(ncvslideio::gin(in_mat));
     pipe.start();
 
-    cv::optional<cv::RMat> out_desync;
-    cv::optional<cv::RMat> out_rmat;
+    ncvslideio::optional<ncvslideio::RMat> out_desync;
+    ncvslideio::optional<ncvslideio::RMat> out_rmat;
     while (true) {
         // Initially it threw "bad variant access" since there was
         // no RMat handling in wrap_opt_arg
-        EXPECT_NO_THROW(pipe.pull(cv::gout(out_desync, out_rmat)));
+        EXPECT_NO_THROW(pipe.pull(ncvslideio::gout(out_desync, out_rmat)));
         if (out_rmat) break;
     }
 }
@@ -2499,26 +2499,26 @@ G_API_OP(GTestBlur, <GFrame(GFrame)>, "test.blur") {
     static GFrameDesc outMeta(GFrameDesc d) { return d; }
 };
 GAPI_OCV_KERNEL(GOcvTestBlur, GTestBlur) {
-    static void run(const cv::MediaFrame& in, cv::MediaFrame& out) {
+    static void run(const ncvslideio::MediaFrame& in, ncvslideio::MediaFrame& out) {
         auto d = in.desc();
-        GAPI_Assert(d.fmt == cv::MediaFormat::BGR);
-        auto view = in.access(cv::MediaFrame::Access::R);
-        cv::Mat mat(d.size, CV_8UC3, view.ptr[0]);
-        cv::Mat blurred;
-        cv::blur(mat, blurred, cv::Size{3,3});
-        out = cv::MediaFrame::Create<TestMediaBGR>(blurred);
+        GAPI_Assert(d.fmt == ncvslideio::MediaFormat::BGR);
+        auto view = in.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat mat(d.size, CV_8UC3, view.ptr[0]);
+        ncvslideio::Mat blurred;
+        ncvslideio::blur(mat, blurred, ncvslideio::Size{3,3});
+        out = ncvslideio::MediaFrame::Create<TestMediaBGR>(blurred);
     }
 };
 
 TEST(GAPI_Streaming, TestDesyncMediaFrame) {
-    cv::GFrame in;
+    ncvslideio::GFrame in;
     auto blurred = GTestBlur::on(in);
-    auto desynced = cv::gapi::streaming::desync(blurred);
+    auto desynced = ncvslideio::gapi::streaming::desync(blurred);
     auto out = GTestBlur::on(blurred);
-    auto pipe = cv::GComputation(cv::GIn(in), cv::GOut(desynced, out))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<GOcvTestBlur>()));
+    auto pipe = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(desynced, out))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<GOcvTestBlur>()));
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
     try {
         pipe.setSource<BGRSource>(filepath);
     } catch(...) {
@@ -2526,12 +2526,12 @@ TEST(GAPI_Streaming, TestDesyncMediaFrame) {
     }
     pipe.start();
 
-    cv::optional<cv::MediaFrame> out_desync;
-    cv::optional<cv::MediaFrame> out_frame;
+    ncvslideio::optional<ncvslideio::MediaFrame> out_desync;
+    ncvslideio::optional<ncvslideio::MediaFrame> out_frame;
     while (true) {
         // Initially it threw "bad variant access" since there was
         // no MediaFrame handling in wrap_opt_arg
-        EXPECT_NO_THROW(pipe.pull(cv::gout(out_desync, out_frame)));
+        EXPECT_NO_THROW(pipe.pull(ncvslideio::gout(out_desync, out_frame)));
         if (out_frame) break;
     }
 }
@@ -2540,26 +2540,26 @@ G_API_OP(GTestBlurGray, <GFrame(GFrame)>, "test.blur_gray") {
     static GFrameDesc outMeta(GFrameDesc d) { return d; }
 };
 GAPI_OCV_KERNEL(GOcvTestBlurGray, GTestBlurGray) {
-    static void run(const cv::MediaFrame & in, cv::MediaFrame & out) {
+    static void run(const ncvslideio::MediaFrame & in, ncvslideio::MediaFrame & out) {
         auto d = in.desc();
-        GAPI_Assert(d.fmt == cv::MediaFormat::GRAY);
-        auto view = in.access(cv::MediaFrame::Access::R);
-        cv::Mat mat(d.size, CV_8UC1, view.ptr[0]);
-        cv::Mat blurred;
-        cv::blur(mat, blurred, cv::Size{ 3,3 });
-        out = cv::MediaFrame::Create<TestMediaGRAY>(blurred);
+        GAPI_Assert(d.fmt == ncvslideio::MediaFormat::GRAY);
+        auto view = in.access(ncvslideio::MediaFrame::Access::R);
+        ncvslideio::Mat mat(d.size, CV_8UC1, view.ptr[0]);
+        ncvslideio::Mat blurred;
+        ncvslideio::blur(mat, blurred, ncvslideio::Size{ 3,3 });
+        out = ncvslideio::MediaFrame::Create<TestMediaGRAY>(blurred);
     }
 };
 
 TEST(GAPI_Streaming, TestDesyncMediaFrameGray) {
-    cv::GFrame in;
+    ncvslideio::GFrame in;
     auto blurred = GTestBlurGray::on(in);
-    auto desynced = cv::gapi::streaming::desync(blurred);
+    auto desynced = ncvslideio::gapi::streaming::desync(blurred);
     auto out = GTestBlurGray::on(blurred);
-    auto pipe = cv::GComputation(cv::GIn(in), cv::GOut(desynced, out))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<GOcvTestBlurGray>()));
+    auto pipe = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(desynced, out))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<GOcvTestBlurGray>()));
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
     try {
         pipe.setSource<GRAYSource>(filepath);
     }
@@ -2568,30 +2568,30 @@ TEST(GAPI_Streaming, TestDesyncMediaFrameGray) {
     }
     pipe.start();
 
-    cv::optional<cv::MediaFrame> out_desync;
-    cv::optional<cv::MediaFrame> out_frame;
+    ncvslideio::optional<ncvslideio::MediaFrame> out_desync;
+    ncvslideio::optional<ncvslideio::MediaFrame> out_frame;
     while (true) {
         // Initially it threw "bad variant access" since there was
         // no MediaFrame handling in wrap_opt_arg
-        EXPECT_NO_THROW(pipe.pull(cv::gout(out_desync, out_frame)));
+        EXPECT_NO_THROW(pipe.pull(ncvslideio::gout(out_desync, out_frame)));
         if (out_frame) break;
     }
 }
 
 TEST(GAPI_Streaming_Exception, SingleKernelThrow) {
-    cv::GMat in;
-    auto pipeline = cv::GComputation(in, GThrowExceptionOp::on(in))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<GThrowExceptionKernel>()));
+    ncvslideio::GMat in;
+    auto pipeline = ncvslideio::GComputation(in, GThrowExceptionOp::on(in))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<GThrowExceptionKernel>()));
 
-    cv::Mat in_mat(cv::Size(300, 300), CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar::all(255));
-    pipeline.setSource(cv::gin(in_mat));
+    ncvslideio::Mat in_mat(ncvslideio::Size(300, 300), CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    pipeline.setSource(ncvslideio::gin(in_mat));
     pipeline.start();
 
     EXPECT_THROW(
             try {
-                cv::Mat out_mat;
-                pipeline.pull(cv::gout(out_mat));
+                ncvslideio::Mat out_mat;
+                pipeline.pull(ncvslideio::gout(out_mat));
             } catch (const std::logic_error& e) {
                 EXPECT_EQ(GThrowExceptionKernel::exception_msg(), e.what());
                 throw;
@@ -2599,20 +2599,20 @@ TEST(GAPI_Streaming_Exception, SingleKernelThrow) {
 }
 
 TEST(GAPI_Streaming_Exception, StreamingBackendExceptionAsInput) {
-    cv::GMat in;
-    auto pipeline = cv::GComputation(in,
-            cv::gapi::copy(GThrowExceptionOp::on(in)))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<GThrowExceptionKernel>()));
+    ncvslideio::GMat in;
+    auto pipeline = ncvslideio::GComputation(in,
+            ncvslideio::gapi::copy(GThrowExceptionOp::on(in)))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<GThrowExceptionKernel>()));
 
-    cv::Mat in_mat(cv::Size(300, 300), CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar::all(255));
-    pipeline.setSource(cv::gin(in_mat));
+    ncvslideio::Mat in_mat(ncvslideio::Size(300, 300), CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    pipeline.setSource(ncvslideio::gin(in_mat));
     pipeline.start();
 
     EXPECT_THROW(
             try {
-                cv::Mat out_mat;
-                pipeline.pull(cv::gout(out_mat));
+                ncvslideio::Mat out_mat;
+                pipeline.pull(ncvslideio::gout(out_mat));
             } catch (const std::logic_error& e) {
                 EXPECT_EQ(GThrowExceptionKernel::exception_msg(), e.what());
                 throw;
@@ -2620,20 +2620,20 @@ TEST(GAPI_Streaming_Exception, StreamingBackendExceptionAsInput) {
 }
 
 TEST(GAPI_Streaming_Exception, RegularBacckendsExceptionAsInput) {
-    cv::GMat in;
-    auto pipeline = cv::GComputation(in,
-            cv::gapi::add(GThrowExceptionOp::on(in), GThrowExceptionOp::on(in)))
-        .compileStreaming(cv::compile_args(cv::gapi::kernels<GThrowExceptionKernel>()));
+    ncvslideio::GMat in;
+    auto pipeline = ncvslideio::GComputation(in,
+            ncvslideio::gapi::add(GThrowExceptionOp::on(in), GThrowExceptionOp::on(in)))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::kernels<GThrowExceptionKernel>()));
 
-    cv::Mat in_mat(cv::Size(300, 300), CV_8UC3);
-    cv::randu(in_mat, cv::Scalar::all(0), cv::Scalar::all(255));
-    pipeline.setSource(cv::gin(in_mat));
+    ncvslideio::Mat in_mat(ncvslideio::Size(300, 300), CV_8UC3);
+    ncvslideio::randu(in_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    pipeline.setSource(ncvslideio::gin(in_mat));
     pipeline.start();
 
     EXPECT_THROW(
             try {
-                cv::Mat out_mat;
-                pipeline.pull(cv::gout(out_mat));
+                ncvslideio::Mat out_mat;
+                pipeline.pull(ncvslideio::gout(out_mat));
             } catch (const std::logic_error& e) {
                 EXPECT_EQ(GThrowExceptionKernel::exception_msg(), e.what());
                 throw;
@@ -2641,16 +2641,16 @@ TEST(GAPI_Streaming_Exception, RegularBacckendsExceptionAsInput) {
 }
 
 TEST(GAPI_Streaming_Exception, SourceThrow) {
-    cv::GMat in;
-    auto pipeline = cv::GComputation(in, cv::gapi::copy(in)).compileStreaming();
+    ncvslideio::GMat in;
+    auto pipeline = ncvslideio::GComputation(in, ncvslideio::gapi::copy(in)).compileStreaming();
 
     pipeline.setSource(std::make_shared<InvalidSource>(1u, 1u));
     pipeline.start();
 
     EXPECT_THROW(
             try {
-                cv::Mat out_mat;
-                pipeline.pull(cv::gout(out_mat));
+                ncvslideio::Mat out_mat;
+                pipeline.pull(ncvslideio::gout(out_mat));
             } catch (const std::logic_error& e) {
                 EXPECT_EQ(InvalidSource::exception_msg(), e.what());
                 throw;
@@ -2662,17 +2662,17 @@ TEST(GAPI_Streaming_Exception, SourceThrowEverySecondFrame) {
     constexpr size_t num_frames = 10u;
     size_t curr_frame = 0;
     bool has_frame = true;
-    cv::Mat out_mat;
+    ncvslideio::Mat out_mat;
 
-    cv::GMat in;
-    auto pipeline = cv::GComputation(in, cv::gapi::copy(in)).compileStreaming();
+    ncvslideio::GMat in;
+    auto pipeline = ncvslideio::GComputation(in, ncvslideio::gapi::copy(in)).compileStreaming();
 
     pipeline.setSource(std::make_shared<InvalidSource>(throw_every_nth_frame, num_frames));
     pipeline.start();
     while (has_frame) {
         ++curr_frame;
         try {
-            has_frame = pipeline.pull(cv::gout(out_mat));
+            has_frame = pipeline.pull(ncvslideio::gout(out_mat));
         } catch (const std::exception& e) {
             EXPECT_TRUE(curr_frame % throw_every_nth_frame == 0);
             EXPECT_EQ(InvalidSource::exception_msg(), e.what());

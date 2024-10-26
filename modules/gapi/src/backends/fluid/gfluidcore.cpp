@@ -32,7 +32,7 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -268,7 +268,7 @@ static void run_addweighted(Buffer &dst, const View &src1, const View &src2,
         out[x] = addWeighted<DST>(in1[x], in2[x], _alpha, _beta, _gamma);
 }
 
-GAPI_FLUID_KERNEL(GFluidAddW, cv::gapi::core::GAddW, false)
+GAPI_FLUID_KERNEL(GFluidAddW, ncvslideio::gapi::core::GAddW, false)
 {
     static const int Window = 1;
 
@@ -286,7 +286,7 @@ GAPI_FLUID_KERNEL(GFluidAddW, cv::gapi::core::GAddW, false)
         BINARY_( float, ushort, ushort, run_addweighted, dst, src1, src2, alpha, beta, gamma);
         BINARY_( float,  short,  short, run_addweighted, dst, src1, src2, alpha, beta, gamma);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -437,11 +437,11 @@ CV_ALWAYS_INLINE void run_arithm(Buffer &dst, const View &src1, const View &src2
                 out[x] = div<DST>(in1[x], in2[x], _scale);
             break;
         }
-        default: CV_Error(cv::Error::StsBadArg, "unsupported arithmetic operation");
+        default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported arithmetic operation");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidAdd, cv::gapi::core::GAdd, false)
+GAPI_FLUID_KERNEL(GFluidAdd, ncvslideio::gapi::core::GAdd, false)
 {
     static const int Window = 1;
 
@@ -465,11 +465,11 @@ GAPI_FLUID_KERNEL(GFluidAdd, cv::gapi::core::GAdd, false)
         BINARY_(float,  short,  short,  run_arithm, dst, src1, src2, ARITHM_ADD);
         BINARY_(float,  float,  float,  run_arithm, dst, src1, src2, ARITHM_ADD);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidSub, cv::gapi::core::GSub, false)
+GAPI_FLUID_KERNEL(GFluidSub, ncvslideio::gapi::core::GSub, false)
 {
     static const int Window = 1;
 
@@ -493,11 +493,11 @@ GAPI_FLUID_KERNEL(GFluidSub, cv::gapi::core::GSub, false)
         BINARY_( float,  short,  short, run_arithm, dst, src1, src2, ARITHM_SUBTRACT);
         BINARY_( float,  float,  float, run_arithm, dst, src1, src2, ARITHM_SUBTRACT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidMul, cv::gapi::core::GMul, false)
+GAPI_FLUID_KERNEL(GFluidMul, ncvslideio::gapi::core::GMul, false)
 {
     static const int Window = 1;
 
@@ -521,11 +521,11 @@ GAPI_FLUID_KERNEL(GFluidMul, cv::gapi::core::GMul, false)
         BINARY_(float,  short,  short,  run_arithm, dst, src1, src2, ARITHM_MULTIPLY, scale);
         BINARY_(float,  float,  float,  run_arithm, dst, src1, src2, ARITHM_MULTIPLY, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidDiv, cv::gapi::core::GDiv, false)
+GAPI_FLUID_KERNEL(GFluidDiv, ncvslideio::gapi::core::GDiv, false)
 {
     static const int Window = 1;
 
@@ -549,7 +549,7 @@ GAPI_FLUID_KERNEL(GFluidDiv, cv::gapi::core::GDiv, false)
         BINARY_( float,  short,  short, run_arithm, dst, src1, src2, ARITHM_DIVIDE, scale);
         BINARY_( float,  float,  float, run_arithm, dst, src1, src2, ARITHM_DIVIDE, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -576,7 +576,7 @@ static void run_absdiff(Buffer &dst, const View &src1, const View &src2)
         out[x] = absdiff<DST>(in1[x], in2[x]);
 }
 
-GAPI_FLUID_KERNEL(GFluidAbsDiff, cv::gapi::core::GAbsDiff, false)
+GAPI_FLUID_KERNEL(GFluidAbsDiff, ncvslideio::gapi::core::GAbsDiff, false)
 {
     static const int Window = 1;
 
@@ -588,7 +588,7 @@ GAPI_FLUID_KERNEL(GFluidAbsDiff, cv::gapi::core::GAbsDiff, false)
         BINARY_( short,  short,  short, run_absdiff, dst, src1, src2);
         BINARY_( float,  float,  float, run_absdiff, dst, src1, src2);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -641,7 +641,7 @@ static void run_arithm_s(DST out[], const SRC in[], int width, int chan,
         }
     }
     else
-        CV_Error(cv::Error::StsBadArg, "unsupported number of channels");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported number of channels");
 }
 
 template<typename DST, typename SRC>
@@ -689,7 +689,7 @@ CV_ALWAYS_INLINE void run_arithm_s(Buffer &dst, const View &src, const float sca
                 out[chan * w + c] = mul<DST>(in[chan * w + c], scalar[c], scale);
         break;
     }
-    default: CV_Error(cv::Error::StsBadArg, "unsupported arithmetic operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported arithmetic operation");
     }
 }
 
@@ -730,13 +730,13 @@ CV_ALWAYS_INLINE void run_arithm_rs(Buffer &dst, const View &src, const float sc
         }
         break;
     }
-    default: CV_Error(cv::Error::StsBadArg, "unsupported arithmetic operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported arithmetic operation");
     }
 }
 
 CV_ALWAYS_INLINE void setScratchSize(Buffer& scratch, const int buflen)
 {
-    cv::Size bufsize(buflen, 1);
+    ncvslideio::Size bufsize(buflen, 1);
     GMatDesc bufdesc = { CV_32F, 1, bufsize };
     Buffer buffer(bufdesc);
     scratch = std::move(buffer);
@@ -765,7 +765,7 @@ CV_ALWAYS_INLINE void initScratchBuffer(Buffer& scratch)
     setScratchSize(scratch, buflen);
 }
 
-CV_ALWAYS_INLINE void scalar_to_scratch(const cv::Scalar& scalar,
+CV_ALWAYS_INLINE void scalar_to_scratch(const ncvslideio::Scalar& scalar,
                                         float scratch[], const int length, const int chan)
 {
     for (int i = 0; i < length; ++i)
@@ -791,11 +791,11 @@ CV_ALWAYS_INLINE void run_absdiffc(Buffer& dst, const View& src, const float sca
         out[w] = absdiff<DST>(in[w], scalar[w % chan]);
 }
 
-GAPI_FLUID_KERNEL(GFluidAbsDiffC, cv::gapi::core::GAbsDiffC, true)
+GAPI_FLUID_KERNEL(GFluidAbsDiffC, ncvslideio::gapi::core::GAbsDiffC, true)
 {
     static const int Window = 1;
 
-    static void run(const View& src, const cv::Scalar& _scalar, Buffer& dst, Buffer& scratch)
+    static void run(const View& src, const ncvslideio::Scalar& _scalar, Buffer& dst, Buffer& scratch)
     {
         if (dst.y() == 0)
         {
@@ -813,7 +813,7 @@ GAPI_FLUID_KERNEL(GFluidAbsDiffC, cv::gapi::core::GAbsDiffC, true)
         UNARY_(short, short, run_absdiffc, dst, src, scalar);
         UNARY_(float, float, run_absdiffc, dst, src, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, const GScalarDesc&, Buffer& scratch)
@@ -826,11 +826,11 @@ GAPI_FLUID_KERNEL(GFluidAbsDiffC, cv::gapi::core::GAbsDiffC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidAddC, cv::gapi::core::GAddC, true)
+GAPI_FLUID_KERNEL(GFluidAddC, ncvslideio::gapi::core::GAddC, true)
 {
     static const int Window = 1;
 
-    static void run(const View& src, const cv::Scalar& _scalar, int /*dtype*/, Buffer& dst, Buffer& scratch)
+    static void run(const View& src, const ncvslideio::Scalar& _scalar, int /*dtype*/, Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
 
@@ -862,7 +862,7 @@ GAPI_FLUID_KERNEL(GFluidAddC, cv::gapi::core::GAddC, true)
         UNARY_(float,  short,  run_arithm_s, dst, src, scalar, ARITHM_ADD);
         UNARY_(float,  float,  run_arithm_s, dst, src, scalar, ARITHM_ADD);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, const GScalarDesc&, int, Buffer& scratch)
@@ -875,11 +875,11 @@ GAPI_FLUID_KERNEL(GFluidAddC, cv::gapi::core::GAddC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidSubC, cv::gapi::core::GSubC, true)
+GAPI_FLUID_KERNEL(GFluidSubC, ncvslideio::gapi::core::GSubC, true)
 {
     static const int Window = 1;
 
-    static void run(const View& src, const cv::Scalar& _scalar, int /*dtype*/, Buffer& dst, Buffer& scratch)
+    static void run(const View& src, const ncvslideio::Scalar& _scalar, int /*dtype*/, Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
 
@@ -911,7 +911,7 @@ GAPI_FLUID_KERNEL(GFluidSubC, cv::gapi::core::GSubC, true)
         UNARY_(float,  short,  run_arithm_s, dst, src, scalar, ARITHM_SUBTRACT);
         UNARY_(float,  float,  run_arithm_s, dst, src, scalar, ARITHM_SUBTRACT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, const GScalarDesc&, int, Buffer& scratch)
@@ -924,11 +924,11 @@ GAPI_FLUID_KERNEL(GFluidSubC, cv::gapi::core::GSubC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidSubRC, cv::gapi::core::GSubRC, true)
+GAPI_FLUID_KERNEL(GFluidSubRC, ncvslideio::gapi::core::GSubRC, true)
 {
     static const int Window = 1;
 
-    static void run(const cv::Scalar& _scalar, const View& src, int /*dtype*/, Buffer& dst, Buffer& scratch)
+    static void run(const ncvslideio::Scalar& _scalar, const View& src, int /*dtype*/, Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
 
@@ -960,7 +960,7 @@ GAPI_FLUID_KERNEL(GFluidSubRC, cv::gapi::core::GSubRC, true)
         UNARY_(float,  short,  run_arithm_rs, dst, src, scalar, ARITHM_SUBTRACT);
         UNARY_(float,  float,  run_arithm_rs, dst, src, scalar, ARITHM_SUBTRACT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GScalarDesc&, const GMatDesc&, int, Buffer& scratch)
@@ -973,11 +973,11 @@ GAPI_FLUID_KERNEL(GFluidSubRC, cv::gapi::core::GSubRC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidMulC, cv::gapi::core::GMulC, true)
+GAPI_FLUID_KERNEL(GFluidMulC, ncvslideio::gapi::core::GMulC, true)
 {
     static const int Window = 1;
 
-    static void run(const View& src, const cv::Scalar& _scalar, int /*dtype*/,
+    static void run(const View& src, const ncvslideio::Scalar& _scalar, int /*dtype*/,
                     Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
@@ -1010,7 +1010,7 @@ GAPI_FLUID_KERNEL(GFluidMulC, cv::gapi::core::GMulC, true)
         UNARY_(float,  short,  run_arithm_s, dst, src, scalar, ARITHM_MULTIPLY, scale);
         UNARY_(float,  float,  run_arithm_s, dst, src, scalar, ARITHM_MULTIPLY, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, const GScalarDesc&, int, Buffer& scratch)
@@ -1023,7 +1023,7 @@ GAPI_FLUID_KERNEL(GFluidMulC, cv::gapi::core::GMulC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidMulCOld, cv::gapi::core::GMulCOld, true)
+GAPI_FLUID_KERNEL(GFluidMulCOld, ncvslideio::gapi::core::GMulCOld, true)
 {
     static const int Window = 1;
 
@@ -1050,7 +1050,7 @@ GAPI_FLUID_KERNEL(GFluidMulCOld, cv::gapi::core::GMulCOld, true)
         UNARY_( float,  short, run_arithm_s, dst, src, scalar, ARITHM_MULTIPLY, scale);
         UNARY_( float,  float, run_arithm_s, dst, src, scalar, ARITHM_MULTIPLY, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, double, int, Buffer& scratch)
@@ -1090,11 +1090,11 @@ CV_ALWAYS_INLINE void run_divc(Buffer& dst, const View& src, Buffer& scratch,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidDivC, cv::gapi::core::GDivC, true)
+GAPI_FLUID_KERNEL(GFluidDivC, ncvslideio::gapi::core::GDivC, true)
 {
     static const int Window = 1;
 
-    static void run(const View& src, const cv::Scalar& _scalar, double _scale, int /*dtype*/,
+    static void run(const View& src, const ncvslideio::Scalar& _scalar, double _scale, int /*dtype*/,
                     Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
@@ -1138,7 +1138,7 @@ GAPI_FLUID_KERNEL(GFluidDivC, cv::gapi::core::GDivC, true)
         UNARY_(float,  ushort, run_divc, dst, src, scratch, scale);
         UNARY_(float,  float,  run_divc, dst, src, scratch, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&, const GScalarDesc&, double, int, Buffer& scratch)
@@ -1170,11 +1170,11 @@ GAPI_FLUID_KERNEL(GFluidDivC, cv::gapi::core::GDivC, true)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidDivRC, cv::gapi::core::GDivRC, true)
+GAPI_FLUID_KERNEL(GFluidDivRC, ncvslideio::gapi::core::GDivRC, true)
 {
     static const int Window = 1;
 
-    static void run(const cv::Scalar& _scalar, const View& src, double _scale, int /*dtype*/,
+    static void run(const ncvslideio::Scalar& _scalar, const View& src, double _scale, int /*dtype*/,
                     Buffer& dst, Buffer& scratch)
     {
         GAPI_Assert(src.meta().chan <= 4);
@@ -1208,7 +1208,7 @@ GAPI_FLUID_KERNEL(GFluidDivRC, cv::gapi::core::GDivRC, true)
         UNARY_(float,  short,  run_arithm_rs, dst, src, scalar, ARITHM_DIVIDE, scale);
         UNARY_(float,  float,  run_arithm_rs, dst, src, scalar, ARITHM_DIVIDE, scale);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GScalarDesc&, const GMatDesc&, double, int, Buffer& scratch)
@@ -1245,23 +1245,23 @@ static void run_mask(Buffer &dst, const View &src, const View &mask)
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidMask, cv::gapi::core::GMask, false)
+GAPI_FLUID_KERNEL(GFluidMask, ncvslideio::gapi::core::GMask, false)
 {
     static const int Window = 1;
 
     static void run(const View &src, const View &mask, Buffer &dst)
     {
         if (src.meta().chan != 1 || dst.meta().chan != 1)
-            CV_Error(cv::Error::StsBadArg, "input and output must be single-channel");
+            CV_Error(ncvslideio::Error::StsBadArg, "input and output must be single-channel");
         if (mask.meta().chan != 1 || mask.meta().depth != CV_8U)
-            CV_Error(cv::Error::StsBadArg, "unsupported mask type");
+            CV_Error(ncvslideio::Error::StsBadArg, "unsupported mask type");
 
         //     DST     SRC     OP        __VA_ARGS__
         UNARY_(uchar , uchar , run_mask, dst, src, mask);
         UNARY_( short,  short, run_mask, dst, src, mask);
         UNARY_(ushort, ushort, run_mask, dst, src, mask);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1301,7 +1301,7 @@ static void run_bitwise2(Buffer &dst, const View &src1, const View &src2, Bitwis
         for (int l=0; l < length; l++)
             out[l] = in1[l] ^ in2[l];
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported bitwise operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported bitwise operation");
     }
 }
 
@@ -1323,11 +1323,11 @@ static void run_bitwise1(Buffer &dst, const View &src, Bitwise bitwise_op)
         for (int l=0; l < length; l++)
             out[l] = ~in[l];
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported bitwise operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported bitwise operation");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidAnd, cv::gapi::core::GAnd, false)
+GAPI_FLUID_KERNEL(GFluidAnd, ncvslideio::gapi::core::GAnd, false)
 {
     static const int Window = 1;
 
@@ -1339,11 +1339,11 @@ GAPI_FLUID_KERNEL(GFluidAnd, cv::gapi::core::GAnd, false)
         BINARY_(ushort, ushort, ushort, run_bitwise2, dst, src1, src2, BW_AND);
         BINARY_( short,  short,  short, run_bitwise2, dst, src1, src2, BW_AND);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidOr, cv::gapi::core::GOr, false)
+GAPI_FLUID_KERNEL(GFluidOr, ncvslideio::gapi::core::GOr, false)
 {
     static const int Window = 1;
 
@@ -1355,11 +1355,11 @@ GAPI_FLUID_KERNEL(GFluidOr, cv::gapi::core::GOr, false)
         BINARY_(ushort, ushort, ushort, run_bitwise2, dst, src1, src2, BW_OR);
         BINARY_( short,  short,  short, run_bitwise2, dst, src1, src2, BW_OR);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidXor, cv::gapi::core::GXor, false)
+GAPI_FLUID_KERNEL(GFluidXor, ncvslideio::gapi::core::GXor, false)
 {
     static const int Window = 1;
 
@@ -1371,11 +1371,11 @@ GAPI_FLUID_KERNEL(GFluidXor, cv::gapi::core::GXor, false)
         BINARY_(ushort, ushort, ushort, run_bitwise2, dst, src1, src2, BW_XOR);
         BINARY_( short,  short,  short, run_bitwise2, dst, src1, src2, BW_XOR);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidNot, cv::gapi::core::GNot, false)
+GAPI_FLUID_KERNEL(GFluidNot, ncvslideio::gapi::core::GNot, false)
 {
     static const int Window = 1;
 
@@ -1386,7 +1386,7 @@ GAPI_FLUID_KERNEL(GFluidNot, cv::gapi::core::GNot, false)
         UNARY_(ushort, ushort, run_bitwise1, dst, src, BW_NOT);
         UNARY_( short,  short, run_bitwise1, dst, src, BW_NOT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1396,7 +1396,7 @@ GAPI_FLUID_KERNEL(GFluidNot, cv::gapi::core::GNot, false)
 //
 //--------------------------------------
 
-static std::array<int,4> convertScalarForBitwise(const cv::Scalar &_scalar)
+static std::array<int,4> convertScalarForBitwise(const ncvslideio::Scalar &_scalar)
 {
     std::array<int,4> scalarI = {
         static_cast<int>(_scalar[0]),
@@ -1408,7 +1408,7 @@ static std::array<int,4> convertScalarForBitwise(const cv::Scalar &_scalar)
     if (!((_scalar[0] == scalarI[0]) && (_scalar[1] == scalarI[1]) &&
           (_scalar[2] == scalarI[2]) && (_scalar[3] == scalarI[3])))
     {
-        CV_Error(cv::Error::StsBadArg, "Bitwise operations make sense with integral types only");
+        CV_Error(ncvslideio::Error::StsBadArg, "Bitwise operations make sense with integral types only");
     }
     return scalarI;
 }
@@ -1462,15 +1462,15 @@ static void run_bitwise_s(Buffer &dst, const View &src, const int scalar[4], Bit
     case BW_XOR:
         run_bitwise_s(out, in, width, chan, scalar, bw_xorS<DST>);
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported bitwise operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported bitwise operation");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidAndS, cv::gapi::core::GAndS, false)
+GAPI_FLUID_KERNEL(GFluidAndS, ncvslideio::gapi::core::GAndS, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &_scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &_scalar, Buffer &dst)
     {
         std::array<int,4> scalar = convertScalarForBitwise(_scalar);
 
@@ -1479,15 +1479,15 @@ GAPI_FLUID_KERNEL(GFluidAndS, cv::gapi::core::GAndS, false)
         UNARY_(ushort, ushort, run_bitwise_s, dst, src, scalar.data(), BW_AND);
         UNARY_( short,  short, run_bitwise_s, dst, src, scalar.data(), BW_AND);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidOrS, cv::gapi::core::GOrS, false)
+GAPI_FLUID_KERNEL(GFluidOrS, ncvslideio::gapi::core::GOrS, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &_scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &_scalar, Buffer &dst)
     {
         std::array<int,4> scalar = convertScalarForBitwise(_scalar);
 
@@ -1496,15 +1496,15 @@ GAPI_FLUID_KERNEL(GFluidOrS, cv::gapi::core::GOrS, false)
         UNARY_(ushort, ushort, run_bitwise_s, dst, src, scalar.data(), BW_OR);
         UNARY_( short,  short, run_bitwise_s, dst, src, scalar.data(), BW_OR);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidXorS, cv::gapi::core::GXorS, false)
+GAPI_FLUID_KERNEL(GFluidXorS, ncvslideio::gapi::core::GXorS, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &_scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &_scalar, Buffer &dst)
     {
         std::array<int,4> scalar = convertScalarForBitwise(_scalar);
 
@@ -1513,7 +1513,7 @@ GAPI_FLUID_KERNEL(GFluidXorS, cv::gapi::core::GXorS, false)
         UNARY_(ushort, ushort, run_bitwise_s, dst, src, scalar.data(), BW_XOR);
         UNARY_( short,  short, run_bitwise_s, dst, src, scalar.data(), BW_XOR);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1523,11 +1523,11 @@ GAPI_FLUID_KERNEL(GFluidXorS, cv::gapi::core::GXorS, false)
 //
 //-------------------
 
-GAPI_FLUID_KERNEL(GFluidLUT, cv::gapi::core::GLUT, false)
+GAPI_FLUID_KERNEL(GFluidLUT, ncvslideio::gapi::core::GLUT, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Mat& lut, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Mat& lut, Buffer &dst)
     {
         GAPI_Assert(CV_8U == dst.meta().depth);
         GAPI_Assert(CV_8U == src.meta().depth);
@@ -1615,7 +1615,7 @@ CV_ALWAYS_INLINE void run_convertto(Buffer &dst, const View &src, double _alpha,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidConvertTo, cv::gapi::core::GConvertTo, false)
+GAPI_FLUID_KERNEL(GFluidConvertTo, ncvslideio::gapi::core::GConvertTo, false)
 {
     static const int Window = 1;
 
@@ -1639,7 +1639,7 @@ GAPI_FLUID_KERNEL(GFluidConvertTo, cv::gapi::core::GConvertTo, false)
         UNARY_(float,  short, run_convertto, dst, src, alpha, beta);
         UNARY_(float,  float, run_convertto, dst, src, alpha, beta);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1676,11 +1676,11 @@ static void run_minmax(Buffer &dst, const View &src1, const View &src2, Minmax m
         for (int l=0; l < length; l++)
             out[l] = in1[l] > in2[l]? in1[l]: in2[l];
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported min/max operation");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported min/max operation");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidMin, cv::gapi::core::GMin, false)
+GAPI_FLUID_KERNEL(GFluidMin, ncvslideio::gapi::core::GMin, false)
 {
     static const int Window = 1;
 
@@ -1692,11 +1692,11 @@ GAPI_FLUID_KERNEL(GFluidMin, cv::gapi::core::GMin, false)
         BINARY_( short,  short,  short, run_minmax, dst, src1, src2, MM_MIN);
         BINARY_( float,  float,  float, run_minmax, dst, src1, src2, MM_MIN);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidMax, cv::gapi::core::GMax, false)
+GAPI_FLUID_KERNEL(GFluidMax, ncvslideio::gapi::core::GMax, false)
 {
     static const int Window = 1;
 
@@ -1708,7 +1708,7 @@ GAPI_FLUID_KERNEL(GFluidMax, cv::gapi::core::GMax, false)
         BINARY_( short,  short,  short, run_minmax, dst, src1, src2, MM_MAX);
         BINARY_( float,  float,  float, run_minmax, dst, src1, src2, MM_MAX);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1762,11 +1762,11 @@ static void run_cmp(Buffer &dst, const View &src1, const View &src2, Compare com
             out[l] = in1[l] < in2[l]? 255: 0;
         break;
     default:
-        CV_Error(cv::Error::StsBadArg, "unsupported compare operation");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported compare operation");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidCmpEQ, cv::gapi::core::GCmpEQ, false)
+GAPI_FLUID_KERNEL(GFluidCmpEQ, ncvslideio::gapi::core::GCmpEQ, false)
 {
     static const int Window = 1;
 
@@ -1777,11 +1777,11 @@ GAPI_FLUID_KERNEL(GFluidCmpEQ, cv::gapi::core::GCmpEQ, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_EQ);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_EQ);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpNE, cv::gapi::core::GCmpNE, false)
+GAPI_FLUID_KERNEL(GFluidCmpNE, ncvslideio::gapi::core::GCmpNE, false)
 {
     static const int Window = 1;
 
@@ -1792,11 +1792,11 @@ GAPI_FLUID_KERNEL(GFluidCmpNE, cv::gapi::core::GCmpNE, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_NE);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_NE);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpGE, cv::gapi::core::GCmpGE, false)
+GAPI_FLUID_KERNEL(GFluidCmpGE, ncvslideio::gapi::core::GCmpGE, false)
 {
     static const int Window = 1;
 
@@ -1807,11 +1807,11 @@ GAPI_FLUID_KERNEL(GFluidCmpGE, cv::gapi::core::GCmpGE, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_GE);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_GE);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpGT, cv::gapi::core::GCmpGT, false)
+GAPI_FLUID_KERNEL(GFluidCmpGT, ncvslideio::gapi::core::GCmpGT, false)
 {
     static const int Window = 1;
 
@@ -1822,11 +1822,11 @@ GAPI_FLUID_KERNEL(GFluidCmpGT, cv::gapi::core::GCmpGT, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_GT);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_GT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpLE, cv::gapi::core::GCmpLE, false)
+GAPI_FLUID_KERNEL(GFluidCmpLE, ncvslideio::gapi::core::GCmpLE, false)
 {
     static const int Window = 1;
 
@@ -1837,11 +1837,11 @@ GAPI_FLUID_KERNEL(GFluidCmpLE, cv::gapi::core::GCmpLE, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_LE);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_LE);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpLT, cv::gapi::core::GCmpLT, false)
+GAPI_FLUID_KERNEL(GFluidCmpLT, ncvslideio::gapi::core::GCmpLT, false)
 {
     static const int Window = 1;
 
@@ -1852,7 +1852,7 @@ GAPI_FLUID_KERNEL(GFluidCmpLT, cv::gapi::core::GCmpLT, false)
         BINARY_(uchar,  short,  short, run_cmp, dst, src1, src2, CMP_LT);
         BINARY_(uchar,  float,  float, run_cmp, dst, src1, src2, CMP_LT);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -1892,12 +1892,12 @@ static void run_cmp(DST out[], const SRC in[], int length, Compare compare, SCAL
             out[l] = in[l] < s? 255: 0;
         break;
     default:
-        CV_Error(cv::Error::StsBadArg, "unsupported compare operation");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported compare operation");
     }
 }
 
 template<typename DST, typename SRC>
-static void run_cmp(Buffer &dst, const View &src, Compare compare, const cv::Scalar &scalar)
+static void run_cmp(Buffer &dst, const View &src, Compare compare, const ncvslideio::Scalar &scalar)
 {
     static_assert(std::is_same<DST, uchar>::value, "wrong types");
 
@@ -1919,93 +1919,93 @@ static void run_cmp(Buffer &dst, const View &src, Compare compare, const cv::Sca
         run_cmp(out, in, length, compare, d);
 }
 
-GAPI_FLUID_KERNEL(GFluidCmpEQScalar, cv::gapi::core::GCmpEQScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpEQScalar, ncvslideio::gapi::core::GCmpEQScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_EQ, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_EQ, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_EQ, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpNEScalar, cv::gapi::core::GCmpNEScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpNEScalar, ncvslideio::gapi::core::GCmpNEScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_NE, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_NE, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_NE, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpGEScalar, cv::gapi::core::GCmpGEScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpGEScalar, ncvslideio::gapi::core::GCmpGEScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_GE, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_GE, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_GE, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpGTScalar, cv::gapi::core::GCmpGTScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpGTScalar, ncvslideio::gapi::core::GCmpGTScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_GT, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_GT, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_GT, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpLEScalar, cv::gapi::core::GCmpLEScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpLEScalar, ncvslideio::gapi::core::GCmpLEScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_LE, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_LE, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_LE, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCmpLTScalar, cv::gapi::core::GCmpLTScalar, false)
+GAPI_FLUID_KERNEL(GFluidCmpLTScalar, ncvslideio::gapi::core::GCmpLTScalar, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &scalar, Buffer &dst)
+    static void run(const View &src, const ncvslideio::Scalar &scalar, Buffer &dst)
     {
         //     DST    SRC     OP       __VA_ARGS__
         UNARY_(uchar, uchar , run_cmp, dst, src, CMP_LT, scalar);
         UNARY_(uchar,  short, run_cmp, dst, src, CMP_LT, scalar);
         UNARY_(uchar,  float, run_cmp, dst, src, CMP_LT, scalar);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -2016,8 +2016,8 @@ GAPI_FLUID_KERNEL(GFluidCmpLTScalar, cv::gapi::core::GCmpLTScalar, false)
 //-------------------------
 
 template<typename DST, typename SRC>
-static void run_threshold(Buffer &dst, const View &src, const cv::Scalar &thresh,
-                                                        const cv::Scalar &maxval,
+static void run_threshold(Buffer &dst, const View &src, const ncvslideio::Scalar &thresh,
+                                                        const ncvslideio::Scalar &maxval,
                                                                      int  type)
 {
     static_assert(std::is_same<DST, SRC>::value, "wrong types");
@@ -2036,36 +2036,36 @@ static void run_threshold(Buffer &dst, const View &src, const cv::Scalar &thresh
 
     switch (type)
     {
-    case cv::THRESH_BINARY:
+    case ncvslideio::THRESH_BINARY:
         for (int l=0; l < length; l++)
             out[l] = in[l] > thresh_? maxvald: 0;
         break;
-    case cv::THRESH_BINARY_INV:
+    case ncvslideio::THRESH_BINARY_INV:
         for (int l=0; l < length; l++)
             out[l] = in[l] > thresh_? 0: maxvald;
         break;
-    case cv::THRESH_TRUNC:
+    case ncvslideio::THRESH_TRUNC:
         for (int l=0; l < length; l++)
             out[l] = in[l] > thresh_? threshd: in[l];
         break;
-    case cv::THRESH_TOZERO:
+    case ncvslideio::THRESH_TOZERO:
         for (int l=0; l < length; l++)
             out[l] = in[l] > thresh_? in[l]: 0;
         break;
-    case cv::THRESH_TOZERO_INV:
+    case ncvslideio::THRESH_TOZERO_INV:
         for (int l=0; l < length; l++)
             out[l] = in[l] > thresh_? 0: in[l];
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported threshold type");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported threshold type");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidThreshold, cv::gapi::core::GThreshold, false)
+GAPI_FLUID_KERNEL(GFluidThreshold, ncvslideio::gapi::core::GThreshold, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &thresh,
-                                     const cv::Scalar &maxval,
+    static void run(const View &src, const ncvslideio::Scalar &thresh,
+                                     const ncvslideio::Scalar &maxval,
                                                   int  type,
                         Buffer &dst)
     {
@@ -2074,7 +2074,7 @@ GAPI_FLUID_KERNEL(GFluidThreshold, cv::gapi::core::GThreshold, false)
         UNARY_(ushort, ushort, run_threshold, dst, src, thresh, maxval, type);
         UNARY_( short,  short, run_threshold, dst, src, thresh, maxval, type);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -2111,8 +2111,8 @@ static void run_inrange3(uchar out[], const uchar in[], int width,
 }
 
 template<typename DST, typename SRC>
-static void run_inrange(Buffer &dst, const View &src, const cv::Scalar &upperb,
-                                                      const cv::Scalar &lowerb)
+static void run_inrange(Buffer &dst, const View &src, const ncvslideio::Scalar &upperb,
+                                                      const ncvslideio::Scalar &lowerb)
 {
     static_assert(std::is_same<DST, uchar>::value, "wrong types");
 
@@ -2180,15 +2180,15 @@ static void run_inrange(Buffer &dst, const View &src, const cv::Scalar &upperb,
                      in[4*w+2] >= lower[2] && in[4*w+2] <= upper[2] &&
                      in[4*w+3] >= lower[3] && in[4*w+3] <= upper[3] ? 255: 0;
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported number of channels");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported number of channels");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidInRange, cv::gapi::core::GInRange, false)
+GAPI_FLUID_KERNEL(GFluidInRange, ncvslideio::gapi::core::GInRange, false)
 {
     static const int Window = 1;
 
-    static void run(const View &src, const cv::Scalar &lowerb, const cv::Scalar& upperb,
+    static void run(const View &src, const ncvslideio::Scalar &lowerb, const ncvslideio::Scalar& upperb,
                         Buffer &dst)
     {
         //       DST     SRC    OP           __VA_ARGS__
@@ -2197,7 +2197,7 @@ GAPI_FLUID_KERNEL(GFluidInRange, cv::gapi::core::GInRange, false)
         INRANGE_(uchar,  short, run_inrange, dst, src, upperb, lowerb);
         INRANGE_(uchar,  float, run_inrange, dst, src, upperb, lowerb);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -2287,11 +2287,11 @@ static void run_select(Buffer &dst, const View &src1, const View &src2, const Vi
     case 2: run_select_row<2>(width, out, in1, in2, in3); break;
     case 3: run_select_row<3>(width, out, in1, in2, in3); break;
     case 4: run_select_row<4>(width, out, in1, in2, in3); break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported number of channels");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported number of channels");
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidSelect, cv::gapi::core::GSelect, false)
+GAPI_FLUID_KERNEL(GFluidSelect, ncvslideio::gapi::core::GSelect, false)
 {
     static const int Window = 1;
 
@@ -2302,7 +2302,7 @@ GAPI_FLUID_KERNEL(GFluidSelect, cv::gapi::core::GSelect, false)
         SELECT_(ushort, ushort, ushort, uchar, run_select, dst, src1, src2, src3);
         SELECT_( short,  short,  short, uchar, run_select, dst, src1, src2, src3);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
@@ -2312,7 +2312,7 @@ GAPI_FLUID_KERNEL(GFluidSelect, cv::gapi::core::GSelect, false)
 //
 //----------------------------------------------------
 
-GAPI_FLUID_KERNEL(GFluidSplit3, cv::gapi::core::GSplit3, false)
+GAPI_FLUID_KERNEL(GFluidSplit3, ncvslideio::gapi::core::GSplit3, false)
 {
     static const int Window = 1;
 
@@ -2343,7 +2343,7 @@ GAPI_FLUID_KERNEL(GFluidSplit3, cv::gapi::core::GSplit3, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidSplit4, cv::gapi::core::GSplit4, false)
+GAPI_FLUID_KERNEL(GFluidSplit4, ncvslideio::gapi::core::GSplit4, false)
 {
     static const int Window = 1;
 
@@ -2399,7 +2399,7 @@ CV_ALWAYS_INLINE void run_merge3(Buffer& dst, const View& src1, const View& src2
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidMerge3, cv::gapi::core::GMerge3, false)
+GAPI_FLUID_KERNEL(GFluidMerge3, ncvslideio::gapi::core::GMerge3, false)
 {
     static const int Window = 1;
 
@@ -2415,11 +2415,11 @@ GAPI_FLUID_KERNEL(GFluidMerge3, cv::gapi::core::GMerge3, false)
         MERGE3_(short,  run_merge3, dst, src1, src2, src3);
         MERGE3_(float,  run_merge3, dst, src1, src2, src3);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidMerge4, cv::gapi::core::GMerge4, false)
+GAPI_FLUID_KERNEL(GFluidMerge4, ncvslideio::gapi::core::GMerge4, false)
 {
     static const int Window = 1;
 
@@ -2454,7 +2454,7 @@ GAPI_FLUID_KERNEL(GFluidMerge4, cv::gapi::core::GMerge4, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidPolarToCart, cv::gapi::core::GPolarToCart, false)
+GAPI_FLUID_KERNEL(GFluidPolarToCart, ncvslideio::gapi::core::GPolarToCart, false)
 {
     static const int Window = 1;
 
@@ -2490,7 +2490,7 @@ GAPI_FLUID_KERNEL(GFluidPolarToCart, cv::gapi::core::GPolarToCart, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidCartToPolar, cv::gapi::core::GCartToPolar, false)
+GAPI_FLUID_KERNEL(GFluidCartToPolar, ncvslideio::gapi::core::GCartToPolar, false)
 {
     static const int Window = 1;
 
@@ -2527,7 +2527,7 @@ GAPI_FLUID_KERNEL(GFluidCartToPolar, cv::gapi::core::GCartToPolar, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidPhase, cv::gapi::core::GPhase, false)
+GAPI_FLUID_KERNEL(GFluidPhase, ncvslideio::gapi::core::GPhase, false)
 {
     static const int Window = 1;
 
@@ -2556,7 +2556,7 @@ GAPI_FLUID_KERNEL(GFluidPhase, cv::gapi::core::GPhase, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidSqrt, cv::gapi::core::GSqrt, false)
+GAPI_FLUID_KERNEL(GFluidSqrt, ncvslideio::gapi::core::GSqrt, false)
 {
     static const int Window = 1;
 
@@ -2580,13 +2580,13 @@ GAPI_FLUID_KERNEL(GFluidSqrt, cv::gapi::core::GSqrt, false)
 
 } // namespace fliud
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
-cv::GKernelPackage cv::gapi::core::fluid::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::core::fluid::kernels()
 {
-    using namespace cv::gapi::fluid;
+    using namespace ncvslideio::gapi::fluid;
 
-    return cv::gapi::kernels
+    return ncvslideio::gapi::kernels
      <       GFluidAdd
             ,GFluidSub
             ,GFluidMul

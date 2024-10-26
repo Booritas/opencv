@@ -13,7 +13,7 @@
 
 #include "executor/gabstractexecutor.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
 class GExecutor final: public GAbstractExecutor
@@ -45,7 +45,7 @@ protected:
 
 public:
     explicit GExecutor(std::unique_ptr<ade::Graph> &&g_model);
-    void run(cv::gimpl::GRuntimeArgs &&args) override;
+    void run(ncvslideio::gimpl::GRuntimeArgs &&args) override;
 
     bool canReshape() const override;
     void reshape(const GMetaArgs& inMetas, const GCompileArgs& args) override;
@@ -54,6 +54,6 @@ public:
 };
 
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GEXECUTOR_HPP

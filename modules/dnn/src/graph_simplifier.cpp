@@ -11,7 +11,7 @@
 
 #include <queue>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 Subgraph::~Subgraph() {}
 
@@ -285,4 +285,4 @@ void simplifySubgraphs(const Ptr<ImportGraphWrapper>& net,
     }
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

@@ -9,7 +9,7 @@
 #include <opencv2/core/utils/filesystem.hpp>
 #include <opencv2/core/utils/filesystem.private.hpp>
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 String dumpInputArray(InputArray argument)
 {
@@ -20,20 +20,20 @@ String dumpInputArray(InputArray argument)
     try {
         do {
             ss << (argument.empty() ? " empty()=true" : " empty()=false");
-            ss << cv::format(" kind=0x%08llx", (long long int)argument.kind());
-            ss << cv::format(" flags=0x%08llx", (long long int)argument.getFlags());
+            ss << ncvslideio::format(" kind=0x%08llx", (long long int)argument.kind());
+            ss << ncvslideio::format(" flags=0x%08llx", (long long int)argument.getFlags());
             if (argument.getObj() == NULL)
             {
                 ss << " obj=NULL";
                 break; // done
             }
-            ss << cv::format(" total(-1)=%lld", (long long int)argument.total(-1));
+            ss << ncvslideio::format(" total(-1)=%lld", (long long int)argument.total(-1));
             int dims = argument.dims(-1);
-            ss << cv::format(" dims(-1)=%d", dims);
+            ss << ncvslideio::format(" dims(-1)=%d", dims);
             if (dims <= 2)
             {
                 Size size = argument.size(-1);
-                ss << cv::format(" size(-1)=%dx%d", size.width, size.height);
+                ss << ncvslideio::format(" size(-1)=%dx%d", size.width, size.height);
             }
             else
             {
@@ -48,7 +48,7 @@ String dumpInputArray(InputArray argument)
                 }
                 ss << "]";
             }
-            ss << " type(-1)=" << cv::typeToString(argument.type(-1));
+            ss << " type(-1)=" << ncvslideio::typeToString(argument.type(-1));
         } while (0);
     }
     catch (...)
@@ -67,26 +67,26 @@ CV_EXPORTS_W String dumpInputArrayOfArrays(InputArrayOfArrays argument)
     try {
         do {
             ss << (argument.empty() ? " empty()=true" : " empty()=false");
-            ss << cv::format(" kind=0x%08llx", (long long int)argument.kind());
-            ss << cv::format(" flags=0x%08llx", (long long int)argument.getFlags());
+            ss << ncvslideio::format(" kind=0x%08llx", (long long int)argument.kind());
+            ss << ncvslideio::format(" flags=0x%08llx", (long long int)argument.getFlags());
             if (argument.getObj() == NULL)
             {
                 ss << " obj=NULL";
                 break; // done
             }
-            ss << cv::format(" total(-1)=%lld", (long long int)argument.total(-1));
-            ss << cv::format(" dims(-1)=%d", argument.dims(-1));
+            ss << ncvslideio::format(" total(-1)=%lld", (long long int)argument.total(-1));
+            ss << ncvslideio::format(" dims(-1)=%d", argument.dims(-1));
             Size size = argument.size(-1);
-            ss << cv::format(" size(-1)=%dx%d", size.width, size.height);
+            ss << ncvslideio::format(" size(-1)=%dx%d", size.width, size.height);
             if (argument.total(-1) > 0)
             {
-                ss << " type(0)=" << cv::typeToString(argument.type(0));
+                ss << " type(0)=" << ncvslideio::typeToString(argument.type(0));
                 int dims = argument.dims(0);
-                ss << cv::format(" dims(0)=%d", dims);
+                ss << ncvslideio::format(" dims(0)=%d", dims);
                 if (dims <= 2)
                 {
                     Size size0 = argument.size(0);
-                    ss << cv::format(" size(0)=%dx%d", size0.width, size0.height);
+                    ss << ncvslideio::format(" size(0)=%dx%d", size0.width, size0.height);
                 }
                 else
                 {
@@ -120,20 +120,20 @@ CV_EXPORTS_W String dumpInputOutputArray(InputOutputArray argument)
     try {
         do {
             ss << (argument.empty() ? " empty()=true" : " empty()=false");
-            ss << cv::format(" kind=0x%08llx", (long long int)argument.kind());
-            ss << cv::format(" flags=0x%08llx", (long long int)argument.getFlags());
+            ss << ncvslideio::format(" kind=0x%08llx", (long long int)argument.kind());
+            ss << ncvslideio::format(" flags=0x%08llx", (long long int)argument.getFlags());
             if (argument.getObj() == NULL)
             {
                 ss << " obj=NULL";
                 break; // done
             }
-            ss << cv::format(" total(-1)=%lld", (long long int)argument.total(-1));
+            ss << ncvslideio::format(" total(-1)=%lld", (long long int)argument.total(-1));
             int dims = argument.dims(-1);
-            ss << cv::format(" dims(-1)=%d", dims);
+            ss << ncvslideio::format(" dims(-1)=%d", dims);
             if (dims <= 2)
             {
                 Size size = argument.size(-1);
-                ss << cv::format(" size(-1)=%dx%d", size.width, size.height);
+                ss << ncvslideio::format(" size(-1)=%dx%d", size.width, size.height);
             }
             else
             {
@@ -148,7 +148,7 @@ CV_EXPORTS_W String dumpInputOutputArray(InputOutputArray argument)
                 }
                 ss << "]";
             }
-            ss << " type(-1)=" << cv::typeToString(argument.type(-1));
+            ss << " type(-1)=" << ncvslideio::typeToString(argument.type(-1));
         } while (0);
     }
     catch (...)
@@ -167,26 +167,26 @@ CV_EXPORTS_W String dumpInputOutputArrayOfArrays(InputOutputArrayOfArrays argume
     try {
         do {
             ss << (argument.empty() ? " empty()=true" : " empty()=false");
-            ss << cv::format(" kind=0x%08llx", (long long int)argument.kind());
-            ss << cv::format(" flags=0x%08llx", (long long int)argument.getFlags());
+            ss << ncvslideio::format(" kind=0x%08llx", (long long int)argument.kind());
+            ss << ncvslideio::format(" flags=0x%08llx", (long long int)argument.getFlags());
             if (argument.getObj() == NULL)
             {
                 ss << " obj=NULL";
                 break; // done
             }
-            ss << cv::format(" total(-1)=%lld", (long long int)argument.total(-1));
-            ss << cv::format(" dims(-1)=%d", argument.dims(-1));
+            ss << ncvslideio::format(" total(-1)=%lld", (long long int)argument.total(-1));
+            ss << ncvslideio::format(" dims(-1)=%d", argument.dims(-1));
             Size size = argument.size(-1);
-            ss << cv::format(" size(-1)=%dx%d", size.width, size.height);
+            ss << ncvslideio::format(" size(-1)=%dx%d", size.width, size.height);
             if (argument.total(-1) > 0)
             {
-                ss << " type(0)=" << cv::typeToString(argument.type(0));
+                ss << " type(0)=" << ncvslideio::typeToString(argument.type(0));
                 int dims = argument.dims(0);
-                ss << cv::format(" dims(0)=%d", dims);
+                ss << ncvslideio::format(" dims(0)=%d", dims);
                 if (dims <= 2)
                 {
                     Size size0 = argument.size(0);
-                    ss << cv::format(" size(0)=%dx%d", size0.width, size0.height);
+                    ss << ncvslideio::format(" size(0)=%dx%d", size0.width, size0.height);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ CV_EXPORTS_W String dumpInputOutputArrayOfArrays(InputOutputArrayOfArrays argume
     return ss.str();
 }
 
-static inline std::ostream& operator<<(std::ostream& os, const cv::Rect& rect)
+static inline std::ostream& operator<<(std::ostream& os, const ncvslideio::Rect& rect)
 {
     return os << "[x=" << rect.x << ", y=" << rect.y << ", w=" << rect.width << ", h=" << rect.height << ']';
 }
@@ -259,10 +259,10 @@ String dumpVectorOfRect(const std::vector<Rect>& vec)
 
 
 namespace fs {
-cv::String getCacheDirectoryForDownloads()
+ncvslideio::String getCacheDirectoryForDownloads()
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
-    return cv::utils::fs::getCacheDirectory("downloads", "OPENCV_DOWNLOADS_CACHE_DIR");
+    return ncvslideio::utils::fs::getCacheDirectory("downloads", "OPENCV_DOWNLOADS_CACHE_DIR");
 #else
     CV_Error(Error::StsNotImplemented, "File system support is disabled in this OpenCV build!");
 #endif

@@ -41,8 +41,8 @@ KernelListener& getListener() {
     return l;
 }
 
-using CompCreator = std::function<cv::GComputation()>;
-using CompileArgsCreator = std::function<cv::GCompileArgs()>;
+using CompCreator = std::function<ncvslideio::GComputation()>;
+using CompileArgsCreator = std::function<ncvslideio::GCompileArgs()>;
 using Verifier = std::function<void(KernelListener)>;
 }  // anonymous namespace
 
@@ -50,24 +50,24 @@ using Verifier = std::function<void(KernelListener)>;
 
 G_TYPED_KERNEL(MyNV12toBGR, <GMat(GMat, GMat)>, "test.my_nv12_to_bgr") {
     static GMatDesc outMeta(GMatDesc in_y, GMatDesc in_uv) {
-        return cv::gapi::imgproc::GNV12toBGR::outMeta(in_y, in_uv);
+        return ncvslideio::gapi::imgproc::GNV12toBGR::outMeta(in_y, in_uv);
     }
 };
 GAPI_OCV_KERNEL(MyNV12toBGRImpl, MyNV12toBGR)
 {
-    static void run(const cv::Mat& in_y, const cv::Mat& in_uv, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in_y, const ncvslideio::Mat& in_uv, ncvslideio::Mat &out)
     {
         getListener().counts[MyNV12toBGR::id()]++;
-        cv::cvtColorTwoPlane(in_y, in_uv, out, cv::COLOR_YUV2BGR_NV12);
+        ncvslideio::cvtColorTwoPlane(in_y, in_uv, out, ncvslideio::COLOR_YUV2BGR_NV12);
     }
 };
 G_TYPED_KERNEL(MyPlanarResize, <GMatP(GMatP, Size, int)>, "test.my_planar_resize") {
     static GMatDesc outMeta(GMatDesc in, Size sz, int interp) {
-        return cv::gapi::imgproc::GResizeP::outMeta(in, sz, interp);
+        return ncvslideio::gapi::imgproc::GResizeP::outMeta(in, sz, interp);
     }
 };
 GAPI_OCV_KERNEL(MyPlanarResizeImpl, MyPlanarResize) {
-    static void run(const cv::Mat& in, cv::Size out_sz, int interp, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Size out_sz, int interp, ncvslideio::Mat &out)
     {
         getListener().counts[MyPlanarResize::id()]++;
         int inH = in.rows / 3;
@@ -75,22 +75,22 @@ GAPI_OCV_KERNEL(MyPlanarResizeImpl, MyPlanarResize) {
         int outH = out.rows / 3;
         int outW = out.cols;
         for (int i = 0; i < 3; i++) {
-            auto in_plane = in(cv::Rect(0, i*inH, inW, inH));
-            auto out_plane = out(cv::Rect(0, i*outH, outW, outH));
-            cv::resize(in_plane, out_plane, out_sz, 0, 0, interp);
+            auto in_plane = in(ncvslideio::Rect(0, i*inH, inW, inH));
+            auto out_plane = out(ncvslideio::Rect(0, i*outH, outW, outH));
+            ncvslideio::resize(in_plane, out_plane, out_sz, 0, 0, interp);
         }
     }
 };
 G_TYPED_KERNEL(MyInterleavedResize, <GMat(GMat, Size, int)>, "test.my_interleaved_resize") {
     static GMatDesc outMeta(GMatDesc in, Size sz, int interp) {
-        return cv::gapi::imgproc::GResize::outMeta(in, sz, 0.0, 0.0, interp);
+        return ncvslideio::gapi::imgproc::GResize::outMeta(in, sz, 0.0, 0.0, interp);
     }
 };
 GAPI_OCV_KERNEL(MyInterleavedResizeImpl, MyInterleavedResize) {
-    static void run(const cv::Mat& in, cv::Size out_sz, int interp, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Size out_sz, int interp, ncvslideio::Mat &out)
     {
         getListener().counts[MyInterleavedResize::id()]++;
-        cv::resize(in, out, out_sz, 0.0, 0.0, interp);
+        ncvslideio::resize(in, out, out_sz, 0.0, 0.0, interp);
     }
 };
 G_TYPED_KERNEL(MyToNCHW, <GMatP(GMat)>, "test.my_to_nchw") {
@@ -102,17 +102,17 @@ G_TYPED_KERNEL(MyToNCHW, <GMatP(GMat)>, "test.my_to_nchw") {
     }
 };
 GAPI_OCV_KERNEL(MyToNCHWImpl, MyToNCHW) {
-    static void run(const cv::Mat& in, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat& out)
     {
         getListener().counts[MyToNCHW::id()]++;
         auto sz = in.size();
         auto w = sz.width;
         auto h = sz.height;
-        cv::Mat ins[3] = {};
-        cv::split(in, ins);
+        ncvslideio::Mat ins[3] = {};
+        ncvslideio::split(in, ins);
         for (int i = 0; i < 3; i++) {
             auto in_plane = ins[i];
-            auto out_plane = out(cv::Rect(0, i*h, w, h));
+            auto out_plane = out(ncvslideio::Rect(0, i*h, w, h));
             in_plane.copyTo(out_plane);
         }
     }
@@ -126,66 +126,66 @@ G_TYPED_KERNEL_M(MySplit4, <GMat4(GMat)>, "test.my_split4") {
     }
 };
 GAPI_OCV_KERNEL(MySplit4Impl, MySplit4) {
-    static void run(const cv::Mat& in, cv::Mat& out1, cv::Mat& out2, cv::Mat& out3, cv::Mat& out4)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat& out1, ncvslideio::Mat& out2, ncvslideio::Mat& out3, ncvslideio::Mat& out4)
     {
         getListener().counts[MySplit4::id()]++;
-        cv::Mat outs[] = { out1, out2, out3, out4 };
-        cv::split(in, outs);
+        ncvslideio::Mat outs[] = { out1, out2, out3, out4 };
+        ncvslideio::split(in, outs);
     }
 };
 
-GAPI_TRANSFORM(NV12Transform, <cv::GMat(cv::GMat, cv::GMat)>, "test.nv12_transform")
+GAPI_TRANSFORM(NV12Transform, <ncvslideio::GMat(ncvslideio::GMat, ncvslideio::GMat)>, "test.nv12_transform")
 {
-    static cv::GMat pattern(const cv::GMat& y, const cv::GMat& uv)
+    static ncvslideio::GMat pattern(const ncvslideio::GMat& y, const ncvslideio::GMat& uv)
     {
-        GMat out = cv::gapi::NV12toBGR(y, uv);
+        GMat out = ncvslideio::gapi::NV12toBGR(y, uv);
         return out;
     }
 
-    static cv::GMat substitute(const cv::GMat& y, const cv::GMat& uv)
+    static ncvslideio::GMat substitute(const ncvslideio::GMat& y, const ncvslideio::GMat& uv)
     {
         GMat out = MyNV12toBGR::on(y, uv);
         return out;
     }
 };
-GAPI_TRANSFORM(ResizeTransform, <cv::GMat(cv::GMat)>, "3 x Resize -> Interleaved Resize")
+GAPI_TRANSFORM(ResizeTransform, <ncvslideio::GMat(ncvslideio::GMat)>, "3 x Resize -> Interleaved Resize")
 {
-    static cv::GMat pattern(const cv::GMat& in)
+    static ncvslideio::GMat pattern(const ncvslideio::GMat& in)
     {
         GMat b, g, r;
-        std::tie(b, g, r) = cv::gapi::split3(in);
-        const auto resize = std::bind(&cv::gapi::resize, std::placeholders::_1,
-            cv::Size(100, 100), 0, 0, cv::INTER_AREA);
-        return cv::gapi::merge3(resize(b), resize(g), resize(r));
+        std::tie(b, g, r) = ncvslideio::gapi::split3(in);
+        const auto resize = std::bind(&ncvslideio::gapi::resize, std::placeholders::_1,
+            ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_AREA);
+        return ncvslideio::gapi::merge3(resize(b), resize(g), resize(r));
     }
 
-    static cv::GMat substitute(const cv::GMat& in)
+    static ncvslideio::GMat substitute(const ncvslideio::GMat& in)
     {
-        return MyInterleavedResize::on(in, cv::Size(100, 100), cv::INTER_AREA);
+        return MyInterleavedResize::on(in, ncvslideio::Size(100, 100), ncvslideio::INTER_AREA);
     }
 };
-GAPI_TRANSFORM(ResizeTransformToCustom, <cv::GMat(cv::GMat)>, "Resize -> Custom Resize")
+GAPI_TRANSFORM(ResizeTransformToCustom, <ncvslideio::GMat(ncvslideio::GMat)>, "Resize -> Custom Resize")
 {
-    static cv::GMat pattern(const cv::GMat& in)
+    static ncvslideio::GMat pattern(const ncvslideio::GMat& in)
     {
-        return cv::gapi::resize(in, cv::Size(100, 100), 0, 0, cv::INTER_AREA);
+        return ncvslideio::gapi::resize(in, ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_AREA);
     }
 
-    static cv::GMat substitute(const cv::GMat& in)
+    static ncvslideio::GMat substitute(const ncvslideio::GMat& in)
     {
-        return MyInterleavedResize::on(in, cv::Size(100, 100), cv::INTER_AREA);
+        return MyInterleavedResize::on(in, ncvslideio::Size(100, 100), ncvslideio::INTER_AREA);
     }
 };
 GAPI_TRANSFORM(ChainTransform1, <GMatP(GMat)>, "Resize + toNCHW -> toNCHW + PlanarResize")
 {
-    static GMatP pattern(const cv::GMat& in)
+    static GMatP pattern(const ncvslideio::GMat& in)
     {
-        return MyToNCHW::on(cv::gapi::resize(in, cv::Size(60, 60)));
+        return MyToNCHW::on(ncvslideio::gapi::resize(in, ncvslideio::Size(60, 60)));
     }
 
-    static GMatP substitute(const cv::GMat& in)
+    static GMatP substitute(const ncvslideio::GMat& in)
     {
-        return MyPlanarResize::on(MyToNCHW::on(in), cv::Size(60, 60), cv::INTER_LINEAR);
+        return MyPlanarResize::on(MyToNCHW::on(in), ncvslideio::Size(60, 60), ncvslideio::INTER_LINEAR);
     }
 };
 GAPI_TRANSFORM(ChainTransform2, <GMatP(GMat, GMat)>, "NV12toBGR + toNCHW -> NV12toBGRp")
@@ -197,14 +197,14 @@ GAPI_TRANSFORM(ChainTransform2, <GMatP(GMat, GMat)>, "NV12toBGR + toNCHW -> NV12
 
     static GMatP substitute(const GMat& y, const GMat& uv)
     {
-        return cv::gapi::NV12toBGRp(y, uv);
+        return ncvslideio::gapi::NV12toBGRp(y, uv);
     }
 };
 GAPI_TRANSFORM(Split4Transform, <GMat4(GMat)>, "Split4 -> Custom Split4")
 {
     static GMat4 pattern(const GMat& in)
     {
-        return cv::gapi::split4(in);
+        return ncvslideio::gapi::split4(in);
     }
 
     static GMat4 substitute(const GMat& in)
@@ -217,15 +217,15 @@ GAPI_TRANSFORM(Split4Merge3Transform, <GMat(GMat)>, "Split4 + Merge3 -> Custom S
     static GMat pattern(const GMat& in)
     {
         GMat tmp1, tmp2, tmp3, unused;
-        std::tie(tmp1, tmp2, tmp3, unused) = cv::gapi::split4(in);
-        return cv::gapi::merge3(tmp1, tmp2, tmp3);
+        std::tie(tmp1, tmp2, tmp3, unused) = ncvslideio::gapi::split4(in);
+        return ncvslideio::gapi::merge3(tmp1, tmp2, tmp3);
     }
 
     static GMat substitute(const GMat& in)
     {
         GMat tmp1, tmp2, tmp3, unused;
         std::tie(tmp1, tmp2, tmp3, unused) = MySplit4::on(in);
-        return cv::gapi::merge3(tmp1, tmp2, tmp3);
+        return ncvslideio::gapi::merge3(tmp1, tmp2, tmp3);
     }
 };
 GAPI_TRANSFORM(Merge4Split4Transform, <GMat4(GMat, GMat, GMat, GMat)>,
@@ -234,13 +234,13 @@ GAPI_TRANSFORM(Merge4Split4Transform, <GMat4(GMat, GMat, GMat, GMat)>,
     static GMat4 pattern(const GMat& in1, const GMat& in2, const GMat& in3,
         const GMat& in4)
     {
-        return cv::gapi::split4(cv::gapi::merge4(in1, in2, in3, in4));
+        return ncvslideio::gapi::split4(ncvslideio::gapi::merge4(in1, in2, in3, in4));
     }
 
     static GMat4 substitute(const GMat& in1, const GMat& in2, const GMat& in3,
         const GMat& in4)
     {
-        return MySplit4::on(cv::gapi::merge4(in1, in2, in3, in4));
+        return MySplit4::on(ncvslideio::gapi::merge4(in1, in2, in3, in4));
     }
 };
 
@@ -249,14 +249,14 @@ GAPI_TRANSFORM(Merge4Split4Transform, <GMat4(GMat, GMat, GMat, GMat)>,
 
 TEST(PatternMatchingIntegrationBasic, OneTransformationApplied)
 {
-    cv::Size in_sz(640, 480);
-    cv::Mat input(in_sz, CV_8UC3);
-    cv::randu(input, cv::Scalar::all(0), cv::Scalar::all(100));
-    cv::Mat orig_graph_output, transformed_graph_output;
+    ncvslideio::Size in_sz(640, 480);
+    ncvslideio::Mat input(in_sz, CV_8UC3);
+    ncvslideio::randu(input, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+    ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
-    auto orig_args = cv::compile_args();
-    auto transform_args = cv::compile_args(
-        cv::gapi::kernels<MyInterleavedResizeImpl, ResizeTransform>());
+    auto orig_args = ncvslideio::compile_args();
+    auto transform_args = ncvslideio::compile_args(
+        ncvslideio::gapi::kernels<MyInterleavedResizeImpl, ResizeTransform>());
 
     auto& listener = getListener();
     listener.counts.clear();  // clear counters before testing
@@ -264,22 +264,22 @@ TEST(PatternMatchingIntegrationBasic, OneTransformationApplied)
     const auto make_computation = [] () {
         GMat in;
         GMat b, g, r;
-        std::tie(b, g, r) = cv::gapi::split3(in);
-        const auto resize = std::bind(&cv::gapi::resize, std::placeholders::_1,
-            cv::Size(100, 100), 0, 0, cv::INTER_AREA);
-        GMat out = cv::gapi::merge3(resize(b), resize(g), resize(r));
-        return cv::GComputation(cv::GIn(in), cv::GOut(out));
+        std::tie(b, g, r) = ncvslideio::gapi::split3(in);
+        const auto resize = std::bind(&ncvslideio::gapi::resize, std::placeholders::_1,
+            ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_AREA);
+        GMat out = ncvslideio::gapi::merge3(resize(b), resize(g), resize(r));
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out));
     };
 
     {
         // Run original graph
         auto mainC = make_computation();
-        mainC.apply(cv::gin(input), cv::gout(orig_graph_output), std::move(orig_args));
+        mainC.apply(ncvslideio::gin(input), ncvslideio::gout(orig_graph_output), std::move(orig_args));
     }
 
     // Generate transformed graph (passing transformations via compile args)
     auto mainC = make_computation();  // get new copy with new Priv
-    mainC.apply(cv::gin(input), cv::gout(transformed_graph_output), std::move(transform_args));
+    mainC.apply(ncvslideio::gin(input), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
     // Compare
     ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -293,14 +293,14 @@ TEST(PatternMatchingIntegrationBasic, OneTransformationApplied)
 
 TEST(PatternMatchingIntegrationBasic, SameTransformationAppliedSeveralTimes)
 {
-    cv::Size in_sz(640, 480);
-    cv::Mat input(in_sz, CV_8UC3);
-    cv::randu(input, cv::Scalar::all(0), cv::Scalar::all(100));
-    cv::Mat orig_graph_output, transformed_graph_output;
+    ncvslideio::Size in_sz(640, 480);
+    ncvslideio::Mat input(in_sz, CV_8UC3);
+    ncvslideio::randu(input, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+    ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
-    auto orig_args = cv::compile_args();
-    auto transform_args = cv::compile_args(
-        cv::gapi::kernels<MyInterleavedResizeImpl, ResizeTransformToCustom>());
+    auto orig_args = ncvslideio::compile_args();
+    auto transform_args = ncvslideio::compile_args(
+        ncvslideio::gapi::kernels<MyInterleavedResizeImpl, ResizeTransformToCustom>());
 
     auto& listener = getListener();
     listener.counts.clear();  // clear counters before testing
@@ -308,22 +308,22 @@ TEST(PatternMatchingIntegrationBasic, SameTransformationAppliedSeveralTimes)
     const auto make_computation = [] () {
         GMat in;
         GMat b, g, r;
-        std::tie(b, g, r) = cv::gapi::split3(in);
-        const auto resize = std::bind(&cv::gapi::resize, std::placeholders::_1,
-            cv::Size(100, 100), 0, 0, cv::INTER_AREA);
-        GMat out = cv::gapi::merge3(resize(b), resize(g), resize(r));
-        return cv::GComputation(cv::GIn(in), cv::GOut(out));
+        std::tie(b, g, r) = ncvslideio::gapi::split3(in);
+        const auto resize = std::bind(&ncvslideio::gapi::resize, std::placeholders::_1,
+            ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_AREA);
+        GMat out = ncvslideio::gapi::merge3(resize(b), resize(g), resize(r));
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out));
     };
 
     {
         // Run original graph
         auto mainC = make_computation();
-        mainC.apply(cv::gin(input), cv::gout(orig_graph_output), std::move(orig_args));
+        mainC.apply(ncvslideio::gin(input), ncvslideio::gout(orig_graph_output), std::move(orig_args));
     }
 
     // Generate transformed graph (passing transformations via compile args)
     auto mainC = make_computation();  // get new copy with new Priv
-    mainC.apply(cv::gin(input), cv::gout(transformed_graph_output), std::move(transform_args));
+    mainC.apply(ncvslideio::gin(input), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
     // Compare
     ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -337,34 +337,34 @@ TEST(PatternMatchingIntegrationBasic, SameTransformationAppliedSeveralTimes)
 
 TEST(PatternMatchingIntegrationBasic, OneNV12toBGRTransformationApplied)
 {
-    cv::Size in_sz(640, 480);
-    cv::Mat y(in_sz, CV_8UC1), uv(cv::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
-    cv::randu(y, cv::Scalar::all(0), cv::Scalar::all(100));
-    cv::randu(uv, cv::Scalar::all(100), cv::Scalar::all(200));
-    cv::Mat orig_graph_output, transformed_graph_output;
+    ncvslideio::Size in_sz(640, 480);
+    ncvslideio::Mat y(in_sz, CV_8UC1), uv(ncvslideio::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
+    ncvslideio::randu(y, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+    ncvslideio::randu(uv, ncvslideio::Scalar::all(100), ncvslideio::Scalar::all(200));
+    ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
-    auto orig_args = cv::compile_args();
-    auto transform_args = cv::compile_args(cv::gapi::kernels<MyNV12toBGRImpl, NV12Transform>());
+    auto orig_args = ncvslideio::compile_args();
+    auto transform_args = ncvslideio::compile_args(ncvslideio::gapi::kernels<MyNV12toBGRImpl, NV12Transform>());
 
     auto& listener = getListener();
     listener.counts.clear();  // clear counters before testing
 
     const auto make_computation = [] () {
         GMat in1, in2;
-        GMat bgr = cv::gapi::NV12toBGR(in1, in2);
-        GMat out = cv::gapi::resize(bgr, cv::Size(100, 100));
-        return cv::GComputation(cv::GIn(in1, in2), cv::GOut(out));
+        GMat bgr = ncvslideio::gapi::NV12toBGR(in1, in2);
+        GMat out = ncvslideio::gapi::resize(bgr, ncvslideio::Size(100, 100));
+        return ncvslideio::GComputation(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
     };
 
     {
         // Run original graph
         auto mainC = make_computation();
-        mainC.apply(cv::gin(y, uv), cv::gout(orig_graph_output), std::move(orig_args));
+        mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(orig_graph_output), std::move(orig_args));
     }
 
     // Generate transformed graph (passing transformations via compile args)
     auto mainC = make_computation();  // get new copy with new Priv
-    mainC.apply(cv::gin(y, uv), cv::gout(transformed_graph_output), std::move(transform_args));
+    mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
     // Compare
     ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -378,15 +378,15 @@ TEST(PatternMatchingIntegrationBasic, OneNV12toBGRTransformationApplied)
 
 TEST(PatternMatchingIntegrationBasic, TwoTransformationsApplied)
 {
-    cv::Size in_sz(640, 480);
-    cv::Mat y(in_sz, CV_8UC1), uv(cv::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
-    cv::randu(y, cv::Scalar::all(0), cv::Scalar::all(100));
-    cv::randu(uv, cv::Scalar::all(100), cv::Scalar::all(200));
-    cv::Mat orig_graph_output, transformed_graph_output;
+    ncvslideio::Size in_sz(640, 480);
+    ncvslideio::Mat y(in_sz, CV_8UC1), uv(ncvslideio::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
+    ncvslideio::randu(y, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+    ncvslideio::randu(uv, ncvslideio::Scalar::all(100), ncvslideio::Scalar::all(200));
+    ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
-    auto orig_args = cv::compile_args();
-    auto transform_args = cv::compile_args(
-        cv::gapi::kernels<MyNV12toBGRImpl, MyInterleavedResizeImpl, ResizeTransform,
+    auto orig_args = ncvslideio::compile_args();
+    auto transform_args = ncvslideio::compile_args(
+        ncvslideio::gapi::kernels<MyNV12toBGRImpl, MyInterleavedResizeImpl, ResizeTransform,
             NV12Transform>());  // compile args with transformations
 
     auto& listener = getListener();
@@ -394,26 +394,26 @@ TEST(PatternMatchingIntegrationBasic, TwoTransformationsApplied)
 
     const auto make_computation = [] () {
         GMat in1, in2;
-        GMat bgr = cv::gapi::NV12toBGR(in1, in2);
+        GMat bgr = ncvslideio::gapi::NV12toBGR(in1, in2);
         GMat b, g, r;
-        std::tie(b, g, r) = cv::gapi::split3(bgr);
-        const auto resize = std::bind(&cv::gapi::resize, std::placeholders::_1,
-            cv::Size(100, 100), 0, 0, cv::INTER_AREA);
-        GMat tmp1 = cv::gapi::resize(bgr, cv::Size(90, 90));
-        GMat tmp2 = cv::gapi::bitwise_not(cv::gapi::merge3(resize(b), resize(g), resize(r)));
-        GMat out = cv::gapi::resize(tmp1 + GScalar(10.0), cv::Size(100, 100)) + tmp2;
-        return cv::GComputation(cv::GIn(in1, in2), cv::GOut(out));
+        std::tie(b, g, r) = ncvslideio::gapi::split3(bgr);
+        const auto resize = std::bind(&ncvslideio::gapi::resize, std::placeholders::_1,
+            ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_AREA);
+        GMat tmp1 = ncvslideio::gapi::resize(bgr, ncvslideio::Size(90, 90));
+        GMat tmp2 = ncvslideio::gapi::bitwise_not(ncvslideio::gapi::merge3(resize(b), resize(g), resize(r)));
+        GMat out = ncvslideio::gapi::resize(tmp1 + GScalar(10.0), ncvslideio::Size(100, 100)) + tmp2;
+        return ncvslideio::GComputation(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
     };
 
     {
         // Run original graph
         auto mainC = make_computation();
-        mainC.apply(cv::gin(y, uv), cv::gout(orig_graph_output), std::move(orig_args));
+        mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(orig_graph_output), std::move(orig_args));
     }
 
     // Generate transformed graph (passing transformations via compile args)
     auto mainC = make_computation();  // get new copy with new Priv
-    mainC.apply(cv::gin(y, uv), cv::gout(transformed_graph_output), std::move(transform_args));
+    mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
     // Compare
     ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -429,33 +429,33 @@ TEST(PatternMatchingIntegrationBasic, TwoTransformationsApplied)
 
 struct PatternMatchingIntegrationE2E : testing::Test
 {
-    cv::GComputation makeComputation() {
+    ncvslideio::GComputation makeComputation() {
         GMat in1, in2;
         GMat bgr = MyNV12toBGR::on(in1, in2);
-        GMat resized = cv::gapi::resize(bgr, cv::Size(60, 60));
+        GMat resized = ncvslideio::gapi::resize(bgr, ncvslideio::Size(60, 60));
         GMatP out = MyToNCHW::on(resized);
-        return cv::GComputation(cv::GIn(in1, in2), cv::GOut(out));
+        return ncvslideio::GComputation(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
     }
 
-    void runTest(cv::GCompileArgs&& transform_args) {
-        cv::Size in_sz(640, 480);
-        cv::Mat y(in_sz, CV_8UC1), uv(cv::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
-        cv::randu(y, cv::Scalar::all(0), cv::Scalar::all(100));
-        cv::randu(uv, cv::Scalar::all(100), cv::Scalar::all(200));
-        cv::Mat orig_graph_output, transformed_graph_output;
+    void runTest(ncvslideio::GCompileArgs&& transform_args) {
+        ncvslideio::Size in_sz(640, 480);
+        ncvslideio::Mat y(in_sz, CV_8UC1), uv(ncvslideio::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
+        ncvslideio::randu(y, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+        ncvslideio::randu(uv, ncvslideio::Scalar::all(100), ncvslideio::Scalar::all(200));
+        ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
         auto& listener = getListener();
         listener.counts.clear();  // clear counters before testing
         {
             // Run original graph
             auto mainC = makeComputation();
-            mainC.apply(cv::gin(y, uv), cv::gout(orig_graph_output),
-                cv::compile_args(cv::gapi::kernels<MyNV12toBGRImpl, MyToNCHWImpl>()));
+            mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(orig_graph_output),
+                ncvslideio::compile_args(ncvslideio::gapi::kernels<MyNV12toBGRImpl, MyToNCHWImpl>()));
         }
 
         // Generate transformed graph (passing transformations via compile args)
         auto mainC = makeComputation();  // get new copy with new Priv
-        mainC.apply(cv::gin(y, uv), cv::gout(transformed_graph_output), std::move(transform_args));
+        mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
         // Compare
         ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -475,51 +475,51 @@ struct PatternMatchingIntegrationE2E : testing::Test
 
 TEST_F(PatternMatchingIntegrationE2E, ChainTransformationsApplied)
 {
-    runTest(cv::compile_args(
-        cv::gapi::kernels<MyPlanarResizeImpl, ChainTransform1, ChainTransform2>()));
+    runTest(ncvslideio::compile_args(
+        ncvslideio::gapi::kernels<MyPlanarResizeImpl, ChainTransform1, ChainTransform2>()));
 }
 
 TEST_F(PatternMatchingIntegrationE2E, ReversedChainTransformationsApplied)
 {
-    runTest(cv::compile_args(
-        cv::gapi::kernels<ChainTransform2, MyPlanarResizeImpl, ChainTransform1>()));
+    runTest(ncvslideio::compile_args(
+        ncvslideio::gapi::kernels<ChainTransform2, MyPlanarResizeImpl, ChainTransform1>()));
 }
 
 struct PatternMatchingIntegrationUnusedNodes : testing::Test
 {
-    cv::GComputation makeComputation() {
+    ncvslideio::GComputation makeComputation() {
         GMat in1, in2;
-        GMat bgr = cv::gapi::NV12toBGR(in1, in2);
+        GMat bgr = ncvslideio::gapi::NV12toBGR(in1, in2);
         GMat b1, g1, r1;
-        std::tie(b1, g1, r1) = cv::gapi::split3(bgr);
+        std::tie(b1, g1, r1) = ncvslideio::gapi::split3(bgr);
         // FIXME: easier way to call split4??
-        GMat merged4 = cv::gapi::merge4(b1, g1, r1, b1);
+        GMat merged4 = ncvslideio::gapi::merge4(b1, g1, r1, b1);
         GMat b2, g2, r2, unused;
-        std::tie(b2, g2, r2, unused) = cv::gapi::split4(merged4);
-        GMat out = cv::gapi::merge3(b2, g2, r2);
-        return cv::GComputation(cv::GIn(in1, in2), cv::GOut(out));
+        std::tie(b2, g2, r2, unused) = ncvslideio::gapi::split4(merged4);
+        GMat out = ncvslideio::gapi::merge3(b2, g2, r2);
+        return ncvslideio::GComputation(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
     }
 
-    void runTest(cv::GCompileArgs&& transform_args) {
-        cv::Size in_sz(640, 480);
-        cv::Mat y(in_sz, CV_8UC1), uv(cv::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
-        cv::randu(y, cv::Scalar::all(0), cv::Scalar::all(100));
-        cv::randu(uv, cv::Scalar::all(100), cv::Scalar::all(200));
+    void runTest(ncvslideio::GCompileArgs&& transform_args) {
+        ncvslideio::Size in_sz(640, 480);
+        ncvslideio::Mat y(in_sz, CV_8UC1), uv(ncvslideio::Size(in_sz.width / 2, in_sz.height / 2), CV_8UC2);
+        ncvslideio::randu(y, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+        ncvslideio::randu(uv, ncvslideio::Scalar::all(100), ncvslideio::Scalar::all(200));
 
-        cv::Mat orig_graph_output, transformed_graph_output;
+        ncvslideio::Mat orig_graph_output, transformed_graph_output;
 
         auto& listener = getListener();
         listener.counts.clear();  // clear counters before testing
         {
             // Run original graph
             auto mainC = makeComputation();
-            mainC.apply(cv::gin(y, uv), cv::gout(orig_graph_output),
-                cv::compile_args(cv::gapi::kernels<MyNV12toBGRImpl, MyToNCHWImpl>()));
+            mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(orig_graph_output),
+                ncvslideio::compile_args(ncvslideio::gapi::kernels<MyNV12toBGRImpl, MyToNCHWImpl>()));
         }
 
         // Generate transformed graph (passing transformations via compile args)
         auto mainC = makeComputation();  // get new copy with new Priv
-        mainC.apply(cv::gin(y, uv), cv::gout(transformed_graph_output), std::move(transform_args));
+        mainC.apply(ncvslideio::gin(y, uv), ncvslideio::gout(transformed_graph_output), std::move(transform_args));
 
         // Compare
         ASSERT_TRUE(AbsExact()(orig_graph_output, transformed_graph_output));
@@ -534,18 +534,18 @@ struct PatternMatchingIntegrationUnusedNodes : testing::Test
 
 TEST_F(PatternMatchingIntegrationUnusedNodes, SingleOpTransformApplied)
 {
-    runTest(cv::compile_args(cv::gapi::kernels<MySplit4Impl, Split4Transform>()));
+    runTest(ncvslideio::compile_args(ncvslideio::gapi::kernels<MySplit4Impl, Split4Transform>()));
 }
 
 // FIXME: enable once unused nodes are properly handled by Transformation API
 TEST_F(PatternMatchingIntegrationUnusedNodes, DISABLED_TransformWithInternalUnusedNodeApplied)
 {
-    runTest(cv::compile_args(cv::gapi::kernels<MySplit4Impl, Split4Merge3Transform>()));
+    runTest(ncvslideio::compile_args(ncvslideio::gapi::kernels<MySplit4Impl, Split4Merge3Transform>()));
 }
 
 TEST_F(PatternMatchingIntegrationUnusedNodes, TransformWithOutputUnusedNodeApplied)
 {
-    runTest(cv::compile_args(cv::gapi::kernels<MySplit4Impl, Merge4Split4Transform>()));
+    runTest(ncvslideio::compile_args(ncvslideio::gapi::kernels<MySplit4Impl, Merge4Split4Transform>()));
 }
 
 // --------------------------------------------------------------------------------------
@@ -553,30 +553,30 @@ TEST_F(PatternMatchingIntegrationUnusedNodes, TransformWithOutputUnusedNodeAppli
 
 struct PatternMatchingIntegrationBadArgTests : testing::Test
 {
-    cv::GComputation makeComputation() {
+    ncvslideio::GComputation makeComputation() {
         GMat in;
         GMat a, b, c, d;
         std::tie(a, b, c, d) = MySplit4::on(in);  // using custom Split4 to check if it's called
-        GMat out = cv::gapi::merge3(a + b, cv::gapi::bitwise_not(c), d * cv::GScalar(2.0));
-        return cv::GComputation(cv::GIn(in), cv::GOut(out));
+        GMat out = ncvslideio::gapi::merge3(a + b, ncvslideio::gapi::bitwise_not(c), d * ncvslideio::GScalar(2.0));
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out));
     }
 
-    void runTest(cv::GCompileArgs&& transform_args) {
-        cv::Size in_sz(640, 480);
-        cv::Mat input(in_sz, CV_8UC4);
-        cv::randu(input, cv::Scalar::all(70), cv::Scalar::all(140));
+    void runTest(ncvslideio::GCompileArgs&& transform_args) {
+        ncvslideio::Size in_sz(640, 480);
+        ncvslideio::Mat input(in_sz, CV_8UC4);
+        ncvslideio::randu(input, ncvslideio::Scalar::all(70), ncvslideio::Scalar::all(140));
 
-        cv::Mat output;
+        ncvslideio::Mat output;
 
         // Generate transformed graph (passing transformations via compile args)
         auto mainC = makeComputation();  // get new copy with new Priv
-        ASSERT_NO_THROW(mainC.apply(cv::gin(input), cv::gout(output), std::move(transform_args)));
+        ASSERT_NO_THROW(mainC.apply(ncvslideio::gin(input), ncvslideio::gout(output), std::move(transform_args)));
     }
 };
 
 TEST_F(PatternMatchingIntegrationBadArgTests, NoTransformations)
 {
-    auto transform_args = cv::compile_args(cv::gapi::kernels<MySplit4Impl>());
+    auto transform_args = ncvslideio::compile_args(ncvslideio::gapi::kernels<MySplit4Impl>());
 
     auto& listener = getListener();
     listener.counts.clear();  // clear counters before testing
@@ -591,8 +591,8 @@ TEST_F(PatternMatchingIntegrationBadArgTests, NoTransformations)
 
 TEST_F(PatternMatchingIntegrationBadArgTests, WrongTransformation)
 {
-    // Here Split4Transform::pattern is "looking for" cv::gapi::split4 but it's not used
-    auto transform_args = cv::compile_args(cv::gapi::kernels<MySplit4Impl, Split4Transform>());
+    // Here Split4Transform::pattern is "looking for" ncvslideio::gapi::split4 but it's not used
+    auto transform_args = ncvslideio::compile_args(ncvslideio::gapi::kernels<MySplit4Impl, Split4Transform>());
 
     auto& listener = getListener();
     listener.counts.clear();  // clear counters before testing
@@ -608,40 +608,40 @@ TEST_F(PatternMatchingIntegrationBadArgTests, WrongTransformation)
 // --------------------------------------------------------------------------------------
 // Bad arg integration tests (GCompiler-level) - Endless Loops
 
-GAPI_TRANSFORM(EndlessLoopTransform, <cv::GMat(cv::GMat)>, "pattern in substitute")
+GAPI_TRANSFORM(EndlessLoopTransform, <ncvslideio::GMat(ncvslideio::GMat)>, "pattern in substitute")
 {
-    static cv::GMat pattern(const cv::GMat& in)
+    static ncvslideio::GMat pattern(const ncvslideio::GMat& in)
     {
-        return cv::gapi::resize(in, cv::Size(100, 100), 0, 0, cv::INTER_LINEAR);
+        return ncvslideio::gapi::resize(in, ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_LINEAR);
     }
 
-    static cv::GMat substitute(const cv::GMat& in)
+    static ncvslideio::GMat substitute(const ncvslideio::GMat& in)
     {
-        cv::GMat b, g, r;
-        std::tie(b, g, r) = cv::gapi::split3(in);
-        auto resize = std::bind(&cv::gapi::resize,
-            std::placeholders::_1, cv::Size(100, 100), 0, 0, cv::INTER_LINEAR);
-        cv::GMat out = cv::gapi::merge3(resize(b), resize(g), resize(r));
+        ncvslideio::GMat b, g, r;
+        std::tie(b, g, r) = ncvslideio::gapi::split3(in);
+        auto resize = std::bind(&ncvslideio::gapi::resize,
+            std::placeholders::_1, ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_LINEAR);
+        ncvslideio::GMat out = ncvslideio::gapi::merge3(resize(b), resize(g), resize(r));
         return out;
     }
 };
 
 TEST(PatternMatchingIntegrationEndlessLoops, PatternInSubstituteInOneTransform)
 {
-    cv::Size in_sz(640, 480);
-    cv::Mat input(in_sz, CV_8UC3);
-    cv::randu(input, cv::Scalar::all(0), cv::Scalar::all(100));
+    ncvslideio::Size in_sz(640, 480);
+    ncvslideio::Mat input(in_sz, CV_8UC3);
+    ncvslideio::randu(input, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
 
     auto c = [] () {
         GMat in;
-        GMat tmp = cv::gapi::resize(in, cv::Size(100, 100), 0, 0, cv::INTER_LINEAR);
-        GMat out = cv::gapi::bitwise_not(tmp);
-        return cv::GComputation(cv::GIn(in), cv::GOut(out));
+        GMat tmp = ncvslideio::gapi::resize(in, ncvslideio::Size(100, 100), 0, 0, ncvslideio::INTER_LINEAR);
+        GMat out = ncvslideio::gapi::bitwise_not(tmp);
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out));
     }();
 
     EXPECT_THROW(
-        cv::gimpl::GCompiler(c, cv::descr_of(cv::gin(input)),
-            cv::compile_args(cv::gapi::kernels<EndlessLoopTransform>())),
+        ncvslideio::gimpl::GCompiler(c, ncvslideio::descr_of(ncvslideio::gin(input)),
+            ncvslideio::compile_args(ncvslideio::gapi::kernels<EndlessLoopTransform>())),
         std::exception);
 }
 

@@ -56,7 +56,7 @@
 #include <array>
 #include <type_traits>
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_basic
@@ -89,8 +89,8 @@ do not describe it in details. There are a few key things, though, that should b
 -   When you see in the reference manual or in OpenCV source code a function that takes
     InputArray, it means that you can actually pass `Mat`, `Matx`, `vector<T>` etc. (see above the
     complete list).
--   Optional input arguments: If some of the input arrays may be empty, pass cv::noArray() (or
-    simply cv::Mat() as you probably did before).
+-   Optional input arguments: If some of the input arrays may be empty, pass ncvslideio::noArray() (or
+    simply ncvslideio::Mat() as you probably did before).
 -   The class is designed solely for passing parameters. That is, normally you *should not*
     declare class members, local and global variables of this type.
 -   If you want to design your own function or a class method that can operate of arrays of
@@ -106,7 +106,7 @@ Here is how you can use a function that takes InputArray :
     for( int i = 0; i < 30; i++ )
         vec.push_back(Point2f((float)(100 + 30*cos(i*CV_PI*2/5)),
                               (float)(100 - 30*sin(i*CV_PI*2/5))));
-    cv::transform(vec, vec, cv::Matx23f(0.707, -0.707, 10, 0.707, 0.707, 20));
+    ncvslideio::transform(vec, vec, ncvslideio::Matx23f(0.707, -0.707, 10, 0.707, 0.707, 20));
 @endcode
 That is, we form an STL vector containing points, and apply in-place affine transformation to the
 vector using the 2x3 matrix created inline as `Matx<float, 2, 3>` instance.
@@ -150,9 +150,9 @@ level their use is similar, but _InputArray::getMat(idx) should be used to get h
 idx-th component of the outer vector and _InputArray::size().area() should be used to find the
 number of components (vectors/matrices) of the outer vector.
 
-In general, type support is limited to cv::Mat types. Other types are forbidden.
-But in some cases we need to support passing of custom non-general Mat types, like arrays of cv::KeyPoint, cv::DMatch, etc.
-This data is not intended to be interpreted as an image data, or processed somehow like regular cv::Mat.
+In general, type support is limited to ncvslideio::Mat types. Other types are forbidden.
+But in some cases we need to support passing of custom non-general Mat types, like arrays of ncvslideio::KeyPoint, ncvslideio::DMatch, etc.
+This data is not intended to be interpreted as an image data, or processed somehow like regular ncvslideio::Mat.
 To pass such custom type use rawIn() / rawOut() / rawInOut() wrappers.
 Custom type is wrapped as Mat-compatible `CV_8UC<N>` values (N = sizeof(T), N <= CV_CN_MAX).
  */
@@ -280,7 +280,7 @@ _OutputArray::create() needs to be called before _OutputArray::getMat(). This wa
 that the output array is properly allocated.
 
 Optional output parameters. If you do not need certain output array to be computed and returned to
-you, pass cv::noArray(), just like you would in the case of optional input array. At the
+you, pass ncvslideio::noArray(), just like you would in the case of optional input array. At the
 implementation level, use _OutputArray::needed() to check if certain output array needs to be
 computed or not.
 
@@ -451,16 +451,16 @@ typedef InputOutputArray InputOutputArrayOfArrays;
  This function is used to provide an "empty" or "null" array when certain functions
  take optional input or output arrays that you don't want to provide.
 
- Many OpenCV functions accept optional arguments as `cv::InputArray` or `cv::OutputArray`.
- When you don't want to pass any data for these optional parameters, you can use `cv::noArray()`
+ Many OpenCV functions accept optional arguments as `ncvslideio::InputArray` or `ncvslideio::OutputArray`.
+ When you don't want to pass any data for these optional parameters, you can use `ncvslideio::noArray()`
  to indicate that you are omitting them.
 
- @return An empty `cv::InputArray` or `cv::OutputArray` that can be used as a placeholder.
+ @return An empty `ncvslideio::InputArray` or `ncvslideio::OutputArray` that can be used as a placeholder.
 
  @note This is often used when a function has optional arrays, and you do not want to
  provide a specific input or output array.
 
- @see cv::InputArray, cv::OutputArray
+ @see ncvslideio::InputArray, ncvslideio::OutputArray
  */
 CV_EXPORTS InputOutputArray noArray();
 
@@ -473,7 +473,7 @@ CV_EXPORTS InputOutputArray noArray();
  @warning  For the OpenCL allocator, `USAGE_ALLOCATE_SHARED_MEMORY` depends on
  OpenCV's optional, experimental integration with OpenCL SVM. To enable this
  integration, build OpenCV using the `WITH_OPENCL_SVM=ON` CMake option and, at
- runtime, call `cv::ocl::Context::getDefault().setUseSVM(true);` or similar
+ runtime, call `ncvslideio::ocl::Context::getDefault().setUseSVM(true);` or similar
  code. Note that SVM is incompatible with OpenCL 1.x.
 */
 enum UMatUsageFlags
@@ -540,7 +540,7 @@ public:
 template<typename _Tp> class MatCommaInitializer_
 {
 public:
-    //! the constructor, created by "matrix << firstValue" operator, where matrix is cv::Mat
+    //! the constructor, created by "matrix << firstValue" operator, where matrix is ncvslideio::Mat
     MatCommaInitializer_(Mat_<_Tp>* _m);
     //! the operator that takes the next value and put it to the matrix
     template<typename T2> MatCommaInitializer_<_Tp>& operator , (T2 v);
@@ -630,7 +630,7 @@ protected:
 };
 
 /** @example samples/cpp/cout_mat.cpp
-An example demonstrating the serial out capabilities of cv::Mat
+An example demonstrating the serial out capabilities of ncvslideio::Mat
 */
 
  /** @brief n-dimensional dense array class \anchor CVMat_Details
@@ -1355,7 +1355,7 @@ public:
     The method performs a matrix inversion by means of matrix expressions. This means that a temporary
     matrix inversion object is returned by the method and can be used further as a part of more complex
     matrix expressions or can be assigned to a matrix.
-    @param method Matrix inversion method. One of cv::DecompTypes
+    @param method Matrix inversion method. One of ncvslideio::DecompTypes
      */
     MatExpr inv(int method=DECOMP_LU) const;
 
@@ -2084,7 +2084,7 @@ public:
     Example 1. All of the operations below put 0xFF the first channel of all matrix elements:
     @code
         Mat image(1920, 1080, CV_8UC3);
-        typedef cv::Point3_<uint8_t> Pixel;
+        typedef ncvslideio::Point3_<uint8_t> Pixel;
 
         // first. raw pointer access.
         for (int r = 0; r < image.rows; ++r) {
@@ -2096,7 +2096,7 @@ public:
         }
 
         // Using MatIterator. (Simple but there are a Iterator's overhead)
-        for (Pixel &p : cv::Mat_<Pixel>(image)) {
+        for (Pixel &p : ncvslideio::Mat_<Pixel>(image)) {
             p.x = 255;
         }
 
@@ -2120,7 +2120,7 @@ public:
         // i.e. pixels (x,y,z) = (1,2,3) is (b,g,r) = (1,2,3).
 
         int sizes[] = { 255, 255, 255 };
-        typedef cv::Point3_<uint8_t> Pixel;
+        typedef ncvslideio::Point3_<uint8_t> Pixel;
 
         Mat_<Pixel> image = Mat::zeros(3, sizes, CV_8UC3);
 
@@ -2471,7 +2471,7 @@ public:
     UMat(const UMat& m, const Range* ranges);
     UMat(const UMat& m, const std::vector<Range>& ranges);
 
-    // FIXIT copyData=false is not implemented, drop this in favor of cv::Mat (OpenCV 5.0)
+    // FIXIT copyData=false is not implemented, drop this in favor of ncvslideio::Mat (OpenCV 5.0)
     //! builds matrix from std::vector with or without copying the data
     template<typename _Tp> explicit UMat(const std::vector<_Tp>& vec, bool copyData=false);
 
@@ -3052,7 +3052,7 @@ public:
 
     //! makes full copy of the matrix. All the elements are duplicated
     CV_NODISCARD_STD SparseMat_ clone() const;
-    //! equivalent to cv::SparseMat::create(dims, _sizes, DataType<_Tp>::type)
+    //! equivalent to ncvslideio::SparseMat::create(dims, _sizes, DataType<_Tp>::type)
     void create(int dims, const int* _sizes);
     //! converts sparse matrix to the old-style CvSparseMat. All the elements are copied
     //operator CvSparseMat*() const;
@@ -3313,7 +3313,7 @@ public:
 
 /** @brief  Read-write Sparse Matrix Iterator
 
- The class is similar to cv::SparseMatConstIterator,
+ The class is similar to ncvslideio::SparseMatConstIterator,
  but can be used for in-place modification of the matrix elements.
 */
 class CV_EXPORTS SparseMatIterator : public SparseMatConstIterator
@@ -3381,7 +3381,7 @@ public:
 
 /** @brief  Template Read-Write Sparse Matrix Iterator Class.
 
- This is the derived from cv::SparseMatConstIterator_ class that
+ This is the derived from ncvslideio::SparseMatConstIterator_ class that
  introduces more convenient operator *() for accessing the current element.
 */
 template<typename _Tp> class SparseMatIterator_ : public SparseMatConstIterator_<_Tp>
@@ -3639,7 +3639,7 @@ public:
 
 //! @} core_basic
 
-//! @relates cv::MatExpr
+//! @relates ncvslideio::MatExpr
 //! @{
 CV_EXPORTS MatExpr operator + (const Mat& a, const Mat& b);
 CV_EXPORTS MatExpr operator + (const Mat& a, const Scalar& s);
@@ -3804,7 +3804,7 @@ CV_EXPORTS MatExpr abs(const Mat& m);
 @param e matrix expression.
 */
 CV_EXPORTS MatExpr abs(const MatExpr& e);
-//! @} relates cv::MatExpr
+//! @} relates ncvslideio::MatExpr
 
 } // cv
 

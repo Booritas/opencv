@@ -62,9 +62,9 @@
 *                                      Image Codecs                                      *
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 
-static const size_t CV_IO_MAX_IMAGE_PARAMS = cv::utils::getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_PARAMS", 50);
+static const size_t CV_IO_MAX_IMAGE_PARAMS = ncvslideio::utils::getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_PARAMS", 50);
 static const size_t CV_IO_MAX_IMAGE_WIDTH = utils::getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_WIDTH", 1 << 20);
 static const size_t CV_IO_MAX_IMAGE_HEIGHT = utils::getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_HEIGHT", 1 << 20);
 static const size_t CV_IO_MAX_IMAGE_PIXELS = utils::getConfigurationParameterSizeT("OPENCV_IO_MAX_IMAGE_PIXELS", 1 << 30);
@@ -450,7 +450,7 @@ imread_( const String& filename, int flags, OutputArray mat )
         if( !decoder->readHeader() )
             return 0;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imread_('" << filename << "'): can't read header: " << e.what());
         return 0;
@@ -491,7 +491,7 @@ imread_( const String& filename, int flags, OutputArray mat )
             success = true;
         }
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imread_('" << filename << "'): can't read data: " << e.what());
     }
@@ -561,7 +561,7 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats, int star
         if (!decoder->readHeader())
             return 0;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imreadmulti_('" << filename << "'): can't read header: " << e.what());
         return 0;
@@ -599,7 +599,7 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats, int star
             if (decoder->readData(mat))
                 success = true;
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             CV_LOG_ERROR(NULL, "imreadmulti_('" << filename << "'): can't read data: " << e.what());
         }
@@ -688,7 +688,7 @@ size_t imcount_(const String& filename, int flags)
     try{
         ImageCollection collection(filename, flags);
         return collection.size();
-    } catch(cv::Exception const& e) {
+    } catch(ncvslideio::Exception const& e) {
         // Reading header or finding decoder for the filename is failed
         CV_LOG_ERROR(NULL, "imcount_('" << filename << "'): can't read header or can't find decoder: " << e.what());
     }
@@ -785,7 +785,7 @@ static bool imwrite_( const String& filename, const std::vector<Mat>& img_vec,
             }
         }
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imwrite_('" << filename << "'): can't write data: " << e.what());
         code = false;
@@ -875,7 +875,7 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
         if (decoder->readHeader())
             success = true;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imdecode_('" << filename << "'): can't read header: " << e.what());
     }
@@ -909,7 +909,7 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
         if (decoder->readData(mat))
             success = true;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imdecode_('" << filename << "'): can't read data: " << e.what());
     }
@@ -966,7 +966,7 @@ Mat imdecode( InputArray _buf, int flags, Mat* dst )
     if (imdecode_(buf, flags, *dst))
         return *dst;
     else
-        return cv::Mat();
+        return ncvslideio::Mat();
 }
 
 static bool
@@ -1020,7 +1020,7 @@ imdecodemulti_(const Mat& buf, int flags, std::vector<Mat>& mats, int start, int
         if (decoder->readHeader())
             success = true;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imreadmulti_('" << filename << "'): can't read header: " << e.what());
     }
@@ -1069,7 +1069,7 @@ imdecodemulti_(const Mat& buf, int flags, std::vector<Mat>& mats, int start, int
             if (decoder->readData(mat))
                 success = true;
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             CV_LOG_ERROR(NULL, "imreadmulti_('" << filename << "'): can't read data: " << e.what());
         }
@@ -1204,7 +1204,7 @@ bool imencode( const String& ext, InputArray _img,
         encoder->throwOnEror();
         CV_Assert( code );
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "imencode(): can't encode data: " << e.what());
         code = false;
@@ -1238,13 +1238,13 @@ bool imencodemulti( const String& ext, InputArrayOfArrays imgs,
 
 bool haveImageReader( const String& filename )
 {
-    ImageDecoder decoder = cv::findDecoder(filename);
+    ImageDecoder decoder = ncvslideio::findDecoder(filename);
     return !decoder.empty();
 }
 
 bool haveImageWriter( const String& filename )
 {
-    cv::ImageEncoder encoder = cv::findEncoder(filename);
+    ncvslideio::ImageEncoder encoder = ncvslideio::findEncoder(filename);
     return !encoder.empty();
 }
 
@@ -1275,7 +1275,7 @@ private:
     int m_width{};
     int m_height{};
     int m_current{};
-    std::vector<cv::Mat> m_pages;
+    std::vector<ncvslideio::Mat> m_pages;
     ImageDecoder m_decoder;
 };
 
@@ -1345,14 +1345,14 @@ Mat ImageCollection::Impl::readData() {
         if (m_decoder->readData(mat))
             success = true;
     }
-    catch (const cv::Exception &e) {
+    catch (const ncvslideio::Exception &e) {
         CV_LOG_ERROR(NULL, "ImageCollection class: can't read data: " << e.what());
     }
     catch (...) {
         CV_LOG_ERROR(NULL, "ImageCollection class:: can't read data: unknown exception");
     }
     if (!success)
-        return cv::Mat();
+        return ncvslideio::Mat();
 
     if ((m_flags & IMREAD_IGNORE_ORIENTATION) == 0 && m_flags != IMREAD_UNCHANGED) {
         ApplyExifOrientation(m_decoder->getExifTag(ORIENTATION), mat);

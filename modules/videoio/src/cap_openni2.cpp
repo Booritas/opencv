@@ -43,7 +43,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifdef HAVE_OPENNI2
 
@@ -74,14 +74,14 @@ using namespace cv;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static cv::Mutex initOpenNI2Mutex;
+static ncvslideio::Mutex initOpenNI2Mutex;
 
 struct OpenNI2Initializer
 {
 public:
     static void init()
     {
-        cv::AutoLock al(initOpenNI2Mutex);
+        ncvslideio::AutoLock al(initOpenNI2Mutex);
         static OpenNI2Initializer initializer;
     }
 
@@ -92,7 +92,7 @@ private:
         openni::Status status = openni::OpenNI::initialize();
         if (status != openni::STATUS_OK)
         {
-            CV_Error(cv::Error::StsError, std::string("Failed to initialize:") + openni::OpenNI::getExtendedError());
+            CV_Error(ncvslideio::Error::StsError, std::string("Failed to initialize:") + openni::OpenNI::getExtendedError());
         }
     }
 
@@ -122,7 +122,7 @@ public:
     bool setProperty(int probIdx, double propVal) CV_OVERRIDE;
     bool grabFrame() CV_OVERRIDE;
     bool retrieveFrame(int outputType, OutputArray arr) CV_OVERRIDE;
-    int getCaptureDomain() CV_OVERRIDE { return cv::CAP_OPENNI2; }
+    int getCaptureDomain() CV_OVERRIDE { return ncvslideio::CAP_OPENNI2; }
 
     bool isOpened() const CV_OVERRIDE;
 
@@ -162,11 +162,11 @@ protected:
     // Data generators with its metadata
     std::vector<openni::VideoStream> streams;
     std::vector<openni::VideoFrameRef> streamFrames;
-    std::vector<cv::Mat> streamImages;
+    std::vector<ncvslideio::Mat> streamImages;
 
     int maxBufferSize, maxTimeDuration; // for approx sync
     bool isCircleBuffer;
-    //cv::Ptr<ApproximateSyncGrabber> approxSyncGrabber;
+    //ncvslideio::Ptr<ApproximateSyncGrabber> approxSyncGrabber;
 
     // Cameras settings:
     // TODO find in OpenNI function to convert z->disparity and remove fields "baseline" and depthFocalLength_VGA
@@ -180,7 +180,7 @@ protected:
     // The value for pixels without a valid disparity measurement
     int noSampleValue;
 
-    std::vector<cv::Mat> outputMaps;
+    std::vector<ncvslideio::Mat> outputMaps;
 };
 
 bool CvCapture_OpenNI2::isOpened() const
@@ -259,7 +259,7 @@ CvCapture_OpenNI2::CvCapture_OpenNI2(int index, const char * filename) :
                 deviceURI = ldevs[index].getUri();
             else
             {
-                CV_Error(cv::Error::StsError, "OpenCVKinect2: Device index exceeds the number of available OpenNI devices");
+                CV_Error(ncvslideio::Error::StsError, "OpenCVKinect2: Device index exceeds the number of available OpenNI devices");
             }
         }
     }
@@ -272,7 +272,7 @@ CvCapture_OpenNI2::CvCapture_OpenNI2(int index, const char * filename) :
     status = device.open(deviceURI);
     if (status != openni::STATUS_OK)
     {
-        CV_Error(cv::Error::StsError, std::string("OpenCVKinect2: Failed to open device: ") + openni::OpenNI::getExtendedError());
+        CV_Error(ncvslideio::Error::StsError, std::string("OpenCVKinect2: Failed to open device: ") + openni::OpenNI::getExtendedError());
     }
 
     toggleStream(CV_DEPTH_STREAM, true);
@@ -288,7 +288,7 @@ CvCapture_OpenNI2::CvCapture_OpenNI2(int index, const char * filename) :
 
     isContextOpened = true;
 
-    CV_LOG_INFO(NULL, cv::format("Opened OpenNI camera: %s %s (%04x:%04x)",
+    CV_LOG_INFO(NULL, ncvslideio::format("Opened OpenNI camera: %s %s (%04x:%04x)",
                       device.getDeviceInfo().getVendor(), device.getDeviceInfo().getName(),
                       device.getDeviceInfo().getUsbVendorId(), device.getDeviceInfo().getUsbProductId())
     );
@@ -346,7 +346,7 @@ void CvCapture_OpenNI2::toggleStream(int stream, bool toggle)
                     if (status != openni::STATUS_OK)
                     {
                         streams[stream].destroy();
-                        CV_Error(cv::Error::StsError, std::string("OpenCVKinect2 : Couldn't set ") +
+                        CV_Error(ncvslideio::Error::StsError, std::string("OpenCVKinect2 : Couldn't set ") +
                                  stream_names[stream] + std::string(" stream output mode: ") +
                                  std::string(openni::OpenNI::getExtendedError()));
                     }
@@ -358,14 +358,14 @@ void CvCapture_OpenNI2::toggleStream(int stream, bool toggle)
             if (status != openni::STATUS_OK)
             {
                 streams[stream].destroy();
-                CV_Error(cv::Error::StsError, std::string("CvCapture_OpenNI2::CvCapture_OpenNI2 : Couldn't start ") +
+                CV_Error(ncvslideio::Error::StsError, std::string("CvCapture_OpenNI2::CvCapture_OpenNI2 : Couldn't start ") +
                          stream_names[stream] + std::string(" stream: ") +
                          std::string(openni::OpenNI::getExtendedError()));
             }
         }
         else
         {
-            CV_Error(cv::Error::StsError, std::string("CvCapture_OpenNI2::CvCapture_OpenNI2 : Couldn't find ") +
+            CV_Error(ncvslideio::Error::StsError, std::string("CvCapture_OpenNI2::CvCapture_OpenNI2 : Couldn't find ") +
                      stream_names[stream] + " stream: " +
                      std::string(openni::OpenNI::getExtendedError()));
         }
@@ -503,7 +503,7 @@ double CvCapture_OpenNI2::getCommonProperty( int propIdx ) const
         break;
     }
     default :
-        CV_LOG_WARNING( NULL, cv::format("Such parameter (propIdx=%d) isn't supported for getting.", propIdx) );
+        CV_LOG_WARNING( NULL, ncvslideio::format("Such parameter (propIdx=%d) isn't supported for getting.", propIdx) );
     }
 
     return propValue;
@@ -541,7 +541,7 @@ bool CvCapture_OpenNI2::setCommonProperty( int propIdx, double propValue )
         break;
 
     default:
-        CV_LOG_WARNING(NULL, cv::format("Such parameter (propIdx=%d) isn't supported for setting.", propIdx));
+        CV_LOG_WARNING(NULL, ncvslideio::format("Such parameter (propIdx=%d) isn't supported for setting.", propIdx));
     }
 
     return isSet;
@@ -595,7 +595,7 @@ double CvCapture_OpenNI2::getDepthGeneratorProperty( int propIdx ) const
         propValue = streamFrames[CV_DEPTH_STREAM].getFrameIndex();
         break;
     default :
-        CV_LOG_WARNING( NULL, cv::format("Depth generator does not support such parameter (propIdx=%d) for getting.", propIdx) );
+        CV_LOG_WARNING( NULL, ncvslideio::format("Depth generator does not support such parameter (propIdx=%d) for getting.", propIdx) );
     }
 
     return propValue;
@@ -660,7 +660,7 @@ bool CvCapture_OpenNI2::setDepthGeneratorProperty( int propIdx, double propValue
         }
         break;
     default:
-        CV_LOG_WARNING( NULL, cv::format("OpenNI2: Depth generator does not support such parameter (propIdx=%d) for setting.", propIdx) );
+        CV_LOG_WARNING( NULL, ncvslideio::format("OpenNI2: Depth generator does not support such parameter (propIdx=%d) for setting.", propIdx) );
     }
 
     return isSet;
@@ -694,7 +694,7 @@ double CvCapture_OpenNI2::getImageGeneratorProperty( int propIdx ) const
         propValue = (double)streamFrames[CV_COLOR_STREAM].getFrameIndex();
         break;
     default :
-        CV_LOG_WARNING( NULL, cv::format("OpenNI2: Image generator does not support such parameter (propIdx=%d) for getting.", propIdx) );
+        CV_LOG_WARNING( NULL, ncvslideio::format("OpenNI2: Image generator does not support such parameter (propIdx=%d) for getting.", propIdx) );
     }
 
     return propValue;
@@ -757,7 +757,7 @@ bool CvCapture_OpenNI2::setImageGeneratorProperty(int propIdx, double propValue)
             break;
         }
         default:
-            CV_LOG_WARNING( NULL, cv::format("Image generator does not support such parameter (propIdx=%d) for setting.", propIdx) );
+            CV_LOG_WARNING( NULL, ncvslideio::format("Image generator does not support such parameter (propIdx=%d) for setting.", propIdx) );
         }
 
     return isSet;
@@ -791,7 +791,7 @@ double CvCapture_OpenNI2::getIrGeneratorProperty(int propIdx) const
         propValue = (double)streamFrames[CV_IR_STREAM].getFrameIndex();
         break;
     default:
-        CV_LOG_WARNING(NULL, cv::format("Image generator does not support such parameter (propIdx=%d) for getting.", propIdx));
+        CV_LOG_WARNING(NULL, ncvslideio::format("Image generator does not support such parameter (propIdx=%d) for getting.", propIdx));
     }
 
     return propValue;
@@ -853,7 +853,7 @@ bool CvCapture_OpenNI2::setIrGeneratorProperty(int propIdx, double propValue)
         break;
     }
     default:
-        CV_LOG_WARNING(NULL, cv::format("Image generator does not support such parameter (propIdx=%d) for setting.", propIdx));
+        CV_LOG_WARNING(NULL, ncvslideio::format("Image generator does not support such parameter (propIdx=%d) for setting.", propIdx));
     }
 
     return isSet;
@@ -887,15 +887,15 @@ bool CvCapture_OpenNI2::grabFrame()
     return isGrabbed;
 }
 
-inline void getDepthMapFromMetaData(const openni::VideoFrameRef& depthMetaData, cv::Mat& depthMap, int noSampleValue, int shadowValue)
+inline void getDepthMapFromMetaData(const openni::VideoFrameRef& depthMetaData, ncvslideio::Mat& depthMap, int noSampleValue, int shadowValue)
 {
     depthMap.create(depthMetaData.getHeight(), depthMetaData.getWidth(), CV_16UC1);
     depthMap.data = (uchar*)depthMetaData.getData();
 
-    cv::Mat badMask = (depthMap == (double)noSampleValue) | (depthMap == (double)shadowValue) | (depthMap == 0);
+    ncvslideio::Mat badMask = (depthMap == (double)noSampleValue) | (depthMap == (double)shadowValue) | (depthMap == 0);
 
     // mask the pixels with invalid depth
-    depthMap.setTo( cv::Scalar::all( CvCapture_OpenNI2::INVALID_PIXEL_VAL ), badMask );
+    depthMap.setTo( ncvslideio::Scalar::all( CvCapture_OpenNI2::INVALID_PIXEL_VAL ), badMask );
 }
 
 Mat CvCapture_OpenNI2::retrieveDepthMap()
@@ -913,13 +913,13 @@ Mat CvCapture_OpenNI2::retrievePointCloudMap()
     if( !streamFrames[CV_DEPTH_STREAM].isValid() )
         return Mat();
 
-    cv::Mat depthImg;
+    ncvslideio::Mat depthImg;
     getDepthMapFromMetaData(streamFrames[CV_DEPTH_STREAM], depthImg, noSampleValue, shadowValue);
 
     const int badPoint = INVALID_PIXEL_VAL;
     const float badCoord = INVALID_COORDINATE_VAL;
     int cols = streamFrames[CV_DEPTH_STREAM].getWidth(), rows = streamFrames[CV_DEPTH_STREAM].getHeight();
-    cv::Mat pointCloud_XYZ( rows, cols, CV_32FC3, cv::Scalar::all(badPoint) );
+    ncvslideio::Mat pointCloud_XYZ( rows, cols, CV_32FC3, ncvslideio::Scalar::all(badPoint) );
 
     float worldX, worldY, worldZ;
     for( int y = 0; y < rows; y++ )
@@ -929,10 +929,10 @@ Mat CvCapture_OpenNI2::retrievePointCloudMap()
             openni::CoordinateConverter::convertDepthToWorld(streams[CV_DEPTH_STREAM], x, y, depthImg.at<unsigned short>(y, x), &worldX, &worldY, &worldZ);
 
             if (depthImg.at<unsigned short>(y, x) == badPoint) // not valid
-                pointCloud_XYZ.at<cv::Point3f>(y, x) = cv::Point3f(badCoord, badCoord, badCoord);
+                pointCloud_XYZ.at<ncvslideio::Point3f>(y, x) = ncvslideio::Point3f(badCoord, badCoord, badCoord);
             else
             {
-                pointCloud_XYZ.at<cv::Point3f>(y, x) = cv::Point3f(worldX*0.001f, worldY*0.001f, worldZ*0.001f); // from mm to meters
+                pointCloud_XYZ.at<ncvslideio::Point3f>(y, x) = ncvslideio::Point3f(worldX*0.001f, worldY*0.001f, worldZ*0.001f); // from mm to meters
             }
         }
     }
@@ -942,9 +942,9 @@ Mat CvCapture_OpenNI2::retrievePointCloudMap()
     return outputMaps[CAP_OPENNI_POINT_CLOUD_MAP];
 }
 
-static void computeDisparity_32F( const openni::VideoFrameRef& depthMetaData, cv::Mat& disp, double baseline, int F, int noSampleValue, int shadowValue)
+static void computeDisparity_32F( const openni::VideoFrameRef& depthMetaData, ncvslideio::Mat& disp, double baseline, int F, int noSampleValue, int shadowValue)
 {
-    cv::Mat depth;
+    ncvslideio::Mat depth;
     getDepthMapFromMetaData( depthMetaData, depth, noSampleValue, shadowValue );
     CV_Assert( depth.type() == CV_16UC1 );
 
@@ -953,7 +953,7 @@ static void computeDisparity_32F( const openni::VideoFrameRef& depthMetaData, cv
     float mult = (float)(baseline /*mm*/ * F /*pixels*/);
 
     disp.create( depth.size(), CV_32FC1);
-    disp = cv::Scalar::all( CvCapture_OpenNI2::INVALID_PIXEL_VAL );
+    disp = ncvslideio::Scalar::all( CvCapture_OpenNI2::INVALID_PIXEL_VAL );
     for( int y = 0; y < disp.rows; y++ )
     {
         for( int x = 0; x < disp.cols; x++ )
@@ -973,7 +973,7 @@ Mat CvCapture_OpenNI2::retrieveDisparityMap()
     if (!readCamerasParams())
         return Mat();
 
-    cv::Mat disp32;
+    ncvslideio::Mat disp32;
     computeDisparity_32F(streamFrames[CV_DEPTH_STREAM], disp32, baseline, depthFocalLength_VGA, noSampleValue, shadowValue);
 
     disp32.convertTo(outputMaps[CAP_OPENNI_DISPARITY_MAP], CV_8UC1);
@@ -999,7 +999,7 @@ Mat CvCapture_OpenNI2::retrieveValidDepthMask()
     if (!streamFrames[CV_DEPTH_STREAM].isValid())
         return Mat();
 
-    cv::Mat d;
+    ncvslideio::Mat d;
     getDepthMapFromMetaData(streamFrames[CV_DEPTH_STREAM], d, noSampleValue, shadowValue);
 
     outputMaps[CAP_OPENNI_VALID_DEPTH_MASK] = d != CvCapture_OpenNI2::INVALID_PIXEL_VAL;
@@ -1007,20 +1007,20 @@ Mat CvCapture_OpenNI2::retrieveValidDepthMask()
     return outputMaps[CAP_OPENNI_VALID_DEPTH_MASK];
 }
 
-inline void getBGRImageFromMetaData( const openni::VideoFrameRef& imageMetaData, cv::Mat& bgrImage )
+inline void getBGRImageFromMetaData( const openni::VideoFrameRef& imageMetaData, ncvslideio::Mat& bgrImage )
 {
-   cv::Mat bufferImage;
+   ncvslideio::Mat bufferImage;
    if( imageMetaData.getVideoMode().getPixelFormat() != openni::PIXEL_FORMAT_RGB888 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "Unsupported format of grabbed image." );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "Unsupported format of grabbed image." );
 
    bgrImage.create(imageMetaData.getHeight(), imageMetaData.getWidth(), CV_8UC3);
    bufferImage.create(imageMetaData.getHeight(), imageMetaData.getWidth(), CV_8UC3);
    bufferImage.data = (uchar*)imageMetaData.getData();
 
-   cv::cvtColor(bufferImage, bgrImage, cv::COLOR_RGB2BGR);
+   ncvslideio::cvtColor(bufferImage, bgrImage, ncvslideio::COLOR_RGB2BGR);
 }
 
-inline void getGrayImageFromMetaData(const openni::VideoFrameRef& imageMetaData, cv::Mat& grayImage)
+inline void getGrayImageFromMetaData(const openni::VideoFrameRef& imageMetaData, ncvslideio::Mat& grayImage)
 {
     if (imageMetaData.getVideoMode().getPixelFormat() == openni::PIXEL_FORMAT_GRAY8)
     {
@@ -1034,7 +1034,7 @@ inline void getGrayImageFromMetaData(const openni::VideoFrameRef& imageMetaData,
     }
     else
     {
-        CV_Error(cv::Error::StsUnsupportedFormat, "Unsupported format of grabbed image.");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Unsupported format of grabbed image.");
     }
 }
 
@@ -1055,9 +1055,9 @@ Mat CvCapture_OpenNI2::retrieveGrayImage()
 
     CV_Assert(streamFrames[CV_COLOR_STREAM].getVideoMode().getPixelFormat() == openni::PIXEL_FORMAT_RGB888); // RGB
 
-    cv::Mat rgbImage;
+    ncvslideio::Mat rgbImage;
     getBGRImageFromMetaData(streamFrames[CV_COLOR_STREAM], rgbImage);
-    cv::cvtColor( rgbImage, outputMaps[CAP_OPENNI_GRAY_IMAGE], cv::COLOR_BGR2GRAY );
+    ncvslideio::cvtColor( rgbImage, outputMaps[CAP_OPENNI_GRAY_IMAGE], ncvslideio::COLOR_BGR2GRAY );
 
     return outputMaps[CAP_OPENNI_GRAY_IMAGE];
 }
@@ -1119,7 +1119,7 @@ bool CvCapture_OpenNI2::retrieveFrame( int outputType, OutputArray arr )
     return true;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::create_OpenNI2_capture_cam( int index )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_OpenNI2_capture_cam( int index )
 {
     Ptr<CvCapture_OpenNI2> capture = makePtr<CvCapture_OpenNI2>( index );
 
@@ -1128,7 +1128,7 @@ cv::Ptr<cv::IVideoCapture> cv::create_OpenNI2_capture_cam( int index )
     return 0;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::create_OpenNI2_capture_file( const std::string &filename )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_OpenNI2_capture_file( const std::string &filename )
 {
     Ptr<CvCapture_OpenNI2> capture = makePtr<CvCapture_OpenNI2>( filename.c_str() );
 

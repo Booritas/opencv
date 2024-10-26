@@ -18,7 +18,7 @@
 
 // Iterate over all nodes and initialize meta of objects taken from the
 // outside (i.e., computation input/output arguments)
-void cv::gimpl::passes::initMeta(ade::passes::PassContext &ctx, const GMetaArgs &metas)
+void ncvslideio::gimpl::passes::initMeta(ade::passes::PassContext &ctx, const GMetaArgs &metas)
 {
     GModel::Graph gr(ctx.graph);
 
@@ -33,7 +33,7 @@ void cv::gimpl::passes::initMeta(ade::passes::PassContext &ctx, const GMetaArgs 
 
 // Iterate over all operations in the topological order, trigger kernels
 // validate() function, update output objects metadata.
-void cv::gimpl::passes::inferMeta(ade::passes::PassContext &ctx, bool meta_is_initialized)
+void ncvslideio::gimpl::passes::inferMeta(ade::passes::PassContext &ctx, bool meta_is_initialized)
 {
     // FIXME: ADE pass dependency on topo_sort?
     // FIXME: ADE pass dependency on initMeta?
@@ -95,7 +95,7 @@ void cv::gimpl::passes::inferMeta(ade::passes::PassContext &ctx, bool meta_is_in
 
                 auto       &output_meta = gr.metadata(output_nh).get<Data>().meta;
 
-                cv::util::suppress_unused_warning(meta_is_initialized);
+                ncvslideio::util::suppress_unused_warning(meta_is_initialized);
                 // FIXME: calling compile() with meta the second time when cannot reshape will lead to error below
                 //if (!meta_is_initialized && !util::holds_alternative<util::monostate>(output_meta))
                 //{
@@ -118,7 +118,7 @@ void cv::gimpl::passes::inferMeta(ade::passes::PassContext &ctx, bool meta_is_in
 
 // After all metadata in graph is inferred, store a vector of inferred metas
 // for computation output values.
-void cv::gimpl::passes::storeResultingMeta(ade::passes::PassContext &ctx)
+void ncvslideio::gimpl::passes::storeResultingMeta(ade::passes::PassContext &ctx)
 {
     GModel::Graph gr(ctx.graph);
 

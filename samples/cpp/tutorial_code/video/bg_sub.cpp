@@ -12,7 +12,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 const char* params
@@ -62,13 +62,13 @@ int main(int argc, char* argv[])
 
         //! [display_frame_number]
         //get the frame number and write it on the current frame
-        rectangle(frame, cv::Point(10, 2), cv::Point(100,20),
-                  cv::Scalar(255,255,255), -1);
+        rectangle(frame, ncvslideio::Point(10, 2), ncvslideio::Point(100,20),
+                  ncvslideio::Scalar(255,255,255), -1);
         stringstream ss;
         ss << capture.get(CAP_PROP_POS_FRAMES);
         string frameNumberString = ss.str();
-        putText(frame, frameNumberString.c_str(), cv::Point(15, 15),
-                FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
+        putText(frame, frameNumberString.c_str(), ncvslideio::Point(15, 15),
+                FONT_HERSHEY_SIMPLEX, 0.5 , ncvslideio::Scalar(0,0,0));
         //! [display_frame_number]
 
         //! [show]

@@ -21,7 +21,7 @@
 #define CV_RVV_MAX_VLEN 1024
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -117,7 +117,7 @@ OPENCV_HAL_IMPL_RVV_TRAITS(vfloat64m8_t, double, e64m8, 64)
 // LLVM/Clang defines "overloaded intrinsics" e.g. 'vand(op1, op2)'
 // GCC does not have these functions, so we need to implement them manually
 // We implement only selected subset required to build current state of the code
-// Included inside namespace cv::
+// Included inside namespace ncvslideio::
 // #ifndef __riscv_v_intrinsic_overloading
 // #include "intrin_rvv_compat_overloaded.hpp"
 // #endif // __riscv_v_intrinsic_overloading
@@ -2198,6 +2198,6 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} //namespace cv
+} //namespace ncvslideio
 
 #endif //OPENCV_HAL_INTRIN_RVV_SCALABLE_HPP

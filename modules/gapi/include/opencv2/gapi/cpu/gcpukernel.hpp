@@ -27,7 +27,7 @@
 #include <opencv2/gapi/util/util.hpp>
 
 // FIXME: namespace scheme for backends?
-namespace cv {
+namespace ncvslideio {
 
 namespace gimpl
 {
@@ -55,7 +55,7 @@ namespace cpu
      *
      * Backends are usually "black boxes" for G-API users -- on the API
      * side, all backends are represented as different objects of the
-     * same class cv::gapi::GBackend.
+     * same class ncvslideio::gapi::GBackend.
      * User can manipulate with backends by specifying which kernels to use.
      *
      * @sa @ref gapi_hld
@@ -71,7 +71,7 @@ namespace cpu
      *
      * @sa gapi_std_backends
      */
-    GAPI_EXPORTS cv::gapi::GBackend backend();
+    GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
     /** @} */
 
     class GOCVFunctor;
@@ -97,12 +97,12 @@ public:
     const T& inArg(int input) { return m_args.at(input).get<T>(); }
 
     // Syntax sugar
-    const cv::Mat&   inMat(int input);
-    cv::Mat&         outMatR(int output); // FIXME: Avoid cv::Mat m = ctx.outMatR()
+    const ncvslideio::Mat&   inMat(int input);
+    ncvslideio::Mat&         outMatR(int output); // FIXME: Avoid ncvslideio::Mat m = ctx.outMatR()
 
-    const cv::Scalar& inVal(int input);
-    cv::Scalar& outValR(int output); // FIXME: Avoid cv::Scalar s = ctx.outValR()
-    cv::MediaFrame& outFrame(int output);
+    const ncvslideio::Scalar& inVal(int input);
+    ncvslideio::Scalar& outValR(int output); // FIXME: Avoid ncvslideio::Scalar s = ctx.outValR()
+    ncvslideio::MediaFrame& outFrame(int output);
     template<typename T> std::vector<T>& outVecR(int output) // FIXME: the same issue
     {
         return outVecRef(output).wref<T>();
@@ -155,53 +155,53 @@ public:
 namespace detail
 {
 template<class T> struct get_in;
-template<> struct get_in<cv::GMat>
+template<> struct get_in<ncvslideio::GMat>
 {
-    static cv::Mat    get(GCPUContext &ctx, int idx) { return ctx.inMat(idx); }
+    static ncvslideio::Mat    get(GCPUContext &ctx, int idx) { return ctx.inMat(idx); }
 };
-template<> struct get_in<cv::GMatP>
+template<> struct get_in<ncvslideio::GMatP>
 {
-    static cv::Mat    get(GCPUContext &ctx, int idx) { return get_in<cv::GMat>::get(ctx, idx); }
+    static ncvslideio::Mat    get(GCPUContext &ctx, int idx) { return get_in<ncvslideio::GMat>::get(ctx, idx); }
 };
-template<> struct get_in<cv::GFrame>
+template<> struct get_in<ncvslideio::GFrame>
 {
-    static cv::MediaFrame get(GCPUContext &ctx, int idx) { return ctx.inArg<cv::MediaFrame>(idx); }
+    static ncvslideio::MediaFrame get(GCPUContext &ctx, int idx) { return ctx.inArg<ncvslideio::MediaFrame>(idx); }
 };
-template<> struct get_in<cv::GScalar>
+template<> struct get_in<ncvslideio::GScalar>
 {
-    static cv::Scalar get(GCPUContext &ctx, int idx) { return ctx.inVal(idx); }
+    static ncvslideio::Scalar get(GCPUContext &ctx, int idx) { return ctx.inVal(idx); }
 };
-template<typename U> struct get_in<cv::GArray<U> >
+template<typename U> struct get_in<ncvslideio::GArray<U> >
 {
     static const std::vector<U>& get(GCPUContext &ctx, int idx) { return ctx.inArg<VectorRef>(idx).rref<U>(); }
 };
-template<typename U> struct get_in<cv::GOpaque<U> >
+template<typename U> struct get_in<ncvslideio::GOpaque<U> >
 {
     static const U& get(GCPUContext &ctx, int idx) { return ctx.inArg<OpaqueRef>(idx).rref<U>(); }
 };
 
 //FIXME(dm): GArray<Mat>/GArray<GMat> conversion should be done more gracefully in the system
-template<> struct get_in<cv::GArray<cv::GMat> >: public get_in<cv::GArray<cv::Mat> >
+template<> struct get_in<ncvslideio::GArray<ncvslideio::GMat> >: public get_in<ncvslideio::GArray<ncvslideio::Mat> >
 {
 };
 
 //FIXME(dm): GArray<Scalar>/GArray<GScalar> conversion should be done more gracefully in the system
-template<> struct get_in<cv::GArray<cv::GScalar> >: public get_in<cv::GArray<cv::Scalar> >
+template<> struct get_in<ncvslideio::GArray<ncvslideio::GScalar> >: public get_in<ncvslideio::GArray<ncvslideio::Scalar> >
 {
 };
 
 // FIXME(dm): GArray<vector<U>>/GArray<GArray<U>> conversion should be done more gracefully in the system
-template<typename U> struct get_in<cv::GArray<cv::GArray<U>> >: public get_in<cv::GArray<std::vector<U>> >
+template<typename U> struct get_in<ncvslideio::GArray<ncvslideio::GArray<U>> >: public get_in<ncvslideio::GArray<std::vector<U>> >
 {
 };
 
 //FIXME(dm): GOpaque<Mat>/GOpaque<GMat> conversion should be done more gracefully in the system
-template<> struct get_in<cv::GOpaque<cv::GMat> >: public get_in<cv::GOpaque<cv::Mat> >
+template<> struct get_in<ncvslideio::GOpaque<ncvslideio::GMat> >: public get_in<ncvslideio::GOpaque<ncvslideio::Mat> >
 {
 };
 
 //FIXME(dm): GOpaque<Scalar>/GOpaque<GScalar> conversion should be done more gracefully in the system
-template<> struct get_in<cv::GOpaque<cv::GScalar> >: public get_in<cv::GOpaque<cv::Mat> >
+template<> struct get_in<ncvslideio::GOpaque<ncvslideio::GScalar> >: public get_in<ncvslideio::GOpaque<ncvslideio::Mat> >
 {
 };
 
@@ -211,11 +211,11 @@ template<class T> struct get_in
 };
 
 struct tracked_cv_mat{
-    tracked_cv_mat(cv::Mat& m) : r{m}, original_data{m.data} {}
-    cv::Mat r;
+    tracked_cv_mat(ncvslideio::Mat& m) : r{m}, original_data{m.data} {}
+    ncvslideio::Mat r;
     uchar* original_data;
 
-    operator cv::Mat& (){ return r;}
+    operator ncvslideio::Mat& (){ return r;}
     void validate() const{
         if (r.data != original_data)
         {
@@ -238,11 +238,11 @@ void postprocess(Outputs&... outs)
     } validate;
     //dummy array to unfold parameter pack
     int dummy[] = { 0, (validate(&outs), 0)... };
-    cv::util::suppress_unused_warning(dummy);
+    ncvslideio::util::suppress_unused_warning(dummy);
 }
 
 template<class T> struct get_out;
-template<> struct get_out<cv::GMat>
+template<> struct get_out<ncvslideio::GMat>
 {
     static tracked_cv_mat get(GCPUContext &ctx, int idx)
     {
@@ -250,28 +250,28 @@ template<> struct get_out<cv::GMat>
         return {r};
     }
 };
-template<> struct get_out<cv::GMatP>
+template<> struct get_out<ncvslideio::GMatP>
 {
     static tracked_cv_mat get(GCPUContext &ctx, int idx)
     {
-        return get_out<cv::GMat>::get(ctx, idx);
+        return get_out<ncvslideio::GMat>::get(ctx, idx);
     }
 };
-template<> struct get_out<cv::GScalar>
+template<> struct get_out<ncvslideio::GScalar>
 {
-    static cv::Scalar& get(GCPUContext &ctx, int idx)
+    static ncvslideio::Scalar& get(GCPUContext &ctx, int idx)
     {
         return ctx.outValR(idx);
     }
 };
-template<> struct get_out<cv::GFrame>
+template<> struct get_out<ncvslideio::GFrame>
 {
-    static cv::MediaFrame& get(GCPUContext &ctx, int idx)
+    static ncvslideio::MediaFrame& get(GCPUContext &ctx, int idx)
     {
         return ctx.outFrame(idx);
     }
 };
-template<typename U> struct get_out<cv::GArray<U>>
+template<typename U> struct get_out<ncvslideio::GArray<U>>
 {
     static std::vector<U>& get(GCPUContext &ctx, int idx)
     {
@@ -280,16 +280,16 @@ template<typename U> struct get_out<cv::GArray<U>>
 };
 
 //FIXME(dm): GArray<Mat>/GArray<GMat> conversion should be done more gracefully in the system
-template<> struct get_out<cv::GArray<cv::GMat> >: public get_out<cv::GArray<cv::Mat> >
+template<> struct get_out<ncvslideio::GArray<ncvslideio::GMat> >: public get_out<ncvslideio::GArray<ncvslideio::Mat> >
 {
 };
 
 // FIXME(dm): GArray<vector<U>>/GArray<GArray<U>> conversion should be done more gracefully in the system
-template<typename U> struct get_out<cv::GArray<cv::GArray<U>> >: public get_out<cv::GArray<std::vector<U>> >
+template<typename U> struct get_out<ncvslideio::GArray<ncvslideio::GArray<U>> >: public get_out<ncvslideio::GArray<std::vector<U>> >
 {
 };
 
-template<typename U> struct get_out<cv::GOpaque<U>>
+template<typename U> struct get_out<ncvslideio::GOpaque<U>>
 {
     static U& get(GCPUContext &ctx, int idx)
     {
@@ -396,7 +396,7 @@ struct OCVCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>>
     }
 
     template<int... IIs, int... OIs>
-    static void call_impl(cv::GCPUContext &ctx, Impl& impl,
+    static void call_impl(ncvslideio::GCPUContext &ctx, Impl& impl,
                           detail::Seq<IIs...>, detail::Seq<OIs...>)
     {
         call_and_postprocess<decltype(get_in<Ins>::get(ctx, IIs))...>
@@ -413,7 +413,7 @@ struct OCVCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>>
     // NB: Same as call but calling the object
     // This necessary for kernel implementations that have a state
     // and are represented as an object
-    static void callFunctor(cv::GCPUContext &ctx, Impl& impl)
+    static void callFunctor(ncvslideio::GCPUContext &ctx, Impl& impl)
     {
         call_impl(ctx, impl,
                   typename detail::MkSeq<sizeof...(Ins)>::type(),
@@ -459,19 +459,19 @@ struct OCVStCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>> :
 } // namespace detail
 
 template<class Impl, class K>
-class GCPUKernelImpl: public cv::detail::KernelTag
+class GCPUKernelImpl: public ncvslideio::detail::KernelTag
 {
-    using CallHelper = cv::detail::OCVCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
+    using CallHelper = ncvslideio::detail::OCVCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
 
 public:
     using API = K;
 
-    static cv::gapi::GBackend backend() { return cv::gapi::cpu::backend(); }
-    static cv::GCPUKernel      kernel() { return GCPUKernel(&CallHelper::call); }
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::cpu::backend(); }
+    static ncvslideio::GCPUKernel      kernel() { return GCPUKernel(&CallHelper::call); }
 };
 
 template<class Impl, class K, class S>
-class GCPUStKernelImpl: public cv::detail::KernelTag
+class GCPUStKernelImpl: public ncvslideio::detail::KernelTag
 {
     using StSetupHelper = detail::OCVSetupHelper<Impl, typename K::InArgs>;
     using StCallHelper  = detail::OCVStCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
@@ -480,24 +480,24 @@ public:
     using API = K;
     using State = S;
 
-    static cv::gapi::GBackend backend() { return cv::gapi::cpu::backend(); }
-    static cv::GCPUKernel     kernel()  { return GCPUKernel(&StCallHelper::call,
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::cpu::backend(); }
+    static ncvslideio::GCPUKernel     kernel()  { return GCPUKernel(&StCallHelper::call,
                                                             &StSetupHelper::setup); }
 };
 
-#define GAPI_OCV_KERNEL(Name, API) struct Name: public cv::GCPUKernelImpl<Name, API>
+#define GAPI_OCV_KERNEL(Name, API) struct Name: public ncvslideio::GCPUKernelImpl<Name, API>
 
 // TODO: Reuse Anatoliy's logic for support of types with commas in macro.
 //       Retrieve the common part from Anatoliy's logic to the separate place.
 #define GAPI_OCV_KERNEL_ST(Name, API, State)                   \
-    struct Name: public cv::GCPUStKernelImpl<Name, API, State> \
+    struct Name: public ncvslideio::GCPUStKernelImpl<Name, API, State> \
 
 /// @private
 class gapi::cpu::GOCVFunctor : public gapi::GFunctor
 {
 public:
     using Impl = std::function<void(GCPUContext &)>;
-    using Meta = cv::GKernel::M;
+    using Meta = ncvslideio::GKernel::M;
 
     GOCVFunctor(const char* id, const Meta &meta, const Impl& impl)
         : gapi::GFunctor(id), impl_{GCPUKernel(impl), meta}
@@ -515,7 +515,7 @@ private:
 template<typename K, typename Callable>
 gapi::cpu::GOCVFunctor gapi::cpu::ocv_kernel(Callable& c)
 {
-    using P = cv::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
+    using P = ncvslideio::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
     return GOCVFunctor{ K::id()
                       , &K::getOutMeta
                       , std::bind(&P::callFunctor, std::placeholders::_1, std::ref(c))
@@ -525,7 +525,7 @@ gapi::cpu::GOCVFunctor gapi::cpu::ocv_kernel(Callable& c)
 template<typename K, typename Callable>
 gapi::cpu::GOCVFunctor gapi::cpu::ocv_kernel(const Callable& c)
 {
-    using P = cv::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
+    using P = ncvslideio::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
     return GOCVFunctor{ K::id()
                       , &K::getOutMeta
                       , std::bind(&P::callFunctor, std::placeholders::_1, c)
@@ -533,7 +533,7 @@ gapi::cpu::GOCVFunctor gapi::cpu::ocv_kernel(const Callable& c)
 }
 //! @endcond
 
-} // namespace cv
+} // namespace ncvslideio
 
 #if defined _MSC_VER
 #pragma warning(pop)

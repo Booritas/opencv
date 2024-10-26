@@ -36,42 +36,42 @@
 //
 // If not, we need to introduce that!
 using GCPUModel = ade::TypedGraph
-    < cv::gimpl::CPUUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::CPUUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGCPUModel = ade::ConstTypedGraph
-    < cv::gimpl::CPUUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::CPUUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 namespace
 {
-    class GCPUBackendImpl final: public cv::gapi::GBackend::Priv
+    class GCPUBackendImpl final: public ncvslideio::gapi::GBackend::Priv
     {
         virtual void unpackKernel(ade::Graph            &graph,
                                   const ade::NodeHandle &op_node,
-                                  const cv::GKernelImpl &impl) override
+                                  const ncvslideio::GKernelImpl &impl) override
         {
             GCPUModel gm(graph);
-            auto cpu_impl = cv::util::any_cast<cv::GCPUKernel>(impl.opaque);
-            gm.metadata(op_node).set(cv::gimpl::CPUUnit{cpu_impl});
+            auto cpu_impl = ncvslideio::util::any_cast<ncvslideio::GCPUKernel>(impl.opaque);
+            gm.metadata(op_node).set(ncvslideio::gimpl::CPUUnit{cpu_impl});
         }
 
         virtual EPtr compile(const ade::Graph &graph,
-                             const cv::GCompileArgs &compileArgs,
+                             const ncvslideio::GCompileArgs &compileArgs,
                              const std::vector<ade::NodeHandle> &nodes) const override
         {
-            return EPtr{new cv::gimpl::GCPUExecutable(graph, compileArgs, nodes)};
+            return EPtr{new ncvslideio::gimpl::GCPUExecutable(graph, compileArgs, nodes)};
         }
 
-        virtual bool supportsConst(cv::GShape shape) const override
+        virtual bool supportsConst(ncvslideio::GShape shape) const override
         {
             // Supports all types of const values
-            return shape == cv::GShape::GOPAQUE
-                || shape == cv::GShape::GSCALAR
-                || shape == cv::GShape::GARRAY;
+            return shape == ncvslideio::GShape::GOPAQUE
+                || shape == ncvslideio::GShape::GSCALAR
+                || shape == ncvslideio::GShape::GARRAY;
             // yes, value-initialized GMats are not supported currently
             // as in-island data -- compiler will lift these values to the
             // GIslandModel's SLOT level (will be handled uniformly)
@@ -79,15 +79,15 @@ namespace
    };
 }
 
-cv::gapi::GBackend cv::gapi::cpu::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::cpu::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GCPUBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GCPUBackendImpl>());
     return this_backend;
 }
 
 // GCPUExecutable implementation //////////////////////////////////////////////
-cv::gimpl::GCPUExecutable::GCPUExecutable(const ade::Graph &g,
-                                          const cv::GCompileArgs &compileArgs,
+ncvslideio::gimpl::GCPUExecutable::GCPUExecutable(const ade::Graph &g,
+                                          const ncvslideio::GCompileArgs &compileArgs,
                                           const std::vector<ade::NodeHandle> &nodes)
     : m_g(g), m_gm(m_g), m_compileArgs(compileArgs)
 {
@@ -128,42 +128,42 @@ cv::gimpl::GCPUExecutable::GCPUExecutable(const ade::Graph &g,
 }
 
 // FIXME: Document what it does
-cv::GArg cv::gimpl::GCPUExecutable::packArg(const GArg &arg)
+ncvslideio::GArg ncvslideio::gimpl::GCPUExecutable::packArg(const GArg &arg)
 {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                && arg.kind != cv::detail::ArgKind::GSCALAR
-                && arg.kind != cv::detail::ArgKind::GARRAY
-                && arg.kind != cv::detail::ArgKind::GOPAQUE
-                && arg.kind != cv::detail::ArgKind::GFRAME);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+                && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE
+                && arg.kind != ncvslideio::detail::ArgKind::GFRAME);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF)
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF)
     {
         // All other cases - pass as-is, with no transformations to GArg contents.
         return arg;
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case GShape::GMAT:    return GArg(m_res.slot<cv::Mat>()   [ref.id]);
-    case GShape::GSCALAR: return GArg(m_res.slot<cv::Scalar>()[ref.id]);
+    case GShape::GMAT:    return GArg(m_res.slot<ncvslideio::Mat>()   [ref.id]);
+    case GShape::GSCALAR: return GArg(m_res.slot<ncvslideio::Scalar>()[ref.id]);
     // Note: .at() is intentional for GArray and GOpaque as objects MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case GShape::GARRAY:  return GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
-    case GShape::GOPAQUE: return GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
-    case GShape::GFRAME:  return GArg(m_res.slot<cv::MediaFrame>().at(ref.id));
+    case GShape::GARRAY:  return GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
+    case GShape::GOPAQUE: return GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
+    case GShape::GFRAME:  return GArg(m_res.slot<ncvslideio::MediaFrame>().at(ref.id));
     default:
         util::throw_error(std::logic_error("Unsupported GShape type"));
         break;
     }
 }
 
-void cv::gimpl::GCPUExecutable::setupKernelStates()
+void ncvslideio::gimpl::GCPUExecutable::setupKernelStates()
 {
     GConstGCPUModel gcm(m_g);
     for (auto& nodeToState : m_nodesToStates)
@@ -179,7 +179,7 @@ void cv::gimpl::GCPUExecutable::setupKernelStates()
     }
 }
 
-void cv::gimpl::GCPUExecutable::makeReshape() {
+void ncvslideio::gimpl::GCPUExecutable::makeReshape() {
     // Prepare the execution script
     m_script.clear();
     for (auto &nh : m_opNodes) {
@@ -190,14 +190,14 @@ void cv::gimpl::GCPUExecutable::makeReshape() {
     for (auto& nh : m_dataNodes) {
         const auto& desc = m_gm.metadata(nh).get<Data>();
         if (desc.storage == Data::Storage::INTERNAL && desc.shape == GShape::GMAT) {
-            const auto mat_desc = util::get<cv::GMatDesc>(desc.meta);
-            auto& mat = m_res.slot<cv::Mat>()[desc.rc];
+            const auto mat_desc = util::get<ncvslideio::GMatDesc>(desc.meta);
+            auto& mat = m_res.slot<ncvslideio::Mat>()[desc.rc];
             createMat(mat_desc, mat);
         }
     }
 }
 
-void cv::gimpl::GCPUExecutable::reshape(ade::Graph&, const GCompileArgs& args) {
+void ncvslideio::gimpl::GCPUExecutable::reshape(ade::Graph&, const GCompileArgs& args) {
     m_compileArgs = args;
     makeReshape();
     // TODO: Add an input meta sensitivity flag to stateful kernels.
@@ -212,14 +212,14 @@ void cv::gimpl::GCPUExecutable::reshape(ade::Graph&, const GCompileArgs& args) {
     }
 }
 
-void cv::gimpl::GCPUExecutable::handleNewStream()
+void ncvslideio::gimpl::GCPUExecutable::handleNewStream()
 {
     // In case if new video-stream happens - for each stateful kernel
     // call 'setup' user callback to re-initialize state.
     setupKernelStates();
 }
 
-void cv::gimpl::GCPUExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::GCPUExecutable::run(std::vector<InObj>  &&input_objs,
                                     std::vector<OutObj> &&output_objs)
 {
     // Update resources with run-time information - what this Island
@@ -293,9 +293,9 @@ void cv::gimpl::GCPUExecutable::run(std::vector<InObj>  &&input_objs,
 
         //As Kernels are forbidden to allocate memory for (Mat) outputs,
         //this code seems redundant, at least for Mats
-        //FIXME: unify with cv::detail::ensure_out_mats_not_reallocated
+        //FIXME: unify with ncvslideio::detail::ensure_out_mats_not_reallocated
         //FIXME: when it's done, remove can_describe(const GMetaArg&, const GRunArgP&)
-        //and descr_of(const cv::GRunArgP &argp)
+        //and descr_of(const ncvslideio::GRunArgP &argp)
         for (const auto out_it : ade::util::indexed(op_info.expected_out_metas))
         {
             const auto  out_index      = ade::util::index(out_it);

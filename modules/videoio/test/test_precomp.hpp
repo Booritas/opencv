@@ -14,12 +14,12 @@
 #include "opencv2/videoio/registry.hpp"
 #include "opencv2/core/private.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 static inline
 std::ostream& operator<<(std::ostream& out, const VideoCaptureAPIs& api)
 {
-    out << cv::videoio_registry::getBackendName(api); return out;
+    out << ncvslideio::videoio_registry::getBackendName(api); return out;
 }
 
 static inline
@@ -41,13 +41,13 @@ std::ostream& operator<<(std::ostream& out, const VideoAccelerationType& va_type
             return out;
         }
     }
-    out << cv::format("UNKNOWN(0x%ux)", static_cast<unsigned int>(va_type));
+    out << ncvslideio::format("UNKNOWN(0x%ux)", static_cast<unsigned int>(va_type));
     return out;
 }
 
-static inline void PrintTo(const cv::VideoCaptureAPIs& api, std::ostream* os)
+static inline void PrintTo(const ncvslideio::VideoCaptureAPIs& api, std::ostream* os)
 {
-    *os << cv::videoio_registry::getBackendName(api);
+    *os << ncvslideio::videoio_registry::getBackendName(api);
 }
 
 } // namespace
@@ -55,7 +55,7 @@ static inline void PrintTo(const cv::VideoCaptureAPIs& api, std::ostream* os)
 
 inline std::string fourccToString(int fourcc)
 {
-    return cv::format("%c%c%c%c", fourcc & 255, (fourcc >> 8) & 255, (fourcc >> 16) & 255, (fourcc >> 24) & 255);
+    return ncvslideio::format("%c%c%c%c", fourcc & 255, (fourcc >> 8) & 255, (fourcc >> 16) & 255, (fourcc >> 24) & 255);
 }
 
 inline std::string fourccToStringSafe(int fourcc)
@@ -69,16 +69,16 @@ inline std::string fourccToStringSafe(int fourcc)
 inline int fourccFromString(const std::string &fourcc)
 {
     if (fourcc.size() != 4) return 0;
-    return cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+    return ncvslideio::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
 }
 
-inline void generateFrame(int i, int FRAME_COUNT, cv::Mat & frame)
+inline void generateFrame(int i, int FRAME_COUNT, ncvslideio::Mat & frame)
 {
-    using namespace cv;
+    using namespace ncvslideio;
     using namespace std;
     int offset = (((i * 5) % FRAME_COUNT) - FRAME_COUNT / 2) * (frame.cols / 2) / FRAME_COUNT;
-    frame(cv::Rect(0, 0, frame.cols / 2 + offset, frame.rows)) = Scalar(255, 255, 255);
-    frame(cv::Rect(frame.cols / 2 + offset, 0, frame.cols - frame.cols / 2 - offset, frame.rows)) = Scalar(0, 0, 0);
+    frame(ncvslideio::Rect(0, 0, frame.cols / 2 + offset, frame.rows)) = Scalar(255, 255, 255);
+    frame(ncvslideio::Rect(frame.cols / 2 + offset, 0, frame.cols - frame.cols / 2 - offset, frame.rows)) = Scalar(0, 0, 0);
     ostringstream buf; buf << "Frame " << setw(2) << setfill('0') << i + 1;
     int baseLine = 0;
     Size box = getTextSize(buf.str(), FONT_HERSHEY_COMPLEX, 2, 5, &baseLine);
@@ -107,7 +107,7 @@ public:
 };
 
 
-static inline bool isBackendAvailable(cv::VideoCaptureAPIs api, const std::vector<cv::VideoCaptureAPIs>& api_list)
+static inline bool isBackendAvailable(ncvslideio::VideoCaptureAPIs api, const std::vector<ncvslideio::VideoCaptureAPIs>& api_list)
 {
     for (size_t i = 0; i < api_list.size(); i++)
     {

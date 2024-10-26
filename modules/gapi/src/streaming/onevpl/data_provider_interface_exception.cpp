@@ -13,7 +13,7 @@
 
 #include <opencv2/gapi/streaming/onevpl/data_provider_interface.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -45,4 +45,4 @@ DataProviderImplementationException::DataProviderImplementationException(const s
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

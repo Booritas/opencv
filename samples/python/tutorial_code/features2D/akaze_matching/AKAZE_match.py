@@ -11,24 +11,24 @@ parser.add_argument('--input2', help='Path to input image 2.', default='graf3.pn
 parser.add_argument('--homography', help='Path to the homography matrix.', default='H1to3p.xml')
 args = parser.parse_args()
 
-img1 = cv.imread(cv.samples.findFile(args.input1), cv.IMREAD_GRAYSCALE)
-img2 = cv.imread(cv.samples.findFile(args.input2), cv.IMREAD_GRAYSCALE)
+img1 = ncvslideio.imread(ncvslideio.samples.findFile(args.input1), ncvslideio.IMREAD_GRAYSCALE)
+img2 = ncvslideio.imread(ncvslideio.samples.findFile(args.input2), ncvslideio.IMREAD_GRAYSCALE)
 if img1 is None or img2 is None:
     print('Could not open or find the images!')
     exit(0)
 
-fs = cv.FileStorage(cv.samples.findFile(args.homography), cv.FILE_STORAGE_READ)
+fs = ncvslideio.FileStorage(ncvslideio.samples.findFile(args.homography), ncvslideio.FILE_STORAGE_READ)
 homography = fs.getFirstTopLevelNode().mat()
 ## [load]
 
 ## [AKAZE]
-akaze = cv.AKAZE_create()
+akaze = ncvslideio.AKAZE_create()
 kpts1, desc1 = akaze.detectAndCompute(img1, None)
 kpts2, desc2 = akaze.detectAndCompute(img2, None)
 ## [AKAZE]
 
 ## [2-nn matching]
-matcher = cv.DescriptorMatcher_create(cv.DescriptorMatcher_BRUTEFORCE_HAMMING)
+matcher = ncvslideio.DescriptorMatcher_create(ncvslideio.DescriptorMatcher_BRUTEFORCE_HAMMING)
 nn_matches = matcher.knnMatch(desc1, desc2, 2)
 ## [2-nn matching]
 
@@ -57,7 +57,7 @@ for i, m in enumerate(matched1):
                 pow(col[1,0] - matched2[i].pt[1], 2))
 
     if dist < inlier_threshold:
-        good_matches.append(cv.DMatch(len(inliers1), len(inliers2), 0))
+        good_matches.append(ncvslideio.DMatch(len(inliers1), len(inliers2), 0))
         inliers1.append(matched1[i])
         inliers2.append(matched2[i])
 ## [homography check]

@@ -16,7 +16,7 @@
 
 #include <ade/execution_engine/execution_engine.hpp>
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // FIXME: exported for internal tests only!
 class GAPI_EXPORTS GCompiler
@@ -26,8 +26,8 @@ class GAPI_EXPORTS GCompiler
     GCompileArgs             m_args;
     ade::ExecutionEngine     m_e;
 
-    cv::GKernelPackage       m_all_kernels;
-    cv::gapi::GNetPackage    m_all_networks;
+    ncvslideio::GKernelPackage       m_all_kernels;
+    ncvslideio::gapi::GNetPackage    m_all_networks;
 
     // Patterns built from transformations
     std::vector<std::unique_ptr<ade::Graph>> m_all_patterns;
@@ -54,12 +54,12 @@ public:
     GPtr        generateGraph();               // Unroll GComputation into a GModel
     void        runPasses(ade::Graph &g);      // Apply all G-API passes on a GModel
     void        compileIslands(ade::Graph &g); // Instantiate GIslandExecutables in GIslandModel
-    static void compileIslands(ade::Graph &g, const cv::GCompileArgs &args);
+    static void compileIslands(ade::Graph &g, const ncvslideio::GCompileArgs &args);
     GCompiled   produceCompiled(GPtr &&pg);    // Produce GCompiled from processed GModel
     GStreamingCompiled  produceStreamingCompiled(GPtr &&pg); // Produce GStreamingCompiled from processed GMbodel
-    static void runMetaPasses(ade::Graph &g, const cv::GMetaArgs &metas);
+    static void runMetaPasses(ade::Graph &g, const ncvslideio::GMetaArgs &metas);
 
-    static GPtr makeGraph(const cv::GComputation::Priv &);
+    static GPtr makeGraph(const ncvslideio::GComputation::Priv &);
 };
 
 }}

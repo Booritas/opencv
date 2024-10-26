@@ -47,7 +47,7 @@
 
 #ifdef HAVE_IMGCODEC_PXM
 
-namespace cv
+namespace ncvslideio
 {
 
 ///////////////////////// P?M reader //////////////////////////////
@@ -185,7 +185,7 @@ bool PxMDecoder::readHeader()
             result = true;
         }
     }
-    catch (const cv::Exception&)
+    catch (const ncvslideio::Exception&)
     {
         throw;
     }
@@ -360,7 +360,7 @@ bool PxMDecoder::readData( Mat& img )
             CV_Error(Error::StsError, "m_bpp is not supported");
         }
     }
-    catch (const cv::Exception&)
+    catch (const ncvslideio::Exception&)
     {
         throw;
     }

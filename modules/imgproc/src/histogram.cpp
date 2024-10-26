@@ -47,7 +47,7 @@
 
 #include "opencv2/core/utils/tls.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 ////////////////// Helper functions //////////////////////
@@ -837,7 +837,7 @@ private:
 }
 
 #ifdef HAVE_OPENVX
-namespace cv
+namespace ncvslideio
 {
     namespace ovx {
         template <> inline bool skipSmallImages<VX_KERNEL_HISTOGRAM>(int w, int h) { return w*h < 2048 * 1536; }
@@ -896,7 +896,7 @@ namespace cv
 
 #ifdef HAVE_IPP
 #define IPP_HISTOGRAM_PARALLEL 1
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_calchist(const Mat &image, Mat &hist, int histSize, const float** ranges, bool uniform, bool accumulate)
 {
@@ -904,7 +904,7 @@ static bool ipp_calchist(const Mat &image, Mat &hist, int histSize, const float*
 
 #if IPP_VERSION_X100 < 201801
     // No SSE42 optimization for uniform 32f
-    if(uniform && image.depth() == CV_32F && cv::ipp::getIppTopFeatures() == ippCPUID_SSE42)
+    if(uniform && image.depth() == CV_32F && ncvslideio::ipp::getIppTopFeatures() == ippCPUID_SSE42)
         return false;
 #endif
 
@@ -946,7 +946,7 @@ static bool ipp_calchist(const Mat &image, Mat &hist, int histSize, const float*
 }
 #endif
 
-void cv::calcHist( const Mat* images, int nimages, const int* channels,
+void ncvslideio::calcHist( const Mat* images, int nimages, const int* channels,
                    InputArray _mask, OutputArray _hist, int dims, const int* histSize,
                    const float** ranges, bool uniform, bool accumulate )
 {
@@ -1005,13 +1005,13 @@ void cv::calcHist( const Mat* images, int nimages, const int* channels,
     else if( depth == CV_32F )
         calcHist_<float>(ptrs, deltas, imsize, ihist, dims, ranges, _uniranges, uniform );
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 
     ihist.convertTo(hist, CV_32F);
 }
 
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static void
@@ -1182,7 +1182,7 @@ static void calcHist( const Mat* images, int nimages, const int* channels,
     else if( depth == CV_32F )
         calcSparseHist_<float>(ptrs, deltas, imsize, hist, dims, ranges, _uniranges, uniform );
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 
     if( !keepInt )
     {
@@ -1258,7 +1258,7 @@ static bool ocl_calcHist(InputArrayOfArrays images, OutputArray hist)
 
 }
 
-void cv::calcHist( const Mat* images, int nimages, const int* channels,
+void ncvslideio::calcHist( const Mat* images, int nimages, const int* channels,
                InputArray _mask, SparseMat& hist, int dims, const int* histSize,
                const float** ranges, bool uniform, bool accumulate )
 {
@@ -1272,7 +1272,7 @@ void cv::calcHist( const Mat* images, int nimages, const int* channels,
 }
 
 
-void cv::calcHist( InputArrayOfArrays images, const std::vector<int>& channels,
+void ncvslideio::calcHist( InputArrayOfArrays images, const std::vector<int>& channels,
                    InputArray mask, OutputArray hist,
                    const std::vector<int>& histSize,
                    const std::vector<float>& ranges,
@@ -1311,7 +1311,7 @@ void cv::calcHist( InputArrayOfArrays images, const std::vector<int>& channels,
 
 /////////////////////////////////////// B A C K   P R O J E C T ////////////////////////////////////
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T, typename BT> static void
@@ -1607,7 +1607,7 @@ calcBackProj_8u( std::vector<uchar*>& _ptrs, const std::vector<int>& _deltas,
 
 }
 
-void cv::calcBackProject( const Mat* images, int nimages, const int* channels,
+void ncvslideio::calcBackProject( const Mat* images, int nimages, const int* channels,
                           InputArray _hist, OutputArray _backProject,
                           const float** ranges, double scale, bool uniform )
 {
@@ -1637,11 +1637,11 @@ void cv::calcBackProject( const Mat* images, int nimages, const int* channels,
     else if( depth == CV_32F )
         calcBackProj_<float, float>(ptrs, deltas, imsize, hist, dims, ranges, _uniranges, (float)scale, uniform );
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 }
 
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T, typename BT> static void
@@ -1778,7 +1778,7 @@ calcSparseBackProj_8u( std::vector<uchar*>& _ptrs, const std::vector<int>& _delt
 
 }
 
-void cv::calcBackProject( const Mat* images, int nimages, const int* channels,
+void ncvslideio::calcBackProject( const Mat* images, int nimages, const int* channels,
                           const SparseMat& hist, OutputArray _backProject,
                           const float** ranges, double scale, bool uniform )
 {
@@ -1810,12 +1810,12 @@ void cv::calcBackProject( const Mat* images, int nimages, const int* channels,
         calcSparseBackProj_<float, float>(ptrs, deltas, imsize, hist, dims, ranges,
                                           _uniranges, (float)scale, uniform );
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 }
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static void getUMatIndex(const std::vector<UMat> & um, int cn, int & idx, int & cnidx)
 {
@@ -1959,7 +1959,7 @@ static bool ocl_calcBackProject( InputArrayOfArrays _images, std::vector<int> ch
 
 #endif
 
-void cv::calcBackProject( InputArrayOfArrays images, const std::vector<int>& channels,
+void ncvslideio::calcBackProject( InputArrayOfArrays images, const std::vector<int>& channels,
                           InputArray hist, OutputArray dst,
                           const std::vector<float>& ranges,
                           double scale )
@@ -2017,7 +2017,7 @@ void cv::calcBackProject( InputArrayOfArrays images, const std::vector<int>& cha
 
 ////////////////// C O M P A R E   H I S T O G R A M S ////////////////////////
 
-double cv::compareHist( InputArray _H1, InputArray _H2, int method )
+double ncvslideio::compareHist( InputArray _H1, InputArray _H2, int method )
 {
     CV_INSTRUMENT_REGION();
 
@@ -2211,7 +2211,7 @@ double cv::compareHist( InputArray _H1, InputArray _H2, int method )
             }
         }
         else
-            CV_Error( cv::Error::StsBadArg, "Unknown comparison method" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unknown comparison method" );
     }
 
     if( method == CV_COMP_CHISQR_ALT )
@@ -2235,7 +2235,7 @@ double cv::compareHist( InputArray _H1, InputArray _H2, int method )
 }
 
 
-double cv::compareHist( const SparseMat& H1, const SparseMat& H2, int method )
+double ncvslideio::compareHist( const SparseMat& H1, const SparseMat& H2, int method )
 {
     CV_INSTRUMENT_REGION();
 
@@ -2350,7 +2350,7 @@ double cv::compareHist( const SparseMat& H1, const SparseMat& H2, int method )
         }
     }
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown comparison method" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown comparison method" );
 
     if( method == CV_COMP_CHISQR_ALT )
         result *= 2;
@@ -2387,7 +2387,7 @@ cvCreateHist( int dims, int *sizes, CvHistType type, float** ranges, int uniform
     else if( type == CV_HIST_SPARSE )
         hist->bins = cvCreateSparseMat( dims, sizes, CV_HIST_DEFAULT_TYPE );
     else
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram type" );
 
     if( ranges )
         cvSetHistBinRanges( hist, ranges, uniform );
@@ -2402,10 +2402,10 @@ cvMakeHistHeaderForArray( int dims, int *sizes, CvHistogram *hist,
                           float *data, float **ranges, int uniform )
 {
     if( !hist )
-        CV_Error( cv::Error::StsNullPtr, "Null histogram header pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Null histogram header pointer" );
 
     if( !data )
-        CV_Error( cv::Error::StsNullPtr, "Null data pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Null data pointer" );
 
     hist->thresh2 = 0;
     hist->type = CV_HIST_MAGIC_VAL;
@@ -2414,7 +2414,7 @@ cvMakeHistHeaderForArray( int dims, int *sizes, CvHistogram *hist,
     if( ranges )
     {
         if( !uniform )
-            CV_Error( cv::Error::StsBadArg, "Only uniform bin ranges can be used here "
+            CV_Error( ncvslideio::Error::StsBadArg, "Only uniform bin ranges can be used here "
                                     "(to avoid memory allocation)" );
         cvSetHistBinRanges( hist, ranges, uniform );
     }
@@ -2427,14 +2427,14 @@ CV_IMPL void
 cvReleaseHist( CvHistogram **hist )
 {
     if( !hist )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     if( *hist )
     {
         CvHistogram* temp = *hist;
 
         if( !CV_IS_HIST(temp))
-            CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
         *hist = 0;
 
         if( CV_IS_SPARSE_HIST( temp ))
@@ -2455,7 +2455,7 @@ CV_IMPL void
 cvClearHist( CvHistogram *hist )
 {
     if( !CV_IS_HIST(hist) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
     cvZero( hist->bins );
 }
 
@@ -2465,13 +2465,13 @@ CV_IMPL void
 cvThreshHist( CvHistogram* hist, double thresh )
 {
     if( !CV_IS_HIST(hist) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
 
     if( !CV_IS_SPARSE_MAT(hist->bins) )
     {
         CvMat mat;
         cvGetMat( hist->bins, &mat, 0, 1 );
-        cvThreshold( &mat, &mat, thresh, 0, cv::THRESH_TOZERO );
+        cvThreshold( &mat, &mat, thresh, 0, ncvslideio::THRESH_TOZERO );
     }
     else
     {
@@ -2497,7 +2497,7 @@ cvNormalizeHist( CvHistogram* hist, double factor )
     double sum = 0;
 
     if( !CV_IS_HIST(hist) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
 
     if( !CV_IS_SPARSE_HIST(hist) )
     {
@@ -2544,7 +2544,7 @@ cvGetMinMaxHistValue( const CvHistogram* hist,
     int dims, size[CV_MAX_DIM];
 
     if( !CV_IS_HIST(hist) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
 
     dims = cvGetDims( hist->bins, size );
 
@@ -2662,29 +2662,29 @@ cvCompareHist( const CvHistogram* hist1,
     int size1[CV_MAX_DIM], size2[CV_MAX_DIM], total = 1;
 
     if( !CV_IS_HIST(hist1) || !CV_IS_HIST(hist2) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header[s]" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header[s]" );
 
     if( CV_IS_SPARSE_MAT(hist1->bins) != CV_IS_SPARSE_MAT(hist2->bins))
-        CV_Error(cv::Error::StsUnmatchedFormats, "One of histograms is sparse and other is not");
+        CV_Error(ncvslideio::Error::StsUnmatchedFormats, "One of histograms is sparse and other is not");
 
     if( !CV_IS_SPARSE_MAT(hist1->bins) )
     {
-        cv::Mat H1 = cv::cvarrToMat(hist1->bins);
-        cv::Mat H2 = cv::cvarrToMat(hist2->bins);
-        return cv::compareHist(H1, H2, method);
+        ncvslideio::Mat H1 = ncvslideio::cvarrToMat(hist1->bins);
+        ncvslideio::Mat H2 = ncvslideio::cvarrToMat(hist2->bins);
+        return ncvslideio::compareHist(H1, H2, method);
     }
 
     int dims1 = cvGetDims( hist1->bins, size1 );
     int dims2 = cvGetDims( hist2->bins, size2 );
 
     if( dims1 != dims2 )
-        CV_Error( cv::Error::StsUnmatchedSizes,
+        CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                  "The histograms have different numbers of dimensions" );
 
     for( i = 0; i < dims1; i++ )
     {
         if( size1[i] != size2[i] )
-            CV_Error( cv::Error::StsUnmatchedSizes, "The histograms have different sizes" );
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes, "The histograms have different sizes" );
         total *= size1[i];
     }
 
@@ -2798,13 +2798,13 @@ cvCompareHist( const CvHistogram* hist1,
     }
     else if( method == CV_COMP_KL_DIV )
     {
-        cv::SparseMat sH1, sH2;
+        ncvslideio::SparseMat sH1, sH2;
         ((const CvSparseMat*)hist1->bins)->copyToSparseMat(sH1);
         ((const CvSparseMat*)hist2->bins)->copyToSparseMat(sH2);
-        result = cv::compareHist( sH1, sH2, CV_COMP_KL_DIV );
+        result = ncvslideio::compareHist( sH1, sH2, CV_COMP_KL_DIV );
     }
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown comparison method" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown comparison method" );
 
     if( method == CV_COMP_CHISQR_ALT )
         result *= 2;
@@ -2817,12 +2817,12 @@ CV_IMPL void
 cvCopyHist( const CvHistogram* src, CvHistogram** _dst )
 {
     if( !_dst )
-        CV_Error( cv::Error::StsNullPtr, "Destination double pointer is NULL" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Destination double pointer is NULL" );
 
     CvHistogram* dst = *_dst;
 
     if( !CV_IS_HIST(src) || (dst && !CV_IS_HIST(dst)) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header[s]" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header[s]" );
 
     bool eq = false;
     int size1[CV_MAX_DIM];
@@ -2887,10 +2887,10 @@ cvSetHistBinRanges( CvHistogram* hist, float** ranges, int uniform )
     int i, j;
 
     if( !ranges )
-        CV_Error( cv::Error::StsNullPtr, "NULL ranges pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL ranges pointer" );
 
     if( !CV_IS_HIST(hist) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
 
     dims = cvGetDims( hist->bins, size );
     for( i = 0; i < dims; i++ )
@@ -2901,7 +2901,7 @@ cvSetHistBinRanges( CvHistogram* hist, float** ranges, int uniform )
         for( i = 0; i < dims; i++ )
         {
             if( !ranges[i] )
-                CV_Error( cv::Error::StsNullPtr, "One of <ranges> elements is NULL" );
+                CV_Error( ncvslideio::Error::StsNullPtr, "One of <ranges> elements is NULL" );
             hist->thresh[i][0] = ranges[i][0];
             hist->thresh[i][1] = ranges[i][1];
         }
@@ -2925,13 +2925,13 @@ cvSetHistBinRanges( CvHistogram* hist, float** ranges, int uniform )
             float val0 = -FLT_MAX;
 
             if( !ranges[i] )
-                CV_Error( cv::Error::StsNullPtr, "One of <ranges> elements is NULL" );
+                CV_Error( ncvslideio::Error::StsNullPtr, "One of <ranges> elements is NULL" );
 
             for( j = 0; j <= size[i]; j++ )
             {
                 float val = ranges[i][j];
                 if( val <= val0 )
-                    CV_Error(cv::Error::StsOutOfRange, "Bin ranges should go in ascenting order");
+                    CV_Error(ncvslideio::Error::StsOutOfRange, "Bin ranges should go in ascenting order");
                 val0 = dim_ranges[j] = val;
             }
 
@@ -2949,22 +2949,22 @@ CV_IMPL void
 cvCalcArrHist( CvArr** img, CvHistogram* hist, int accumulate, const CvArr* mask )
 {
     if( !CV_IS_HIST(hist))
-        CV_Error( cv::Error::StsBadArg, "Bad histogram pointer" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Bad histogram pointer" );
 
     if( !img )
-        CV_Error( cv::Error::StsNullPtr, "Null double array pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Null double array pointer" );
 
     int size[CV_MAX_DIM];
     int i, dims = cvGetDims( hist->bins, size);
     bool uniform = CV_IS_UNIFORM_HIST(hist);
 
-    std::vector<cv::Mat> images(dims);
+    std::vector<ncvslideio::Mat> images(dims);
     for( i = 0; i < dims; i++ )
-        images[i] = cv::cvarrToMat(img[i]);
+        images[i] = ncvslideio::cvarrToMat(img[i]);
 
-    cv::Mat _mask;
+    ncvslideio::Mat _mask;
     if( mask )
-        _mask = cv::cvarrToMat(mask);
+        _mask = ncvslideio::cvarrToMat(mask);
 
     const float* uranges[CV_MAX_DIM] = {0};
     const float** ranges = 0;
@@ -2982,8 +2982,8 @@ cvCalcArrHist( CvArr** img, CvHistogram* hist, int accumulate, const CvArr* mask
 
     if( !CV_IS_SPARSE_HIST(hist) )
     {
-        cv::Mat H = cv::cvarrToMat(hist->bins);
-        cv::calcHist( &images[0], (int)images.size(), 0, _mask,
+        ncvslideio::Mat H = ncvslideio::cvarrToMat(hist->bins);
+        ncvslideio::calcHist( &images[0], (int)images.size(), 0, _mask,
                       H, cvGetDims(hist->bins), H.size, ranges, uniform, accumulate != 0 );
     }
     else
@@ -2992,15 +2992,15 @@ cvCalcArrHist( CvArr** img, CvHistogram* hist, int accumulate, const CvArr* mask
 
         if( !accumulate )
             cvZero( hist->bins );
-        cv::SparseMat sH;
+        ncvslideio::SparseMat sH;
         sparsemat->copyToSparseMat(sH);
-        cv::calcHist( &images[0], (int)images.size(), 0, _mask, sH, sH.dims(),
+        ncvslideio::calcHist( &images[0], (int)images.size(), 0, _mask, sH, sH.dims(),
                       sH.dims() > 0 ? sH.hdr->size : 0, ranges, uniform, accumulate != 0, true );
 
         if( accumulate )
             cvZero( sparsemat );
 
-        cv::SparseMatConstIterator it = sH.begin();
+        ncvslideio::SparseMatConstIterator it = sH.begin();
         int nz = (int)sH.nzcount();
         for( i = 0; i < nz; i++, ++it )
         {
@@ -3015,10 +3015,10 @@ CV_IMPL void
 cvCalcArrBackProject( CvArr** img, CvArr* dst, const CvHistogram* hist )
 {
     if( !CV_IS_HIST(hist))
-        CV_Error( cv::Error::StsBadArg, "Bad histogram pointer" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Bad histogram pointer" );
 
     if( !img )
-        CV_Error( cv::Error::StsNullPtr, "Null double array pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Null double array pointer" );
 
     int size[CV_MAX_DIM];
     int i, dims = cvGetDims( hist->bins, size );
@@ -3038,25 +3038,25 @@ cvCalcArrBackProject( CvArr** img, CvArr* dst, const CvHistogram* hist )
         }
     }
 
-    std::vector<cv::Mat> images(dims);
+    std::vector<ncvslideio::Mat> images(dims);
     for( i = 0; i < dims; i++ )
-        images[i] = cv::cvarrToMat(img[i]);
+        images[i] = ncvslideio::cvarrToMat(img[i]);
 
-    cv::Mat _dst = cv::cvarrToMat(dst);
+    ncvslideio::Mat _dst = ncvslideio::cvarrToMat(dst);
 
     CV_Assert( _dst.size() == images[0].size() && _dst.depth() == images[0].depth() );
 
     if( !CV_IS_SPARSE_HIST(hist) )
     {
-        cv::Mat H = cv::cvarrToMat(hist->bins);
-        cv::calcBackProject( &images[0], (int)images.size(),
+        ncvslideio::Mat H = ncvslideio::cvarrToMat(hist->bins);
+        ncvslideio::calcBackProject( &images[0], (int)images.size(),
                             0, H, _dst, ranges, 1, uniform );
     }
     else
     {
-        cv::SparseMat sH;
+        ncvslideio::SparseMat sH;
         ((const CvSparseMat*)hist->bins)->copyToSparseMat(sH);
-        cv::calcBackProject( &images[0], (int)images.size(),
+        ncvslideio::calcBackProject( &images[0], (int)images.size(),
                              0, sH, _dst, ranges, 1, uniform );
     }
 }
@@ -3075,24 +3075,24 @@ cvCalcArrBackProjectPatch( CvArr** arr, CvArr* dst, CvSize patch_size, CvHistogr
     CvMat dststub, *dstmat;
     int i, dims;
     int x, y;
-    cv::Size size;
+    ncvslideio::Size size;
 
     if( !CV_IS_HIST(hist))
-        CV_Error( cv::Error::StsBadArg, "Bad histogram pointer" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Bad histogram pointer" );
 
     if( !arr )
-        CV_Error( cv::Error::StsNullPtr, "Null double array pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "Null double array pointer" );
 
     if( norm_factor <= 0 )
-        CV_Error( cv::Error::StsOutOfRange,
+        CV_Error( ncvslideio::Error::StsOutOfRange,
                   "Bad normalization factor (set it to 1.0 if unsure)" );
 
     if( patch_size.width <= 0 || patch_size.height <= 0 )
-        CV_Error( cv::Error::StsBadSize, "The patch width and height must be positive" );
+        CV_Error( ncvslideio::Error::StsBadSize, "The patch width and height must be positive" );
 
     dims = cvGetDims( hist->bins );
     if (dims < 1)
-        CV_Error( cv::Error::StsOutOfRange, "Invalid number of dimensions");
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Invalid number of dimensions");
     cvNormalizeHist( hist, norm_factor );
 
     for( i = 0; i < dims; i++ )
@@ -3105,11 +3105,11 @@ cvCalcArrBackProjectPatch( CvArr** arr, CvArr* dst, CvSize patch_size, CvHistogr
 
     dstmat = cvGetMat( dst, &dststub, 0, 0 );
     if( CV_MAT_TYPE( dstmat->type ) != CV_32FC1 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "Resultant image must have 32fC1 type" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "Resultant image must have 32fC1 type" );
 
     if( dstmat->cols != img[0]->width - patch_size.width + 1 ||
         dstmat->rows != img[0]->height - patch_size.height + 1 )
-        CV_Error( cv::Error::StsUnmatchedSizes,
+        CV_Error( ncvslideio::Error::StsUnmatchedSizes,
             "The output map must be (W-w+1 x H-h+1), "
             "where the input images are (W x H) each and the patch is (w x h)" );
 
@@ -3146,18 +3146,18 @@ cvCalcBayesianProb( CvHistogram** src, int count, CvHistogram** dst )
     int i;
 
     if( !src || !dst )
-        CV_Error( cv::Error::StsNullPtr, "NULL histogram array pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL histogram array pointer" );
 
     if( count < 2 )
-        CV_Error( cv::Error::StsOutOfRange, "Too small number of histograms" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Too small number of histograms" );
 
     for( i = 0; i < count; i++ )
     {
         if( !CV_IS_HIST(src[i]) || !CV_IS_HIST(dst[i]) )
-            CV_Error( cv::Error::StsBadArg, "Invalid histogram header" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram header" );
 
         if( !CV_IS_MATND(src[i]->bins) || !CV_IS_MATND(dst[i]->bins) )
-            CV_Error( cv::Error::StsBadArg, "The function supports dense histograms only" );
+            CV_Error( ncvslideio::Error::StsBadArg, "The function supports dense histograms only" );
     }
 
     cvZero( dst[0]->bins );
@@ -3178,10 +3178,10 @@ cvCalcProbDensity( const CvHistogram* hist, const CvHistogram* hist_mask,
                    CvHistogram* hist_dens, double scale )
 {
     if( scale <= 0 )
-        CV_Error( cv::Error::StsOutOfRange, "scale must be positive" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "scale must be positive" );
 
     if( !CV_IS_HIST(hist) || !CV_IS_HIST(hist_mask) || !CV_IS_HIST(hist_dens) )
-        CV_Error( cv::Error::StsBadArg, "Invalid histogram pointer[s]" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid histogram pointer[s]" );
 
     {
         CvArr* arrs[] = { hist->bins, hist_mask->bins, hist_dens->bins };
@@ -3191,7 +3191,7 @@ cvCalcProbDensity( const CvHistogram* hist, const CvHistogram* hist_mask,
         cvInitNArrayIterator( 3, arrs, 0, stubs, &iterator );
 
         if( CV_MAT_TYPE(iterator.hdr[0]->type) != CV_32FC1 )
-            CV_Error( cv::Error::StsUnsupportedFormat, "All histograms must have 32fC1 type" );
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat, "All histograms must have 32fC1 type" );
 
         do
         {
@@ -3217,16 +3217,16 @@ cvCalcProbDensity( const CvHistogram* hist, const CvHistogram* hist_mask,
     }
 }
 
-class EqualizeHistCalcHist_Invoker : public cv::ParallelLoopBody
+class EqualizeHistCalcHist_Invoker : public ncvslideio::ParallelLoopBody
 {
 public:
     enum {HIST_SZ = 256};
 
-    EqualizeHistCalcHist_Invoker(cv::Mat& src, int* histogram, cv::Mutex* histogramLock)
+    EqualizeHistCalcHist_Invoker(ncvslideio::Mat& src, int* histogram, ncvslideio::Mutex* histogramLock)
         : src_(src), globalHistogram_(histogram), histogramLock_(histogramLock)
     { }
 
-    void operator()( const cv::Range& rowRange ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& rowRange ) const CV_OVERRIDE
     {
         int localHistogram[HIST_SZ] = {0, };
 
@@ -3256,13 +3256,13 @@ public:
                 localHistogram[ptr[x]]++;
         }
 
-        cv::AutoLock lock(*histogramLock_);
+        ncvslideio::AutoLock lock(*histogramLock_);
 
         for( int i = 0; i < HIST_SZ; i++ )
             globalHistogram_[i] += localHistogram[i];
     }
 
-    static bool isWorthParallel( const cv::Mat& src )
+    static bool isWorthParallel( const ncvslideio::Mat& src )
     {
         return ( src.total() >= 640*480 );
     }
@@ -3270,21 +3270,21 @@ public:
 private:
     EqualizeHistCalcHist_Invoker& operator=(const EqualizeHistCalcHist_Invoker&);
 
-    cv::Mat& src_;
+    ncvslideio::Mat& src_;
     int* globalHistogram_;
-    cv::Mutex* histogramLock_;
+    ncvslideio::Mutex* histogramLock_;
 };
 
-class EqualizeHistLut_Invoker : public cv::ParallelLoopBody
+class EqualizeHistLut_Invoker : public ncvslideio::ParallelLoopBody
 {
 public:
-    EqualizeHistLut_Invoker( cv::Mat& src, cv::Mat& dst, int* lut )
+    EqualizeHistLut_Invoker( ncvslideio::Mat& src, ncvslideio::Mat& dst, int* lut )
         : src_(src),
           dst_(dst),
           lut_(lut)
     { }
 
-    void operator()( const cv::Range& rowRange ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& rowRange ) const CV_OVERRIDE
     {
         const size_t sstep = src_.step;
         const size_t dstep = dst_.step;
@@ -3327,7 +3327,7 @@ public:
         }
     }
 
-    static bool isWorthParallel( const cv::Mat& src )
+    static bool isWorthParallel( const ncvslideio::Mat& src )
     {
         return ( src.total() >= 640*480 );
     }
@@ -3335,19 +3335,19 @@ public:
 private:
     EqualizeHistLut_Invoker& operator=(const EqualizeHistLut_Invoker&);
 
-    cv::Mat& src_;
-    cv::Mat& dst_;
+    ncvslideio::Mat& src_;
+    ncvslideio::Mat& dst_;
     int* lut_;
 };
 
 CV_IMPL void cvEqualizeHist( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::equalizeHist(cv::cvarrToMat(srcarr), cv::cvarrToMat(dstarr));
+    ncvslideio::equalizeHist(ncvslideio::cvarrToMat(srcarr), ncvslideio::cvarrToMat(dstarr));
 }
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 static bool ocl_equalizeHist(InputArray _src, OutputArray _dst)
 {
@@ -3397,7 +3397,7 @@ static bool ocl_equalizeHist(InputArray _src, OutputArray _dst)
 #endif
 
 #ifdef HAVE_OPENVX
-namespace cv
+namespace ncvslideio
 {
 static bool openvx_equalize_hist(Mat srcMat, Mat dstMat)
 {
@@ -3433,7 +3433,7 @@ static bool openvx_equalize_hist(Mat srcMat, Mat dstMat)
 }
 #endif
 
-void cv::equalizeHist( InputArray _src, OutputArray _dst )
+void ncvslideio::equalizeHist( InputArray _src, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 
@@ -3462,7 +3462,7 @@ void cv::equalizeHist( InputArray _src, OutputArray _dst )
 
     EqualizeHistCalcHist_Invoker calcBody(src, hist, &histogramLockInstance);
     EqualizeHistLut_Invoker      lutBody(src, dst, lut);
-    cv::Range heightRange(0, src.rows);
+    ncvslideio::Range heightRange(0, src.rows);
 
     if(EqualizeHistCalcHist_Invoker::isWorthParallel(src))
         parallel_for_(heightRange, calcBody);
@@ -3535,7 +3535,7 @@ static void *icvReadHist( CvFileStorage * fs, CvFileNode * node )
         int i, sizes[CV_MAX_DIM];
 
         if(!CV_IS_MATND(mat))
-            CV_Error( cv::Error::StsError, "Expected CvMatND");
+            CV_Error( ncvslideio::Error::StsError, "Expected CvMatND");
 
         for(i=0; i<mat->dims; i++)
             sizes[i] = mat->dim[i].size;
@@ -3556,7 +3556,7 @@ static void *icvReadHist( CvFileStorage * fs, CvFileNode * node )
     {
         h->bins = cvReadByName( fs, node, "bins" );
         if(!CV_IS_SPARSE_MAT(h->bins)){
-            CV_Error( cv::Error::StsError, "Unknown Histogram type");
+            CV_Error( ncvslideio::Error::StsError, "Unknown Histogram type");
         }
     }
 
@@ -3573,7 +3573,7 @@ static void *icvReadHist( CvFileStorage * fs, CvFileNode * node )
 
         thresh_node = cvGetFileNodeByName( fs, node, "thresh" );
         if(!thresh_node)
-            CV_Error( cv::Error::StsError, "'thresh' node is missing");
+            CV_Error( ncvslideio::Error::StsError, "'thresh' node is missing");
         cvStartReadRawData( fs, thresh_node, &reader );
 
         if(is_uniform)

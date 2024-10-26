@@ -12,7 +12,7 @@
 # include "opencv2/dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 class SuperScale
@@ -31,11 +31,11 @@ private:
     dnn::Net srnet_;
     bool net_loaded_ = false;
 
-    int superResolutionScale(const cv::Mat &src, cv::Mat &dst);
+    int superResolutionScale(const ncvslideio::Mat &src, ncvslideio::Mat &dst);
 #endif
 };
 
 } // namespace barcode
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_BARCODE_SUPER_SCALE_HPP

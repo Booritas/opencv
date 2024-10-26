@@ -102,29 +102,29 @@ INSTANTIATE_TEST_CASE_P(ExifFiles, Imgcodecs_Jpeg_Exif,
 
 TEST(Imgcodecs_Jpeg, encode_empty)
 {
-    cv::Mat img;
+    ncvslideio::Mat img;
     std::vector<uchar> jpegImg;
-    ASSERT_THROW(cv::imencode(".jpg", img, jpegImg), cv::Exception);
+    ASSERT_THROW(ncvslideio::imencode(".jpg", img, jpegImg), ncvslideio::Exception);
 }
 
 TEST(Imgcodecs_Jpeg, encode_decode_progressive_jpeg)
 {
     cvtest::TS& ts = *cvtest::TS::ptr();
-    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(input);
+    string input = string(ts.get_data_path()) + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(input);
     ASSERT_FALSE(img.empty());
 
     std::vector<int> params;
     params.push_back(IMWRITE_JPEG_PROGRESSIVE);
     params.push_back(1);
 
-    string output_progressive = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_progressive, img, params));
-    cv::Mat img_jpg_progressive = cv::imread(output_progressive);
+    string output_progressive = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_progressive, img, params));
+    ncvslideio::Mat img_jpg_progressive = ncvslideio::imread(output_progressive);
 
-    string output_normal = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_normal, img));
-    cv::Mat img_jpg_normal = cv::imread(output_normal);
+    string output_normal = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_normal, img));
+    ncvslideio::Mat img_jpg_normal = ncvslideio::imread(output_normal);
 
     EXPECT_EQ(0, cvtest::norm(img_jpg_progressive, img_jpg_normal, NORM_INF));
 
@@ -135,21 +135,21 @@ TEST(Imgcodecs_Jpeg, encode_decode_progressive_jpeg)
 TEST(Imgcodecs_Jpeg, encode_decode_optimize_jpeg)
 {
     cvtest::TS& ts = *cvtest::TS::ptr();
-    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(input);
+    string input = string(ts.get_data_path()) + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(input);
     ASSERT_FALSE(img.empty());
 
     std::vector<int> params;
     params.push_back(IMWRITE_JPEG_OPTIMIZE);
     params.push_back(1);
 
-    string output_optimized = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_optimized, img, params));
-    cv::Mat img_jpg_optimized = cv::imread(output_optimized);
+    string output_optimized = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_optimized, img, params));
+    ncvslideio::Mat img_jpg_optimized = ncvslideio::imread(output_optimized);
 
-    string output_normal = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_normal, img));
-    cv::Mat img_jpg_normal = cv::imread(output_normal);
+    string output_normal = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_normal, img));
+    ncvslideio::Mat img_jpg_normal = ncvslideio::imread(output_normal);
 
     EXPECT_EQ(0, cvtest::norm(img_jpg_optimized, img_jpg_normal, NORM_INF));
 
@@ -160,21 +160,21 @@ TEST(Imgcodecs_Jpeg, encode_decode_optimize_jpeg)
 TEST(Imgcodecs_Jpeg, encode_decode_rst_jpeg)
 {
     cvtest::TS& ts = *cvtest::TS::ptr();
-    string input = string(ts.get_data_path()) + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(input);
+    string input = string(ts.get_data_path()) + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(input);
     ASSERT_FALSE(img.empty());
 
     std::vector<int> params;
     params.push_back(IMWRITE_JPEG_RST_INTERVAL);
     params.push_back(1);
 
-    string output_rst = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_rst, img, params));
-    cv::Mat img_jpg_rst = cv::imread(output_rst);
+    string output_rst = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_rst, img, params));
+    ncvslideio::Mat img_jpg_rst = ncvslideio::imread(output_rst);
 
-    string output_normal = cv::tempfile(".jpg");
-    EXPECT_NO_THROW(cv::imwrite(output_normal, img));
-    cv::Mat img_jpg_normal = cv::imread(output_normal);
+    string output_normal = ncvslideio::tempfile(".jpg");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output_normal, img));
+    ncvslideio::Mat img_jpg_normal = ncvslideio::imread(output_normal);
 
     EXPECT_EQ(0, cvtest::norm(img_jpg_rst, img_jpg_normal, NORM_INF));
 
@@ -198,11 +198,11 @@ TEST_P(Imgcodecs_Jpeg_decode_cmyk, regression25274)
     cvtest::TS& ts = *cvtest::TS::ptr();
 
     string  rgb_filename  = string(ts.get_data_path()) + "readwrite/test_1_c3.jpg";
-    cv::Mat rgb_img       = cv::imread(rgb_filename, imread_flag);
+    ncvslideio::Mat rgb_img       = ncvslideio::imread(rgb_filename, imread_flag);
     ASSERT_FALSE(rgb_img.empty());
 
     string  cmyk_filename = string(ts.get_data_path()) + "readwrite/test_1_c4.jpg";
-    cv::Mat cmyk_img      = cv::imread(cmyk_filename, imread_flag);
+    ncvslideio::Mat cmyk_img      = ncvslideio::imread(cmyk_filename, imread_flag);
     ASSERT_FALSE(cmyk_img.empty());
 
     EXPECT_EQ(rgb_img.size(), cmyk_img.size());
@@ -216,10 +216,10 @@ TEST_P(Imgcodecs_Jpeg_decode_cmyk, regression25274)
 
 INSTANTIATE_TEST_CASE_P( /* nothing */,
                         Imgcodecs_Jpeg_decode_cmyk,
-                        testing::Values(cv::IMREAD_COLOR,
-                                        cv::IMREAD_COLOR_RGB,
-                                        cv::IMREAD_GRAYSCALE,
-                                        cv::IMREAD_ANYCOLOR));
+                        testing::Values(ncvslideio::IMREAD_COLOR,
+                                        ncvslideio::IMREAD_COLOR_RGB,
+                                        ncvslideio::IMREAD_GRAYSCALE,
+                                        ncvslideio::IMREAD_ANYCOLOR));
 
 //==================================================================================================
 
@@ -229,7 +229,7 @@ static uint32_t test_jpeg_subsampling( const Mat src, const vector<int> param )
 {
     vector<uint8_t> jpeg;
 
-    if ( cv::imencode(".jpg", src, jpeg, param ) == false )
+    if ( ncvslideio::imencode(".jpg", src, jpeg, param ) == false )
     {
         return 0;
     }
@@ -264,13 +264,13 @@ static uint32_t test_jpeg_subsampling( const Mat src, const vector<int> param )
 TEST(Imgcodecs_Jpeg, encode_subsamplingfactor_default)
 {
     vector<int> param;
-    Mat src( 48, 64, CV_8UC3, cv::Scalar::all(0) );
+    Mat src( 48, 64, CV_8UC3, ncvslideio::Scalar::all(0) );
     EXPECT_EQ( default_sampling_factor, test_jpeg_subsampling(src, param) );
 }
 
 TEST(Imgcodecs_Jpeg, encode_subsamplingfactor_usersetting_valid)
 {
-    Mat src( 48, 64, CV_8UC3, cv::Scalar::all(0) );
+    Mat src( 48, 64, CV_8UC3, ncvslideio::Scalar::all(0) );
     const uint32_t sampling_factor_list[] = {
         IMWRITE_JPEG_SAMPLING_FACTOR_411,
         IMWRITE_JPEG_SAMPLING_FACTOR_420,
@@ -291,7 +291,7 @@ TEST(Imgcodecs_Jpeg, encode_subsamplingfactor_usersetting_valid)
 
 TEST(Imgcodecs_Jpeg, encode_subsamplingfactor_usersetting_invalid)
 {
-    Mat src( 48, 64, CV_8UC3, cv::Scalar::all(0) );
+    Mat src( 48, 64, CV_8UC3, ncvslideio::Scalar::all(0) );
     const uint32_t sampling_factor_list[] = { // Invalid list
         0x111112,
         0x000000,
@@ -323,20 +323,20 @@ TEST_P(Imgcodecs_Jpeg_encode_withLumaChromaQuality, basic)
     const int chroma = get<1>(GetParam());
 
     cvtest::TS& ts = *cvtest::TS::ptr();
-    string fname = string(ts.get_data_path()) + "../cv/shared/lena.png";
+    string fname = string(ts.get_data_path()) + "../ncvslideio/shared/lena.png";
 
-    cv::Mat src = imread(fname, cv::IMREAD_COLOR);
+    ncvslideio::Mat src = imread(fname, ncvslideio::IMREAD_COLOR);
     ASSERT_FALSE(src.empty());
 
     // Add imread RGB test
-    cv::Mat src_rgb = imread(fname, cv::IMREAD_COLOR_RGB);
+    ncvslideio::Mat src_rgb = imread(fname, ncvslideio::IMREAD_COLOR_RGB);
     ASSERT_FALSE(src_rgb.empty());
 
     cvtColor(src_rgb, src_rgb, COLOR_RGB2BGR);
     EXPECT_TRUE(cvtest::norm(src, src_rgb, NORM_INF) == 0);
 
     std::vector<uint8_t> jpegNormal;
-    ASSERT_NO_THROW(cv::imencode(".jpg", src, jpegNormal));
+    ASSERT_NO_THROW(ncvslideio::imencode(".jpg", src, jpegNormal));
 
     std::vector<int> param;
     param.push_back(IMWRITE_JPEG_LUMA_QUALITY);
@@ -345,7 +345,7 @@ TEST_P(Imgcodecs_Jpeg_encode_withLumaChromaQuality, basic)
     param.push_back(chroma);
 
     std::vector<uint8_t> jpegCustom;
-    ASSERT_NO_THROW(cv::imencode(".jpg", src, jpegCustom, param));
+    ASSERT_NO_THROW(ncvslideio::imencode(".jpg", src, jpegCustom, param));
 
 #if JPEG_LIB_VERSION >= 70
     // For jpeg7+, we can support IMWRITE_JPEG_LUMA_QUALITY and IMWRITE_JPEG_CHROMA_QUALITY.

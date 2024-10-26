@@ -44,7 +44,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 
 #include <iostream>
-namespace cv
+namespace ncvslideio
 {
 
 /* NOTE:

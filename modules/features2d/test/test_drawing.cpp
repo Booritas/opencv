@@ -39,7 +39,7 @@ TEST_P(Features2D_drawKeypoints, Accuracy)
     ASSERT_EQ(outImg.channels(), (cn == 4) ? 4 : 3);
 
     Mat ref_ = getReference_DrawKeypoint(cn);
-    EXPECT_EQ(0, cv::norm(outImg, ref_, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(outImg, ref_, NORM_INF));
 }
 INSTANTIATE_TEST_CASE_P(/**/, Features2D_drawKeypoints, Values(CV_8UC1, CV_8UC3, CV_8UC4));
 
@@ -68,7 +68,7 @@ TEST_P(Features2D_drawMatches, Accuracy)
                 Scalar::all(255), Scalar::all(255));
     ASSERT_EQ(outImg.channels(), cn);
 
-    EXPECT_EQ(0, cv::norm(outImg, concattedRef, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(outImg, concattedRef, NORM_INF));
 }
 INSTANTIATE_TEST_CASE_P(/**/, Features2D_drawMatches, Combine(
     Values(CV_8UC1, CV_8UC3, CV_8UC4),

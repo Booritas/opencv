@@ -18,7 +18,7 @@
 #include <opencv2/gapi/streaming/onevpl/cfg_params.hpp>
 
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -86,6 +86,6 @@ std::string ext_mem_frame_type_to_cstr(int type);
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ONEVPL_UTILS_HPP

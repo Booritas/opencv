@@ -8,7 +8,7 @@
 #include "test_precomp.hpp"
 #include "npy_blob.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static std::string getType(const std::string& header)
@@ -91,4 +91,4 @@ Mat blobFromNPY(const std::string& path)
     return blob;
 }
 
-}  // namespace cv
+}  // namespace ncvslideio

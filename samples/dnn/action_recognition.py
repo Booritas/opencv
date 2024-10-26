@@ -45,14 +45,14 @@ def classify_video(video_path, net_path):
     mean = (114.7748, 107.7354, 99.4750)
     class_names = get_class_names(args.classes)
 
-    net = cv.dnn.readNet(net_path)
-    net.setPreferableBackend(cv.dnn.DNN_BACKEND_INFERENCE_ENGINE)
-    net.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
+    net = ncvslideio.dnn.readNet(net_path)
+    net.setPreferableBackend(ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE)
+    net.setPreferableTarget(ncvslideio.dnn.DNN_TARGET_CPU)
 
     winName = 'Deep learning image classification in OpenCV'
-    cv.namedWindow(winName, cv.WINDOW_AUTOSIZE)
-    cap = cv.VideoCapture(video_path)
-    while cv.waitKey(1) < 0:
+    ncvslideio.namedWindow(winName, ncvslideio.WINDOW_AUTOSIZE)
+    cap = ncvslideio.VideoCapture(video_path)
+    while ncvslideio.waitKey(1) < 0:
         frames = []
         for _ in range(SAMPLE_DURATION):
             hasFrame, frame = cap.read()
@@ -60,7 +60,7 @@ def classify_video(video_path, net_path):
                 exit(0)
             frames.append(frame)
 
-        inputs = cv.dnn.blobFromImages(frames, 1, (SAMPLE_SIZE, SAMPLE_SIZE), mean, True, crop=True)
+        inputs = ncvslideio.dnn.blobFromImages(frames, 1, (SAMPLE_SIZE, SAMPLE_SIZE), mean, True, crop=True)
         inputs = np.transpose(inputs, (1, 0, 2, 3))
         inputs = np.expand_dims(inputs, axis=0)
         net.setInput(inputs)
@@ -69,12 +69,12 @@ def classify_video(video_path, net_path):
         label = class_names[class_pred]
 
         for frame in frames:
-            labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            cv.rectangle(frame, (0, 10 - labelSize[1]),
-                                (labelSize[0], 10 + baseLine), (255, 255, 255), cv.FILLED)
-            cv.putText(frame, label, (0, 10), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-            cv.imshow(winName, frame)
-        if cv.waitKey(1) & 0xFF == ord('q'):
+            labelSize, baseLine = ncvslideio.getTextSize(label, ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            ncvslideio.rectangle(frame, (0, 10 - labelSize[1]),
+                                (labelSize[0], 10 + baseLine), (255, 255, 255), ncvslideio.FILLED)
+            ncvslideio.putText(frame, label, (0, 10), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+            ncvslideio.imshow(winName, frame)
+        if ncvslideio.waitKey(1) & 0xFF == ord('q'):
             break
 
 if __name__ == "__main__":

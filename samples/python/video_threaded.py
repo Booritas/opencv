@@ -48,11 +48,11 @@ def main():
 
     def process_frame(frame, t0):
         # some intensive computation...
-        frame = cv.medianBlur(frame, 19)
-        frame = cv.medianBlur(frame, 19)
+        frame = ncvslideio.medianBlur(frame, 19)
+        frame = ncvslideio.medianBlur(frame, 19)
         return frame, t0
 
-    threadn = cv.getNumberOfCPUs()
+    threadn = ncvslideio.getNumberOfCPUs()
     pool = ThreadPool(processes = threadn)
     pending = deque()
 
@@ -68,7 +68,7 @@ def main():
             draw_str(res, (20, 20), "threaded      :  " + str(threaded_mode))
             draw_str(res, (20, 40), "latency        :  %.1f ms" % (latency.value*1000))
             draw_str(res, (20, 60), "frame interval :  %.1f ms" % (frame_interval.value*1000))
-            cv.imshow('threaded video', res)
+            ncvslideio.imshow('threaded video', res)
         if len(pending) < threadn:
             _ret, frame = cap.read()
             t = clock()
@@ -79,7 +79,7 @@ def main():
             else:
                 task = DummyTask(process_frame(frame, t))
             pending.append(task)
-        ch = cv.waitKey(1)
+        ch = ncvslideio.waitKey(1)
         if ch == ord(' '):
             threaded_mode = not threaded_mode
         if ch == 27:
@@ -91,4 +91,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

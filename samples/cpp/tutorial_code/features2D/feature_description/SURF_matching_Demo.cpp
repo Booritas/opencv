@@ -5,8 +5,8 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
-using namespace cv;
-using namespace cv::xfeatures2d;
+using namespace ncvslideio;
+using namespace ncvslideio::xfeatures2d;
 using std::cout;
 using std::endl;
 

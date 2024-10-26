@@ -32,7 +32,7 @@
 #include "../op_timvx.hpp"
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 struct DepthSpaceOps {
     MatShape internal_shape;
@@ -61,7 +61,7 @@ struct DepthSpaceOps {
     void cpuCompute(const Mat &input, Mat &output) {
         const auto output_shape = shape(output);
         Mat tmp;
-        cv::transposeND(input.reshape(1, internal_shape), permutation, tmp);
+        ncvslideio::transposeND(input.reshape(1, internal_shape), permutation, tmp);
         tmp.reshape(1, output_shape).copyTo(output);
     }
 
@@ -91,7 +91,7 @@ struct DepthSpaceOps {
         UMat tmp = inputs.front().reshape(1, static_cast<int>(internal_shape.size()), internal_shape.data());
 
         bool use_half = (inputs_arr.depth() == CV_16F);
-        std::string permute_options = cv::format("-DDtype=%s", use_half ? "half" : "float");
+        std::string permute_options = ncvslideio::format("-DDtype=%s", use_half ? "half" : "float");
         ocl::Kernel permute_kernel("permute", ocl::dnn::permute_oclsrc, permute_options);
         if (permute_kernel.empty()) {
             return false;
@@ -131,7 +131,7 @@ public:
             is_crd = false;
             permutation = {0, 3, 4, 1, 5, 2};
         } else {
-            CV_Error(Error::StsBadArg, cv::format("DepthToSpace: unsupported mode %s\n", mode.c_str()));
+            CV_Error(Error::StsBadArg, ncvslideio::format("DepthToSpace: unsupported mode %s\n", mode.c_str()));
         }
     }
 
@@ -217,7 +217,7 @@ public:
     Ptr<BackendNode> initCUDA(void *context_,
                               const std::vector<Ptr<BackendWrapper>>& inputs,
                               const std::vector<Ptr<BackendWrapper>>& outputs) override {
-        using namespace cv::dnn::cuda4dnn;
+        using namespace ncvslideio::dnn::cuda4dnn;
         auto context = reinterpret_cast<csl::CSLContext*>(context_);
         std::vector<size_t> perm(permutation.begin(), permutation.end());
         return make_cuda_node<cuda4dnn::DepthSpaceOps>(preferableTarget, std::move(context->stream), internal_shape, perm);
@@ -399,7 +399,7 @@ public:
     Ptr<BackendNode> initCUDA(void *context_,
                               const std::vector<Ptr<BackendWrapper>> &inputs,
                               const std::vector<Ptr<BackendWrapper>> &outputs) override {
-        using namespace cv::dnn::cuda4dnn;
+        using namespace ncvslideio::dnn::cuda4dnn;
         auto context = reinterpret_cast<csl::CSLContext*>(context_);
         std::vector<size_t> perm(permutation.begin(), permutation.end());
         return make_cuda_node<cuda4dnn::DepthSpaceOps>(preferableTarget, std::move(context->stream), internal_shape, perm);
@@ -489,4 +489,4 @@ Ptr<SpaceToDepthLayer> SpaceToDepthLayer::create(const LayerParams &params) {
     return makePtr<SpaceToDepthLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

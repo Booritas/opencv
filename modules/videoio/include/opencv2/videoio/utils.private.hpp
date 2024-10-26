@@ -8,7 +8,7 @@
 #include "opencv2/core/cvdef.h"
 #include <string>
 
-namespace cv {
+namespace ncvslideio {
 CV_EXPORTS std::string icvExtractPattern(const std::string& filename, unsigned *offset);
 }
 

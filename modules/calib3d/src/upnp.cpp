@@ -52,7 +52,7 @@
 #if 0  // fix buffer overflow first (FIXIT mark in .cpp file)
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 upnp::upnp(const Mat& cameraMatrix, const Mat& opoints, const Mat& ipoints)
 {

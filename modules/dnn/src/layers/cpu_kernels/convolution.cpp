@@ -16,7 +16,7 @@
 #include "layers/cpu_kernels/conv_block.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 enum { VEC_ALIGN = 32}; // Memory alignment.
 
 void convBlock_F32(int np, const float* a, const float* b, float* c, int ldc, bool init_c, const int outLen,
@@ -444,7 +444,7 @@ Ptr<FastConv> initFastConv(
         }
     }
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "Unknown convolution type.");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Unknown convolution type.");
 
     // store bias; append some zero's to make sure that
     // we can always read MR elements starting from any valid index
@@ -2108,4 +2108,4 @@ void convBlock_F32(int np, const float* a, const float* b, float* c, int ldc, bo
 #endif
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

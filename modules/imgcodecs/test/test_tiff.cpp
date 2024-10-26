@@ -18,21 +18,21 @@ TEST(Imgcodecs_Tiff, decode_tile16384x16384)
 #endif
 {
     // see issue #2161
-    cv::Mat big(16384, 16384, CV_8UC1, cv::Scalar::all(0));
-    string file3 = cv::tempfile(".tiff");
-    string file4 = cv::tempfile(".tiff");
+    ncvslideio::Mat big(16384, 16384, CV_8UC1, ncvslideio::Scalar::all(0));
+    string file3 = ncvslideio::tempfile(".tiff");
+    string file4 = ncvslideio::tempfile(".tiff");
 
     std::vector<int> params;
     params.push_back(IMWRITE_TIFF_ROWSPERSTRIP);
     params.push_back(big.rows);
-    EXPECT_NO_THROW(cv::imwrite(file4, big, params));
-    EXPECT_NO_THROW(cv::imwrite(file3, big.colRange(0, big.cols - 1), params));
+    EXPECT_NO_THROW(ncvslideio::imwrite(file4, big, params));
+    EXPECT_NO_THROW(ncvslideio::imwrite(file3, big.colRange(0, big.cols - 1), params));
     big.release();
 
     try
     {
-        cv::imread(file3, IMREAD_UNCHANGED);
-        EXPECT_NO_THROW(cv::imread(file4, IMREAD_UNCHANGED));
+        ncvslideio::imread(file3, IMREAD_UNCHANGED);
+        EXPECT_NO_THROW(ncvslideio::imread(file4, IMREAD_UNCHANGED));
     }
     catch(const std::bad_alloc&)
     {
@@ -80,7 +80,7 @@ TEST_P(Imgcodecs_Tiff_decode_Huge, regression)
     const int imread_mode        = get<2>(GetParam());
 
     // Detect data file
-    const string req_filename = cv::format("readwrite/huge-tiff/%s_%zu.tif", mat_type_string.c_str(), (size_t)buffer_size);
+    const string req_filename = ncvslideio::format("readwrite/huge-tiff/%s_%zu.tif", mat_type_string.c_str(), (size_t)buffer_size);
     const string filename = findDataFile( req_filename );
 
     // Preparation process for test
@@ -98,7 +98,7 @@ TEST_P(Imgcodecs_Tiff_decode_Huge, regression)
         uint64_t pixels = (uint64_t) width * height;
         if ( pixels > CV_IO_MAX_IMAGE_PIXELS )
         {
-            throw SkipTestException( cv::format("Test is skipped( pixels(%zu) > CV_IO_MAX_IMAGE_PIXELS(%zu) )",
+            throw SkipTestException( ncvslideio::format("Test is skipped( pixels(%zu) > CV_IO_MAX_IMAGE_PIXELS(%zu) )",
                 (size_t)pixels, CV_IO_MAX_IMAGE_PIXELS) );
         }
 
@@ -175,7 +175,7 @@ TEST_P(Imgcodecs_Tiff_decode_Huge, regression)
             memory_usage_work;   // Work memory in imgcodecs
 
         // Output memory usage log.
-        CV_LOG_DEBUG(NULL, cv::format("OpenCV TIFF-test: memory usage info : mat(%zu), libtiff(%zu), work(%zu) -> total(%zu)",
+        CV_LOG_DEBUG(NULL, ncvslideio::format("OpenCV TIFF-test: memory usage info : mat(%zu), libtiff(%zu), work(%zu) -> total(%zu)",
                      (size_t)memory_usage_cvmat, (size_t)memory_usage_tiff, (size_t)memory_usage_work, (size_t)memory_usage_total) );
 
         // Add test tags.
@@ -207,8 +207,8 @@ TEST_P(Imgcodecs_Tiff_decode_Huge, regression)
 
     // TEST Main
 
-    cv::Mat img;
-    ASSERT_NO_THROW( img = cv::imread(filename, imread_mode) );
+    ncvslideio::Mat img;
+    ASSERT_NO_THROW( img = ncvslideio::imread(filename, imread_mode) );
     ASSERT_FALSE(img.empty());
 
     /**
@@ -402,7 +402,7 @@ TEST_P(Imgcodecs_Tiff_decode_Huge, regression)
     case MAKE_FLAG(CV_16UC1, CV_16UC4):
     case MAKE_FLAG(CV_16UC3, CV_16UC4):
     default:
-        FAIL() << cv::format("Unknown test pattern: from = %d ( %d, %d) to = %d ( %d, %d )",
+        FAIL() << ncvslideio::format("Unknown test pattern: from = %d ( %d, %d) to = %d ( %d, %d )",
                               mat_type,   (int)CV_MAT_CN(mat_type   ), ( CV_MAT_DEPTH(mat_type   )==CV_16U)?16:8,
                               img.type(), (int)CV_MAT_CN(img.type() ), ( CV_MAT_DEPTH(img.type() )==CV_16U)?16:8);
         break;
@@ -494,7 +494,7 @@ TEST(Imgcodecs_Tiff, write_read_16bit_big_little_endian)
     // Test imread() for both a little endian TIFF and big endian TIFF
     for (int i = 0; i < 2; i++)
     {
-        string filename = cv::tempfile(".tiff");
+        string filename = ncvslideio::tempfile(".tiff");
 
         // Write sample TIFF file
         FILE* fp = fopen(filename.c_str(), "wb");
@@ -526,13 +526,13 @@ TEST(Imgcodecs_Tiff, decode_tile_remainder)
      * so the test converts back but rounding errors cause small differences.
      */
     const string root = cvtest::TS::ptr()->get_data_path();
-    cv::Mat img = imread(root + "readwrite/non_tiled.tif",-1);
+    ncvslideio::Mat img = imread(root + "readwrite/non_tiled.tif",-1);
     ASSERT_FALSE(img.empty());
     ASSERT_TRUE(img.channels() == 3);
-    cv::Mat tiled8 = imread(root + "readwrite/tiled_8.tif", -1);
+    ncvslideio::Mat tiled8 = imread(root + "readwrite/tiled_8.tif", -1);
     ASSERT_FALSE(tiled8.empty());
     ASSERT_PRED_FORMAT2(cvtest::MatComparator(0, 0), img, tiled8);
-    cv::Mat tiled16 = imread(root + "readwrite/tiled_16.tif", -1);
+    ncvslideio::Mat tiled16 = imread(root + "readwrite/tiled_16.tif", -1);
     ASSERT_FALSE(tiled16.empty());
     ASSERT_TRUE(tiled16.elemSize() == 6);
     tiled16.convertTo(tiled8, CV_8UC3, 1./256.);
@@ -547,106 +547,106 @@ TEST(Imgcodecs_Tiff, decode_10_12_14)
     const string root = cvtest::TS::ptr()->get_data_path();
 
     const double maxDiff = 256;//samples do not have the exact same values because of the tool that created them
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     double diff = 0;
 
-    cv::Mat img8UC1 = imread(root + "readwrite/pattern_8uc1.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img8UC1 = imread(root + "readwrite/pattern_8uc1.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img8UC1.empty());
     ASSERT_EQ(img8UC1.type(), CV_8UC1);
 
-    cv::Mat img8UC3 = imread(root + "readwrite/pattern_8uc3.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img8UC3 = imread(root + "readwrite/pattern_8uc3.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img8UC3.empty());
     ASSERT_EQ(img8UC3.type(), CV_8UC3);
 
-    cv::Mat img8UC4 = imread(root + "readwrite/pattern_8uc4.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img8UC4 = imread(root + "readwrite/pattern_8uc4.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img8UC4.empty());
     ASSERT_EQ(img8UC4.type(), CV_8UC4);
 
-    cv::Mat img16UC1 = imread(root + "readwrite/pattern_16uc1.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img16UC1 = imread(root + "readwrite/pattern_16uc1.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img16UC1.empty());
     ASSERT_EQ(img16UC1.type(), CV_16UC1);
     ASSERT_EQ(img8UC1.size(), img16UC1.size());
     img8UC1.convertTo(tmp, img16UC1.type(), (1U<<(16-8)));
-    diff = cv::norm(tmp.reshape(1), img16UC1.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(tmp.reshape(1), img16UC1.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img16UC3 = imread(root + "readwrite/pattern_16uc3.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img16UC3 = imread(root + "readwrite/pattern_16uc3.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img16UC3.empty());
     ASSERT_EQ(img16UC3.type(), CV_16UC3);
     ASSERT_EQ(img8UC3.size(), img16UC3.size());
     img8UC3.convertTo(tmp, img16UC3.type(), (1U<<(16-8)));
-    diff = cv::norm(tmp.reshape(1), img16UC3.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(tmp.reshape(1), img16UC3.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img16UC4 = imread(root + "readwrite/pattern_16uc4.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img16UC4 = imread(root + "readwrite/pattern_16uc4.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img16UC4.empty());
     ASSERT_EQ(img16UC4.type(), CV_16UC4);
     ASSERT_EQ(img8UC4.size(), img16UC4.size());
     img8UC4.convertTo(tmp, img16UC4.type(), (1U<<(16-8)));
-    diff = cv::norm(tmp.reshape(1), img16UC4.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(tmp.reshape(1), img16UC4.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img10UC1 = imread(root + "readwrite/pattern_10uc1.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img10UC1 = imread(root + "readwrite/pattern_10uc1.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img10UC1.empty());
     ASSERT_EQ(img10UC1.type(), CV_16UC1);
     ASSERT_EQ(img10UC1.size(), img16UC1.size());
-    diff = cv::norm(img10UC1.reshape(1), img16UC1.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img10UC1.reshape(1), img16UC1.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img10UC3 = imread(root + "readwrite/pattern_10uc3.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img10UC3 = imread(root + "readwrite/pattern_10uc3.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img10UC3.empty());
     ASSERT_EQ(img10UC3.type(), CV_16UC3);
     ASSERT_EQ(img10UC3.size(), img16UC3.size());
-    diff = cv::norm(img10UC3.reshape(1), img16UC3.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img10UC3.reshape(1), img16UC3.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img10UC4 = imread(root + "readwrite/pattern_10uc4.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img10UC4 = imread(root + "readwrite/pattern_10uc4.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img10UC4.empty());
     ASSERT_EQ(img10UC4.type(), CV_16UC4);
     ASSERT_EQ(img10UC4.size(), img16UC4.size());
-    diff = cv::norm(img10UC4.reshape(1), img16UC4.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img10UC4.reshape(1), img16UC4.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img12UC1 = imread(root + "readwrite/pattern_12uc1.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img12UC1 = imread(root + "readwrite/pattern_12uc1.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img12UC1.empty());
     ASSERT_EQ(img12UC1.type(), CV_16UC1);
     ASSERT_EQ(img12UC1.size(), img16UC1.size());
-    diff = cv::norm(img12UC1.reshape(1), img16UC1.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img12UC1.reshape(1), img16UC1.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img12UC3 = imread(root + "readwrite/pattern_12uc3.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img12UC3 = imread(root + "readwrite/pattern_12uc3.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img12UC3.empty());
     ASSERT_EQ(img12UC3.type(), CV_16UC3);
     ASSERT_EQ(img12UC3.size(), img16UC3.size());
-    diff = cv::norm(img12UC3.reshape(1), img16UC3.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img12UC3.reshape(1), img16UC3.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img12UC4 = imread(root + "readwrite/pattern_12uc4.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img12UC4 = imread(root + "readwrite/pattern_12uc4.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img12UC4.empty());
     ASSERT_EQ(img12UC4.type(), CV_16UC4);
     ASSERT_EQ(img12UC4.size(), img16UC4.size());
-    diff = cv::norm(img12UC4.reshape(1), img16UC4.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img12UC4.reshape(1), img16UC4.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img14UC1 = imread(root + "readwrite/pattern_14uc1.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img14UC1 = imread(root + "readwrite/pattern_14uc1.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img14UC1.empty());
     ASSERT_EQ(img14UC1.type(), CV_16UC1);
     ASSERT_EQ(img14UC1.size(), img16UC1.size());
-    diff = cv::norm(img14UC1.reshape(1), img16UC1.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img14UC1.reshape(1), img16UC1.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img14UC3 = imread(root + "readwrite/pattern_14uc3.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img14UC3 = imread(root + "readwrite/pattern_14uc3.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img14UC3.empty());
     ASSERT_EQ(img14UC3.type(), CV_16UC3);
     ASSERT_EQ(img14UC3.size(), img16UC3.size());
-    diff = cv::norm(img14UC3.reshape(1), img16UC3.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img14UC3.reshape(1), img16UC3.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 
-    cv::Mat img14UC4 = imread(root + "readwrite/pattern_14uc4.tif", cv::IMREAD_UNCHANGED);
+    ncvslideio::Mat img14UC4 = imread(root + "readwrite/pattern_14uc4.tif", ncvslideio::IMREAD_UNCHANGED);
     ASSERT_FALSE(img14UC4.empty());
     ASSERT_EQ(img14UC4.type(), CV_16UC4);
     ASSERT_EQ(img14UC4.size(), img16UC4.size());
-    diff = cv::norm(img14UC4.reshape(1), img16UC4.reshape(1), cv::NORM_INF);
+    diff = ncvslideio::norm(img14UC4.reshape(1), img16UC4.reshape(1), ncvslideio::NORM_INF);
     ASSERT_LE(diff, maxDiff);
 }
 
@@ -670,12 +670,12 @@ TEST(Imgcodecs_Tiff, decode_infinite_rowsperstrip)
         0x00, 0x00
     };
 
-    const string filename = cv::tempfile(".tiff");
+    const string filename = ncvslideio::tempfile(".tiff");
     std::ofstream outfile(filename.c_str(), std::ofstream::binary);
     outfile.write(reinterpret_cast<const char *>(sample_data), sizeof sample_data);
     outfile.close();
 
-    EXPECT_NO_THROW(cv::imread(filename, IMREAD_UNCHANGED));
+    EXPECT_NO_THROW(ncvslideio::imread(filename, IMREAD_UNCHANGED));
 
     EXPECT_EQ(0, remove(filename.c_str()));
 }
@@ -684,10 +684,10 @@ TEST(Imgcodecs_Tiff, readWrite_unsigned)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/gray_8u.tif";
-    const string filenameOutput = cv::tempfile(".tiff");
+    const string filenameOutput = ncvslideio::tempfile(".tiff");
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC1, img.type());
 
@@ -695,11 +695,11 @@ TEST(Imgcodecs_Tiff, readWrite_unsigned)
     img.convertTo(matS8, CV_8SC1);
 
     bool ret_imwrite = false;
-    ASSERT_NO_THROW(ret_imwrite = cv::imwrite(filenameOutput, matS8));
+    ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(filenameOutput, matS8));
     ASSERT_TRUE(ret_imwrite);
 
     Mat img2;
-    ASSERT_NO_THROW(img2 = cv::imread(filenameOutput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img2 = ncvslideio::imread(filenameOutput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img2.empty());
     ASSERT_EQ(img2.type(), matS8.type());
     ASSERT_EQ(img2.size(), matS8.size());
@@ -711,19 +711,19 @@ TEST(Imgcodecs_Tiff, readWrite_32FC1)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test32FC1.tiff";
-    const string filenameOutput = cv::tempfile(".tiff");
+    const string filenameOutput = ncvslideio::tempfile(".tiff");
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_32FC1,img.type());
 
     bool ret_imwrite = false;
-    ASSERT_NO_THROW(ret_imwrite = cv::imwrite(filenameOutput, img));
+    ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(filenameOutput, img));
     ASSERT_TRUE(ret_imwrite);
 
     Mat img2;
-    ASSERT_NO_THROW(img2 = cv::imread(filenameOutput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img2 = ncvslideio::imread(filenameOutput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img2.empty());
     ASSERT_EQ(img2.type(), img.type());
     ASSERT_EQ(img2.size(), img.size());
@@ -735,19 +735,19 @@ TEST(Imgcodecs_Tiff, readWrite_64FC1)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test64FC1.tiff";
-    const string filenameOutput = cv::tempfile(".tiff");
+    const string filenameOutput = ncvslideio::tempfile(".tiff");
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_64FC1, img.type());
 
     bool ret_imwrite = false;
-    ASSERT_NO_THROW(ret_imwrite = cv::imwrite(filenameOutput, img));
+    ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(filenameOutput, img));
     ASSERT_TRUE(ret_imwrite);
 
     Mat img2;
-    ASSERT_NO_THROW(img2 = cv::imread(filenameOutput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img2 = ncvslideio::imread(filenameOutput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img2.empty());
     ASSERT_EQ(img2.type(), img.type());
     ASSERT_EQ(img2.size(), img.size());
@@ -759,19 +759,19 @@ TEST(Imgcodecs_Tiff, readWrite_32FC3_SGILOG)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test32FC3_sgilog.tiff";
-    const string filenameOutput = cv::tempfile(".tiff");
+    const string filenameOutput = ncvslideio::tempfile(".tiff");
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_32FC3, img.type());
 
     bool ret_imwrite = false;
-    ASSERT_NO_THROW(ret_imwrite = cv::imwrite(filenameOutput, img));
+    ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(filenameOutput, img));
     ASSERT_TRUE(ret_imwrite);
 
     Mat img2;
-    ASSERT_NO_THROW(img2 = cv::imread(filenameOutput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img2 = ncvslideio::imread(filenameOutput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img2.empty());
     ASSERT_EQ(img2.type(), img.type());
     ASSERT_EQ(img2.size(), img.size());
@@ -783,10 +783,10 @@ TEST(Imgcodecs_Tiff, readWrite_32FC3_RAW)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test32FC3_raw.tiff";
-    const string filenameOutput = cv::tempfile(".tiff");
+    const string filenameOutput = ncvslideio::tempfile(".tiff");
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_32FC3, img.type());
 
@@ -795,11 +795,11 @@ TEST(Imgcodecs_Tiff, readWrite_32FC3_RAW)
     params.push_back(IMWRITE_TIFF_COMPRESSION_NONE);
 
     bool ret_imwrite = false;
-    ASSERT_NO_THROW(ret_imwrite = cv::imwrite(filenameOutput, img, params));
+    ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(filenameOutput, img, params));
     ASSERT_TRUE(ret_imwrite);
 
     Mat img2;
-    ASSERT_NO_THROW(img2 = cv::imread(filenameOutput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img2 = ncvslideio::imread(filenameOutput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img2.empty());
     ASSERT_EQ(img2.type(), img.type());
     ASSERT_EQ(img2.size(), img.size());
@@ -813,7 +813,7 @@ TEST(Imgcodecs_Tiff, read_palette_color_image)
     const string filenameInput = root + "readwrite/test_palette_color_image.tif";
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC3, img.type());
 }
@@ -824,8 +824,8 @@ TEST(Imgcodecs_Tiff, read_palette_color_image_rgb_and_bgr)
     const string filenameInput = root + "readwrite/test_palette_color_image.tif";
 
     Mat img_rgb, img_bgr;
-    ASSERT_NO_THROW(img_rgb = cv::imread(filenameInput, IMREAD_COLOR_RGB));
-    ASSERT_NO_THROW(img_bgr = cv::imread(filenameInput, IMREAD_COLOR_BGR));
+    ASSERT_NO_THROW(img_rgb = ncvslideio::imread(filenameInput, IMREAD_COLOR_RGB));
+    ASSERT_NO_THROW(img_bgr = ncvslideio::imread(filenameInput, IMREAD_COLOR_BGR));
     ASSERT_FALSE(img_rgb.empty());
     ASSERT_EQ(CV_8UC3, img_rgb.type());
 
@@ -842,7 +842,7 @@ TEST(Imgcodecs_Tiff, read_4_bit_palette_color_image)
     const string filenameInput = root + "readwrite/4-bit_palette_color.tif";
 
     Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filenameInput, IMREAD_UNCHANGED));
+    ASSERT_NO_THROW(img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED));
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC3, img.type());
 }
@@ -864,7 +864,7 @@ TEST(Imgcodecs_Tiff, readWrite_predictor)
         0xff, 0xff, 0x88, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0xff
     };
 
-    cv::Mat mat(10, 16, CV_8UC1, (void*)sample_data);
+    ncvslideio::Mat mat(10, 16, CV_8UC1, (void*)sample_data);
     int methods[] = {
         IMWRITE_TIFF_COMPRESSION_NONE,     IMWRITE_TIFF_COMPRESSION_LZW,
         IMWRITE_TIFF_COMPRESSION_PACKBITS, IMWRITE_TIFF_COMPRESSION_DEFLATE,
@@ -872,7 +872,7 @@ TEST(Imgcodecs_Tiff, readWrite_predictor)
     };
     for (size_t i = 0; i < sizeof(methods) / sizeof(int); i++)
     {
-        string out = cv::tempfile(".tif");
+        string out = ncvslideio::tempfile(".tif");
 
         std::vector<int> params;
         params.push_back(IMWRITE_TIFF_COMPRESSION);
@@ -881,14 +881,14 @@ TEST(Imgcodecs_Tiff, readWrite_predictor)
         params.push_back(IMWRITE_TIFF_PREDICTOR_HORIZONTAL);
 
         bool ret_imwrite = false;
-        ASSERT_NO_THROW(ret_imwrite = cv::imwrite(out, mat, params));
+        ASSERT_NO_THROW(ret_imwrite = ncvslideio::imwrite(out, mat, params));
         ASSERT_TRUE(ret_imwrite);
 
         Mat img;
-        ASSERT_NO_THROW(img = cv::imread(out, IMREAD_UNCHANGED));
+        ASSERT_NO_THROW(img = ncvslideio::imread(out, IMREAD_UNCHANGED));
         ASSERT_FALSE(img.empty());
 
-        ASSERT_EQ(0, cv::norm(mat, img, cv::NORM_INF));
+        ASSERT_EQ(0, ncvslideio::norm(mat, img, ncvslideio::NORM_INF));
 
         EXPECT_EQ(0, remove(out.c_str()));
     }
@@ -905,11 +905,11 @@ TEST_P(Imgcodecs_Tiff_Types, readWrite_alltypes)
     const bool isCompAvailable = get<1>(GetParam());
 
     // Create a test image.
-    const Mat src = cv::Mat::zeros( 120, 160, mat_types );
+    const Mat src = ncvslideio::Mat::zeros( 120, 160, mat_types );
     {
         // Add noise to test compression.
-        cv::Mat roi = cv::Mat(src, cv::Rect(0, 0, src.cols, src.rows/2));
-        cv::randu(roi, cv::Scalar(0), cv::Scalar(256));
+        ncvslideio::Mat roi = ncvslideio::Mat(src, ncvslideio::Rect(0, 0, src.cols, src.rows/2));
+        ncvslideio::randu(roi, ncvslideio::Scalar(0), ncvslideio::Scalar(256));
     }
 
     // Try to encode/decode the test image with LZW compression.
@@ -918,10 +918,10 @@ TEST_P(Imgcodecs_Tiff_Types, readWrite_alltypes)
         std::vector<int> params;
         params.push_back(IMWRITE_TIFF_COMPRESSION);
         params.push_back(IMWRITE_TIFF_COMPRESSION_LZW);
-        ASSERT_NO_THROW(cv::imencode(".tiff", src, bufLZW, params));
+        ASSERT_NO_THROW(ncvslideio::imencode(".tiff", src, bufLZW, params));
 
         Mat dstLZW;
-        ASSERT_NO_THROW(cv::imdecode( bufLZW, IMREAD_UNCHANGED, &dstLZW));
+        ASSERT_NO_THROW(ncvslideio::imdecode( bufLZW, IMREAD_UNCHANGED, &dstLZW));
         ASSERT_EQ(dstLZW.type(), src.type());
         ASSERT_EQ(dstLZW.size(), src.size());
         ASSERT_LE(cvtest::norm(dstLZW, src, NORM_INF | NORM_RELATIVE), 1e-3);
@@ -933,10 +933,10 @@ TEST_P(Imgcodecs_Tiff_Types, readWrite_alltypes)
         std::vector<int> params;
         params.push_back(IMWRITE_TIFF_COMPRESSION);
         params.push_back(IMWRITE_TIFF_COMPRESSION_NONE);
-        ASSERT_NO_THROW(cv::imencode(".tiff", src, bufRAW, params));
+        ASSERT_NO_THROW(ncvslideio::imencode(".tiff", src, bufRAW, params));
 
         Mat dstRAW;
-        ASSERT_NO_THROW(cv::imdecode( bufRAW, IMREAD_UNCHANGED, &dstRAW));
+        ASSERT_NO_THROW(ncvslideio::imdecode( bufRAW, IMREAD_UNCHANGED, &dstRAW));
         ASSERT_EQ(dstRAW.type(), src.type());
         ASSERT_EQ(dstRAW.size(), src.size());
         ASSERT_LE(cvtest::norm(dstRAW, src, NORM_INF | NORM_RELATIVE), 1e-3);
@@ -1112,7 +1112,7 @@ TEST(Imgcodecs_Tiff_Modes, write_multipage)
         pages.push_back(page);
     }
 
-    string tmp_filename = cv::tempfile(".tiff");
+    string tmp_filename = ncvslideio::tempfile(".tiff");
     bool res = imwrite(tmp_filename, pages);
     ASSERT_TRUE(res);
 
@@ -1130,24 +1130,24 @@ TEST(Imgcodecs_Tiff_Modes, write_multipage)
 TEST(Imgcodecs_Tiff, imdecode_no_exception_temporary_file_removed)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
-    const string filename = root + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(filename);
+    const string filename = root + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(filename);
     ASSERT_FALSE(img.empty());
     std::vector<uchar> buf;
-    EXPECT_NO_THROW(cv::imencode(".tiff", img, buf));
-    EXPECT_NO_THROW(cv::imdecode(buf, IMREAD_UNCHANGED));
+    EXPECT_NO_THROW(ncvslideio::imencode(".tiff", img, buf));
+    EXPECT_NO_THROW(ncvslideio::imdecode(buf, IMREAD_UNCHANGED));
 }
 
 
 TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr12989_grayscale)
 {
     const string filename = cvtest::findDataFile("readwrite/bitsperpixel1.tiff");
-    cv::Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filename, IMREAD_GRAYSCALE));
+    ncvslideio::Mat img;
+    ASSERT_NO_THROW(img = ncvslideio::imread(filename, IMREAD_GRAYSCALE));
     ASSERT_FALSE(img.empty());
     EXPECT_EQ(64, img.cols);
     EXPECT_EQ(64, img.rows);
-    EXPECT_EQ(CV_8UC1, img.type()) << cv::typeToString(img.type());
+    EXPECT_EQ(CV_8UC1, img.type()) << ncvslideio::typeToString(img.type());
     // Check for 0/255 values only: 267 + 3829 = 64*64
     EXPECT_EQ(267, countNonZero(img == 0));
     EXPECT_EQ(3829, countNonZero(img == 255));
@@ -1156,23 +1156,23 @@ TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr12989_grayscale)
 TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr12989_default)
 {
     const string filename = cvtest::findDataFile("readwrite/bitsperpixel1.tiff");
-    cv::Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filename));  // by default image type is CV_8UC3
+    ncvslideio::Mat img;
+    ASSERT_NO_THROW(img = ncvslideio::imread(filename));  // by default image type is CV_8UC3
     ASSERT_FALSE(img.empty());
     EXPECT_EQ(64, img.cols);
     EXPECT_EQ(64, img.rows);
-    EXPECT_EQ(CV_8UC3, img.type()) << cv::typeToString(img.type());
+    EXPECT_EQ(CV_8UC3, img.type()) << ncvslideio::typeToString(img.type());
 }
 
 TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr17275_grayscale)
 {
     const string filename = cvtest::findDataFile("readwrite/bitsperpixel1_min.tiff");
-    cv::Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filename, IMREAD_GRAYSCALE));
+    ncvslideio::Mat img;
+    ASSERT_NO_THROW(img = ncvslideio::imread(filename, IMREAD_GRAYSCALE));
     ASSERT_FALSE(img.empty());
     EXPECT_EQ(64, img.cols);
     EXPECT_EQ(64, img.rows);
-    EXPECT_EQ(CV_8UC1, img.type()) << cv::typeToString(img.type());
+    EXPECT_EQ(CV_8UC1, img.type()) << ncvslideio::typeToString(img.type());
     // Check for 0/255 values only: 267 + 3829 = 64*64
     EXPECT_EQ(267, countNonZero(img == 0));
     EXPECT_EQ(3829, countNonZero(img == 255));
@@ -1181,12 +1181,12 @@ TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr17275_grayscale)
 TEST(Imgcodecs_Tiff, decode_black_and_write_image_pr17275_default)
 {
     const string filename = cvtest::findDataFile("readwrite/bitsperpixel1_min.tiff");
-    cv::Mat img;
-    ASSERT_NO_THROW(img = cv::imread(filename));  // by default image type is CV_8UC3
+    ncvslideio::Mat img;
+    ASSERT_NO_THROW(img = ncvslideio::imread(filename));  // by default image type is CV_8UC3
     ASSERT_FALSE(img.empty());
     EXPECT_EQ(64, img.cols);
     EXPECT_EQ(64, img.rows);
-    EXPECT_EQ(CV_8UC3, img.type()) << cv::typeToString(img.type());
+    EXPECT_EQ(CV_8UC3, img.type()) << ncvslideio::typeToString(img.type());
 }
 
 TEST(Imgcodecs_Tiff, count_multipage)

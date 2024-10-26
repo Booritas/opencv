@@ -83,18 +83,18 @@
 
 #define TegraGenOp_Invoker(name, func, src_cnt, dst_cnt, scale_cnt, ...) \
 template <typename ST, typename DT> \
-class TegraGenOp_##name##_Invoker : public cv::ParallelLoopBody \
+class TegraGenOp_##name##_Invoker : public ncvslideio::ParallelLoopBody \
 { \
 public: \
     TegraGenOp_##name##_Invoker(SRC_ARG##src_cnt \
                                 DST_ARG##dst_cnt \
                                 int width_, int height_ \
                                 SCALE_ARG##scale_cnt) : \
-        cv::ParallelLoopBody(), SRC_STORE##src_cnt \
+        ncvslideio::ParallelLoopBody(), SRC_STORE##src_cnt \
                                 DST_STORE##dst_cnt \
                                 width(width_), height(height_) \
                                 SCALE_STORE##scale_cnt {} \
-    virtual void operator()(const cv::Range& range) const \
+    virtual void operator()(const ncvslideio::Range& range) const \
     { \
         CAROTENE_NS::func(CAROTENE_NS::Size2D(width, range.end-range.start), __VA_ARGS__); \
     } \
@@ -253,32 +253,32 @@ TegraGenOp_Invoker(cmpLE, cmpGE, 2, 1, 0, RANGE_DATA(ST, src2_data, src2_step), 
 #define TEGRA_CMP(type, src1, sz1, src2, sz2, dst, sz, w, h, op) \
 ( \
     CAROTENE_NS::isSupportedConfiguration() ? \
-        ((op) == cv::CMP_EQ) ? \
+        ((op) == ncvslideio::CMP_EQ) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpEQ_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_NE) ? \
+        ((op) == ncvslideio::CMP_NE) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpNE_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_GT) ? \
+        ((op) == ncvslideio::CMP_GT) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpGT_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_GE) ? \
+        ((op) == ncvslideio::CMP_GE) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpGE_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_LT) ? \
+        ((op) == ncvslideio::CMP_LT) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpLT_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_LE) ? \
+        ((op) == ncvslideio::CMP_LE) ? \
         parallel_for_(Range(0, h), \
         TegraGenOp_cmpLE_Invoker<const type, CAROTENE_NS::u8>(src1, sz1, src2, sz2, dst, sz, w, h), \
         (w * h) / static_cast<double>(1<<16)), \
@@ -610,37 +610,37 @@ TegraBinaryOpScale_Invoker(addWeighted, addWeighted, 3, scales[0], scales[1], sc
 #define TEGRA_CMP(src1, sz1, src2, sz2, dst, sz, w, h, op) \
 ( \
     CAROTENE_NS::isSupportedConfiguration() ? \
-        ((op) == cv::CMP_EQ) ? \
+        ((op) == ncvslideio::CMP_EQ) ? \
         CAROTENE_NS::cmpEQ(CAROTENE_NS::Size2D(w, h), \
                            src1, sz1, \
                            src2, sz2, \
                            dst, sz), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_NE) ? \
+        ((op) == ncvslideio::CMP_NE) ? \
         CAROTENE_NS::cmpNE(CAROTENE_NS::Size2D(w, h), \
                            src1, sz1, \
                            src2, sz2, \
                            dst, sz), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_GT) ? \
+        ((op) == ncvslideio::CMP_GT) ? \
         CAROTENE_NS::cmpGT(CAROTENE_NS::Size2D(w, h), \
                            src1, sz1, \
                            src2, sz2, \
                            dst, sz), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_GE) ? \
+        ((op) == ncvslideio::CMP_GE) ? \
         CAROTENE_NS::cmpGE(CAROTENE_NS::Size2D(w, h), \
                            src1, sz1, \
                            src2, sz2, \
                            dst, sz), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_LT) ? \
+        ((op) == ncvslideio::CMP_LT) ? \
         CAROTENE_NS::cmpGT(CAROTENE_NS::Size2D(w, h), \
                            src2, sz2, \
                            src1, sz1, \
                            dst, sz), \
         CV_HAL_ERROR_OK : \
-        ((op) == cv::CMP_LE) ? \
+        ((op) == ncvslideio::CMP_LE) ? \
         CAROTENE_NS::cmpGE(CAROTENE_NS::Size2D(w, h), \
                            src2, sz2, \
                            src1, sz1, \
@@ -863,16 +863,16 @@ TegraBinaryOpScale_Invoker(addWeighted, addWeighted, 3, scales[0], scales[1], sc
 
 #define TegraRowOp_Invoker(name, func, src_cnt, dst_cnt, val_cnt, ...) \
 template <typename ST, typename DT> \
-class TegraRowOp_##name##_Invoker : public cv::ParallelLoopBody \
+class TegraRowOp_##name##_Invoker : public ncvslideio::ParallelLoopBody \
 { \
 public: \
     TegraRowOp_##name##_Invoker(ROW_SRC_ARG##src_cnt \
                                 ROW_DST_ARG##dst_cnt \
                                 ROW_VAL_ARG##val_cnt) : \
-         cv::ParallelLoopBody() ROW_SRC_STORE##src_cnt \
+         ncvslideio::ParallelLoopBody() ROW_SRC_STORE##src_cnt \
                                 ROW_DST_STORE##dst_cnt \
                                 ROW_VAL_STORE##val_cnt {} \
-    virtual void operator()(const cv::Range& range) const \
+    virtual void operator()(const ncvslideio::Range& range) const \
     { \
         CAROTENE_NS::func(CAROTENE_NS::Size2D(range.end-range.start, 1), __VA_ARGS__); \
     } \
@@ -1366,7 +1366,7 @@ inline int TEGRA_MORPHINIT(cvhalFilter2D **context, int operation, int src_type,
         else
         {
             for(int i = 0; i < ctx->channels; ++i)
-                ctx->borderValues[i] = (CAROTENE_NS::u8)cv::saturate_cast<uchar>(borderValue[i]);
+                ctx->borderValues[i] = (CAROTENE_NS::u8)ncvslideio::saturate_cast<uchar>(borderValue[i]);
         }
         break;
     case CV_HAL_BORDER_REPLICATE:
@@ -1527,12 +1527,12 @@ inline int TEGRA_MORPHFREE(cvhalFilter2D *context)
 
 
 #define TegraCvtColor_Invoker(name, func, ...) \
-class TegraCvtColor_##name##_Invoker : public cv::ParallelLoopBody \
+class TegraCvtColor_##name##_Invoker : public ncvslideio::ParallelLoopBody \
 { \
 public: \
     TegraCvtColor_##name##_Invoker(const uchar * src_data_, size_t src_step_, uchar * dst_data_, size_t dst_step_, int width_, int height_) : \
-        cv::ParallelLoopBody(), src_data(src_data_), src_step(src_step_), dst_data(dst_data_), dst_step(dst_step_), width(width_), height(height_) {} \
-    virtual void operator()(const cv::Range& range) const CV_OVERRIDE \
+        ncvslideio::ParallelLoopBody(), src_data(src_data_), src_step(src_step_), dst_data(dst_data_), dst_step(dst_step_), width(width_), height(height_) {} \
+    virtual void operator()(const ncvslideio::Range& range) const CV_OVERRIDE \
     { \
         CAROTENE_NS::func(CAROTENE_NS::Size2D(width, range.end-range.start), __VA_ARGS__); \
     } \

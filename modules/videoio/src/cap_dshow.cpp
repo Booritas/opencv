@@ -41,7 +41,7 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #if defined _WIN32 && defined HAVE_DSHOW
 #include "cap_dshow.hpp"
@@ -1583,9 +1583,9 @@ bool videoInput::getPixels(int id, unsigned char * dstBuffer, bool flipRedAndBlu
                 }
                 else if (VDList[id]->pAmMediaType->subtype == MEDIASUBTYPE_NV12)
                 {
-                    cv::Mat srcMat(height * 3 / 2, width, CV_8UC1, src);
-                    cv::Mat dstMat(height, width, CV_8UC3, dst);
-                    cv::cvtColor(srcMat, dstMat, cv::COLOR_YUV2BGR_NV12);
+                    ncvslideio::Mat srcMat(height * 3 / 2, width, CV_8UC1, src);
+                    ncvslideio::Mat dstMat(height, width, CV_8UC3, dst);
+                    ncvslideio::cvtColor(srcMat, dstMat, ncvslideio::COLOR_YUV2BGR_NV12);
                 }
                 else
                 {
@@ -2405,7 +2405,7 @@ int videoInput::getVideoPropertyFromCV(int cv_property){
         case CAP_PROP_WHITE_BALANCE_BLUE_U:
             return VideoProcAmp_WhiteBalance;
 
-        case cv::VideoCaptureProperties::CAP_PROP_AUTO_WB:
+        case ncvslideio::VideoCaptureProperties::CAP_PROP_AUTO_WB:
             return VideoProcAmp_WhiteBalance;
 
         case  CAP_PROP_BACKLIGHT:
@@ -3364,7 +3364,7 @@ int videoInput::property_window_count(int idx)
     return 0;
 }
 
-namespace cv
+namespace ncvslideio
 {
 videoInput VideoCapture_DShow::g_VI;
 
@@ -3427,7 +3427,7 @@ double VideoCapture_DShow::getProperty(int propIdx) const
             return (double)current_value;
         break;
 
-    case cv::VideoCaptureProperties::CAP_PROP_AUTO_WB:
+    case ncvslideio::VideoCaptureProperties::CAP_PROP_AUTO_WB:
         if (g_VI.getVideoSettingFilter(m_index, g_VI.getVideoPropertyFromCV(propIdx), min_value, max_value, stepping_delta, current_value, flags, defaultValue))
             return (double)flags == CameraControl_Flags_Auto ? 1.0 : 0.0;
         break;
@@ -3579,7 +3579,7 @@ bool VideoCapture_DShow::setProperty(int propIdx, double propVal)
     bool useDefaultValue = false;
     switch (propIdx)
     {
-        case cv::VideoCaptureProperties::CAP_PROP_AUTO_WB:
+        case ncvslideio::VideoCaptureProperties::CAP_PROP_AUTO_WB:
         case CAP_PROP_AUTO_EXPOSURE:
             useDefaultValue = true;
             if (cvRound(propVal) == 1)
@@ -3603,7 +3603,7 @@ bool VideoCapture_DShow::setProperty(int propIdx, double propVal)
     case CAP_PROP_GAMMA:
     case CAP_PROP_MONOCHROME:
     case CAP_PROP_WHITE_BALANCE_BLUE_U:
-    case cv::VideoCaptureProperties::CAP_PROP_AUTO_WB:
+    case ncvslideio::VideoCaptureProperties::CAP_PROP_AUTO_WB:
     case CAP_PROP_BACKLIGHT:
     case CAP_PROP_GAIN:
         return g_VI.setVideoSettingFilter(m_index, g_VI.getVideoPropertyFromCV(propIdx), (long)propVal, flags, useDefaultValue);
@@ -3646,7 +3646,7 @@ bool VideoCapture_DShow::retrieveFrame(int, OutputArray frame)
         frame.create(Size(w, h), CV_8UC3);
     }
 
-    cv::Mat mat = frame.getMat();
+    ncvslideio::Mat mat = frame.getMat();
     return g_VI.getPixels(m_index, mat.ptr(), false, true );
 }
 int VideoCapture_DShow::getCaptureDomain()

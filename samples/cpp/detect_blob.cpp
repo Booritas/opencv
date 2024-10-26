@@ -7,7 +7,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 
 static void help(char** argv)
@@ -72,7 +72,7 @@ static String Legende(SimpleBlobDetector::Params &pAct)
 int main(int argc, char *argv[])
 {
     String fileName;
-    cv::CommandLineParser parser(argc, argv, "{@input |detect_blob.png| }{h help | | }");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@input |detect_blob.png| }{h help | | }");
     if (parser.has("h"))
     {
         help(argv);

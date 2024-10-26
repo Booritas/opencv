@@ -19,7 +19,7 @@
 #include "compiler/gislandmodel.hpp"
 #include "compiler/passes/passes.hpp"
 
-namespace cv { namespace gimpl { namespace passes {
+namespace ncvslideio { namespace gimpl { namespace passes {
 
 // TODO: FIXME: Ideally all this low-level stuff with accessing ADE APIs directly
 // should be incapsulated somewhere into GModel, so here we'd operate not
@@ -28,17 +28,17 @@ void dumpDot(const ade::Graph &g, std::ostream& os)
 {
     GModel::ConstGraph gr(g);
 
-    const std::unordered_map<cv::GShape, std::string> data_labels = {
-        {cv::GShape::GMAT,    "GMat"},
-        {cv::GShape::GSCALAR, "GScalar"},
-        {cv::GShape::GARRAY,  "GArray"},
-        {cv::GShape::GOPAQUE, "GOpaque"},
-        {cv::GShape::GFRAME,  "GFrame"},
+    const std::unordered_map<ncvslideio::GShape, std::string> data_labels = {
+        {ncvslideio::GShape::GMAT,    "GMat"},
+        {ncvslideio::GShape::GSCALAR, "GScalar"},
+        {ncvslideio::GShape::GARRAY,  "GArray"},
+        {ncvslideio::GShape::GOPAQUE, "GOpaque"},
+        {ncvslideio::GShape::GFRAME,  "GFrame"},
     };
 
     auto format_op_label  = [&gr](ade::NodeHandle nh) -> std::string {
         std::stringstream ss;
-        const cv::GKernel k = gr.metadata(nh).get<Op>().k;
+        const ncvslideio::GKernel k = gr.metadata(nh).get<Op>().k;
         ss << k.name << "_" << nh;
         return ss.str();
     };
@@ -243,4 +243,4 @@ void dumpGraph(ade::passes::PassContext &ctx, const std::string& dump_path)
     dump_path.empty() ? dumpDotStdout(ctx) : dumpDotToFile(ctx, dump_path);
 }
 
-}}} // cv::gimpl::passes
+}}} // ncvslideio::gimpl::passes

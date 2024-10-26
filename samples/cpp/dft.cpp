@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(const char ** argv)

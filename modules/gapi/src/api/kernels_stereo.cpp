@@ -6,13 +6,13 @@
 
 #include <opencv2/gapi/stereo.hpp>
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 GMat stereo(const GMat& left, const GMat& right,
-            const cv::gapi::StereoOutputFormat of)
+            const ncvslideio::gapi::StereoOutputFormat of)
 {
     return calib3d::GStereo::on(left, right, of);
 }
 
-} // namespace cv
+} // namespace ncvslideio
 } // namespace gapi

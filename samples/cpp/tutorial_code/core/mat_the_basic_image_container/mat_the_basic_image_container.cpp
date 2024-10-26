@@ -4,15 +4,15 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help()
 {
     cout
     << "\n---------------------------------------------------------------------------" << endl
-    << "This program shows how to create matrices(cv::Mat) in OpenCV and its serial"
+    << "This program shows how to create matrices(ncvslideio::Mat) in OpenCV and its serial"
     << " out capabilities"                                                             << endl
-    << "That is, cv::Mat M(...); M.create and cout << M. "                             << endl
+    << "That is, ncvslideio::Mat M(...); M.create and cout << M. "                             << endl
     << "Shows how output can be formatted to OpenCV, python, numpy, csv and C styles." << endl
     << "Usage:"                                                                        << endl
     << "./mat_the_basic_image_container"                                               << endl

@@ -97,7 +97,7 @@ static void DFT_1D( const Mat& _src, Mat& _dst, int flags, const Mat& _wave=Mat(
         }
     }
     else
-        CV_Error(cv::Error::StsUnsupportedFormat, "");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 }
 
 
@@ -148,7 +148,7 @@ static Mat initDCTWave( int n, bool inv )
             wave.at<double>(i, k) = scale*cos( angle*i*(2*k + 1) );
 
     if( inv )
-        cv::transpose( wave, wave );
+        ncvslideio::transpose( wave, wave );
 
     return wave;
 }
@@ -692,9 +692,9 @@ void CxCore_DFTTest::run_func()
     const Mat& src = inplace ? dst : test_mat[INPUT][0];
 
     if(!(flags & CV_DXT_INVERSE))
-        cv::dft( src, dst, flags );
+        ncvslideio::dft( src, dst, flags );
     else
-        cv::idft(src, dst, flags & ~CV_DXT_INVERSE);
+        ncvslideio::idft(src, dst, flags & ~CV_DXT_INVERSE);
 }
 
 
@@ -757,9 +757,9 @@ void CxCore_DCTTest::run_func()
     const Mat& src = inplace ? dst : test_mat[INPUT][0];
 
     if(!(flags & CV_DXT_INVERSE))
-        cv::dct( src, dst, flags );
+        ncvslideio::dct( src, dst, flags );
     else
-        cv::idct( src, dst, flags & ~CV_DXT_INVERSE);
+        ncvslideio::idct( src, dst, flags & ~CV_DXT_INVERSE);
 }
 
 
@@ -819,7 +819,7 @@ void CxCore_MulSpectrumsTest::run_func()
             src1 = &dst;
     }
 
-    cv::mulSpectrums( *src1, *src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
+    ncvslideio::mulSpectrums( *src1, *src2, dst, flags, (flags & CV_DXT_MUL_CONJ) != 0 );
 }
 
 
@@ -878,7 +878,7 @@ protected:
             {
                 cout << "actual:\n" << dst << endl << endl;
                 cout << "reference:\n" << dstz << endl << endl;
-                CV_Error(cv::Error::StsError, "");
+                CV_Error(ncvslideio::Error::StsError, "");
             }
         }
     }
@@ -952,13 +952,13 @@ protected:
                 Mat two;
                 if (mode == ModeDFT)
                 {
-                    cv::dft(one, out, flags);
-                    cv::dft(out, two, flags_inv);
+                    ncvslideio::dft(one, out, flags);
+                    ncvslideio::dft(out, two, flags_inv);
                 }
                 else if (mode == ModeDCT)
                 {
-                    cv::dct(one, out, flags);
-                    cv::dct(out, two, flags_inv);
+                    ncvslideio::dct(one, out, flags);
+                    ncvslideio::dct(out, two, flags_inv);
                 }
                 if (out.channels() != cn_out || two.channels() != cn_in || cvtest::norm(one, two, NORM_INF) > 1e-5)
                 {

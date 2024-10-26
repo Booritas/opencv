@@ -118,8 +118,8 @@ static void* openclamdblas_check_fn(int ID)
     void* func = CV_CL_GET_PROC_ADDRESS(e->fnName);
     if (!func)
     {
-        throw cv::Exception(cv::Error::OpenCLApiCallError,
-                cv::format("OpenCL AMD BLAS function is not available: [%s]", e->fnName),
+        throw ncvslideio::Exception(ncvslideio::Error::OpenCLApiCallError,
+                ncvslideio::format("OpenCL AMD BLAS function is not available: [%s]", e->fnName),
                 CV_Func, __FILE__, __LINE__);
     }
     *(e->ppFn) = func;

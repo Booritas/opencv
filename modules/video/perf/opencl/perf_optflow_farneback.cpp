@@ -69,10 +69,10 @@ OCL_PERF_TEST_P(FarnebackOpticalFlowFixture, FarnebackOpticalFlow,
                     )
                 )
 {
-    Mat frame0 = imread(getDataPath("gpu/opticalflow/rubberwhale1.png"), cv::IMREAD_GRAYSCALE);
+    Mat frame0 = imread(getDataPath("gpu/opticalflow/rubberwhale1.png"), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame0.empty()) << "can't load rubberwhale1.png";
 
-    Mat frame1 = imread(getDataPath("gpu/opticalflow/rubberwhale2.png"), cv::IMREAD_GRAYSCALE);
+    Mat frame1 = imread(getDataPath("gpu/opticalflow/rubberwhale2.png"), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame1.empty()) << "can't load rubberwhale2.png";
 
     const Size srcSize = frame0.size();
@@ -96,12 +96,12 @@ OCL_PERF_TEST_P(FarnebackOpticalFlowFixture, FarnebackOpticalFlow,
     declare.in(uFrame0, uFrame1, WARMUP_READ).out(uFlow, WARMUP_READ);
     if (useInitFlow)
     {
-        cv::calcOpticalFlowFarneback(uFrame0, uFrame1, uFlow, pyrScale, numLevels, winSize, numIters, polyN, polySigma, flags);
+        ncvslideio::calcOpticalFlowFarneback(uFrame0, uFrame1, uFlow, pyrScale, numLevels, winSize, numIters, polyN, polySigma, flags);
         flags |= OPTFLOW_USE_INITIAL_FLOW;
     }
 
     OCL_TEST_CYCLE()
-            cv::calcOpticalFlowFarneback(uFrame0, uFrame1, uFlow, pyrScale, numLevels, winSize, numIters, polyN, polySigma, flags);
+            ncvslideio::calcOpticalFlowFarneback(uFrame0, uFrame1, uFlow, pyrScale, numLevels, winSize, numIters, polyN, polySigma, flags);
 
 
     SANITY_CHECK(uFlow, eps, ERROR_RELATIVE);

@@ -11,7 +11,7 @@
 #include <gst/gstbuffer.h>
 #include <gst/video/video-frame.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gstreamer_utils {
@@ -22,6 +22,6 @@ void mapBufferToFrame(GstBuffer& buffer, GstVideoInfo& info, GstVideoFrame& fram
 } // namespace gstreamer_utils
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMER_BUFFER_UTILS_HPP

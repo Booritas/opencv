@@ -15,11 +15,11 @@
 
 #include "color.hpp"
 
-using cv::softfloat;
+using ncvslideio::softfloat;
 
 static const float * splineBuild(const softfloat* f, size_t n)
 {
-    float* tab = cv::allocSingleton<float>(n * 4);
+    float* tab = ncvslideio::allocSingleton<float>(n * 4);
     const softfloat f2(2), f3(3), f4(4);
     softfloat cn(0);
     softfloat* sftab = reinterpret_cast<softfloat*>(tab);
@@ -58,11 +58,11 @@ template<typename _Tp> static inline _Tp splineInterpolate(_Tp x, const _Tp* tab
 
 #if (CV_SIMD || CV_SIMD_SCALABLE)
 
-template<typename _Tp> static inline cv::v_float32 splineInterpolate(const cv::v_float32& x, const _Tp* tab, int n)
+template<typename _Tp> static inline ncvslideio::v_float32 splineInterpolate(const ncvslideio::v_float32& x, const _Tp* tab, int n)
 {
-    using namespace cv;
+    using namespace ncvslideio;
     v_int32 ix = v_min(v_max(v_trunc(x), vx_setzero_s32()), vx_setall_s32(n-1));
-    cv::v_float32 xx = v_sub(x, v_cvt_f32(ix));
+    ncvslideio::v_float32 xx = v_sub(x, v_cvt_f32(ix));
     ix = v_shl<2>(ix);
 
     v_float32 t0, t1, t2, t3;
@@ -92,7 +92,7 @@ template<typename _Tp> static inline cv::v_float32 splineInterpolate(const cv::v
 
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 ////////////////////////////////////// RGB <-> XYZ ///////////////////////////////////////
@@ -1043,9 +1043,9 @@ static LUVLUT_T initLUTforLUV(const softfloat &un, const softfloat &vn)
     */
 
     const softfloat oneof4 = softfloat::one()/softfloat(4);
-    int *LuToUp_b = cv::allocSingleton<int>(256*256);
-    int *LvToVp_b = cv::allocSingleton<int>(256*256);
-    long long int *LvToVpl_b = cv::allocSingleton<long long int>(256*256);
+    int *LuToUp_b = ncvslideio::allocSingleton<int>(256*256);
+    int *LvToVp_b = ncvslideio::allocSingleton<int>(256*256);
+    long long int *LvToVpl_b = ncvslideio::allocSingleton<long long int>(256*256);
     for(int LL = 0; LL < 256; LL++)
     {
         softfloat L = softfloat(LL*100)/f255;
@@ -1077,7 +1077,7 @@ static LUVLUT_T initLUTforLUV(const softfloat &un, const softfloat &vn)
 
 static int * initLUTforABXZ()
 {
-    int * res = cv::allocSingleton<int>(LAB_BASE*9/4);
+    int * res = ncvslideio::allocSingleton<int>(LAB_BASE*9/4);
     for(int i = minABvalue; i < LAB_BASE*9/4+minABvalue; i++)
     {
         int v;
@@ -1207,8 +1207,8 @@ static LABLUVLUT_s16_t initLUTforLABLUVs16(const softfloat & un, const softfloat
         }
     }
 
-    int16_t *RGB2LabLUT_s16 = cv::allocSingleton<int16_t>(LAB_LUT_DIM*LAB_LUT_DIM*LAB_LUT_DIM*3*8);
-    int16_t *RGB2LuvLUT_s16 = cv::allocSingleton<int16_t>(LAB_LUT_DIM*LAB_LUT_DIM*LAB_LUT_DIM*3*8);
+    int16_t *RGB2LabLUT_s16 = ncvslideio::allocSingleton<int16_t>(LAB_LUT_DIM*LAB_LUT_DIM*LAB_LUT_DIM*3*8);
+    int16_t *RGB2LuvLUT_s16 = ncvslideio::allocSingleton<int16_t>(LAB_LUT_DIM*LAB_LUT_DIM*LAB_LUT_DIM*3*8);
     for(int p = 0; p < LAB_LUT_DIM; p++)
         for(int q = 0; q < LAB_LUT_DIM; q++)
             for(int r = 0; r < LAB_LUT_DIM; r++)
@@ -4842,4 +4842,4 @@ void cvtColorXYZ2BGR( InputArray _src, OutputArray _dst, int dcn, bool swapb )
     hal::cvtXYZtoBGR(h.src.data, h.src.step, h.dst.data, h.dst.step, h.src.cols, h.src.rows, h.depth, dcn, swapb);
 }
 
-} // namespace cv
+} // namespace ncvslideio

@@ -30,18 +30,18 @@ TEST(WaveCorrection, AutoWaveCorrection)
     EXPECT_EQ(detail::WAVE_CORRECT_HORIZ, correctionKind(images));
 
     std::vector<UMat> rotated_images(2);
-    rotate(images[0], rotated_images[0], cv::ROTATE_90_CLOCKWISE);
-    rotate(images[1], rotated_images[1], cv::ROTATE_90_CLOCKWISE);
+    rotate(images[0], rotated_images[0], ncvslideio::ROTATE_90_CLOCKWISE);
+    rotate(images[1], rotated_images[1], ncvslideio::ROTATE_90_CLOCKWISE);
 
     EXPECT_EQ(detail::WAVE_CORRECT_VERT, correctionKind(rotated_images));
 
-    rotate(images[0], rotated_images[0], cv::ROTATE_90_COUNTERCLOCKWISE);
-    rotate(images[1], rotated_images[1], cv::ROTATE_90_COUNTERCLOCKWISE);
+    rotate(images[0], rotated_images[0], ncvslideio::ROTATE_90_COUNTERCLOCKWISE);
+    rotate(images[1], rotated_images[1], ncvslideio::ROTATE_90_COUNTERCLOCKWISE);
 
     EXPECT_EQ(detail::WAVE_CORRECT_VERT, correctionKind(rotated_images));
 
-    rotate(images[0], rotated_images[0], cv::ROTATE_180);
-    rotate(images[1], rotated_images[1], cv::ROTATE_180);
+    rotate(images[0], rotated_images[0], ncvslideio::ROTATE_180);
+    rotate(images[1], rotated_images[1], ncvslideio::ROTATE_180);
 
     EXPECT_EQ(detail::WAVE_CORRECT_HORIZ, correctionKind(rotated_images));
 }

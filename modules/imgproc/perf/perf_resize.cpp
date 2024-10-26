@@ -50,7 +50,7 @@ PERF_TEST_P(MatInfo_Size_Size, resizeUpLinear,
     Size from = get<1>(GetParam());
     Size to = get<2>(GetParam());
 
-    cv::Mat src(from, matType), dst(to, matType);
+    ncvslideio::Mat src(from, matType), dst(to, matType);
     cvtest::fillGradient(src);
     declare.in(src).out(dst);
 
@@ -76,7 +76,7 @@ PERF_TEST_P(MatInfo_SizePair, resizeUpLinearNonExact,
     Size from = get<0>(sizes);
     Size to = get<1>(sizes);
 
-    cv::Mat src(from, matType), dst(to, matType);
+    ncvslideio::Mat src(from, matType), dst(to, matType);
     switch(src.depth())
     {
         case CV_8U: cvtest::fillGradient(src); break;
@@ -119,7 +119,7 @@ PERF_TEST_P(MatInfo_Size_Size, resizeDownLinear,
     Size from = get<1>(GetParam());
     Size to = get<2>(GetParam());
 
-    cv::Mat src(from, matType), dst(to, matType);
+    ncvslideio::Mat src(from, matType), dst(to, matType);
     cvtest::fillGradient(src);
     declare.in(src).out(dst);
 
@@ -152,7 +152,7 @@ PERF_TEST_P(MatInfo_SizePair, resizeDownLinearNonExact,
     Size from = get<0>(sizes);
     Size to = get<1>(sizes);
 
-    cv::Mat src(from, matType), dst(to, matType);
+    ncvslideio::Mat src(from, matType), dst(to, matType);
     switch(src.depth())
     {
         case CV_8U: cvtest::fillGradient(src); break;
@@ -185,8 +185,8 @@ PERF_TEST_P(MatInfo_Size_Scale, ResizeAreaFast,
     from.width = (from.width/scale)*scale;
     from.height = (from.height/scale)*scale;
 
-    cv::Mat src(from, matType);
-    cv::Mat dst(from.height / scale, from.width / scale, matType);
+    ncvslideio::Mat src(from, matType);
+    ncvslideio::Mat dst(from.height / scale, from.width / scale, matType);
 
     declare.in(src, WARMUP_RNG).out(dst);
 
@@ -212,10 +212,10 @@ PERF_TEST_P(MatInfo_Size_Scale_Area, ResizeArea,
     Size from = get<1>(GetParam());
     double scale = get<2>(GetParam());
 
-    cv::Mat src(from, matType);
+    ncvslideio::Mat src(from, matType);
 
     Size to(cvRound(from.width * scale), cvRound(from.height * scale));
-    cv::Mat dst(to, matType);
+    ncvslideio::Mat dst(to, matType);
 
     declare.in(src, WARMUP_RNG).out(dst);
     declare.time(100);
@@ -240,10 +240,10 @@ PERF_TEST_P(MatInfo_Size_Scale_NN, ResizeNN,
     Size from = get<1>(GetParam());
     double scale = get<2>(GetParam());
 
-    cv::Mat src(from, matType);
+    ncvslideio::Mat src(from, matType);
 
     Size to(cvRound(from.width * scale), cvRound(from.height * scale));
-    cv::Mat dst(to, matType);
+    ncvslideio::Mat dst(to, matType);
 
     declare.in(src, WARMUP_RNG).out(dst);
     declare.time(100);
@@ -266,10 +266,10 @@ PERF_TEST_P(MatInfo_Size_Scale_NN, ResizeNNExact,
     Size from = get<1>(GetParam());
     double scale = get<2>(GetParam());
 
-    cv::Mat src(from, matType);
+    ncvslideio::Mat src(from, matType);
 
     Size to(cvRound(from.width * scale), cvRound(from.height * scale));
-    cv::Mat dst(to, matType);
+    ncvslideio::Mat dst(to, matType);
 
     declare.in(src, WARMUP_RNG).out(dst);
     declare.time(100);

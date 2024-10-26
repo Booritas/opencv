@@ -69,18 +69,18 @@ void CV_KalmanTest::run( int )
     RNG& rng = ts->get_rng();
     int i, j;
 
-    cv::Mat Sample(Dim,1,CV_32F);
-    cv::Mat Temp(Dim,1,CV_32F);
+    ncvslideio::Mat Sample(Dim,1,CV_32F);
+    ncvslideio::Mat Temp(Dim,1,CV_32F);
 
-    cv::KalmanFilter Kalm(Dim, Dim);
-    Kalm.transitionMatrix = cv::Mat::eye(Dim, Dim, CV_32F);
-    Kalm.measurementMatrix = cv::Mat::eye(Dim, Dim, CV_32F);
-    Kalm.processNoiseCov = cv::Mat::eye(Dim, Dim, CV_32F);
-    Kalm.errorCovPre = cv::Mat::eye(Dim, Dim, CV_32F);
-    Kalm.errorCovPost = cv::Mat::eye(Dim, Dim, CV_32F);
-    Kalm.measurementNoiseCov = cv::Mat::zeros(Dim, Dim, CV_32F);
-    Kalm.statePre = cv::Mat::zeros(Dim, 1, CV_32F);
-    Kalm.statePost = cv::Mat::zeros(Dim, 1, CV_32F);
+    ncvslideio::KalmanFilter Kalm(Dim, Dim);
+    Kalm.transitionMatrix = ncvslideio::Mat::eye(Dim, Dim, CV_32F);
+    Kalm.measurementMatrix = ncvslideio::Mat::eye(Dim, Dim, CV_32F);
+    Kalm.processNoiseCov = ncvslideio::Mat::eye(Dim, Dim, CV_32F);
+    Kalm.errorCovPre = ncvslideio::Mat::eye(Dim, Dim, CV_32F);
+    Kalm.errorCovPost = ncvslideio::Mat::eye(Dim, Dim, CV_32F);
+    Kalm.measurementNoiseCov = ncvslideio::Mat::zeros(Dim, Dim, CV_32F);
+    Kalm.statePre = ncvslideio::Mat::zeros(Dim, 1, CV_32F);
+    Kalm.statePost = ncvslideio::Mat::zeros(Dim, 1, CV_32F);
     cvtest::randUni(rng, Sample, Scalar::all(-max_init), Scalar::all(max_init));
     Kalm.correct(Sample);
     for(i = 0; i<Steps; i++)

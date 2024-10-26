@@ -12,11 +12,11 @@
 
 #include <onnxruntime_cxx_api.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace onnx {
 void addDMLExecutionProvider(Ort::SessionOptions *session_options,
-                             const cv::gapi::onnx::ep::DirectML &dml_ep);
+                             const ncvslideio::gapi::onnx::ep::DirectML &dml_ep);
 }}}
 
 #endif  // HAVE_ONNX

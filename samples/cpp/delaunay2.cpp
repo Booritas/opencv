@@ -2,7 +2,7 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** argv)
@@ -105,7 +105,7 @@ static void paint_voronoi( Mat& img, Subdiv2D& subdiv )
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{help h||}");
     if (parser.has("help"))
     {
         help(argv);

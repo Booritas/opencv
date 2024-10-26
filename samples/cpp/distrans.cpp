@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int maskSize0 = DIST_MASK_5;
 int voronoiType = -1;

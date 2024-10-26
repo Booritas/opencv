@@ -101,11 +101,11 @@ OCL_TEST_P(GoodFeaturesToTrack, Accuracy)
 
         std::vector<Point2f> upts, pts;
 
-        OCL_OFF(cv::goodFeaturesToTrack(src_roi, points, maxCorners, qualityLevel, minDistance, noArray(), quality));
+        OCL_OFF(ncvslideio::goodFeaturesToTrack(src_roi, points, maxCorners, qualityLevel, minDistance, noArray(), quality));
         ASSERT_FALSE(points.empty());
         UMatToVector(points, pts);
 
-        OCL_ON(cv::goodFeaturesToTrack(usrc_roi, upoints, maxCorners, qualityLevel, minDistance, noArray(), uquality));
+        OCL_ON(ncvslideio::goodFeaturesToTrack(usrc_roi, upoints, maxCorners, qualityLevel, minDistance, noArray(), uquality));
         ASSERT_FALSE(upoints.empty());
         UMatToVector(upoints, upts);
 
@@ -135,7 +135,7 @@ OCL_TEST_P(GoodFeaturesToTrack, EmptyCorners)
     generateTestData();
     usrc_roi.setTo(Scalar::all(0));
 
-    OCL_ON(cv::goodFeaturesToTrack(usrc_roi, upoints, maxCorners, qualityLevel, minDistance, noArray(), uquality));
+    OCL_ON(ncvslideio::goodFeaturesToTrack(usrc_roi, upoints, maxCorners, qualityLevel, minDistance, noArray(), uquality));
 
     ASSERT_TRUE(upoints.empty());
     ASSERT_TRUE(uquality.empty());

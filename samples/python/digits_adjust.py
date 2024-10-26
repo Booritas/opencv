@@ -67,7 +67,7 @@ class App(object):
         return self._samples, self._labels
 
     def run_jobs(self, f, jobs):
-        pool = ThreadPool(processes=cv.getNumberOfCPUs())
+        pool = ThreadPool(processes=ncvslideio.getNumberOfCPUs())
         ires = pool.imap_unordered(f, jobs)
         return ires
 

@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 
@@ -1056,7 +1056,7 @@ int main(int argc, char** argv)
         "{microTime m    | 20            | time of recording audio with microphone in seconds }"
         "{frameSizeTime f| 5             | size of sliding window in seconds        }"
         "{updateTime u   | 1             | update time of sliding window in seconds }"
-        "{waitTime w     | 10            | parameter to cv.waitKey() for dynamic update of file input, takes values in milliseconds }"
+        "{waitTime w     | 10            | parameter to ncvslideio.waitKey() for dynamic update of file input, takes values in milliseconds }"
         ;
 
     CommandLineParser parser(argc, argv, keys);

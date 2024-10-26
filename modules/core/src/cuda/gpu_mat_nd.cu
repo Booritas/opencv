@@ -13,8 +13,8 @@
 #include "opencv2/core/cuda.hpp"
 #include "opencv2/cudev.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 GpuData::GpuData(const size_t _size)
     : data(nullptr), size(_size)

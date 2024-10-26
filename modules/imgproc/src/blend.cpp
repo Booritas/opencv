@@ -47,7 +47,7 @@
 #include "opencl_kernels_imgproc.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 #if (CV_SIMD || CV_SIMD_SCALABLE)
 static inline v_float32 blend(const v_float32& v_src1, const v_float32& v_src2, const v_float32& v_w1, const v_float32& v_w2)
 {
@@ -372,7 +372,7 @@ static bool ocl_blendLinear( InputArray _src1, InputArray _src2, InputArray _wei
 
 }
 
-void cv::blendLinear( InputArray _src1, InputArray _src2, InputArray _weights1, InputArray _weights2, OutputArray _dst )
+void ncvslideio::blendLinear( InputArray _src1, InputArray _src2, InputArray _weights1, InputArray _weights2, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 

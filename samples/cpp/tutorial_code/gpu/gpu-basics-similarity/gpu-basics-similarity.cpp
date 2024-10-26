@@ -11,7 +11,7 @@
 #include <opencv2/cudafilters.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 double getPSNR(const Mat& I1, const Mat& I2);      // CPU versions
 Scalar getMSSIM( const Mat& I1, const Mat& I2);

@@ -8,7 +8,7 @@
 #include "convert.simd.hpp"
 #include "convert.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 namespace hal {
 void cvt16f32f(const hfloat* src, float* dst, int len)
@@ -401,4 +401,4 @@ void convertFp16(InputArray _src, OutputArray _dst)
     }
 }
 
-} // namespace cv
+} // namespace ncvslideio

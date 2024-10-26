@@ -48,7 +48,7 @@
 
 #include "agast_score.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class BRISK_Impl CV_FINAL : public BRISK
@@ -172,8 +172,8 @@ protected:
         int weighted_dx; // 1024.0/dx
         int weighted_dy; // 1024.0/dy
     };
-    inline int smoothedIntensity(const cv::Mat& image,
-                const cv::Mat& integral,const float key_x,
+    inline int smoothedIntensity(const ncvslideio::Mat& image,
+                const ncvslideio::Mat& integral,const float key_x,
                 const float key_y, const unsigned int scale,
                 const unsigned int rot, const unsigned int point) const;
     // pattern properties
@@ -214,13 +214,13 @@ public:
     static const int TWOTHIRDSAMPLE = 1;
   };
   // construct a base layer
-  BriskLayer(const cv::Mat& img, float scale = 1.0f, float offset = 0.0f);
+  BriskLayer(const ncvslideio::Mat& img, float scale = 1.0f, float offset = 0.0f);
   // derive a layer
   BriskLayer(const BriskLayer& layer, int mode);
 
   // Agast without non-max suppression
   void
-  getAgastPoints(int threshold, std::vector<cv::KeyPoint>& keypoints);
+  getAgastPoints(int threshold, std::vector<ncvslideio::KeyPoint>& keypoints);
 
   // get scores - attention, this is in layer coordinates, not scale=1 coordinates!
   inline int
@@ -231,12 +231,12 @@ public:
   getAgastScore(float xf, float yf, int threshold, float scale = 1.0f) const;
 
   // accessors
-  inline const cv::Mat&
+  inline const ncvslideio::Mat&
   img() const
   {
     return img_;
   }
-  inline const cv::Mat&
+  inline const ncvslideio::Mat&
   scores() const
   {
     return scores_;
@@ -254,24 +254,24 @@ public:
 
   // half sampling
   static inline void
-  halfsample(const cv::Mat& srcimg, cv::Mat& dstimg);
+  halfsample(const ncvslideio::Mat& srcimg, ncvslideio::Mat& dstimg);
   // two third sampling
   static inline void
-  twothirdsample(const cv::Mat& srcimg, cv::Mat& dstimg);
+  twothirdsample(const ncvslideio::Mat& srcimg, ncvslideio::Mat& dstimg);
 
 private:
   // access gray values (smoothed/interpolated)
   inline int
-  value(const cv::Mat& mat, float xf, float yf, float scale) const;
+  value(const ncvslideio::Mat& mat, float xf, float yf, float scale) const;
   // the image
-  cv::Mat img_;
+  ncvslideio::Mat img_;
   // its Agast scores
-  cv::Mat_<uchar> scores_;
+  ncvslideio::Mat_<uchar> scores_;
   // coordinate transformation
   float scale_;
   float offset_;
   // agast
-  cv::Ptr<cv::AgastFeatureDetector> oast_9_16_;
+  ncvslideio::Ptr<ncvslideio::AgastFeatureDetector> oast_9_16_;
   int pixel_5_8_[25];
   int pixel_9_16_[25];
 };
@@ -285,11 +285,11 @@ public:
 
   // construct the image pyramids
   void
-  constructPyramid(const cv::Mat& image);
+  constructPyramid(const ncvslideio::Mat& image);
 
   // get Keypoints
   void
-  getKeypoints(const int _threshold, std::vector<cv::KeyPoint>& keypoints);
+  getKeypoints(const int _threshold, std::vector<ncvslideio::KeyPoint>& keypoints);
 
 protected:
   // nonmax suppression:
@@ -547,7 +547,7 @@ BRISK_Impl::generateKernel(const std::vector<float> &radiusList,
 
 // simple alternative:
 inline int
-BRISK_Impl::smoothedIntensity(const cv::Mat& image, const cv::Mat& integral, const float key_x,
+BRISK_Impl::smoothedIntensity(const ncvslideio::Mat& image, const ncvslideio::Mat& integral, const float key_x,
                                             const float key_y, const unsigned int scale, const unsigned int rot,
                                             const unsigned int point) const
 {
@@ -720,7 +720,7 @@ BRISK_Impl::detectAndCompute( InputArray _image, InputArray _mask, std::vector<K
 {
   bool doOrientation=true;
 
-  // If the user specified cv::noArray(), this will yield false. Otherwise it will return true.
+  // If the user specified ncvslideio::noArray(), this will yield false. Otherwise it will return true.
   bool doDescriptors = _descriptors.needed();
 
   computeDescriptorsAndOrOrientation(_image, _mask, keypoints, _descriptors, doDescriptors, doOrientation,
@@ -748,7 +748,7 @@ BRISK_Impl::computeDescriptorsAndOrOrientation(InputArray _image, InputArray _ma
   kscales.resize(ksize);
   static const float log2 = 0.693147180559945f;
   static const float lb_scalerange = (float)(std::log(scalerange_) / (log2));
-  std::vector<cv::KeyPoint>::iterator beginning = keypoints.begin();
+  std::vector<ncvslideio::KeyPoint>::iterator beginning = keypoints.begin();
   std::vector<int>::iterator beginningkscales = kscales.begin();
   static const float basicSize06 = basicSize_ * 0.6f;
   for (size_t k = 0; k < ksize; k++)
@@ -778,13 +778,13 @@ BRISK_Impl::computeDescriptorsAndOrOrientation(InputArray _image, InputArray _ma
 
   // first, calculate the integral image over the whole image:
   // current integral image
-  cv::Mat _integral; // the integral image
-  cv::integral(image, _integral);
+  ncvslideio::Mat _integral; // the integral image
+  ncvslideio::integral(image, _integral);
 
   int* _values = new int[points_]; // for temporary use
 
   // resize the descriptors:
-  cv::Mat descriptors;
+  ncvslideio::Mat descriptors;
   if (doDescriptors)
   {
     _descriptors.create((int)ksize, strings_, CV_8U);
@@ -802,7 +802,7 @@ BRISK_Impl::computeDescriptorsAndOrOrientation(InputArray _image, InputArray _ma
   const uchar* ptr = descriptors.ptr();
   for (size_t k = 0; k < ksize; k++)
   {
-    cv::KeyPoint& kp = keypoints[k];
+    ncvslideio::KeyPoint& kp = keypoints[k];
     const int& scale = kscales[k];
     const float& x = kp.pt.x;
     const float& y = kp.pt.y;
@@ -940,7 +940,7 @@ BriskScaleSpace::~BriskScaleSpace()
 }
 // construct the image pyramids
 void
-BriskScaleSpace::constructPyramid(const cv::Mat& image)
+BriskScaleSpace::constructPyramid(const ncvslideio::Mat& image)
 {
 
   // set correct size:
@@ -962,7 +962,7 @@ BriskScaleSpace::constructPyramid(const cv::Mat& image)
 }
 
 void
-BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& keypoints)
+BriskScaleSpace::getKeypoints(const int threshold_, std::vector<ncvslideio::KeyPoint>& keypoints)
 {
   // make sure keypoints is empty
   keypoints.resize(0);
@@ -970,7 +970,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
 
   // assign thresholds
   int safeThreshold_ = (int)(threshold_ * safetyFactor_);
-  std::vector<std::vector<cv::KeyPoint> > agastPoints;
+  std::vector<std::vector<ncvslideio::KeyPoint> > agastPoints;
   agastPoints.resize(layers_);
 
   // go through the octaves and intra layers and calculate agast corner scores:
@@ -987,7 +987,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
     const size_t num = agastPoints[0].size();
     for (size_t n = 0; n < num; n++)
     {
-      const cv::Point2f& point = agastPoints.at(0)[n].pt;
+      const ncvslideio::Point2f& point = agastPoints.at(0)[n].pt;
       // first check if it is a maximum:
       if (!isMax2D(0, (int)point.x, (int)point.y))
         continue;
@@ -1007,7 +1007,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
       float max = subpixel2D(s_0_0, s_0_1, s_0_2, s_1_0, s_1_1, s_1_2, s_2_0, s_2_1, s_2_2, delta_x, delta_y);
 
       // store:
-      keypoints.push_back(cv::KeyPoint(float(point.x) + delta_x, float(point.y) + delta_y, basicSize_, -1, max, 0));
+      keypoints.push_back(ncvslideio::KeyPoint(float(point.x) + delta_x, float(point.y) + delta_y, basicSize_, -1, max, 0));
 
     }
 
@@ -1023,7 +1023,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
     {
       for (size_t n = 0; n < num; n++)
       {
-        const cv::Point2f& point = agastPoints.at(i)[n].pt;
+        const ncvslideio::Point2f& point = agastPoints.at(i)[n].pt;
         // consider only 2D maxima...
         if (!isMax2D(i, (int)point.x, (int)point.y))
           continue;
@@ -1049,7 +1049,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
 
         // store:
         keypoints.push_back(
-            cv::KeyPoint((float(point.x) + delta_x) * l.scale() + l.offset(),
+            ncvslideio::KeyPoint((float(point.x) + delta_x) * l.scale() + l.offset(),
                          (float(point.y) + delta_y) * l.scale() + l.offset(), basicSize_ * l.scale(), -1, max, i));
       }
     }
@@ -1058,7 +1058,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
       // not the last layer:
       for (size_t n = 0; n < num; n++)
       {
-        const cv::Point2f& point = agastPoints.at(i)[n].pt;
+        const ncvslideio::Point2f& point = agastPoints.at(i)[n].pt;
 
         // first check if it is a maximum:
         if (!isMax2D(i, (int)point.x, (int)point.y))
@@ -1075,7 +1075,7 @@ BriskScaleSpace::getKeypoints(const int threshold_, std::vector<cv::KeyPoint>& k
         // finally store the detected keypoint:
         if (score > float(threshold_))
         {
-          keypoints.push_back(cv::KeyPoint(x, y, basicSize_ * scale, -1, score, i));
+          keypoints.push_back(ncvslideio::KeyPoint(x, y, basicSize_ * scale, -1, score, i));
         }
       }
     }
@@ -1230,7 +1230,7 @@ BriskScaleSpace::getScoreBelow(const int layer, const int x_layer, const int y_l
 inline bool
 BriskScaleSpace::isMax2D(const int layer, const int x_layer, const int y_layer)
 {
-  const cv::Mat& scores = pyramid_[layer].scores();
+  const ncvslideio::Mat& scores = pyramid_[layer].scores();
   const int scorescols = scores.cols;
   const uchar* data = scores.ptr() + y_layer * scorescols + x_layer;
   // decision tree:
@@ -2163,10 +2163,10 @@ BriskScaleSpace::subpixel2D(const int s_0_0, const int s_0_1, const int s_0_2, c
 }
 
 // construct a layer
-BriskLayer::BriskLayer(const cv::Mat& img_in, float scale_in, float offset_in)
+BriskLayer::BriskLayer(const ncvslideio::Mat& img_in, float scale_in, float offset_in)
 {
   img_ = img_in;
-  scores_ = cv::Mat_<uchar>::zeros(img_in.rows, img_in.cols);
+  scores_ = ncvslideio::Mat_<uchar>::zeros(img_in.rows, img_in.cols);
   // attention: this means that the passed image reference must point to persistent memory
   scale_ = scale_in;
   offset_ = offset_in;
@@ -2192,7 +2192,7 @@ BriskLayer::BriskLayer(const BriskLayer& layer, int mode)
     scale_ = layer.scale() * 1.5f;
     offset_ = 0.5f * scale_ - 0.5f;
   }
-  scores_ = cv::Mat::zeros(img_.rows, img_.cols, CV_8U);
+  scores_ = ncvslideio::Mat::zeros(img_.rows, img_.cols, CV_8U);
   oast_9_16_ = AgastFeatureDetector::create(1, false, AgastFeatureDetector::OAST_9_16);
   makeAgastOffsets(pixel_5_8_, (int)img_.step, AgastFeatureDetector::AGAST_5_8);
   makeAgastOffsets(pixel_9_16_, (int)img_.step, AgastFeatureDetector::OAST_9_16);
@@ -2279,13 +2279,13 @@ BriskLayer::getAgastScore(float xf, float yf, int threshold_in, float scale_in) 
 
 // access gray values (smoothed/interpolated)
 inline int
-BriskLayer::value(const cv::Mat& mat, float xf, float yf, float scale_in) const
+BriskLayer::value(const ncvslideio::Mat& mat, float xf, float yf, float scale_in) const
 {
   CV_Assert(!mat.empty());
   // get the position
   const int x = cvFloor(xf);
   const int y = cvFloor(yf);
-  const cv::Mat& image = mat;
+  const ncvslideio::Mat& image = mat;
   const int& imagecols = image.cols;
 
   // get the sigma_half:
@@ -2386,7 +2386,7 @@ BriskLayer::value(const cv::Mat& mat, float xf, float yf, float scale_in) const
 
 // half sampling
 inline void
-BriskLayer::halfsample(const cv::Mat& srcimg, cv::Mat& dstimg)
+BriskLayer::halfsample(const ncvslideio::Mat& srcimg, ncvslideio::Mat& dstimg)
 {
   // make sure the destination image is of the right size:
   CV_Assert(srcimg.cols / 2 == dstimg.cols);
@@ -2397,7 +2397,7 @@ BriskLayer::halfsample(const cv::Mat& srcimg, cv::Mat& dstimg)
 }
 
 inline void
-BriskLayer::twothirdsample(const cv::Mat& srcimg, cv::Mat& dstimg)
+BriskLayer::twothirdsample(const ncvslideio::Mat& srcimg, ncvslideio::Mat& dstimg)
 {
   // make sure the destination image is of the right size:
   CV_Assert((srcimg.cols / 3) * 2 == dstimg.cols);

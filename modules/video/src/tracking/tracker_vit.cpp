@@ -9,7 +9,7 @@
 #include "opencv2/dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 TrackerVit::TrackerVit()
 {

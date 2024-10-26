@@ -7,7 +7,7 @@
 
 #if CV_RVP052
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 namespace opt_RVP052 {
 

@@ -20,7 +20,7 @@
 #include <gst/video/video-frame.h>
 #include <gst/pbutils/missing-plugins.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -48,7 +48,7 @@ GStreamerPipelineFacade::GStreamerPipelineFacade(const std::string& pipelineDesc
 
     if (err)
     {
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
             std::runtime_error("Error in parsing pipeline: " + std::string(err->message)));
     }
 }
@@ -235,7 +235,7 @@ void GStreamerPipelineFacade::verifyStateChange(GstStateChangeReturn status)
         PipelineState state = queryState();
         const gchar* currentState = gst_element_state_get_name(state.current);
         const gchar* pendingState = gst_element_state_get_name(state.pending);
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
             std::runtime_error(std::string("Unable to change pipeline state from ") +
                                std::string(currentState) + std::string(" to ") +
                                std::string(pendingState)));
@@ -261,7 +261,7 @@ void GStreamerPipelineFacade::checkBusMessages() const
         if (gst_is_missing_plugin_message(msg))
         {
             GStreamerPtr<gchar> descr(gst_missing_plugin_message_get_description(msg));
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                 std::runtime_error("Your GStreamer installation is missing a required plugin!"
                                    "Details: " + std::string(descr)));
         }
@@ -310,5 +310,5 @@ void GStreamerPipelineFacade::checkBusMessages() const
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER

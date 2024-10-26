@@ -33,7 +33,7 @@ std::string keys =
                         "6: CUDA, "
                         "7: CUDA fp16 (half-float preprocess) }";
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace dnn;
 
 std::vector<std::string> classes;

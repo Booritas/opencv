@@ -1,10 +1,10 @@
 /**
  * @file core_reduce.cpp
- * @brief It demonstrates the usage of cv::reduce .
+ * @brief It demonstrates the usage of ncvslideio::reduce .
  *
  * It shows how to compute the row sum, column sum, row average,
  * column average, row minimum, column minimum, row maximum
- * and column maximum of a cv::Mat.
+ * and column maximum of a ncvslideio::Mat.
  *
  * @author KUANG Fangjun
  * @date August 2017
@@ -14,7 +14,7 @@
 #include <opencv2/core.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main()
 {

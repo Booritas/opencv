@@ -18,8 +18,8 @@ Test for Tensorflow models loading
 namespace opencv_test
 {
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 template<typename TString>
 static std::string _tf(TString filename)
@@ -93,8 +93,8 @@ public:
         std::string inpPath = path(prefix + "_in.npy");
         std::string outPath = path(prefix + groupPrefix + "_out.npy");
 
-        cv::Mat input = blobFromNPY(inpPath);
-        cv::Mat ref = blobFromNPY(outPath);
+        ncvslideio::Mat input = blobFromNPY(inpPath);
+        ncvslideio::Mat ref = blobFromNPY(outPath);
         checkBackend(&input, &ref);
 
         Net net;
@@ -121,7 +121,7 @@ public:
         net.setPreferableBackend(backend);
         net.setPreferableTarget(target);
         net.setInput(input);
-        cv::Mat output = net.forward();
+        ncvslideio::Mat output = net.forward();
         normAssert(ref, output, "", l1 ? l1 : default_l1, lInf ? lInf : default_lInf);
 
         if (cvtest::debugLevel > 0 || HasFailure())
@@ -1853,27 +1853,27 @@ TEST_P(Test_TensorFlow_nets, Mask_RCNN)
     int masksSize[] = {1, numDetections, outMasks.size[2], outMasks.size[3]};
     Mat masks(4, &masksSize[0], CV_32F);
 
-    std::vector<cv::Range> srcRanges(4, cv::Range::all());
-    std::vector<cv::Range> dstRanges(4, cv::Range::all());
+    std::vector<ncvslideio::Range> srcRanges(4, ncvslideio::Range::all());
+    std::vector<ncvslideio::Range> dstRanges(4, ncvslideio::Range::all());
 
     outDetections = outDetections.reshape(1, outDetections.total() / 7);
     for (int i = 0; i < numDetections; ++i)
     {
         // Get a class id for this bounding box and copy mask only for that class.
         int classId = static_cast<int>(outDetections.at<float>(i, 1));
-        srcRanges[0] = dstRanges[1] = cv::Range(i, i + 1);
-        srcRanges[1] = cv::Range(classId, classId + 1);
+        srcRanges[0] = dstRanges[1] = ncvslideio::Range(i, i + 1);
+        srcRanges[1] = ncvslideio::Range(classId, classId + 1);
         outMasks(srcRanges).copyTo(masks(dstRanges));
     }
-    cv::Range topRefMasks[] = {Range::all(), Range(0, numDetections), Range::all(), Range::all()};
+    ncvslideio::Range topRefMasks[] = {Range::all(), Range(0, numDetections), Range::all(), Range::all()};
     refMasks = refMasks(&topRefMasks[0]);
 
     // make binary masks
-    cv::threshold(masks.reshape(1, 1), masks, kMaskThreshold, 1, THRESH_BINARY);
-    cv::threshold(refMasks.reshape(1, 1), refMasks, kMaskThreshold, 1, THRESH_BINARY);
+    ncvslideio::threshold(masks.reshape(1, 1), masks, kMaskThreshold, 1, THRESH_BINARY);
+    ncvslideio::threshold(refMasks.reshape(1, 1), refMasks, kMaskThreshold, 1, THRESH_BINARY);
 
-    double inter = cv::countNonZero(masks & refMasks);
-    double area = cv::countNonZero(masks | refMasks);
+    double inter = ncvslideio::countNonZero(masks & refMasks);
+    double area = ncvslideio::countNonZero(masks | refMasks);
     EXPECT_GE(inter / area, (target == DNN_TARGET_OPENCL_FP16 || target == DNN_TARGET_MYRIAD || target == DNN_TARGET_CPU_FP16) ? 0.98 : 0.99);
 
     if (backend == DNN_BACKEND_INFERENCE_ENGINE_NGRAPH)

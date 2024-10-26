@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "logtagconfigparser.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 
@@ -211,62 +211,62 @@ std::pair<LogLevel, bool> LogTagConfigParser::parseLogLevel(const std::string& s
             break;
         case 'D':
             if (len == 1u ||
-                (len == 5u && cv::toUpperCase(s) == "DEBUG"))
+                (len == 5u && ncvslideio::toUpperCase(s) == "DEBUG"))
             {
                 return make_parsed_result(LOG_LEVEL_DEBUG);
             }
-            if ((len == 7u && cv::toUpperCase(s) == "DISABLE") ||
-                (len == 8u && cv::toUpperCase(s) == "DISABLED"))
+            if ((len == 7u && ncvslideio::toUpperCase(s) == "DISABLE") ||
+                (len == 8u && ncvslideio::toUpperCase(s) == "DISABLED"))
             {
                 return make_parsed_result(LOG_LEVEL_SILENT);
             }
             break;
         case 'E':
             if (len == 1u ||
-                (len == 5u && cv::toUpperCase(s) == "ERROR"))
+                (len == 5u && ncvslideio::toUpperCase(s) == "ERROR"))
             {
                 return make_parsed_result(LOG_LEVEL_ERROR);
             }
             break;
         case 'F':
             if (len == 1u ||
-                (len == 5u && cv::toUpperCase(s) == "FATAL"))
+                (len == 5u && ncvslideio::toUpperCase(s) == "FATAL"))
             {
                 return make_parsed_result(LOG_LEVEL_FATAL);
             }
             break;
         case 'I':
             if (len == 1u ||
-                (len == 4u && cv::toUpperCase(s) == "INFO"))
+                (len == 4u && ncvslideio::toUpperCase(s) == "INFO"))
             {
                 return make_parsed_result(LOG_LEVEL_INFO);
             }
             break;
         case 'O':
-            if (len == 3u && cv::toUpperCase(s) == "OFF")
+            if (len == 3u && ncvslideio::toUpperCase(s) == "OFF")
             {
                 return make_parsed_result(LOG_LEVEL_SILENT);
             }
             break;
         case 'S':
             if (len == 1u ||
-                (len == 6u && cv::toUpperCase(s) == "SILENT"))
+                (len == 6u && ncvslideio::toUpperCase(s) == "SILENT"))
             {
                 return make_parsed_result(LOG_LEVEL_SILENT);
             }
             break;
         case 'V':
             if (len == 1u ||
-                (len == 7u && cv::toUpperCase(s) == "VERBOSE"))
+                (len == 7u && ncvslideio::toUpperCase(s) == "VERBOSE"))
             {
                 return make_parsed_result(LOG_LEVEL_VERBOSE);
             }
             break;
         case 'W':
             if (len == 1u ||
-                (len == 4u && cv::toUpperCase(s) == "WARN") ||
-                (len == 7u && cv::toUpperCase(s) == "WARNING") ||
-                (len == 8u && cv::toUpperCase(s) == "WARNINGS"))
+                (len == 4u && ncvslideio::toUpperCase(s) == "WARN") ||
+                (len == 7u && ncvslideio::toUpperCase(s) == "WARNING") ||
+                (len == 8u && ncvslideio::toUpperCase(s) == "WARNINGS"))
             {
                 return make_parsed_result(LOG_LEVEL_WARNING);
             }

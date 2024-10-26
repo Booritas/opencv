@@ -124,12 +124,12 @@ TEST(Imgproc_MatchTemplate, bug_9597) {
                 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245,
                 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245,
                 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245, 245 };
-        cv::Mat cvimg(cv::Size(61, 82), CV_8UC1, (void*)img, cv::Mat::AUTO_STEP);
-        cv::Mat cvtmpl(cv::Size(17, 17), CV_8UC1, (void*)tmpl, cv::Mat::AUTO_STEP);
-        cv::Mat result;
-        cv::matchTemplate(cvimg, cvtmpl, result, cv::TM_SQDIFF);
+        ncvslideio::Mat cvimg(ncvslideio::Size(61, 82), CV_8UC1, (void*)img, ncvslideio::Mat::AUTO_STEP);
+        ncvslideio::Mat cvtmpl(ncvslideio::Size(17, 17), CV_8UC1, (void*)tmpl, ncvslideio::Mat::AUTO_STEP);
+        ncvslideio::Mat result;
+        ncvslideio::matchTemplate(cvimg, cvtmpl, result, ncvslideio::TM_SQDIFF);
         double minValue;
-        cv::minMaxLoc(result, &minValue, NULL, NULL, NULL);
+        ncvslideio::minMaxLoc(result, &minValue, NULL, NULL, NULL);
         ASSERT_GE(minValue, 0);
 }
 
@@ -137,7 +137,7 @@ TEST(Imgproc_MatchTemplate, bug_9597) {
 
 static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const int method)
 {
-    CV_Assert(cv::TM_SQDIFF <= method && method <= cv::TM_CCOEFF_NORMED);
+    CV_Assert(ncvslideio::TM_SQDIFF <= method && method <= ncvslideio::TM_CCOEFF_NORMED);
 
     const Size res_sz(img.cols - templ.cols + 1, img.rows - templ.rows + 1);
     result.create(res_sz, CV_32FC1);
@@ -152,7 +152,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
 
     Scalar b_mean = Scalar::all(0);
     Scalar b_sdv = Scalar::all(0);
-    cv::meanStdDev(templ, b_mean, b_sdv);
+    ncvslideio::meanStdDev(templ, b_mean, b_sdv);
 
     double b_sum2 = 0.;
     for (int i = 0; i < cn; i++ )
@@ -160,7 +160,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
 
     if (b_sdv.val[0] * b_sdv.val[0] + b_sdv.val[1] * b_sdv.val[1] +
         b_sdv.val[2] * b_sdv.val[2] + b_sdv.val[3] * b_sdv.val[3] < DBL_EPSILON &&
-        method == cv::TM_CCOEFF_NORMED)
+        method == ncvslideio::TM_CCOEFF_NORMED)
     {
         result = Scalar::all(1.);
         return;
@@ -170,7 +170,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
     if (method & 1) // _NORMED
     {
         b_denom = 0;
-        if (method != cv::TM_CCOEFF_NORMED)
+        if (method != ncvslideio::TM_CCOEFF_NORMED)
         {
             b_denom = b_sum2;
         }
@@ -197,7 +197,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
                 const uchar* a = img.ptr<uchar>(i, j); // ??? ->data.ptr + i*img->step + j*cn;
                 const uchar* b = templ.ptr<uchar>();
 
-                if( cn == 1 || method < cv::TM_CCOEFF )
+                if( cn == 1 || method < ncvslideio::TM_CCOEFF )
                 {
                     for (int k = 0; k < height; k++, a += a_step, b += b_step)
                         for (int l = 0; l < width_n; l++)
@@ -229,7 +229,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
                 const float* a = img.ptr<float>(i, j); // ???? (const float*)(img->data.ptr + i*img->step) + j*cn;
                 const float* b = templ.ptr<float>();
 
-                if( cn == 1 || method < cv::TM_CCOEFF )
+                if( cn == 1 || method < ncvslideio::TM_CCOEFF )
                 {
                     for (int k = 0; k < height; k++, a += a_step, b += b_step)
                         for (int l = 0; l < width_n; l++)
@@ -259,12 +259,12 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
 
             switch( method )
             {
-            case cv::TM_CCORR:
-            case cv::TM_CCORR_NORMED:
+            case ncvslideio::TM_CCORR:
+            case ncvslideio::TM_CCORR_NORMED:
                 value = ccorr.val[0];
                 break;
-            case cv::TM_SQDIFF:
-            case cv::TM_SQDIFF_NORMED:
+            case ncvslideio::TM_SQDIFF:
+            case ncvslideio::TM_SQDIFF_NORMED:
                 value = (a_sum2.val[0] + b_sum2 - 2*ccorr.val[0]);
                 break;
             default:
@@ -278,7 +278,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
                 double denom;
 
                 // calc denominator
-                if( method != cv::TM_CCOEFF_NORMED )
+                if( method != ncvslideio::TM_CCOEFF_NORMED )
                 {
                     denom = a_sum2.val[0] + a_sum2.val[1] + a_sum2.val[2];
                 }
@@ -294,7 +294,7 @@ static void matchTemplate_reference(Mat & img, Mat & templ, Mat & result, const 
                 else if( fabs(value) < denom*1.125 )
                     value = value > 0 ? 1 : -1;
                 else
-                    value = method != cv::TM_SQDIFF_NORMED ? 0 : 1;
+                    value = method != ncvslideio::TM_SQDIFF_NORMED ? 0 : 1;
             }
             result.at<float>(i, j) = (float)value;
         }
@@ -315,7 +315,7 @@ TEST_P(matchTemplate_Modes, accuracy)
 
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const Size imgSize(rng.uniform(128, 320), rng.uniform(128, 240));
         const Size templSize(rng.uniform(1, 30), rng.uniform(1, 30));
@@ -325,7 +325,7 @@ TEST_P(matchTemplate_Modes, accuracy)
         cvtest::randUni(rng, templ, Scalar::all(0), Scalar::all(255));
 
         Mat result;
-        cv::matchTemplate(img, templ, result, method);
+        ncvslideio::matchTemplate(img, templ, result, method);
 
         Mat reference;
         matchTemplate_reference(img, templ, reference, method);

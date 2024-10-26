@@ -27,9 +27,9 @@
 #  pragma GCC diagnostic ignored "-Wstrict-overflow"
 #endif
 
-using cv::gapi::own::saturate;
+using ncvslideio::gapi::own::saturate;
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -3160,6 +3160,6 @@ CV_CPU_OPTIMIZATION_NAMESPACE_END
 
 }  // namespace fluid
 }  // namespace gapi
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // !defined(GAPI_STANDALONE)

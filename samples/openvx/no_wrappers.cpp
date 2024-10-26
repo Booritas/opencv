@@ -27,14 +27,14 @@ enum UserMemoryMode
     COPY, USER_MEM
 };
 
-vx_image convertCvMatToVxImage(vx_context context, cv::Mat image, bool toCopy);
-cv::Mat copyVxImageToCvMat(vx_image ovxImage);
+vx_image convertCvMatToVxImage(vx_context context, ncvslideio::Mat image, bool toCopy);
+ncvslideio::Mat copyVxImageToCvMat(vx_image ovxImage);
 void swapVxImage(vx_image ovxImage);
 vx_status createProcessingGraph(vx_image inputImage, vx_image outputImage, vx_graph& graph);
 int ovxDemo(std::string inputPath, UserMemoryMode mode);
 
 
-vx_image convertCvMatToVxImage(vx_context context, cv::Mat image, bool toCopy)
+vx_image convertCvMatToVxImage(vx_context context, ncvslideio::Mat image, bool toCopy)
 {
     if (!(!image.empty() && image.dims <= 2 && image.channels() == 1))
         throw std::runtime_error("Invalid format");
@@ -105,7 +105,7 @@ vx_image convertCvMatToVxImage(vx_context context, cv::Mat image, bool toCopy)
 }
 
 
-cv::Mat copyVxImageToCvMat(vx_image ovxImage)
+ncvslideio::Mat copyVxImageToCvMat(vx_image ovxImage)
 {
     vx_status status;
     vx_df_image df_image = 0;
@@ -142,7 +142,7 @@ cv::Mat copyVxImageToCvMat(vx_image ovxImage)
         break;
     }
 
-    cv::Mat image(height, width, CV_MAKE_TYPE(depth, 1));
+    ncvslideio::Mat image(height, width, CV_MAKE_TYPE(depth, 1));
 
     vx_rectangle_t rect;
     rect.start_x = rect.start_y = 0;
@@ -268,7 +268,7 @@ vx_status createProcessingGraph(vx_image inputImage, vx_image outputImage, vx_gr
 
 int ovxDemo(std::string inputPath, UserMemoryMode mode)
 {
-    cv::Mat image = cv::imread(inputPath, cv::IMREAD_GRAYSCALE);
+    ncvslideio::Mat image = ncvslideio::imread(inputPath, ncvslideio::IMREAD_GRAYSCALE);
     if (image.empty()) return -1;
 
     //check image format
@@ -279,17 +279,17 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
     status = vxGetStatus((vx_reference)context);
     if (status != VX_SUCCESS) return status;
 
-    //put user data from cv::Mat to vx_image
+    //put user data from ncvslideio::Mat to vx_image
     vx_image ovxImage;
     ovxImage = convertCvMatToVxImage(context, image, mode == COPY);
 
     vx_uint32 width = image.cols, height = image.rows;
 
     vx_image ovxResult;
-    cv::Mat output;
+    ncvslideio::Mat output;
     if (mode == COPY)
     {
-        //we will copy data from vx_image to cv::Mat
+        //we will copy data from vx_image to ncvslideio::Mat
         ovxResult = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
         if (vxGetStatus((vx_reference)ovxResult) != VX_SUCCESS)
             throw std::runtime_error("Failed to create image");
@@ -297,7 +297,7 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
     else
     {
         //create vx_image based on user data, no copying required
-        output = cv::Mat(height, width, CV_8U, cv::Scalar(0));
+        output = ncvslideio::Mat(height, width, CV_8U, ncvslideio::Scalar(0));
         ovxResult = convertCvMatToVxImage(context, output, false);
     }
 
@@ -309,7 +309,7 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
     status = vxProcessGraph(graph);
     if (status != VX_SUCCESS) return status;
 
-    //getting resulting image in cv::Mat
+    //getting resulting image in ncvslideio::Mat
     if (mode == COPY)
     {
         output = copyVxImageToCvMat(ovxResult);
@@ -321,14 +321,14 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
     }
 
     //here output goes
-    cv::imshow("processing result", output);
-    cv::waitKey(0);
+    ncvslideio::imshow("processing result", output);
+    ncvslideio::waitKey(0);
 
     //we need to take user memory back before releasing the image
     if (mode == USER_MEM)
         swapVxImage(ovxImage);
 
-    cv::destroyAllWindows();
+    ncvslideio::destroyAllWindows();
 
     status = vxReleaseContext(&context);
     return status;
@@ -345,7 +345,7 @@ int main(int argc, char *argv[])
         "user_mem: use handles to user-allocated memory}"
         ;
 
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     parser.about("OpenVX interoperability sample demonstrating standard OpenVX API."
                  "The application loads an image, processes it with OpenVX graph and outputs result in a window");
     if (parser.has("help"))

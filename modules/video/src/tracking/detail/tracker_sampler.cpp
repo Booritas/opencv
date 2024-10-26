@@ -6,7 +6,7 @@
 
 #include "opencv2/video/detail/tracking.detail.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -65,4 +65,4 @@ void TrackerSampler::clearSamples()
     samples.clear();
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

@@ -30,7 +30,7 @@
 #include <utility>
 #include <algorithm>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     struct ConvolutionConfiguration {
         /* the size of the following vectors must be equal to the kernel size */
@@ -286,8 +286,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             /* input[0] = conv input, input[1] = bias (from fused eltwise layer) */
@@ -603,6 +603,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         } fusion_location;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_CONVOLUTION_HPP */

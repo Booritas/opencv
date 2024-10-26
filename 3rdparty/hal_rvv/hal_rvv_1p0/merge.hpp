@@ -3,16 +3,16 @@
 
 #include <riscv_vector.h>
 
-namespace cv { namespace cv_hal_rvv {
+namespace ncvslideio { namespace cv_hal_rvv {
 
 #undef cv_hal_merge8u
-#define cv_hal_merge8u cv::cv_hal_rvv::merge8u
+#define cv_hal_merge8u ncvslideio::cv_hal_rvv::merge8u
 #undef cv_hal_merge16u
-#define cv_hal_merge16u cv::cv_hal_rvv::merge16u
+#define cv_hal_merge16u ncvslideio::cv_hal_rvv::merge16u
 #undef cv_hal_merge32s
-#define cv_hal_merge32s cv::cv_hal_rvv::merge32s
+#define cv_hal_merge32s ncvslideio::cv_hal_rvv::merge32s
 #undef cv_hal_merge64s
-#define cv_hal_merge64s cv::cv_hal_rvv::merge64s
+#define cv_hal_merge64s ncvslideio::cv_hal_rvv::merge64s
 
 #if defined __GNUC__
 __attribute__((optimize("no-tree-vectorize")))

@@ -49,7 +49,7 @@ OCL_PERF_TEST_P(HoughLinesFixture, HoughLines, Combine(OCL_TEST_SIZES,
 
     declare.in(usrc).out(lines);
 
-    OCL_TEST_CYCLE() cv::HoughLines(usrc, lines, rhoStep, thetaStep, threshold);
+    OCL_TEST_CYCLE() ncvslideio::HoughLines(usrc, lines, rhoStep, thetaStep, threshold);
 
     Mat result;
     lines.copyTo(result);
@@ -63,7 +63,7 @@ OCL_PERF_TEST_P(HoughLinesFixture, HoughLines, Combine(OCL_TEST_SIZES,
 typedef tuple<string, double, double> Image_RhoStep_ThetaStep_t;
 typedef TestBaseWithParam<Image_RhoStep_ThetaStep_t> HoughLinesPFixture;
 
-OCL_PERF_TEST_P(HoughLinesPFixture, HoughLinesP, Combine(Values("cv/shared/pic5.png", "stitching/a1.png"),
+OCL_PERF_TEST_P(HoughLinesPFixture, HoughLinesP, Combine(Values("ncvslideio/shared/pic5.png", "stitching/a1.png"),
                                                          Values( 0.1, 1 ),
                                                          Values( CV_PI / 180.0, 0.1 )))
 {
@@ -80,7 +80,7 @@ OCL_PERF_TEST_P(HoughLinesPFixture, HoughLinesP, Combine(Values("cv/shared/pic5.
 
     declare.in(usrc).out(lines);
 
-    OCL_TEST_CYCLE() cv::HoughLinesP(usrc, lines, rhoStep, thetaStep, threshold, minLineLength, maxGap);
+    OCL_TEST_CYCLE() ncvslideio::HoughLinesP(usrc, lines, rhoStep, thetaStep, threshold, minLineLength, maxGap);
 
     EXPECT_NE((int) lines.total(), 0);
     SANITY_CHECK_NOTHING();

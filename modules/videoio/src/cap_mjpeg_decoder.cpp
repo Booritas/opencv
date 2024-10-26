@@ -42,7 +42,7 @@
 #include "precomp.hpp"
 #include "opencv2/videoio/container_avi.private.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class MotionJpegCapture: public IVideoCapture

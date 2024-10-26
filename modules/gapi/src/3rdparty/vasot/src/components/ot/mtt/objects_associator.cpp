@@ -27,7 +27,7 @@ ObjectsAssociator::~ObjectsAssociator() {
 std::pair<std::vector<bool>, std::vector<int32_t>>
 ObjectsAssociator::Associate(const std::vector<Detection> &detections,
                              const std::vector<std::shared_ptr<Tracklet>> &tracklets,
-                             const std::vector<cv::Mat> *detection_rgb_features) {
+                             const std::vector<ncvslideio::Mat> *detection_rgb_features) {
     PROF_START(PROF_COMPONENTS_OT_ASSOCIATE_COMPUTE_DIST_TABLE);
     std::vector<std::vector<float>> d2t_rgb_dist_table;
 
@@ -68,7 +68,7 @@ ObjectsAssociator::Associate(const std::vector<Detection> &detections,
 
     PROF_START(PROF_COMPONENTS_OT_ASSOCIATE_COMPUTE_COST_TABLE);
     // Compute detection-tracklet association cost table
-    cv::Mat_<float> d2t_cost_table;
+    ncvslideio::Mat_<float> d2t_cost_table;
     d2t_cost_table.create(static_cast<int32_t>(detections.size()),
                           static_cast<int32_t>(tracklets.size() + detections.size()));
     d2t_cost_table = kAssociationCostThreshold + 1.0f;
@@ -110,7 +110,7 @@ ObjectsAssociator::Associate(const std::vector<Detection> &detections,
     // Solve detection-tracking association using Hungarian algorithm
     PROF_START(PROF_COMPONENTS_OT_ASSOCIATE_WITH_HUNGARIAN);
     HungarianAlgo hungarian(d2t_cost_table);
-    cv::Mat_<uint8_t> d2t_assign_table = hungarian.Solve();
+    ncvslideio::Mat_<uint8_t> d2t_assign_table = hungarian.Solve();
     PROF_END(PROF_COMPONENTS_OT_ASSOCIATE_WITH_HUNGARIAN);
 
     for (std::size_t d = 0; d < n_detections; ++d) {
@@ -129,7 +129,7 @@ ObjectsAssociator::Associate(const std::vector<Detection> &detections,
 std::vector<std::vector<float>>
 ObjectsAssociator::ComputeRgbDistance(const std::vector<Detection> &detections,
                                       const std::vector<std::shared_ptr<Tracklet>> &tracklets,
-                                      const std::vector<cv::Mat> *detection_rgb_features) {
+                                      const std::vector<ncvslideio::Mat> *detection_rgb_features) {
     auto n_detections = detections.size();
     auto n_tracklets = tracklets.size();
 
@@ -153,7 +153,7 @@ ObjectsAssociator::ComputeRgbDistance(const std::vector<Detection> &detections,
     return d2t_rgb_dist_table;
 }
 
-float ObjectsAssociator::NormalizedCenterDistance(const cv::Rect2f &r1, const cv::Rect2f &r2) {
+float ObjectsAssociator::NormalizedCenterDistance(const ncvslideio::Rect2f &r1, const ncvslideio::Rect2f &r2) {
     float normalizer = std::min(0.5f * (r1.width + r1.height), 0.5f * (r2.width + r2.height));
 
     float r1x = r1.x + 0.5f * r1.width;
@@ -165,7 +165,7 @@ float ObjectsAssociator::NormalizedCenterDistance(const cv::Rect2f &r1, const cv
     return std::sqrt(dx * dx + dy * dy);
 }
 
-float ObjectsAssociator::NormalizedShapeDistance(const cv::Rect2f &r1, const cv::Rect2f &r2) {
+float ObjectsAssociator::NormalizedShapeDistance(const ncvslideio::Rect2f &r1, const ncvslideio::Rect2f &r2) {
     int32_t normalize_w = int32_t(r1.width);
     int32_t normalize_h = int32_t(r1.height);
 

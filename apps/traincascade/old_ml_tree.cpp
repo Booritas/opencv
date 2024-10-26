@@ -41,7 +41,7 @@
 #include "old_ml_precomp.hpp"
 #include <ctype.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 static const float ord_nan = FLT_MAX*0.5f;
 static const int min_block_size = 1 << 16;
@@ -93,17 +93,17 @@ bool CvDTreeTrainData::set_params( const CvDTreeParams& _params )
     params = _params;
 
     if( params.max_categories < 2 )
-        CV_ERROR( cv::Error::StsOutOfRange, "params.max_categories should be >= 2" );
+        CV_ERROR( ncvslideio::Error::StsOutOfRange, "params.max_categories should be >= 2" );
     params.max_categories = MIN( params.max_categories, 15 );
 
     if( params.max_depth < 0 )
-        CV_ERROR( cv::Error::StsOutOfRange, "params.max_depth should be >= 0" );
+        CV_ERROR( ncvslideio::Error::StsOutOfRange, "params.max_depth should be >= 0" );
     params.max_depth = MIN( params.max_depth, 25 );
 
     params.min_sample_count = MAX(params.min_sample_count,1);
 
     if( params.cv_folds < 0 )
-        CV_ERROR( cv::Error::StsOutOfRange,
+        CV_ERROR( ncvslideio::Error::StsOutOfRange,
         "params.cv_folds should be =0 (the tree is not pruned) "
         "or n>0 (tree is pruned using n-fold cross-validation)" );
 
@@ -111,7 +111,7 @@ bool CvDTreeTrainData::set_params( const CvDTreeParams& _params )
         params.cv_folds = 0;
 
     if( params.regression_accuracy < 0 )
-        CV_ERROR( cv::Error::StsOutOfRange, "params.regression_accuracy should be >= 0" );
+        CV_ERROR( ncvslideio::Error::StsOutOfRange, "params.regression_accuracy should be >= 0" );
 
     ok = true;
 
@@ -183,7 +183,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
             cvNorm( data->var_type, var_type, CV_C ) < FLT_EPSILON &&
             cvNorm( data->cat_count, cat_count, CV_C ) < FLT_EPSILON &&
             cvNorm( data->cat_map, cat_map, CV_C ) < FLT_EPSILON) )
-            CV_ERROR( cv::Error::StsBadArg,
+            CV_ERROR( ncvslideio::Error::StsBadArg,
             "The new training data must have the same types and the input and output variables "
             "and the same categories for categorical variables" );
 
@@ -212,7 +212,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
     clear();
 
     var_all = 0;
-    rng = &cv::theRNG();
+    rng = &ncvslideio::theRNG();
 
     CV_CALL( set_params( _params ));
 
@@ -264,7 +264,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
          CV_MAT_TYPE(_responses->type) != CV_32FC1) ||
         (_responses->rows != 1 && _responses->cols != 1) ||
         _responses->rows + _responses->cols - 1 != sample_all )
-        CV_ERROR( cv::Error::StsBadArg, "The array of _responses must be an integer or "
+        CV_ERROR( ncvslideio::Error::StsBadArg, "The array of _responses must be an integer or "
                   "floating-point vector containing as many elements as "
                   "the total number of samples in the training data matrix" );
 
@@ -317,7 +317,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
 
     if ((uint64)effective_buf_width * (uint64)effective_buf_height != effective_buf_size)
     {
-        CV_Error(cv::Error::StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
+        CV_Error(ncvslideio::Error::StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
     }
 
 
@@ -360,7 +360,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
     if( cv_n )
     {
         if( sample_count < cv_n*MAX(params.min_sample_count,10) )
-            CV_ERROR( cv::Error::StsOutOfRange,
+            CV_ERROR( ncvslideio::Error::StsOutOfRange,
                 "The many folds in cross-validation for such a small dataset" );
 
         cv_size = cvAlign( cv_n*(sizeof(int) + sizeof(double)*2), sizeof(double) );
@@ -444,7 +444,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
                         {
                             snprintf( err, sizeof(err), "%d-th value of %d-th (categorical) "
                                 "variable is not an integer", i, vi );
-                            CV_ERROR( cv::Error::StsBadArg, err );
+                            CV_ERROR( ncvslideio::Error::StsBadArg, err );
                         }
                     }
 
@@ -452,7 +452,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
                     {
                         snprintf( err, sizeof(err), "%d-th value of %d-th (categorical) "
                             "variable is too large", i, vi );
-                        CV_ERROR( cv::Error::StsBadArg, err );
+                        CV_ERROR( ncvslideio::Error::StsBadArg, err );
                     }
                     num_valid++;
                 }
@@ -559,7 +559,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
                     {
                         snprintf( err, sizeof(err), "%d-th value of %d-th (ordered) "
                             "variable (=%g) is too large", i, vi, val );
-                        CV_ERROR( cv::Error::StsBadArg, err );
+                        CV_ERROR( ncvslideio::Error::StsBadArg, err );
                     }
                     num_valid++;
                 }
@@ -652,7 +652,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
         {
             double val = have_priors ? params.priors[i] : 1.;
             if( val <= 0 )
-                CV_ERROR( cv::Error::StsOutOfRange, "Every class weight should be positive" );
+                CV_ERROR( ncvslideio::Error::StsOutOfRange, "Every class weight should be positive" );
             priors->data.db[i] = val;
             sum += val;
         }
@@ -705,7 +705,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data( const CvMat* _subsample_idx )
     __BEGIN__;
 
     if( !data_root )
-        CV_ERROR( cv::Error::StsError, "No training data has been set" );
+        CV_ERROR( ncvslideio::Error::StsError, "No training data has been set" );
 
     if( _subsample_idx )
     {
@@ -772,7 +772,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data( const CvMat* _subsample_idx )
                 co[i*2+1] = -1;
         }
 
-        cv::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
+        ncvslideio::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
         for( vi = 0; vi < workVarCount; vi++ )
         {
             int ci = get_var_type(vi);
@@ -911,7 +911,7 @@ void CvDTreeTrainData::get_vectors( const CvMat* _subsample_idx,
     int* sidx = 0;
     int* co = 0;
 
-    cv::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
+    ncvslideio::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
     if( _subsample_idx )
     {
         CV_CALL( subsample_idx = cvPreprocessIndexArray( _subsample_idx, sample_count ));
@@ -1166,7 +1166,7 @@ void CvDTreeTrainData::clear()
 
     data_root = 0;
 
-    rng = &cv::theRNG();
+    rng = &ncvslideio::theRNG();
 }
 
 
@@ -1287,7 +1287,7 @@ int CvDTreeTrainData::get_child_buf_idx( CvDTreeNode* n )
 }
 
 
-void CvDTreeTrainData::write_params( cv::FileStorage& fs ) const
+void CvDTreeTrainData::write_params( ncvslideio::FileStorage& fs ) const
 {
     CV_FUNCNAME( "CvDTreeTrainData::write_params" );
 
@@ -1349,13 +1349,13 @@ void CvDTreeTrainData::write_params( cv::FileStorage& fs ) const
 }
 
 
-void CvDTreeTrainData::read_params( const cv::FileNode& node )
+void CvDTreeTrainData::read_params( const ncvslideio::FileNode& node )
 {
     CV_FUNCNAME( "CvDTreeTrainData::read_params" );
 
     __BEGIN__;
 
-    cv::FileNode tparams_node, vartype_node;
+    ncvslideio::FileNode tparams_node, vartype_node;
     FileNodeIterator reader;
     int vi, max_split_size, tree_block_size;
 
@@ -1396,7 +1396,7 @@ void CvDTreeTrainData::read_params( const cv::FileNode& node )
             auto tmat = cvMat( tparams_node[ "priors" ].mat() );
             priors = cvCloneMat( &tmat );
             if( !CV_IS_MAT(priors) )
-                CV_ERROR( cv::Error::StsParseError, "priors must stored as a matrix" );
+                CV_ERROR( ncvslideio::Error::StsParseError, "priors must stored as a matrix" );
             priors_mult = cvCloneMat( priors );
         }
     }
@@ -1413,12 +1413,12 @@ void CvDTreeTrainData::read_params( const cv::FileNode& node )
             (var_idx->cols != 1 && var_idx->rows != 1) ||
             var_idx->cols + var_idx->rows - 1 != var_count ||
             CV_MAT_TYPE(var_idx->type) != CV_32SC1 )
-            CV_ERROR( cv::Error::StsParseError,
+            CV_ERROR( ncvslideio::Error::StsParseError,
                 "var_idx (if exist) must be valid 1d integer vector containing <var_count> elements" );
 
         for( vi = 0; vi < var_count; vi++ )
             if( (unsigned)var_idx->data.i[vi] >= (unsigned)var_all )
-                CV_ERROR( cv::Error::StsOutOfRange, "some of var_idx elements are out of range" );
+                CV_ERROR( ncvslideio::Error::StsOutOfRange, "some of var_idx elements are out of range" );
     }
 
     ////// read var type
@@ -1434,15 +1434,15 @@ void CvDTreeTrainData::read_params( const cv::FileNode& node )
     {
         if( vartype_node.empty() || !vartype_node.isSeq() ||
             vartype_node.size() != (size_t) var_count )
-            CV_ERROR( cv::Error::StsParseError, "var_type must exist and be a sequence of 0's and 1's" );
+            CV_ERROR( ncvslideio::Error::StsParseError, "var_type must exist and be a sequence of 0's and 1's" );
 
         reader = vartype_node.begin();
 
         for( vi = 0; vi < var_count; vi++ )
         {
-          cv::FileNode n = *reader;
+          ncvslideio::FileNode n = *reader;
             if( !n.isInt() || ((int) n & ~1) )
-                CV_ERROR( cv::Error::StsParseError, "var_type must exist and be a sequence of 0's and 1's" );
+                CV_ERROR( ncvslideio::Error::StsParseError, "var_type must exist and be a sequence of 0's and 1's" );
             var_type->data.i[vi] = (int) n ? cat_var_count++ : ord_var_count--;
             reader++;
         }
@@ -1468,7 +1468,7 @@ void CvDTreeTrainData::read_params( const cv::FileNode& node )
             cat_count->cols + cat_count->rows - 1 != cat_var_count + is_classifier ||
             (cat_map->cols != 1 && cat_map->rows != 1) ||
             CV_MAT_TYPE(cat_map->type) != CV_32SC1 )
-            CV_ERROR( cv::Error::StsParseError,
+            CV_ERROR( ncvslideio::Error::StsParseError,
             "Both cat_count and cat_map must exist and be valid 1d integer vectors of an appropriate size" );
 
         ccount = cat_var_count + is_classifier;
@@ -1481,13 +1481,13 @@ void CvDTreeTrainData::read_params( const cv::FileNode& node )
         {
             int val = cat_count->data.i[vi];
             if( val <= 0 )
-                CV_ERROR( cv::Error::StsOutOfRange, "some of cat_count elements are out of range" );
+                CV_ERROR( ncvslideio::Error::StsOutOfRange, "some of cat_count elements are out of range" );
             max_c_count = MAX( max_c_count, val );
             cat_ofs->data.i[vi+1] = total_c_count += val;
         }
 
         if( cat_map->cols + cat_map->rows - 1 != total_c_count )
-            CV_ERROR( cv::Error::StsBadSize,
+            CV_ERROR( ncvslideio::Error::StsBadSize,
             "cat_map vector length is not equal to the total number of categories in all categorical vars" );
     }
 
@@ -1788,7 +1788,7 @@ double CvDTree::calc_node_dir( CvDTreeNode* node )
 
     if( data->get_var_type(vi) >= 0 ) // split on categorical var
     {
-        cv::AutoBuffer<int> inn_buf(n*(!data->have_priors ? 1 : 2));
+        ncvslideio::AutoBuffer<int> inn_buf(n*(!data->have_priors ? 1 : 2));
         int* labels_buf = inn_buf.data();
         const int* labels = data->get_cat_var_data( node, vi, labels_buf );
         const int* subset = node->split->subset;
@@ -1832,7 +1832,7 @@ double CvDTree::calc_node_dir( CvDTreeNode* node )
     {
         int split_point = node->split->ord.split_point;
         int n1 = node->get_num_valid(vi);
-        cv::AutoBuffer<uchar> inn_buf(n*(sizeof(int)*(data->have_priors ? 3 : 2) + sizeof(float)));
+        ncvslideio::AutoBuffer<uchar> inn_buf(n*(sizeof(int)*(data->have_priors ? 3 : 2) + sizeof(float)));
         float* val_buf = (float*)inn_buf.data();
         int* sorted_buf = (int*)(val_buf + n);
         int* sample_idx_buf = sorted_buf + n;
@@ -1886,7 +1886,7 @@ double CvDTree::calc_node_dir( CvDTreeNode* node )
 }
 
 
-namespace cv
+namespace ncvslideio
 {
 
 void DefaultDeleter<CvDTreeSplit>::operator ()(CvDTreeSplit* obj) const { fastFree(obj); }
@@ -1964,7 +1964,7 @@ CvDTreeSplit* CvDTree::find_best_split( CvDTreeNode* node )
 {
     DTreeBestSplitFinder finder( this, node );
 
-    cv::parallel_reduce(cv::BlockedRange(0, data->var_count), finder);
+    ncvslideio::parallel_reduce(ncvslideio::BlockedRange(0, data->var_count), finder);
 
     CvDTreeSplit *bestSplit = 0;
     if( finder.bestSplit->quality > 0 )
@@ -1985,7 +1985,7 @@ CvDTreeSplit* CvDTree::find_split_ord_class( CvDTreeNode* node, int vi,
     int m = data->get_num_classes();
 
     int base_size = 2*m*sizeof(int);
-    cv::AutoBuffer<uchar> inn_buf(base_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(base_size);
     if( !_ext_buf )
       inn_buf.allocate(base_size + n*(3*sizeof(int)+sizeof(float)));
     uchar* base_buf = inn_buf.data();
@@ -2101,7 +2101,7 @@ void CvDTree::cluster_categories( const int* vectors, int n, int m,
     // TODO: consider adding priors (class weights) and sample weights to the clustering algorithm
     int iters = 0, max_iters = 100;
     int i, j, idx;
-    cv::AutoBuffer<double> buf(n + k);
+    ncvslideio::AutoBuffer<double> buf(n + k);
     double *v_weights = buf.data(), *c_weights = buf.data() + n;
     bool modified = true;
     RNG* r = data->rng;
@@ -2204,7 +2204,7 @@ CvDTreeSplit* CvDTree::find_split_cat_class( CvDTreeNode* node, int vi, float in
         base_size += (m*std::min(data->params.max_categories, n) + mi)*sizeof(int);
     else
         base_size += mi*sizeof(int*);
-    cv::AutoBuffer<uchar> inn_buf(base_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(base_size);
     if( !_ext_buf )
         inn_buf.allocate(base_size + 2*n*sizeof(int));
     uchar* base_buf = inn_buf.data();
@@ -2386,7 +2386,7 @@ CvDTreeSplit* CvDTree::find_split_ord_reg( CvDTreeNode* node, int vi, float init
     int n = node->sample_count;
     int n1 = node->get_num_valid(vi);
 
-    cv::AutoBuffer<uchar> inn_buf;
+    ncvslideio::AutoBuffer<uchar> inn_buf;
     if( !_ext_buf )
         inn_buf.allocate(2*n*(sizeof(int) + sizeof(float)));
     uchar* ext_buf = _ext_buf ? _ext_buf : inn_buf.data();
@@ -2446,7 +2446,7 @@ CvDTreeSplit* CvDTree::find_split_cat_reg( CvDTreeNode* node, int vi, float init
     int mi = data->cat_count->data.i[ci];
 
     int base_size = (mi+2)*sizeof(double) + (mi+1)*(sizeof(int) + sizeof(double*));
-    cv::AutoBuffer<uchar> inn_buf(base_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(base_size);
     if( !_ext_buf )
         inn_buf.allocate(base_size + n*(2*sizeof(int) + sizeof(float)));
     uchar* base_buf = inn_buf.data();
@@ -2457,7 +2457,7 @@ CvDTreeSplit* CvDTree::find_split_cat_reg( CvDTreeNode* node, int vi, float init
     int* sample_indices_buf = (int*)(responses_buf + n);
     const float* responses = data->get_ord_responses(node, responses_buf, sample_indices_buf);
 
-    double* sum = (double*)cv::alignPtr(base_buf,sizeof(double)) + 1;
+    double* sum = (double*)ncvslideio::alignPtr(base_buf,sizeof(double)) + 1;
     int* counts = (int*)(sum + mi) + 1;
     double** sum_ptr = (double**)(counts + mi);
     int i, L = 0, R = 0;
@@ -2537,7 +2537,7 @@ CvDTreeSplit* CvDTree::find_surrogate_split_ord( CvDTreeNode* node, int vi, ucha
     const float epsilon = FLT_EPSILON*2;
     const char* dir = (char*)data->direction->data.ptr;
     int n = node->sample_count, n1 = node->get_num_valid(vi);
-    cv::AutoBuffer<uchar> inn_buf;
+    ncvslideio::AutoBuffer<uchar> inn_buf;
     if( !_ext_buf )
         inn_buf.allocate( n*(sizeof(int)*(data->have_priors ? 3 : 2) + sizeof(float)) );
     uchar* ext_buf = _ext_buf ? _ext_buf : inn_buf.data();
@@ -2661,7 +2661,7 @@ CvDTreeSplit* CvDTree::find_surrogate_split_cat( CvDTreeNode* node, int vi, ucha
     int i, mi = data->cat_count->data.i[data->get_var_type(vi)], l_win = 0;
 
     int base_size = (2*(mi+1)+1)*sizeof(double) + (!data->have_priors ? 2*(mi+1)*sizeof(int) : 0);
-    cv::AutoBuffer<uchar> inn_buf(base_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(base_size);
     if( !_ext_buf )
         inn_buf.allocate(base_size + n*(sizeof(int) + (data->have_priors ? sizeof(int) : 0)));
     uchar* base_buf = inn_buf.data();
@@ -2675,7 +2675,7 @@ CvDTreeSplit* CvDTree::find_surrogate_split_cat( CvDTreeNode* node, int vi, ucha
     // RR - ... both send to the right
     CvDTreeSplit* split = data->new_split_cat( vi, 0 );
     double best_val = 0;
-    double* lc = (double*)cv::alignPtr(base_buf,sizeof(double)) + 1;
+    double* lc = (double*)ncvslideio::alignPtr(base_buf,sizeof(double)) + 1;
     double* rc = lc + mi + 1;
 
     for( i = -1; i < mi; i++ )
@@ -2763,7 +2763,7 @@ void CvDTree::calc_node_value( CvDTreeNode* node )
 
     int base_size = data->is_classifier ? m*cv_n*sizeof(int) : 2*cv_n*sizeof(double)+cv_n*sizeof(int);
     int ext_size = n*(sizeof(int) + (data->is_classifier ? sizeof(int) : sizeof(int)+sizeof(float)));
-    cv::AutoBuffer<uchar> inn_buf(base_size + ext_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(base_size + ext_size);
     uchar* base_buf = inn_buf.data();
     uchar* ext_buf = base_buf + base_size;
 
@@ -2958,7 +2958,7 @@ void CvDTree::complete_node_dir( CvDTreeNode* node )
     // try to complete direction using surrogate splits
     if( nz && data->params.use_surrogates )
     {
-        cv::AutoBuffer<uchar> inn_buf(n*(2*sizeof(int)+sizeof(float)));
+        ncvslideio::AutoBuffer<uchar> inn_buf(n*(2*sizeof(int)+sizeof(float)));
         CvDTreeSplit* split = node->split->next;
         for( ; split != 0 && nz; split = split->next )
         {
@@ -3047,7 +3047,7 @@ void CvDTree::split_node_data( CvDTreeNode* node )
     int work_var_count = data->get_work_var_count();
     CvMat* buf = data->buf;
     size_t length_buf_row = data->get_length_subbuf();
-    cv::AutoBuffer<uchar> inn_buf(n*(3*sizeof(int) + sizeof(float)));
+    ncvslideio::AutoBuffer<uchar> inn_buf(n*(3*sizeof(int) + sizeof(float)));
     int* temp_buf = (int*)inn_buf.data();
 
     complete_node_dir(node);
@@ -3624,20 +3624,20 @@ void CvDTree::free_tree()
 CvDTreeNode* CvDTree::predict( const CvMat* _sample,
     const CvMat* _missing, bool preprocessed_input ) const
 {
-    cv::AutoBuffer<int> catbuf;
+    ncvslideio::AutoBuffer<int> catbuf;
 
     int i, mstep = 0;
     const uchar* m = 0;
     CvDTreeNode* node = root;
 
     if( !node )
-        CV_Error( cv::Error::StsError, "The tree has not been trained yet" );
+        CV_Error( ncvslideio::Error::StsError, "The tree has not been trained yet" );
 
     if( !CV_IS_MAT(_sample) || CV_MAT_TYPE(_sample->type) != CV_32FC1 ||
         (_sample->cols != 1 && _sample->rows != 1) ||
         (_sample->cols + _sample->rows - 1 != data->var_all && !preprocessed_input) ||
         (_sample->cols + _sample->rows - 1 != data->var_count && preprocessed_input) )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
         "the input sample must be 1d floating-point vector with the same "
         "number of elements as the total number of variables used for training" );
 
@@ -3656,7 +3656,7 @@ CvDTreeNode* CvDTree::predict( const CvMat* _sample,
     {
         if( !CV_IS_MAT(_missing) || !CV_IS_MASK_ARR(_missing) ||
             !CV_ARE_SIZES_EQ(_missing, _sample) )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
         "the missing data mask must be 8-bit vector of the same size as input sample" );
         m = _missing->data.ptr;
         mstep = CV_IS_MAT_CONT(_missing->type) ? 1 : _missing->step/sizeof(m[0]);
@@ -3696,7 +3696,7 @@ CvDTreeNode* CvDTree::predict( const CvMat* _sample,
 
                         int ival = cvRound(val);
                         if( ival != val )
-                            CV_Error( cv::Error::StsBadArg,
+                            CV_Error( ncvslideio::Error::StsBadArg,
                             "one of input categorical variable is not an integer" );
 
                         while( a < b )
@@ -3786,7 +3786,7 @@ const CvMat* CvDTree::get_var_importance()
 }
 
 
-void CvDTree::write_split( cv::FileStorage& fs, CvDTreeSplit* split ) const
+void CvDTree::write_split( ncvslideio::FileStorage& fs, CvDTreeSplit* split ) const
 {
     int ci;
 
@@ -3823,7 +3823,7 @@ void CvDTree::write_split( cv::FileStorage& fs, CvDTreeSplit* split ) const
 }
 
 
-void CvDTree::write_node( cv::FileStorage& fs, CvDTreeNode* node ) const
+void CvDTree::write_node( ncvslideio::FileStorage& fs, CvDTreeNode* node ) const
 {
     fs.startWriteStruct( 0, FileNode::MAP );
 
@@ -3855,7 +3855,7 @@ void CvDTree::write_node( cv::FileStorage& fs, CvDTreeNode* node ) const
 }
 
 
-void CvDTree::write_tree_nodes( cv::FileStorage& fs ) const
+void CvDTree::write_tree_nodes( ncvslideio::FileStorage& fs ) const
 {
     //CV_FUNCNAME( "CvDTree::write_tree_nodes" );
 
@@ -3889,7 +3889,7 @@ void CvDTree::write_tree_nodes( cv::FileStorage& fs ) const
 }
 
 
-void CvDTree::write( cv::FileStorage& fs, const char* name ) const
+void CvDTree::write( ncvslideio::FileStorage& fs, const char* name ) const
 {
     //CV_FUNCNAME( "CvDTree::write" );
 
@@ -3909,7 +3909,7 @@ void CvDTree::write( cv::FileStorage& fs, const char* name ) const
 }
 
 
-void CvDTree::write( cv::FileStorage& fs ) const
+void CvDTree::write( ncvslideio::FileStorage& fs ) const
 {
     //CV_FUNCNAME( "CvDTree::write" );
 
@@ -3925,7 +3925,7 @@ void CvDTree::write( cv::FileStorage& fs ) const
 }
 
 
-CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
+CvDTreeSplit* CvDTree::read_split( const ncvslideio::FileNode& fnode )
 {
     CvDTreeSplit* split = 0;
 
@@ -3936,18 +3936,18 @@ CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
     int vi, ci;
 
     if( fnode.empty() || !fnode.isMap() )
-        CV_ERROR( cv::Error::StsParseError, "some of the splits are not stored properly" );
+        CV_ERROR( ncvslideio::Error::StsParseError, "some of the splits are not stored properly" );
 
     vi = fnode[ "var" ].empty() ? -1 : (int) fnode[ "var" ];
     if( (unsigned)vi >= (unsigned)data->var_count )
-        CV_ERROR( cv::Error::StsOutOfRange, "Split variable index is out of range" );
+        CV_ERROR( ncvslideio::Error::StsOutOfRange, "Split variable index is out of range" );
 
     ci = data->get_var_type(vi);
     if( ci >= 0 ) // split on categorical var
     {
         int i, n = data->cat_count->data.i[ci], inversed = 0, val;
         FileNodeIterator reader;
-        cv::FileNode inseq;
+        ncvslideio::FileNode inseq;
         split = data->new_split_cat( vi, 0 );
         inseq = fnode[ "in" ];
         if( inseq.empty() )
@@ -3957,14 +3957,14 @@ CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
         }
         if( inseq.empty() ||
             (!inseq.isSeq() && !inseq.isInt()))
-            CV_ERROR( cv::Error::StsParseError,
+            CV_ERROR( ncvslideio::Error::StsParseError,
             "Either 'in' or 'not_in' tags should be inside a categorical split data" );
 
         if( inseq.isInt() )
         {
             val = (int) inseq;
             if( (unsigned)val >= (unsigned)n )
-                CV_ERROR( cv::Error::StsOutOfRange, "some of in/not_in elements are out of range" );
+                CV_ERROR( ncvslideio::Error::StsOutOfRange, "some of in/not_in elements are out of range" );
 
             split->subset[val >> 5] |= 1 << (val & 31);
         }
@@ -3974,10 +3974,10 @@ CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
 
             for( i = 0; i < (int) (*reader).size(); i++ )
             {
-                cv::FileNode inode = *reader;
+                ncvslideio::FileNode inode = *reader;
                 val = (int) inode;
                 if( !inode.isInt() || (unsigned)val >= (unsigned)n )
-                    CV_ERROR( cv::Error::StsOutOfRange, "some of in/not_in elements are out of range" );
+                    CV_ERROR( ncvslideio::Error::StsOutOfRange, "some of in/not_in elements are out of range" );
 
                 split->subset[val >> 5] |= 1 << (val & 31);
                 reader++;
@@ -3992,7 +3992,7 @@ CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
     }
     else
     {
-        cv::FileNode cmp_node;
+        ncvslideio::FileNode cmp_node;
         split = data->new_split_ord( vi, 0, 0, 0, 0 );
 
         cmp_node = fnode[ "le" ];
@@ -4013,7 +4013,7 @@ CvDTreeSplit* CvDTree::read_split( const cv::FileNode& fnode )
 }
 
 
-CvDTreeNode* CvDTree::read_node( const cv::FileNode& fnode, CvDTreeNode* parent )
+CvDTreeNode* CvDTree::read_node( const ncvslideio::FileNode& fnode, CvDTreeNode* parent )
 {
     CvDTreeNode* node = 0;
 
@@ -4021,16 +4021,16 @@ CvDTreeNode* CvDTree::read_node( const cv::FileNode& fnode, CvDTreeNode* parent 
 
     __BEGIN__;
 
-    cv::FileNode splits;
+    ncvslideio::FileNode splits;
     int i, depth;
 
     if( fnode.empty() || !fnode.isMap() )
-        CV_ERROR( cv::Error::StsParseError, "some of the tree elements are not stored properly" );
+        CV_ERROR( ncvslideio::Error::StsParseError, "some of the tree elements are not stored properly" );
 
     CV_CALL( node = data->new_node( parent, 0, 0, 0 ));
     depth = fnode[ "depth" ].empty() ? -1 : (int) fnode[ "depth" ];
     if( depth != node->depth )
-        CV_ERROR( cv::Error::StsParseError, "incorrect node depth" );
+        CV_ERROR( ncvslideio::Error::StsParseError, "incorrect node depth" );
 
     node->sample_count = (int) fnode[ "sample_count" ];
     node->value = (double) fnode[ "value" ];
@@ -4051,7 +4051,7 @@ CvDTreeNode* CvDTree::read_node( const cv::FileNode& fnode, CvDTreeNode* parent 
         CvDTreeSplit* last_split = 0;
 
         if( !splits.isSeq() )
-            CV_ERROR( cv::Error::StsParseError, "splits tag must stored as a sequence" );
+            CV_ERROR( ncvslideio::Error::StsParseError, "splits tag must stored as a sequence" );
 
         reader = splits.begin();
         for( i = 0; i < (int) (*reader).size(); i++ )
@@ -4073,7 +4073,7 @@ CvDTreeNode* CvDTree::read_node( const cv::FileNode& fnode, CvDTreeNode* parent 
 }
 
 
-void CvDTree::read_tree_nodes( const cv::FileNode& fnode )
+void CvDTree::read_tree_nodes( const ncvslideio::FileNode& fnode )
 {
     CV_FUNCNAME( "CvDTree::read_tree_nodes" );
 
@@ -4113,7 +4113,7 @@ void CvDTree::read_tree_nodes( const cv::FileNode& fnode )
 }
 
 
-void CvDTree::read( const cv::FileNode& fnode )
+void CvDTree::read( const ncvslideio::FileNode& fnode )
 {
     CvDTreeTrainData* _data = new CvDTreeTrainData();
     _data->read_params( fnode );
@@ -4124,20 +4124,20 @@ void CvDTree::read( const cv::FileNode& fnode )
 
 
 // a special entry point for reading weak decision trees from the tree ensembles
-void CvDTree::read( const cv::FileNode& node, CvDTreeTrainData* _data )
+void CvDTree::read( const ncvslideio::FileNode& node, CvDTreeTrainData* _data )
 {
     CV_FUNCNAME( "CvDTree::read" );
 
     __BEGIN__;
 
-    cv::FileNode tree_nodes;
+    ncvslideio::FileNode tree_nodes;
 
     clear();
     data = _data;
 
     tree_nodes = node[ "nodes" ];
     if( tree_nodes.empty() || !tree_nodes.isSeq() )
-        CV_ERROR( cv::Error::StsParseError, "nodes tag is missing" );
+        CV_ERROR( ncvslideio::Error::StsParseError, "nodes tag is missing" );
 
     pruned_tree_idx = node[ "best_tree_idx" ].empty() ? -1 : node[ "best_tree_idx" ];
     read_tree_nodes( tree_nodes );

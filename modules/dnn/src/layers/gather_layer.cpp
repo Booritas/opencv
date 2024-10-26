@@ -8,7 +8,7 @@
 #include "layers_common.hpp"
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class GatherLayerImpl CV_FINAL : public GatherLayer
 {
@@ -140,4 +140,4 @@ Ptr<GatherLayer> GatherLayer::create(const LayerParams& params)
     return makePtr<GatherLayerImpl>(params);
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

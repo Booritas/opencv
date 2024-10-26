@@ -63,7 +63,7 @@ namespace custom {
 
 // Every network requires three parameters to define:
 // 1) Network's TYPE name - this TYPE is then used as a template
-//    parameter to generic functions like cv::gapi::infer<>(),
+//    parameter to generic functions like ncvslideio::gapi::infer<>(),
 //    and is used to define network's configuration (per-backend).
 // 2) Network's SIGNATURE - a std::function<>-like record which defines
 //    networks' input and output parameters (its API)
@@ -76,16 +76,16 @@ namespace custom {
 
 //! [G_API_NET]
 // Face detector: takes one Mat, returns another Mat
-G_API_NET(Faces, <cv::GMat(cv::GMat)>, "face-detector");
+G_API_NET(Faces, <ncvslideio::GMat(ncvslideio::GMat)>, "face-detector");
 
 // Age/Gender recognition - takes one Mat, returns two:
 // one for Age and one for Gender. In G-API, multiple-return-value operations
 // are defined using std::tuple<>.
-using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-G_API_NET(AgeGender, <AGInfo(cv::GMat)>,   "age-gender-recoginition");
+using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>,   "age-gender-recoginition");
 
 // Emotion recognition - takes one Mat, returns another.
-G_API_NET(Emotions, <cv::GMat(cv::GMat)>, "emotions-recognition");
+G_API_NET(Emotions, <ncvslideio::GMat(ncvslideio::GMat)>, "emotions-recognition");
 //! [G_API_NET]
 
 //! [Postproc]
@@ -95,25 +95,25 @@ G_API_NET(Emotions, <cv::GMat(cv::GMat)>, "emotions-recognition");
 // and returns a vector of ROI (filtered by a default threshold).
 // Threshold (or a class to select) may become a parameter, but since
 // this kernel is custom, it doesn't make a lot of sense.
-G_API_OP(PostProc, <cv::GArray<cv::Rect>(cv::GMat, cv::GMat)>, "custom.fd_postproc") {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc &, const cv::GMatDesc &) {
+G_API_OP(PostProc, <ncvslideio::GArray<ncvslideio::Rect>(ncvslideio::GMat, ncvslideio::GMat)>, "custom.fd_postproc") {
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &, const ncvslideio::GMatDesc &) {
         // This function is required for G-API engine to figure out
         // what the output format is, given the input parameters.
         // Since the output is an array (with a specific type),
         // there's nothing to describe.
-        return cv::empty_array_desc();
+        return ncvslideio::empty_array_desc();
     }
 };
 
 // OpenCV-based implementation of the above kernel.
 GAPI_OCV_KERNEL(OCVPostProc, PostProc) {
-    static void run(const cv::Mat &in_ssd_result,
-                    const cv::Mat &in_frame,
-                    std::vector<cv::Rect> &out_faces) {
+    static void run(const ncvslideio::Mat &in_ssd_result,
+                    const ncvslideio::Mat &in_frame,
+                    std::vector<ncvslideio::Rect> &out_faces) {
         const int MAX_PROPOSALS = 200;
         const int OBJECT_SIZE   =   7;
-        const cv::Size upscale = in_frame.size();
-        const cv::Rect surface({0,0}, upscale);
+        const ncvslideio::Size upscale = in_frame.size();
+        const ncvslideio::Rect surface({0,0}, upscale);
 
         out_faces.clear();
 
@@ -135,7 +135,7 @@ GAPI_OCV_KERNEL(OCVPostProc, PostProc) {
 
             // Convert floating-point coordinates to the absolute image
             // frame coordinates; clip by the source image boundaries.
-            cv::Rect rc;
+            ncvslideio::Rect rc;
             rc.x      = static_cast<int>(rc_left   * upscale.width);
             rc.y      = static_cast<int>(rc_top    * upscale.height);
             rc.width  = static_cast<int>(rc_right  * upscale.width)  - rc.x;
@@ -156,11 +156,11 @@ const std::string emotions[] = {
     "neutral", "happy", "sad", "surprise", "anger"
 };
 namespace {
-void DrawResults(cv::Mat &frame,
-                 const std::vector<cv::Rect> &faces,
-                 const std::vector<cv::Mat>  &out_ages,
-                 const std::vector<cv::Mat>  &out_genders,
-                 const std::vector<cv::Mat>  &out_emotions) {
+void DrawResults(ncvslideio::Mat &frame,
+                 const std::vector<ncvslideio::Rect> &faces,
+                 const std::vector<ncvslideio::Mat>  &out_ages,
+                 const std::vector<ncvslideio::Mat>  &out_genders,
+                 const std::vector<ncvslideio::Mat>  &out_emotions) {
     CV_Assert(faces.size() == out_ages.size());
     CV_Assert(faces.size() == out_genders.size());
     CV_Assert(faces.size() == out_emotions.size());
@@ -183,25 +183,25 @@ void DrawResults(cv::Mat &frame,
            << emotions[emo_id];
 
         const int ATTRIB_OFFSET = 15;
-        cv::rectangle(frame, rc, {0, 255, 0},  4);
-        cv::putText(frame, ss.str(),
-                    cv::Point(rc.x, rc.y - ATTRIB_OFFSET),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+        ncvslideio::rectangle(frame, rc, {0, 255, 0},  4);
+        ncvslideio::putText(frame, ss.str(),
+                    ncvslideio::Point(rc.x, rc.y - ATTRIB_OFFSET),
+                    ncvslideio::FONT_HERSHEY_COMPLEX_SMALL,
                     1,
-                    cv::Scalar(0, 0, 255));
+                    ncvslideio::Scalar(0, 0, 255));
     }
 }
 
-void DrawFPS(cv::Mat &frame, std::size_t n, double fps) {
+void DrawFPS(ncvslideio::Mat &frame, std::size_t n, double fps) {
     std::ostringstream out;
     out << "FRAME " << n << ": "
         << std::fixed << std::setprecision(2) << fps
         << " FPS (AVG)";
-    cv::putText(frame, out.str(),
-                cv::Point(0, frame.rows),
-                cv::FONT_HERSHEY_SIMPLEX,
+    ncvslideio::putText(frame, out.str(),
+                ncvslideio::Point(0, frame.rows),
+                ncvslideio::FONT_HERSHEY_SIMPLEX,
                 1,
-                cv::Scalar(0, 255, 0),
+                ncvslideio::Scalar(0, 255, 0),
                 2);
 }
 } // anonymous namespace
@@ -209,7 +209,7 @@ void DrawFPS(cv::Mat &frame, std::size_t n, double fps) {
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -222,9 +222,9 @@ int main(int argc, char *argv[])
     // Express our processing pipeline. Lambda-based constructor
     // is used to keep all temporary objects in a dedicated scope.
     //! [GComputation]
-    cv::GComputation pp([]() {
+    ncvslideio::GComputation pp([]() {
             // Declare an empty GMat - the beginning of the pipeline.
-            cv::GMat in;
+            ncvslideio::GMat in;
 
             // Run face detection on the input frame. Result is a single GMat,
             // internally representing an 1x1x200x7 SSD output.
@@ -232,11 +232,11 @@ int main(int argc, char *argv[])
             // - Inference is running on the whole input image;
             // - Image is converted and resized to the network's expected format
             //   automatically.
-            cv::GMat detections = cv::gapi::infer<custom::Faces>(in);
+            ncvslideio::GMat detections = ncvslideio::gapi::infer<custom::Faces>(in);
 
             // Parse SSD output to a list of ROI (rectangles) using
             // a custom kernel. Note: parsing SSD may become a "standard" kernel.
-            cv::GArray<cv::Rect> faces = custom::PostProc::on(detections, in);
+            ncvslideio::GArray<ncvslideio::Rect> faces = custom::PostProc::on(detections, in);
 
             // Now run Age/Gender model on every detected face. This model has two
             // outputs (for age and gender respectively).
@@ -247,25 +247,25 @@ int main(int argc, char *argv[])
             //   from the list
             // - Inference results are also returned in form of list (GArray<>)
             // - Since there're two outputs, infer<> return two arrays (via std::tuple).
-            cv::GArray<cv::GMat> ages;
-            cv::GArray<cv::GMat> genders;
-            std::tie(ages, genders) = cv::gapi::infer<custom::AgeGender>(faces, in);
+            ncvslideio::GArray<ncvslideio::GMat> ages;
+            ncvslideio::GArray<ncvslideio::GMat> genders;
+            std::tie(ages, genders) = ncvslideio::gapi::infer<custom::AgeGender>(faces, in);
 
             // Recognize emotions on every face.
             // ROI-list-oriented infer<>() is used here as well.
             // Since custom::Emotions network produce a single output, only one
             // GArray<> is returned here.
-            cv::GArray<cv::GMat> emotions = cv::gapi::infer<custom::Emotions>(faces, in);
+            ncvslideio::GArray<ncvslideio::GMat> emotions = ncvslideio::gapi::infer<custom::Emotions>(faces, in);
 
             // Return the decoded frame as a result as well.
             // Input matrix can't be specified as output one, so use copy() here
             // (this copy will be optimized out in the future).
-            cv::GMat frame = cv::gapi::copy(in);
+            ncvslideio::GMat frame = ncvslideio::gapi::copy(in);
 
             // Now specify the computation's boundaries - our pipeline consumes
             // one images and produces five outputs.
-            return cv::GComputation(cv::GIn(in),
-                                    cv::GOut(frame, faces, ages, genders, emotions));
+            return ncvslideio::GComputation(ncvslideio::GIn(in),
+                                    ncvslideio::GOut(frame, faces, ages, genders, emotions));
         });
     //! [GComputation]
 
@@ -276,26 +276,26 @@ int main(int argc, char *argv[])
 
     // Declare IE parameters for FaceDetection network. Note here custom::Face
     // is the type name we specified in GAPI_NETWORK() previously.
-    // cv::gapi::ie::Params<> is a generic configuration description which is
+    // ncvslideio::gapi::ie::Params<> is a generic configuration description which is
     // specialized to every particular network we use.
     //
     // OpenCV DNN backend will have its own parmater structure with settings
     // relevant to OpenCV DNN module. Same applies to other possible inference
     // backends...
     //! [Param_Cfg]
-    auto det_net = cv::gapi::ie::Params<custom::Faces> {
+    auto det_net = ncvslideio::gapi::ie::Params<custom::Faces> {
         cmd.get<std::string>("fdm"),   // read cmd args: path to topology IR
         cmd.get<std::string>("fdw"),   // read cmd args: path to weights
         cmd.get<std::string>("fdd"),   // read cmd args: device specifier
     };
 
-    auto age_net = cv::gapi::ie::Params<custom::AgeGender> {
+    auto age_net = ncvslideio::gapi::ie::Params<custom::AgeGender> {
         cmd.get<std::string>("agem"),   // read cmd args: path to topology IR
         cmd.get<std::string>("agew"),   // read cmd args: path to weights
         cmd.get<std::string>("aged"),   // read cmd args: device specifier
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    auto emo_net = cv::gapi::ie::Params<custom::Emotions> {
+    auto emo_net = ncvslideio::gapi::ie::Params<custom::Emotions> {
         cmd.get<std::string>("emom"),   // read cmd args: path to topology IR
         cmd.get<std::string>("emow"),   // read cmd args: path to weights
         cmd.get<std::string>("emod"),   // read cmd args: device specifier
@@ -305,14 +305,14 @@ int main(int argc, char *argv[])
     //! [Compile]
     // Form a kernel package (with a single OpenCV-based implementation of our
     // post-processing) and a network package (holding our three networks).
-    auto kernels = cv::gapi::kernels<custom::OCVPostProc>();
-    auto networks = cv::gapi::networks(det_net, age_net, emo_net);
+    auto kernels = ncvslideio::gapi::kernels<custom::OCVPostProc>();
+    auto networks = ncvslideio::gapi::networks(det_net, age_net, emo_net);
 
     // Compile our pipeline and pass our kernels & networks as
     // parameters.  This is the place where G-API learns which
     // networks & kernels we're actually operating with (the graph
     // description itself known nothing about that).
-    auto cc = pp.compileStreaming(cv::compile_args(kernels, networks));
+    auto cc = pp.compileStreaming(ncvslideio::compile_args(kernels, networks));
     //! [Compile]
 
     Avg avg;
@@ -323,8 +323,8 @@ int main(int argc, char *argv[])
     // better documentation snippets
     if (!be_serial) {
         //! [Source]
-        auto in_src = cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input);
-        cc.setSource(cv::gin(in_src));
+        auto in_src = ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input);
+        cc.setSource(ncvslideio::gin(in_src));
         //! [Source]
 
         avg.start();
@@ -334,16 +334,16 @@ int main(int argc, char *argv[])
         cc.start();
 
         // Declare data objects we will be receiving from the pipeline.
-        cv::Mat frame;                      // The captured frame itself
-        std::vector<cv::Rect> faces;        // Array of detected faces
-        std::vector<cv::Mat> out_ages;      // Array of inferred ages (one blob per face)
-        std::vector<cv::Mat> out_genders;   // Array of inferred genders (one blob per face)
-        std::vector<cv::Mat> out_emotions;  // Array of classified emotions (one blob per face)
+        ncvslideio::Mat frame;                      // The captured frame itself
+        std::vector<ncvslideio::Rect> faces;        // Array of detected faces
+        std::vector<ncvslideio::Mat> out_ages;      // Array of inferred ages (one blob per face)
+        std::vector<ncvslideio::Mat> out_genders;   // Array of inferred genders (one blob per face)
+        std::vector<ncvslideio::Mat> out_emotions;  // Array of classified emotions (one blob per face)
 
         // Implement different execution policies depending on the display option
         // for the best performance.
         while (cc.running()) {
-            auto out_vector = cv::gout(frame, faces, out_ages, out_genders, out_emotions);
+            auto out_vector = ncvslideio::gout(frame, faces, out_ages, out_genders, out_emotions);
             if (no_show) {
                 // This is purely a video processing. No need to balance
                 // with UI rendering.  Use a blocking pull() to obtain
@@ -353,7 +353,7 @@ int main(int argc, char *argv[])
             } else if (!cc.try_pull(std::move(out_vector))) {
                 // Use a non-blocking try_pull() to obtain data.
                 // If there's no data, let UI refresh (and handle keypress)
-                if (cv::waitKey(1) >= 0) break;
+                if (ncvslideio::waitKey(1) >= 0) break;
                 else continue;
             }
             // At this point we have data for sure (obtained in either
@@ -361,22 +361,22 @@ int main(int argc, char *argv[])
             frames++;
             labels::DrawResults(frame, faces, out_ages, out_genders, out_emotions);
             labels::DrawFPS(frame, frames, avg.fps(frames));
-            if (!no_show) cv::imshow("Out", frame);
+            if (!no_show) ncvslideio::imshow("Out", frame);
         }
         //! [Run]
     } else { // (serial flag)
         //! [Run_Serial]
-        cv::VideoCapture cap(input);
-        cv::Mat in_frame, frame;            // The captured frame itself
-        std::vector<cv::Rect> faces;        // Array of detected faces
-        std::vector<cv::Mat> out_ages;      // Array of inferred ages (one blob per face)
-        std::vector<cv::Mat> out_genders;   // Array of inferred genders (one blob per face)
-        std::vector<cv::Mat> out_emotions;  // Array of classified emotions (one blob per face)
+        ncvslideio::VideoCapture cap(input);
+        ncvslideio::Mat in_frame, frame;            // The captured frame itself
+        std::vector<ncvslideio::Rect> faces;        // Array of detected faces
+        std::vector<ncvslideio::Mat> out_ages;      // Array of inferred ages (one blob per face)
+        std::vector<ncvslideio::Mat> out_genders;   // Array of inferred genders (one blob per face)
+        std::vector<ncvslideio::Mat> out_emotions;  // Array of classified emotions (one blob per face)
 
         while (cap.read(in_frame)) {
-            pp.apply(cv::gin(in_frame),
-                     cv::gout(frame, faces, out_ages, out_genders, out_emotions),
-                     cv::compile_args(kernels, networks));
+            pp.apply(ncvslideio::gin(in_frame),
+                     ncvslideio::gout(frame, faces, out_ages, out_genders, out_emotions),
+                     ncvslideio::compile_args(kernels, networks));
             labels::DrawResults(frame, faces, out_ages, out_genders, out_emotions);
             frames++;
             if (frames == 1u) {
@@ -388,8 +388,8 @@ int main(int argc, char *argv[])
                 labels::DrawFPS(frame, frames, avg.fps(frames-1));
             }
             if (!no_show) {
-                cv::imshow("Out", frame);
-                if (cv::waitKey(1) >= 0) break;
+                ncvslideio::imshow("Out", frame);
+                if (ncvslideio::waitKey(1) >= 0) break;
             }
         }
         //! [Run_Serial]

@@ -12,14 +12,14 @@
 
 #include <memory>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
 
 /**
  * @brief OpenCV's GStreamer streaming source.
- *        Streams cv::Mat-s/cv::MediaFrame from passed GStreamer pipeline.
+ *        Streams ncvslideio::Mat-s/ncvslideio::MediaFrame from passed GStreamer pipeline.
  *
  * This class implements IStreamSource interface.
  *
@@ -34,15 +34,15 @@ namespace gst {
  *
  *      - data passed to appsink should be video-frame in NV12 or GRAY8 format.
  *
- * 'outputType' is used to select type of output data to produce: 'cv::MediaFrame' or 'cv::Mat'.
- * To produce 'cv::MediaFrame'-s you need to pass 'GStreamerSource::OutputType::FRAME' and,
- * correspondingly, 'GStreamerSource::OutputType::MAT' to produce 'cv::Mat'-s.
- * Please note, that in the last case, output 'cv::Mat' will be of BGR format, internal conversion
+ * 'outputType' is used to select type of output data to produce: 'ncvslideio::MediaFrame' or 'ncvslideio::Mat'.
+ * To produce 'ncvslideio::MediaFrame'-s you need to pass 'GStreamerSource::OutputType::FRAME' and,
+ * correspondingly, 'GStreamerSource::OutputType::MAT' to produce 'ncvslideio::Mat'-s.
+ * Please note, that in the last case, output 'ncvslideio::Mat' will be of BGR format, internal conversion
  * from NV12 / GRAY8 GStreamer data will happen.
  * Default value for 'outputType' is 'GStreamerSource::OutputType::MAT'.
  *
  * @note Stream sources are passed to G-API via shared pointers, so please use gapi::make_src<>
- *       to create objects and ptr() to pass a GStreamerSource to cv::gin().
+ *       to create objects and ptr() to pass a GStreamerSource to ncvslideio::gin().
  *
  * @note You need to build OpenCV with GStreamer support to use this class.
  */
@@ -54,7 +54,7 @@ class GAPI_EXPORTS GStreamerSource : public IStreamSource
 public:
     class Priv;
 
-    // Indicates what type of data should be produced by GStreamerSource: cv::MediaFrame or cv::Mat
+    // Indicates what type of data should be produced by GStreamerSource: ncvslideio::MediaFrame or ncvslideio::Mat
     enum class OutputType {
         FRAME,
         MAT
@@ -68,7 +68,7 @@ public:
                     const GStreamerSource::OutputType outputType =
                         GStreamerSource::OutputType::MAT);
 
-    bool pull(cv::gapi::wip::Data& data) override;
+    bool pull(ncvslideio::gapi::wip::Data& data) override;
     GMetaArg descr_of() const override;
     ~GStreamerSource() override;
 
@@ -83,7 +83,7 @@ protected:
 using GStreamerSource = gst::GStreamerSource;
 
 // NB: Overload for using from python
-GAPI_EXPORTS_W cv::Ptr<IStreamSource>
+GAPI_EXPORTS_W ncvslideio::Ptr<IStreamSource>
 inline make_gst_src(const std::string& pipeline,
                     const GStreamerSource::OutputType outputType =
                     GStreamerSource::OutputType::MAT)
@@ -92,6 +92,6 @@ inline make_gst_src(const std::string& pipeline,
 }
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMERSOURCE_HPP

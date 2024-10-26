@@ -17,7 +17,7 @@
 #include "../op_cuda.hpp"
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/layer_norm.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 // OpenCL backend
@@ -26,7 +26,7 @@ using namespace cv::dnn::cuda4dnn;
 #include "opencl_kernels_dnn.hpp"
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 // https://github.com/onnx/onnx/blob/main/docs/Operators.md#LayerNormalization
 class LayerNormLayerImpl CV_FINAL : public LayerNormLayer
@@ -277,13 +277,13 @@ public:
             }
         } else {
             const auto &scale_mat = blobs.front();
-            const auto op_const_scale = std::make_shared<CannConstOp>(scale_mat.data, scale_mat.type(), shape(scale_mat), cv::format("%s_w", name.c_str()));
+            const auto op_const_scale = std::make_shared<CannConstOp>(scale_mat.data, scale_mat.type(), shape(scale_mat), ncvslideio::format("%s_w", name.c_str()));
             op->set_input_gamma(*(op_const_scale->getOp()));
             op->update_input_desc_gamma(*(op_const_scale->getTensorDesc()));
 
             if ((inputs.size() + blobs.size()) >= 3) {
                 const auto &bias_mat = blobs.back();
-                const auto op_const_bias = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), shape(bias_mat), cv::format("%s_b", name.c_str()));
+                const auto op_const_bias = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), shape(bias_mat), ncvslideio::format("%s_b", name.c_str()));
                 op->set_input_beta(*(op_const_bias->getOp()));
                 op->update_input_desc_beta(*(op_const_bias->getTensorDesc()));
             }
@@ -375,4 +375,4 @@ Ptr<LayerNormLayer> LayerNormLayer::create(const LayerParams& params)
     return makePtr<LayerNormLayerImpl>(params);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

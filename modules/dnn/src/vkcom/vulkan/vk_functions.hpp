@@ -18,11 +18,11 @@
 #define VK_FUNC(func) extern PFN_##func func;
 #define VK_FUNC_MANDATORY(func) extern PFN_##func func;
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #include "function_list.inl.hpp"
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 #endif // HAVE_VULKAN
 
 #endif // OPENCV_DNN_VKCOM_VULKAN_VK_FUNCTONS_HPP

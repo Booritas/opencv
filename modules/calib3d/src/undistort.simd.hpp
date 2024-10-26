@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations
 Ptr<ParallelLoopBody> getInitUndistortRectifyMapComputer(Size _size, Mat &_map1, Mat &_map2, int _m1type,
@@ -99,7 +99,7 @@ public:
 #endif
     }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_INSTRUMENT_REGION();
 
@@ -253,7 +253,7 @@ public:
                 double kr = (1 + ((k3*r2 + k2)*r2 + k1)*r2)/(1 + ((k6*r2 + k5)*r2 + k4)*r2);
                 double xd = (x*kr + p1*_2xy + p2*(r2 + 2*x2) + s1*r2+s2*r2*r2);
                 double yd = (y*kr + p1*(r2 + 2*y2) + p2*_2xy + s3*r2+s4*r2*r2);
-                Vec3d vecTilt = matTilt*cv::Vec3d(xd, yd, 1);
+                Vec3d vecTilt = matTilt*ncvslideio::Vec3d(xd, yd, 1);
                 double invProj = vecTilt(2) ? 1./vecTilt(2) : 1;
                 double u = fx*invProj*vecTilt(0) + u0;
                 double v = fy*invProj*vecTilt(1) + v0;

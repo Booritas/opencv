@@ -85,19 +85,19 @@ static int rgbe_error(int rgbe_error_code, const char *msg)
 {
   switch (rgbe_error_code) {
   case rgbe_read_error:
-       CV_Error(cv::Error::StsError, "RGBE read error");
+       CV_Error(ncvslideio::Error::StsError, "RGBE read error");
        break;
   case rgbe_write_error:
-       CV_Error(cv::Error::StsError, "RGBE write error");
+       CV_Error(ncvslideio::Error::StsError, "RGBE write error");
        break;
   case rgbe_format_error:
-       CV_Error(cv::Error::StsError, cv::String("RGBE bad file format: ") +
-                       cv::String(msg));
+       CV_Error(ncvslideio::Error::StsError, ncvslideio::String("RGBE bad file format: ") +
+                       ncvslideio::String(msg));
        break;
   default:
   case rgbe_memory_error:
-       CV_Error(cv::Error::StsError, cv::String("RGBE error: \n") +
-                     cv::String(msg));
+       CV_Error(ncvslideio::Error::StsError, ncvslideio::String("RGBE error: \n") +
+                     ncvslideio::String(msg));
   }
 }
 

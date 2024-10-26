@@ -12,11 +12,11 @@
 
 namespace opencv_test
 {
-using cv::GMatDesc;
-using View = cv::RMat::View;
-using cv::Mat;
-using cv::gimpl::asMat;
-using cv::gimpl::asView;
+using ncvslideio::GMatDesc;
+using View = ncvslideio::RMat::View;
+using ncvslideio::Mat;
+using ncvslideio::gimpl::asMat;
+using ncvslideio::gimpl::asView;
 using namespace ::testing;
 
 static void expect_eq_desc(const GMatDesc& desc, const View& view) {
@@ -42,7 +42,7 @@ struct RMatViewTest : public TestWithParam<int /*dataType*/>{};
 TEST_P(RMatViewTest, ConstructionFromMat) {
     auto type = GetParam();
     Mat mat(8,8,type);
-    const auto desc = cv::descr_of(mat);
+    const auto desc = ncvslideio::descr_of(mat);
     View view = asView(mat);
     expect_eq_desc(desc, view);
     EXPECT_EQ(mat.ptr(), view.ptr());
@@ -52,8 +52,8 @@ TEST_P(RMatViewTest, ConstructionFromMat) {
 TEST(RMatView, TestConstructionFromMatND) {
     std::vector<int> dims(4, 8);
     Mat mat(dims, CV_8UC1);
-    const auto desc = cv::descr_of(mat);
-    View view(cv::descr_of(mat), mat.ptr());
+    const auto desc = ncvslideio::descr_of(mat);
+    View view(ncvslideio::descr_of(mat), mat.ptr());
     expect_eq_desc(desc, view);
     EXPECT_EQ(mat.ptr(), view.ptr());
 }
@@ -95,7 +95,7 @@ TEST_P(RMatViewNDTest, StepFromMat) {
     int depth = 0, ndims = 0;
     std::tie(depth, ndims) = GetParam();
     std::vector<int> dims(ndims, 12);
-    cv::Mat mat(dims, depth);
+    ncvslideio::Mat mat(dims, depth);
     auto view = asView(mat);
     EXPECT_EQ(mat.ptr(), view.ptr());
     for (int i = 0; i < ndims; i++) {
@@ -158,58 +158,58 @@ INSTANTIATE_TEST_CASE_P(Test, RMatViewNDTestNegative,
 TEST_P(RMatViewTest, NonDefaultStepInput) {
     auto type = GetParam();
     Mat bigMat(16,16,type);
-    cv::randn(bigMat, cv::Scalar::all(127), cv::Scalar::all(40));
-    Mat mat = bigMat(cv::Rect{4,4,8,8});
+    ncvslideio::randn(bigMat, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
+    Mat mat = bigMat(ncvslideio::Rect{4,4,8,8});
     View view = asView(mat);
     const auto viewMat = asMat(view);
     Mat ref, out;
-    cv::Size ksize{1,1};
-    cv::blur(viewMat, out, ksize);
-    cv::blur(    mat, ref, ksize);
+    ncvslideio::Size ksize{1,1};
+    ncvslideio::blur(viewMat, out, ksize);
+    ncvslideio::blur(    mat, ref, ksize);
     EXPECT_EQ(0, cvtest::norm(ref, out, NORM_INF));
 }
 
 TEST_P(RMatViewTest, NonDefaultStepOutput) {
     auto type = GetParam();
     Mat mat(8,8,type);
-    cv::randn(mat, cv::Scalar::all(127), cv::Scalar::all(40));
+    ncvslideio::randn(mat, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
     Mat bigMat = Mat::zeros(16,16,type);
-    Mat out = bigMat(cv::Rect{4,4,8,8});
+    Mat out = bigMat(ncvslideio::Rect{4,4,8,8});
     View view = asView(out);
     auto viewMat = asMat(view);
     Mat ref;
-    cv::Size ksize{1,1};
-    cv::blur(mat, viewMat, ksize);
-    cv::blur(mat, ref,     ksize);
+    ncvslideio::Size ksize{1,1};
+    ncvslideio::blur(mat, viewMat, ksize);
+    ncvslideio::blur(mat, ref,     ksize);
     EXPECT_EQ(0, cvtest::norm(ref, out, NORM_INF));
 }
 
 TEST_P(RMatViewTest, NonDefaultStep2DInput) {
     auto type = GetParam();
     Mat bigMat(16,16,type);
-    cv::randn(bigMat, cv::Scalar::all(127), cv::Scalar::all(40));
-    Mat mat = bigMat(cv::Rect{4,4,8,8});
-    View view(cv::descr_of(mat), mat.data, mat.step);
+    ncvslideio::randn(bigMat, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
+    Mat mat = bigMat(ncvslideio::Rect{4,4,8,8});
+    View view(ncvslideio::descr_of(mat), mat.data, mat.step);
     const auto viewMat = asMat(view);
     Mat ref, out;
-    cv::Size ksize{1,1};
-    cv::blur(viewMat, out, ksize);
-    cv::blur(    mat, ref, ksize);
+    ncvslideio::Size ksize{1,1};
+    ncvslideio::blur(viewMat, out, ksize);
+    ncvslideio::blur(    mat, ref, ksize);
     EXPECT_EQ(0, cvtest::norm(ref, out, NORM_INF));
 }
 
 TEST_P(RMatViewTest, NonDefaultStep2DOutput) {
     auto type = GetParam();
     Mat mat(8,8,type);
-    cv::randn(mat, cv::Scalar::all(127), cv::Scalar::all(40));
+    ncvslideio::randn(mat, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
     Mat bigMat = Mat::zeros(16,16,type);
-    Mat out = bigMat(cv::Rect{4,4,8,8});
-    View view(cv::descr_of(out), out.data, out.step);
+    Mat out = bigMat(ncvslideio::Rect{4,4,8,8});
+    View view(ncvslideio::descr_of(out), out.data, out.step);
     auto viewMat = asMat(view);
     Mat ref;
-    cv::Size ksize{1,1};
-    cv::blur(mat, viewMat, ksize);
-    cv::blur(mat, ref,     ksize);
+    ncvslideio::Size ksize{1,1};
+    ncvslideio::blur(mat, viewMat, ksize);
+    ncvslideio::blur(mat, ref,     ksize);
     EXPECT_EQ(0, cvtest::norm(ref, out, NORM_INF));
 }
 
@@ -219,7 +219,7 @@ INSTANTIATE_TEST_CASE_P(Test, RMatViewTest,
 struct RMatViewCallbackTest : public ::testing::Test {
     RMatViewCallbackTest()
         : mat(8,8,CV_8UC1) {
-        cv::randn(mat, cv::Scalar::all(127), cv::Scalar::all(40));
+        ncvslideio::randn(mat, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
     }
     View getView() { return asView(mat, [this](){ callbackCalls++; }); }
     int callbackCalls = 0;
@@ -229,7 +229,7 @@ struct RMatViewCallbackTest : public ::testing::Test {
 TEST_F(RMatViewCallbackTest, MoveCtor) {
     {
         View copy(getView());
-        cv::util::suppress_unused_warning(copy);
+        ncvslideio::util::suppress_unused_warning(copy);
         EXPECT_EQ(0, callbackCalls);
     }
     EXPECT_EQ(1, callbackCalls);
@@ -239,7 +239,7 @@ TEST_F(RMatViewCallbackTest, MoveCopy) {
     {
         View copy;
         copy = getView();
-        cv::util::suppress_unused_warning(copy);
+        ncvslideio::util::suppress_unused_warning(copy);
         EXPECT_EQ(0, callbackCalls);
     }
     EXPECT_EQ(1, callbackCalls);
@@ -249,7 +249,7 @@ static int firstElement(const View& view) { return *view.ptr(); }
 static void setFirstElement(View& view, uchar value) { *view.ptr() = value; }
 
 TEST_F(RMatViewCallbackTest, MagazineInteraction) {
-    cv::gimpl::magazine::Class<View> mag;
+    ncvslideio::gimpl::magazine::Class<View> mag;
     constexpr int rc = 1;
     constexpr uchar value = 11;
     mag.slot<View>()[rc] = getView();
@@ -270,11 +270,11 @@ TEST_F(RMatViewCallbackTest, MagazineInteraction) {
 }
 
 TEST(RMatView, Access1DMat) {
-    cv::Mat m({1}, CV_32FC1);
+    ncvslideio::Mat m({1}, CV_32FC1);
     m.dims = 1;
-    auto rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(m);
-    auto view = rmat.access(cv::RMat::Access::R);
-    auto out = cv::gimpl::asMat(view);
+    auto rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(m);
+    auto view = rmat.access(ncvslideio::RMat::Access::R);
+    auto out = ncvslideio::gimpl::asMat(view);
     EXPECT_EQ(1, out.dims);
 }
 } // namespace opencv_test

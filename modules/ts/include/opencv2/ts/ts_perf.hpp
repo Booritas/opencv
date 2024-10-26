@@ -25,7 +25,7 @@
 #endif
 
 // declare major namespaces to avoid errors on unknown namespace
-namespace cv { namespace cuda {} namespace ocl {} }
+namespace ncvslideio { namespace cuda {} namespace ocl {} }
 namespace cvtest { }
 
 namespace perf
@@ -43,32 +43,32 @@ class TestBase;
 /*****************************************************************************************\
 *                Predefined typical frame sizes and typical test parameters               *
 \*****************************************************************************************/
-const static cv::Size szQVGA = cv::Size(320, 240);
-const static cv::Size szVGA = cv::Size(640, 480);
-const static cv::Size szSVGA = cv::Size(800, 600);
-const static cv::Size szXGA = cv::Size(1024, 768);
-const static cv::Size szSXGA = cv::Size(1280, 1024);
-const static cv::Size szWQHD = cv::Size(2560, 1440);
+const static ncvslideio::Size szQVGA = ncvslideio::Size(320, 240);
+const static ncvslideio::Size szVGA = ncvslideio::Size(640, 480);
+const static ncvslideio::Size szSVGA = ncvslideio::Size(800, 600);
+const static ncvslideio::Size szXGA = ncvslideio::Size(1024, 768);
+const static ncvslideio::Size szSXGA = ncvslideio::Size(1280, 1024);
+const static ncvslideio::Size szWQHD = ncvslideio::Size(2560, 1440);
 
-const static cv::Size sznHD = cv::Size(640, 360);
-const static cv::Size szqHD = cv::Size(960, 540);
-const static cv::Size sz240p = szQVGA;
-const static cv::Size sz720p = cv::Size(1280, 720);
-const static cv::Size sz1080p = cv::Size(1920, 1080);
-const static cv::Size sz1440p = szWQHD;
-const static cv::Size sz2160p = cv::Size(3840, 2160);//UHDTV1 4K
-const static cv::Size sz4320p = cv::Size(7680, 4320);//UHDTV2 8K
+const static ncvslideio::Size sznHD = ncvslideio::Size(640, 360);
+const static ncvslideio::Size szqHD = ncvslideio::Size(960, 540);
+const static ncvslideio::Size sz240p = szQVGA;
+const static ncvslideio::Size sz720p = ncvslideio::Size(1280, 720);
+const static ncvslideio::Size sz1080p = ncvslideio::Size(1920, 1080);
+const static ncvslideio::Size sz1440p = szWQHD;
+const static ncvslideio::Size sz2160p = ncvslideio::Size(3840, 2160);//UHDTV1 4K
+const static ncvslideio::Size sz4320p = ncvslideio::Size(7680, 4320);//UHDTV2 8K
 
-const static cv::Size sz3MP = cv::Size(2048, 1536);
-const static cv::Size sz5MP = cv::Size(2592, 1944);
-const static cv::Size sz2K = cv::Size(2048, 2048);
+const static ncvslideio::Size sz3MP = ncvslideio::Size(2048, 1536);
+const static ncvslideio::Size sz5MP = ncvslideio::Size(2592, 1944);
+const static ncvslideio::Size sz2K = ncvslideio::Size(2048, 2048);
 
-const static cv::Size szODD = cv::Size(127, 61);
+const static ncvslideio::Size szODD = ncvslideio::Size(127, 61);
 
-const static cv::Size szSmall24 = cv::Size(24, 24);
-const static cv::Size szSmall32 = cv::Size(32, 32);
-const static cv::Size szSmall64 = cv::Size(64, 64);
-const static cv::Size szSmall128 = cv::Size(128, 128);
+const static ncvslideio::Size szSmall24 = ncvslideio::Size(24, 24);
+const static ncvslideio::Size szSmall32 = ncvslideio::Size(32, 32);
+const static ncvslideio::Size szSmall64 = ncvslideio::Size(64, 64);
+const static ncvslideio::Size szSmall128 = ncvslideio::Size(128, 128);
 
 #define SZ_ALL_VGA ::testing::Values(::perf::szQVGA, ::perf::szVGA, ::perf::szSVGA)
 #define SZ_ALL_GA  ::testing::Values(::perf::szQVGA, ::perf::szVGA, ::perf::szSVGA, ::perf::szXGA, ::perf::szSXGA)
@@ -104,7 +104,7 @@ private:
 
 #define CV_ENUM(class_name, ...)                                                        \
     namespace {                                                                         \
-    using namespace cv;using namespace cv::cuda; using namespace cv::ocl;               \
+    using namespace ncvslideio;using namespace ncvslideio::cuda; using namespace ncvslideio::ocl;               \
     struct class_name {                                                                 \
         class_name(int val = 0) : val_(val) {}                                          \
         operator int() const { return val_; }                                           \
@@ -137,7 +137,7 @@ private:
         class_name(int val = 0) : val_(val) {}                                          \
         operator int() const { return val_; }                                           \
         void PrintTo(std::ostream* os) const {                                          \
-            using namespace cv;using namespace cv::cuda; using namespace cv::ocl;        \
+            using namespace ncvslideio;using namespace ncvslideio::cuda; using namespace ncvslideio::ocl;        \
             const int vals[] = { __VA_ARGS__ };                                         \
             const char* svals = #__VA_ARGS__;                                           \
             int value = val_;                                                           \
@@ -174,13 +174,13 @@ enum ERROR_TYPE
 class Regression
 {
 public:
-    static Regression& add(TestBase* test, const std::string& name, cv::InputArray array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
-    static Regression& addMoments(TestBase* test, const std::string& name, const cv::Moments & array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
-    static Regression& addKeypoints(TestBase* test, const std::string& name, const std::vector<cv::KeyPoint>& array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
-    static Regression& addMatches(TestBase* test, const std::string& name, const std::vector<cv::DMatch>& array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
+    static Regression& add(TestBase* test, const std::string& name, ncvslideio::InputArray array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
+    static Regression& addMoments(TestBase* test, const std::string& name, const ncvslideio::Moments & array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
+    static Regression& addKeypoints(TestBase* test, const std::string& name, const std::vector<ncvslideio::KeyPoint>& array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
+    static Regression& addMatches(TestBase* test, const std::string& name, const std::vector<ncvslideio::DMatch>& array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
     static void Init(const std::string& testSuitName, const std::string& ext = ".xml");
 
-    Regression& operator() (const std::string& name, cv::InputArray array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
+    Regression& operator() (const std::string& name, ncvslideio::InputArray array, double eps = DBL_EPSILON, ERROR_TYPE err = ERROR_ABSOLUTE);
 
 private:
     static Regression& instance();
@@ -190,26 +190,26 @@ private:
     Regression(const Regression&);
     Regression& operator=(const Regression&);
 
-    cv::RNG regRNG;//own random numbers generator to make collection and verification work identical
+    ncvslideio::RNG regRNG;//own random numbers generator to make collection and verification work identical
     std::string storageInPath;
     std::string storageOutPath;
-    cv::FileStorage storageIn;
-    cv::FileStorage storageOut;
-    cv::FileNode rootIn;
+    ncvslideio::FileStorage storageIn;
+    ncvslideio::FileStorage storageOut;
+    ncvslideio::FileNode rootIn;
     std::string currentTestNodeName;
     std::string suiteName;
 
-    cv::FileStorage& write();
+    ncvslideio::FileStorage& write();
 
     static std::string getCurrentTestNodeName();
-    static bool isVector(cv::InputArray a);
-    static double getElem(cv::Mat& m, int x, int y, int cn = 0);
+    static bool isVector(ncvslideio::InputArray a);
+    static double getElem(ncvslideio::Mat& m, int x, int y, int cn = 0);
 
     void init(const std::string& testSuitName, const std::string& ext);
-    void write(cv::InputArray array);
-    void write(cv::Mat m);
-    void verify(cv::FileNode node, cv::InputArray array, double eps, ERROR_TYPE err);
-    void verify(cv::FileNode node, cv::Mat actual, double eps, std::string argname, ERROR_TYPE err);
+    void write(ncvslideio::InputArray array);
+    void write(ncvslideio::Mat m);
+    void verify(ncvslideio::FileNode node, ncvslideio::InputArray array, double eps, ERROR_TYPE err);
+    void verify(ncvslideio::FileNode node, ncvslideio::Mat actual, double eps, std::string argname, ERROR_TYPE err);
 };
 
 #define SANITY_CHECK(array, ...) ::perf::Regression::add(this, #array, array , ## __VA_ARGS__)
@@ -284,7 +284,7 @@ typedef struct ImplData
     bool ocl;
     bool plain;
     std::vector<int> implCode;
-    std::vector<cv::String> funName;
+    std::vector<ncvslideio::String> funName;
 
     ImplData()
     {
@@ -293,7 +293,7 @@ typedef struct ImplData
 
     void Reset()
     {
-        cv::setImpl(0);
+        ncvslideio::setImpl(0);
         ipp = icv = ocl = ipp_mt = false;
         implCode.clear();
         funName.clear();
@@ -301,12 +301,12 @@ typedef struct ImplData
 
     void GetImpl()
     {
-        flagsToVars(cv::getImpl(implCode, funName));
+        flagsToVars(ncvslideio::getImpl(implCode, funName));
     }
 
-    std::vector<cv::String> GetCallsForImpl(int impl)
+    std::vector<ncvslideio::String> GetCallsForImpl(int impl)
     {
-        std::vector<cv::String> out;
+        std::vector<ncvslideio::String> out;
 
         for(int i = 0; i < (int)implCode.size(); i++)
         {
@@ -320,7 +320,7 @@ typedef struct ImplData
     void ShapeUp()
     {
         std::vector<int> savedCode;
-        std::vector<cv::String> savedName;
+        std::vector<ncvslideio::String> savedName;
 
         for(int i = 0; i < (int)implCode.size(); i++)
         {
@@ -366,7 +366,7 @@ typedef struct ImplData
 class InstumentData
 {
 public:
-    static ::cv::String treeToString();
+    static ::ncvslideio::String treeToString();
     static void         printTree();
 };
 #endif
@@ -414,7 +414,7 @@ protected:
     };
 
     void reportMetrics(bool toJUnitXML = false);
-    static void warmup(cv::InputOutputArray a, WarmUpType wtype = WARMUP_READ);
+    static void warmup(ncvslideio::InputOutputArray a, WarmUpType wtype = WARMUP_READ);
 
     performance_metrics& calcMetrics();
 
@@ -428,7 +428,7 @@ protected:
 #endif
 
 private:
-    typedef std::vector<std::pair<int, cv::Size> > SizeVector;
+    typedef std::vector<std::pair<int, ncvslideio::Size> > SizeVector;
     typedef std::vector<int64> TimeVector;
 
     SizeVector inputData;
@@ -454,23 +454,23 @@ private:
     performance_metrics metrics;
     void validateMetrics();
 
-    static void warmup_impl(cv::Mat m, WarmUpType wtype);
-    static int getSizeInBytes(cv::InputArray a);
-    static cv::Size getSize(cv::InputArray a);
-    static void declareArray(SizeVector& sizes, cv::InputOutputArray a, WarmUpType wtype);
+    static void warmup_impl(ncvslideio::Mat m, WarmUpType wtype);
+    static int getSizeInBytes(ncvslideio::InputArray a);
+    static ncvslideio::Size getSize(ncvslideio::InputArray a);
+    static void declareArray(SizeVector& sizes, ncvslideio::InputOutputArray a, WarmUpType wtype);
 
     class _declareHelper
     {
     public:
-        _declareHelper& in(cv::InputOutputArray a1, WarmUpType wtype = WARMUP_READ);
-        _declareHelper& in(cv::InputOutputArray a1, cv::InputOutputArray a2, WarmUpType wtype = WARMUP_READ);
-        _declareHelper& in(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, WarmUpType wtype = WARMUP_READ);
-        _declareHelper& in(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, cv::InputOutputArray a4, WarmUpType wtype = WARMUP_READ);
+        _declareHelper& in(ncvslideio::InputOutputArray a1, WarmUpType wtype = WARMUP_READ);
+        _declareHelper& in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, WarmUpType wtype = WARMUP_READ);
+        _declareHelper& in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, WarmUpType wtype = WARMUP_READ);
+        _declareHelper& in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, ncvslideio::InputOutputArray a4, WarmUpType wtype = WARMUP_READ);
 
-        _declareHelper& out(cv::InputOutputArray a1, WarmUpType wtype = WARMUP_WRITE);
-        _declareHelper& out(cv::InputOutputArray a1, cv::InputOutputArray a2, WarmUpType wtype = WARMUP_WRITE);
-        _declareHelper& out(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, WarmUpType wtype = WARMUP_WRITE);
-        _declareHelper& out(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, cv::InputOutputArray a4, WarmUpType wtype = WARMUP_WRITE);
+        _declareHelper& out(ncvslideio::InputOutputArray a1, WarmUpType wtype = WARMUP_WRITE);
+        _declareHelper& out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, WarmUpType wtype = WARMUP_WRITE);
+        _declareHelper& out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, WarmUpType wtype = WARMUP_WRITE);
+        _declareHelper& out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, ncvslideio::InputOutputArray a4, WarmUpType wtype = WARMUP_WRITE);
 
         _declareHelper& iterations(unsigned int n);
         _declareHelper& time(double timeLimitSecs);
@@ -497,7 +497,7 @@ public:
 
 template<typename T> class TestBaseWithParam: public TestBase, public ::testing::WithParamInterface<T> {};
 
-typedef tuple<cv::Size, MatType> Size_MatType_t;
+typedef tuple<ncvslideio::Size, MatType> Size_MatType_t;
 typedef TestBaseWithParam<Size_MatType_t> Size_MatType;
 
 /*****************************************************************************************\
@@ -507,13 +507,13 @@ void PrintTo(const MatType& t, std::ostream* os);
 
 } //namespace perf
 
-namespace cv
+namespace ncvslideio
 {
 
 void PrintTo(const String& str, ::std::ostream* os);
 void PrintTo(const Size& sz, ::std::ostream* os);
 
-} //namespace cv
+} //namespace ncvslideio
 
 
 /*****************************************************************************************\
@@ -608,16 +608,16 @@ void PrintTo(const Size& sz, ::std::ostream* os);
 // The user should put his test code between braces after using this
 // macro.  Example:
 //
-//   typedef ::perf::TestBaseWithParam<cv::Size> FooTest;
+//   typedef ::perf::TestBaseWithParam<ncvslideio::Size> FooTest;
 //
 //   PERF_TEST_P(FooTest, DoTestingRight, ::testing::Values(::perf::szVGA, ::perf::sz720p) {
-//     cv::Mat b(GetParam(), CV_8U, cv::Scalar(10));
-//     cv::Mat a(GetParam(), CV_8U, cv::Scalar(20));
-//     cv::Mat c(GetParam(), CV_8U, cv::Scalar(0));
+//     ncvslideio::Mat b(GetParam(), CV_8U, ncvslideio::Scalar(10));
+//     ncvslideio::Mat a(GetParam(), CV_8U, ncvslideio::Scalar(20));
+//     ncvslideio::Mat c(GetParam(), CV_8U, ncvslideio::Scalar(0));
 //
 //     declare.in(a, b).out(c).time(0.5);
 //
-//     TEST_CYCLE() cv::add(a, b, c);
+//     TEST_CYCLE() ncvslideio::add(a, b, c);
 //
 //     SANITY_CHECK(c);
 //   }
@@ -693,7 +693,7 @@ namespace comparators
 template<typename T>
 struct RectLess_
 {
-  bool operator()(const cv::Rect_<T>& r1, const cv::Rect_<T>& r2) const
+  bool operator()(const ncvslideio::Rect_<T>& r1, const ncvslideio::Rect_<T>& r2) const
   {
     return r1.x < r2.x ||
             (r1.x == r2.x && r1.y < r2.y) ||
@@ -706,7 +706,7 @@ typedef RectLess_<int> RectLess;
 
 struct KeypointGreater
 {
-    bool operator()(const cv::KeyPoint& kp1, const cv::KeyPoint& kp2) const
+    bool operator()(const ncvslideio::KeyPoint& kp1, const ncvslideio::KeyPoint& kp2) const
     {
         if (kp1.response > kp2.response) return true;
         if (kp1.response < kp2.response) return false;
@@ -722,7 +722,7 @@ struct KeypointGreater
 
 } //namespace comparators
 
-void sort(std::vector<cv::KeyPoint>& pts, cv::InputOutputArray descriptors);
+void sort(std::vector<ncvslideio::KeyPoint>& pts, ncvslideio::InputOutputArray descriptors);
 } //namespace perf
 
 #endif //OPENCV_TS_PERF_HPP

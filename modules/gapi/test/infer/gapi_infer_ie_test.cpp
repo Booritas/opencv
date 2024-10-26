@@ -44,24 +44,24 @@ namespace opencv_test
 {
 namespace {
 
-class TestMediaBGR final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_mat;
-    using Cb = cv::MediaFrame::View::Callback;
+class TestMediaBGR final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_mat;
+    using Cb = ncvslideio::MediaFrame::View::Callback;
     Cb m_cb;
 
 public:
-    explicit TestMediaBGR(cv::Mat m, Cb cb = [](){})
+    explicit TestMediaBGR(ncvslideio::Mat m, Cb cb = [](){})
         : m_mat(m), m_cb(cb) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::BGR, cv::Size(m_mat.cols, m_mat.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, ncvslideio::Size(m_mat.cols, m_mat.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
     }
-    cv::util::any blobParams() const override {
+    ncvslideio::util::any blobParams() const override {
 #if INF_ENGINE_RELEASE > 2023000000
         // NB: blobParams() shouldn't be used in tests
         // if OpenVINO versions is higher than 2023.0
@@ -78,23 +78,23 @@ public:
     }
 };
 
-class TestMediaNV12 final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_y;
-    cv::Mat m_uv;
+class TestMediaNV12 final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_y;
+    ncvslideio::Mat m_uv;
 public:
-    TestMediaNV12(cv::Mat y, cv::Mat uv) : m_y(y), m_uv(uv) {
+    TestMediaNV12(ncvslideio::Mat y, ncvslideio::Mat uv) : m_y(y), m_uv(uv) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::NV12, cv::Size(m_y.cols, m_y.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::NV12, ncvslideio::Size(m_y.cols, m_y.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = {
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = {
             m_y.ptr(), m_uv.ptr(), nullptr, nullptr
         };
-        cv::MediaFrame::View::Strides ss = {
+        ncvslideio::MediaFrame::View::Strides ss = {
             m_y.step, m_uv.step, 0u, 0u
         };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
     }
 };
 
@@ -126,14 +126,14 @@ static const std::string SUBDIR = "Retail/object_attributes/age_gender/dldt/";
 #endif
 
 // FIXME: taken from the DNN module
-void normAssert(cv::InputArray ref, cv::InputArray test,
+void normAssert(ncvslideio::InputArray ref, ncvslideio::InputArray test,
                 const char *comment /*= ""*/,
                 double l1 = 0.00001, double lInf = 0.0001)
 {
-    double normL1 = cvtest::norm(ref, test, cv::NORM_L1) / ref.getMat().total();
+    double normL1 = cvtest::norm(ref, test, ncvslideio::NORM_L1) / ref.getMat().total();
     EXPECT_LE(normL1, l1) << comment;
 
-    double normInf = cvtest::norm(ref, test, cv::NORM_INF);
+    double normInf = cvtest::norm(ref, test, ncvslideio::NORM_INF);
     EXPECT_LE(normInf, lInf) << comment;
 }
 
@@ -156,7 +156,7 @@ void setNetParameters(IE::CNNNetwork& net, bool is_nv12 = false) {
 
 bool checkDeviceIsAvailable(const std::string& device) {
     const static auto available_devices = [&](){
-        auto devices = cv::gimpl::ie::wrap::getCore().GetAvailableDevices();
+        auto devices = ncvslideio::gimpl::ie::wrap::getCore().GetAvailableDevices();
         return std::unordered_set<std::string>{devices.begin(), devices.end()};
     }();
     return available_devices.find(device) != available_devices.end();
@@ -168,15 +168,15 @@ void skipIfDeviceNotAvailable(const std::string& device) {
     }
 }
 
-void compileBlob(const cv::gapi::ie::detail::ParamDesc& params,
+void compileBlob(const ncvslideio::gapi::ie::detail::ParamDesc& params,
                  const std::string&                     output,
                  const IE::Precision&                   ip) {
-    auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-    auto net    = cv::gimpl::ie::wrap::readNetwork(params);
+    auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+    auto net    = ncvslideio::gimpl::ie::wrap::readNetwork(params);
     for (auto&& ii : net.getInputsInfo()) {
         ii.second->setPrecision(ip);
     }
-    auto this_network = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+    auto this_network = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
     std::ofstream out_file{output, std::ios::out | std::ios::binary};
     GAPI_Assert(out_file.is_open());
     this_network.Export(out_file);
@@ -184,7 +184,7 @@ void compileBlob(const cv::gapi::ie::detail::ParamDesc& params,
 
 std::string compileAgeGenderBlob(const std::string& device) {
     const static std::string blob_path = [&](){
-        cv::gapi::ie::detail::ParamDesc params;
+        ncvslideio::gapi::ie::detail::ParamDesc params;
         const std::string model_name = "age-gender-recognition-retail-0013";
         const std::string output  = model_name + ".blob";
         params.model_path   = findDataFile(SUBDIR + model_name + ".xml", false);
@@ -204,130 +204,130 @@ TEST(TestAgeGenderIE, InferBasicTensor)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
 
         const auto &iedims = net.getInputsInfo().begin()->second->getTensorDesc().getDims();
-              auto  cvdims = cv::gapi::ie::util::to_ocv(iedims);
+              auto  cvdims = ncvslideio::gapi::ie::util::to_ocv(iedims);
         in_mat.create(cvdims, CV_32F);
-        cv::randu(in_mat, -1, 1);
+        ncvslideio::randu(in_mat, -1, 1);
 
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(TestAgeGenderIE, InferBasicImage)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // FIXME: Ideally it should be an image from disk
-    // cv::Mat in_mat = cv::imread(findDataFile("grace_hopper_227.png"));
-    cv::Mat in_mat(cv::Size(320, 240), CV_8UC3);
-    cv::randu(in_mat, 0, 255);
+    // ncvslideio::Mat in_mat = ncvslideio::imread(findDataFile("grace_hopper_227.png"));
+    ncvslideio::Mat in_mat(ncvslideio::Size(320, 240), CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 struct InferWithReshape: public ::testing::Test {
-    cv::gapi::ie::detail::ParamDesc params;
-    cv::Mat m_in_mat;
-    std::vector<cv::Rect> m_roi_list;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
+    ncvslideio::Mat m_in_mat;
+    std::vector<ncvslideio::Rect> m_roi_list;
     std::vector<size_t> reshape_dims;
-    std::vector<cv::Mat> m_out_ie_ages;
-    std::vector<cv::Mat> m_out_ie_genders;
-    std::vector<cv::Mat> m_out_gapi_ages;
-    std::vector<cv::Mat> m_out_gapi_genders;
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    std::vector<ncvslideio::Mat> m_out_ie_ages;
+    std::vector<ncvslideio::Mat> m_out_ie_genders;
+    std::vector<ncvslideio::Mat> m_out_gapi_ages;
+    std::vector<ncvslideio::Mat> m_out_gapi_genders;
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
     InferenceEngine::CNNNetwork net;
     InferenceEngine::Core plugin;
 
     void SetUp() {
-        // FIXME: it must be cv::imread(findDataFile("../dnn/grace_hopper_227.png", false));
-        m_in_mat = cv::Mat(cv::Size(320, 240), CV_8UC3);
-        cv::randu(m_in_mat, 0, 255);
+        // FIXME: it must be ncvslideio::imread(findDataFile("../dnn/grace_hopper_227.png", false));
+        m_in_mat = ncvslideio::Mat(ncvslideio::Size(320, 240), CV_8UC3);
+        ncvslideio::randu(m_in_mat, 0, 255);
 
         m_out_gapi_ages.resize(1);
         m_out_gapi_genders.resize(1);
 
         // both ROIs point to the same face, with a slightly changed geometry
         m_roi_list = {
-            cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-            cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+            ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+            ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
         };
 
         // New dimensions for "data" input
@@ -339,14 +339,14 @@ struct InferWithReshape: public ::testing::Test {
 
         params.device_id = "CPU";
 
-        plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        net    = cv::gimpl::ie::wrap::readNetwork(params);
+        plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        net    = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net);
         net.reshape({{"data", reshape_dims}});
     }
 
     void inferROIs(IE::Blob::Ptr blob) {
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
         for (auto &&rc : m_roi_list) {
             const auto ie_rc = IE::ROI {
@@ -358,23 +358,23 @@ struct InferWithReshape: public ::testing::Test {
             };
             infer_request.SetBlob("data", IE::make_shared_blob(blob, ie_rc));
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             m_out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             m_out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         }
     }
 
-    void infer(cv::Mat& in, const bool with_roi = false) {
+    void infer(ncvslideio::Mat& in, const bool with_roi = false) {
         if (!with_roi) {
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in));
+            infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in));
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             m_out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             m_out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         } else {
-            auto frame_blob = cv::gapi::ie::util::to_ie(in);
+            auto frame_blob = ncvslideio::gapi::ie::util::to_ie(in);
             inferROIs(frame_blob);
         }
     }
@@ -395,40 +395,40 @@ struct InferWithReshape: public ::testing::Test {
 }; // InferWithReshape
 
 struct InferWithReshapeNV12: public InferWithReshape {
-    cv::Mat m_in_uv;
-    cv::Mat m_in_y;
+    ncvslideio::Mat m_in_uv;
+    ncvslideio::Mat m_in_y;
     void SetUp() {
         InferWithReshape::SetUp();
-        cv::Size sz{320, 240};
-        m_in_y = cv::Mat{sz, CV_8UC1};
-        cv::randu(m_in_y, 0, 255);
-        m_in_uv = cv::Mat{sz / 2, CV_8UC2};
-        cv::randu(m_in_uv, 0, 255);
+        ncvslideio::Size sz{320, 240};
+        m_in_y = ncvslideio::Mat{sz, CV_8UC1};
+        ncvslideio::randu(m_in_y, 0, 255);
+        m_in_uv = ncvslideio::Mat{sz / 2, CV_8UC2};
+        ncvslideio::randu(m_in_uv, 0, 255);
 // NB: NV12 feature shouldn't be used in tests
 // if OpenVINO versions is higher than 2023.0
 #if INF_ENGINE_RELEASE <= 2023000000
         setNetParameters(net, true);
         net.reshape({{"data", reshape_dims}});
-        auto frame_blob = cv::gapi::ie::util::to_ie(m_in_y, m_in_uv);
+        auto frame_blob = ncvslideio::gapi::ie::util::to_ie(m_in_y, m_in_uv);
         inferROIs(frame_blob);
 #endif // INF_ENGINE_RELEASE <= 2023000000
     }
 };
 
 struct ROIList: public ::testing::Test {
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
 
-    cv::Mat m_in_mat;
-    std::vector<cv::Rect> m_roi_list;
+    ncvslideio::Mat m_in_mat;
+    std::vector<ncvslideio::Rect> m_roi_list;
 
-    std::vector<cv::Mat> m_out_ie_ages;
-    std::vector<cv::Mat> m_out_ie_genders;
+    std::vector<ncvslideio::Mat> m_out_ie_ages;
+    std::vector<ncvslideio::Mat> m_out_ie_genders;
 
-    std::vector<cv::Mat> m_out_gapi_ages;
-    std::vector<cv::Mat> m_out_gapi_genders;
+    std::vector<ncvslideio::Mat> m_out_gapi_ages;
+    std::vector<ncvslideio::Mat> m_out_gapi_genders;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
     void SetUp() {
         initDLDTDataPath();
@@ -436,24 +436,24 @@ struct ROIList: public ::testing::Test {
         params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         params.device_id = "CPU";
 
-        // FIXME: it must be cv::imread(findDataFile("../dnn/grace_hopper_227.png", false));
-        m_in_mat = cv::Mat(cv::Size(320, 240), CV_8UC3);
-        cv::randu(m_in_mat, 0, 255);
+        // FIXME: it must be ncvslideio::imread(findDataFile("../dnn/grace_hopper_227.png", false));
+        m_in_mat = ncvslideio::Mat(ncvslideio::Size(320, 240), CV_8UC3);
+        ncvslideio::randu(m_in_mat, 0, 255);
 
         // both ROIs point to the same face, with a slightly changed geometry
         m_roi_list = {
-            cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-            cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+            ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+            ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
         };
 
         // Load & run IE network
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            auto frame_blob = cv::gapi::ie::util::to_ie(m_in_mat);
+            auto frame_blob = ncvslideio::gapi::ie::util::to_ie(m_in_mat);
 
             for (auto &&rc : m_roi_list) {
                 const auto ie_rc = IE::ROI {
@@ -466,7 +466,7 @@ struct ROIList: public ::testing::Test {
                 infer_request.SetBlob("data", IE::make_shared_blob(frame_blob, ie_rc));
                 infer_request.Infer();
 
-                using namespace cv::gapi::ie::util;
+                using namespace ncvslideio::gapi::ie::util;
                 m_out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
                 m_out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
             }
@@ -488,20 +488,20 @@ struct ROIList: public ::testing::Test {
 }; // ROIList
 
 struct ROIListNV12: public ::testing::Test {
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
 
-    cv::Mat m_in_uv;
-    cv::Mat m_in_y;
-    std::vector<cv::Rect> m_roi_list;
+    ncvslideio::Mat m_in_uv;
+    ncvslideio::Mat m_in_y;
+    std::vector<ncvslideio::Rect> m_roi_list;
 
-    std::vector<cv::Mat> m_out_ie_ages;
-    std::vector<cv::Mat> m_out_ie_genders;
+    std::vector<ncvslideio::Mat> m_out_ie_ages;
+    std::vector<ncvslideio::Mat> m_out_ie_genders;
 
-    std::vector<cv::Mat> m_out_gapi_ages;
-    std::vector<cv::Mat> m_out_gapi_genders;
+    std::vector<ncvslideio::Mat> m_out_gapi_ages;
+    std::vector<ncvslideio::Mat> m_out_gapi_genders;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
     void SetUp() {
         initDLDTDataPath();
@@ -509,16 +509,16 @@ struct ROIListNV12: public ::testing::Test {
         params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         params.device_id = "CPU";
 
-        cv::Size sz{320, 240};
-        m_in_y = cv::Mat{sz, CV_8UC1};
-        cv::randu(m_in_y, 0, 255);
-        m_in_uv = cv::Mat{sz / 2, CV_8UC2};
-        cv::randu(m_in_uv, 0, 255);
+        ncvslideio::Size sz{320, 240};
+        m_in_y = ncvslideio::Mat{sz, CV_8UC1};
+        ncvslideio::randu(m_in_y, 0, 255);
+        m_in_uv = ncvslideio::Mat{sz / 2, CV_8UC2};
+        ncvslideio::randu(m_in_uv, 0, 255);
 
         // both ROIs point to the same face, with a slightly changed geometry
         m_roi_list = {
-            cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-            cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+            ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+            ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
         };
 
 // NB: NV12 feature shouldn't be used in tests
@@ -526,12 +526,12 @@ struct ROIListNV12: public ::testing::Test {
 #if INF_ENGINE_RELEASE <= 2023000000
         {
             // Load & run IE network
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net, true);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            auto frame_blob = cv::gapi::ie::util::to_ie(m_in_y, m_in_uv);
+            auto frame_blob = ncvslideio::gapi::ie::util::to_ie(m_in_y, m_in_uv);
 
             for (auto &&rc : m_roi_list) {
                 const auto ie_rc = IE::ROI {
@@ -544,7 +544,7 @@ struct ROIListNV12: public ::testing::Test {
                 infer_request.SetBlob("data", IE::make_shared_blob(frame_blob, ie_rc));
                 infer_request.Infer();
 
-                using namespace cv::gapi::ie::util;
+                using namespace ncvslideio::gapi::ie::util;
                 m_out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
                 m_out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
             }
@@ -572,16 +572,16 @@ struct ROIListNV12: public ::testing::Test {
 };
 
 struct SingleROI: public ::testing::Test {
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
 
-    cv::Mat m_in_mat;
-    cv::Rect m_roi;
+    ncvslideio::Mat m_in_mat;
+    ncvslideio::Rect m_roi;
 
-    cv::Mat m_out_gapi_age;
-    cv::Mat m_out_gapi_gender;
+    ncvslideio::Mat m_out_gapi_age;
+    ncvslideio::Mat m_out_gapi_gender;
 
-    cv::Mat m_out_ie_age;
-    cv::Mat m_out_ie_gender;
+    ncvslideio::Mat m_out_ie_age;
+    ncvslideio::Mat m_out_ie_gender;
 
     void SetUp() {
         initDLDTDataPath();
@@ -589,19 +589,19 @@ struct SingleROI: public ::testing::Test {
         params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         params.device_id = "CPU";
 
-        // FIXME: it must be cv::imread(findDataFile("../dnn/grace_hopper_227.png", false));
-        m_in_mat = cv::Mat(cv::Size(320, 240), CV_8UC3);
-        cv::randu(m_in_mat, 0, 255);
+        // FIXME: it must be ncvslideio::imread(findDataFile("../dnn/grace_hopper_227.png", false));
+        m_in_mat = ncvslideio::Mat(ncvslideio::Size(320, 240), CV_8UC3);
+        ncvslideio::randu(m_in_mat, 0, 255);
 
-        m_roi = cv::Rect(cv::Point{64, 60}, cv::Size{96, 96});
+        m_roi = ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
         // Load & run IE network
         IE::Blob::Ptr ie_age, ie_gender;
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
 
             const auto ie_rc = IE::ROI {
@@ -612,11 +612,11 @@ struct SingleROI: public ::testing::Test {
                 , static_cast<std::size_t>(m_roi.height)
             };
 
-            IE::Blob::Ptr roi_blob = IE::make_shared_blob(cv::gapi::ie::util::to_ie(m_in_mat), ie_rc);
+            IE::Blob::Ptr roi_blob = IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(m_in_mat), ie_rc);
             infer_request.SetBlob("data", roi_blob);
             infer_request.Infer();
 
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             m_out_ie_age    = to_ocv(infer_request.GetBlob("age_conv3")).clone();
             m_out_ie_gender = to_ocv(infer_request.GetBlob("prob")).clone();
         }
@@ -630,17 +630,17 @@ struct SingleROI: public ::testing::Test {
 };
 
 struct SingleROINV12: public ::testing::Test {
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
 
-    cv::Mat m_in_y;
-    cv::Mat m_in_uv;
-    cv::Rect m_roi;
+    ncvslideio::Mat m_in_y;
+    ncvslideio::Mat m_in_uv;
+    ncvslideio::Rect m_roi;
 
-    cv::Mat m_out_gapi_age;
-    cv::Mat m_out_gapi_gender;
+    ncvslideio::Mat m_out_gapi_age;
+    ncvslideio::Mat m_out_gapi_gender;
 
-    cv::Mat m_out_ie_age;
-    cv::Mat m_out_ie_gender;
+    ncvslideio::Mat m_out_ie_age;
+    ncvslideio::Mat m_out_ie_gender;
 
     void SetUp() {
         initDLDTDataPath();
@@ -648,13 +648,13 @@ struct SingleROINV12: public ::testing::Test {
         params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         params.device_id = "CPU";
 
-        cv::Size sz{320, 240};
-        m_in_y = cv::Mat{sz, CV_8UC1};
-        cv::randu(m_in_y, 0, 255);
-        m_in_uv = cv::Mat{sz / 2, CV_8UC2};
-        cv::randu(m_in_uv, 0, 255);
+        ncvslideio::Size sz{320, 240};
+        m_in_y = ncvslideio::Mat{sz, CV_8UC1};
+        ncvslideio::randu(m_in_y, 0, 255);
+        m_in_uv = ncvslideio::Mat{sz / 2, CV_8UC2};
+        ncvslideio::randu(m_in_uv, 0, 255);
 
-        m_roi = cv::Rect(cv::Point{64, 60}, cv::Size{96, 96});
+        m_roi = ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
 // NB: NV12 feature shouldn't be used in tests
 // if OpenVINO versions is higher than 2023.0
@@ -662,12 +662,12 @@ struct SingleROINV12: public ::testing::Test {
         // Load & run IE network
         IE::Blob::Ptr ie_age, ie_gender;
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net, /* NV12 */ true);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            auto blob = cv::gapi::ie::util::to_ie(m_in_y, m_in_uv);
+            auto blob = ncvslideio::gapi::ie::util::to_ie(m_in_y, m_in_uv);
 
             const auto ie_rc = IE::ROI {
                 0u
@@ -681,7 +681,7 @@ struct SingleROINV12: public ::testing::Test {
             infer_request.SetBlob("data", roi_blob);
             infer_request.Infer();
 
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             m_out_ie_age    = to_ocv(infer_request.GetBlob("age_conv3")).clone();
             m_out_ie_gender = to_ocv(infer_request.GetBlob("prob")).clone();
         }
@@ -702,35 +702,35 @@ struct SingleROINV12: public ::testing::Test {
 
 TEST_F(ROIList, TestInfer)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-            cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+            ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(ROIList, TestInfer2)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
@@ -738,121 +738,121 @@ TEST(DISABLED_TestTwoIENNPipeline, InferBasicImage)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc AGparams;
+    ncvslideio::gapi::ie::detail::ParamDesc AGparams;
     AGparams.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     AGparams.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     AGparams.device_id = "MYRIAD";
 
     // FIXME: Ideally it should be an image from disk
-    // cv::Mat in_mat = cv::imread(findDataFile("grace_hopper_227.png"));
-    cv::Mat in_mat(cv::Size(320, 240), CV_8UC3);
-    cv::randu(in_mat, 0, 255);
+    // ncvslideio::Mat in_mat = ncvslideio::imread(findDataFile("grace_hopper_227.png"));
+    ncvslideio::Mat in_mat(ncvslideio::Size(320, 240), CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age1, gapi_gender1, gapi_age2, gapi_gender2;
+    ncvslideio::Mat gapi_age1, gapi_gender1, gapi_age2, gapi_gender2;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age1, ie_gender1, ie_age2, ie_gender2;
     {
-        auto AGplugin1         = cv::gimpl::ie::wrap::getPlugin(AGparams);
-        auto AGnet1            = cv::gimpl::ie::wrap::readNetwork(AGparams);
+        auto AGplugin1         = ncvslideio::gimpl::ie::wrap::getPlugin(AGparams);
+        auto AGnet1            = ncvslideio::gimpl::ie::wrap::readNetwork(AGparams);
         setNetParameters(AGnet1);
-        auto AGplugin_network1 = cv::gimpl::ie::wrap::loadNetwork(AGplugin1, AGnet1, AGparams);
+        auto AGplugin_network1 = ncvslideio::gimpl::ie::wrap::loadNetwork(AGplugin1, AGnet1, AGparams);
         auto AGinfer_request1  = AGplugin_network1.CreateInferRequest();
-        AGinfer_request1.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        AGinfer_request1.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         AGinfer_request1.Infer();
         ie_age1    = AGinfer_request1.GetBlob("age_conv3");
         ie_gender1 = AGinfer_request1.GetBlob("prob");
 
-        auto AGplugin2         = cv::gimpl::ie::wrap::getPlugin(AGparams);
-        auto AGnet2            = cv::gimpl::ie::wrap::readNetwork(AGparams);
+        auto AGplugin2         = ncvslideio::gimpl::ie::wrap::getPlugin(AGparams);
+        auto AGnet2            = ncvslideio::gimpl::ie::wrap::readNetwork(AGparams);
         setNetParameters(AGnet2);
-        auto AGplugin_network2 = cv::gimpl::ie::wrap::loadNetwork(AGplugin2, AGnet2, AGparams);
+        auto AGplugin_network2 = ncvslideio::gimpl::ie::wrap::loadNetwork(AGplugin2, AGnet2, AGparams);
         auto AGinfer_request2     = AGplugin_network2.CreateInferRequest();
-        AGinfer_request2.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        AGinfer_request2.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         AGinfer_request2.Infer();
         ie_age2    = AGinfer_request2.GetBlob("age_conv3");
         ie_gender2 = AGinfer_request2.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender1, <AGInfo(cv::GMat)>,   "test-age-gender1");
-    G_API_NET(AgeGender2, <AGInfo(cv::GMat)>,   "test-age-gender2");
-    cv::GMat in;
-    cv::GMat age1, gender1;
-    std::tie(age1, gender1) = cv::gapi::infer<AgeGender1>(in);
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender1, <AGInfo(ncvslideio::GMat)>,   "test-age-gender1");
+    G_API_NET(AgeGender2, <AGInfo(ncvslideio::GMat)>,   "test-age-gender2");
+    ncvslideio::GMat in;
+    ncvslideio::GMat age1, gender1;
+    std::tie(age1, gender1) = ncvslideio::gapi::infer<AgeGender1>(in);
 
-    cv::GMat age2, gender2;
+    ncvslideio::GMat age2, gender2;
     // FIXME: "Multi-node inference is not supported!", workarounded 'till enabling proper tools
-    std::tie(age2, gender2) = cv::gapi::infer<AgeGender2>(cv::gapi::copy(in));
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age1, gender1, age2, gender2));
+    std::tie(age2, gender2) = ncvslideio::gapi::infer<AgeGender2>(ncvslideio::gapi::copy(in));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age1, gender1, age2, gender2));
 
-    auto age_net1 = cv::gapi::ie::Params<AgeGender1> {
+    auto age_net1 = ncvslideio::gapi::ie::Params<AgeGender1> {
         AGparams.model_path, AGparams.weights_path, AGparams.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    auto age_net2 = cv::gapi::ie::Params<AgeGender2> {
+    auto age_net2 = ncvslideio::gapi::ie::Params<AgeGender2> {
         AGparams.model_path, AGparams.weights_path, AGparams.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age1, gapi_gender1, gapi_age2, gapi_gender2),
-               cv::compile_args(cv::gapi::networks(age_net1, age_net2)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age1, gapi_gender1, gapi_age2, gapi_gender2),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(age_net1, age_net2)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age1),    gapi_age1,    "Test age output 1");
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender1), gapi_gender1, "Test gender output 1");
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age2),    gapi_age2,    "Test age output 2");
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender2), gapi_gender2, "Test gender output 2");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age1),    gapi_age1,    "Test age output 1");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender1), gapi_gender1, "Test gender output 1");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age2),    gapi_age2,    "Test age output 2");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender2), gapi_gender2, "Test gender output 2");
 }
 
 TEST(TestAgeGenderIE, GenericInfer)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Mat in_mat(cv::Size(320, 240), CV_8UC3);
-    cv::randu(in_mat, 0, 255);
+    ncvslideio::Mat in_mat(ncvslideio::Size(320, 240), CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net    = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net    = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    cv::GMat in;
+    ncvslideio::GMat in;
     GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", inputs);
 
     auto age    = outputs.at("age_conv3");
     auto gender = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id};
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(TestAgeGenderIE, InvalidConfigGeneric)
@@ -864,21 +864,21 @@ TEST(TestAgeGenderIE, InvalidConfigGeneric)
     std::string device_id    = "CPU";
 
     // Configure & run G-API
-    cv::GMat in;
+    ncvslideio::GMat in;
     GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<cv::gapi::Generic>{
+    auto pp = ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic>{
         "age-gender-generic", model_path, weights_path, device_id
     }.pluginConfig({{"unsupported_config", "some_value"}});
 
-    EXPECT_ANY_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST(TestAgeGenderIE, CPUConfigGeneric)
@@ -890,22 +890,22 @@ TEST(TestAgeGenderIE, CPUConfigGeneric)
     std::string device_id    = "CPU";
 
     // Configure & run G-API
-    cv::GMat in;
+    ncvslideio::GMat in;
     GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<cv::gapi::Generic> {
+    auto pp = ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> {
         "age-gender-generic", model_path, weights_path, device_id
     }.pluginConfig({{IE::PluginConfigParams::KEY_CPU_THROUGHPUT_STREAMS,
                      IE::PluginConfigParams::CPU_THROUGHPUT_NUMA}});
 
-    EXPECT_NO_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                    cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_NO_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                    ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST(TestAgeGenderIE, InvalidConfig)
@@ -916,21 +916,21 @@ TEST(TestAgeGenderIE, InvalidConfig)
     std::string weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     std::string device_id    = "CPU";
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         model_path, weights_path, device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .pluginConfig({{"unsupported_config", "some_value"}});
 
-    EXPECT_ANY_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST(TestAgeGenderIE, CPUConfig)
@@ -941,42 +941,42 @@ TEST(TestAgeGenderIE, CPUConfig)
     std::string weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     std::string device_id    = "CPU";
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         model_path, weights_path, device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .pluginConfig({{IE::PluginConfigParams::KEY_CPU_THROUGHPUT_STREAMS,
                      IE::PluginConfigParams::CPU_THROUGHPUT_NUMA}});
 
-    EXPECT_NO_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                    cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_NO_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                    ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(ROIList, MediaInputBGR)
 {
     initDLDTDataPath();
 
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
@@ -985,30 +985,30 @@ TEST_F(ROIListNV12, MediaInputNV12)
 {
     initDLDTDataPath();
 
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi_list),
-                     cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi_list),
+                     ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
@@ -1016,18 +1016,18 @@ TEST(TestAgeGenderIE, MediaInputNV12)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Size sz{320, 240};
-    cv::Mat in_y_mat(sz, CV_8UC1);
-    cv::randu(in_y_mat, 0, 255);
-    cv::Mat in_uv_mat(sz / 2, CV_8UC2);
-    cv::randu(in_uv_mat, 0, 255);
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_y_mat(sz, CV_8UC1);
+    ncvslideio::randu(in_y_mat, 0, 255);
+    ncvslideio::Mat in_uv_mat(sz / 2, CV_8UC2);
+    ncvslideio::randu(in_uv_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
 // NB: NV12 feature shouldn't be used in tests
 // if OpenVINO versions is higher than 2023.0
@@ -1035,12 +1035,12 @@ TEST(TestAgeGenderIE, MediaInputNV12)
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net, true);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
@@ -1048,32 +1048,32 @@ TEST(TestAgeGenderIE, MediaInputNV12)
 #endif
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame), cv::gout(gapi_age, gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame), ncvslideio::gout(gapi_age, gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
@@ -1081,77 +1081,77 @@ TEST(TestAgeGenderIE, MediaInputBGR)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Size sz{320, 240};
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(frame), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(InferROI, MediaInputBGR)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Size sz{320, 240};
-    cv::Mat in_mat(sz, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_mat(sz, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
-    cv::Rect rect(cv::Point{64, 60}, cv::Size{96, 96});
+    ncvslideio::Mat gapi_age, gapi_gender;
+    ncvslideio::Rect rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
         const auto ie_rc = IE::ROI {
             0u
@@ -1160,7 +1160,7 @@ TEST(InferROI, MediaInputBGR)
             , static_cast<std::size_t>(rect.width)
             , static_cast<std::size_t>(rect.height)
         };
-        IE::Blob::Ptr roi_blob = IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_mat), ie_rc);
+        IE::Blob::Ptr roi_blob = IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_mat), ie_rc);
         infer_request.SetBlob("data", roi_blob);
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
@@ -1168,46 +1168,46 @@ TEST(InferROI, MediaInputBGR)
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaBGR>(in_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(frame, rect), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, rect), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(InferROI, MediaInputNV12)
 {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Size sz{320, 240};
-    auto in_y_mat = cv::Mat{sz, CV_8UC1};
-    cv::randu(in_y_mat, 0, 255);
-    auto in_uv_mat = cv::Mat{sz / 2, CV_8UC2};
-    cv::randu(in_uv_mat, 0, 255);
+    ncvslideio::Size sz{320, 240};
+    auto in_y_mat = ncvslideio::Mat{sz, CV_8UC1};
+    ncvslideio::randu(in_y_mat, 0, 255);
+    auto in_uv_mat = ncvslideio::Mat{sz / 2, CV_8UC2};
+    ncvslideio::randu(in_uv_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
-    cv::Rect rect(cv::Point{64, 60}, cv::Size{96, 96});
+    ncvslideio::Mat gapi_age, gapi_gender;
+    ncvslideio::Rect rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
 // NB: NV12 feature shouldn't be used in tests
 // if OpenVINO versions is higher than 2023.0
@@ -1215,10 +1215,10 @@ TEST(InferROI, MediaInputNV12)
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         setNetParameters(net, true);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
         const auto ie_rc = IE::ROI {
             0u
@@ -1227,7 +1227,7 @@ TEST(InferROI, MediaInputNV12)
             , static_cast<std::size_t>(rect.width)
             , static_cast<std::size_t>(rect.height)
         };
-        IE::Blob::Ptr roi_blob = IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
+        IE::Blob::Ptr roi_blob = IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
         infer_request.SetBlob("data", roi_blob);
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
@@ -1236,105 +1236,105 @@ TEST(InferROI, MediaInputNV12)
 #endif
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, rect), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, rect), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, rect), cv::gout(gapi_age, gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, rect), ncvslideio::gout(gapi_age, gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST_F(ROIList, Infer2MediaInputBGR)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(ROIListNV12, Infer2MediaInputNV12)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi_list),
-                     cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi_list),
+                     ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST_F(SingleROI, GenericInfer)
 {
     // Configure & run G-API
-    cv::GMat in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GInferInputs inputs;
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", roi, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", roi, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
-    comp.apply(cv::gin(m_in_mat, m_roi), cv::gout(m_out_gapi_age, m_out_gapi_gender),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi), ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
@@ -1342,25 +1342,25 @@ TEST_F(SingleROI, GenericInfer)
 TEST_F(SingleROI, GenericInferMediaBGR)
 {
     // Configure & run G-API
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GInferInputs inputs;
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", roi, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", roi, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
-    comp.apply(cv::gin(frame, m_roi), cv::gout(m_out_gapi_age, m_out_gapi_gender),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi), ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
@@ -1368,18 +1368,18 @@ TEST_F(SingleROI, GenericInferMediaBGR)
 TEST_F(SingleROINV12, GenericInferMediaNV12)
 {
     // Configure & run G-API
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GInferInputs inputs;
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", roi, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", roi, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
@@ -1389,82 +1389,82 @@ TEST_F(SingleROINV12, GenericInferMediaNV12)
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi), cv::gout(m_out_gapi_age, m_out_gapi_gender),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi), ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi),
-                     cv::gout(m_out_gapi_age, m_out_gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi),
+                     ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST_F(ROIList, GenericInfer)
 {
-    cv::GMat in;
-    cv::GArray<cv::Rect> rr;
-    cv::GInferInputs inputs;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", rr, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", rr, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-            cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+            ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
 
 TEST_F(ROIList, GenericInferMediaBGR)
 {
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GInferInputs inputs;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", rr, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", rr, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
-    comp.apply(cv::gin(frame, m_roi_list),
-            cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+            ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
 
 TEST_F(ROIListNV12, GenericInferMediaNV12)
 {
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GInferInputs inputs;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
 
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>("age-gender-generic", rr, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>("age-gender-generic", rr, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
@@ -1474,81 +1474,81 @@ TEST_F(ROIListNV12, GenericInferMediaNV12)
     // NB: NV12 feature has been deprecated in OpenVINO versions higher
     // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi_list),
-                     cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi_list),
+                     ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST_F(ROIList, GenericInfer2)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
     GInferListInputs list;
     list["data"] = rr;
 
-    auto outputs = cv::gapi::infer2<cv::gapi::Generic>("age-gender-generic", in, list);
+    auto outputs = ncvslideio::gapi::infer2<ncvslideio::gapi::Generic>("age-gender-generic", in, list);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-            cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+            ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(ROIList, GenericInfer2MediaInputBGR)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
     GInferListInputs inputs;
     inputs["data"] = rr;
 
-    auto outputs = cv::gapi::infer2<cv::gapi::Generic>("age-gender-generic", in, inputs);
+    auto outputs = ncvslideio::gapi::infer2<ncvslideio::gapi::Generic>("age-gender-generic", in, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
-    comp.apply(cv::gin(frame, m_roi_list),
-            cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+            ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(ROIListNV12, GenericInfer2MediaInputNV12)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
     GInferListInputs inputs;
     inputs["data"] = rr;
 
-    auto outputs = cv::gapi::infer2<cv::gapi::Generic>("age-gender-generic", in, inputs);
+    auto outputs = ncvslideio::gapi::infer2<ncvslideio::gapi::Generic>("age-gender-generic", in, inputs);
     auto age     = outputs.at("age_conv3");
     auto gender  = outputs.at("prob");
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    cv::gapi::ie::Params<cv::gapi::Generic> pp{
+    ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> pp{
         "age-gender-generic", params.model_path, params.weights_path, params.device_id
     };
     pp.cfgNumRequests(2u);
@@ -1558,24 +1558,24 @@ TEST_F(ROIListNV12, GenericInfer2MediaInputNV12)
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi_list),
-                     cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi_list),
+                     ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST(Infer, SetInvalidNumberOfRequests)
 {
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::gapi::ie::Params<AgeGender> pp{"model", "weights", "device"};
+    ncvslideio::gapi::ie::Params<AgeGender> pp{"model", "weights", "device"};
 
     EXPECT_ANY_THROW(pp.cfgNumRequests(0u));
 }
@@ -1587,27 +1587,27 @@ TEST(Infer, TestStreamingInfer)
 
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
 
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -1616,34 +1616,34 @@ TEST(Infer, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
-    pipeline.setSource<cv::gapi::wip::GCaptureSource>(filepath);
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
+    pipeline.setSource<ncvslideio::gapi::wip::GCaptureSource>(filepath);
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_age, gapi_gender)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_age, gapi_gender)))
     {
         IE::Blob::Ptr ie_age, ie_gender;
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
 
-            infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+            infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
             infer_request.Infer();
             ie_age    = infer_request.GetBlob("age_conv3");
             ie_gender = infer_request.GetBlob("prob");
         }
         // Validate with IE itself (avoid DNN module dependency here)
-        normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-        normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
         ++num_frames;
         cap >> in_mat;
     }
@@ -1657,29 +1657,29 @@ TEST(InferROI, TestStreamingInfer)
 
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    cv::Mat gapi_age, gapi_gender;
-    cv::Rect rect(cv::Point{64, 60}, cv::Size{96, 96});
+    ncvslideio::Mat in_mat;
+    ncvslideio::Mat gapi_age, gapi_gender;
+    ncvslideio::Rect rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GMat age, gender;
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GMat age, gender;
 
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -1688,26 +1688,26 @@ TEST(InferROI, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     pipeline.setSource(
-            cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(filepath), rect));
+            ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(filepath), rect));
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_age, gapi_gender)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_age, gapi_gender)))
     {
         // Load & run IE network
         IE::Blob::Ptr ie_age, ie_gender;
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
             const auto ie_rc = IE::ROI {
                 0u
@@ -1716,15 +1716,15 @@ TEST(InferROI, TestStreamingInfer)
                 , static_cast<std::size_t>(rect.width)
                 , static_cast<std::size_t>(rect.height)
             };
-            IE::Blob::Ptr roi_blob = IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_mat), ie_rc);
+            IE::Blob::Ptr roi_blob = IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_mat), ie_rc);
             infer_request.SetBlob("data", roi_blob);
             infer_request.Infer();
             ie_age    = infer_request.GetBlob("age_conv3");
             ie_gender = infer_request.GetBlob("prob");
         }
         // Validate with IE itself (avoid DNN module dependency here)
-        normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-        normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
         ++num_frames;
         cap >> in_mat;
     }
@@ -1738,33 +1738,33 @@ TEST(InferList, TestStreamingInfer)
 
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    std::vector<cv::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
+    ncvslideio::Mat in_mat;
+    std::vector<ncvslideio::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
 
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GArray<cv::Rect> roi;
-    cv::GArray<GMat> age, gender;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> roi;
+    ncvslideio::GArray<GMat> age, gender;
 
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -1772,26 +1772,26 @@ TEST(InferList, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     pipeline.setSource(
-            cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(filepath), roi_list));
+            ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(filepath), roi_list));
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_ages, gapi_genders)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_ages, gapi_genders)))
     {
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            auto frame_blob = cv::gapi::ie::util::to_ie(in_mat);
+            auto frame_blob = ncvslideio::gapi::ie::util::to_ie(in_mat);
 
             for (auto &&rc : roi_list) {
                 const auto ie_rc = IE::ROI {
@@ -1804,7 +1804,7 @@ TEST(InferList, TestStreamingInfer)
                 infer_request.SetBlob("data", IE::make_shared_blob(frame_blob, ie_rc));
                 infer_request.Infer();
 
-                using namespace cv::gapi::ie::util;
+                using namespace ncvslideio::gapi::ie::util;
                 ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
                 ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
             }
@@ -1830,33 +1830,33 @@ TEST(Infer2, TestStreamingInfer)
 
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    std::vector<cv::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
+    ncvslideio::Mat in_mat;
+    std::vector<ncvslideio::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
 
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -1864,26 +1864,26 @@ TEST(Infer2, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 10u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     pipeline.setSource(
-            cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(filepath), roi_list));
+            ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(filepath), roi_list));
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_ages, gapi_genders)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_ages, gapi_genders)))
     {
         {
-            auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-            auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+            auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             setNetParameters(net);
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
             auto infer_request = this_network.CreateInferRequest();
-            auto frame_blob = cv::gapi::ie::util::to_ie(in_mat);
+            auto frame_blob = ncvslideio::gapi::ie::util::to_ie(in_mat);
 
             for (auto &&rc : roi_list) {
                 const auto ie_rc = IE::ROI {
@@ -1896,7 +1896,7 @@ TEST(Infer2, TestStreamingInfer)
                 infer_request.SetBlob("data", IE::make_shared_blob(frame_blob, ie_rc));
                 infer_request.Infer();
 
-                using namespace cv::gapi::ie::util;
+                using namespace ncvslideio::gapi::ie::util;
                 ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
                 ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
             }
@@ -1920,31 +1920,31 @@ TEST(InferEmptyList, TestStreamingInfer)
 {
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    std::vector<cv::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
+    ncvslideio::Mat in_mat;
+    std::vector<ncvslideio::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
 
     // NB: Empty list of roi
-    std::vector<cv::Rect> roi_list;
+    std::vector<ncvslideio::Rect> roi_list;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GArray<cv::Rect> roi;
-    cv::GArray<GMat> age, gender;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::Rect> roi;
+    ncvslideio::GArray<GMat> age, gender;
 
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -1952,18 +1952,18 @@ TEST(InferEmptyList, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 1u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     pipeline.setSource(
-            cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(filepath), roi_list));
+            ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(filepath), roi_list));
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_ages, gapi_genders)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_ages, gapi_genders)))
     {
         EXPECT_TRUE(gapi_ages.empty());
         EXPECT_TRUE(gapi_genders.empty());
@@ -1974,31 +1974,31 @@ TEST(Infer2EmptyList, TestStreamingInfer)
 {
     initDLDTDataPath();
 
-    std::string filepath = findDataFile("cv/video/768x576.avi");
+    std::string filepath = findDataFile("ncvslideio/video/768x576.avi");
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat;
-    std::vector<cv::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
+    ncvslideio::Mat in_mat;
+    std::vector<ncvslideio::Mat> ie_ages, ie_genders, gapi_ages, gapi_genders;
 
     // NB: Empty list of roi
-    std::vector<cv::Rect> roi_list;
+    std::vector<ncvslideio::Rect> roi_list;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
 
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgNumRequests(4u);
@@ -2006,18 +2006,18 @@ TEST(Infer2EmptyList, TestStreamingInfer)
     std::size_t num_frames = 0u;
     std::size_t max_frames = 1u;
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(filepath);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
 
     cap >> in_mat;
-    auto pipeline = comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    auto pipeline = comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     pipeline.setSource(
-            cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(filepath), roi_list));
+            ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(filepath), roi_list));
 
     pipeline.start();
-    while (num_frames < max_frames && pipeline.pull(cv::gout(gapi_ages, gapi_genders)))
+    while (num_frames < max_frames && pipeline.pull(ncvslideio::gout(gapi_ages, gapi_genders)))
     {
         EXPECT_TRUE(gapi_ages.empty());
         EXPECT_TRUE(gapi_genders.empty());
@@ -2029,16 +2029,16 @@ TEST_F(InferWithReshape, TestInfer)
     // IE code
     infer(m_in_mat);
     // G-API code
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({{"data", reshape_dims}});
-    comp.apply(cv::gin(m_in_mat), cv::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2046,22 +2046,22 @@ TEST_F(InferWithReshape, TestInfer)
 TEST_F(InferWithReshape, TestInferInImage)
 {
     // Input image already has 70x70 size
-    cv::Mat rsz;
-    cv::resize(m_in_mat, rsz, cv::Size(70, 70));
+    ncvslideio::Mat rsz;
+    ncvslideio::resize(m_in_mat, rsz, ncvslideio::Size(70, 70));
     // IE code
     infer(rsz);
     // G-API code
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({"data"});
     // Reshape CNN input by input image size
-    comp.apply(cv::gin(rsz), cv::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(rsz), ncvslideio::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2071,17 +2071,17 @@ TEST_F(InferWithReshape, TestInferForSingleLayer)
     // IE code
     infer(m_in_mat);
     // G-API code
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgInputReshape("data", reshape_dims);
-    comp.apply(cv::gin(m_in_mat), cv::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_out_gapi_ages.front(), m_out_gapi_genders.front()),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2091,18 +2091,18 @@ TEST_F(InferWithReshape, TestInferList)
     // IE code
     infer(m_in_mat, true);
     // G-API code
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({{"data", reshape_dims}});
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2112,18 +2112,18 @@ TEST_F(InferWithReshape, TestInferList2)
     // IE code
     infer(m_in_mat, true);
     // G-API code
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({{"data", reshape_dims}});
-    comp.apply(cv::gin(m_in_mat, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2133,20 +2133,20 @@ TEST_F(InferWithReshape, TestInferListBGR)
     // IE code
     infer(m_in_mat, true);
     // G-API code
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({{"data", reshape_dims}});
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 }
@@ -2154,50 +2154,50 @@ TEST_F(InferWithReshape, TestInferListBGR)
 TEST_F(InferWithReshapeNV12, TestInferListYUV)
 {
     // G-API code
-    cv::GFrame in;
-    cv::GArray<cv::Rect> rr;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" }).cfgInputReshape({{"data", reshape_dims}});
 
 // NB: NV12 feature has been deprecated in OpenVINO versions higher
 // than 2023.0 so G-API must throw error in that case.
 #if INF_ENGINE_RELEASE <= 2023000000
-    comp.apply(cv::gin(frame, m_roi_list),
-               cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, m_roi_list),
+               ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     // Validate
     validate();
 #else
-    EXPECT_ANY_THROW(comp.apply(cv::gin(frame, m_roi_list),
-                     cv::gout(m_out_gapi_ages, m_out_gapi_genders),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(frame, m_roi_list),
+                     ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 #endif
 }
 
 TEST_F(ROIList, CallInferMultipleTimes)
 {
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    auto cc = comp.compile(cv::descr_of(cv::gin(m_in_mat, m_roi_list)),
-                           cv::compile_args(cv::gapi::networks(pp)));
+    auto cc = comp.compile(ncvslideio::descr_of(ncvslideio::gin(m_in_mat, m_roi_list)),
+                           ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     for (int i = 0; i < 10; ++i) {
-        cc(cv::gin(m_in_mat, m_roi_list), cv::gout(m_out_gapi_ages, m_out_gapi_genders));
+        cc(ncvslideio::gin(m_in_mat, m_roi_list), ncvslideio::gout(m_out_gapi_ages, m_out_gapi_genders));
     }
 
     validate();
@@ -2206,15 +2206,15 @@ TEST_F(ROIList, CallInferMultipleTimes)
 #if INF_ENGINE_RELEASE <= 2023000000
 TEST(IEFrameAdapter, blobParams)
 {
-    cv::Mat bgr = cv::Mat::eye(240, 320, CV_8UC3);
-    cv::MediaFrame frame = cv::MediaFrame::Create<TestMediaBGR>(bgr);
+    ncvslideio::Mat bgr = ncvslideio::Mat::eye(240, 320, CV_8UC3);
+    ncvslideio::MediaFrame frame = ncvslideio::MediaFrame::Create<TestMediaBGR>(bgr);
 
     auto expected = std::make_pair(IE::TensorDesc{IE::Precision::U8, {1, 3, 300, 300},
                                                   IE::Layout::NCHW},
                                    IE::ParamMap{{"HELLO", 42}, {"COLOR_FORMAT",
                                                                 IE::ColorFormat::NV12}});
 
-    auto actual = cv::util::any_cast<decltype(expected)>(frame.blobParams());
+    auto actual = ncvslideio::util::any_cast<decltype(expected)>(frame.blobParams());
 
     EXPECT_EQ(expected, actual);
 }
@@ -2225,24 +2225,24 @@ namespace
 
 struct Sync {
     std::mutex              m;
-    std::condition_variable cv;
+    std::condition_variable ncvslideio;
     int                     counter = 0;
 };
 
-class GMockMediaAdapter final: public cv::MediaFrame::IAdapter {
+class GMockMediaAdapter final: public ncvslideio::MediaFrame::IAdapter {
 public:
-    explicit GMockMediaAdapter(cv::Mat m, std::shared_ptr<Sync> sync)
+    explicit GMockMediaAdapter(ncvslideio::Mat m, std::shared_ptr<Sync> sync)
         : m_mat(m), m_sync(sync) {
     }
 
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::BGR, m_mat.size()};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, m_mat.size()};
     }
 
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss));
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
     }
 
     ~GMockMediaAdapter() {
@@ -2250,11 +2250,11 @@ public:
             std::lock_guard<std::mutex> lk{m_sync->m};
             m_sync->counter--;
         }
-        m_sync->cv.notify_one();
+        m_sync->ncvslideio.notify_one();
     }
 
 private:
-    cv::Mat               m_mat;
+    ncvslideio::Mat               m_mat;
     std::shared_ptr<Sync> m_sync;
 };
 
@@ -2262,60 +2262,60 @@ private:
 // cases where the memory resources are limited.
 // GMockSource(int limit) - accept the number of MediaFrames that
 // the source can produce until resources are over.
-class GMockSource : public cv::gapi::wip::IStreamSource {
+class GMockSource : public ncvslideio::gapi::wip::IStreamSource {
 public:
     explicit GMockSource(int limit)
-        : m_limit(limit), m_mat(cv::Size(1920, 1080), CV_8UC3),
+        : m_limit(limit), m_mat(ncvslideio::Size(1920, 1080), CV_8UC3),
           m_sync(new Sync{}) {
-        cv::randu(m_mat, cv::Scalar::all(0), cv::Scalar::all(255));
+        ncvslideio::randu(m_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
     }
 
-    bool pull(cv::gapi::wip::Data& data) {
+    bool pull(ncvslideio::gapi::wip::Data& data) {
         std::unique_lock<std::mutex> lk(m_sync->m);
         m_sync->counter++;
         // NB: Can't produce new frames until old ones are released.
-        m_sync->cv.wait(lk, [this]{return m_sync->counter <= m_limit;});
+        m_sync->ncvslideio.wait(lk, [this]{return m_sync->counter <= m_limit;});
 
-        data = cv::MediaFrame::Create<GMockMediaAdapter>(m_mat, m_sync);
+        data = ncvslideio::MediaFrame::Create<GMockMediaAdapter>(m_mat, m_sync);
         return true;
     }
 
     GMetaArg descr_of() const override {
-        return GMetaArg{cv::GFrameDesc{cv::MediaFormat::BGR, m_mat.size()}};
+        return GMetaArg{ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, m_mat.size()}};
     }
 
 private:
     int                   m_limit;
-    cv::Mat               m_mat;
+    ncvslideio::Mat               m_mat;
     std::shared_ptr<Sync> m_sync;
 };
 
 struct LimitedSourceInfer: public ::testing::Test {
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
     LimitedSourceInfer()
         : comp([](){
-            cv::GFrame in;
-            cv::GMat age, gender;
-            std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-            return cv::GComputation(cv::GIn(in), cv::GOut(age, gender));
+            ncvslideio::GFrame in;
+            ncvslideio::GMat age, gender;
+            std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+            return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
         }) {
         initDLDTDataPath();
     }
 
     GStreamingCompiled compileStreaming(int nireq) {
-        cv::gapi::ie::detail::ParamDesc params;
+        ncvslideio::gapi::ie::detail::ParamDesc params;
         params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
         params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         params.device_id = "CPU";
 
-        auto pp = cv::gapi::ie::Params<AgeGender> {
+        auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
             params.model_path, params.weights_path, params.device_id }
         .cfgOutputLayers({ "age_conv3", "prob" })
         .cfgNumRequests(nireq);
 
-        return comp.compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+        return comp.compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     }
 
     void run(const int max_frames, const int limit, const int nireq) {
@@ -2325,13 +2325,13 @@ struct LimitedSourceInfer: public ::testing::Test {
 
         int num_frames = 0;
         while (num_frames != max_frames &&
-               pipeline.pull(cv::gout(out_age, out_gender))) {
+               pipeline.pull(ncvslideio::gout(out_age, out_gender))) {
             ++num_frames;
         }
     }
 
-    cv::GComputation comp;
-    cv::Mat          out_age, out_gender;
+    ncvslideio::GComputation comp;
+    ncvslideio::Mat          out_age, out_gender;
 };
 
 } // anonymous namespace
@@ -2359,52 +2359,52 @@ TEST(TestAgeGenderIE, InferWithBatch)
     initDLDTDataPath();
 
     constexpr int batch_size = 4;
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
-    cv::Mat in_mat({batch_size, 3, 62, 62}, CV_8U);
-    cv::randu(in_mat, 0, 255);
+    ncvslideio::Mat in_mat({batch_size, 3, 62, 62}, CV_8U);
+    ncvslideio::randu(in_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         auto ii = net.getInputsInfo().at("data");
         ii->setPrecision(IE::Precision::U8);
         net.setBatchSize(batch_size);
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat));
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat));
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgBatchSize(batch_size);
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 // NB: All tests below use preprocessing for "Import" networks
@@ -2418,47 +2418,47 @@ TEST(ImportNetwork, Infer)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Mat in_mat(320, 240, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat(320, 240, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         IE::PreProcessInfo info;
         info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_mat), info);
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_mat), info);
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(ImportNetwork, InferNV12)
@@ -2468,53 +2468,53 @@ TEST(ImportNetwork, InferNV12)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path= compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Size sz{320, 240};
-    cv::Mat in_y_mat(sz, CV_8UC1);
-    cv::randu(in_y_mat, 0, 255);
-    cv::Mat in_uv_mat(sz / 2, CV_8UC2);
-    cv::randu(in_uv_mat, 0, 255);
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_y_mat(sz, CV_8UC1);
+    ncvslideio::randu(in_y_mat, 0, 255);
+    ncvslideio::Mat in_uv_mat(sz / 2, CV_8UC2);
+    ncvslideio::randu(in_uv_mat, 0, 255);
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         IE::PreProcessInfo info;
         info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
         info.setColorFormat(IE::ColorFormat::NV12);
-        infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), info);
+        infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), info);
         infer_request.Infer();
         ie_age    = infer_request.GetBlob("age_conv3");
         ie_gender = infer_request.GetBlob("prob");
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
-    comp.apply(cv::gin(frame), cv::gout(gapi_age, gapi_gender),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame), ncvslideio::gout(gapi_age, gapi_gender),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(ImportNetwork, InferROI)
@@ -2524,20 +2524,20 @@ TEST(ImportNetwork, InferROI)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Mat in_mat(320, 240, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
-    cv::Mat gapi_age, gapi_gender;
-    cv::Rect rect(cv::Point{64, 60}, cv::Size{96, 96});
+    ncvslideio::Mat in_mat(320, 240, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
+    ncvslideio::Mat gapi_age, gapi_gender;
+    ncvslideio::Rect rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         const auto ie_rc = IE::ROI {
             0u
@@ -2546,7 +2546,7 @@ TEST(ImportNetwork, InferROI)
             , static_cast<std::size_t>(rect.width)
             , static_cast<std::size_t>(rect.height)
         };
-        IE::Blob::Ptr roi_blob = IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_mat), ie_rc);
+        IE::Blob::Ptr roi_blob = IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_mat), ie_rc);
         IE::PreProcessInfo info;
         info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
         infer_request.SetBlob("data", roi_blob, info);
@@ -2555,25 +2555,25 @@ TEST(ImportNetwork, InferROI)
         ie_gender = infer_request.GetBlob("prob");
     }
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(in_mat, rect), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, rect), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(ImportNetwork, InferROINV12)
@@ -2583,24 +2583,24 @@ TEST(ImportNetwork, InferROINV12)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Size sz{320, 240};
-    cv::Mat in_y_mat(sz, CV_8UC1);
-    cv::randu(in_y_mat, 0, 255);
-    cv::Mat in_uv_mat(sz / 2, CV_8UC2);
-    cv::randu(in_uv_mat, 0, 255);
-    cv::Rect rect(cv::Point{64, 60}, cv::Size{96, 96});
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_y_mat(sz, CV_8UC1);
+    ncvslideio::randu(in_y_mat, 0, 255);
+    ncvslideio::Mat in_uv_mat(sz / 2, CV_8UC2);
+    ncvslideio::randu(in_uv_mat, 0, 255);
+    ncvslideio::Rect rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96});
 
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // Load & run IE network
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         const auto ie_rc = IE::ROI {
             0u
@@ -2610,7 +2610,7 @@ TEST(ImportNetwork, InferROINV12)
             , static_cast<std::size_t>(rect.height)
         };
         IE::Blob::Ptr roi_blob =
-            IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
+            IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
         IE::PreProcessInfo info;
         info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
         info.setColorFormat(IE::ColorFormat::NV12);
@@ -2620,27 +2620,27 @@ TEST(ImportNetwork, InferROINV12)
         ie_gender = infer_request.GetBlob("prob");
     }
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> roi;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(roi, in);
-    cv::GComputation comp(cv::GIn(in, roi), cv::GOut(age, gender));
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> roi;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(roi, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender));
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(frame, rect), cv::gout(gapi_age, gapi_gender),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, rect), ncvslideio::gout(gapi_age, gapi_gender),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 TEST(ImportNetwork, InferList)
@@ -2650,22 +2650,22 @@ TEST(ImportNetwork, InferList)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Mat in_mat(320, 240, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    ncvslideio::Mat in_mat(320, 240, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
-    std::vector<cv::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
+    std::vector<ncvslideio::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
 
     // Load & run IE network
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         for (auto &&rc : roi_list) {
             const auto ie_rc = IE::ROI {
@@ -2676,33 +2676,33 @@ TEST(ImportNetwork, InferList)
                 , static_cast<std::size_t>(rc.height)
             };
             IE::Blob::Ptr roi_blob =
-                IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_mat), ie_rc);
+                IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_mat), ie_rc);
             IE::PreProcessInfo info;
             info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
             infer_request.SetBlob("data", roi_blob, info);
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         }
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(in_mat, roi_list), cv::gout(out_gapi_ages, out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, roi_list), ncvslideio::gout(out_gapi_ages, out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
     GAPI_Assert(!out_gapi_ages.empty());
@@ -2724,25 +2724,25 @@ TEST(ImportNetwork, InferListNV12)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Size sz{320, 240};
-    cv::Mat in_y_mat(sz, CV_8UC1);
-    cv::randu(in_y_mat, 0, 255);
-    cv::Mat in_uv_mat(sz / 2, CV_8UC2);
-    cv::randu(in_uv_mat, 0, 255);
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_y_mat(sz, CV_8UC1);
+    ncvslideio::randu(in_y_mat, 0, 255);
+    ncvslideio::Mat in_uv_mat(sz / 2, CV_8UC2);
+    ncvslideio::randu(in_uv_mat, 0, 255);
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
-    std::vector<cv::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
+    std::vector<ncvslideio::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
 
     // Load & run IE network
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         for (auto &&rc : roi_list) {
             const auto ie_rc = IE::ROI {
@@ -2753,36 +2753,36 @@ TEST(ImportNetwork, InferListNV12)
                 , static_cast<std::size_t>(rc.height)
             };
             IE::Blob::Ptr roi_blob =
-                IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
+                IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
             IE::PreProcessInfo info;
             info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
             info.setColorFormat(IE::ColorFormat::NV12);
             infer_request.SetBlob("data", roi_blob, info);
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         }
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(rr, in);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(rr, in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    comp.apply(cv::gin(frame, roi_list), cv::gout(out_gapi_ages, out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, roi_list), ncvslideio::gout(out_gapi_ages, out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
     GAPI_Assert(!out_gapi_ages.empty());
@@ -2804,22 +2804,22 @@ TEST(ImportNetwork, InferList2)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Mat in_mat(320, 240, CV_8UC3);
-    cv::randu(in_mat, 0, 255);
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    ncvslideio::Mat in_mat(320, 240, CV_8UC3);
+    ncvslideio::randu(in_mat, 0, 255);
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
-    std::vector<cv::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
+    std::vector<ncvslideio::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
 
     // Load & run IE network
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         for (auto &&rc : roi_list) {
             const auto ie_rc = IE::ROI {
@@ -2830,33 +2830,33 @@ TEST(ImportNetwork, InferList2)
                 , static_cast<std::size_t>(rc.height)
             };
             IE::Blob::Ptr roi_blob =
-                IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_mat), ie_rc);
+                IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_mat), ie_rc);
             IE::PreProcessInfo info;
             info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
             infer_request.SetBlob("data", roi_blob, info);
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         }
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GMat in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(in_mat, roi_list), cv::gout(out_gapi_ages, out_gapi_genders),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, roi_list), ncvslideio::gout(out_gapi_ages, out_gapi_genders),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
     GAPI_Assert(!out_gapi_ages.empty());
@@ -2878,25 +2878,25 @@ TEST(ImportNetwork, InferList2NV12)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
-    cv::Size sz{320, 240};
-    cv::Mat in_y_mat(sz, CV_8UC1);
-    cv::randu(in_y_mat, 0, 255);
-    cv::Mat in_uv_mat(sz / 2, CV_8UC2);
-    cv::randu(in_uv_mat, 0, 255);
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    ncvslideio::Size sz{320, 240};
+    ncvslideio::Mat in_y_mat(sz, CV_8UC1);
+    ncvslideio::randu(in_y_mat, 0, 255);
+    ncvslideio::Mat in_uv_mat(sz / 2, CV_8UC2);
+    ncvslideio::randu(in_uv_mat, 0, 255);
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
-    std::vector<cv::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
+    std::vector<ncvslideio::Mat> out_ie_ages, out_ie_genders, out_gapi_ages, out_gapi_genders;
 
     // Load & run IE network
     {
-        auto plugin = cv::gimpl::ie::wrap::getPlugin(params);
-        auto this_network  = cv::gimpl::ie::wrap::importNetwork(plugin, params);
+        auto plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::importNetwork(plugin, params);
         auto infer_request = this_network.CreateInferRequest();
         for (auto &&rc : roi_list) {
             const auto ie_rc = IE::ROI {
@@ -2907,36 +2907,36 @@ TEST(ImportNetwork, InferList2NV12)
                 , static_cast<std::size_t>(rc.height)
             };
             IE::Blob::Ptr roi_blob =
-                IE::make_shared_blob(cv::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
+                IE::make_shared_blob(ncvslideio::gapi::ie::util::to_ie(in_y_mat, in_uv_mat), ie_rc);
             IE::PreProcessInfo info;
             info.setResizeAlgorithm(IE::RESIZE_BILINEAR);
             info.setColorFormat(IE::ColorFormat::NV12);
             infer_request.SetBlob("data", roi_blob, info);
             infer_request.Infer();
-            using namespace cv::gapi::ie::util;
+            using namespace ncvslideio::gapi::ie::util;
             out_ie_ages.push_back(to_ocv(infer_request.GetBlob("age_conv3")).clone());
             out_ie_genders.push_back(to_ocv(infer_request.GetBlob("prob")).clone());
         }
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GArray<cv::Rect> rr;
-    cv::GFrame in;
-    cv::GArray<cv::GMat> age, gender;
-    std::tie(age, gender) = cv::gapi::infer2<AgeGender>(in, rr);
-    cv::GComputation comp(cv::GIn(in, rr), cv::GOut(age, gender));
+    ncvslideio::GArray<ncvslideio::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<ncvslideio::GMat> age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer2<AgeGender>(in, rr);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
     auto frame = MediaFrame::Create<TestMediaNV12>(in_y_mat, in_uv_mat);
 
-    comp.apply(cv::gin(frame, roi_list), cv::gout(out_gapi_ages, out_gapi_genders),
-            cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, roi_list), ncvslideio::gout(out_gapi_ages, out_gapi_genders),
+            ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
     GAPI_Assert(!out_gapi_ages.empty());
@@ -2959,33 +2959,33 @@ TEST(TestAgeGender, ThrowBlobAndInputPrecisionMismatch)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     // NB: Precision for inputs is U8.
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in, age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in, age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    cv::Mat in_mat(320, 240, CV_32FC3);
-    cv::randu(in_mat, 0, 1);
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat(320, 240, CV_32FC3);
+    ncvslideio::randu(in_mat, 0, 1);
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     // NB: Blob precision is U8, but user pass FP32 data, so exception will be thrown.
     // Now exception comes directly from IE, but since G-API has information
     // about data precision at the compile stage, consider the possibility of
     // throwing exception from there.
-    EXPECT_ANY_THROW(comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 #ifdef HAVE_NGRAPH
@@ -3014,34 +3014,34 @@ TEST(Infer, ModelWith2DInputs)
         ngraph::ParameterVector{in1, in2}
     );
 
-    cv::Mat in_mat1(std::vector<int>{H, W}, CV_8U),
+    ncvslideio::Mat in_mat1(std::vector<int>{H, W}, CV_8U),
             in_mat2(std::vector<int>{H, W}, CV_8U),
             gapi_mat, ref_mat;
 
-    cv::randu(in_mat1, 0, 100);
-    cv::randu(in_mat2, 0, 100);
-    cv::add(in_mat1, in_mat2, ref_mat, cv::noArray(), CV_32F);
+    ncvslideio::randu(in_mat1, 0, 100);
+    ncvslideio::randu(in_mat2, 0, 100);
+    ncvslideio::add(in_mat1, in_mat2, ref_mat, ncvslideio::noArray(), CV_32F);
 
     // Compile xml file
     IE::CNNNetwork(func).serialize(model_path);
 
     // Configure & run G-API
-    cv::GMat g_in1, g_in2;
-    cv::GInferInputs inputs;
+    ncvslideio::GMat g_in1, g_in2;
+    ncvslideio::GInferInputs inputs;
     inputs[in1->get_name()] = g_in1;
     inputs[in2->get_name()] = g_in2;
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>(model_name, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(model_name, inputs);
     auto out = outputs.at(result->get_name());
 
-    cv::GComputation comp(cv::GIn(g_in1, g_in2), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(g_in1, g_in2), ncvslideio::GOut(out));
 
-    auto pp = cv::gapi::ie::Params<cv::gapi::Generic>(model_name,
+    auto pp = ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic>(model_name,
                                                       model_path,
                                                       weights_path,
                                                       device_id);
 
-    comp.apply(cv::gin(in_mat1, in_mat2), cv::gout(gapi_mat),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(gapi_mat),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     normAssert(ref_mat, gapi_mat, "Test model output");
 }
@@ -3055,29 +3055,29 @@ TEST(TestAgeGender, ThrowBlobAndInputPrecisionMismatchStreaming)
 
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     // NB: Precision for inputs is U8.
     params.model_path = compileAgeGenderBlob(device);
     params.device_id = device;
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    cv::GMat in, age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    auto pipeline = cv::GComputation(cv::GIn(in), cv::GOut(age, gender))
-        .compileStreaming(cv::compile_args(cv::gapi::networks(pp)));
+    ncvslideio::GMat in, age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    auto pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(age, gender))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
-    cv::Mat in_mat(320, 240, CV_32FC3);
-    cv::randu(in_mat, 0, 1);
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat(320, 240, CV_32FC3);
+    ncvslideio::randu(in_mat, 0, 1);
+    ncvslideio::Mat gapi_age, gapi_gender;
 
-    pipeline.setSource(cv::gin(in_mat));
+    pipeline.setSource(ncvslideio::gin(in_mat));
     pipeline.start();
 
     // NB: Blob precision is U8, but user pass FP32 data, so exception will be thrown.
@@ -3085,21 +3085,21 @@ TEST(TestAgeGender, ThrowBlobAndInputPrecisionMismatchStreaming)
     // about data precision at the compile stage, consider the possibility of
     // throwing exception from there.
     for (int i = 0; i < 10; ++i) {
-        EXPECT_ANY_THROW(pipeline.pull(cv::gout(gapi_age, gapi_gender)));
+        EXPECT_ANY_THROW(pipeline.pull(ncvslideio::gout(gapi_age, gapi_gender)));
     }
 }
 
 struct AgeGenderInferTest: public ::testing::Test {
-    cv::Mat m_in_mat;
-    cv::Mat m_gapi_age;
-    cv::Mat m_gapi_gender;
+    ncvslideio::Mat m_in_mat;
+    ncvslideio::Mat m_gapi_age;
+    ncvslideio::Mat m_gapi_gender;
 
-    cv::gimpl::ie::wrap::Plugin     m_plugin;
+    ncvslideio::gimpl::ie::wrap::Plugin     m_plugin;
     IE::CNNNetwork                  m_net;
-    cv::gapi::ie::detail::ParamDesc m_params;
+    ncvslideio::gapi::ie::detail::ParamDesc m_params;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
     void SetUp() {
         initDLDTDataPath();
@@ -3107,61 +3107,61 @@ struct AgeGenderInferTest: public ::testing::Test {
         m_params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
         m_params.device_id = "CPU";
 
-        m_plugin = cv::gimpl::ie::wrap::getPlugin(m_params);
-        m_net    = cv::gimpl::ie::wrap::readNetwork(m_params);
+        m_plugin = ncvslideio::gimpl::ie::wrap::getPlugin(m_params);
+        m_net    = ncvslideio::gimpl::ie::wrap::readNetwork(m_params);
         setNetParameters(m_net);
 
-        m_in_mat = cv::Mat(cv::Size(320, 240), CV_8UC3);
-        cv::randu(m_in_mat, 0, 255);
+        m_in_mat = ncvslideio::Mat(ncvslideio::Size(320, 240), CV_8UC3);
+        ncvslideio::randu(m_in_mat, 0, 255);
     }
 
-    cv::GComputation buildGraph() {
-        cv::GMat in, age, gender;
-        std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-        return cv::GComputation(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GComputation buildGraph() {
+        ncvslideio::GMat in, age, gender;
+        std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
     }
 
     void validate() {
         IE::Blob::Ptr ie_age, ie_gender;
         {
-            auto this_network  = cv::gimpl::ie::wrap::loadNetwork(m_plugin, m_net, m_params);
+            auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(m_plugin, m_net, m_params);
             auto infer_request = this_network.CreateInferRequest();
-            infer_request.SetBlob("data", cv::gapi::ie::util::to_ie(m_in_mat));
+            infer_request.SetBlob("data", ncvslideio::gapi::ie::util::to_ie(m_in_mat));
             infer_request.Infer();
             ie_age    = infer_request.GetBlob("age_conv3");
             ie_gender = infer_request.GetBlob("prob");
         }
         // Validate with IE itself (avoid DNN module dependency here)
-        normAssert(cv::gapi::ie::util::to_ocv(ie_age),    m_gapi_age,    "Test age output"   );
-        normAssert(cv::gapi::ie::util::to_ocv(ie_gender), m_gapi_gender, "Test gender output");
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    m_gapi_age,    "Test age output"   );
+        normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), m_gapi_gender, "Test gender output");
     }
 };
 
 TEST_F(AgeGenderInferTest, SyncExecution) {
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         m_params.model_path, m_params.weights_path, m_params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
-     .cfgInferMode(cv::gapi::ie::InferMode::Sync);
+     .cfgInferMode(ncvslideio::gapi::ie::InferMode::Sync);
 
-    buildGraph().apply(cv::gin(m_in_mat), cv::gout(m_gapi_age, m_gapi_gender),
-                       cv::compile_args(cv::gapi::networks(pp)));
+    buildGraph().apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_gapi_age, m_gapi_gender),
+                       ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
 
 TEST_F(AgeGenderInferTest, ThrowSyncWithNireqNotEqualToOne) {
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         m_params.model_path, m_params.weights_path, m_params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
-     .cfgInferMode(cv::gapi::ie::InferMode::Sync)
+     .cfgInferMode(ncvslideio::gapi::ie::InferMode::Sync)
      .cfgNumRequests(4u);
 
-    EXPECT_ANY_THROW(buildGraph().apply(cv::gin(m_in_mat), cv::gout(m_gapi_age, m_gapi_gender),
-                                        cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(buildGraph().apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_gapi_age, m_gapi_gender),
+                                        ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(AgeGenderInferTest, ChangeOutputPrecision) {
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         m_params.model_path, m_params.weights_path, m_params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgOutputPrecision(CV_8U);
@@ -3170,59 +3170,59 @@ TEST_F(AgeGenderInferTest, ChangeOutputPrecision) {
         it.second->setPrecision(IE::Precision::U8);
     }
 
-    buildGraph().apply(cv::gin(m_in_mat), cv::gout(m_gapi_age, m_gapi_gender),
-                       cv::compile_args(cv::gapi::networks(pp)));
+    buildGraph().apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_gapi_age, m_gapi_gender),
+                       ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(AgeGenderInferTest, ChangeSpecificOutputPrecison) {
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         m_params.model_path, m_params.weights_path, m_params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgOutputPrecision({{"prob", CV_8U}});
 
     m_net.getOutputsInfo().at("prob")->setPrecision(IE::Precision::U8);
 
-    buildGraph().apply(cv::gin(m_in_mat), cv::gout(m_gapi_age, m_gapi_gender),
-                       cv::compile_args(cv::gapi::networks(pp)));
+    buildGraph().apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_gapi_age, m_gapi_gender),
+                       ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
     validate();
 }
 
 TEST_F(AgeGenderInferTest, ThrowIfSetLayoutForImage) {
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         m_params.model_path, m_params.weights_path, m_params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
      .cfgOutputPrecision({{"prob", CV_8U}})
      .cfgInputLayout("NHWC");
 
-    EXPECT_ANY_THROW(buildGraph().apply(cv::gin(m_in_mat), cv::gout(m_gapi_age, m_gapi_gender),
-                                        cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(buildGraph().apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_gapi_age, m_gapi_gender),
+                                        ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST(TestAgeGenderIE, InferTensorWithPreproc) {
     initDLDTDataPath();
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     params.model_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.xml", false);
     params.weights_path = findDataFile(SUBDIR + "age-gender-recognition-retail-0013.bin", false);
     params.device_id = "CPU";
 
     // Load IE network, initialize input data using that.
-    cv::Mat in_mat({1, 240, 320, 3}, CV_8U);
-    cv::randu(in_mat, 0, 255);
-    cv::Mat gapi_age, gapi_gender;
+    ncvslideio::Mat in_mat({1, 240, 320, 3}, CV_8U);
+    ncvslideio::randu(in_mat, 0, 255);
+    ncvslideio::Mat gapi_age, gapi_gender;
 
     IE::Blob::Ptr ie_age, ie_gender;
     {
-        auto plugin        = cv::gimpl::ie::wrap::getPlugin(params);
-        auto net           = cv::gimpl::ie::wrap::readNetwork(params);
+        auto plugin        = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+        auto net           = ncvslideio::gimpl::ie::wrap::readNetwork(params);
         auto ii = net.getInputsInfo().at("data");
 
         ii->setPrecision(IE::Precision::U8);
         ii->getPreProcess().setResizeAlgorithm(IE::RESIZE_BILINEAR);
         ii->setLayout(IE::Layout::NHWC);
 
-        auto this_network  = cv::gimpl::ie::wrap::loadNetwork(plugin, net, params);
+        auto this_network  = ncvslideio::gimpl::ie::wrap::loadNetwork(plugin, net, params);
         auto infer_request = this_network.CreateInferRequest();
         IE::TensorDesc desc{IE::Precision::U8, {1, 3, 240, 320}, IE::Layout::NHWC};
         auto blob =  IE::make_shared_blob<uint8_t>(desc, const_cast<uint8_t*>(in_mat.ptr<uint8_t>()));
@@ -3233,26 +3233,26 @@ TEST(TestAgeGenderIE, InferTensorWithPreproc) {
     }
 
     // Configure & run G-API
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "test-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "test-age-gender");
 
-    cv::GMat in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(age, gender));
+    ncvslideio::GMat in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(age, gender));
 
-    auto pp = cv::gapi::ie::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ie::Params<AgeGender> {
         params.model_path, params.weights_path, params.device_id
     }.cfgOutputLayers({ "age_conv3", "prob" })
-     .cfgResize(cv::INTER_LINEAR)
+     .cfgResize(ncvslideio::INTER_LINEAR)
      .cfgInputLayout("NHWC");
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate with IE itself (avoid DNN module dependency here)
-    normAssert(cv::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
-    normAssert(cv::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_age),    gapi_age,    "Test age output"   );
+    normAssert(ncvslideio::gapi::ie::util::to_ocv(ie_gender), gapi_gender, "Test gender output");
 }
 
 } // namespace opencv_test

@@ -53,7 +53,7 @@
 
 #include <opencv2/core/utils/fp_control_utils.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -126,7 +126,7 @@ public:
 
             int repetitions = layerCounter[name]++;
             if (repetitions)
-                name += cv::format("_%d", repetitions);
+                name += ncvslideio::format("_%d", repetitions);
 
             int id = dstNet.addLayer(name, type, layerParams);
 
@@ -207,14 +207,14 @@ Net readNetFromDarknet(const String &cfgFile, const String &darknetModel /*= Str
     std::ifstream cfgStream(cfgFile.c_str());
     if (!cfgStream.is_open())
     {
-        CV_Error(cv::Error::StsParseError, "Failed to open NetParameter file: " + std::string(cfgFile));
+        CV_Error(ncvslideio::Error::StsParseError, "Failed to open NetParameter file: " + std::string(cfgFile));
     }
     if (darknetModel != String())
     {
         std::ifstream darknetModelStream(darknetModel.c_str(), std::ios::binary);
         if (!darknetModelStream.is_open())
         {
-            CV_Error(cv::Error::StsParseError, "Failed to parse NetParameter file: " + std::string(darknetModel));
+            CV_Error(ncvslideio::Error::StsParseError, "Failed to parse NetParameter file: " + std::string(darknetModel));
         }
         return readNetFromDarknet(cfgStream, darknetModelStream);
     }

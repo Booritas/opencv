@@ -15,21 +15,21 @@ RobustMatcher::~RobustMatcher()
     // TODO Auto-generated destructor stub
 }
 
-void RobustMatcher::computeKeyPoints( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints)
+void RobustMatcher::computeKeyPoints( const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints)
 {
     detector_->detect(image, keypoints);
 }
 
-void RobustMatcher::computeDescriptors( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors)
+void RobustMatcher::computeDescriptors( const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::Mat& descriptors)
 {
     extractor_->compute(image, keypoints, descriptors);
 }
 
-int RobustMatcher::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
+int RobustMatcher::ratioTest(std::vector<std::vector<ncvslideio::DMatch> > &matches)
 {
     int removed = 0;
     // for all matches
-    for ( std::vector<std::vector<cv::DMatch> >::iterator
+    for ( std::vector<std::vector<ncvslideio::DMatch> >::iterator
           matchIterator= matches.begin(); matchIterator!= matches.end(); ++matchIterator)
     {
         // if 2 NN has been identified
@@ -51,12 +51,12 @@ int RobustMatcher::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
     return removed;
 }
 
-void RobustMatcher::symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches1,
-                                  const std::vector<std::vector<cv::DMatch> >& matches2,
-                                  std::vector<cv::DMatch>& symMatches )
+void RobustMatcher::symmetryTest( const std::vector<std::vector<ncvslideio::DMatch> >& matches1,
+                                  const std::vector<std::vector<ncvslideio::DMatch> >& matches2,
+                                  std::vector<ncvslideio::DMatch>& symMatches )
 {
     // for all matches image 1 -> image 2
-    for (std::vector<std::vector<cv::DMatch> >::const_iterator
+    for (std::vector<std::vector<ncvslideio::DMatch> >::const_iterator
          matchIterator1 = matches1.begin(); matchIterator1 != matches1.end(); ++matchIterator1)
     {
         // ignore deleted matches
@@ -64,7 +64,7 @@ void RobustMatcher::symmetryTest( const std::vector<std::vector<cv::DMatch> >& m
             continue;
 
         // for all matches image 2 -> image 1
-        for (std::vector<std::vector<cv::DMatch> >::const_iterator
+        for (std::vector<std::vector<ncvslideio::DMatch> >::const_iterator
              matchIterator2 = matches2.begin(); matchIterator2 != matches2.end(); ++matchIterator2)
         {
             // ignore deleted matches
@@ -76,7 +76,7 @@ void RobustMatcher::symmetryTest( const std::vector<std::vector<cv::DMatch> >& m
                 (*matchIterator2)[0].queryIdx == (*matchIterator1)[0].trainIdx)
             {
                 // add symmetrical match
-                symMatches.push_back(cv::DMatch((*matchIterator1)[0].queryIdx,
+                symMatches.push_back(ncvslideio::DMatch((*matchIterator1)[0].queryIdx,
                                      (*matchIterator1)[0].trainIdx, (*matchIterator1)[0].distance));
                 break; // next match in image 1 -> image 2
             }
@@ -84,19 +84,19 @@ void RobustMatcher::symmetryTest( const std::vector<std::vector<cv::DMatch> >& m
     }
 }
 
-void RobustMatcher::robustMatch( const cv::Mat& frame, std::vector<cv::DMatch>& good_matches,
-                                 std::vector<cv::KeyPoint>& keypoints_frame, const cv::Mat& descriptors_model,
-                                 const std::vector<cv::KeyPoint>& keypoints_model)
+void RobustMatcher::robustMatch( const ncvslideio::Mat& frame, std::vector<ncvslideio::DMatch>& good_matches,
+                                 std::vector<ncvslideio::KeyPoint>& keypoints_frame, const ncvslideio::Mat& descriptors_model,
+                                 const std::vector<ncvslideio::KeyPoint>& keypoints_model)
 {
     // 1a. Detection of the ORB features
     this->computeKeyPoints(frame, keypoints_frame);
 
     // 1b. Extraction of the ORB descriptors
-    cv::Mat descriptors_frame;
+    ncvslideio::Mat descriptors_frame;
     this->computeDescriptors(frame, keypoints_frame, descriptors_frame);
 
     // 2. Match the two image descriptors
-    std::vector<std::vector<cv::DMatch> > matches12, matches21;
+    std::vector<std::vector<ncvslideio::DMatch> > matches12, matches21;
 
     // 2a. From image 1 to image 2
     matcher_->knnMatch(descriptors_frame, descriptors_model, matches12, 2); // return 2 nearest neighbours
@@ -115,14 +115,14 @@ void RobustMatcher::robustMatch( const cv::Mat& frame, std::vector<cv::DMatch>& 
 
     if (!training_img_.empty() && !keypoints_model.empty())
     {
-        cv::drawMatches(frame, keypoints_frame, training_img_, keypoints_model, good_matches, img_matching_);
+        ncvslideio::drawMatches(frame, keypoints_frame, training_img_, keypoints_model, good_matches, img_matching_);
     }
 }
 
-void RobustMatcher::fastRobustMatch( const cv::Mat& frame, std::vector<cv::DMatch>& good_matches,
-                                     std::vector<cv::KeyPoint>& keypoints_frame,
-                                     const cv::Mat& descriptors_model,
-                                     const std::vector<cv::KeyPoint>& keypoints_model)
+void RobustMatcher::fastRobustMatch( const ncvslideio::Mat& frame, std::vector<ncvslideio::DMatch>& good_matches,
+                                     std::vector<ncvslideio::KeyPoint>& keypoints_frame,
+                                     const ncvslideio::Mat& descriptors_model,
+                                     const std::vector<ncvslideio::KeyPoint>& keypoints_model)
 {
     good_matches.clear();
 
@@ -130,18 +130,18 @@ void RobustMatcher::fastRobustMatch( const cv::Mat& frame, std::vector<cv::DMatc
     this->computeKeyPoints(frame, keypoints_frame);
 
     // 1b. Extraction of the ORB descriptors
-    cv::Mat descriptors_frame;
+    ncvslideio::Mat descriptors_frame;
     this->computeDescriptors(frame, keypoints_frame, descriptors_frame);
 
     // 2. Match the two image descriptors
-    std::vector<std::vector<cv::DMatch> > matches;
+    std::vector<std::vector<ncvslideio::DMatch> > matches;
     matcher_->knnMatch(descriptors_frame, descriptors_model, matches, 2);
 
     // 3. Remove matches for which NN ratio is > than threshold
     ratioTest(matches);
 
     // 4. Fill good matches container
-    for ( std::vector<std::vector<cv::DMatch> >::iterator
+    for ( std::vector<std::vector<ncvslideio::DMatch> >::iterator
           matchIterator= matches.begin(); matchIterator!= matches.end(); ++matchIterator)
     {
         if (!matchIterator->empty()) good_matches.push_back((*matchIterator)[0]);
@@ -149,6 +149,6 @@ void RobustMatcher::fastRobustMatch( const cv::Mat& frame, std::vector<cv::DMatc
 
     if (!training_img_.empty() && !keypoints_model.empty())
     {
-        cv::drawMatches(frame, keypoints_frame, training_img_, keypoints_model, good_matches, img_matching_);
+        ncvslideio::drawMatches(frame, keypoints_frame, training_img_, keypoints_model, good_matches, img_matching_);
     }
 }

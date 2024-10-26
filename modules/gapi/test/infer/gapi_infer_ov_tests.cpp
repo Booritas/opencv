@@ -42,13 +42,13 @@ void initDLDTDataPath()
 static const std::string SUBDIR = "intel/age-gender-recognition-retail-0013/FP32/";
 
 // FIXME: taken from the DNN module
-void normAssert(cv::InputArray ref, cv::InputArray test,
+void normAssert(ncvslideio::InputArray ref, ncvslideio::InputArray test,
                 const char *comment /*= ""*/,
                 double l1 = 0.00001, double lInf = 0.0001) {
-    double normL1 = cvtest::norm(ref, test, cv::NORM_L1) / ref.getMat().total();
+    double normL1 = cvtest::norm(ref, test, ncvslideio::NORM_L1) / ref.getMat().total();
     EXPECT_LE(normL1, l1) << comment;
 
-    double normInf = cvtest::norm(ref, test, cv::NORM_INF);
+    double normInf = cvtest::norm(ref, test, ncvslideio::NORM_INF);
     EXPECT_LE(normInf, lInf) << comment;
 }
 
@@ -57,7 +57,7 @@ void normAssert(cv::InputArray ref, cv::InputArray test,
 
 struct AGNetGenParams {
     static constexpr const char* tag = "age-gender-generic";
-    using Params = cv::gapi::ov::Params<cv::gapi::Generic>;
+    using Params = ncvslideio::gapi::ov::Params<ncvslideio::gapi::Generic>;
 
     static Params params(const std::string &xml,
                          const std::string &bin,
@@ -72,9 +72,9 @@ struct AGNetGenParams {
 };
 
 struct AGNetTypedParams {
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "typed-age-gender");
-    using Params = cv::gapi::ov::Params<AgeGender>;
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "typed-age-gender");
+    using Params = ncvslideio::gapi::ov::Params<AgeGender>;
 
     static Params params(const std::string &xml_path,
                          const std::string &bin_path,
@@ -86,62 +86,62 @@ struct AGNetTypedParams {
 };
 
 struct AGNetTypedComp : AGNetTypedParams {
-    static cv::GComputation create() {
-        cv::GMat in;
-        cv::GMat age, gender;
-        std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-        return cv::GComputation{cv::GIn(in), cv::GOut(age, gender)};
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
+        ncvslideio::GMat age, gender;
+        std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+        return ncvslideio::GComputation{ncvslideio::GIn(in), ncvslideio::GOut(age, gender)};
     }
 };
 
 struct AGNetGenComp : public AGNetGenParams {
-    static cv::GComputation create() {
-        cv::GMat in;
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
         GInferInputs inputs;
         inputs["data"] = in;
-        auto outputs = cv::gapi::infer<cv::gapi::Generic>(tag, inputs);
+        auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, inputs);
         auto age = outputs.at("age_conv3");
         auto gender = outputs.at("prob");
-        return cv::GComputation{cv::GIn(in), cv::GOut(age, gender)};
+        return ncvslideio::GComputation{ncvslideio::GIn(in), ncvslideio::GOut(age, gender)};
     }
 };
 
 struct AGNetROIGenComp : AGNetGenParams {
-    static cv::GComputation create() {
-        cv::GMat in;
-        cv::GOpaque<cv::Rect> roi;
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
+        ncvslideio::GOpaque<ncvslideio::Rect> roi;
         GInferInputs inputs;
         inputs["data"] = in;
-        auto outputs = cv::gapi::infer<cv::gapi::Generic>(tag, roi, inputs);
+        auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, roi, inputs);
         auto age = outputs.at("age_conv3");
         auto gender = outputs.at("prob");
-        return cv::GComputation{cv::GIn(in, roi), cv::GOut(age, gender)};
+        return ncvslideio::GComputation{ncvslideio::GIn(in, roi), ncvslideio::GOut(age, gender)};
     }
 };
 
 struct AGNetListGenComp : AGNetGenParams {
-    static cv::GComputation create() {
-        cv::GMat in;
-        cv::GArray<cv::Rect> rois;
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
+        ncvslideio::GArray<ncvslideio::Rect> rois;
         GInferInputs inputs;
         inputs["data"] = in;
-        auto outputs = cv::gapi::infer<cv::gapi::Generic>(tag, rois, inputs);
+        auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, rois, inputs);
         auto age = outputs.at("age_conv3");
         auto gender = outputs.at("prob");
-        return cv::GComputation{cv::GIn(in, rois), cv::GOut(age, gender)};
+        return ncvslideio::GComputation{ncvslideio::GIn(in, rois), ncvslideio::GOut(age, gender)};
     }
 };
 
 struct AGNetList2GenComp : AGNetGenParams {
-    static cv::GComputation create() {
-        cv::GMat in;
-        cv::GArray<cv::Rect> rois;
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
+        ncvslideio::GArray<ncvslideio::Rect> rois;
         GInferListInputs list;
         list["data"] = rois;
-        auto outputs = cv::gapi::infer2<cv::gapi::Generic>(tag, in, list);
+        auto outputs = ncvslideio::gapi::infer2<ncvslideio::gapi::Generic>(tag, in, list);
         auto age = outputs.at("age_conv3");
         auto gender = outputs.at("prob");
-        return cv::GComputation{cv::GIn(in, rois), cv::GOut(age, gender)};
+        return ncvslideio::GComputation{ncvslideio::GIn(in, rois), ncvslideio::GOut(age, gender)};
     }
 };
 
@@ -152,46 +152,46 @@ public:
           m_infer_request(m_compiled_model.create_infer_request()) {
     }
 
-    void operator()(const cv::Mat  &in_mat,
-                    const cv::Rect &roi,
-                          cv::Mat  &age_mat,
-                          cv::Mat  &gender_mat) {
+    void operator()(const ncvslideio::Mat  &in_mat,
+                    const ncvslideio::Rect &roi,
+                          ncvslideio::Mat  &age_mat,
+                          ncvslideio::Mat  &gender_mat) {
         // FIXME: W & H could be extracted from model shape
         // but it's anyway used only for Age Gender model.
         // (Well won't work in case of reshape)
         const int W = 62;
         const int H = 62;
-        cv::Mat resized_roi;
-        cv::resize(in_mat(roi), resized_roi, cv::Size(W, H));
+        ncvslideio::Mat resized_roi;
+        ncvslideio::resize(in_mat(roi), resized_roi, ncvslideio::Size(W, H));
         (*this)(resized_roi, age_mat, gender_mat);
     }
 
-    void operator()(const cv::Mat               &in_mat,
-                    const std::vector<cv::Rect> &rois,
-                    std::vector<cv::Mat>        &age_mats,
-                    std::vector<cv::Mat>        &gender_mats) {
+    void operator()(const ncvslideio::Mat               &in_mat,
+                    const std::vector<ncvslideio::Rect> &rois,
+                    std::vector<ncvslideio::Mat>        &age_mats,
+                    std::vector<ncvslideio::Mat>        &gender_mats) {
         for (size_t i = 0; i < rois.size(); ++i) {
             (*this)(in_mat, rois[i], age_mats[i], gender_mats[i]);
         }
     }
 
-    void operator()(const cv::Mat &in_mat,
-                          cv::Mat &age_mat,
-                          cv::Mat &gender_mat) {
+    void operator()(const ncvslideio::Mat &in_mat,
+                          ncvslideio::Mat &age_mat,
+                          ncvslideio::Mat &gender_mat) {
         auto input_tensor   = m_infer_request.get_input_tensor();
-        cv::gapi::ov::util::to_ov(in_mat, input_tensor);
+        ncvslideio::gapi::ov::util::to_ov(in_mat, input_tensor);
 
         m_infer_request.infer();
 
         auto age_tensor = m_infer_request.get_tensor("age_conv3");
-        age_mat.create(cv::gapi::ov::util::to_ocv(age_tensor.get_shape()),
-                       cv::gapi::ov::util::to_ocv(age_tensor.get_element_type()));
-        cv::gapi::ov::util::to_ocv(age_tensor, age_mat);
+        age_mat.create(ncvslideio::gapi::ov::util::to_ocv(age_tensor.get_shape()),
+                       ncvslideio::gapi::ov::util::to_ocv(age_tensor.get_element_type()));
+        ncvslideio::gapi::ov::util::to_ocv(age_tensor, age_mat);
 
         auto gender_tensor = m_infer_request.get_tensor("prob");
-        gender_mat.create(cv::gapi::ov::util::to_ocv(gender_tensor.get_shape()),
-                          cv::gapi::ov::util::to_ocv(gender_tensor.get_element_type()));
-        cv::gapi::ov::util::to_ocv(gender_tensor, gender_mat);
+        gender_mat.create(ncvslideio::gapi::ov::util::to_ocv(gender_tensor.get_shape()),
+                          ncvslideio::gapi::ov::util::to_ocv(gender_tensor.get_element_type()));
+        ncvslideio::gapi::ov::util::to_ocv(gender_tensor, gender_mat);
     }
 
     void export_model(const std::string &outpath) {
@@ -214,7 +214,7 @@ struct ImageInputPreproc {
         ppp.input().preprocess().resize(::ov::preprocess::ResizeAlgorithm::RESIZE_LINEAR);
     }
 
-    cv::Size size;
+    ncvslideio::Size size;
 };
 
 class AGNetOVComp {
@@ -223,7 +223,7 @@ public:
                 const std::string &bin_path,
                 const std::string &device)
         : m_device(device) {
-        m_model = cv::gapi::ov::wrap::getCore()
+        m_model = ncvslideio::gapi::ov::wrap::getCore()
             .read_model(xml_path, bin_path);
     }
 
@@ -236,14 +236,14 @@ public:
     }
 
     AGNetOVCompiled compile() {
-        auto compiled_model = cv::gapi::ov::wrap::getCore()
+        auto compiled_model = ncvslideio::gapi::ov::wrap::getCore()
             .compile_model(m_model, m_device);
         return {std::move(compiled_model)};
     }
 
-    void apply(const cv::Mat &in_mat,
-                     cv::Mat &age_mat,
-                     cv::Mat &gender_mat) {
+    void apply(const ncvslideio::Mat &in_mat,
+                     ncvslideio::Mat &age_mat,
+                     ncvslideio::Mat &gender_mat) {
         compile()(in_mat, age_mat, gender_mat);
     }
 
@@ -261,16 +261,16 @@ struct BaseAgeGenderOV: public ::testing::Test {
         blob_path = "age-gender-recognition-retail-0013.blob";
     }
 
-    cv::Mat getRandomImage(const cv::Size &sz) {
-        cv::Mat image(sz, CV_8UC3);
-        cv::randu(image, 0, 255);
+    ncvslideio::Mat getRandomImage(const ncvslideio::Size &sz) {
+        ncvslideio::Mat image(sz, CV_8UC3);
+        ncvslideio::randu(image, 0, 255);
         return image;
     }
 
-    cv::Mat getRandomTensor(const std::vector<int> &dims,
+    ncvslideio::Mat getRandomTensor(const std::vector<int> &dims,
                             const int              depth) {
-        cv::Mat tensor(dims, depth);
-        cv::randu(tensor, -1, 1);
+        ncvslideio::Mat tensor(dims, depth);
+        ncvslideio::randu(tensor, -1, 1);
         return tensor;
     }
 
@@ -282,7 +282,7 @@ struct BaseAgeGenderOV: public ::testing::Test {
 };
 
 struct TestAgeGenderOV : public BaseAgeGenderOV {
-    cv::Mat ov_age, ov_gender, gapi_age, gapi_gender;
+    ncvslideio::Mat ov_age, ov_gender, gapi_age, gapi_gender;
 
     void validate() {
         normAssert(ov_age,    gapi_age,    "Test age output"   );
@@ -291,12 +291,12 @@ struct TestAgeGenderOV : public BaseAgeGenderOV {
 };
 
 struct TestAgeGenderListOV : public BaseAgeGenderOV {
-    std::vector<cv::Mat> ov_age, ov_gender,
+    std::vector<ncvslideio::Mat> ov_age, ov_gender,
                          gapi_age, gapi_gender;
 
-    std::vector<cv::Rect> roi_list = {
-        cv::Rect(cv::Point{64, 60}, cv::Size{ 96,  96}),
-        cv::Rect(cv::Point{50, 32}, cv::Size{128, 160}),
+    std::vector<ncvslideio::Rect> roi_list = {
+        ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{ 96,  96}),
+        ncvslideio::Rect(ncvslideio::Point{50, 32}, ncvslideio::Size{128, 160}),
     };
 
     TestAgeGenderListOV() {
@@ -319,22 +319,22 @@ struct TestAgeGenderListOV : public BaseAgeGenderOV {
     }
 };
 
-class TestMediaBGR final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_mat;
-    using Cb = cv::MediaFrame::View::Callback;
+class TestMediaBGR final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_mat;
+    using Cb = ncvslideio::MediaFrame::View::Callback;
     Cb m_cb;
 
 public:
-    explicit TestMediaBGR(cv::Mat m, Cb cb = [](){})
+    explicit TestMediaBGR(ncvslideio::Mat m, Cb cb = [](){})
         : m_mat(m), m_cb(cb) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::BGR, cv::Size(m_mat.cols, m_mat.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::BGR, ncvslideio::Size(m_mat.cols, m_mat.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-        cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+        ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), Cb{m_cb});
     }
 };
 
@@ -346,26 +346,26 @@ struct MediaFrameTestAgeGenderOV: public ::testing::Test {
         device    = "CPU";
         blob_path = "age-gender-recognition-retail-0013.blob";
 
-        cv::Size sz{62, 62};
-        m_in_mat = cv::Mat(sz, CV_8UC3);
-        cv::resize(m_in_mat, m_in_mat, sz);
+        ncvslideio::Size sz{62, 62};
+        m_in_mat = ncvslideio::Mat(sz, CV_8UC3);
+        ncvslideio::resize(m_in_mat, m_in_mat, sz);
 
-        m_in_y = cv::Mat{sz, CV_8UC1};
-        cv::randu(m_in_y, 0, 255);
-        m_in_uv = cv::Mat{sz / 2, CV_8UC2};
-        cv::randu(m_in_uv, 0, 255);
+        m_in_y = ncvslideio::Mat{sz, CV_8UC1};
+        ncvslideio::randu(m_in_y, 0, 255);
+        m_in_uv = ncvslideio::Mat{sz / 2, CV_8UC2};
+        ncvslideio::randu(m_in_uv, 0, 255);
     }
 
-    cv::Mat m_in_y;
-    cv::Mat m_in_uv;
+    ncvslideio::Mat m_in_y;
+    ncvslideio::Mat m_in_uv;
 
-    cv::Mat m_in_mat;
+    ncvslideio::Mat m_in_mat;
 
-    cv::Mat m_out_ov_age;
-    cv::Mat m_out_ov_gender;
+    ncvslideio::Mat m_out_ov_age;
+    ncvslideio::Mat m_out_ov_gender;
 
-    cv::Mat m_out_gapi_age;
-    cv::Mat m_out_gapi_gender;
+    ncvslideio::Mat m_out_gapi_age;
+    ncvslideio::Mat m_out_gapi_gender;
 
     std::string xml_path;
     std::string bin_path;
@@ -373,8 +373,8 @@ struct MediaFrameTestAgeGenderOV: public ::testing::Test {
     std::string device;
     std::string image_path;
 
-    using AGInfo = std::tuple<cv::GMat, cv::GMat>;
-    G_API_NET(AgeGender, <AGInfo(cv::GMat)>, "typed-age-gender");
+    using AGInfo = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+    G_API_NET(AgeGender, <AGInfo(ncvslideio::GMat)>, "typed-age-gender");
 
     void validate() {
         normAssert(m_out_ov_age,    m_out_gapi_age,    "0: Test age output");
@@ -395,26 +395,26 @@ TEST_F(MediaFrameTestAgeGenderOV, InferMediaInputBGR)
     ref.compile()(m_in_mat, m_out_ov_age, m_out_ov_gender);
 
     // G-API
-    cv::GFrame in;
-    cv::GMat age, gender;
-    std::tie(age, gender) = cv::gapi::infer<AgeGender>(in);
-    cv::GComputation comp{cv::GIn(in), cv::GOut(age, gender)};
+    ncvslideio::GFrame in;
+    ncvslideio::GMat age, gender;
+    std::tie(age, gender) = ncvslideio::gapi::infer<AgeGender>(in);
+    ncvslideio::GComputation comp{ncvslideio::GIn(in), ncvslideio::GOut(age, gender)};
 
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
-    auto pp = cv::gapi::ov::Params<AgeGender> {
+    auto pp = ncvslideio::gapi::ov::Params<AgeGender> {
         xml_path, bin_path, device
     }.cfgOutputLayers({ "age_conv3", "prob" });
 
-    comp.apply(cv::gin(frame),
-               cv::gout(m_out_gapi_age, m_out_gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame),
+               ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
 
 TEST_F(MediaFrameTestAgeGenderOV, InferROIGenericMediaInputBGR) {
     // OpenVINO
-    cv::Rect roi(cv::Rect(cv::Point{20, 25}, cv::Size{16, 16}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{20, 25}, ncvslideio::Size{16, 16}));
     auto frame = MediaFrame::Create<TestMediaBGR>(m_in_mat);
     static constexpr const char* tag = "age-gender-generic";
 
@@ -427,64 +427,64 @@ TEST_F(MediaFrameTestAgeGenderOV, InferROIGenericMediaInputBGR) {
     ref.compile()(m_in_mat, roi, m_out_ov_age, m_out_ov_gender);
 
     // G-API
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> rr;
     GInferInputs inputs;
     inputs["data"] = in;
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>(tag, rr, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, rr, inputs);
     auto age = outputs.at("age_conv3");
     auto gender = outputs.at("prob");
-    cv::GComputation comp{cv::GIn(in, rr), cv::GOut(age, gender)};
+    ncvslideio::GComputation comp{ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender)};
 
     auto pp = AGNetROIGenComp::params(xml_path, bin_path, device);
 
-    comp.apply(cv::gin(frame, roi), cv::gout(m_out_gapi_age, m_out_gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(frame, roi), ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     validate();
 }
 
-class TestMediaNV12 final: public cv::MediaFrame::IAdapter {
-    cv::Mat m_y;
-    cv::Mat m_uv;
+class TestMediaNV12 final: public ncvslideio::MediaFrame::IAdapter {
+    ncvslideio::Mat m_y;
+    ncvslideio::Mat m_uv;
 
 public:
-    TestMediaNV12(cv::Mat y, cv::Mat uv) : m_y(y), m_uv(uv) {
+    TestMediaNV12(ncvslideio::Mat y, ncvslideio::Mat uv) : m_y(y), m_uv(uv) {
     }
-    cv::GFrameDesc meta() const override {
-        return cv::GFrameDesc{cv::MediaFormat::NV12, cv::Size(m_y.cols, m_y.rows)};
+    ncvslideio::GFrameDesc meta() const override {
+        return ncvslideio::GFrameDesc{ncvslideio::MediaFormat::NV12, ncvslideio::Size(m_y.cols, m_y.rows)};
     }
-    cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-        cv::MediaFrame::View::Ptrs pp = {
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+        ncvslideio::MediaFrame::View::Ptrs pp = {
             m_y.ptr(), m_uv.ptr(), nullptr, nullptr
         };
-        cv::MediaFrame::View::Strides ss = {
+        ncvslideio::MediaFrame::View::Strides ss = {
             m_y.step, m_uv.step, 0u, 0u
         };
-        return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
     }
 };
 
 TEST_F(MediaFrameTestAgeGenderOV, TestMediaNV12AgeGenderOV)
 {
-    cv::GFrame in;
-    cv::GOpaque<cv::Rect> rr;
+    ncvslideio::GFrame in;
+    ncvslideio::GOpaque<ncvslideio::Rect> rr;
     GInferInputs inputs;
     inputs["data"] = in;
     static constexpr const char* tag = "age-gender-generic";
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>(tag, rr, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, rr, inputs);
     auto age = outputs.at("age_conv3");
     auto gender = outputs.at("prob");
-    cv::GComputation comp{cv::GIn(in, rr), cv::GOut(age, gender)};
+    ncvslideio::GComputation comp{ncvslideio::GIn(in, rr), ncvslideio::GOut(age, gender)};
 
     auto frame = MediaFrame::Create<TestMediaNV12>(m_in_y, m_in_uv);
     auto pp = AGNetROIGenComp::params(xml_path, bin_path, device);
 
-    cv::Rect roi(cv::Rect(cv::Point{20, 25}, cv::Size{16, 16}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{20, 25}, ncvslideio::Size{16, 16}));
 
-    EXPECT_NO_THROW(comp.apply(cv::gin(frame, roi),
-                    cv::gout(m_out_gapi_age, m_out_gapi_gender),
-                    cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_NO_THROW(comp.apply(ncvslideio::gin(frame, roi),
+                    ncvslideio::gout(m_out_gapi_age, m_out_gapi_gender),
+                    ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 // TODO: Make all of tests below parmetrized to avoid code duplication
@@ -497,8 +497,8 @@ TEST_F(TestAgeGenderOV, Infer_Tensor) {
     // G-API
     auto comp = AGNetTypedComp::create();
     auto pp   = AGNetTypedComp::params(xml_path, bin_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -515,8 +515,8 @@ TEST_F(TestAgeGenderOV, Infer_Image) {
     // G-API
     auto comp = AGNetTypedComp::create();
     auto pp   = AGNetTypedComp::params(xml_path, bin_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -532,8 +532,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_Tensor) {
     // G-API
     auto comp = AGNetGenComp::create();
     auto pp   = AGNetGenComp::params(xml_path, bin_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -550,8 +550,8 @@ TEST_F(TestAgeGenderOV, InferGenericImage) {
     // G-API
     auto comp = AGNetGenComp::create();
     auto pp   = AGNetGenComp::params(xml_path, bin_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -571,8 +571,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_ImageBlob) {
     // G-API
     auto comp = AGNetGenComp::create();
     auto pp   = AGNetGenComp::params(blob_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -590,8 +590,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_TensorBlob) {
     // G-API
     auto comp = AGNetGenComp::create();
     auto pp   = AGNetGenComp::params(blob_path, device);
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -613,8 +613,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_BothOutputsFP16) {
     auto pp   = AGNetGenComp::params(xml_path, bin_path, device);
     pp.cfgOutputTensorPrecision(CV_16F);
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -636,8 +636,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_OneOutputFP16) {
     auto pp   = AGNetGenComp::params(xml_path, bin_path, device);
     pp.cfgOutputTensorPrecision({{fp16_output_name, CV_16F}});
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -662,8 +662,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_ThrowInvalidConfigIR) {
     auto pp   = AGNetGenComp::params(xml_path, bin_path, device);
     pp.cfgPluginConfig({{"some_key", "some_value"}});
 
-    EXPECT_ANY_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                                  cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                                  ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderOV, InferGeneric_ThrowInvalidConfigBlob) {
@@ -677,8 +677,8 @@ TEST_F(TestAgeGenderOV, InferGeneric_ThrowInvalidConfigBlob) {
     auto pp   = AGNetGenComp::params(blob_path, device);
     pp.cfgPluginConfig({{"some_key", "some_value"}});
 
-    EXPECT_ANY_THROW(comp.compile(cv::GMatDesc{CV_8U,3,cv::Size{320, 240}},
-                                  cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size{320, 240}},
+                                  ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderOV, Infer_ThrowInvalidImageLayout) {
@@ -688,8 +688,8 @@ TEST_F(TestAgeGenderOV, Infer_ThrowInvalidImageLayout) {
 
     pp.cfgInputTensorLayout("NCHW");
 
-    EXPECT_ANY_THROW(comp.compile(cv::descr_of(in_mat),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.compile(ncvslideio::descr_of(in_mat),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderOV, Infer_TensorWithPreproc) {
@@ -708,11 +708,11 @@ TEST_F(TestAgeGenderOV, Infer_TensorWithPreproc) {
     // G-API
     auto comp = AGNetTypedComp::create();
     auto pp = AGNetTypedComp::params(xml_path, bin_path, device);
-    pp.cfgResize(cv::INTER_LINEAR)
+    pp.cfgResize(ncvslideio::INTER_LINEAR)
       .cfgInputTensorLayout("NHWC");
 
-    comp.apply(cv::gin(in_mat), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -720,7 +720,7 @@ TEST_F(TestAgeGenderOV, Infer_TensorWithPreproc) {
 
 TEST_F(TestAgeGenderOV, InferROIGeneric_Image) {
     const auto in_mat = getRandomImage({300, 300});
-    cv::Rect roi(cv::Rect(cv::Point{64, 60}, cv::Size{96, 96}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96}));
 
     // OpenVINO
     AGNetOVComp ref(xml_path, bin_path, device);
@@ -734,8 +734,8 @@ TEST_F(TestAgeGenderOV, InferROIGeneric_Image) {
     auto comp = AGNetROIGenComp::create();
     auto pp   = AGNetROIGenComp::params(xml_path, bin_path, device);
 
-    comp.apply(cv::gin(in_mat, roi), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, roi), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -743,40 +743,40 @@ TEST_F(TestAgeGenderOV, InferROIGeneric_Image) {
 
 TEST_F(TestAgeGenderOV, InferROIGeneric_ThrowIncorrectLayout) {
     const auto in_mat = getRandomImage({300, 300});
-    cv::Rect roi(cv::Rect(cv::Point{64, 60}, cv::Size{96, 96}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96}));
 
     // G-API
     auto comp = AGNetROIGenComp::create();
     auto pp   = AGNetROIGenComp::params(xml_path, bin_path, device);
 
     pp.cfgInputTensorLayout("NCHW");
-    EXPECT_ANY_THROW(comp.apply(cv::gin(in_mat, roi), cv::gout(gapi_age, gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat, roi), ncvslideio::gout(gapi_age, gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderOV, InferROIGeneric_ThrowTensorInput) {
     const auto in_mat = getRandomTensor({1, 3, 62, 62}, CV_32F);
-    cv::Rect roi(cv::Rect(cv::Point{64, 60}, cv::Size{96, 96}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96}));
 
     // G-API
     auto comp = AGNetROIGenComp::create();
     auto pp   = AGNetROIGenComp::params(xml_path, bin_path, device);
 
-    EXPECT_ANY_THROW(comp.apply(cv::gin(in_mat, roi), cv::gout(gapi_age, gapi_gender),
-                                cv::compile_args(cv::gapi::networks(pp))));
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat, roi), ncvslideio::gout(gapi_age, gapi_gender),
+                                ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderOV, InferROIGeneric_ThrowExplicitResize) {
     const auto in_mat = getRandomImage({300, 300});
-    cv::Rect roi(cv::Rect(cv::Point{64, 60}, cv::Size{96, 96}));
+    ncvslideio::Rect roi(ncvslideio::Rect(ncvslideio::Point{64, 60}, ncvslideio::Size{96, 96}));
 
     // G-API
     auto comp = AGNetROIGenComp::create();
     auto pp   = AGNetROIGenComp::params(xml_path, bin_path, device);
 
-    pp.cfgResize(cv::INTER_LINEAR);
-    EXPECT_ANY_THROW(comp.apply(cv::gin(in_mat, roi), cv::gout(gapi_age, gapi_gender),
-                     cv::compile_args(cv::gapi::networks(pp))));
+    pp.cfgResize(ncvslideio::INTER_LINEAR);
+    EXPECT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat, roi), ncvslideio::gout(gapi_age, gapi_gender),
+                     ncvslideio::compile_args(ncvslideio::gapi::networks(pp))));
 }
 
 TEST_F(TestAgeGenderListOV, InferListGeneric_Image) {
@@ -794,8 +794,8 @@ TEST_F(TestAgeGenderListOV, InferListGeneric_Image) {
     auto comp = AGNetListGenComp::create();
     auto pp   = AGNetListGenComp::params(xml_path, bin_path, device);
 
-    comp.apply(cv::gin(in_mat, roi_list), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, roi_list), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -816,8 +816,8 @@ TEST_F(TestAgeGenderListOV, InferList2Generic_Image) {
     auto comp = AGNetList2GenComp::create();
     auto pp   = AGNetList2GenComp::params(xml_path, bin_path, device);
 
-    comp.apply(cv::gin(in_mat, roi_list), cv::gout(gapi_age, gapi_gender),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(in_mat, roi_list), ncvslideio::gout(gapi_age, gapi_gender),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Assert
     validate();
@@ -835,17 +835,17 @@ static ov::element::Type toOV(int depth) {
 }
 
 struct TestMeanScaleOV : public ::testing::TestWithParam<int>{
-    G_API_NET(IdentityNet, <cv::GMat(cv::GMat)>, "test-identity-net");
+    G_API_NET(IdentityNet, <ncvslideio::GMat(ncvslideio::GMat)>, "test-identity-net");
 
-    static cv::GComputation create() {
-        cv::GMat in;
-        cv::GMat out;
-        out = cv::gapi::infer<IdentityNet>(in);
+    static ncvslideio::GComputation create() {
+        ncvslideio::GMat in;
+        ncvslideio::GMat out;
+        out = ncvslideio::gapi::infer<IdentityNet>(in);
 
-        return cv::GComputation{cv::GIn(in), cv::GOut(out)};
+        return ncvslideio::GComputation{ncvslideio::GIn(in), ncvslideio::GOut(out)};
     }
 
-    using Params = cv::gapi::ov::Params<IdentityNet>;
+    using Params = ncvslideio::gapi::ov::Params<IdentityNet>;
     static Params params(const std::string &xml_path,
                          const std::string &bin_path,
                          const std::string &device) {
@@ -862,11 +862,11 @@ struct TestMeanScaleOV : public ::testing::TestWithParam<int>{
         m_weights_path = findDataFile("gapi/ov/identity_net_100x100.bin");
         m_device_id = "CPU";
 
-        m_ov_model = cv::gapi::ov::wrap::getCore()
+        m_ov_model = ncvslideio::gapi::ov::wrap::getCore()
             .read_model(m_model_path, m_weights_path);
 
         auto input_depth = GetParam();
-        auto input = cv::imread(findDataFile("gapi/gapi_logo.jpg"));
+        auto input = ncvslideio::imread(findDataFile("gapi/gapi_logo.jpg"));
         input.convertTo(m_in_mat, input_depth);
     }
 
@@ -885,19 +885,19 @@ struct TestMeanScaleOV : public ::testing::TestWithParam<int>{
     }
 
     void runOV() {
-        auto compiled_model = cv::gapi::ov::wrap::getCore()
+        auto compiled_model = ncvslideio::gapi::ov::wrap::getCore()
             .compile_model(m_ov_model, m_device_id);
         auto infer_request = compiled_model.create_infer_request();
 
         auto input_tensor = infer_request.get_input_tensor();
-        cv::gapi::ov::util::to_ov(m_in_mat, input_tensor);
+        ncvslideio::gapi::ov::util::to_ov(m_in_mat, input_tensor);
 
         infer_request.infer();
 
         auto out_tensor = infer_request.get_tensor("output");
-        m_out_mat_ov.create(cv::gapi::ov::util::to_ocv(out_tensor.get_shape()),
-                            cv::gapi::ov::util::to_ocv(out_tensor.get_element_type()));
-        cv::gapi::ov::util::to_ocv(out_tensor, m_out_mat_ov);
+        m_out_mat_ov.create(ncvslideio::gapi::ov::util::to_ocv(out_tensor.get_shape()),
+                            ncvslideio::gapi::ov::util::to_ocv(out_tensor.get_element_type()));
+        ncvslideio::gapi::ov::util::to_ocv(out_tensor, m_out_mat_ov);
     }
 
     std::string m_model_path;
@@ -906,9 +906,9 @@ struct TestMeanScaleOV : public ::testing::TestWithParam<int>{
 
     std::shared_ptr<ov::Model> m_ov_model;
 
-    cv::Mat m_in_mat;
-    cv::Mat m_out_mat_gapi;
-    cv::Mat m_out_mat_ov;
+    ncvslideio::Mat m_in_mat;
+    ncvslideio::Mat m_out_mat_gapi;
+    ncvslideio::Mat m_out_mat_ov;
 };
 
 TEST_P(TestMeanScaleOV, Mean)
@@ -933,8 +933,8 @@ TEST_P(TestMeanScaleOV, Mean)
     auto pp = params(m_model_path, m_weights_path, m_device_id);
     pp.cfgMean(mean_values);
 
-    comp.apply(cv::gin(m_in_mat), cv::gout(m_out_mat_gapi),
-               cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_out_mat_gapi),
+               ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate OV results against G-API ones:
     normAssert(m_out_mat_ov, m_out_mat_gapi, "Test output");
@@ -962,8 +962,8 @@ TEST_P(TestMeanScaleOV, Scale)
     auto pp = params(m_model_path, m_weights_path, m_device_id);
     pp.cfgScale(scale_values);
 
-    comp.apply(cv::gin(m_in_mat), cv::gout(m_out_mat_gapi),
-        cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_out_mat_gapi),
+        ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate OV results against G-API ones:
     normAssert(m_out_mat_ov, m_out_mat_gapi, "Test output");
@@ -994,8 +994,8 @@ TEST_P(TestMeanScaleOV, MeanAndScale)
     pp.cfgMean(mean_values);
     pp.cfgScale(scale_values);
 
-    comp.apply(cv::gin(m_in_mat), cv::gout(m_out_mat_gapi),
-        cv::compile_args(cv::gapi::networks(pp)));
+    comp.apply(ncvslideio::gin(m_in_mat), ncvslideio::gout(m_out_mat_gapi),
+        ncvslideio::compile_args(ncvslideio::gapi::networks(pp)));
 
     // Validate OV results against G-API ones:
     normAssert(m_out_mat_ov, m_out_mat_gapi, "Test output");

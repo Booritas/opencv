@@ -8,7 +8,7 @@
 #include <limits>
 #include <typeinfo>
 
-namespace cv
+namespace ncvslideio
 {
 
 // Utility function for safe integer conversions
@@ -24,7 +24,7 @@ inline D safe_int_cast(S val, const char * msg = 0)
     {
         if (!msg)
             CV_Error(Error::StsOutOfRange,
-                     cv::format("Can not convert integer values (%s -> %s), value 0x%jx is out of range", typeid(S).name(), typeid(D).name(), (uintmax_t)val));
+                     ncvslideio::format("Can not convert integer values (%s -> %s), value 0x%jx is out of range", typeid(S).name(), typeid(D).name(), (uintmax_t)val));
         else
             CV_Error(Error::StsOutOfRange, msg);
     }
@@ -649,7 +649,7 @@ bool BitStream::open(const String& filename)
     output.open(filename.c_str(), std::ios_base::binary);
     if (!output.is_open())
     {
-        CV_LOG_DEBUG(NULL, cv::format("Failed to open stream for writing to  \"%s\"", filename.c_str()));
+        CV_LOG_DEBUG(NULL, ncvslideio::format("Failed to open stream for writing to  \"%s\"", filename.c_str()));
         return false;
     }
     m_current = m_start;

@@ -13,7 +13,7 @@
 #include <opencv2/core/cuda.hpp>
 #include <sstream>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     inline void checkVersions()
     {
@@ -68,11 +68,11 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         CUDA4DNN_CHECK_CUDA(cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, device_id));
         CUDA4DNN_CHECK_CUDA(cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, device_id));
 
-        if (cv::cuda::TargetArchs::hasEqualOrLessPtx(major, minor))
+        if (ncvslideio::cuda::TargetArchs::hasEqualOrLessPtx(major, minor))
             return true;
 
         for (int i = minor; i >= 0; i--)
-            if (cv::cuda::TargetArchs::hasBin(major, i))
+            if (ncvslideio::cuda::TargetArchs::hasBin(major, i))
                 return true;
 
         return false;
@@ -94,6 +94,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         return (version >= 53);
     }
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_INIT_HPP */

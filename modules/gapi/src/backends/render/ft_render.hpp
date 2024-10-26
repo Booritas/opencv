@@ -14,7 +14,7 @@
 
 #include <opencv2/gapi/own/exports.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -29,8 +29,8 @@ public:
     class Priv;
     explicit FTTextRender(const std::string& path);
 
-    cv::Size getTextSize(const std::wstring& text, int fh, int* baseline);
-    void putText(cv::Mat& mat, const std::wstring& text, const cv::Point& org, int fh);
+    ncvslideio::Size getTextSize(const std::wstring& text, int fh, int* baseline);
+    void putText(ncvslideio::Mat& mat, const std::wstring& text, const ncvslideio::Point& org, int fh);
 
 private:
     std::shared_ptr<Priv> m_priv;
@@ -39,6 +39,6 @@ private:
 } // namespace draw
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_FREETYPE_TEXT_RENDER_HPP

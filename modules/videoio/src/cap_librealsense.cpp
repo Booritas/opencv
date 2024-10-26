@@ -7,7 +7,7 @@
 #ifdef HAVE_LIBREALSENSE
 #include "cap_librealsense.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 VideoCapture_LibRealsense::VideoCapture_LibRealsense(int) : mAlign(RS2_STREAM_COLOR)
@@ -190,7 +190,7 @@ bool VideoCapture_LibRealsense::grabFrame()
 
     return true;
 }
-bool VideoCapture_LibRealsense::retrieveFrame(int outputType, cv::OutputArray frame)
+bool VideoCapture_LibRealsense::retrieveFrame(int outputType, ncvslideio::OutputArray frame)
 {
     rs2::video_frame _frame(nullptr);
     int type;

@@ -33,17 +33,17 @@
 */
 void spngCvt_BGR2Gray_8u_C3C1R(const uchar *bgr, int bgr_step,
                                uchar *gray, int gray_step,
-                               cv::Size size, int _swap_rb);
+                               ncvslideio::Size size, int _swap_rb);
 
 void spngCvt_BGRA2Gray_8u_C4C1R(const uchar *bgra, int rgba_step,
                                 uchar *gray, int gray_step,
-                                cv::Size size, int _swap_rb);
+                                ncvslideio::Size size, int _swap_rb);
 
 void spngCvt_BGRA2Gray_16u_CnC1R(const ushort *bgr, int bgr_step,
                                  ushort *gray, int gray_step,
-                                 cv::Size size, int ncn, int _swap_rb);
+                                 ncvslideio::Size size, int ncn, int _swap_rb);
 
-namespace cv
+namespace ncvslideio
 {
 
 /////////////////////// SPngDecoder ///////////////////
@@ -686,7 +686,7 @@ bool SPngEncoder::write(const Mat &img, const std::vector<int> &params)
 
 void spngCvt_BGR2Gray_8u_C3C1R(const uchar *bgr, int bgr_step,
                                uchar *gray, int gray_step,
-                               cv::Size size, int _swap_rb)
+                               ncvslideio::Size size, int _swap_rb)
 {
     int i;
     for (; size.height--; gray += gray_step)
@@ -707,7 +707,7 @@ void spngCvt_BGR2Gray_8u_C3C1R(const uchar *bgr, int bgr_step,
 
 void spngCvt_BGRA2Gray_8u_C4C1R(const uchar *bgra, int rgba_step,
                                 uchar *gray, int gray_step,
-                                cv::Size size, int _swap_rb)
+                                ncvslideio::Size size, int _swap_rb)
 {
     for (; size.height--; gray += gray_step)
     {
@@ -719,7 +719,7 @@ void spngCvt_BGRA2Gray_8u_C4C1R(const uchar *bgra, int rgba_step,
             std::swap(cBGR0, cBGR2);
         for (int i = 0; i < size.width; i++, bgra += 4)
         {
-            gray[i] = cv::saturate_cast<uchar>(cBGR0 * bgra[0] + cBGR1 * bgra[1] + cBGR2 * bgra[2]);
+            gray[i] = ncvslideio::saturate_cast<uchar>(cBGR0 * bgra[0] + cBGR1 * bgra[1] + cBGR2 * bgra[2]);
         }
 
         bgra += rgba_step - size.width * 4;
@@ -728,7 +728,7 @@ void spngCvt_BGRA2Gray_8u_C4C1R(const uchar *bgra, int rgba_step,
 
 void spngCvt_BGRA2Gray_16u_CnC1R(const ushort *bgr, int bgr_step,
                                  ushort *gray, int gray_step,
-                                 cv::Size size, int ncn, int _swap_rb)
+                                 ncvslideio::Size size, int ncn, int _swap_rb)
 {
     for (; size.height--; gray += gray_step)
     {

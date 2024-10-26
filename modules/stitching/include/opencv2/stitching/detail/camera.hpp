@@ -45,7 +45,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching
@@ -73,6 +73,6 @@ struct CV_EXPORTS_W_SIMPLE CameraParams
 //! @}
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // #ifndef OPENCV_STITCHING_CAMERA_HPP

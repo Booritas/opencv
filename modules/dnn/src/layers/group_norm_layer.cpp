@@ -10,7 +10,7 @@
 #include "../op_cuda.hpp"
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/group_norm.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 // OpenCL backend
@@ -19,7 +19,7 @@ using namespace cv::dnn::cuda4dnn;
 #include "opencl_kernels_dnn.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 // https://github.com/onnx/onnx/blob/main/docs/Operators.md#GroupNormalization
@@ -187,4 +187,4 @@ Ptr<GroupNormLayer> GroupNormLayer::create(const LayerParams &params) {
     return Ptr<GroupNormLayer>(new GroupNormLayerImpl(params));
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

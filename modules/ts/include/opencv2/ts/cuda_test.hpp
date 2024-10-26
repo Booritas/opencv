@@ -55,31 +55,31 @@ namespace cvtest
 
     int randomInt(int minVal, int maxVal);
     double randomDouble(double minVal, double maxVal);
-    cv::Size randomSize(int minVal, int maxVal);
-    cv::Scalar randomScalar(double minVal, double maxVal);
-    cv::Mat randomMat(cv::Size size, int type, double minVal = 0.0, double maxVal = 255.0);
+    ncvslideio::Size randomSize(int minVal, int maxVal);
+    ncvslideio::Scalar randomScalar(double minVal, double maxVal);
+    ncvslideio::Mat randomMat(ncvslideio::Size size, int type, double minVal = 0.0, double maxVal = 255.0);
 
     //////////////////////////////////////////////////////////////////////
     // GpuMat create
 
-    cv::cuda::GpuMat createMat(cv::Size size, int type, bool useRoi = false);
-    cv::cuda::GpuMat createMat(cv::Size size, int type, cv::Size& size0, cv::Point& ofs, bool useRoi = false);
-    cv::cuda::GpuMat loadMat(const cv::Mat& m, bool useRoi = false);
+    ncvslideio::cuda::GpuMat createMat(ncvslideio::Size size, int type, bool useRoi = false);
+    ncvslideio::cuda::GpuMat createMat(ncvslideio::Size size, int type, ncvslideio::Size& size0, ncvslideio::Point& ofs, bool useRoi = false);
+    ncvslideio::cuda::GpuMat loadMat(const ncvslideio::Mat& m, bool useRoi = false);
 
     //////////////////////////////////////////////////////////////////////
     // Image load
 
     //! read image from testdata folder
-    cv::Mat readImage(const std::string& fileName, int flags = cv::IMREAD_COLOR);
+    ncvslideio::Mat readImage(const std::string& fileName, int flags = ncvslideio::IMREAD_COLOR);
 
     //! read image from testdata folder and convert it to specified type
-    cv::Mat readImageType(const std::string& fname, int type);
+    ncvslideio::Mat readImageType(const std::string& fname, int type);
 
     //////////////////////////////////////////////////////////////////////
     // Gpu devices
 
     //! return true if device supports specified feature and gpu module was built with support the feature.
-    bool supportFeature(const cv::cuda::DeviceInfo& info, cv::cuda::FeatureSet feature);
+    bool supportFeature(const ncvslideio::cuda::DeviceInfo& info, ncvslideio::cuda::FeatureSet feature);
 
     class DeviceManager
     {
@@ -89,10 +89,10 @@ namespace cvtest
         void load(int i);
         void loadAll();
 
-        const std::vector<cv::cuda::DeviceInfo>& values() const { return devices_; }
+        const std::vector<ncvslideio::cuda::DeviceInfo>& values() const { return devices_; }
 
     private:
-        std::vector<cv::cuda::DeviceInfo> devices_;
+        std::vector<ncvslideio::cuda::DeviceInfo> devices_;
     };
 
     #define ALL_DEVICES testing::ValuesIn(cvtest::DeviceManager::instance().values())
@@ -100,11 +100,11 @@ namespace cvtest
     //////////////////////////////////////////////////////////////////////
     // Additional assertion
 
-    void minMaxLocGold(const cv::Mat& src, double* minVal_, double* maxVal_ = 0, cv::Point* minLoc_ = 0, cv::Point* maxLoc_ = 0, const cv::Mat& mask = cv::Mat());
+    void minMaxLocGold(const ncvslideio::Mat& src, double* minVal_, double* maxVal_ = 0, ncvslideio::Point* minLoc_ = 0, ncvslideio::Point* maxLoc_ = 0, const ncvslideio::Mat& mask = ncvslideio::Mat());
 
-    cv::Mat getMat(cv::InputArray arr);
+    ncvslideio::Mat getMat(ncvslideio::InputArray arr);
 
-    testing::AssertionResult assertMatNear(const char* expr1, const char* expr2, const char* eps_expr, cv::InputArray m1, cv::InputArray m2, double eps);
+    testing::AssertionResult assertMatNear(const char* expr1, const char* expr2, const char* eps_expr, ncvslideio::InputArray m1, ncvslideio::InputArray m2, double eps);
 
     #undef EXPECT_MAT_NEAR
     #define EXPECT_MAT_NEAR(m1, m2, eps) EXPECT_PRED_FORMAT3(cvtest::assertMatNear, m1, m2, eps)
@@ -149,7 +149,7 @@ namespace cvtest
             ASSERT_NEAR(p1.z, p2.z, eps); \
         }
 
-    double checkSimilarity(cv::InputArray m1, cv::InputArray m2);
+    double checkSimilarity(ncvslideio::InputArray m1, ncvslideio::InputArray m2);
 
     #undef EXPECT_MAT_SIMILAR
     #define EXPECT_MAT_SIMILAR(mat1, mat2, eps) \
@@ -205,19 +205,19 @@ namespace cvtest
         catch (const cvtest::details::SkipTestExceptionBase& e) \
         { \
             printf("[     SKIP ] %s\n", e.what()); \
-            cv::cuda::resetDevice(); \
+            ncvslideio::cuda::resetDevice(); \
         } \
         catch (...) \
         { \
-          cv::cuda::resetDevice(); \
+          ncvslideio::cuda::resetDevice(); \
           throw; \
         } \
       } \
       void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::UnsafeTestBody()
 
-    #define DIFFERENT_SIZES testing::Values(cv::Size(128, 128), cv::Size(113, 113))
+    #define DIFFERENT_SIZES testing::Values(ncvslideio::Size(128, 128), ncvslideio::Size(113, 113))
 
-    #define DIFFERENT_SIZES_EXTRA testing::Values(cv::Size(13, 1), cv::Size(1, 13), cv::Size(128, 128), cv::Size(113, 113))
+    #define DIFFERENT_SIZES_EXTRA testing::Values(ncvslideio::Size(13, 1), ncvslideio::Size(1, 13), ncvslideio::Size(128, 128), ncvslideio::Size(113, 113))
 
     // Depth
 
@@ -326,38 +326,38 @@ namespace cvtest
     CV_ENUM(Interpolation, INTER_NEAREST, INTER_LINEAR, INTER_CUBIC, INTER_AREA)
 
     CV_ENUM(BorderType, BORDER_REFLECT101, BORDER_REPLICATE, BORDER_CONSTANT, BORDER_REFLECT, BORDER_WRAP)
-    #define ALL_BORDER_TYPES testing::Values(BorderType(cv::BORDER_REFLECT101), BorderType(cv::BORDER_REPLICATE), BorderType(cv::BORDER_CONSTANT), BorderType(cv::BORDER_REFLECT), BorderType(cv::BORDER_WRAP))
+    #define ALL_BORDER_TYPES testing::Values(BorderType(ncvslideio::BORDER_REFLECT101), BorderType(ncvslideio::BORDER_REPLICATE), BorderType(ncvslideio::BORDER_CONSTANT), BorderType(ncvslideio::BORDER_REFLECT), BorderType(ncvslideio::BORDER_WRAP))
 
     CV_FLAGS(WarpFlags, INTER_NEAREST, INTER_LINEAR, INTER_CUBIC, WARP_INVERSE_MAP)
 
     //////////////////////////////////////////////////////////////////////
     // Features2D
 
-    testing::AssertionResult assertKeyPointsEquals(const char* gold_expr, const char* actual_expr, std::vector<cv::KeyPoint>& gold, std::vector<cv::KeyPoint>& actual);
+    testing::AssertionResult assertKeyPointsEquals(const char* gold_expr, const char* actual_expr, std::vector<ncvslideio::KeyPoint>& gold, std::vector<ncvslideio::KeyPoint>& actual);
 
     #define ASSERT_KEYPOINTS_EQ(gold, actual) EXPECT_PRED_FORMAT2(assertKeyPointsEquals, gold, actual)
 
-    int getMatchedPointsCount(std::vector<cv::KeyPoint>& gold, std::vector<cv::KeyPoint>& actual);
-    int getMatchedPointsCount(const std::vector<cv::KeyPoint>& keypoints1, const std::vector<cv::KeyPoint>& keypoints2, const std::vector<cv::DMatch>& matches);
+    int getMatchedPointsCount(std::vector<ncvslideio::KeyPoint>& gold, std::vector<ncvslideio::KeyPoint>& actual);
+    int getMatchedPointsCount(const std::vector<ncvslideio::KeyPoint>& keypoints1, const std::vector<ncvslideio::KeyPoint>& keypoints2, const std::vector<ncvslideio::DMatch>& matches);
 
     //////////////////////////////////////////////////////////////////////
     // Other
 
-    void dumpImage(const std::string& fileName, const cv::Mat& image);
-    void showDiff(cv::InputArray gold, cv::InputArray actual, double eps);
+    void dumpImage(const std::string& fileName, const ncvslideio::Mat& image);
+    void showDiff(ncvslideio::InputArray gold, ncvslideio::InputArray actual, double eps);
 
     void parseCudaDeviceOptions(int argc, char **argv);
     void printCudaInfo();
 }
 
-namespace cv { namespace cuda
+namespace ncvslideio { namespace cuda
 {
     void PrintTo(const DeviceInfo& info, std::ostream* os);
 }}
 
 #ifdef HAVE_CUDA
 
-#define CV_TEST_INIT0_CUDA cvtest::parseCudaDeviceOptions(argc, argv), cvtest::printCudaInfo(), cv::setUseOptimized(false)
+#define CV_TEST_INIT0_CUDA cvtest::parseCudaDeviceOptions(argc, argv), cvtest::printCudaInfo(), ncvslideio::setUseOptimized(false)
 
 #define CV_CUDA_TEST_MAIN(resourcesubdir, ...) \
     CV_TEST_MAIN_EX(resourcesubdir, CUDA, __VA_ARGS__)

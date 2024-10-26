@@ -11,7 +11,7 @@
 #include <gst/gst.h>
 #endif // HAVE_GSTREAMER
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -35,7 +35,7 @@ GStreamerEnv::GStreamerEnv()
 
         if (err)
         {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                 std::runtime_error(std::string("GStreamer initializaton error! Details: ") +
                                    err->message));
         }
@@ -48,7 +48,7 @@ GStreamerEnv::GStreamerEnv()
     gst_version(&major, &minor, &micro, &nano);
     if (GST_VERSION_MAJOR != major)
     {
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
             std::runtime_error(std::string("Incompatible GStreamer version: compiled with ") +
                                std::to_string(GST_VERSION_MAJOR) + '.' +
                                std::to_string(GST_VERSION_MINOR) + '.' +
@@ -87,4 +87,4 @@ GStreamerEnv::~GStreamerEnv()
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

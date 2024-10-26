@@ -20,10 +20,10 @@
 
 #include <cstddef>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn  { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn  { namespace kernels {
 
 namespace raw {
     template <class T, class ActivationOp, std::size_t N>
@@ -409,4 +409,4 @@ void axiswise_relu(const Stream& stream, Span<T> output, View<T> input, std::siz
 #endif
     template void axiswise_relu<float>(const Stream&, Span<float>, View<float>, std::size_t, View<float>);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

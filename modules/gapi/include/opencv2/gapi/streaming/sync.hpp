@@ -7,7 +7,7 @@
 #ifndef OPENCV_GAPI_STREAMING_SYNC_HPP
 #define OPENCV_GAPI_STREAMING_SYNC_HPP
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace streaming {
 
@@ -25,6 +25,6 @@ namespace detail {
     };
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_SYNC_HPP

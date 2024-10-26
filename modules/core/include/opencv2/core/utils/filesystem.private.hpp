@@ -29,7 +29,7 @@
 #endif
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
-namespace cv { namespace utils { namespace fs {
+namespace ncvslideio { namespace utils { namespace fs {
 
 /**
  * File-based lock object.

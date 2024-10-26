@@ -12,7 +12,7 @@
 #include <string.h>
 #include <time.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 enum { DETECTION = 0, CAPTURING = 1, CALIBRATED = 2 };
@@ -185,7 +185,7 @@ int main( int argc, char** argv )
     vector<vector<Point2f> > imgpt[3];
     vector<string> imageList;
 
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{help ||}{w||}{h||}{s|1|}{o|out_camera_data.yml|}"
         "{zt||}{a|1|}{p||}{@input||}");
     if (parser.has("help"))

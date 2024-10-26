@@ -10,10 +10,10 @@
 
 namespace opencv_test {
 namespace {
-void randomizeMat(cv::Mat& m) {
+void randomizeMat(ncvslideio::Mat& m) {
     auto ref = m.clone();
-    while (cv::norm(m, ref, cv::NORM_INF) == 0) {
-        cv::randu(m, cv::Scalar::all(127), cv::Scalar::all(40));
+    while (ncvslideio::norm(m, ref, ncvslideio::NORM_INF) == 0) {
+        ncvslideio::randu(m, ncvslideio::Scalar::all(127), ncvslideio::Scalar::all(40));
     }
 }
 
@@ -21,28 +21,28 @@ template <typename RMatAdapterT>
 struct RMatTest {
     using AdapterT = RMatAdapterT;
     RMatTest()
-        : m_deviceMat(cv::Mat::zeros(8,8,CV_8UC1))
+        : m_deviceMat(ncvslideio::Mat::zeros(8,8,CV_8UC1))
         , m_rmat(make_rmat<RMatAdapterT>(m_deviceMat, m_callbackCalled)) {
         randomizeMat(m_deviceMat);
         expectNoCallbackCalled();
     }
 
     RMat& rmat() { return m_rmat; }
-    cv::Mat cloneDeviceMat() { return m_deviceMat.clone(); }
+    ncvslideio::Mat cloneDeviceMat() { return m_deviceMat.clone(); }
     void expectCallbackCalled() { EXPECT_TRUE(m_callbackCalled); }
     void expectNoCallbackCalled() { EXPECT_FALSE(m_callbackCalled); }
 
-    void expectDeviceDataEqual(const cv::Mat& mat) {
-        EXPECT_EQ(0, cv::norm(mat, m_deviceMat, NORM_INF));
+    void expectDeviceDataEqual(const ncvslideio::Mat& mat) {
+        EXPECT_EQ(0, ncvslideio::norm(mat, m_deviceMat, NORM_INF));
     }
-    void expectDeviceDataNotEqual(const cv::Mat& mat) {
-        EXPECT_NE(0, cv::norm(mat, m_deviceMat, NORM_INF));
+    void expectDeviceDataNotEqual(const ncvslideio::Mat& mat) {
+        EXPECT_NE(0, ncvslideio::norm(mat, m_deviceMat, NORM_INF));
     }
 
 private:
-    cv::Mat m_deviceMat;
+    ncvslideio::Mat m_deviceMat;
     bool m_callbackCalled = false;
-    cv::RMat m_rmat;
+    ncvslideio::RMat m_rmat;
 };
 } // anonymous namespace
 
@@ -57,8 +57,8 @@ TYPED_TEST_CASE(RMatTypedTest, RMatTestTypes);
 
 TYPED_TEST(RMatTypedTest, Smoke) {
     auto view = this->rmat().access(RMat::Access::R);
-    auto matFromDevice = cv::Mat(view.size(), view.type(), view.ptr());
-    EXPECT_TRUE(cv::descr_of(this->cloneDeviceMat()) == this->rmat().desc());
+    auto matFromDevice = ncvslideio::Mat(view.size(), view.type(), view.ptr());
+    EXPECT_TRUE(ncvslideio::descr_of(this->cloneDeviceMat()) == this->rmat().desc());
     this->expectDeviceDataEqual(matFromDevice);
 }
 
@@ -73,7 +73,7 @@ TYPED_TEST(RMatTypedTest, BasicWorkflow) {
     }
     this->expectNoCallbackCalled();
 
-    cv::Mat dataToWrite = this->cloneDeviceMat();
+    ncvslideio::Mat dataToWrite = this->cloneDeviceMat();
     randomizeMat(dataToWrite);
     this->expectDeviceDataNotEqual(dataToWrite);
     {
@@ -96,7 +96,7 @@ TYPED_TEST(RMatTypedTest, CorrectAdapterCast) {
 
 class DummyAdapter : public RMat::IAdapter {
     virtual RMat::View access(RMat::Access) override { return {}; }
-    virtual cv::GMatDesc desc() const override { return {}; }
+    virtual ncvslideio::GMatDesc desc() const override { return {}; }
 };
 
 TYPED_TEST(RMatTypedTest, IncorrectAdapterCast) {
@@ -117,7 +117,7 @@ public:
 // test that we can obtain it via RMat.as<T>() method
 TEST(RMat, UsageInBackend) {
     int i = 123456;
-    auto rmat = cv::make_rmat<RMatAdapterForBackend>(i);
+    auto rmat = ncvslideio::make_rmat<RMatAdapterForBackend>(i);
 
     auto adapter = rmat.get<RMatAdapterForBackend>();
     ASSERT_NE(nullptr, adapter);

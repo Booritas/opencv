@@ -3,14 +3,14 @@
 
 #include <opencv2/gapi/gkernel.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace meta {
 
-cv::GKernelPackage kernels();
+ncvslideio::GKernelPackage kernels();
 
 } // namespace meta
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_SRC_COMMON_META_BACKEND_HPP

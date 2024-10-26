@@ -5,10 +5,10 @@ import sys
 
 from common import *
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-            cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD, cv.dnn.DNN_TARGET_HDDL,
-           cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+            ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD, ncvslideio.dnn.DNN_TARGET_HDDL,
+           ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--zoo', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models.yml'),
@@ -19,7 +19,7 @@ parser.add_argument('--framework', choices=['caffe', 'tensorflow', 'torch', 'dar
                          'Detect it automatically if it does not set.')
 parser.add_argument('--colors', help='Optional path to a text file with colors for an every class. '
                                      'An every color is represented with three values from 0 to 255 in BGR channels order.')
-parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                     help="Choose one of computation backends: "
                          "%d: automatically (by default), "
                          "%d: Halide language (http://halide-lang.org/), "
@@ -27,7 +27,7 @@ parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DE
                          "%d: OpenCV implementation, "
                          "%d: VKCOM, "
                          "%d: CUDA"% backends)
-parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                     help='Choose one of target computation devices: '
                          '%d: CPU target (by default), '
                          '%d: OpenCL, '
@@ -73,26 +73,26 @@ def showLegend(classes):
         for i in range(len(classes)):
             block = legend[i * blockHeight:(i + 1) * blockHeight]
             block[:,:] = colors[i]
-            cv.putText(block, classes[i], (0, blockHeight//2), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+            ncvslideio.putText(block, classes[i], (0, blockHeight//2), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 
-        cv.namedWindow('Legend', cv.WINDOW_NORMAL)
-        cv.imshow('Legend', legend)
+        ncvslideio.namedWindow('Legend', ncvslideio.WINDOW_NORMAL)
+        ncvslideio.imshow('Legend', legend)
         classes = None
 
 # Load a network
-net = cv.dnn.readNet(args.model, args.config, args.framework)
+net = ncvslideio.dnn.readNet(args.model, args.config, args.framework)
 net.setPreferableBackend(args.backend)
 net.setPreferableTarget(args.target)
 
 winName = 'Deep learning semantic segmentation in OpenCV'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+cv.namedWindow(winName, ncvslideio.WINDOW_NORMAL)
 
-cap = cv.VideoCapture(args.input if args.input else 0)
+cap = ncvslideio.VideoCapture(args.input if args.input else 0)
 legend = None
-while cv.waitKey(1) < 0:
+while ncvslideio.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
-        cv.waitKey()
+        ncvslideio.waitKey()
         break
 
     frameHeight = frame.shape[0]
@@ -101,7 +101,7 @@ while cv.waitKey(1) < 0:
     # Create a 4D blob from a frame.
     inpWidth = args.width if args.width else frameWidth
     inpHeight = args.height if args.height else frameHeight
-    blob = cv.dnn.blobFromImage(frame, args.scale, (inpWidth, inpHeight), args.mean, args.rgb, crop=False)
+    blob = ncvslideio.dnn.blobFromImage(frame, args.scale, (inpWidth, inpHeight), args.mean, args.rgb, crop=False)
 
     # Run a model
     net.setInput(blob)
@@ -122,14 +122,14 @@ while cv.waitKey(1) < 0:
     segm = np.stack([colors[idx] for idx in classIds.flatten()])
     segm = segm.reshape(height, width, 3)
 
-    segm = cv.resize(segm, (frameWidth, frameHeight), interpolation=cv.INTER_NEAREST)
+    segm = ncvslideio.resize(segm, (frameWidth, frameHeight), interpolation=ncvslideio.INTER_NEAREST)
     frame = (0.1 * frame + 0.9 * segm).astype(np.uint8)
 
     # Put efficiency information.
     t, _ = net.getPerfProfile()
-    label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
-    cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+    label = 'Inference time: %.2f ms' % (t * 1000.0 / ncvslideio.getTickFrequency())
+    ncvslideio.putText(frame, label, (0, 15), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
     showLegend(classes)
 
-    cv.imshow(winName, frame)
+    ncvslideio.imshow(winName, frame)

@@ -6,7 +6,7 @@
 #include "stats.h"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 void drawBoundingBox(Mat image, vector<Point2f> bb);
 void drawStatistics(Mat image, const Stats& stats);

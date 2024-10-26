@@ -31,7 +31,7 @@ CV_EXPORTS @interface Rect2f : NSObject
 @property float width;
 @property float height;
 #ifdef __cplusplus
-@property(readonly) cv::Rect2f& nativeRef;
+@property(readonly) ncvslideio::Rect2f& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -43,7 +43,7 @@ CV_EXPORTS @interface Rect2f : NSObject
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Rect2f&)point;
++ (instancetype)fromNative:(ncvslideio::Rect2f&)point;
 #endif
 
 #pragma mark - Methods

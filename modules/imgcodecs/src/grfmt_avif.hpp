@@ -13,7 +13,7 @@ struct avifDecoder;
 struct avifEncoder;
 struct avifRWData;
 
-namespace cv {
+namespace ncvslideio {
 
 class AvifDecoder CV_FINAL : public BaseImageDecoder {
  public:
@@ -55,7 +55,7 @@ class AvifEncoder CV_FINAL : public BaseImageEncoder {
   avifEncoder* encoder_;
 };
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif
 

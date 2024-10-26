@@ -31,13 +31,13 @@ def main():
     except:
         fn = 'baboon.jpg'
 
-    img = cv.imread(cv.samples.findFile(fn))
+    img = ncvslideio.imread(ncvslideio.samples.findFile(fn))
 
     if img is None:
         print('Failed to load image file:', fn)
         sys.exit(1)
 
-    cv.imshow('original', img)
+    ncvslideio.imshow('original', img)
 
     modes = cycle(['erode/dilate', 'open/close', 'blackhat/tophat', 'gradient'])
     str_modes = cycle(['ellipse', 'rect', 'cross'])
@@ -51,8 +51,8 @@ def main():
 
     def update(dummy=None):
         try: # do not get trackbar position while trackbar is not created
-            sz = cv.getTrackbarPos('op/size', 'morphology')
-            iters = cv.getTrackbarPos('iters', 'morphology')
+            sz = ncvslideio.getTrackbarPos('op/size', 'morphology')
+            iters = ncvslideio.getTrackbarPos('iters', 'morphology')
         except:
             return
         opers = cur_mode.split('/')
@@ -66,21 +66,21 @@ def main():
 
         str_name = 'MORPH_' + cur_str_mode.upper()
         oper_name = 'MORPH_' + op.upper()
-        st = cv.getStructuringElement(getattr(cv, str_name), (sz, sz))
-        res = cv.morphologyEx(img, getattr(cv, oper_name), st, iterations=iters)
+        st = ncvslideio.getStructuringElement(getattr(ncvslideio, str_name), (sz, sz))
+        res = ncvslideio.morphologyEx(img, getattr(ncvslideio, oper_name), st, iterations=iters)
 
         draw_str(res, (10, 20), 'mode: ' + cur_mode)
         draw_str(res, (10, 40), 'operation: ' + oper_name)
         draw_str(res, (10, 60), 'structure: ' + str_name)
         draw_str(res, (10, 80), 'ksize: %d  iters: %d' % (sz, iters))
-        cv.imshow('morphology', res)
+        ncvslideio.imshow('morphology', res)
 
-    cv.namedWindow('morphology')
-    cv.createTrackbar('op/size', 'morphology', 12, 20, update)
-    cv.createTrackbar('iters', 'morphology', 1, 10, update)
+    ncvslideio.namedWindow('morphology')
+    ncvslideio.createTrackbar('op/size', 'morphology', 12, 20, update)
+    ncvslideio.createTrackbar('iters', 'morphology', 1, 10, update)
     update()
     while True:
-        ch = cv.waitKey()
+        ch = ncvslideio.waitKey()
         if ch == 27:
             break
         if ch == ord('1'):
@@ -101,4 +101,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

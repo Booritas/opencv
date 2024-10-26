@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** av)
@@ -55,7 +55,7 @@ static int process(const vector<string>& images)
 
 int main(int ac, char** av)
 {
-  cv::CommandLineParser parser(ac, av, "{help h||}{@input||}");
+  ncvslideio::CommandLineParser parser(ac, av, "{help h||}{@input||}");
   if (parser.has("help"))
   {
       help(av);

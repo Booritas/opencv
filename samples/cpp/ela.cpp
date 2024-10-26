@@ -8,7 +8,7 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 int scale_value = 7;
 int quality = 95;

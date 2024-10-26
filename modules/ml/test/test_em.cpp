@@ -26,12 +26,12 @@ TEST_P(ML_EM_Params, accuracy)
     Mat testData( pointsCount, 2, CV_64FC1 );
     Mat testLabels;
     generateData( testData, testLabels, sizes, means, covs, CV_64FC1, CV_32SC1 );
-    Mat probs(trainData.rows, nclusters, CV_64FC1, cv::Scalar(1));
-    Mat weights(1, nclusters, CV_64FC1, cv::Scalar(1));
-    TermCriteria termCrit(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 100, FLT_EPSILON);
+    Mat probs(trainData.rows, nclusters, CV_64FC1, ncvslideio::Scalar(1));
+    Mat weights(1, nclusters, CV_64FC1, ncvslideio::Scalar(1));
+    TermCriteria termCrit(ncvslideio::TermCriteria::COUNT + ncvslideio::TermCriteria::EPS, 100, FLT_EPSILON);
     int startStep = get<0>(GetParam());
     int covMatType = get<1>(GetParam());
-    cv::Mat labels;
+    ncvslideio::Mat labels;
 
     Ptr<EM> em = EM::create();
     em->setClustersNumber(nclusters);
@@ -81,7 +81,7 @@ TEST(ML_EM, save_load)
     samples << 1., 2., 3.;
 
     std::vector<double> firstResult;
-    string filename = cv::tempfile(".xml");
+    string filename = ncvslideio::tempfile(".xml");
     {
         Mat labels;
         Ptr<EM> em = EM::create();
@@ -132,7 +132,7 @@ TEST(ML_EM, classification)
     const int testSamplesCount = samples.rows - trainSamplesCount;
     for(int i = 0; i < trainSamplesCount; i++)
         trainSamplesMask[i] = 1;
-    RNG &rng = cv::theRNG();
+    RNG &rng = ncvslideio::theRNG();
     for(size_t i = 0; i < trainSamplesMask.size(); i++)
     {
         int i1 = rng(static_cast<unsigned>(trainSamplesMask.size()));

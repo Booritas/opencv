@@ -16,10 +16,10 @@ namespace opencv_test
 // FIXME: consider a better solution
 TEST(OAK, Available)
 {
-    cv::GFrame in;
-    auto out = cv::gapi::oak::encode(in, {});
-    auto args = cv::compile_args(cv::gapi::oak::ColorCameraParams{}, cv::gapi::oak::kernels());
-    auto pipeline = cv::GComputation(cv::GIn(in), cv::GOut(out)).compileStreaming(std::move(args));
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::oak::encode(in, {});
+    auto args = ncvslideio::compile_args(ncvslideio::gapi::oak::ColorCameraParams{}, ncvslideio::gapi::oak::kernels());
+    auto pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out)).compileStreaming(std::move(args));
 }
 } // opencv_test
 

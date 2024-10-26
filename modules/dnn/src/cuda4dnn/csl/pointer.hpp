@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <ostream>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     /** @brief provides a type-safe device pointer
      *
@@ -406,6 +406,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
         CUDA4DNN_CHECK_CUDA(cudaMemsetAsync(dest.get(), ch, n * sizeof(T), stream.get()));
     }
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_POINTER_HPP */

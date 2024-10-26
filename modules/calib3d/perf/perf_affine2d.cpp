@@ -73,7 +73,7 @@ PERF_TEST_P( EstimateAffine, EstimateAffine2D, ESTIMATE_PARAMS )
     const size_t refining = get<3>(params);
 
     Mat aff(2, 3, CV_64F);
-    cv::randu(aff, -2., 2.);
+    ncvslideio::randu(aff, -2., 2.);
 
     // LMEDS can't handle more than 50% outliers (by design)
     int m;

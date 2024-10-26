@@ -9,7 +9,7 @@
 
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace calib3d {
 namespace cpu {
@@ -35,14 +35,14 @@ struct GAPI_EXPORTS StereoInitParam {
 
 namespace detail {
 
-    template<> struct CompileArgTag<cv::gapi::calib3d::cpu::StereoInitParam> {
+    template<> struct CompileArgTag<ncvslideio::gapi::calib3d::cpu::StereoInitParam> {
     static const char* tag() {
         return "org.opencv.stereoInit";
     }
 };
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 
 #endif // OPENCV_GAPI_CPU_STEREO_API_HPP

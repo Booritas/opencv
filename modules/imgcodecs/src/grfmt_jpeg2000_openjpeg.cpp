@@ -11,7 +11,7 @@
 
 #include "opencv2/core/utils/logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace {
 
@@ -296,12 +296,12 @@ void copyFromMat(const Mat& in, std::vector<OutT*>&& out)
 
 void errorLogCallback(const char* msg, void* /* userData */)
 {
-    CV_LOG_ERROR(NULL, cv::format("OpenJPEG2000: %s", msg));
+    CV_LOG_ERROR(NULL, ncvslideio::format("OpenJPEG2000: %s", msg));
 }
 
 void warningLogCallback(const char* msg, void* /* userData */)
 {
-    CV_LOG_WARNING(NULL, cv::format("OpenJPEG2000: %s", msg));
+    CV_LOG_WARNING(NULL, ncvslideio::format("OpenJPEG2000: %s", msg));
 }
 
 void setupLogCallbacks(opj_codec_t* codec)
@@ -332,7 +332,7 @@ opj_cparameters setupEncoderParameters(const std::vector<int>& params)
     {
         switch (params[i])
         {
-        case cv::IMWRITE_JPEG2000_COMPRESSION_X1000:
+        case ncvslideio::IMWRITE_JPEG2000_COMPRESSION_X1000:
             parameters.tcp_rates[0] = 1000.f / std::min(std::max(params[i + 1], 1), 1000);
             rate_is_specified = true;
             break;
@@ -350,7 +350,7 @@ opj_cparameters setupEncoderParameters(const std::vector<int>& params)
     return parameters;
 }
 
-bool decodeSRGBData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shift, bool use_rgb)
+bool decodeSRGBData(const opj_image_t& inImg, ncvslideio::Mat& outImg, uint8_t shift, bool use_rgb)
 {
     using ImageComponents = std::vector<const OPJ_INT32*>;
 
@@ -389,12 +389,12 @@ bool decodeSRGBData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shift, bo
         return true;
     }
     CV_LOG_ERROR(NULL,
-                 cv::format("OpenJPEG2000: unsupported conversion from %d components to %d for SRGB image decoding",
+                 ncvslideio::format("OpenJPEG2000: unsupported conversion from %d components to %d for SRGB image decoding",
                             inChannels, outChannels));
     return false;
 }
 
-bool decodeGrayscaleData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shift, bool)
+bool decodeGrayscaleData(const opj_image_t& inImg, ncvslideio::Mat& outImg, uint8_t shift, bool)
 {
     using ImageComponents = std::vector<const OPJ_INT32*>;
 
@@ -407,12 +407,12 @@ bool decodeGrayscaleData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shif
         return true;
     }
     CV_LOG_ERROR(NULL,
-                 cv::format("OpenJPEG2000: unsupported conversion from %d components to %d for Grayscale image decoding",
+                 ncvslideio::format("OpenJPEG2000: unsupported conversion from %d components to %d for Grayscale image decoding",
                             inChannels, outChannels));
     return false;
 }
 
-bool decodeSYCCData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shift, bool use_rgb)
+bool decodeSYCCData(const opj_image_t& inImg, ncvslideio::Mat& outImg, uint8_t shift, bool use_rgb)
 {
     using ImageComponents = std::vector<const OPJ_INT32*>;
 
@@ -435,7 +435,7 @@ bool decodeSYCCData(const opj_image_t& inImg, cv::Mat& outImg, uint8_t shift, bo
     }
 
     CV_LOG_ERROR(NULL,
-                 cv::format("OpenJPEG2000: unsupported conversion from %d components to %d for YUV image decoding",
+                 ncvslideio::format("OpenJPEG2000: unsupported conversion from %d components to %d for YUV image decoding",
                             inChannels, outChannels));
     return false;
 }
@@ -556,12 +556,12 @@ bool Jpeg2KOpjDecoderBase::readHeader()
 
         if (comp.sgnd)
         {
-            CV_Error(Error::StsNotImplemented, cv::format("OpenJPEG2000: Component %d/%d is signed", i, numcomps));
+            CV_Error(Error::StsNotImplemented, ncvslideio::format("OpenJPEG2000: Component %d/%d is signed", i, numcomps));
         }
 
         if (hasAlpha && comp.alpha)
         {
-            CV_Error(Error::StsNotImplemented, cv::format("OpenJPEG2000: Component %d/%d is duplicate alpha channel", i, numcomps));
+            CV_Error(Error::StsNotImplemented, ncvslideio::format("OpenJPEG2000: Component %d/%d is duplicate alpha channel", i, numcomps));
         }
 
         hasAlpha |= comp.alpha != 0;
@@ -589,7 +589,7 @@ bool Jpeg2KOpjDecoderBase::readHeader()
 
 bool Jpeg2KOpjDecoderBase::readData( Mat& img )
 {
-    using DecodeFunc = bool(*)(const opj_image_t&, cv::Mat&, uint8_t shift, bool use_rgb);
+    using DecodeFunc = bool(*)(const opj_image_t&, ncvslideio::Mat&, uint8_t shift, bool use_rgb);
 
     if (!opj_decode(codec_.get(), stream_.get(), image_.get()))
     {
@@ -599,7 +599,7 @@ bool Jpeg2KOpjDecoderBase::readData( Mat& img )
     if (img.channels() == 2)
     {
         CV_Error(Error::StsNotImplemented,
-                 cv::format("OpenJPEG2000: Unsupported number of output channels. IN: %d OUT: 2", image_->numcomps));
+                 ncvslideio::format("OpenJPEG2000: Unsupported number of output channels. IN: %d OUT: 2", image_->numcomps));
     }
 
     DecodeFunc decode = nullptr;
@@ -621,7 +621,7 @@ bool Jpeg2KOpjDecoderBase::readData( Mat& img )
         break;
     default:
         CV_Error(Error::StsNotImplemented,
-                 cv::format("OpenJPEG2000: Unsupported color space conversion: %s -> %s",
+                 ncvslideio::format("OpenJPEG2000: Unsupported color space conversion: %s -> %s",
                             colorspaceName(image_->color_space).c_str(),
                             (img.channels() == 1) ? "gray" : "BGR"));
     }
@@ -631,7 +631,7 @@ bool Jpeg2KOpjDecoderBase::readData( Mat& img )
         if (depth == CV_8U) return 8;
         if (depth == CV_16U) return 16;
         CV_Error(Error::StsNotImplemented,
-                 cv::format("OpenJPEG2000: output precision > 16 not supported: target depth %d", depth));
+                 ncvslideio::format("OpenJPEG2000: output precision > 16 not supported: target depth %d", depth));
     }();
     const uint8_t shift = outPrec > m_maxPrec ? 0 : (uint8_t)(m_maxPrec - outPrec); // prec <= 64
 
@@ -714,7 +714,7 @@ bool Jpeg2KOpjEncoder::write(const Mat& img, const std::vector<int>& params)
         if (depth == CV_8U) return 8;
         if (depth == CV_16U) return 16;
         CV_Error(Error::StsNotImplemented,
-                 cv::format("OpenJPEG2000: image precision > 16 not supported. Got: %d", depth));
+                 ncvslideio::format("OpenJPEG2000: image precision > 16 not supported. Got: %d", depth));
     }();
 
     opj_cparameters parameters = setupEncoderParameters(params);
@@ -809,6 +809,6 @@ bool Jpeg2KOpjEncoder::write(const Mat& img, const std::vector<int>& params)
 }
 
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif

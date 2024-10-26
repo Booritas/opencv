@@ -164,7 +164,7 @@ TEST_P(Imgcodecs_ExtSize, write_imageseq)
             continue;
         if (cn != 3 && ext == ".ppm")
             continue;
-        string filename = cv::tempfile(format("%d%s", cn, ext.c_str()).c_str());
+        string filename = ncvslideio::tempfile(format("%d%s", cn, ext.c_str()).c_str());
 
         Mat img_gt(size, CV_MAKETYPE(CV_8U, cn), Scalar::all(0));
         circle(img_gt, center, radius, Scalar::all(255));
@@ -259,7 +259,7 @@ TEST_P(Imgcodecs_pbm, write_read)
 {
     bool binary = GetParam();
     const String ext = "pbm";
-    const string full_name = cv::tempfile(ext.c_str());
+    const string full_name = ncvslideio::tempfile(ext.c_str());
 
     Size size(640, 480);
     const Point2i center = Point2i(size.width / 2, size.height / 2);
@@ -307,7 +307,7 @@ TEST(Imgcodecs_Bmp, read_32bit_rgb)
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test_32bit_rgb.bmp";
 
-    const Mat img = cv::imread(filenameInput, IMREAD_UNCHANGED);
+    const Mat img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC3, img.type());
 }
@@ -317,7 +317,7 @@ TEST(Imgcodecs_Bmp, rgba_bit_mask)
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test_rgba_mask.bmp";
 
-    const Mat img = cv::imread(filenameInput, IMREAD_UNCHANGED);
+    const Mat img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC4, img.type());
 
@@ -330,7 +330,7 @@ TEST(Imgcodecs_Bmp, read_32bit_xrgb)
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test_32bit_xrgb.bmp";
 
-    const Mat img = cv::imread(filenameInput, IMREAD_UNCHANGED);
+    const Mat img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC4, img.type());
 
@@ -343,7 +343,7 @@ TEST(Imgcodecs_Bmp, rgba_scale)
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filenameInput = root + "readwrite/test_rgba_scale.bmp";
 
-    Mat img = cv::imread(filenameInput, IMREAD_UNCHANGED);
+    Mat img = ncvslideio::imread(filenameInput, IMREAD_UNCHANGED);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC4, img.type());
 
@@ -353,11 +353,11 @@ TEST(Imgcodecs_Bmp, rgba_scale)
     ASSERT_EQ(data[2], 255);
     ASSERT_EQ(data[3], 255);
 
-    img = cv::imread(filenameInput, IMREAD_COLOR);
+    img = ncvslideio::imread(filenameInput, IMREAD_COLOR);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC3, img.type());
 
-    img = cv::imread(filenameInput, IMREAD_COLOR_RGB);
+    img = ncvslideio::imread(filenameInput, IMREAD_COLOR_RGB);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC3, img.type());
 
@@ -366,7 +366,7 @@ TEST(Imgcodecs_Bmp, rgba_scale)
     ASSERT_EQ(data[1], 255);
     ASSERT_EQ(data[2], 255);
 
-    img = cv::imread(filenameInput, IMREAD_GRAYSCALE);
+    img = ncvslideio::imread(filenameInput, IMREAD_GRAYSCALE);
     ASSERT_FALSE(img.empty());
     ASSERT_EQ(CV_8UC1, img.type());
 
@@ -432,20 +432,20 @@ TEST(Imgcodecs_Pam, read_write)
     string folder = string(cvtest::TS::ptr()->get_data_path()) + "readwrite/";
     string filepath = folder + "lena.pam";
 
-    cv::Mat img = cv::imread(filepath);
+    ncvslideio::Mat img = ncvslideio::imread(filepath);
     ASSERT_FALSE(img.empty());
 
     std::vector<int> params;
     params.push_back(IMWRITE_PAM_TUPLETYPE);
     params.push_back(IMWRITE_PAM_FORMAT_RGB);
 
-    string writefile = cv::tempfile(".pam");
-    EXPECT_NO_THROW(cv::imwrite(writefile, img, params));
-    cv::Mat reread = cv::imread(writefile);
+    string writefile = ncvslideio::tempfile(".pam");
+    EXPECT_NO_THROW(ncvslideio::imwrite(writefile, img, params));
+    ncvslideio::Mat reread = ncvslideio::imread(writefile);
 
-    string writefile_no_param = cv::tempfile(".pam");
-    EXPECT_NO_THROW(cv::imwrite(writefile_no_param, img));
-    cv::Mat reread_no_param = cv::imread(writefile_no_param);
+    string writefile_no_param = ncvslideio::tempfile(".pam");
+    EXPECT_NO_THROW(ncvslideio::imwrite(writefile_no_param, img));
+    ncvslideio::Mat reread_no_param = ncvslideio::imread(writefile_no_param);
 
     EXPECT_EQ(0, cvtest::norm(reread, reread_no_param, NORM_INF));
     EXPECT_EQ(0, cvtest::norm(img, reread, NORM_INF));
@@ -463,13 +463,13 @@ TEST(Imgcodecs_Pfm, read_write)
   img.convertTo(img, CV_32F, 1/255.0f);
 
   std::vector<int> params;
-  string writefile = cv::tempfile(".pfm");
-  EXPECT_NO_THROW(cv::imwrite(writefile, img, params));
-  cv::Mat reread = cv::imread(writefile, IMREAD_UNCHANGED);
+  string writefile = ncvslideio::tempfile(".pfm");
+  EXPECT_NO_THROW(ncvslideio::imwrite(writefile, img, params));
+  ncvslideio::Mat reread = ncvslideio::imread(writefile, IMREAD_UNCHANGED);
 
-  string writefile_no_param = cv::tempfile(".pfm");
-  EXPECT_NO_THROW(cv::imwrite(writefile_no_param, img));
-  cv::Mat reread_no_param = cv::imread(writefile_no_param, IMREAD_UNCHANGED);
+  string writefile_no_param = ncvslideio::tempfile(".pfm");
+  EXPECT_NO_THROW(ncvslideio::imwrite(writefile_no_param, img));
+  ncvslideio::Mat reread_no_param = ncvslideio::imread(writefile_no_param, IMREAD_UNCHANGED);
 
   EXPECT_EQ(0, cvtest::norm(reread, reread_no_param, NORM_INF));
   EXPECT_EQ(0, cvtest::norm(img, reread, NORM_INF));
@@ -481,28 +481,28 @@ TEST(Imgcodecs_Pfm, read_write)
 
 TEST(Imgcodecs, write_parameter_type)
 {
-    cv::Mat m(10, 10, CV_8UC1, cv::Scalar::all(0));
-    cv::Mat1b m_type = cv::Mat1b::zeros(10, 10);
-    string tmp_file = cv::tempfile(".bmp");
-    EXPECT_NO_THROW(cv::imwrite(tmp_file, cv::Mat(m * 2))) << "* Failed with cv::Mat";
-    EXPECT_NO_THROW(cv::imwrite(tmp_file, m * 2)) << "* Failed with cv::MatExpr";
-    EXPECT_NO_THROW(cv::imwrite(tmp_file, m_type)) << "* Failed with cv::Mat_";
-    EXPECT_NO_THROW(cv::imwrite(tmp_file, m_type * 2)) << "* Failed with cv::MatExpr(Mat_)";
-    cv::Matx<uchar, 10, 10> matx;
-    EXPECT_NO_THROW(cv::imwrite(tmp_file, matx)) << "* Failed with cv::Matx";
+    ncvslideio::Mat m(10, 10, CV_8UC1, ncvslideio::Scalar::all(0));
+    ncvslideio::Mat1b m_type = ncvslideio::Mat1b::zeros(10, 10);
+    string tmp_file = ncvslideio::tempfile(".bmp");
+    EXPECT_NO_THROW(ncvslideio::imwrite(tmp_file, ncvslideio::Mat(m * 2))) << "* Failed with ncvslideio::Mat";
+    EXPECT_NO_THROW(ncvslideio::imwrite(tmp_file, m * 2)) << "* Failed with ncvslideio::MatExpr";
+    EXPECT_NO_THROW(ncvslideio::imwrite(tmp_file, m_type)) << "* Failed with ncvslideio::Mat_";
+    EXPECT_NO_THROW(ncvslideio::imwrite(tmp_file, m_type * 2)) << "* Failed with ncvslideio::MatExpr(Mat_)";
+    ncvslideio::Matx<uchar, 10, 10> matx;
+    EXPECT_NO_THROW(ncvslideio::imwrite(tmp_file, matx)) << "* Failed with ncvslideio::Matx";
     EXPECT_EQ(0, remove(tmp_file.c_str()));
 }
 
 TEST(Imgcodecs, imdecode_user_buffer)
 {
-    cv::Mat encoded = cv::Mat::zeros(1, 1024, CV_8UC1);
-    cv::Mat user_buffer(1, 1024, CV_8UC1);
-    cv::Mat result = cv::imdecode(encoded, IMREAD_ANYCOLOR, &user_buffer);
+    ncvslideio::Mat encoded = ncvslideio::Mat::zeros(1, 1024, CV_8UC1);
+    ncvslideio::Mat user_buffer(1, 1024, CV_8UC1);
+    ncvslideio::Mat result = ncvslideio::imdecode(encoded, IMREAD_ANYCOLOR, &user_buffer);
     EXPECT_TRUE(result.empty());
     // the function does not release user-provided buffer
     EXPECT_FALSE(user_buffer.empty());
 
-    result = cv::imdecode(encoded, IMREAD_ANYCOLOR);
+    result = ncvslideio::imdecode(encoded, IMREAD_ANYCOLOR);
     EXPECT_TRUE(result.empty());
 }
 

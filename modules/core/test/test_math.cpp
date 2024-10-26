@@ -170,7 +170,7 @@ void Core_PowTest::run_func()
             {
                 b.at<float>(i,0) = (float)fabs(cvCbrt(a.at<float>(i,0)));
                 for( int j = 1; j < a.cols; j++ )
-                    b.at<float>(i,j) = (float)fabs(cv::cubeRoot(a.at<float>(i,j)));
+                    b.at<float>(i,j) = (float)fabs(ncvslideio::cubeRoot(a.at<float>(i,j)));
             }
         }
         else
@@ -181,9 +181,9 @@ void Core_PowTest::run_func()
         Mat& a = test_mat[INPUT][0];
         Mat& b = test_mat[OUTPUT][0];
         if(power == 0.5)
-            cv::sqrt(a, b);
+            ncvslideio::sqrt(a, b);
         else
-            cv::pow(a, power, b);
+            ncvslideio::pow(a, power, b);
     }
 }
 
@@ -549,7 +549,7 @@ void Core_CrossProductTest::run_func()
 
 void Core_CrossProductTest::prepare_to_validation( int )
 {
-    cv::Scalar a, b, c;
+    ncvslideio::Scalar a, b, c;
 
     if( test_mat[INPUT][0].rows > 1 )
     {
@@ -793,7 +793,7 @@ void Core_MulTransposedTest::prepare_to_validation( int )
     {
         if( delta.rows < src.rows || delta.cols < src.cols )
         {
-            cv::repeat( delta, src.rows/delta.rows, src.cols/delta.cols, temp);
+            ncvslideio::repeat( delta, src.rows/delta.rows, src.cols/delta.cols, temp);
             delta = temp;
         }
         cvtest::add( src, 1, delta, -1, Scalar::all(0), temp, temp.type());
@@ -1357,7 +1357,7 @@ void Core_CovarMatrixTest::prepare_to_validation( int )
     }
 
     Mat& temp0 = test_mat[TEMP][0];
-    cv::repeat( avg, temp0.rows/avg.rows, temp0.cols/avg.cols, temp0 );
+    ncvslideio::repeat( avg, temp0.rows/avg.rows, temp0.cols/avg.cols, temp0 );
     cvtest::add( test_mat[INPUT][0], 1, temp0, -1, Scalar::all(0), temp0, temp0.type());
 
     cvtest::gemm( temp0, temp0, scale, Mat(), 0., test_mat[REF_OUTPUT][0],
@@ -1696,7 +1696,7 @@ void Core_InvertTest::prepare_to_validation( int )
     else
         cvtest::gemm( input, temp0, 1., Mat(), 0., dst, 0 );
 
-    cv::setIdentity( dst0, Scalar::all(1) );
+    ncvslideio::setIdentity( dst0, Scalar::all(1) );
 }
 
 
@@ -2003,7 +2003,7 @@ void Core_SVDTest::prepare_to_validation( int /*test_case_idx*/ )
         src = &test_mat[TEMP][1];
         dst = &test_mat[OUTPUT][1];
         cvtest::gemm( *src, *src, 1., Mat(), 0., *dst, src->rows == dst->rows ? CV_GEMM_B_T : CV_GEMM_A_T );
-        cv::setIdentity( test_mat[REF_OUTPUT][1], Scalar::all(1.) );
+        ncvslideio::setIdentity( test_mat[REF_OUTPUT][1], Scalar::all(1.) );
     }
 
     if( have_v )
@@ -2011,7 +2011,7 @@ void Core_SVDTest::prepare_to_validation( int /*test_case_idx*/ )
         src = &test_mat[TEMP][2];
         dst = &test_mat[OUTPUT][2];
         cvtest::gemm( *src, *src, 1., Mat(), 0., *dst, src->rows == dst->rows ? CV_GEMM_B_T : CV_GEMM_A_T );
-        cv::setIdentity( test_mat[REF_OUTPUT][2], Scalar::all(1.) );
+        ncvslideio::setIdentity( test_mat[REF_OUTPUT][2], Scalar::all(1.) );
     }
 
     w = &test_mat[TEMP][0];
@@ -2105,7 +2105,7 @@ void Core_SVBkSbTest::get_test_array_types_and_sizes( int test_case_idx, vector<
     int bits = cvtest::randInt(rng);
     Base::get_test_array_types_and_sizes( test_case_idx, sizes, types );
     int min_size, i, m, n;
-    cv::Size b_size;
+    ncvslideio::Size b_size;
 
     min_size = MIN( sizes[INPUT][0].width, sizes[INPUT][0].height );
 
@@ -2213,7 +2213,7 @@ void Core_SVBkSbTest::prepare_to_validation( int )
     CvMat _w = cvMat(w), _wdb = cvMat(wdb);
     // use exactly the same threshold as in icvSVD... ,
     // so the changes in the library and here should be synchronized.
-    double threshold = cv::sum(w)[0]*(DBL_EPSILON*2);//(is_float ? FLT_EPSILON*10 : DBL_EPSILON*2);
+    double threshold = ncvslideio::sum(w)[0]*(DBL_EPSILON*2);//(is_float ? FLT_EPSILON*10 : DBL_EPSILON*2);
 
     wdb = Scalar::all(0);
     for( i = 0; i < min_size; i++ )
@@ -2349,13 +2349,13 @@ void Core_SolvePolyTest::run( int )
             if( n == 3 )
             {
                 ar2.resize(n);
-                cv::Mat _umat2(3, 1, CV_64F, &ar2[0]), umat2 = _umat2;
+                ncvslideio::Mat _umat2(3, 1, CV_64F, &ar2[0]), umat2 = _umat2;
                 cvFlip(&amat, &amat, 0);
                 int nr2;
                 if( cubic_case == 0 )
-                    nr2 = cv::solveCubic(cv::cvarrToMat(&amat),umat2);
+                    nr2 = ncvslideio::solveCubic(ncvslideio::cvarrToMat(&amat),umat2);
                 else
-                    nr2 = cv::solveCubic(cv::Mat_<float>(cv::cvarrToMat(&amat)), umat2);
+                    nr2 = ncvslideio::solveCubic(ncvslideio::Mat_<float>(ncvslideio::cvarrToMat(&amat)), umat2);
                 cvFlip(&amat, &amat, 0);
                 if(nr2 > 0)
                     std::sort(ar2.begin(), ar2.begin()+nr2, pred_double());
@@ -2391,13 +2391,13 @@ void Core_SolvePolyTest::run( int )
         }
 
         //test x^3 = 0
-        cv::Mat coeffs_5623(4, 1, CV_64FC1);
-        cv::Mat r_5623(3, 1, CV_64FC2);
+        ncvslideio::Mat coeffs_5623(4, 1, CV_64FC1);
+        ncvslideio::Mat r_5623(3, 1, CV_64FC2);
         coeffs_5623.at<double>(0) = 1;
         coeffs_5623.at<double>(1) = 0;
         coeffs_5623.at<double>(2) = 0;
         coeffs_5623.at<double>(3) = 0;
-        double prec_5623 = cv::solveCubic(coeffs_5623, r_5623);
+        double prec_5623 = ncvslideio::solveCubic(coeffs_5623, r_5623);
         pass = pass && r_5623.at<double>(0) == 0 && r_5623.at<double>(1) == 0 && r_5623.at<double>(2) == 0;
         pass = pass && prec_5623 == 1;
 
@@ -2438,11 +2438,11 @@ static void checkRoot(Mat& r, T re, T im)
 TEST(Core_SolvePoly, regression_5599)
 {
     // x^4 - x^2 = 0, roots: 1, -1, 0, 0
-    cv::Mat coefs = (cv::Mat_<float>(1,5) << 0, 0, -1, 0, 1 );
+    ncvslideio::Mat coefs = (ncvslideio::Mat_<float>(1,5) << 0, 0, -1, 0, 1 );
     {
-        cv::Mat r;
+        ncvslideio::Mat r;
         double prec;
-        prec = cv::solvePoly(coefs, r);
+        prec = ncvslideio::solvePoly(coefs, r);
         EXPECT_LE(prec, 1e-6);
         EXPECT_EQ(4u, r.total());
         //std::cout << "Preciseness = " << prec << std::endl;
@@ -2454,11 +2454,11 @@ TEST(Core_SolvePoly, regression_5599)
         checkRoot<float>(r, 0, 0);
     }
     // x^2 - 2x + 1 = 0,  roots: 1, 1
-    coefs = (cv::Mat_<float>(1,3) << 1, -2, 1 );
+    coefs = (ncvslideio::Mat_<float>(1,3) << 1, -2, 1 );
     {
-        cv::Mat r;
+        ncvslideio::Mat r;
         double prec;
-        prec = cv::solvePoly(coefs, r);
+        prec = ncvslideio::solvePoly(coefs, r);
         EXPECT_LE(prec, 1e-6);
         EXPECT_EQ(2u, r.total());
         //std::cout << "Preciseness = " << prec << std::endl;
@@ -2565,22 +2565,22 @@ protected:
 
 TEST(Core_CheckRange_Empty, accuracy)
 {
-    cv::Mat m;
-    ASSERT_TRUE( cv::checkRange(m) );
+    ncvslideio::Mat m;
+    ASSERT_TRUE( ncvslideio::checkRange(m) );
 }
 
 TEST(Core_CheckRange_INT_MAX, accuracy)
 {
-    cv::Mat m(3, 3, CV_32SC1, cv::Scalar(INT_MAX));
-    ASSERT_FALSE( cv::checkRange(m, true, 0, 0, INT_MAX) );
-    ASSERT_TRUE( cv::checkRange(m) );
+    ncvslideio::Mat m(3, 3, CV_32SC1, ncvslideio::Scalar(INT_MAX));
+    ASSERT_FALSE( ncvslideio::checkRange(m, true, 0, 0, INT_MAX) );
+    ASSERT_TRUE( ncvslideio::checkRange(m) );
 }
 
 TEST(Core_CheckRange_INT_MAX1, accuracy)
 {
-    cv::Mat m(3, 3, CV_32SC1, cv::Scalar(INT_MAX));
-    ASSERT_TRUE( cv::checkRange(m, true, 0, 0, (float)((double)INT_MAX+1.0f)) );
-    ASSERT_TRUE( cv::checkRange(m) );
+    ncvslideio::Mat m(3, 3, CV_32SC1, ncvslideio::Scalar(INT_MAX));
+    ASSERT_TRUE( ncvslideio::checkRange(m, true, 0, 0, (float)((double)INT_MAX+1.0f)) );
+    ASSERT_TRUE( ncvslideio::checkRange(m) );
 }
 
 template <typename T> class Core_CheckRange : public testing::Test {};
@@ -2593,9 +2593,9 @@ TYPED_TEST_P(Core_CheckRange, Negative)
     double max_bound = 16.0;
 
     TypeParam data[] = {5, 10, 15, 10, 10, 2, 8, 12, 14};
-    cv::Mat src = cv::Mat(3,3, cv::DataDepth<TypeParam>::value, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, ncvslideio::DataDepth<TypeParam>::value, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt, min_bound, max_bound));
     ASSERT_EQ(bad_pt.x, 2);
@@ -2610,9 +2610,9 @@ TYPED_TEST_P(Core_CheckRange, Negative3CN)
     TypeParam data[] = { 5,  6,  7,   10, 11, 12,   13, 14, 15,
                         10, 11, 12,   10, 11, 12,    2,  5,  6,
                          8,  8,  8,   12, 12, 12,   14, 14, 14};
-    cv::Mat src = cv::Mat(3,3, CV_MAKETYPE(cv::DataDepth<TypeParam>::value, 3), data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, CV_MAKETYPE(ncvslideio::DataDepth<TypeParam>::value, 3), data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt, min_bound, max_bound));
     ASSERT_EQ(bad_pt.x, 2);
@@ -2625,9 +2625,9 @@ TYPED_TEST_P(Core_CheckRange, Positive)
     double max_bound = 16.0;
 
     TypeParam data[] = {5, 10, 15, 4, 10, 2, 8, 12, 14};
-    cv::Mat src = cv::Mat(3,3, cv::DataDepth<TypeParam>::value, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, ncvslideio::DataDepth<TypeParam>::value, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_TRUE(checkRange(src, true, &bad_pt, min_bound, max_bound));
     ASSERT_EQ(bad_pt.x, 0);
@@ -2640,9 +2640,9 @@ TYPED_TEST_P(Core_CheckRange, Bounds)
     double max_bound = 1.0;
 
     TypeParam data[] = {5, 10, 15, 4, 10, 2, 8, 12, 14};
-    cv::Mat src = cv::Mat(3,3, cv::DataDepth<TypeParam>::value, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, ncvslideio::DataDepth<TypeParam>::value, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt, min_bound, max_bound));
     ASSERT_EQ(bad_pt.x, 0);
@@ -2654,10 +2654,10 @@ TYPED_TEST_P(Core_CheckRange, Zero)
     double min_bound = 0.0;
     double max_bound = 0.1;
 
-    cv::Mat src1 = cv::Mat::zeros(3, 3, cv::DataDepth<TypeParam>::value);
+    ncvslideio::Mat src1 = ncvslideio::Mat::zeros(3, 3, ncvslideio::DataDepth<TypeParam>::value);
 
     int sizes[] = {5, 6, 7};
-    cv::Mat src2 = cv::Mat::zeros(3, sizes, cv::DataDepth<TypeParam>::value);
+    ncvslideio::Mat src2 = ncvslideio::Mat::zeros(3, sizes, ncvslideio::DataDepth<TypeParam>::value);
 
     ASSERT_TRUE( checkRange(src1, true, NULL, min_bound, max_bound) );
     ASSERT_TRUE( checkRange(src2, true, NULL, min_bound, max_bound) );
@@ -2668,10 +2668,10 @@ TYPED_TEST_P(Core_CheckRange, One)
     double min_bound = 1.0;
     double max_bound = 1.1;
 
-    cv::Mat src1 = cv::Mat::ones(3, 3, cv::DataDepth<TypeParam>::value);
+    ncvslideio::Mat src1 = ncvslideio::Mat::ones(3, 3, ncvslideio::DataDepth<TypeParam>::value);
 
     int sizes[] = {5, 6, 7};
-    cv::Mat src2 = cv::Mat::ones(3, sizes, cv::DataDepth<TypeParam>::value);
+    ncvslideio::Mat src2 = ncvslideio::Mat::ones(3, sizes, ncvslideio::DataDepth<TypeParam>::value);
 
     ASSERT_TRUE( checkRange(src1, true, NULL, min_bound, max_bound) );
     ASSERT_TRUE( checkRange(src2, true, NULL, min_bound, max_bound) );
@@ -2682,9 +2682,9 @@ TEST(Core_CheckRange, NaN)
     float data[] = { 5,  6,  7,   10, 11, 12,   13, 14, 15,
                     10, 11, 12,   10, 11, 12,   5,  5,  std::numeric_limits<float>::quiet_NaN(),
                      8,  8,  8,   12, 12, 12,   14, 14, 14};
-    cv::Mat src = cv::Mat(3,3, CV_32FC3, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, CV_32FC3, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt));
     ASSERT_EQ(bad_pt.x, 2);
@@ -2696,9 +2696,9 @@ TEST(Core_CheckRange, Inf)
     float data[] = { 5,  6,  7,   10, 11, 12,   13, 14, 15,
                     10, 11, 12,   10, 11, 12,   5,  5,  std::numeric_limits<float>::infinity(),
                      8,  8,  8,   12, 12, 12,   14, 14, 14};
-    cv::Mat src = cv::Mat(3,3, CV_32FC3, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, CV_32FC3, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt));
     ASSERT_EQ(bad_pt.x, 2);
@@ -2710,9 +2710,9 @@ TEST(Core_CheckRange, Inf_Minus)
     float data[] = { 5,  6,  7,   10, 11, 12,   13, 14, 15,
                     10, 11, 12,   10, 11, 12,   5,  5,  -std::numeric_limits<float>::infinity(),
                      8,  8,  8,   12, 12, 12,   14, 14, 14};
-    cv::Mat src = cv::Mat(3,3, CV_32FC3, data);
+    ncvslideio::Mat src = ncvslideio::Mat(3,3, CV_32FC3, data);
 
-    cv::Point bad_pt(0, 0);
+    ncvslideio::Point bad_pt(0, 0);
 
     ASSERT_FALSE(checkRange(src, true, &bad_pt));
     ASSERT_EQ(bad_pt.x, 2);
@@ -2726,16 +2726,16 @@ INSTANTIATE_TYPED_TEST_CASE_P(Negative_Test, Core_CheckRange, mat_data_types);
 
 TEST(Core_Invert, small)
 {
-    cv::Mat a = (cv::Mat_<float>(3,3) << 2.42104644730331, 1.81444796521479, -3.98072565304758, 0, 7.08389214348967e-3, 5.55326770986007e-3, 0,0, 7.44556154284261e-3);
-    //cv::randu(a, -1, 1);
+    ncvslideio::Mat a = (ncvslideio::Mat_<float>(3,3) << 2.42104644730331, 1.81444796521479, -3.98072565304758, 0, 7.08389214348967e-3, 5.55326770986007e-3, 0,0, 7.44556154284261e-3);
+    //ncvslideio::randu(a, -1, 1);
 
-    cv::Mat b = a.t()*a;
-    cv::Mat c, i = Mat_<float>::eye(3, 3);
-    cv::invert(b, c, cv::DECOMP_LU); //std::cout << b*c << std::endl;
+    ncvslideio::Mat b = a.t()*a;
+    ncvslideio::Mat c, i = Mat_<float>::eye(3, 3);
+    ncvslideio::invert(b, c, ncvslideio::DECOMP_LU); //std::cout << b*c << std::endl;
     ASSERT_LT( cvtest::norm(b*c, i, CV_C), 0.1 );
-    cv::invert(b, c, cv::DECOMP_SVD); //std::cout << b*c << std::endl;
+    ncvslideio::invert(b, c, ncvslideio::DECOMP_SVD); //std::cout << b*c << std::endl;
     ASSERT_LT( cvtest::norm(b*c, i, CV_C), 0.1 );
-    cv::invert(b, c, cv::DECOMP_CHOLESKY); //std::cout << b*c << std::endl;
+    ncvslideio::invert(b, c, ncvslideio::DECOMP_CHOLESKY); //std::cout << b*c << std::endl;
     ASSERT_LT( cvtest::norm(b*c, i, CV_C), 0.1 );
 }
 
@@ -2830,10 +2830,10 @@ protected:
                 {
                     dims = 2;
 
-                    std::vector<cv::Point2f> data0(N0);
+                    std::vector<ncvslideio::Point2f> data0(N0);
                     rng.fill(data0, RNG::UNIFORM, -1, 1);
 
-                    std::vector<cv::Point2f> data(N);
+                    std::vector<ncvslideio::Point2f> data(N);
                     for( i = 0; i < N; i++ )
                         data[i] = data0[rng.uniform(0, N0)];
 
@@ -2956,7 +2956,7 @@ TEST(Core_KMeans, bad_input)
     const TermCriteria crit = TermCriteria(TermCriteria::COUNT, 5, 0); // low number of iterations
     const int K = 3;
     Mat data(N, 1, CV_32FC2);
-    cv::randu(data, Scalar(-200, -200), Scalar(200, 200));
+    ncvslideio::randu(data, Scalar(-200, -200), Scalar(200, 200));
     {
         SCOPED_TRACE("Huge value");
         data.at<Vec2f>(10, 0) = Vec2f(1e20f, 0);
@@ -2980,66 +2980,66 @@ TEST(Core_KMeans, bad_input)
 TEST(CovariationMatrixVectorOfMat, accuracy)
 {
     unsigned int col_problem_size = 8, row_problem_size = 8, vector_size = 16;
-    cv::Mat src(vector_size, col_problem_size * row_problem_size, CV_32F);
+    ncvslideio::Mat src(vector_size, col_problem_size * row_problem_size, CV_32F);
     int singleMatFlags = CV_COVAR_ROWS;
 
-    cv::Mat gold;
-    cv::Mat goldMean;
-    cv::randu(src,cv::Scalar(-128), cv::Scalar(128));
-    cv::calcCovarMatrix(src,gold,goldMean,singleMatFlags,CV_32F);
-    std::vector<cv::Mat> srcVec;
+    ncvslideio::Mat gold;
+    ncvslideio::Mat goldMean;
+    ncvslideio::randu(src,ncvslideio::Scalar(-128), ncvslideio::Scalar(128));
+    ncvslideio::calcCovarMatrix(src,gold,goldMean,singleMatFlags,CV_32F);
+    std::vector<ncvslideio::Mat> srcVec;
     for(size_t i = 0; i < vector_size; i++)
     {
         srcVec.push_back(src.row(static_cast<int>(i)).reshape(0,col_problem_size));
     }
 
-    cv::Mat actual;
-    cv::Mat actualMean;
-    cv::calcCovarMatrix(srcVec, actual, actualMean,singleMatFlags,CV_32F);
+    ncvslideio::Mat actual;
+    ncvslideio::Mat actualMean;
+    ncvslideio::calcCovarMatrix(srcVec, actual, actualMean,singleMatFlags,CV_32F);
 
-    cv::Mat diff;
-    cv::absdiff(gold, actual, diff);
-    cv::Scalar s = cv::sum(diff);
+    ncvslideio::Mat diff;
+    ncvslideio::absdiff(gold, actual, diff);
+    ncvslideio::Scalar s = ncvslideio::sum(diff);
     ASSERT_EQ(s.dot(s), 0.0);
 
-    cv::Mat meanDiff;
-    cv::absdiff(goldMean, actualMean.reshape(0,1), meanDiff);
-    cv::Scalar sDiff = cv::sum(meanDiff);
+    ncvslideio::Mat meanDiff;
+    ncvslideio::absdiff(goldMean, actualMean.reshape(0,1), meanDiff);
+    ncvslideio::Scalar sDiff = ncvslideio::sum(meanDiff);
     ASSERT_EQ(sDiff.dot(sDiff), 0.0);
 }
 
 TEST(CovariationMatrixVectorOfMatWithMean, accuracy)
 {
     unsigned int col_problem_size = 8, row_problem_size = 8, vector_size = 16;
-    cv::Mat src(vector_size, col_problem_size * row_problem_size, CV_32F);
+    ncvslideio::Mat src(vector_size, col_problem_size * row_problem_size, CV_32F);
     int singleMatFlags = CV_COVAR_ROWS | CV_COVAR_USE_AVG;
 
-    cv::Mat gold;
-    cv::randu(src,cv::Scalar(-128), cv::Scalar(128));
-    cv::Mat goldMean;
+    ncvslideio::Mat gold;
+    ncvslideio::randu(src,ncvslideio::Scalar(-128), ncvslideio::Scalar(128));
+    ncvslideio::Mat goldMean;
 
-    cv::reduce(src, goldMean, 0, REDUCE_AVG, CV_32F);
+    ncvslideio::reduce(src, goldMean, 0, REDUCE_AVG, CV_32F);
 
-    cv::calcCovarMatrix(src,gold,goldMean,singleMatFlags,CV_32F);
+    ncvslideio::calcCovarMatrix(src,gold,goldMean,singleMatFlags,CV_32F);
 
-    std::vector<cv::Mat> srcVec;
+    std::vector<ncvslideio::Mat> srcVec;
     for(size_t i = 0; i < vector_size; i++)
     {
         srcVec.push_back(src.row(static_cast<int>(i)).reshape(0,col_problem_size));
     }
 
-    cv::Mat actual;
-    cv::Mat actualMean = goldMean.reshape(0, row_problem_size);
-    cv::calcCovarMatrix(srcVec, actual, actualMean,singleMatFlags,CV_32F);
+    ncvslideio::Mat actual;
+    ncvslideio::Mat actualMean = goldMean.reshape(0, row_problem_size);
+    ncvslideio::calcCovarMatrix(srcVec, actual, actualMean,singleMatFlags,CV_32F);
 
-    cv::Mat diff;
-    cv::absdiff(gold, actual, diff);
-    cv::Scalar s = cv::sum(diff);
+    ncvslideio::Mat diff;
+    ncvslideio::absdiff(gold, actual, diff);
+    ncvslideio::Scalar s = ncvslideio::sum(diff);
     ASSERT_EQ(s.dot(s), 0.0);
 
-    cv::Mat meanDiff;
-    cv::absdiff(goldMean, actualMean.reshape(0,1), meanDiff);
-    cv::Scalar sDiff = cv::sum(meanDiff);
+    ncvslideio::Mat meanDiff;
+    ncvslideio::absdiff(goldMean, actualMean.reshape(0,1), meanDiff);
+    ncvslideio::Scalar sDiff = ncvslideio::sum(meanDiff);
     ASSERT_EQ(sDiff.dot(sDiff), 0.0);
 }
 
@@ -3060,7 +3060,7 @@ TEST(Core_Pow, special)
         double power = ((1 << pf) - (1 << (max_pf*2-1)))/16.;
         int ipower = cvRound(power);
         bool is_ipower = ipower == power;
-        cv::pow(mtx, power, result);
+        ncvslideio::pow(mtx, power, result);
         for( int j = 0; j < n; j++ )
         {
             double val = type == CV_32F ? (double)mtx.at<float>(j) : mtx.at<double>(j);
@@ -3161,70 +3161,70 @@ TEST(Core_QR_Solver, accuracy64f)
 
 TEST(Core_Solve, regression_11888)
 {
-    cv::Matx<float, 3, 2> A(
+    ncvslideio::Matx<float, 3, 2> A(
         2, 1,
         3, 1,
         6, 1
     );
-    cv::Vec<float, 3> b(4, 5, 7);
-    cv::Matx<float, 2, 1> xQR = A.solve(b, DECOMP_QR);
-    cv::Matx<float, 2, 1> xSVD = A.solve(b, DECOMP_SVD);
+    ncvslideio::Vec<float, 3> b(4, 5, 7);
+    ncvslideio::Matx<float, 2, 1> xQR = A.solve(b, DECOMP_QR);
+    ncvslideio::Matx<float, 2, 1> xSVD = A.solve(b, DECOMP_SVD);
     EXPECT_LE(cvtest::norm(xQR, xSVD, NORM_L2 | NORM_RELATIVE), 0.001);
-    cv::Matx<float, 2, 3> iA = A.inv(DECOMP_SVD);
+    ncvslideio::Matx<float, 2, 3> iA = A.inv(DECOMP_SVD);
     EXPECT_LE(cvtest::norm(iA*A, Matx<float, 2, 2>::eye(), NORM_L2), 1e-3);
     EXPECT_ANY_THROW({
-       /*cv::Matx<float, 2, 1> xLU =*/ A.solve(b, DECOMP_LU);
+       /*ncvslideio::Matx<float, 2, 1> xLU =*/ A.solve(b, DECOMP_LU);
        std::cout << "FATAL ERROR" << std::endl;
     });
 }
 
 TEST(Core_Solve, Matx_2_2)
 {
-    cv::Matx<float, 2, 2> A(
+    ncvslideio::Matx<float, 2, 2> A(
         2, 1,
         1, 1
     );
-    cv::Vec<float, 2> b(4, 5);
-    cv::Matx<float, 2, 1> xLU = A.solve(b, DECOMP_LU);
-    cv::Matx<float, 2, 1> xQR = A.solve(b, DECOMP_QR);
-    cv::Matx<float, 2, 1> xSVD = A.solve(b, DECOMP_SVD);
+    ncvslideio::Vec<float, 2> b(4, 5);
+    ncvslideio::Matx<float, 2, 1> xLU = A.solve(b, DECOMP_LU);
+    ncvslideio::Matx<float, 2, 1> xQR = A.solve(b, DECOMP_QR);
+    ncvslideio::Matx<float, 2, 1> xSVD = A.solve(b, DECOMP_SVD);
     EXPECT_LE(cvtest::norm(xQR, xSVD, NORM_L2 | NORM_RELATIVE), 1e-3);
     EXPECT_LE(cvtest::norm(xQR, xLU, NORM_L2 | NORM_RELATIVE), 1e-3);
-    cv::Matx<float, 2, 2> iA = A.inv(DECOMP_SVD);
+    ncvslideio::Matx<float, 2, 2> iA = A.inv(DECOMP_SVD);
     EXPECT_LE(cvtest::norm(iA*A, Matx<float, 2, 2>::eye(), NORM_L2), 1e-3);
 }
 TEST(Core_Solve, Matx_3_3)
 {
-    cv::Matx<float, 3, 3> A(
+    ncvslideio::Matx<float, 3, 3> A(
         2, 1, 0,
         0, 1, 1,
         1, 0, 1
     );
-    cv::Vec<float, 3> b(4, 5, 6);
-    cv::Matx<float, 3, 1> xLU = A.solve(b, DECOMP_LU);
-    cv::Matx<float, 3, 1> xQR = A.solve(b, DECOMP_QR);
-    cv::Matx<float, 3, 1> xSVD = A.solve(b, DECOMP_SVD);
+    ncvslideio::Vec<float, 3> b(4, 5, 6);
+    ncvslideio::Matx<float, 3, 1> xLU = A.solve(b, DECOMP_LU);
+    ncvslideio::Matx<float, 3, 1> xQR = A.solve(b, DECOMP_QR);
+    ncvslideio::Matx<float, 3, 1> xSVD = A.solve(b, DECOMP_SVD);
     EXPECT_LE(cvtest::norm(xQR, xSVD, NORM_L2 | NORM_RELATIVE), 1e-3);
     EXPECT_LE(cvtest::norm(xQR, xLU, NORM_L2 | NORM_RELATIVE), 1e-3);
-    cv::Matx<float, 3, 3> iA = A.inv(DECOMP_SVD);
+    ncvslideio::Matx<float, 3, 3> iA = A.inv(DECOMP_SVD);
     EXPECT_LE(cvtest::norm(iA*A, Matx<float, 3, 3>::eye(), NORM_L2), 1e-3);
 }
 
 TEST(Core_Solve, Matx_4_4)
 {
-    cv::Matx<float, 4, 4> A(
+    ncvslideio::Matx<float, 4, 4> A(
         2, 1, 0, 4,
         0, 1, 1, 3,
         1, 0, 1, 2,
         2, 2, 0, 1
     );
-    cv::Vec<float, 4> b(4, 5, 6, 7);
-    cv::Matx<float, 4, 1> xLU = A.solve(b, DECOMP_LU);
-    cv::Matx<float, 4, 1> xQR = A.solve(b, DECOMP_QR);
-    cv::Matx<float, 4, 1> xSVD = A.solve(b, DECOMP_SVD);
+    ncvslideio::Vec<float, 4> b(4, 5, 6, 7);
+    ncvslideio::Matx<float, 4, 1> xLU = A.solve(b, DECOMP_LU);
+    ncvslideio::Matx<float, 4, 1> xQR = A.solve(b, DECOMP_QR);
+    ncvslideio::Matx<float, 4, 1> xSVD = A.solve(b, DECOMP_SVD);
     EXPECT_LE(cvtest::norm(xQR, xSVD, NORM_L2 | NORM_RELATIVE), 1e-3);
     EXPECT_LE(cvtest::norm(xQR, xLU, NORM_L2 | NORM_RELATIVE), 1e-3);
-    cv::Matx<float, 4, 4> iA = A.inv(DECOMP_SVD);
+    ncvslideio::Matx<float, 4, 4> iA = A.inv(DECOMP_SVD);
     EXPECT_LE(cvtest::norm(iA*A, Matx<float, 4, 4>::eye(), NORM_L2), 1e-3);
 }
 

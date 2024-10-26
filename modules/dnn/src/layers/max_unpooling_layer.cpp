@@ -19,10 +19,10 @@ Implementation of Batch Normalization layer.
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/max_unpooling.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -113,7 +113,7 @@ public:
                     int index = idxptr[i_wh];
                     if (!(0 <= index && index < outPlaneTotal))
                     {
-                        CV_LOG_ERROR(NULL, cv::format(
+                        CV_LOG_ERROR(NULL, ncvslideio::format(
                             "i_n=%d\ni_c=%d\ni_wh=%d\nindex=%d\nmaxval=%lf\noutPlaneTotal=%d\n",
                             i_n, i_c, i_wh, index, inptr[i_wh], outPlaneTotal));
                         CV_LOG_ERROR(NULL, "input.size=" << input.size);
@@ -164,7 +164,7 @@ public:
         // skip a part of input data (you'd better change your model).
         if (poolKernel.width != poolStride.width ||
             poolKernel.height != poolStride.height)
-            CV_Error(cv::Error::StsNotImplemented,
+            CV_Error(ncvslideio::Error::StsNotImplemented,
                      "Halide backend for maximum unpooling "
                      "is not support cases when kernel != stride");
 

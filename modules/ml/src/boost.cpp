@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-namespace cv { namespace ml {
+namespace ncvslideio { namespace ml {
 
 static inline double
 log_ratio( double val )
@@ -206,7 +206,7 @@ public:
         int i, n = (int)w->sidx.size();
         int nvars = (int)varIdx.size();
         double sumw = 0., C = 1.;
-        cv::AutoBuffer<double> buf(n + nvars);
+        ncvslideio::AutoBuffer<double> buf(n + nvars);
         double* result = buf.data();
         float* sbuf = (float*)(result + n);
         Mat sample(1, nvars, CV_32F, sbuf);
@@ -308,7 +308,7 @@ public:
             }
         }
         else
-            CV_Error(cv::Error::StsNotImplemented, "Unknown boosting type");
+            CV_Error(ncvslideio::Error::StsNotImplemented, "Unknown boosting type");
 
         /*if( bparams.boostType != Boost::LOGIT )
         {
@@ -387,7 +387,7 @@ public:
     void write( FileStorage& fs ) const CV_OVERRIDE
     {
         if( roots.empty() )
-            CV_Error( cv::Error::StsBadArg, "RTrees have not been trained" );
+            CV_Error( ncvslideio::Error::StsBadArg, "RTrees have not been trained" );
 
         writeFormat(fs);
         writeParams(fs);
@@ -477,8 +477,8 @@ public:
     inline void setTruncatePrunedTree(bool val) CV_OVERRIDE { impl.params.setTruncatePrunedTree(val); }
     inline float getRegressionAccuracy() const CV_OVERRIDE { return impl.params.getRegressionAccuracy(); }
     inline void setRegressionAccuracy(float val) CV_OVERRIDE { impl.params.setRegressionAccuracy(val); }
-    inline cv::Mat getPriors() const CV_OVERRIDE { return impl.params.getPriors(); }
-    inline void setPriors(const cv::Mat& val) CV_OVERRIDE { impl.params.setPriors(val); }
+    inline ncvslideio::Mat getPriors() const CV_OVERRIDE { return impl.params.getPriors(); }
+    inline void setPriors(const ncvslideio::Mat& val) CV_OVERRIDE { impl.params.setPriors(val); }
 
     String getDefaultName() const CV_OVERRIDE { return "opencv_ml_boost"; }
 

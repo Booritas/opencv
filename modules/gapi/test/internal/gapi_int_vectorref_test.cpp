@@ -10,7 +10,7 @@
 namespace opencv_test
 {
 
-typedef ::testing::Types<int, cv::Point, cv::Rect> VectorRef_Test_Types;
+typedef ::testing::Types<int, ncvslideio::Point, ncvslideio::Rect> VectorRef_Test_Types;
 
 template<typename T> struct VectorRefT: public ::testing::Test { using Type = T; };
 
@@ -19,7 +19,7 @@ TYPED_TEST_CASE(VectorRefT, VectorRef_Test_Types);
 TYPED_TEST(VectorRefT, Reset_Valid)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRefT<T> ref;       // vector ref created empty
+    ncvslideio::detail::VectorRefT<T> ref;       // vector ref created empty
     EXPECT_NO_THROW(ref.reset());        // 1st reset is OK (initializes)
     EXPECT_NO_THROW(ref.reset());        // 2nd reset is also OK (resets)
 }
@@ -28,7 +28,7 @@ TYPED_TEST(VectorRefT, Reset_Invalid)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec(42);              // create a std::vector of 42 elements
-    cv::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
     EXPECT_ANY_THROW(ref.reset());       // data-bound vector ref can't be reset
 }
 
@@ -36,7 +36,7 @@ TYPED_TEST(VectorRefT, ReadRef_External)
 {
     using T = typename TestFixture::Type;
     const std::vector<T> vec(42);        // create a std::vector of 42 elements
-    cv::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
     auto &vref = ref.rref();
     EXPECT_EQ(vec.data(), vref.data());
     EXPECT_EQ(vec.size(), vref.size());
@@ -45,7 +45,7 @@ TYPED_TEST(VectorRefT, ReadRef_External)
 TYPED_TEST(VectorRefT, ReadRef_Internal)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRefT<T> ref;
+    ncvslideio::detail::VectorRefT<T> ref;
     ref.reset();                         // RW_OWN (reset on empty ref)
     auto &vref = ref.rref();             // read access is valid for RW_OWN
     EXPECT_EQ(0u, vref.size());          // by default vector is empty
@@ -55,7 +55,7 @@ TYPED_TEST(VectorRefT, WriteRef_External)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec(42);               // create a std::vector of 42 elements
-    cv::detail::VectorRefT<T> ref(vec);   // RW_EXT (since reference is not const)
+    ncvslideio::detail::VectorRefT<T> ref(vec);   // RW_EXT (since reference is not const)
     auto &vref = ref.wref();              // write access is valid with RW_EXT
     EXPECT_EQ(vec.data(), vref.data());
     EXPECT_EQ(vec.size(), vref.size());
@@ -64,7 +64,7 @@ TYPED_TEST(VectorRefT, WriteRef_External)
 TYPED_TEST(VectorRefT, WriteRef_Internal)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRefT<T> ref;
+    ncvslideio::detail::VectorRefT<T> ref;
     ref.reset();                          // RW_OWN (reset on empty ref)
     auto &vref = ref.wref();              // write access is valid for RW_OWN
     EXPECT_EQ(0u, vref.size());           // empty vector by default
@@ -74,7 +74,7 @@ TYPED_TEST(VectorRefT, WriteToRO)
 {
     using T = typename TestFixture::Type;
     const std::vector<T> vec(42);        // create a std::vector of 42 elements
-    cv::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRefT<T> ref(vec);  // RO_EXT (since reference is const)
     EXPECT_ANY_THROW(ref.wref());
 }
 
@@ -82,10 +82,10 @@ TYPED_TEST(VectorRefT, ReadAfterWrite)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec;                        // Initial data holder (empty vector)
-    cv::detail::VectorRefT<T> writer(vec);     // RW_EXT
+    ncvslideio::detail::VectorRefT<T> writer(vec);     // RW_EXT
 
     const auto& ro_ref = vec;
-    cv::detail::VectorRefT<T> reader(ro_ref);  // RO_EXT
+    ncvslideio::detail::VectorRefT<T> reader(ro_ref);  // RO_EXT
 
     EXPECT_EQ(0u, writer.wref().size()); // Check the initial state
     EXPECT_EQ(0u, reader.rref().size());
@@ -110,7 +110,7 @@ template<class T> struct custom_struct { T a; T b; };
 TYPED_TEST(VectorRefU, Reset_Valid)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRef ref;           // vector ref created empty
+    ncvslideio::detail::VectorRef ref;           // vector ref created empty
     EXPECT_NO_THROW(ref.reset<T>());     // 1st reset is OK (initializes)
     EXPECT_NO_THROW(ref.reset<T>());     // 2nd reset is also OK (resets)
 
@@ -121,7 +121,7 @@ TYPED_TEST(VectorRefU, Reset_Invalid)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec(42);              // create a std::vector of 42 elements
-    cv::detail::VectorRef ref(vec);      // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRef ref(vec);      // RO_EXT (since reference is const)
     EXPECT_ANY_THROW(ref.reset<T>());    // data-bound vector ref can't be reset
 }
 
@@ -129,7 +129,7 @@ TYPED_TEST(VectorRefU, ReadRef_External)
 {
     using T = typename TestFixture::Type;
     const std::vector<T> vec(42);        // create a std::vector of 42 elements
-    cv::detail::VectorRef ref(vec);      // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRef ref(vec);      // RO_EXT (since reference is const)
     auto &vref = ref.rref<T>();
     EXPECT_EQ(vec.data(), vref.data());
     EXPECT_EQ(vec.size(), vref.size());
@@ -138,7 +138,7 @@ TYPED_TEST(VectorRefU, ReadRef_External)
 TYPED_TEST(VectorRefU, ReadRef_Internal)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRef ref;
+    ncvslideio::detail::VectorRef ref;
     ref.reset<T>();                      // RW_OWN (reset on empty ref)
     auto &vref = ref.rref<T>();          // read access is valid for RW_OWN
     EXPECT_EQ(0u, vref.size());          // by default vector is empty
@@ -148,7 +148,7 @@ TYPED_TEST(VectorRefU, WriteRef_External)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec(42);             // create a std::vector of 42 elements
-    cv::detail::VectorRef ref(vec);     // RW_EXT (since reference is not const)
+    ncvslideio::detail::VectorRef ref(vec);     // RW_EXT (since reference is not const)
     auto &vref = ref.wref<T>();         // write access is valid with RW_EXT
     EXPECT_EQ(vec.data(), vref.data());
     EXPECT_EQ(vec.size(), vref.size());
@@ -157,7 +157,7 @@ TYPED_TEST(VectorRefU, WriteRef_External)
 TYPED_TEST(VectorRefU, WriteRef_Internal)
 {
     using T = typename TestFixture::Type;
-    cv::detail::VectorRef ref;
+    ncvslideio::detail::VectorRef ref;
     ref.reset<T>();                     // RW_OWN (reset on empty ref)
     auto &vref = ref.wref<T>();         // write access is valid for RW_OWN
     EXPECT_EQ(0u, vref.size());         // empty vector by default
@@ -167,7 +167,7 @@ TYPED_TEST(VectorRefU, WriteToRO)
 {
     using T = typename TestFixture::Type;
     const std::vector<T> vec(42);       // create a std::vector of 42 elements
-    cv::detail::VectorRef ref(vec);     // RO_EXT (since reference is const)
+    ncvslideio::detail::VectorRef ref(vec);     // RO_EXT (since reference is const)
     EXPECT_ANY_THROW(ref.wref<T>());
 }
 
@@ -175,10 +175,10 @@ TYPED_TEST(VectorRefU, ReadAfterWrite)
 {
     using T = typename TestFixture::Type;
     std::vector<T> vec;                     // Initial data holder (empty vector)
-    cv::detail::VectorRef writer(vec);      // RW_EXT
+    ncvslideio::detail::VectorRef writer(vec);      // RW_EXT
 
     const auto& ro_ref = vec;
-    cv::detail::VectorRef reader(ro_ref);   // RO_EXT
+    ncvslideio::detail::VectorRef reader(ro_ref);   // RO_EXT
 
     EXPECT_EQ(0u, writer.wref<T>().size()); // Check the initial state
     EXPECT_EQ(0u, reader.rref<T>().size());
@@ -196,7 +196,7 @@ TYPED_TEST(VectorRefU, ReadAfterWrite)
 
 TEST(VectorRefU, TypeCheck)
 {
-    cv::detail::VectorRef ref;
+    ncvslideio::detail::VectorRef ref;
     ref.reset<int>(); // RW_OWN
 
     EXPECT_ANY_THROW(ref.reset<char>());

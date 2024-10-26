@@ -8,17 +8,17 @@
 #include <iostream>
 #include <cctype>
 
-static cv::UMat image;
+static ncvslideio::UMat image;
 static bool backprojMode = false;
 static bool selectObject = false;
 static int trackObject = 0;
 static bool showHist = true;
-static cv::Rect selection;
+static ncvslideio::Rect selection;
 static int vmin = 10, vmax = 256, smin = 30;
 
 static void onMouse(int event, int x, int y, int, void*)
 {
-    static cv::Point origin;
+    static ncvslideio::Point origin;
 
     if (selectObject)
     {
@@ -27,17 +27,17 @@ static void onMouse(int event, int x, int y, int, void*)
         selection.width = std::abs(x - origin.x);
         selection.height = std::abs(y - origin.y);
 
-        selection &= cv::Rect(0, 0, image.cols, image.rows);
+        selection &= ncvslideio::Rect(0, 0, image.cols, image.rows);
     }
 
     switch (event)
     {
-    case cv::EVENT_LBUTTONDOWN:
-        origin = cv::Point(x, y);
-        selection = cv::Rect(x, y, 0, 0);
+    case ncvslideio::EVENT_LBUTTONDOWN:
+        origin = ncvslideio::Point(x, y);
+        selection = ncvslideio::Rect(x, y, 0, 0);
         selectObject = true;
         break;
-    case cv::EVENT_LBUTTONUP:
+    case ncvslideio::EVENT_LBUTTONUP:
         selectObject = false;
         if (selection.width > 0 && selection.height > 0)
             trackObject = -1;
@@ -69,13 +69,13 @@ int main(int argc, const char ** argv)
 {
     help();
 
-    cv::VideoCapture cap;
-    cv::Rect trackWindow;
+    ncvslideio::VideoCapture cap;
+    ncvslideio::Rect trackWindow;
     int hsize = 16;
     float hranges[2] = { 0, 180 };
 
     const char * const keys = { "{@camera_number| 0 | camera number}" };
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     int camNum = parser.get<int>(0);
 
     cap.open(camNum);
@@ -91,15 +91,15 @@ int main(int argc, const char ** argv)
         return EXIT_FAILURE;
     }
 
-    cv::namedWindow("Histogram", cv::WINDOW_NORMAL);
-    cv::namedWindow("CamShift Demo", cv::WINDOW_NORMAL);
-    cv::setMouseCallback("CamShift Demo", onMouse);
-    cv::createTrackbar("Vmin", "CamShift Demo", &vmin, 256);
-    cv::createTrackbar("Vmax", "CamShift Demo", &vmax, 256);
-    cv::createTrackbar("Smin", "CamShift Demo", &smin, 256);
+    ncvslideio::namedWindow("Histogram", ncvslideio::WINDOW_NORMAL);
+    ncvslideio::namedWindow("CamShift Demo", ncvslideio::WINDOW_NORMAL);
+    ncvslideio::setMouseCallback("CamShift Demo", onMouse);
+    ncvslideio::createTrackbar("Vmin", "CamShift Demo", &vmin, 256);
+    ncvslideio::createTrackbar("Vmax", "CamShift Demo", &vmax, 256);
+    ncvslideio::createTrackbar("Smin", "CamShift Demo", &smin, 256);
 
-    cv::Mat frame, histimg(200, 320, CV_8UC3, cv::Scalar::all(0));
-    cv::UMat hsv, hist, hue, mask, backproj;
+    ncvslideio::Mat frame, histimg(200, 320, CV_8UC3, ncvslideio::Scalar::all(0));
+    ncvslideio::UMat hsv, hist, hue, mask, backproj;
     bool paused = false;
 
     for ( ; ; )
@@ -115,68 +115,68 @@ int main(int argc, const char ** argv)
 
         if (!paused)
         {
-            cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+            ncvslideio::cvtColor(image, hsv, ncvslideio::COLOR_BGR2HSV);
 
             if (trackObject)
             {
                 int _vmin = vmin, _vmax = vmax;
 
-                cv::inRange(hsv, cv::Scalar(0, smin, std::min(_vmin, _vmax)),
-                        cv::Scalar(180, 256, std::max(_vmin, _vmax)), mask);
+                ncvslideio::inRange(hsv, ncvslideio::Scalar(0, smin, std::min(_vmin, _vmax)),
+                        ncvslideio::Scalar(180, 256, std::max(_vmin, _vmax)), mask);
 
                 int fromTo[2] = { 0,0 };
                 hue.create(hsv.size(), hsv.depth());
-                cv::mixChannels(std::vector<cv::UMat>(1, hsv), std::vector<cv::UMat>(1, hue), fromTo, 1);
+                ncvslideio::mixChannels(std::vector<ncvslideio::UMat>(1, hsv), std::vector<ncvslideio::UMat>(1, hue), fromTo, 1);
 
                 if (trackObject < 0)
                 {
-                    cv::UMat roi(hue, selection), maskroi(mask, selection);
-                    cv::calcHist(std::vector<cv::Mat>(1, roi.getMat(cv::ACCESS_READ)), std::vector<int>(1, 0),
+                    ncvslideio::UMat roi(hue, selection), maskroi(mask, selection);
+                    ncvslideio::calcHist(std::vector<ncvslideio::Mat>(1, roi.getMat(ncvslideio::ACCESS_READ)), std::vector<int>(1, 0),
                                  maskroi, hist, std::vector<int>(1, hsize), std::vector<float>(hranges, hranges + 2));
-                    cv::normalize(hist, hist, 0, 255, cv::NORM_MINMAX);
+                    ncvslideio::normalize(hist, hist, 0, 255, ncvslideio::NORM_MINMAX);
 
                     trackWindow = selection;
                     trackObject = 1;
 
-                    histimg = cv::Scalar::all(0);
+                    histimg = ncvslideio::Scalar::all(0);
                     int binW = histimg.cols / hsize;
-                    cv::Mat buf (1, hsize, CV_8UC3);
+                    ncvslideio::Mat buf (1, hsize, CV_8UC3);
                     for (int i = 0; i < hsize; i++)
-                        buf.at<cv::Vec3b>(i) = cv::Vec3b(cv::saturate_cast<uchar>(i*180./hsize), 255, 255);
-                    cv::cvtColor(buf, buf, cv::COLOR_HSV2BGR);
+                        buf.at<ncvslideio::Vec3b>(i) = ncvslideio::Vec3b(ncvslideio::saturate_cast<uchar>(i*180./hsize), 255, 255);
+                    ncvslideio::cvtColor(buf, buf, ncvslideio::COLOR_HSV2BGR);
 
                     {
-                        cv::Mat _hist = hist.getMat(cv::ACCESS_READ);
+                        ncvslideio::Mat _hist = hist.getMat(ncvslideio::ACCESS_READ);
                         for (int i = 0; i < hsize; i++)
                         {
-                            int val = cv::saturate_cast<int>(_hist.at<float>(i)*histimg.rows/255);
-                            cv::rectangle(histimg, cv::Point(i*binW, histimg.rows),
-                                       cv::Point((i+1)*binW, histimg.rows - val),
-                                       cv::Scalar(buf.at<cv::Vec3b>(i)), -1, 8);
+                            int val = ncvslideio::saturate_cast<int>(_hist.at<float>(i)*histimg.rows/255);
+                            ncvslideio::rectangle(histimg, ncvslideio::Point(i*binW, histimg.rows),
+                                       ncvslideio::Point((i+1)*binW, histimg.rows - val),
+                                       ncvslideio::Scalar(buf.at<ncvslideio::Vec3b>(i)), -1, 8);
                         }
                     }
                 }
 
-                cv::calcBackProject(std::vector<cv::UMat>(1, hue), std::vector<int>(1, 0), hist, backproj,
+                ncvslideio::calcBackProject(std::vector<ncvslideio::UMat>(1, hue), std::vector<int>(1, 0), hist, backproj,
                                     std::vector<float>(hranges, hranges + 2), 1.0);
-                cv::bitwise_and(backproj, mask, backproj);
+                ncvslideio::bitwise_and(backproj, mask, backproj);
 
-                cv::RotatedRect trackBox = cv::CamShift(backproj, trackWindow,
-                                    cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 10, 1));
+                ncvslideio::RotatedRect trackBox = ncvslideio::CamShift(backproj, trackWindow,
+                                    ncvslideio::TermCriteria(ncvslideio::TermCriteria::EPS | ncvslideio::TermCriteria::COUNT, 10, 1));
                 if (trackWindow.area() <= 1)
                 {
                     int cols = backproj.cols, rows = backproj.rows, r = (std::min(cols, rows) + 5)/6;
-                    trackWindow = cv::Rect(trackWindow.x - r, trackWindow.y - r,
+                    trackWindow = ncvslideio::Rect(trackWindow.x - r, trackWindow.y - r,
                                        trackWindow.x + r, trackWindow.y + r) &
-                                  cv::Rect(0, 0, cols, rows);
+                                  ncvslideio::Rect(0, 0, cols, rows);
                 }
 
                 if (backprojMode)
-                    cv::cvtColor(backproj, image, cv::COLOR_GRAY2BGR);
+                    ncvslideio::cvtColor(backproj, image, ncvslideio::COLOR_GRAY2BGR);
 
                 {
-                    cv::Mat _image = image.getMat(cv::ACCESS_RW);
-                    cv::ellipse(_image, trackBox, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+                    ncvslideio::Mat _image = image.getMat(ncvslideio::ACCESS_RW);
+                    ncvslideio::ellipse(_image, trackBox, ncvslideio::Scalar(0, 0, 255), 3, ncvslideio::LINE_AA);
                 }
             }
         }
@@ -185,15 +185,15 @@ int main(int argc, const char ** argv)
 
         if (selectObject && selection.width > 0 && selection.height > 0)
         {
-            cv::UMat roi(image, selection);
-            cv::bitwise_not(roi, roi);
+            ncvslideio::UMat roi(image, selection);
+            ncvslideio::bitwise_not(roi, roi);
         }
 
-        cv::imshow("CamShift Demo", image);
+        ncvslideio::imshow("CamShift Demo", image);
         if (showHist)
-            cv::imshow("Histogram", histimg);
+            ncvslideio::imshow("Histogram", histimg);
 
-        char c = (char)cv::waitKey(10);
+        char c = (char)ncvslideio::waitKey(10);
         if (c == 27)
             break;
 
@@ -204,20 +204,20 @@ int main(int argc, const char ** argv)
             break;
         case 't':
             trackObject = 0;
-            histimg = cv::Scalar::all(0);
+            histimg = ncvslideio::Scalar::all(0);
             break;
         case 'h':
             showHist = !showHist;
             if (!showHist)
-                cv::destroyWindow("Histogram");
+                ncvslideio::destroyWindow("Histogram");
             else
-                cv::namedWindow("Histogram", cv::WINDOW_AUTOSIZE);
+                ncvslideio::namedWindow("Histogram", ncvslideio::WINDOW_AUTOSIZE);
             break;
         case 'p':
             paused = !paused;
             break;
         case 'c':
-            cv::ocl::setUseOpenCL(!cv::ocl::useOpenCL());
+            ncvslideio::ocl::setUseOpenCL(!ncvslideio::ocl::useOpenCL());
         default:
             break;
         }

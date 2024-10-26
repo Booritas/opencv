@@ -8,7 +8,7 @@
 #include "opencv2/core/cvstd.hpp"
 #include "logger.defines.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 

@@ -25,7 +25,7 @@
 #  pragma GCC diagnostic ignored "-Wstrict-overflow"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -402,6 +402,6 @@ CONVERTTO_SCALED_SIMD(float, float)
 
 } // namespace fluid
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // CV_SIMD
 #endif // !defined(GAPI_STANDALONE)

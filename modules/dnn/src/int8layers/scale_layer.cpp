@@ -8,7 +8,7 @@
 #include <opencv2/dnn/shape_utils.hpp>
 #include "../ie_ngraph.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -263,4 +263,4 @@ Ptr<Layer> ShiftLayerInt8::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

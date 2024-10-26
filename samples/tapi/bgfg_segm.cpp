@@ -9,7 +9,7 @@
 #include "opencv2/video.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 #define M_MOG2 2
 #define M_KNN  3

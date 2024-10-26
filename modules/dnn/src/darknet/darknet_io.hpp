@@ -71,17 +71,17 @@
 
 #include <opencv2/dnn/dnn.hpp>
 
-namespace cv {
+namespace ncvslideio {
     namespace dnn {
         namespace darknet {
 
             class LayerParameter {
                 std::string layer_name, layer_type;
                 std::vector<std::string> bottom_indexes;
-                cv::dnn::LayerParams layerParams;
+                ncvslideio::dnn::LayerParams layerParams;
             public:
                 friend class setLayersParams;
-                cv::dnn::LayerParams getLayerParams() const { return layerParams; }
+                ncvslideio::dnn::LayerParams getLayerParams() const { return layerParams; }
                 std::string name() const { return layer_name; }
                 std::string type() const { return layer_type; }
                 int bottom_size() const { return bottom_indexes.size(); }

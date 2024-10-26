@@ -10,14 +10,14 @@ namespace opencv_test { namespace {
 TEST(Imgcodecs_WebP, encode_decode_lossless_webp)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
-    string filename = root + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(filename);
+    string filename = root + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(filename);
     ASSERT_FALSE(img.empty());
 
-    string output = cv::tempfile(".webp");
-    EXPECT_NO_THROW(cv::imwrite(output, img)); // lossless
+    string output = ncvslideio::tempfile(".webp");
+    EXPECT_NO_THROW(ncvslideio::imwrite(output, img)); // lossless
 
-    cv::Mat img_webp = cv::imread(output);
+    ncvslideio::Mat img_webp = ncvslideio::imread(output);
 
     std::vector<unsigned char> buf;
 
@@ -47,11 +47,11 @@ TEST(Imgcodecs_WebP, encode_decode_lossless_webp)
 
     EXPECT_EQ(0, remove(output.c_str()));
 
-    cv::Mat decode = cv::imdecode(buf, IMREAD_COLOR);
+    ncvslideio::Mat decode = ncvslideio::imdecode(buf, IMREAD_COLOR);
     ASSERT_FALSE(decode.empty());
     EXPECT_TRUE(cvtest::norm(decode, img_webp, NORM_INF) == 0);
 
-    cv::Mat decode_rgb = cv::imdecode(buf, IMREAD_COLOR_RGB);
+    ncvslideio::Mat decode_rgb = ncvslideio::imdecode(buf, IMREAD_COLOR_RGB);
     ASSERT_FALSE(decode_rgb.empty());
 
     cvtColor(decode_rgb, decode_rgb, COLOR_RGB2BGR);
@@ -65,8 +65,8 @@ TEST(Imgcodecs_WebP, encode_decode_lossless_webp)
 TEST(Imgcodecs_WebP, encode_decode_lossy_webp)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
-    std::string input = root + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(input);
+    std::string input = root + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(input);
     ASSERT_FALSE(img.empty());
 
     for(int q = 100; q>=0; q-=20)
@@ -74,10 +74,10 @@ TEST(Imgcodecs_WebP, encode_decode_lossy_webp)
         std::vector<int> params;
         params.push_back(IMWRITE_WEBP_QUALITY);
         params.push_back(q);
-        string output = cv::tempfile(".webp");
+        string output = ncvslideio::tempfile(".webp");
 
-        EXPECT_NO_THROW(cv::imwrite(output, img, params));
-        cv::Mat img_webp = cv::imread(output);
+        EXPECT_NO_THROW(ncvslideio::imwrite(output, img, params));
+        ncvslideio::Mat img_webp = ncvslideio::imread(output);
         EXPECT_EQ(0, remove(output.c_str()));
         EXPECT_FALSE(img_webp.empty());
         EXPECT_EQ(3,   img_webp.channels());
@@ -89,21 +89,21 @@ TEST(Imgcodecs_WebP, encode_decode_lossy_webp)
 TEST(Imgcodecs_WebP, encode_decode_with_alpha_webp)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
-    std::string input = root + "../cv/shared/lena.png";
-    cv::Mat img = cv::imread(input);
+    std::string input = root + "../ncvslideio/shared/lena.png";
+    ncvslideio::Mat img = ncvslideio::imread(input);
     ASSERT_FALSE(img.empty());
 
-    std::vector<cv::Mat> imgs;
-    cv::split(img, imgs);
-    imgs.push_back(cv::Mat(imgs[0]));
-    imgs[imgs.size() - 1] = cv::Scalar::all(128);
-    cv::merge(imgs, img);
+    std::vector<ncvslideio::Mat> imgs;
+    ncvslideio::split(img, imgs);
+    imgs.push_back(ncvslideio::Mat(imgs[0]));
+    imgs[imgs.size() - 1] = ncvslideio::Scalar::all(128);
+    ncvslideio::merge(imgs, img);
 
-    string output = cv::tempfile(".webp");
+    string output = ncvslideio::tempfile(".webp");
 
-    EXPECT_NO_THROW(cv::imwrite(output, img));
-    cv::Mat img_webp = cv::imread(output, IMREAD_UNCHANGED);
-    cv::Mat img_webp_bgr = cv::imread(output); // IMREAD_COLOR by default
+    EXPECT_NO_THROW(ncvslideio::imwrite(output, img));
+    ncvslideio::Mat img_webp = ncvslideio::imread(output, IMREAD_UNCHANGED);
+    ncvslideio::Mat img_webp_bgr = ncvslideio::imread(output); // IMREAD_COLOR by default
     EXPECT_EQ(0, remove(output.c_str()));
     EXPECT_FALSE(img_webp.empty());
     EXPECT_EQ(4,   img_webp.channels());

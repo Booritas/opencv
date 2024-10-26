@@ -11,12 +11,12 @@
 #include <set>
 #include <map>
 
-namespace cv {
+namespace ncvslideio {
 namespace details{
 /**
  * \brief Fast point sysmetric cross detector based on a localized radon transformation
  */
-class FastX : public cv::Feature2D
+class FastX : public ncvslideio::Feature2D
 {
     public:
         struct Parameters
@@ -48,35 +48,35 @@ class FastX : public cv::Feature2D
         void reconfigure(const Parameters &para);
 
         //declaration to be wrapped by rbind
-        void detect(cv::InputArray image,std::vector<cv::KeyPoint>& keypoints, cv::InputArray mask=cv::Mat())override
-        {cv::Feature2D::detect(image.getMat(),keypoints,mask.getMat());}
+        void detect(ncvslideio::InputArray image,std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputArray mask=ncvslideio::Mat())override
+        {ncvslideio::Feature2D::detect(image.getMat(),keypoints,mask.getMat());}
 
-        virtual void detectAndCompute(cv::InputArray image,
-                                              cv::InputArray mask,
-                                              std::vector<cv::KeyPoint>& keypoints,
-                                              cv::OutputArray descriptors,
+        virtual void detectAndCompute(ncvslideio::InputArray image,
+                                              ncvslideio::InputArray mask,
+                                              std::vector<ncvslideio::KeyPoint>& keypoints,
+                                              ncvslideio::OutputArray descriptors,
                                               bool useProvidedKeyPoints = false)override;
 
-        void detectImpl(const cv::Mat& image,
-                               std::vector<cv::KeyPoint>& keypoints,
-                               std::vector<cv::Mat> &feature_maps,
-                               const cv::Mat& mask=cv::Mat())const;
+        void detectImpl(const ncvslideio::Mat& image,
+                               std::vector<ncvslideio::KeyPoint>& keypoints,
+                               std::vector<ncvslideio::Mat> &feature_maps,
+                               const ncvslideio::Mat& mask=ncvslideio::Mat())const;
 
-        void detectImpl(const cv::Mat& image,
-                                std::vector<cv::Mat> &rotated_images,
-                                std::vector<cv::Mat> &feature_maps,
-                                const cv::Mat& mask=cv::Mat())const;
+        void detectImpl(const ncvslideio::Mat& image,
+                                std::vector<ncvslideio::Mat> &rotated_images,
+                                std::vector<ncvslideio::Mat> &feature_maps,
+                                const ncvslideio::Mat& mask=ncvslideio::Mat())const;
 
-        void findKeyPoints(const std::vector<cv::Mat> &feature_map,
-                                   std::vector<cv::KeyPoint>& keypoints,
-                                   const cv::Mat& mask = cv::Mat())const;
+        void findKeyPoints(const std::vector<ncvslideio::Mat> &feature_map,
+                                   std::vector<ncvslideio::KeyPoint>& keypoints,
+                                   const ncvslideio::Mat& mask = ncvslideio::Mat())const;
 
-        std::vector<std::vector<float> > calcAngles(const std::vector<cv::Mat> &rotated_images,
-                                                            std::vector<cv::KeyPoint> &keypoints)const;
+        std::vector<std::vector<float> > calcAngles(const std::vector<ncvslideio::Mat> &rotated_images,
+                                                            std::vector<ncvslideio::KeyPoint> &keypoints)const;
         // define pure virtual methods
         virtual int descriptorSize()const override{return 0;}
         virtual int descriptorType()const override{return 0;}
-        virtual void operator()( cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints, cv::OutputArray descriptors, bool useProvidedKeypoints=false )const
+        virtual void operator()( ncvslideio::InputArray image, ncvslideio::InputArray mask, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::OutputArray descriptors, bool useProvidedKeypoints=false )const
         {
             descriptors.clear();
             detectImpl(image.getMat(),keypoints,mask);
@@ -86,18 +86,18 @@ class FastX : public cv::Feature2D
         }
 
     protected:
-        virtual void computeImpl( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors)const
+        virtual void computeImpl( const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::Mat& descriptors)const
         {
-            descriptors = cv::Mat();
+            descriptors = ncvslideio::Mat();
             detectImpl(image,keypoints);
         }
 
     private:
-        void detectImpl(const cv::Mat& _src, std::vector<cv::KeyPoint>& keypoints, const cv::Mat& mask)const;
-        virtual void detectImpl(cv::InputArray image, std::vector<cv::KeyPoint>& keypoints, cv::InputArray mask=cv::noArray())const;
+        void detectImpl(const ncvslideio::Mat& _src, std::vector<ncvslideio::KeyPoint>& keypoints, const ncvslideio::Mat& mask)const;
+        virtual void detectImpl(ncvslideio::InputArray image, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputArray mask=ncvslideio::noArray())const;
 
-        void rotate(float angle,cv::InputArray img,cv::Size size,cv::OutputArray out)const;
-        void calcFeatureMap(const cv::Mat &images,cv::Mat& out)const;
+        void rotate(float angle,ncvslideio::InputArray img,ncvslideio::Size size,ncvslideio::OutputArray out)const;
+        void calcFeatureMap(const ncvslideio::Mat &images,ncvslideio::Mat& out)const;
 
     private:
         Parameters parameters;
@@ -110,16 +110,16 @@ class Ellipse
 {
     public:
         Ellipse();
-        Ellipse(const cv::Point2f &center, const cv::Size2f &axes, float angle);
+        Ellipse(const ncvslideio::Point2f &center, const ncvslideio::Size2f &axes, float angle);
 
-        void draw(cv::InputOutputArray img,const cv::Scalar &color = cv::Scalar::all(120))const;
-        bool contains(const cv::Point2f &pt)const;
-        cv::Point2f getCenter()const;
-        const cv::Size2f &getAxes()const;
+        void draw(ncvslideio::InputOutputArray img,const ncvslideio::Scalar &color = ncvslideio::Scalar::all(120))const;
+        bool contains(const ncvslideio::Point2f &pt)const;
+        ncvslideio::Point2f getCenter()const;
+        const ncvslideio::Size2f &getAxes()const;
 
     private:
-        cv::Point2f center;
-        cv::Size2f axes;
+        ncvslideio::Point2f center;
+        ncvslideio::Size2f axes;
         float angle,cosf,sinf;
 };
 
@@ -131,7 +131,7 @@ class Ellipse
  * Thereby, the left top corner has index 0 and the bottom right
  * corner n*m-1.
  */
-class Chessboard: public cv::Feature2D
+class Chessboard: public ncvslideio::Feature2D
 {
     public:
         static const int DUMMY_FIELD_SIZE = 100;  // in pixel
@@ -142,7 +142,7 @@ class Chessboard: public cv::Feature2D
          */
         struct Parameters
         {
-            cv::Size chessboard_size; //!< size of the chessboard
+            ncvslideio::Size chessboard_size; //!< size of the chessboard
             int min_scale;            //!< scale level [0..8]
             int max_scale;            //!< scale level [0..8]
             int max_points;           //!< maximal number of points regarded
@@ -153,7 +153,7 @@ class Chessboard: public cv::Feature2D
 
             Parameters()
             {
-                chessboard_size = cv::Size(9,6);
+                chessboard_size = ncvslideio::Size(9,6);
                 min_scale = 3;
                 max_scale = 4;
                 super_resolution = true;
@@ -168,7 +168,7 @@ class Chessboard: public cv::Feature2D
                 max_scale(scale),
                 max_points(_max_points)
             {
-                chessboard_size = cv::Size(9,6);
+                chessboard_size = ncvslideio::Size(9,6);
             }
         };
 
@@ -182,7 +182,7 @@ class Chessboard: public cv::Feature2D
          *
          * \returns Returns the object points as CV_32FC3
          */
-        static cv::Mat getObjectPoints(const cv::Size &pattern_size,float cell_size);
+        static ncvslideio::Mat getObjectPoints(const ncvslideio::Size &pattern_size,float cell_size);
 
         /**
          * \brief Class for searching and storing chessboard corners.
@@ -211,10 +211,10 @@ class Chessboard: public cv::Feature2D
                  * \param[out] p3 Forth point coordinate
                  *
                  */
-                static bool estimatePoint(const cv::Point2f &p0,const cv::Point2f &p1,const cv::Point2f &p2,cv::Point2f &p3);
+                static bool estimatePoint(const ncvslideio::Point2f &p0,const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2,ncvslideio::Point2f &p3);
 
                 // using 1D homography
-                static bool estimatePoint(const cv::Point2f &p0,const cv::Point2f &p1,const cv::Point2f &p2,const cv::Point2f &p3, cv::Point2f &p4);
+                static bool estimatePoint(const ncvslideio::Point2f &p0,const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2,const ncvslideio::Point2f &p3, ncvslideio::Point2f &p4);
 
                 /**
                  * \brief Checks if all points of a row or column have a valid cross ratio constraint
@@ -228,7 +228,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] points THe points of the row/column
                  *
                  */
-                static bool checkRowColumn(const std::vector<cv::Point2f> &points);
+                static bool checkRowColumn(const std::vector<ncvslideio::Point2f> &points);
 
                 /**
                  * \brief Estimates the search area for the next point on the line using cross ratio
@@ -246,8 +246,8 @@ class Chessboard: public cv::Feature2D
                  * \return Returns false if no search area can be calculated
                  *
                  */
-                static bool estimateSearchArea(const cv::Point2f &p1,const cv::Point2f &p2,const cv::Point2f &p3,float p,
-                                                       Ellipse &ellipse,const cv::Point2f *p0 =NULL);
+                static bool estimateSearchArea(const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2,const ncvslideio::Point2f &p3,float p,
+                                                       Ellipse &ellipse,const ncvslideio::Point2f *p0 =NULL);
 
                 /**
                  * \brief Estimates the search area for a specific point based on the given homography
@@ -260,7 +260,7 @@ class Chessboard: public cv::Feature2D
                  * \return Returns false if no search area can be calculated
                  *
                  */
-                static Ellipse estimateSearchArea(cv::Mat H,int row, int col,float p,int field_size = DUMMY_FIELD_SIZE);
+                static Ellipse estimateSearchArea(ncvslideio::Mat H,int row, int col,float p,int field_size = DUMMY_FIELD_SIZE);
 
                 /**
                  * \brief Searches for the maximum in a given search area
@@ -272,7 +272,7 @@ class Chessboard: public cv::Feature2D
                  * \return Returns a negative value if all points are outside the ellipse
                  *
                  */
-                static float findMaxPoint(cv::flann::Index &index,const cv::Mat &data,const Ellipse &ellipse,float white_angle,float black_angle,cv::Point2f &pt);
+                static float findMaxPoint(ncvslideio::flann::Index &index,const ncvslideio::Mat &data,const Ellipse &ellipse,float white_angle,float black_angle,ncvslideio::Point2f &pt);
 
                 /**
                  * \brief Searches for the next point using cross ratio constrain
@@ -290,16 +290,16 @@ class Chessboard: public cv::Feature2D
                  * \return Returns false if no point could be found
                  *
                  */
-                static bool findNextPoint(cv::flann::Index &index,const cv::Mat &data,
-                                                  const cv::Point2f &pt1,const cv::Point2f &pt2, const cv::Point2f &pt3,
-                                                  float white_angle,float black_angle,float min_response,cv::Point2f &point);
+                static bool findNextPoint(ncvslideio::flann::Index &index,const ncvslideio::Mat &data,
+                                                  const ncvslideio::Point2f &pt1,const ncvslideio::Point2f &pt2, const ncvslideio::Point2f &pt3,
+                                                  float white_angle,float black_angle,float min_response,ncvslideio::Point2f &point);
 
                 /**
                  * \brief Creates a new Board object
                  *
                  */
                 Board(float white_angle=0,float black_angle=0);
-                Board(const cv::Size &size, const std::vector<cv::Point2f> &points,float white_angle=0,float black_angle=0);
+                Board(const ncvslideio::Size &size, const std::vector<ncvslideio::Point2f> &points,float white_angle=0,float black_angle=0);
                 Board(const Chessboard::Board &other);
                 virtual ~Board();
 
@@ -313,13 +313,13 @@ class Chessboard: public cv::Feature2D
                  * \param[in] H optional homography to calculate search area
                  *
                  */
-                void draw(cv::InputArray m,cv::OutputArray out,cv::InputArray H=cv::Mat())const;
+                void draw(ncvslideio::InputArray m,ncvslideio::OutputArray out,ncvslideio::InputArray H=ncvslideio::Mat())const;
 
                 /**
                  * \brief Estimates the pose of the chessboard
                  *
                  */
-                bool estimatePose(const cv::Size2f &real_size,cv::InputArray _K,cv::OutputArray rvec,cv::OutputArray tvec)const;
+                bool estimatePose(const ncvslideio::Size2f &real_size,ncvslideio::InputArray _K,ncvslideio::OutputArray rvec,ncvslideio::OutputArray tvec)const;
 
                 /**
                  * \brief Clears all internal data of the object
@@ -351,7 +351,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \return Returns false if the grid could not be initialized
                  */
-                bool init(const std::vector<cv::Point2f> points);
+                bool init(const std::vector<ncvslideio::Point2f> points);
 
                 /**
                  * \brief Returns true if the board is empty
@@ -366,7 +366,7 @@ class Chessboard: public cv::Feature2D
                  * corner rows*cols-1. All corners which only belong to
                  * empty cells are returned as NaN.
                  */
-                std::vector<cv::Point2f> getCorners(bool ball=true) const;
+                std::vector<ncvslideio::Point2f> getCorners(bool ball=true) const;
 
                 /**
                  * \brief Returns all board corners as ordered vector of KeyPoints
@@ -377,7 +377,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] ball if set to false only non empty points are returned
                  *
                  */
-                std::vector<cv::KeyPoint> getKeyPoints(bool ball=true) const;
+                std::vector<ncvslideio::KeyPoint> getKeyPoints(bool ball=true) const;
 
                 /**
                  * \brief Returns the centers of the chessboard cells
@@ -386,7 +386,7 @@ class Chessboard: public cv::Feature2D
                  * corner (rows-1)*(cols-1)-1.
                  *
                  */
-                std::vector<cv::Point2f> getCellCenters() const;
+                std::vector<ncvslideio::Point2f> getCellCenters() const;
 
                 /**
                  * \brief Returns all cells as mats of four points each describing their corners.
@@ -394,7 +394,7 @@ class Chessboard: public cv::Feature2D
                  * The left top cell has index 0
                  *
                  */
-                std::vector<cv::Mat> getCells(float shrink_factor = 1.0,bool bwhite=true,bool bblack = true) const;
+                std::vector<ncvslideio::Mat> getCells(float shrink_factor = 1.0,bool bwhite=true,bool bblack = true) const;
 
                 /**
                  * \brief Estimates the homography between an ideal board
@@ -404,7 +404,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] field_size The field size of the ideal board
                  *
                  */
-                cv::Mat estimateHomography(cv::Rect rect,int field_size = DUMMY_FIELD_SIZE)const;
+                ncvslideio::Mat estimateHomography(ncvslideio::Rect rect,int field_size = DUMMY_FIELD_SIZE)const;
 
                 /**
                  * \brief Estimates the homography between an ideal board
@@ -413,19 +413,19 @@ class Chessboard: public cv::Feature2D
                  * \param[in] field_size The field size of the ideal board
                  *
                  */
-                cv::Mat estimateHomography(int field_size = DUMMY_FIELD_SIZE)const;
+                ncvslideio::Mat estimateHomography(int field_size = DUMMY_FIELD_SIZE)const;
 
                 /**
                  * \brief Warp image to match ideal checkerboard
                  *
                  */
-                cv::Mat warpImage(cv::InputArray image)const;
+                ncvslideio::Mat warpImage(ncvslideio::InputArray image)const;
 
                 /**
                  * \brief Returns the size of the board
                  *
                  */
-                cv::Size getSize() const;
+                ncvslideio::Size getSize() const;
 
                 /**
                  * \brief Returns the number of cols
@@ -445,13 +445,13 @@ class Chessboard: public cv::Feature2D
                  * \info the contour might be non squared if not all points of the board are defined
                  *
                  */
-                std::vector<cv::Point2f> getContour()const;
+                std::vector<ncvslideio::Point2f> getContour()const;
 
                 /**
                  * \brief Masks the found board in the given image
                  *
                  */
-                void maskImage(cv::InputOutputArray img,const cv::Scalar &color=cv::Scalar::all(0))const;
+                void maskImage(ncvslideio::InputOutputArray img,const ncvslideio::Scalar &color=ncvslideio::Scalar::all(0))const;
 
                 /**
                  * \brief Grows the board in all direction until no more corners are found in the feature map
@@ -461,7 +461,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns the number of grows
                  */
-                int grow(const cv::Mat &data,cv::flann::Index &flann_index);
+                int grow(const ncvslideio::Mat &data,ncvslideio::flann::Index &flann_index);
 
                 /**
                  * \brief Validates all corners using guided search based on the given homography
@@ -473,7 +473,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns the number of valid corners
                  */
-                int validateCorners(const cv::Mat &data,cv::flann::Index &flann_index,const cv::Mat &h,float min_response=0);
+                int validateCorners(const ncvslideio::Mat &data,ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &h,float min_response=0);
 
                 /**
                  * \brief check that no corner is used more than once
@@ -516,7 +516,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns Returns false if the feature map has no maxima at the requested positions
                  */
-                bool growLeft(const cv::Mat &map,cv::flann::Index &flann_index);
+                bool growLeft(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index);
                 void growLeft();
 
                 /**
@@ -526,7 +526,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns Returns false if the feature map has no maxima at the requested positions
                  */
-                bool growTop(const cv::Mat &map,cv::flann::Index &flann_index);
+                bool growTop(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index);
                 void growTop();
 
                 /**
@@ -536,7 +536,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns Returns false if the feature map has no maxima at the requested positions
                  */
-                bool growRight(const cv::Mat &map,cv::flann::Index &flann_index);
+                bool growRight(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index);
                 void growRight();
 
                 /**
@@ -546,7 +546,7 @@ class Chessboard: public cv::Feature2D
                  *
                  * \returns Returns false if the feature map has no maxima at the requested positions
                  */
-                bool growBottom(const cv::Mat &map,cv::flann::Index &flann_index);
+                bool growBottom(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index);
                 void growBottom();
 
                 /**
@@ -555,7 +555,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] points The corner coordinates
                  *
                  */
-                void addColumnLeft(const std::vector<cv::Point2f> &points);
+                void addColumnLeft(const std::vector<ncvslideio::Point2f> &points);
 
                 /**
                  * \brief Adds one column at the top
@@ -563,7 +563,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] points The corner coordinates
                  *
                  */
-                void addRowTop(const std::vector<cv::Point2f> &points);
+                void addRowTop(const std::vector<ncvslideio::Point2f> &points);
 
                 /**
                  * \brief Adds one column on the right side
@@ -571,7 +571,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] points The corner coordinates
                  *
                  */
-                void addColumnRight(const std::vector<cv::Point2f> &points);
+                void addColumnRight(const std::vector<ncvslideio::Point2f> &points);
 
                 /**
                  * \brief Adds one row at the bottom
@@ -579,7 +579,7 @@ class Chessboard: public cv::Feature2D
                  * \param[in] points The corner coordinates
                  *
                  */
-                void addRowBottom(const std::vector<cv::Point2f> &points);
+                void addRowBottom(const std::vector<ncvslideio::Point2f> &points);
 
                 /**
                  * \brief Rotates the board 90° degrees to the left
@@ -623,14 +623,14 @@ class Chessboard: public cv::Feature2D
                 bool operator==(const Chessboard::Board& other) const {return rows*cols == other.rows*other.cols;}
                 bool operator< (const Chessboard::Board& other) const {return rows*cols < other.rows*other.cols;}
                 bool operator> (const Chessboard::Board& other) const {return rows*cols > other.rows*other.cols;}
-                bool operator>= (const cv::Size& size)const { return rows*cols >= size.width*size.height; }
+                bool operator>= (const ncvslideio::Size& size)const { return rows*cols >= size.width*size.height; }
 
                 /**
                  * \brief Returns a specific corner
                  *
                  * \info raises runtime_error if row col does not exists
                  */
-                cv::Point2f& getCorner(int row,int col);
+                ncvslideio::Point2f& getCorner(int row,int col);
 
                 /**
                  * \brief Returns true if the cell is empty meaning at least one corner is NaN
@@ -662,7 +662,7 @@ class Chessboard: public cv::Feature2D
                  * \returns Returns the number of found markes
                  *
                  */
-                 int detectMarkers(cv::InputArray image);
+                 int detectMarkers(ncvslideio::InputArray image);
 
                  /**
                   * \brief Calculates the average edge sharpness for the chessboard
@@ -675,7 +675,7 @@ class Chessboard: public cv::Feature2D
                   *
                   * \author aduda@krakenrobotik.de
                   */
-                 cv::Scalar calcEdgeSharpness(cv::InputArray image,float rise_distance=0.8,bool vertical=false,cv::OutputArray sharpness=cv::noArray());
+                 ncvslideio::Scalar calcEdgeSharpness(ncvslideio::InputArray image,float rise_distance=0.8,bool vertical=false,ncvslideio::OutputArray sharpness=ncvslideio::noArray());
 
 
                  /**
@@ -687,7 +687,7 @@ class Chessboard: public cv::Feature2D
                   *
                   * \returns Returns the object points as CV_32FC3
                   */
-                 cv::Mat getObjectPoints(float cell_size)const;
+                 ncvslideio::Mat getObjectPoints(float cell_size)const;
 
 
                  /**
@@ -709,12 +709,12 @@ class Chessboard: public cv::Feature2D
             private:
                 // stores one cell
                 // in general a cell is initialized by the Board so that:
-                // * all corners are always pointing to a valid cv::Point2f
+                // * all corners are always pointing to a valid ncvslideio::Point2f
                 // * depending on the position left,top,right and bottom might be set to NaN
                 // * A cell is empty if at least one corner is NaN
                 struct Cell
                 {
-                    cv::Point2f *top_left,*top_right,*bottom_right,*bottom_left; // corners
+                    ncvslideio::Point2f *top_left,*top_right,*bottom_right,*bottom_left; // corners
                     Cell *left,*top,*right,*bottom;         // neighbouring cells
                     bool black;                             // set to true if cell is black
                     bool marker;                            // set to true if cell has a round marker in its center
@@ -722,8 +722,8 @@ class Chessboard: public cv::Feature2D
                     bool empty()const;                      // indicates if the cell is empty (one of its corners has NaN)
                     int getRow()const;
                     int getCol()const;
-                    cv::Point2f getCenter()const;
-                    bool isInside(const cv::Point2f &pt)const;  // check if point is inside the cell
+                    ncvslideio::Point2f getCenter()const;
+                    bool isInside(const ncvslideio::Point2f &pt)const;  // check if point is inside the cell
                 };
 
                 // corners
@@ -756,10 +756,10 @@ class Chessboard: public cv::Feature2D
                                                               // none empty cell
                         bool isNaN()const;                    // returns true if the current corner is NaN
 
-                        const cv::Point2f* operator*() const;  // current corner coordinate
-                        cv::Point2f* operator*();              // current corner coordinate
-                        const cv::Point2f* operator->() const; // current corner coordinate
-                        cv::Point2f* operator->();             // current corner coordinate
+                        const ncvslideio::Point2f* operator*() const;  // current corner coordinate
+                        ncvslideio::Point2f* operator*();              // current corner coordinate
+                        const ncvslideio::Point2f* operator->() const; // current corner coordinate
+                        ncvslideio::Point2f* operator->();             // current corner coordinate
 
                         Cell *getCell();                 // current cell
                     private:
@@ -768,7 +768,7 @@ class Chessboard: public cv::Feature2D
                 };
 
                 std::vector<Cell*> cells;          // storage for all board cells
-                std::vector<cv::Point2f*> corners; // storage for all corners
+                std::vector<ncvslideio::Point2f*> corners; // storage for all corners
                 Cell *top_left;                    // pointer to the top left corner of the board in its local coordinate system
                 int rows;                          // number of inner pattern rows
                 int cols;                          // number of inner pattern cols
@@ -800,10 +800,10 @@ class Chessboard: public cv::Feature2D
          * \param[in] mask Currently not supported
          *
          */
-        void detect(cv::InputArray image,std::vector<cv::KeyPoint>& keypoints, cv::InputArray mask=cv::Mat())override
-        {cv::Feature2D::detect(image.getMat(),keypoints,mask.getMat());}
+        void detect(ncvslideio::InputArray image,std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputArray mask=ncvslideio::Mat())override
+        {ncvslideio::Feature2D::detect(image.getMat(),keypoints,mask.getMat());}
 
-        virtual void detectAndCompute(cv::InputArray image,cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints,cv::OutputArray descriptors,
+        virtual void detectAndCompute(ncvslideio::InputArray image,ncvslideio::InputArray mask, std::vector<ncvslideio::KeyPoint>& keypoints,ncvslideio::OutputArray descriptors,
                                               bool useProvidedKeyPoints = false)override;
 
         /*
@@ -820,13 +820,13 @@ class Chessboard: public cv::Feature2D
          * \param[in] mask Currently not supported
          *
          */
-        void detectImpl(const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints,std::vector<cv::Mat> &feature_maps,const cv::Mat& mask)const;
-        Chessboard::Board detectImpl(const cv::Mat& image,std::vector<cv::Mat> &feature_maps,const cv::Mat& mask)const;
+        void detectImpl(const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints,std::vector<ncvslideio::Mat> &feature_maps,const ncvslideio::Mat& mask)const;
+        Chessboard::Board detectImpl(const ncvslideio::Mat& image,std::vector<ncvslideio::Mat> &feature_maps,const ncvslideio::Mat& mask)const;
 
         // define pure virtual methods
         virtual int descriptorSize()const override{return 0;}
         virtual int descriptorType()const override{return 0;}
-        virtual void operator()( cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints, cv::OutputArray descriptors, bool useProvidedKeypoints=false )const
+        virtual void operator()( ncvslideio::InputArray image, ncvslideio::InputArray mask, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::OutputArray descriptors, bool useProvidedKeypoints=false )const
         {
             descriptors.clear();
             detectImpl(image.getMat(),keypoints,mask);
@@ -836,9 +836,9 @@ class Chessboard: public cv::Feature2D
         }
 
     protected:
-        virtual void computeImpl( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors)const
+        virtual void computeImpl( const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::Mat& descriptors)const
         {
-            descriptors = cv::Mat();
+            descriptors = ncvslideio::Mat();
             detectImpl(image,keypoints);
         }
 
@@ -852,17 +852,17 @@ class Chessboard: public cv::Feature2D
             FOUND_BOARD = 4           // board was found
         };
 
-        void findKeyPoints(const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints,std::vector<cv::Mat> &feature_maps,
-                           std::vector<std::vector<float> > &angles ,const cv::Mat& mask)const;
-        cv::Mat buildData(const std::vector<cv::KeyPoint>& keypoints)const;
-        std::vector<cv::KeyPoint> getInitialPoints(cv::flann::Index &flann_index,const cv::Mat &data,const cv::KeyPoint &center,float white_angle,float black_angle, float min_response = 0)const;
-        BState generateBoards(cv::flann::Index &flann_index,const cv::Mat &data, const cv::KeyPoint &center,
-                             float white_angle,float black_angle,float min_response,const cv::Mat &img,
+        void findKeyPoints(const ncvslideio::Mat& image, std::vector<ncvslideio::KeyPoint>& keypoints,std::vector<ncvslideio::Mat> &feature_maps,
+                           std::vector<std::vector<float> > &angles ,const ncvslideio::Mat& mask)const;
+        ncvslideio::Mat buildData(const std::vector<ncvslideio::KeyPoint>& keypoints)const;
+        std::vector<ncvslideio::KeyPoint> getInitialPoints(ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &data,const ncvslideio::KeyPoint &center,float white_angle,float black_angle, float min_response = 0)const;
+        BState generateBoards(ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &data, const ncvslideio::KeyPoint &center,
+                             float white_angle,float black_angle,float min_response,const ncvslideio::Mat &img,
                              std::vector<Chessboard::Board> &boards)const;
 
     private:
-        void detectImpl(const cv::Mat&,std::vector<cv::KeyPoint>&, const cv::Mat& mast =cv::Mat())const;
-        virtual void detectImpl(cv::InputArray image, std::vector<cv::KeyPoint>& keypoints, cv::InputArray mask=cv::noArray())const;
+        void detectImpl(const ncvslideio::Mat&,std::vector<ncvslideio::KeyPoint>&, const ncvslideio::Mat& mast =ncvslideio::Mat())const;
+        virtual void detectImpl(ncvslideio::InputArray image, std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputArray mask=ncvslideio::noArray())const;
 
     private:
         Parameters parameters; // storing the configuration of the detector

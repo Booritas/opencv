@@ -18,9 +18,9 @@ def myHarris_function(val):
     for i in range(src_gray.shape[0]):
         for j in range(src_gray.shape[1]):
             if Mc[i,j] > myHarris_minVal + ( myHarris_maxVal - myHarris_minVal )*myHarris_qualityLevel/max_qualityLevel:
-                cv.circle(myHarris_copy, (j,i), 4, (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256)), cv.FILLED)
+                ncvslideio.circle(myHarris_copy, (j,i), 4, (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256)), ncvslideio.FILLED)
 
-    cv.imshow(myHarris_window, myHarris_copy)
+    ncvslideio.imshow(myHarris_window, myHarris_copy)
 
 def myShiTomasi_function(val):
     myShiTomasi_copy = np.copy(src)
@@ -29,28 +29,28 @@ def myShiTomasi_function(val):
     for i in range(src_gray.shape[0]):
         for j in range(src_gray.shape[1]):
             if myShiTomasi_dst[i,j] > myShiTomasi_minVal + ( myShiTomasi_maxVal - myShiTomasi_minVal )*myShiTomasi_qualityLevel/max_qualityLevel:
-                cv.circle(myShiTomasi_copy, (j,i), 4, (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256)), cv.FILLED)
+                ncvslideio.circle(myShiTomasi_copy, (j,i), 4, (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256)), ncvslideio.FILLED)
 
-    cv.imshow(myShiTomasi_window, myShiTomasi_copy)
+    ncvslideio.imshow(myShiTomasi_window, myShiTomasi_copy)
 
 # Load source image and convert it to gray
 parser = argparse.ArgumentParser(description='Code for Creating your own corner detector tutorial.')
 parser.add_argument('--input', help='Path to input image.', default='building.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 
-src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
 
 # Set some parameters
 blockSize = 3
 apertureSize = 3
 
 # My Harris matrix -- Using cornerEigenValsAndVecs
-myHarris_dst = cv.cornerEigenValsAndVecs(src_gray, blockSize, apertureSize)
+myHarris_dst = ncvslideio.cornerEigenValsAndVecs(src_gray, blockSize, apertureSize)
 
 # calculate Mc
 Mc = np.empty(src_gray.shape, dtype=np.float32)
@@ -60,7 +60,7 @@ for i in range(src_gray.shape[0]):
         lambda_2 = myHarris_dst[i,j,1]
         Mc[i,j] = lambda_1*lambda_2 - 0.04*pow( ( lambda_1 + lambda_2 ), 2 )
 
-myHarris_minVal, myHarris_maxVal, _, _ = cv.minMaxLoc(Mc)
+myHarris_minVal, myHarris_maxVal, _, _ = ncvslideio.minMaxLoc(Mc)
 
 # Create Window and Trackbar
 cv.namedWindow(myHarris_window)
@@ -68,9 +68,9 @@ cv.createTrackbar('Quality Level:', myHarris_window, myHarris_qualityLevel, max_
 myHarris_function(myHarris_qualityLevel)
 
 # My Shi-Tomasi -- Using cornerMinEigenVal
-myShiTomasi_dst = cv.cornerMinEigenVal(src_gray, blockSize, apertureSize)
+myShiTomasi_dst = ncvslideio.cornerMinEigenVal(src_gray, blockSize, apertureSize)
 
-myShiTomasi_minVal, myShiTomasi_maxVal, _, _ = cv.minMaxLoc(myShiTomasi_dst)
+myShiTomasi_minVal, myShiTomasi_maxVal, _, _ = ncvslideio.minMaxLoc(myShiTomasi_dst)
 
 # Create Window and Trackbar
 cv.namedWindow(myShiTomasi_window)

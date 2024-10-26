@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-bool cv::initAll()
+bool ncvslideio::initAll()
 {
     return true;
 }

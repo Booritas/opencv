@@ -1,6 +1,6 @@
 /**
  * @file core_split.cpp
- * @brief It demonstrates the usage of cv::split .
+ * @brief It demonstrates the usage of ncvslideio::split .
  *
  * It shows how to split a 3-channel matrix into a 3 single channel matrices.
  *
@@ -12,7 +12,7 @@
 #include <opencv2/core.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main()
 {

@@ -73,7 +73,7 @@
                                       Median Filter
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations
 void medianBlur(const Mat& src0, /*const*/ Mat& dst, int ksize);
@@ -867,14 +867,14 @@ void medianBlur(const Mat& src0, /*const*/ Mat& dst, int ksize)
         else if( src.depth() == CV_32F )
             medianBlur_SortNet<MinMax32f, MinMaxVec32f>( src, dst, ksize );
         else
-            CV_Error(cv::Error::StsUnsupportedFormat, "");
+            CV_Error(ncvslideio::Error::StsUnsupportedFormat, "");
 
         return;
     }
     else
     {
         // TODO AVX guard (external call)
-        cv::copyMakeBorder( src0, src, 0, 0, ksize/2, ksize/2, BORDER_REPLICATE|BORDER_ISOLATED);
+        ncvslideio::copyMakeBorder( src0, src, 0, 0, ksize/2, ksize/2, BORDER_REPLICATE|BORDER_ISOLATED);
 
         int cn = src0.channels();
         CV_Assert( src.depth() == CV_8U && (cn == 1 || cn == 3 || cn == 4) );

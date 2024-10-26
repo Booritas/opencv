@@ -24,11 +24,11 @@
 #include "backend_plugin_legacy.impl.hpp"
 
 
-namespace cv { namespace impl {
+namespace ncvslideio { namespace impl {
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT && defined(ENABLE_PLUGINS)
 
-using namespace cv::plugin::impl;  // plugin_loader.hpp
+using namespace ncvslideio::plugin::impl;  // plugin_loader.hpp
 
 static Mutex& getInitializationMutex()
 {
@@ -148,7 +148,7 @@ protected:
         if (api_header.opencv_version_major != CV_VERSION_MAJOR)
         {
             CV_LOG_ERROR(NULL, "Video I/O: wrong OpenCV major version used by plugin '" << api_header.api_description << "': " <<
-                cv::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
+                ncvslideio::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
             return false;
         }
         if (!checkMinorOpenCVVersion)
@@ -158,11 +158,11 @@ protected:
         else if (api_header.opencv_version_minor != CV_VERSION_MINOR)
         {
             CV_LOG_ERROR(NULL, "Video I/O: wrong OpenCV minor version used by plugin '" << api_header.api_description << "': " <<
-                cv::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
+                ncvslideio::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
             return false;
         }
         CV_LOG_INFO(NULL, "Video I/O: initialized '" << api_header.api_description << "': built with "
-            << cv::format("OpenCV %d.%d (ABI/API = %d/%d)",
+            << ncvslideio::format("OpenCV %d.%d (ABI/API = %d/%d)",
                  api_header.opencv_version_major, api_header.opencv_version_minor,
                  api_header.min_api_version, api_header.api_version)
             << ", current OpenCV version is '" CV_VERSION "' (ABI/API = " << abi_version << "/" << api_version << ")"
@@ -176,7 +176,7 @@ protected:
         if (api_header.api_version != api_version)
         {
             CV_LOG_INFO(NULL, "Video I/O: NOTE: plugin is supported, but there is API version mismath: "
-                << cv::format("plugin API level (%d) != OpenCV API level (%d)", api_header.api_version, api_version));
+                << ncvslideio::format("plugin API level (%d) != OpenCV API level (%d)", api_header.api_version, api_version));
             if (api_header.api_version < api_version)
             {
                 CV_LOG_INFO(NULL, "Video I/O: NOTE: some functionality may be unavailable due to lack of support by plugin implementation");
@@ -186,12 +186,12 @@ protected:
     }
 
 public:
-    Ptr<cv::plugin::impl::DynamicLib> lib_;
+    Ptr<ncvslideio::plugin::impl::DynamicLib> lib_;
     const OpenCV_VideoIO_Capture_Plugin_API* capture_api_;
     const OpenCV_VideoIO_Writer_Plugin_API* writer_api_;
     const OpenCV_VideoIO_Plugin_API_preview* plugin_api_;  //!< deprecated
 
-    PluginBackend(const Ptr<cv::plugin::impl::DynamicLib>& lib)
+    PluginBackend(const Ptr<ncvslideio::plugin::impl::DynamicLib>& lib)
         : lib_(lib)
         , capture_api_(NULL), writer_api_(NULL)
         , plugin_api_(NULL)
@@ -209,7 +209,7 @@ public:
     Ptr<IVideoCapture> createCapture(const std::string &filename) const;
     Ptr<IVideoCapture> createCapture(const std::string &filename, const VideoCaptureParameters& params) const CV_OVERRIDE;
     Ptr<IVideoWriter> createWriter(const std::string& filename, int fourcc, double fps,
-                                   const cv::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE;
+                                   const ncvslideio::Size& sz, const VideoWriterParameters& params) const CV_OVERRIDE;
 
     std::string getCapturePluginVersion(CV_OUT int& version_ABI, CV_OUT int& version_API)
     {
@@ -300,8 +300,8 @@ protected:
 static
 std::vector<FileSystemPath_t> getPluginCandidates(const std::string& baseName)
 {
-    using namespace cv::utils;
-    using namespace cv::utils::fs;
+    using namespace ncvslideio::utils;
+    using namespace ncvslideio::utils::fs;
     const std::string baseName_l = toLowerCase(baseName);
     const std::string baseName_u = toUpperCase(baseName);
     const FileSystemPath_t baseName_l_fs = toFileSystemPath(baseName_l);
@@ -372,7 +372,7 @@ std::vector<FileSystemPath_t> getPluginCandidates(const std::string& baseName)
         if (path.empty())
             continue;
         std::vector<std::string> candidates;
-        cv::glob(utils::fs::join(path, plugin_expr), candidates);
+        ncvslideio::glob(utils::fs::join(path, plugin_expr), candidates);
         // Prefer candisates with higher versions
         // TODO: implemented accurate versions-based comparator
         std::sort(candidates.begin(), candidates.end(), std::greater<std::string>());
@@ -388,7 +388,7 @@ void PluginBackendFactory::loadPlugin()
 {
     for (const FileSystemPath_t& plugin : getPluginCandidates(baseName_))
     {
-        auto lib = makePtr<cv::plugin::impl::DynamicLib>(plugin);
+        auto lib = makePtr<ncvslideio::plugin::impl::DynamicLib>(plugin);
         if (!lib->isLoaded())
             continue;
         try
@@ -445,7 +445,7 @@ void PluginBackendFactory::loadPlugin()
 
 //==================================================================================================
 
-class PluginCapture : public cv::IVideoCapture
+class PluginCapture : public ncvslideio::IVideoCapture
 {
     const OpenCV_VideoIO_Capture_Plugin_API* plugin_api_;
     CvPluginCapture capture_;
@@ -528,17 +528,17 @@ public:
     static CvResult CV_API_CALL retrieve_callback(int stream_idx, const unsigned char* data, int step, int width, int height, int type, void* userdata)
     {
         CV_UNUSED(stream_idx);
-        cv::_OutputArray* dst = static_cast<cv::_OutputArray*>(userdata);
+        ncvslideio::_OutputArray* dst = static_cast<ncvslideio::_OutputArray*>(userdata);
         if (!dst)
             return CV_ERROR_FAIL;
-        cv::Mat(cv::Size(width, height), type, (void*)data, step).copyTo(*dst);
+        ncvslideio::Mat(ncvslideio::Size(width, height), type, (void*)data, step).copyTo(*dst);
         return CV_ERROR_OK;
     }
-    bool retrieveFrame(int idx, cv::OutputArray img) CV_OVERRIDE
+    bool retrieveFrame(int idx, ncvslideio::OutputArray img) CV_OVERRIDE
     {
         bool res = false;
         if (plugin_api_->v0.Capture_retreive)
-            if (CV_ERROR_OK == plugin_api_->v0.Capture_retreive(capture_, idx, retrieve_callback, (cv::_OutputArray*)&img))
+            if (CV_ERROR_OK == plugin_api_->v0.Capture_retreive(capture_, idx, retrieve_callback, (ncvslideio::_OutputArray*)&img))
                 res = true;
         return res;
     }
@@ -555,7 +555,7 @@ public:
 
 //==================================================================================================
 
-class PluginWriter : public cv::IVideoWriter
+class PluginWriter : public ncvslideio::IVideoWriter
 {
     const OpenCV_VideoIO_Writer_Plugin_API* plugin_api_;
     CvPluginWriter writer_;
@@ -563,7 +563,7 @@ class PluginWriter : public cv::IVideoWriter
 public:
     static
     Ptr<PluginWriter> create(const OpenCV_VideoIO_Writer_Plugin_API* plugin_api,
-            const std::string& filename, int fourcc, double fps, const cv::Size& sz,
+            const std::string& filename, int fourcc, double fps, const ncvslideio::Size& sz,
             const VideoWriterParameters& params)
     {
         CV_Assert(plugin_api);
@@ -640,9 +640,9 @@ public:
     {
         return writer_ != NULL;  // TODO always true
     }
-    void write(cv::InputArray arr) CV_OVERRIDE
+    void write(ncvslideio::InputArray arr) CV_OVERRIDE
     {
-        cv::Mat img = arr.getMat();
+        ncvslideio::Mat img = arr.getMat();
         CV_DbgAssert(writer_);
         CV_Assert(plugin_api_->v0.Writer_write);
         if (CV_ERROR_OK != plugin_api_->v0.Writer_write(writer_, img.data, (int)img.step[0], img.cols, img.rows, img.channels()))
@@ -707,7 +707,7 @@ Ptr<IVideoCapture> PluginBackend::createCapture(const std::string &filename, con
 }
 
 Ptr<IVideoWriter> PluginBackend::createWriter(const std::string& filename, int fourcc, double fps,
-                                              const cv::Size& sz, const VideoWriterParameters& params) const
+                                              const ncvslideio::Size& sz, const VideoWriterParameters& params) const
 {
     try
     {

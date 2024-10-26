@@ -54,17 +54,17 @@ protected:
 
 private:
     //common
-    cv::Size img_size;
+    ncvslideio::Size img_size;
     //static const int N_POINTS = 1;
     static const int N_POINTS2 = 2;
 
     //C++
-    cv::Mat camera_mat;
-    cv::Mat R;
-    cv::Mat P;
-    cv::Mat distortion_coeffs;
-    cv::Mat src_points;
-    std::vector<cv::Point2f> dst_points;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat R;
+    ncvslideio::Mat P;
+    ncvslideio::Mat distortion_coeffs;
+    ncvslideio::Mat src_points;
+    std::vector<ncvslideio::Point2f> dst_points;
 
 };
 
@@ -74,7 +74,7 @@ CV_UndistortPointsBadArgTest::CV_UndistortPointsBadArgTest ()
 
 void CV_UndistortPointsBadArgTest::run_func()
 {
-    cv::undistortPoints(src_points,dst_points,camera_mat,distortion_coeffs,R,P);
+    ncvslideio::undistortPoints(src_points,dst_points,camera_mat,distortion_coeffs,R,P);
 }
 
 void CV_UndistortPointsBadArgTest::run(int)
@@ -99,23 +99,23 @@ void CV_UndistortPointsBadArgTest::run(int)
     CvMat _R_orig = cvMat(3,3,CV_64F,r);
     CvMat _src_points_orig = cvMat(1,4,CV_64FC2,s_points);
 
-    camera_mat = cv::cvarrToMat(&_camera_mat_orig);
-    distortion_coeffs = cv::cvarrToMat(&_distortion_coeffs_orig);
-    P = cv::cvarrToMat(&_P_orig);
-    R = cv::cvarrToMat(&_R_orig);
-    src_points = cv::cvarrToMat(&_src_points_orig);
+    camera_mat = ncvslideio::cvarrToMat(&_camera_mat_orig);
+    distortion_coeffs = ncvslideio::cvarrToMat(&_distortion_coeffs_orig);
+    P = ncvslideio::cvarrToMat(&_P_orig);
+    R = ncvslideio::cvarrToMat(&_R_orig);
+    src_points = ncvslideio::cvarrToMat(&_src_points_orig);
 
     src_points.create(2, 2, CV_32FC2);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid input data matrix size" );
-    src_points = cv::cvarrToMat(&_src_points_orig);
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid input data matrix size" );
+    src_points = ncvslideio::cvarrToMat(&_src_points_orig);
 
     src_points.create(1, 4, CV_64FC2);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid input data matrix type" );
-    src_points = cv::cvarrToMat(&_src_points_orig);
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid input data matrix type" );
+    src_points = ncvslideio::cvarrToMat(&_src_points_orig);
 
-    src_points = cv::Mat();
-    errcount += run_test_case( cv::Error::StsBadArg, "Input data matrix is not continuous" );
-    src_points = cv::cvarrToMat(&_src_points_orig);
+    src_points = ncvslideio::Mat();
+    errcount += run_test_case( ncvslideio::Error::StsBadArg, "Input data matrix is not continuous" );
+    src_points = ncvslideio::cvarrToMat(&_src_points_orig);
 
 //------------
     ts->set_failed_test_info(errcount > 0 ? cvtest::TS::FAIL_BAD_ARG_CHECK : cvtest::TS::OK);
@@ -132,13 +132,13 @@ protected:
     void run_func();
 
 private:
-    cv::Size img_size;
-    cv::Mat camera_mat;
-    cv::Mat R;
-    cv::Mat new_camera_mat;
-    cv::Mat distortion_coeffs;
-    cv::Mat mapx;
-    cv::Mat mapy;
+    ncvslideio::Size img_size;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat R;
+    ncvslideio::Mat new_camera_mat;
+    ncvslideio::Mat distortion_coeffs;
+    ncvslideio::Mat mapx;
+    ncvslideio::Mat mapy;
     int mat_type;
 
 };
@@ -149,7 +149,7 @@ CV_InitUndistortRectifyMapBadArgTest::CV_InitUndistortRectifyMapBadArgTest ()
 
 void CV_InitUndistortRectifyMapBadArgTest::run_func()
 {
-    cv::initUndistortRectifyMap(camera_mat,distortion_coeffs,R,new_camera_mat,img_size,mat_type,mapx,mapy);
+    ncvslideio::initUndistortRectifyMap(camera_mat,distortion_coeffs,R,new_camera_mat,img_size,mat_type,mapx,mapy);
 }
 
 void CV_InitUndistortRectifyMapBadArgTest::run(int)
@@ -173,28 +173,28 @@ void CV_InitUndistortRectifyMapBadArgTest::run(int)
     CvMat _mapy_orig = cvMat(img_size.height,img_size.width,CV_32FC1,&arr_mapy[0]);
     int mat_type_orig = CV_32FC1;
 
-    camera_mat = cv::cvarrToMat(&_camera_mat_orig);
-    distortion_coeffs = cv::cvarrToMat(&_distortion_coeffs_orig);
-    new_camera_mat = cv::cvarrToMat(&_new_camera_mat_orig);
-    R = cv::cvarrToMat(&_R_orig);
-    mapx = cv::cvarrToMat(&_mapx_orig);
-    mapy = cv::cvarrToMat(&_mapy_orig);
+    camera_mat = ncvslideio::cvarrToMat(&_camera_mat_orig);
+    distortion_coeffs = ncvslideio::cvarrToMat(&_distortion_coeffs_orig);
+    new_camera_mat = ncvslideio::cvarrToMat(&_new_camera_mat_orig);
+    R = ncvslideio::cvarrToMat(&_R_orig);
+    mapx = ncvslideio::cvarrToMat(&_mapx_orig);
+    mapy = ncvslideio::cvarrToMat(&_mapy_orig);
 
     mat_type = CV_64F;
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid map matrix type" );
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid map matrix type" );
     mat_type = mat_type_orig;
 
     camera_mat.create(3, 2, CV_32F);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid camera data matrix size" );
-    camera_mat = cv::cvarrToMat(&_camera_mat_orig);
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid camera data matrix size" );
+    camera_mat = ncvslideio::cvarrToMat(&_camera_mat_orig);
 
     R.create(4, 3, CV_32F);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid R data matrix size" );
-    R = cv::cvarrToMat(&_R_orig);
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid R data matrix size" );
+    R = ncvslideio::cvarrToMat(&_R_orig);
 
     distortion_coeffs.create(6, 1, CV_32F);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid distortion coefficients data matrix size" );
-    distortion_coeffs = cv::cvarrToMat(&_distortion_coeffs_orig);
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid distortion coefficients data matrix size" );
+    distortion_coeffs = ncvslideio::cvarrToMat(&_distortion_coeffs_orig);
 
 //------------
     ts->set_failed_test_info(errcount > 0 ? cvtest::TS::FAIL_BAD_ARG_CHECK : cvtest::TS::OK);
@@ -212,13 +212,13 @@ protected:
 
 private:
     //common
-    cv::Size img_size;
+    ncvslideio::Size img_size;
 
-    cv::Mat camera_mat;
-    cv::Mat new_camera_mat;
-    cv::Mat distortion_coeffs;
-    cv::Mat src;
-    cv::Mat dst;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat new_camera_mat;
+    ncvslideio::Mat distortion_coeffs;
+    ncvslideio::Mat src;
+    ncvslideio::Mat dst;
 
 };
 
@@ -228,7 +228,7 @@ CV_UndistortBadArgTest::CV_UndistortBadArgTest ()
 
 void CV_UndistortBadArgTest::run_func()
 {
-    cv::undistort(src,dst,camera_mat,distortion_coeffs,new_camera_mat);
+    ncvslideio::undistort(src,dst,camera_mat,distortion_coeffs,new_camera_mat);
 }
 
 void CV_UndistortBadArgTest::run(int)
@@ -249,14 +249,14 @@ void CV_UndistortBadArgTest::run(int)
     CvMat _src_orig = cvMat(img_size.height,img_size.width,CV_32FC1,&arr_src[0]);
     CvMat _dst_orig = cvMat(img_size.height,img_size.width,CV_32FC1,&arr_dst[0]);
 
-    camera_mat = cv::cvarrToMat(&_camera_mat_orig);
-    distortion_coeffs = cv::cvarrToMat(&_distortion_coeffs_orig);
-    new_camera_mat = cv::cvarrToMat(&_new_camera_mat_orig);
-    src = cv::cvarrToMat(&_src_orig);
-    dst = cv::cvarrToMat(&_dst_orig);
+    camera_mat = ncvslideio::cvarrToMat(&_camera_mat_orig);
+    distortion_coeffs = ncvslideio::cvarrToMat(&_distortion_coeffs_orig);
+    new_camera_mat = ncvslideio::cvarrToMat(&_new_camera_mat_orig);
+    src = ncvslideio::cvarrToMat(&_src_orig);
+    dst = ncvslideio::cvarrToMat(&_dst_orig);
 
     camera_mat.create(5, 5, CV_64F);
-    errcount += run_test_case( cv::Error::StsAssert, "Invalid camera data matrix size" );
+    errcount += run_test_case( ncvslideio::Error::StsAssert, "Invalid camera data matrix size" );
 
 //------------
     ts->set_failed_test_info(errcount > 0 ? cvtest::TS::FAIL_BAD_ARG_CHECK : cvtest::TS::OK);

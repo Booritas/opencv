@@ -13,12 +13,12 @@ PERF_TEST_P(Size_MatType, abs, TYPICAL_MATS_ABS)
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
 
-    cv::Mat a = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() c = cv::abs(a);
+    TEST_CYCLE() c = ncvslideio::abs(a);
 
     SANITY_CHECK(c);
 }

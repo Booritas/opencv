@@ -55,7 +55,7 @@
 */
 
 //////////////////////////////// image codec ////////////////////////////////
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup imgcodecs
@@ -91,9 +91,9 @@ enum ImwriteFlags {
        IMWRITE_JPEG_RST_INTERVAL   = 4,  //!< JPEG restart interval, 0 - 65535, default is 0 - no restart.
        IMWRITE_JPEG_LUMA_QUALITY   = 5,  //!< Separate luma quality level, 0 - 100, default is -1 - don't use. If JPEG_LIB_VERSION < 70, Not supported.
        IMWRITE_JPEG_CHROMA_QUALITY = 6,  //!< Separate chroma quality level, 0 - 100, default is -1 - don't use. If JPEG_LIB_VERSION < 70, Not supported.
-       IMWRITE_JPEG_SAMPLING_FACTOR = 7, //!< For JPEG, set sampling factor. See cv::ImwriteJPEGSamplingFactorParams.
+       IMWRITE_JPEG_SAMPLING_FACTOR = 7, //!< For JPEG, set sampling factor. See ncvslideio::ImwriteJPEGSamplingFactorParams.
        IMWRITE_PNG_COMPRESSION     = 16, //!< For PNG, it can be the compression level from 0 to 9. A higher value means a smaller size and longer compression time. If specified, strategy is changed to IMWRITE_PNG_STRATEGY_DEFAULT (Z_DEFAULT_STRATEGY). Default value is 1 (best speed setting).
-       IMWRITE_PNG_STRATEGY        = 17, //!< One of cv::ImwritePNGFlags, default is IMWRITE_PNG_STRATEGY_RLE.
+       IMWRITE_PNG_STRATEGY        = 17, //!< One of ncvslideio::ImwritePNGFlags, default is IMWRITE_PNG_STRATEGY_RLE.
        IMWRITE_PNG_BILEVEL         = 18, //!< Binary level PNG, 0 or 1, default is 0.
        IMWRITE_PXM_BINARY          = 32, //!< For PPM, PGM, or PBM, it can be a binary format flag, 0 or 1. Default value is 1.
        IMWRITE_EXR_TYPE            = (3 << 4) + 0 /* 48 */, //!< override EXR storage type (FLOAT (FP32) is default)
@@ -105,9 +105,9 @@ enum ImwriteFlags {
        IMWRITE_TIFF_RESUNIT        = 256,//!< For TIFF, use to specify which DPI resolution unit to set; see libtiff documentation for valid values
        IMWRITE_TIFF_XDPI           = 257,//!< For TIFF, use to specify the X direction DPI
        IMWRITE_TIFF_YDPI           = 258,//!< For TIFF, use to specify the Y direction DPI
-       IMWRITE_TIFF_COMPRESSION    = 259,//!< For TIFF, use to specify the image compression scheme. See cv::ImwriteTiffCompressionFlags. Note, for images whose depth is CV_32F, only libtiff's SGILOG compression scheme is used. For other supported depths, the compression scheme can be specified by this flag; LZW compression is the default.
+       IMWRITE_TIFF_COMPRESSION    = 259,//!< For TIFF, use to specify the image compression scheme. See ncvslideio::ImwriteTiffCompressionFlags. Note, for images whose depth is CV_32F, only libtiff's SGILOG compression scheme is used. For other supported depths, the compression scheme can be specified by this flag; LZW compression is the default.
        IMWRITE_TIFF_ROWSPERSTRIP   = 278,//!< For TIFF, use to specify the number of rows per strip.
-       IMWRITE_TIFF_PREDICTOR      = 317,//!< For TIFF, use to specify predictor. See cv::ImwriteTiffPredictorFlags.
+       IMWRITE_TIFF_PREDICTOR      = 317,//!< For TIFF, use to specify predictor. See ncvslideio::ImwriteTiffPredictorFlags.
        IMWRITE_JPEG2000_COMPRESSION_X1000 = 272,//!< For JPEG2000, use to specify the target compression rate (multiplied by 1000). The value can be from 0 to 1000. Default is 1000.
        IMWRITE_AVIF_QUALITY        = 512,//!< For AVIF, it can be a quality between 0 and 100 (the higher the better). Default is 95.
        IMWRITE_AVIF_DEPTH          = 513,//!< For AVIF, it can be 8, 10 or 12. If >8, it is stored/read as CV_32F. Default is 8.
@@ -267,7 +267,7 @@ Currently, the following file formats are supported:
     the environment variable `OPENCV_IO_MAX_IMAGE_PIXELS`. See @ref tutorial_env_reference.
 
 @param filename Name of the file to be loaded.
-@param flags Flag that can take values of `cv::ImreadModes`.
+@param flags Flag that can take values of `ncvslideio::ImreadModes`.
 */
 CV_EXPORTS_W Mat imread( const String& filename, int flags = IMREAD_COLOR_BGR );
 
@@ -276,7 +276,7 @@ CV_EXPORTS_W Mat imread( const String& filename, int flags = IMREAD_COLOR_BGR );
 This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts and the return value.
 @param filename Name of file to be loaded.
 @param dst object in which the image will be loaded.
-@param flags Flag that can take values of cv::ImreadModes
+@param flags Flag that can take values of ncvslideio::ImreadModes
 @note
 The image passing through the img parameter can be pre-allocated. The memory is reused if the shape and the type match with the load image.
  */
@@ -287,8 +287,8 @@ CV_EXPORTS_W void imread( const String& filename, OutputArray dst, int flags = I
 The function imreadmulti loads a multi-page image from the specified file into a vector of Mat objects.
 @param filename Name of file to be loaded.
 @param mats A vector of Mat objects holding each page.
-@param flags Flag that can take values of cv::ImreadModes, default with cv::IMREAD_ANYCOLOR.
-@sa cv::imread
+@param flags Flag that can take values of ncvslideio::ImreadModes, default with ncvslideio::IMREAD_ANYCOLOR.
+@sa ncvslideio::imread
 */
 CV_EXPORTS_W bool imreadmulti(const String& filename, CV_OUT std::vector<Mat>& mats, int flags = IMREAD_ANYCOLOR);
 
@@ -299,8 +299,8 @@ The function imreadmulti loads a specified range from a multi-page image from th
 @param mats A vector of Mat objects holding each page.
 @param start Start index of the image to load
 @param count Count number of images to load
-@param flags Flag that can take values of cv::ImreadModes, default with cv::IMREAD_ANYCOLOR.
-@sa cv::imread
+@param flags Flag that can take values of ncvslideio::ImreadModes, default with ncvslideio::IMREAD_ANYCOLOR.
+@sa ncvslideio::imread
 */
 CV_EXPORTS_W bool imreadmulti(const String& filename, CV_OUT std::vector<Mat>& mats, int start, int count, int flags = IMREAD_ANYCOLOR);
 
@@ -309,15 +309,15 @@ CV_EXPORTS_W bool imreadmulti(const String& filename, CV_OUT std::vector<Mat>& m
 The function imcount returns the number of pages in a multi-page image (e.g. TIFF), the number of frames in an animation (e.g. AVIF), and 1 otherwise.
 If the image cannot be decoded, 0 is returned.
 @param filename Name of file to be loaded.
-@param flags Flag that can take values of cv::ImreadModes, default with cv::IMREAD_ANYCOLOR.
-@todo when cv::IMREAD_LOAD_GDAL flag used the return value will be 0 or 1 because OpenCV's GDAL decoder doesn't support multi-page reading yet.
+@param flags Flag that can take values of ncvslideio::ImreadModes, default with ncvslideio::IMREAD_ANYCOLOR.
+@todo when ncvslideio::IMREAD_LOAD_GDAL flag used the return value will be 0 or 1 because OpenCV's GDAL decoder doesn't support multi-page reading yet.
 */
 CV_EXPORTS_W size_t imcount(const String& filename, int flags = IMREAD_ANYCOLOR);
 
 /** @brief Saves an image to a specified file.
 
 The function imwrite saves the image to the specified file. The image format is chosen based on the
-filename extension (see cv::imread for the list of extensions). In general, only 8-bit unsigned (CV_8U)
+filename extension (see ncvslideio::imread for the list of extensions). In general, only 8-bit unsigned (CV_8U)
 single-channel or 3-channel (with 'BGR' channel order) images
 can be saved using this function, with these exceptions:
 
@@ -341,7 +341,7 @@ can be saved using this function, with these exceptions:
 If the image format is not supported, the image will be converted to 8-bit unsigned (CV_8U) and saved that way.
 
 If the format, depth or channel order is different, use
-Mat::convertTo and cv::cvtColor to convert it before saving. Or, use the universal FileStorage I/O
+Mat::convertTo and ncvslideio::cvtColor to convert it before saving. Or, use the universal FileStorage I/O
 functions to save the image to XML or YAML format.
 
 The sample below shows how to create a BGRA image, how to set custom compression parameters and save it to a PNG file.
@@ -349,7 +349,7 @@ It also demonstrates how to save multiple images in a TIFF file:
 @include snippets/imgcodecs_imwrite.cpp
 @param filename Name of the file.
 @param img (Mat or vector of Mat) Image or Images to be saved.
-@param params Format-specific parameters encoded as pairs (paramId_1, paramValue_1, paramId_2, paramValue_2, ... .) see cv::ImwriteFlags
+@param params Format-specific parameters encoded as pairs (paramId_1, paramValue_1, paramId_2, paramValue_2, ... .) see ncvslideio::ImwriteFlags
 */
 CV_EXPORTS_W bool imwrite( const String& filename, InputArray img,
               const std::vector<int>& params = std::vector<int>());
@@ -367,20 +367,20 @@ bool imwritemulti(const String& filename, InputArrayOfArrays img,
 The function imdecode reads an image from the specified buffer in the memory. If the buffer is too short or
 contains invalid data, the function returns an empty matrix ( Mat::data==NULL ).
 
-See cv::imread for the list of supported formats and flags description.
+See ncvslideio::imread for the list of supported formats and flags description.
 
 @note In the case of color images, the decoded images will have the channels stored in **B G R** order.
 @param buf Input array or vector of bytes.
-@param flags The same flags as in cv::imread, see cv::ImreadModes.
+@param flags The same flags as in ncvslideio::imread, see ncvslideio::ImreadModes.
 */
 CV_EXPORTS_W Mat imdecode( InputArray buf, int flags );
 
 /** @overload
 @param buf Input array or vector of bytes.
-@param flags The same flags as in cv::imread, see cv::ImreadModes.
+@param flags The same flags as in ncvslideio::imread, see ncvslideio::ImreadModes.
 @param dst The optional output placeholder for the decoded matrix. It can save the image
 reallocations when the function is called repeatedly for images of the same size. In case of decoder
-failure the function returns empty cv::Mat object, but does not release user-provided dst buffer.
+failure the function returns empty ncvslideio::Mat object, but does not release user-provided dst buffer.
 */
 CV_EXPORTS Mat imdecode( InputArray buf, int flags, Mat* dst);
 
@@ -389,25 +389,25 @@ CV_EXPORTS Mat imdecode( InputArray buf, int flags, Mat* dst);
 The function imdecodemulti reads a multi-page image from the specified buffer in the memory. If the buffer is too short or
 contains invalid data, the function returns false.
 
-See cv::imreadmulti for the list of supported formats and flags description.
+See ncvslideio::imreadmulti for the list of supported formats and flags description.
 
 @note In the case of color images, the decoded images will have the channels stored in **B G R** order.
 @param buf Input array or vector of bytes.
-@param flags The same flags as in cv::imread, see cv::ImreadModes.
+@param flags The same flags as in ncvslideio::imread, see ncvslideio::ImreadModes.
 @param mats A vector of Mat objects holding each page, if more than one.
 @param range A continuous selection of pages.
 */
-CV_EXPORTS_W bool imdecodemulti(InputArray buf, int flags, CV_OUT std::vector<Mat>& mats, const cv::Range& range = Range::all());
+CV_EXPORTS_W bool imdecodemulti(InputArray buf, int flags, CV_OUT std::vector<Mat>& mats, const ncvslideio::Range& range = Range::all());
 
 /** @brief Encodes an image into a memory buffer.
 
 The function imencode compresses the image and stores it in the memory buffer that is resized to fit the
-result. See cv::imwrite for the list of supported formats and flags description.
+result. See ncvslideio::imwrite for the list of supported formats and flags description.
 
 @param ext File extension that defines the output format. Must include a leading period.
 @param img Image to be compressed.
 @param buf Output buffer resized to fit the compressed image.
-@param params Format-specific parameters. See cv::imwrite and cv::ImwriteFlags.
+@param params Format-specific parameters. See ncvslideio::imwrite and ncvslideio::ImwriteFlags.
 */
 CV_EXPORTS_W bool imencode( const String& ext, InputArray img,
                             CV_OUT std::vector<uchar>& buf,
@@ -415,13 +415,13 @@ CV_EXPORTS_W bool imencode( const String& ext, InputArray img,
 
 /** @brief Encodes array of images into a memory buffer.
 
-The function is analog to cv::imencode for in-memory multi-page image compression.
-See cv::imwrite for the list of supported formats and flags description.
+The function is analog to ncvslideio::imencode for in-memory multi-page image compression.
+See ncvslideio::imwrite for the list of supported formats and flags description.
 
 @param ext File extension that defines the output format. Must include a leading period.
 @param imgs Vector of images to be written.
 @param buf Output buffer resized to fit the compressed data.
-@param params Format-specific parameters. See cv::imwrite and cv::ImwriteFlags.
+@param params Format-specific parameters. See ncvslideio::imwrite and ncvslideio::ImwriteFlags.
 */
 CV_EXPORTS_W bool imencodemulti( const String& ext, InputArrayOfArrays imgs,
                                  CV_OUT std::vector<uchar>& buf,
@@ -439,7 +439,7 @@ This can be useful for verifying support for a given image format before attempt
 It does not check for the actual existence of the file but rather the ability to read the specified file type.
 If the file cannot be opened or the format is unsupported, the function will return false.
 
-@sa cv::haveImageWriter, cv::imread, cv::imdecode
+@sa ncvslideio::haveImageWriter, ncvslideio::imread, ncvslideio::imdecode
 */
 CV_EXPORTS_W bool haveImageReader( const String& filename );
 
@@ -455,7 +455,7 @@ It is recommended to provide the file extension rather than the full file name.
 @note The function checks the availability of image codecs that are either built into OpenCV or dynamically loaded.
 It does not check for the actual existence of the file but rather the ability to write files of the given type.
 
-@sa cv::haveImageReader, cv::imwrite, cv::imencode
+@sa ncvslideio::haveImageReader, ncvslideio::imwrite, ncvslideio::imencode
 */
 CV_EXPORTS_W bool haveImageWriter( const String& filename );
 

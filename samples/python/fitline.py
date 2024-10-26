@@ -4,7 +4,7 @@
 Robust line fitting.
 ==================
 
-Example of using cv.fitLine function for fitting line
+Example of using ncvslideio.fitLine function for fitting line
 to points in presence of outliers.
 
 Usage
@@ -55,38 +55,38 @@ else:
     cur_func_name = dist_func_names.next()
 
 def update(_=None):
-    noise = cv.getTrackbarPos('noise', 'fit line')
-    n = cv.getTrackbarPos('point n', 'fit line')
-    r = cv.getTrackbarPos('outlier %', 'fit line') / 100.0
+    noise = ncvslideio.getTrackbarPos('noise', 'fit line')
+    n = ncvslideio.getTrackbarPos('point n', 'fit line')
+    r = ncvslideio.getTrackbarPos('outlier %', 'fit line') / 100.0
     outn = int(n*r)
 
     p0, p1 = (90, 80), (w-90, h-80)
     img = np.zeros((h, w, 3), np.uint8)
-    cv.line(img, toint(p0), toint(p1), (0, 255, 0))
+    ncvslideio.line(img, toint(p0), toint(p1), (0, 255, 0))
 
     if n > 0:
         line_points = sample_line(p0, p1, n-outn, noise)
         outliers = np.random.rand(outn, 2) * (w, h)
         points = np.vstack([line_points, outliers])
         for p in line_points:
-            cv.circle(img, toint(p), 2, (255, 255, 255), -1)
+            ncvslideio.circle(img, toint(p), 2, (255, 255, 255), -1)
         for p in outliers:
-            cv.circle(img, toint(p), 2, (64, 64, 255), -1)
-        func = getattr(cv, cur_func_name)
-        vx, vy, cx, cy = cv.fitLine(np.float32(points), func, 0, 0.01, 0.01)
-        cv.line(img, (int(cx-vx*w), int(cy-vy*w)), (int(cx+vx*w), int(cy+vy*w)), (0, 0, 255))
+            ncvslideio.circle(img, toint(p), 2, (64, 64, 255), -1)
+        func = getattr(ncvslideio, cur_func_name)
+        vx, vy, cx, cy = ncvslideio.fitLine(np.float32(points), func, 0, 0.01, 0.01)
+        ncvslideio.line(img, (int(cx-vx*w), int(cy-vy*w)), (int(cx+vx*w), int(cy+vy*w)), (0, 0, 255))
 
     draw_str(img, (20, 20), cur_func_name)
-    cv.imshow('fit line', img)
+    ncvslideio.imshow('fit line', img)
 
 def main():
-    cv.namedWindow('fit line')
-    cv.createTrackbar('noise', 'fit line', 3, 50, update)
-    cv.createTrackbar('point n', 'fit line', 100, 500, update)
-    cv.createTrackbar('outlier %', 'fit line', 30, 100, update)
+    ncvslideio.namedWindow('fit line')
+    ncvslideio.createTrackbar('noise', 'fit line', 3, 50, update)
+    ncvslideio.createTrackbar('point n', 'fit line', 100, 500, update)
+    ncvslideio.createTrackbar('outlier %', 'fit line', 30, 100, update)
     while True:
         update()
-        ch = cv.waitKey(0)
+        ch = ncvslideio.waitKey(0)
         if ch == ord('f'):
             global cur_func_name
             if PY3:
@@ -102,4 +102,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

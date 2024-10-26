@@ -60,7 +60,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 struct CvDC1394
 {
@@ -476,7 +476,7 @@ bool CvCaptureCAM_DC1394_v2_CPP::grabFrame()
         // Swap R&B channels:
         if (nch==3)
         {
-            cv::cvtColor(frame, img[i], cv::COLOR_RGB2BGR);
+            ncvslideio::cvtColor(frame, img[i], ncvslideio::COLOR_RGB2BGR);
         }
         else
         {
@@ -695,7 +695,7 @@ bool CvCaptureCAM_DC1394_v2_CPP::setProperty(int propId, double value)
 }
 
 
-cv::Ptr<cv::IVideoCapture> cv::create_DC1394_capture(int index)
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_DC1394_capture(int index)
 {
     Ptr<CvCaptureCAM_DC1394_v2_CPP> capture = makePtr<CvCaptureCAM_DC1394_v2_CPP>();
     if (capture->open(index))

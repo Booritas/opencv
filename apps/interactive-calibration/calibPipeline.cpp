@@ -14,13 +14,13 @@ using namespace calib;
 
 #define CAP_DELAY 10
 
-cv::Size CalibPipeline::getCameraResolution()
+ncvslideio::Size CalibPipeline::getCameraResolution()
 {
-    mCapture.set(cv::CAP_PROP_FRAME_WIDTH, 10000);
-    mCapture.set(cv::CAP_PROP_FRAME_HEIGHT, 10000);
-    int w = (int)mCapture.get(cv::CAP_PROP_FRAME_WIDTH);
-    int h = (int)mCapture.get(cv::CAP_PROP_FRAME_HEIGHT);
-    return cv::Size(w,h);
+    mCapture.set(ncvslideio::CAP_PROP_FRAME_WIDTH, 10000);
+    mCapture.set(ncvslideio::CAP_PROP_FRAME_HEIGHT, 10000);
+    int w = (int)mCapture.get(ncvslideio::CAP_PROP_FRAME_WIDTH);
+    int h = (int)mCapture.get(ncvslideio::CAP_PROP_FRAME_HEIGHT);
+    return ncvslideio::Size(w,h);
 }
 
 CalibPipeline::CalibPipeline(captureParameters params) :
@@ -29,30 +29,30 @@ CalibPipeline::CalibPipeline(captureParameters params) :
 
 }
 
-PipelineExitStatus CalibPipeline::start(std::vector<cv::Ptr<FrameProcessor> > processors)
+PipelineExitStatus CalibPipeline::start(std::vector<ncvslideio::Ptr<FrameProcessor> > processors)
 {
     auto open_camera = [this] () {
         if(mCaptureParams.source == Camera)
         {
             mCapture.open(mCaptureParams.camID);
-            cv::Size maxRes = getCameraResolution();
-            cv::Size neededRes = mCaptureParams.cameraResolution;
+            ncvslideio::Size maxRes = getCameraResolution();
+            ncvslideio::Size neededRes = mCaptureParams.cameraResolution;
 
             if(maxRes.width < neededRes.width) {
                 double aR = (double)maxRes.width / maxRes.height;
-                mCapture.set(cv::CAP_PROP_FRAME_WIDTH, neededRes.width);
-                mCapture.set(cv::CAP_PROP_FRAME_HEIGHT, neededRes.width/aR);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_WIDTH, neededRes.width);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_HEIGHT, neededRes.width/aR);
             }
             else if(maxRes.height < neededRes.height) {
                 double aR = (double)maxRes.width / maxRes.height;
-                mCapture.set(cv::CAP_PROP_FRAME_HEIGHT, neededRes.height);
-                mCapture.set(cv::CAP_PROP_FRAME_WIDTH, neededRes.height*aR);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_HEIGHT, neededRes.height);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_WIDTH, neededRes.height*aR);
             }
             else {
-                mCapture.set(cv::CAP_PROP_FRAME_HEIGHT, neededRes.height);
-                mCapture.set(cv::CAP_PROP_FRAME_WIDTH, neededRes.width);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_HEIGHT, neededRes.height);
+                mCapture.set(ncvslideio::CAP_PROP_FRAME_WIDTH, neededRes.width);
             }
-            mCapture.set(cv::CAP_PROP_AUTOFOCUS, 0);
+            mCapture.set(ncvslideio::CAP_PROP_AUTOFOCUS, 0);
         }
         else if (mCaptureParams.source == File)
             mCapture.open(mCaptureParams.videoFileName);
@@ -61,12 +61,12 @@ PipelineExitStatus CalibPipeline::start(std::vector<cv::Ptr<FrameProcessor> > pr
     if(!mCapture.isOpened()) {
         open_camera();
     }
-    mImageSize = cv::Size((int)mCapture.get(cv::CAP_PROP_FRAME_WIDTH), (int)mCapture.get(cv::CAP_PROP_FRAME_HEIGHT));
+    mImageSize = ncvslideio::Size((int)mCapture.get(ncvslideio::CAP_PROP_FRAME_WIDTH), (int)mCapture.get(ncvslideio::CAP_PROP_FRAME_HEIGHT));
 
     if(!mCapture.isOpened())
         throw std::runtime_error("Unable to open video source");
 
-    cv::Mat frame, processedFrame, resizedFrame;
+    ncvslideio::Mat frame, processedFrame, resizedFrame;
     while (true) {
         if (!mCapture.grab())
         {
@@ -83,26 +83,26 @@ PipelineExitStatus CalibPipeline::start(std::vector<cv::Ptr<FrameProcessor> > pr
             } while (!mCapture.isOpened() || !mCapture.grab());
 
             CV_LOG_INFO(NULL, "VideoCapture error: reopened successfully.");
-            auto newSize = cv::Size((int)mCapture.get(cv::CAP_PROP_FRAME_WIDTH), (int)mCapture.get(cv::CAP_PROP_FRAME_HEIGHT));
+            auto newSize = ncvslideio::Size((int)mCapture.get(ncvslideio::CAP_PROP_FRAME_WIDTH), (int)mCapture.get(ncvslideio::CAP_PROP_FRAME_HEIGHT));
             CV_CheckEQ(mImageSize, newSize, "Camera image size changed after reopening.");
         }
         mCapture.retrieve(frame);
         if(mCaptureParams.flipVertical)
-            cv::flip(frame, frame, -1);
+            ncvslideio::flip(frame, frame, -1);
 
         frame.copyTo(processedFrame);
-        for (std::vector<cv::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
+        for (std::vector<ncvslideio::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
             processedFrame = (*it)->processFrame(processedFrame);
         if (std::fabs(mCaptureParams.zoom - 1.) > 0.001f)
         {
-            cv::resize(processedFrame, resizedFrame, cv::Size(), mCaptureParams.zoom, mCaptureParams.zoom);
+            ncvslideio::resize(processedFrame, resizedFrame, ncvslideio::Size(), mCaptureParams.zoom, mCaptureParams.zoom);
         }
         else
         {
             resizedFrame = std::move(processedFrame);
         }
-        cv::imshow(mainWindowName, resizedFrame);
-        char key = (char)cv::waitKey(CAP_DELAY);
+        ncvslideio::imshow(mainWindowName, resizedFrame);
+        char key = (char)ncvslideio::waitKey(CAP_DELAY);
 
         if(key == 27) // esc
             return Finished;
@@ -117,7 +117,7 @@ PipelineExitStatus CalibPipeline::start(std::vector<cv::Ptr<FrameProcessor> > pr
         else if (key == 118) // v
             return SwitchVisualisation;
 
-        for (std::vector<cv::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
+        for (std::vector<ncvslideio::Ptr<FrameProcessor> >::iterator it = processors.begin(); it != processors.end(); ++it)
             if((*it)->isProcessed())
                 return Calibrate;
     }
@@ -125,7 +125,7 @@ PipelineExitStatus CalibPipeline::start(std::vector<cv::Ptr<FrameProcessor> > pr
     return Finished;
 }
 
-cv::Size CalibPipeline::getImageSize() const
+ncvslideio::Size CalibPipeline::getImageSize() const
 {
     return mImageSize;
 }

@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description='Code for Image Segmentation with D
 parser.add_argument('--input', help='Path to input image.', default='cards.png')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
@@ -43,7 +43,7 @@ kernel = np.array([[1, 1, 1], [1, -8, 1], [1, 1, 1]], dtype=np.float32)
 # and we can expect in general to have a Laplacian image with negative values
 # BUT a 8bits unsigned int (the one we are working with) can contain values from 0 to 255
 # so the possible negative number will be truncated
-imgLaplacian = cv.filter2D(src, cv.CV_32F, kernel)
+imgLaplacian = ncvslideio.filter2D(src, ncvslideio.CV_32F, kernel)
 sharp = np.float32(src)
 imgResult = sharp - imgLaplacian
 
@@ -53,35 +53,35 @@ imgResult = imgResult.astype('uint8')
 imgLaplacian = np.clip(imgLaplacian, 0, 255)
 imgLaplacian = np.uint8(imgLaplacian)
 
-#cv.imshow('Laplace Filtered Image', imgLaplacian)
+#ncvslideio.imshow('Laplace Filtered Image', imgLaplacian)
 cv.imshow('New Sharped Image', imgResult)
 ## [sharp]
 
 ## [bin]
 # Create binary image from source image
-bw = cv.cvtColor(imgResult, cv.COLOR_BGR2GRAY)
-_, bw = cv.threshold(bw, 40, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
+bw = ncvslideio.cvtColor(imgResult, ncvslideio.COLOR_BGR2GRAY)
+_, bw = ncvslideio.threshold(bw, 40, 255, ncvslideio.THRESH_BINARY | ncvslideio.THRESH_OTSU)
 cv.imshow('Binary Image', bw)
 ## [bin]
 
 ## [dist]
 # Perform the distance transform algorithm
-dist = cv.distanceTransform(bw, cv.DIST_L2, 3)
+dist = ncvslideio.distanceTransform(bw, ncvslideio.DIST_L2, 3)
 
 # Normalize the distance image for range = {0.0, 1.0}
 # so we can visualize and threshold it
-cv.normalize(dist, dist, 0, 1.0, cv.NORM_MINMAX)
+cv.normalize(dist, dist, 0, 1.0, ncvslideio.NORM_MINMAX)
 cv.imshow('Distance Transform Image', dist)
 ## [dist]
 
 ## [peaks]
 # Threshold to obtain the peaks
 # This will be the markers for the foreground objects
-_, dist = cv.threshold(dist, 0.4, 1.0, cv.THRESH_BINARY)
+_, dist = ncvslideio.threshold(dist, 0.4, 1.0, ncvslideio.THRESH_BINARY)
 
 # Dilate a bit the dist image
 kernel1 = np.ones((3,3), dtype=np.uint8)
-dist = cv.dilate(dist, kernel1)
+dist = ncvslideio.dilate(dist, kernel1)
 cv.imshow('Peaks', dist)
 ## [peaks]
 
@@ -91,14 +91,14 @@ cv.imshow('Peaks', dist)
 dist_8u = dist.astype('uint8')
 
 # Find total markers
-contours, _ = cv.findContours(dist_8u, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+contours, _ = ncvslideio.findContours(dist_8u, ncvslideio.RETR_EXTERNAL, ncvslideio.CHAIN_APPROX_SIMPLE)
 
 # Create the marker image for the watershed algorithm
 markers = np.zeros(dist.shape, dtype=np.int32)
 
 # Draw the foreground markers
 for i in range(len(contours)):
-    cv.drawContours(markers, contours, i, (i+1), -1)
+    ncvslideio.drawContours(markers, contours, i, (i+1), -1)
 
 # Draw the background marker
 cv.circle(markers, (5,5), 3, (255,255,255), -1)
@@ -112,10 +112,10 @@ cv.watershed(imgResult, markers)
 
 #mark = np.zeros(markers.shape, dtype=np.uint8)
 mark = markers.astype('uint8')
-mark = cv.bitwise_not(mark)
+mark = ncvslideio.bitwise_not(mark)
 # uncomment this if you want to see how the mark
 # image looks like at that point
-#cv.imshow('Markers_v2', mark)
+#ncvslideio.imshow('Markers_v2', mark)
 
 # Generate random colors
 colors = []

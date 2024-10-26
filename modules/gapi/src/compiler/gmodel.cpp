@@ -21,12 +21,12 @@
 #include "api/gorigin.hpp"
 #include "compiler/gmodel_priv.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 ade::NodeHandle GModel::mkOpNode(GModel::Graph &g,
                                  const GKernel &k,
                                  const std::vector<GArg> &args,
-                                 const cv::util::any &params,
+                                 const ncvslideio::util::any &params,
                                  const std::string &island)
 {
     ade::NodeHandle op_h = g.createNode();
@@ -71,7 +71,7 @@ ade::NodeHandle GModel::mkDataNode(GModel::Graph &g, const GShape shape)
     GMetaArg meta;
     HostCtor ctor;
     Data::Storage storage = Data::Storage::INTERNAL; // By default, all objects are marked INTERNAL
-    cv::detail::OpaqueKind kind = cv::detail::OpaqueKind::CV_UNKNOWN;
+    ncvslideio::detail::OpaqueKind kind = ncvslideio::detail::OpaqueKind::CV_UNKNOWN;
 
     g.metadata(data_h).set(Data{shape, id, meta, ctor, kind, storage});
     return data_h;
@@ -95,7 +95,7 @@ ade::EdgeHandle GModel::linkIn(Graph &g, ade::NodeHandle opH, ade::NodeHandle ob
     g.metadata(eh).set(Input{in_port});
 
     // Replace an API object with a REF (G* -> GOBJREF)
-    op.args[in_port] = cv::GArg(RcDesc{gm.rc, gm.shape, {}});
+    op.args[in_port] = ncvslideio::GArg(RcDesc{gm.rc, gm.shape, {}});
 
     return eh;
 }
@@ -132,7 +132,7 @@ std::vector<ade::NodeHandle> GModel::orderedInputs(const ConstGraph &g, ade::Nod
     std::vector<ade::NodeHandle> sorted_in_nhs(nh->inEdges().size());
     for (const auto& in_eh : nh->inEdges())
     {
-        const auto port = g.metadata(in_eh).get<cv::gimpl::Input>().port;
+        const auto port = g.metadata(in_eh).get<ncvslideio::gimpl::Input>().port;
         GAPI_Assert(port < sorted_in_nhs.size());
         sorted_in_nhs[port] = in_eh->srcNode();
     }
@@ -144,7 +144,7 @@ std::vector<ade::NodeHandle> GModel::orderedOutputs(const ConstGraph &g, ade::No
     std::vector<ade::NodeHandle> sorted_out_nhs(nh->outEdges().size());
     for (const auto& out_eh : nh->outEdges())
     {
-        const auto port = g.metadata(out_eh).get<cv::gimpl::Output>().port;
+        const auto port = g.metadata(out_eh).get<ncvslideio::gimpl::Output>().port;
         GAPI_Assert(port < sorted_out_nhs.size());
         sorted_out_nhs[port] = out_eh->dstNode();
     }
@@ -280,10 +280,10 @@ GMetaArgs GModel::collectOutputMeta(const GModel::ConstGraph &cg, ade::NodeHandl
     return out_meta_args;
 }
 
-bool GModel::isActive(const GModel::Graph &cg, const cv::gapi::GBackend &backend)
+bool GModel::isActive(const GModel::Graph &cg, const ncvslideio::gapi::GBackend &backend)
 {
     return ade::util::contains(cg.metadata().get<ActiveBackends>().backends,
                                backend);
 }
 
-}} // cv::gimpl
+}} // ncvslideio::gimpl

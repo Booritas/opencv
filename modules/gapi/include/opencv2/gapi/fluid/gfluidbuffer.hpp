@@ -18,17 +18,17 @@
 
 #include <opencv2/gapi/util/optional.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
 struct Border
 {
     // This constructor is required to support existing kernels which are part of G-API
-    Border(int _type, cv::Scalar _val) : type(_type), value(_val) {}
+    Border(int _type, ncvslideio::Scalar _val) : type(_type), value(_val) {}
 
     int type;
-    cv::Scalar value;
+    ncvslideio::Scalar value;
 };
 
 using BorderOpt = util::optional<Border>;
@@ -102,16 +102,16 @@ public:
     // all following initialization performed in Priv::init())
     Buffer();
     // Scratch constructor (user kernels)
-    Buffer(const cv::GMatDesc &desc);
+    Buffer(const ncvslideio::GMatDesc &desc);
 
     // Constructor for intermediate buffers (for tests)
-    Buffer(const cv::GMatDesc &desc,
+    Buffer(const ncvslideio::GMatDesc &desc,
            int max_line_consumption, int border_size,
            int skew,
            int wlpi,
            BorderOpt border);
     // Constructor for in/out buffers (for tests)
-    Buffer(const cv::Mat &data, bool is_input);
+    Buffer(const ncvslideio::Mat &data, bool is_input);
     ~Buffer();
     Buffer& operator=(Buffer&&);
 
@@ -147,8 +147,8 @@ private:
     const Cache* m_cache;
 };
 
-} // namespace cv::gapi::fluid
-} // namespace cv::gapi
-} // namespace cv
+} // namespace ncvslideio::gapi::fluid
+} // namespace ncvslideio::gapi
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_FLUID_BUFFER_HPP

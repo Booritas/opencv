@@ -29,7 +29,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/utils/logger.hpp>
 #include <iostream>
-namespace cv
+namespace ncvslideio
 {
 //! @addtogroup core_quaternion
 //! @{
@@ -151,7 +151,7 @@ template <typename _Tp> std::ostream& operator<<(std::ostream&, const Quat<_Tp>&
  * To create a quaternion representing the rotation around the axis \f$\boldsymbol{u}\f$
  * with angle \f$\theta\f$, you can use
  * ```
- * using namespace cv;
+ * using namespace ncvslideio;
  * double angle = CV_PI;
  * Vec3d axis = {0, 0, 1};
  * Quatd q = Quatd::createFromAngleAxis(angle, axis);
@@ -1447,7 +1447,7 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator-(const T s, const Quat<T>&);
+    friend Quat<T> ncvslideio::operator-(const T s, const Quat<T>&);
 
     /**
      * @brief Subtraction operator of a quaternions and a scalar.
@@ -1462,7 +1462,7 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator-(const Quat<T>&, const T s);
+    friend Quat<T> ncvslideio::operator-(const Quat<T>&, const T s);
 
     /**
      * @brief Addition operator of a quaternions and a scalar.
@@ -1477,7 +1477,7 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator+(const T s, const Quat<T>&);
+    friend Quat<T> ncvslideio::operator+(const T s, const Quat<T>&);
 
     /**
      * @brief Addition operator of a quaternions and a scalar.
@@ -1492,7 +1492,7 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator+(const Quat<T>&, const T s);
+    friend Quat<T> ncvslideio::operator+(const Quat<T>&, const T s);
 
     /**
      * @brief Multiplication operator of a scalar and a quaternions.
@@ -1517,7 +1517,7 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator*(const T s, const Quat<T>&);
+    friend Quat<T> ncvslideio::operator*(const T s, const Quat<T>&);
 
     /**
      * @brief Multiplication operator of a quaternion and a scalar.
@@ -1542,10 +1542,10 @@ public:
      * @note the type of scalar should be equal to the quaternion.
      */
     template <typename T>
-    friend Quat<T> cv::operator*(const Quat<T>&, const T s);
+    friend Quat<T> ncvslideio::operator*(const Quat<T>&, const T s);
 
     template <typename S>
-    friend std::ostream& cv::operator<<(std::ostream&, const Quat<S>&);
+    friend std::ostream& ncvslideio::operator<<(std::ostream&, const Quat<S>&);
 
     /**
      * @brief Transform a quaternion q to Euler angles.

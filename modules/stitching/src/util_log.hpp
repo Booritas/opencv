@@ -33,7 +33,7 @@
     for(;;)                                    \
     {                                          \
         using namespace std;                   \
-        if ((_level) >= ::cv::detail::stitchingLogLevel()) \
+        if ((_level) >= ::ncvslideio::detail::stitchingLogLevel()) \
         {                                      \
             LOG_STITCHING_MSG(_msg);           \
         }                                      \

@@ -85,8 +85,8 @@ OCL_TEST_P(HoughLines, RealImage)
 {
     readRealTestData();
 
-    OCL_OFF(cv::HoughLines(src, dst, rhoStep, thetaStep, threshold));
-    OCL_ON(cv::HoughLines(usrc, udst, rhoStep, thetaStep, threshold));
+    OCL_OFF(ncvslideio::HoughLines(src, dst, rhoStep, thetaStep, threshold));
+    OCL_ON(ncvslideio::HoughLines(usrc, udst, rhoStep, thetaStep, threshold));
 
     Near(1e-5);
 }
@@ -97,8 +97,8 @@ OCL_TEST_P(HoughLines, GeneratedImage)
     {
         generateTestData();
 
-        OCL_OFF(cv::HoughLines(src, dst, rhoStep, thetaStep, threshold));
-        OCL_ON(cv::HoughLines(usrc, udst, rhoStep, thetaStep, threshold));
+        OCL_OFF(ncvslideio::HoughLines(src, dst, rhoStep, thetaStep, threshold));
+        OCL_ON(ncvslideio::HoughLines(usrc, udst, rhoStep, thetaStep, threshold));
 
         Near(1e-5);
     }
@@ -165,8 +165,8 @@ OCL_TEST_P(HoughLinesP, RealImage)
 {
     readRealTestData();
 
-    OCL_OFF(cv::HoughLinesP(src, dst, rhoStep, thetaStep, threshold, minLineLength, maxGap));
-    OCL_ON(cv::HoughLinesP(usrc, udst, rhoStep, thetaStep, threshold, minLineLength, maxGap));
+    OCL_OFF(ncvslideio::HoughLinesP(src, dst, rhoStep, thetaStep, threshold, minLineLength, maxGap));
+    OCL_ON(ncvslideio::HoughLinesP(usrc, udst, rhoStep, thetaStep, threshold, minLineLength, maxGap));
 
     Near(0.25);
 }

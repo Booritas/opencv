@@ -15,7 +15,7 @@ PyObject* pyopencv_from(const cvflann_flann_distance_t& value)
 }
 
 template<>
-bool pyopencv_to(PyObject *o, cv::flann::IndexParams& p, const ArgInfo& info)
+bool pyopencv_to(PyObject *o, ncvslideio::flann::IndexParams& p, const ArgInfo& info)
 {
     if (!o || o == Py_None)
     {
@@ -103,9 +103,9 @@ bool pyopencv_to(PyObject *o, cv::flann::IndexParams& p, const ArgInfo& info)
 }
 
 template<>
-bool pyopencv_to(PyObject* obj, cv::flann::SearchParams & value, const ArgInfo& info)
+bool pyopencv_to(PyObject* obj, ncvslideio::flann::SearchParams & value, const ArgInfo& info)
 {
-    return pyopencv_to<cv::flann::IndexParams>(obj, value, info);
+    return pyopencv_to<ncvslideio::flann::IndexParams>(obj, value, info);
 }
 
 template<>

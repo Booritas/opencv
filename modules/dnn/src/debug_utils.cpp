@@ -10,7 +10,7 @@
 #include <opencv2/dnn/utils/debug_utils.hpp>
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 bool DNN_DIAGNOSTICS_RUN = false;

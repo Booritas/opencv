@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     enum class SquashMethod {
         SOFTMAX,
@@ -69,7 +69,7 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         using wrapper_type = GetCUDABackendWrapperType<T>;
 
         template <class V>
-        RegionOp(csl::Stream stream_, const cv::Mat& bias, const RegionConfiguration<V>& config)
+        RegionOp(csl::Stream stream_, const ncvslideio::Mat& bias, const RegionConfiguration<V>& config)
             : stream(std::move(stream_))
         {
             biasTensor = csl::makeTensorHeader<T>(bias);
@@ -92,8 +92,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(outputs.size() == 1);
@@ -182,6 +182,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         bool new_coords;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_REGION_HPP */

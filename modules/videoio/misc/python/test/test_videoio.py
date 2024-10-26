@@ -14,12 +14,12 @@ class Bindings(NewOpenCVTests):
         self.assertFalse(name == "")
 
     def test_registry(self):
-        self.check_name(cv.videoio_registry.getBackendName(cv.CAP_ANY));
-        self.check_name(cv.videoio_registry.getBackendName(cv.CAP_FFMPEG))
-        self.check_name(cv.videoio_registry.getBackendName(cv.CAP_OPENCV_MJPEG))
-        backends = cv.videoio_registry.getBackends()
+        self.check_name(ncvslideio.videoio_registry.getBackendName(ncvslideio.CAP_ANY));
+        self.check_name(ncvslideio.videoio_registry.getBackendName(ncvslideio.CAP_FFMPEG))
+        self.check_name(ncvslideio.videoio_registry.getBackendName(ncvslideio.CAP_OPENCV_MJPEG))
+        backends = ncvslideio.videoio_registry.getBackends()
         for backend in backends:
-            self.check_name(cv.videoio_registry.getBackendName(backend))
+            self.check_name(ncvslideio.videoio_registry.getBackendName(backend))
 
 if __name__ == '__main__':
     NewOpenCVTests.bootstrap()

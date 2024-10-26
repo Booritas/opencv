@@ -19,8 +19,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/dnn.hpp>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 const char* keys =
 "{help    h  |                 | show help message}"
@@ -47,7 +47,7 @@ const char* keys =
 "6: CUDA, "
 "7: CUDA fp16 (half-float preprocess) }";
 
-namespace cv{
+namespace ncvslideio{
 namespace reid{
 
 static Mat preprocess(const Mat& img)
@@ -156,7 +156,7 @@ static void getTopK(const std::vector<std::vector<float>>& queryFeatures, const 
 static void addBorder(const Mat& img, const Scalar& color, Mat& result)
 {
     const int bordersize = 5;
-    copyMakeBorder(img, result, bordersize, bordersize, bordersize, bordersize, cv::BORDER_CONSTANT, color);
+    copyMakeBorder(img, result, bordersize, bordersize, bordersize, bordersize, ncvslideio::BORDER_CONSTANT, color);
     return ;
 }
 

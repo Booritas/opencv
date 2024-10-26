@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
   console.log('opencv.js loaded');
   if (isNodeJs) {
-    global.cv = cv;
+    global.ncvslideio = ncvslideio;
     global.combine = HelpFunc.combine;
     global.fillGradient = HelpFunc.fillGradient;
     global.log = HelpFunc.log;
@@ -65,23 +65,23 @@ function perf() {
   function addResizeCase(suite, type) {
     suite.add('resize', function() {
       if (type == "area") {
-        cv.resize(src, dst, dst.size(), 0, 0, cv.INTER_AREA);
+        ncvslideio.resize(src, dst, dst.size(), 0, 0, ncvslideio.INTER_AREA);
       } else {
-        cv.resize(src, dst, to, 0, 0, cv.INTER_LINEAR_EXACT);
+        ncvslideio.resize(src, dst, to, 0, 0, ncvslideio.INTER_LINEAR_EXACT);
       }
     }, {
         'setup': function() {
           let from = this.params.from;
           let to = this.params.to;
-          let matType = cv[this.params.matType];
-          let src = new cv.Mat(from, matType);
+          let matType = ncvslideio[this.params.matType];
+          let src = new ncvslideio.Mat(from, matType);
           let type = this.params.modeType;
           let dst;
           if (type == "area") {
-            dst = new cv.Mat(from.height/scale, from.width/scale, matType);
+            dst = new ncvslideio.Mat(from.height/scale, from.width/scale, matType);
           } else {
-            dst = new cv.Mat(to, matType);
-            fillGradient(cv, src);
+            dst = new ncvslideio.Mat(to, matType);
+            fillGradient(ncvslideio, src);
           }
           },
         'teardown': function() {
@@ -115,7 +115,7 @@ function perf() {
     if (/\(\w+,[\ ]*[0-9]+x[0-9]+,[\ ]*[0-9]+x[0-9]+\)/g.test(paramsContent.toString())) {
       let params = paramsContent.toString().match(/\(\w+,[\ ]*[0-9]+x[0-9]+,[\ ]*[0-9]+x[0-9]+\)/g)[0];
       let paramObjs = [];
-      paramObjs.push({name:"matType", value:"", reg:["/CV\_[0-9]+[A-z][A-z][0-9]/"], index:0});
+      paramObjs.push({name:"matType", value:"", reg:["/ncvslideio\_[0-9]+[A-z][A-z][0-9]/"], index:0});
       paramObjs.push({name:"size1", value:"", reg:[""], index:1});
       paramObjs.push({name:"size2", value:"", reg:[""], index:2});
       let locationList = decodeParams2Case(params, paramObjs,combinations);
@@ -158,11 +158,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

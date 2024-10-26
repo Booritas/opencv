@@ -49,7 +49,7 @@
 #include <iostream>
 #include <functional>
 
-namespace cv
+namespace ncvslideio
 {
 
 struct greaterThanPtr
@@ -363,7 +363,7 @@ static bool openvx_harris(Mat image, OutputArray _corners,
 
 }
 
-void cv::goodFeaturesToTrack( InputArray image, OutputArray corners,
+void ncvslideio::goodFeaturesToTrack( InputArray image, OutputArray corners,
                               int maxCorners, double qualityLevel, double minDistance,
                               InputArray mask, int blockSize, bool useHarrisDetector, double k )
 {
@@ -371,7 +371,7 @@ void cv::goodFeaturesToTrack( InputArray image, OutputArray corners,
                                mask, noArray(), blockSize, 3, useHarrisDetector, k);
 }
 
-void cv::goodFeaturesToTrack( InputArray image, OutputArray corners,
+void ncvslideio::goodFeaturesToTrack( InputArray image, OutputArray corners,
                               int maxCorners, double qualityLevel, double minDistance,
                               InputArray mask, int blockSize, int gradientSize, bool useHarrisDetector, double k )
 {
@@ -379,7 +379,7 @@ void cv::goodFeaturesToTrack( InputArray image, OutputArray corners,
                                 mask, noArray(), blockSize, gradientSize, useHarrisDetector, k );
 }
 
-void cv::goodFeaturesToTrack( InputArray _image, OutputArray _corners,
+void ncvslideio::goodFeaturesToTrack( InputArray _image, OutputArray _corners,
                               int maxCorners, double qualityLevel, double minDistance,
                               InputArray _mask, OutputArray _cornersQuality, int blockSize, int gradientSize,
                               bool useHarrisDetector, double harrisK )
@@ -554,14 +554,14 @@ cvGoodFeaturesToTrack( const void* _image, void*, void*,
                        const void* _maskImage, int block_size,
                        int use_harris, double harris_k )
 {
-    cv::Mat image = cv::cvarrToMat(_image), mask;
-    std::vector<cv::Point2f> corners;
+    ncvslideio::Mat image = ncvslideio::cvarrToMat(_image), mask;
+    std::vector<ncvslideio::Point2f> corners;
 
     if( _maskImage )
-        mask = cv::cvarrToMat(_maskImage);
+        mask = ncvslideio::cvarrToMat(_maskImage);
 
     CV_Assert( _corners && _corner_count );
-    cv::goodFeaturesToTrack( image, corners, *_corner_count, quality_level,
+    ncvslideio::goodFeaturesToTrack( image, corners, *_corner_count, quality_level,
         min_distance, mask, block_size, use_harris != 0, harris_k );
 
     size_t i, ncorners = corners.size();

@@ -71,7 +71,7 @@ OCL_PERF_TEST_P(PyrDownFixture, PyrDown,
     UMat src(srcSize, type), dst(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::pyrDown(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::pyrDown(src, dst);
 
     SANITY_CHECK(dst, eps);
 }
@@ -95,7 +95,7 @@ OCL_PERF_TEST_P(PyrUpFixture, PyrUp,
     UMat src(srcSize, type), dst(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::pyrUp(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::pyrUp(src, dst);
 
     SANITY_CHECK(dst, eps);
 }
@@ -118,7 +118,7 @@ OCL_PERF_TEST_P(BuildPyramidFixture, BuildPyramid,
     UMat src(srcSize, type);
     declare.in(src, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::buildPyramid(src, dst, maxLevel);
+    OCL_TEST_CYCLE() ncvslideio::buildPyramid(src, dst, maxLevel);
 
     UMat dst0 = dst[0], dst1 = dst[1], dst2 = dst[2], dst3 = dst[3], dst4 = dst[4];
 

@@ -13,8 +13,8 @@ typedef TestBaseWithParam<ImgSize_TmplSize_Method_MatType_t> ImgSize_TmplSize_Me
 
 OCL_PERF_TEST_P(ImgSize_TmplSize_Method_MatType, MatchTemplate,
         ::testing::Combine(
-            testing::Values(cv::Size(640, 480), cv::Size(1280, 1024)),
-            testing::Values(cv::Size(11, 11), cv::Size(16, 16), cv::Size(41, 41)),
+            testing::Values(ncvslideio::Size(640, 480), ncvslideio::Size(1280, 1024)),
+            testing::Values(ncvslideio::Size(11, 11), ncvslideio::Size(16, 16), ncvslideio::Size(41, 41)),
             MethodType::all(),
             testing::Values(CV_8UC1, CV_8UC3, CV_32FC1, CV_32FC3)
             )
@@ -60,7 +60,7 @@ OCL_PERF_TEST_P(CV_TM_CCORRFixture, matchTemplate,
 
     declare.in(src, templ, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::matchTemplate(src, templ, dst, cv::TM_CCORR);
+    OCL_TEST_CYCLE() ncvslideio::matchTemplate(src, templ, dst, ncvslideio::TM_CCORR);
 
     SANITY_CHECK(dst, 1e-4);
 }
@@ -78,7 +78,7 @@ OCL_PERF_TEST_P(CV_TM_CCORR_NORMEDFixture, matchTemplate,
 
     declare.in(src, templ, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::matchTemplate(src, templ, dst, cv::TM_CCORR_NORMED);
+    OCL_TEST_CYCLE() ncvslideio::matchTemplate(src, templ, dst, ncvslideio::TM_CCORR_NORMED);
 
     SANITY_CHECK(dst, 3e-2);
 }

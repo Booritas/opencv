@@ -13,7 +13,7 @@
 
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class ReshapeOp final : public CUDABackendNode {
@@ -23,8 +23,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         ReshapeOp(csl::Stream stream_) : stream(std::move(stream_)) { }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             /* sometimes the output shape is passed as extra inputs; hence, >= instead of == */
@@ -56,6 +56,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         csl::Stream stream;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_RESHAPE_HPP */

@@ -40,8 +40,8 @@ namespace
     public:
         HeteroGraph()
         {
-            auto tmp = I::GClone::on(cv::gapi::add(in[0], in[1]));
-            out = cv::gapi::imgproc::GBGR2Gray::on(tmp);
+            auto tmp = I::GClone::on(ncvslideio::gapi::add(in[0], in[1]));
+            out = ncvslideio::gapi::imgproc::GBGR2Gray::on(tmp);
         }
 
         static void registerCallKernel(KernelTags kernel_tag) {
@@ -56,7 +56,7 @@ namespace
         void SetUp() override
         {
             if (!kernel_calls.empty())
-                cv::util::throw_error(std::logic_error("Kernel call log has not been cleared!!!"));
+                ncvslideio::util::throw_error(std::logic_error("Kernel call log has not been cleared!!!"));
         }
 
         void TearDown() override
@@ -65,7 +65,7 @@ namespace
         }
 
     protected:
-        cv::GMat in[2], out;
+        ncvslideio::GMat in[2], out;
         static std::set<KernelTags> kernel_calls;
     };
 
@@ -73,23 +73,23 @@ namespace
     {
         GAPI_OCV_KERNEL(GClone, I::GClone)
         {
-            static void run(const cv::Mat&, cv::Mat)
+            static void run(const ncvslideio::Mat&, ncvslideio::Mat)
             {
                 HeteroGraph::registerCallKernel(KernelTags::CPU_CUSTOM_CLONE);
             }
         };
 
-        GAPI_OCV_KERNEL(BGR2Gray, cv::gapi::imgproc::GBGR2Gray)
+        GAPI_OCV_KERNEL(BGR2Gray, ncvslideio::gapi::imgproc::GBGR2Gray)
         {
-            static void run(const cv::Mat&, cv::Mat&)
+            static void run(const ncvslideio::Mat&, ncvslideio::Mat&)
             {
                 HeteroGraph::registerCallKernel(KernelTags::CPU_CUSTOM_BGR2GRAY);
             }
         };
 
-        GAPI_OCV_KERNEL(GAdd, cv::gapi::core::GAdd)
+        GAPI_OCV_KERNEL(GAdd, ncvslideio::gapi::core::GAdd)
         {
-            static void run(const cv::Mat&, const cv::Mat&, int, cv::Mat&)
+            static void run(const ncvslideio::Mat&, const ncvslideio::Mat&, int, ncvslideio::Mat&)
             {
                 HeteroGraph::registerCallKernel(KernelTags::CPU_CUSTOM_ADD);
             }
@@ -101,26 +101,26 @@ namespace
         GAPI_FLUID_KERNEL(GClone, I::GClone, false)
         {
             static const int Window = 1;
-            static void run(const cv::gapi::fluid::View&, cv::gapi::fluid::Buffer&)
+            static void run(const ncvslideio::gapi::fluid::View&, ncvslideio::gapi::fluid::Buffer&)
             {
                 HeteroGraph::registerCallKernel(KernelTags::FLUID_CUSTOM_CLONE);
             }
         };
 
-        GAPI_FLUID_KERNEL(BGR2Gray, cv::gapi::imgproc::GBGR2Gray, false)
+        GAPI_FLUID_KERNEL(BGR2Gray, ncvslideio::gapi::imgproc::GBGR2Gray, false)
         {
             static const int Window = 1;
-            static void run(const cv::gapi::fluid::View&, cv::gapi::fluid::Buffer&)
+            static void run(const ncvslideio::gapi::fluid::View&, ncvslideio::gapi::fluid::Buffer&)
             {
                 HeteroGraph::registerCallKernel(KernelTags::FLUID_CUSTOM_BGR2GRAY);
             }
         };
 
-        GAPI_FLUID_KERNEL(GAdd, cv::gapi::core::GAdd, false)
+        GAPI_FLUID_KERNEL(GAdd, ncvslideio::gapi::core::GAdd, false)
         {
             static const int Window = 1;
-            static void run(const cv::gapi::fluid::View&, const cv::gapi::fluid::View&,
-                            int, cv::gapi::fluid::Buffer&)
+            static void run(const ncvslideio::gapi::fluid::View&, const ncvslideio::gapi::fluid::View&,
+                            int, ncvslideio::gapi::fluid::Buffer&)
             {
                 HeteroGraph::registerCallKernel(KernelTags::FLUID_CUSTOM_ADD);
             }
@@ -133,14 +133,14 @@ namespace
 TEST(KernelPackage, Create)
 {
     namespace J = Jupiter;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz>();
     EXPECT_EQ(3u, pkg.size());
 }
 
 TEST(KernelPackage, Includes)
 {
     namespace J = Jupiter;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz>();
     EXPECT_TRUE (pkg.includes<J::Foo>());
     EXPECT_TRUE (pkg.includes<J::Bar>());
     EXPECT_TRUE (pkg.includes<J::Baz>());
@@ -150,7 +150,7 @@ TEST(KernelPackage, Includes)
 TEST(KernelPackage, Include)
 {
     namespace J = Jupiter;
-    auto pkg = cv::gapi::kernels();
+    auto pkg = ncvslideio::gapi::kernels();
     pkg.include(J::backend(), "test.kernels.foo");
     pkg.include(J::backend(), "test.kernels.bar");
     EXPECT_TRUE (pkg.includes<J::Foo>());
@@ -160,7 +160,7 @@ TEST(KernelPackage, Include)
 TEST(KernelPackage, GetIds)
 {
     namespace J = Jupiter;
-    auto pkg = cv::gapi::kernels();
+    auto pkg = ncvslideio::gapi::kernels();
     pkg.include(J::backend(), "test.kernels.foo");
     pkg.include(J::backend(), "test.kernels.bar");
     pkg.include<J::Baz>();
@@ -174,7 +174,7 @@ TEST(KernelPackage, IncludesAPI)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, S::Bar>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, S::Bar>();
     EXPECT_TRUE (pkg.includesAPI<I::Foo>());
     EXPECT_TRUE (pkg.includesAPI<I::Bar>());
     EXPECT_FALSE(pkg.includesAPI<I::Baz>());
@@ -184,7 +184,7 @@ TEST(KernelPackage, IncludesAPI)
 TEST(KernelPackage, Include_Add)
 {
     namespace J = Jupiter;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz>();
     EXPECT_FALSE(pkg.includes<J::Qux>());
 
     pkg.include<J::Qux>();
@@ -195,7 +195,7 @@ TEST(KernelPackage, Include_REPLACE)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
     EXPECT_FALSE(pkg.includes<S::Bar>());
 
     pkg.include<S::Bar>();
@@ -207,7 +207,7 @@ TEST(KernelPackage, RemoveBackend)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, S::Baz>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, S::Baz>();
     EXPECT_TRUE(pkg.includes<J::Foo>());
     EXPECT_TRUE(pkg.includes<J::Bar>());
 
@@ -221,7 +221,7 @@ TEST(KernelPackage, RemoveAPI)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
     EXPECT_TRUE(pkg.includes<J::Foo>());
     EXPECT_TRUE(pkg.includes<J::Bar>());
 
@@ -234,7 +234,7 @@ TEST(KernelPackage, CreateHetero)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz, S::Qux>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz, S::Qux>();
     EXPECT_EQ(4u, pkg.size());
 }
 
@@ -242,7 +242,7 @@ TEST(KernelPackage, IncludesHetero)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz, S::Qux>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz, S::Qux>();
     EXPECT_TRUE (pkg.includes<J::Foo>());
     EXPECT_TRUE (pkg.includes<J::Bar>());
     EXPECT_TRUE (pkg.includes<J::Baz>());
@@ -254,7 +254,7 @@ TEST(KernelPackage, IncludeHetero)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz>();
+    auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz>();
     EXPECT_FALSE(pkg.includes<J::Qux>());
     EXPECT_FALSE(pkg.includes<S::Qux>());
 
@@ -267,9 +267,9 @@ TEST(KernelPackage, Combine_REPLACE_Full)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto j_pkg = cv::gapi::kernels<J::Foo, J::Bar, J::Baz>();
-    auto s_pkg = cv::gapi::kernels<S::Foo, S::Bar, S::Baz>();
-    auto u_pkg = cv::gapi::combine(j_pkg, s_pkg);
+    auto j_pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar, J::Baz>();
+    auto s_pkg = ncvslideio::gapi::kernels<S::Foo, S::Bar, S::Baz>();
+    auto u_pkg = ncvslideio::gapi::combine(j_pkg, s_pkg);
 
     EXPECT_EQ(3u, u_pkg.size());
     EXPECT_FALSE(u_pkg.includes<J::Foo>());
@@ -284,9 +284,9 @@ TEST(KernelPackage, Combine_REPLACE_Partial)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto j_pkg = cv::gapi::kernels<J::Foo, J::Bar>();
-    auto s_pkg = cv::gapi::kernels<S::Bar>();
-    auto u_pkg = cv::gapi::combine(j_pkg, s_pkg);
+    auto j_pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
+    auto s_pkg = ncvslideio::gapi::kernels<S::Bar>();
+    auto u_pkg = ncvslideio::gapi::combine(j_pkg, s_pkg);
 
     EXPECT_EQ(2u, u_pkg.size());
     EXPECT_TRUE (u_pkg.includes<J::Foo>());
@@ -298,9 +298,9 @@ TEST(KernelPackage, Combine_REPLACE_Append)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto j_pkg = cv::gapi::kernels<J::Foo, J::Bar>();
-    auto s_pkg = cv::gapi::kernels<S::Qux>();
-    auto u_pkg = cv::gapi::combine(j_pkg, s_pkg);
+    auto j_pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
+    auto s_pkg = ncvslideio::gapi::kernels<S::Qux>();
+    auto u_pkg = ncvslideio::gapi::combine(j_pkg, s_pkg);
 
     EXPECT_EQ(3u, u_pkg.size());
     EXPECT_TRUE(u_pkg.includes<J::Foo>());
@@ -311,9 +311,9 @@ TEST(KernelPackage, Combine_REPLACE_Append)
 TEST(KernelPackage, TestWithEmptyLHS)
 {
     namespace J = Jupiter;
-    auto lhs = cv::gapi::kernels<>();
-    auto rhs = cv::gapi::kernels<J::Foo>();
-    auto pkg = cv::gapi::combine(lhs, rhs);
+    auto lhs = ncvslideio::gapi::kernels<>();
+    auto rhs = ncvslideio::gapi::kernels<J::Foo>();
+    auto pkg = ncvslideio::gapi::combine(lhs, rhs);
 
     EXPECT_EQ(1u, pkg.size());
     EXPECT_TRUE(pkg.includes<J::Foo>());
@@ -322,9 +322,9 @@ TEST(KernelPackage, TestWithEmptyLHS)
 TEST(KernelPackage, TestWithEmptyRHS)
 {
     namespace J = Jupiter;
-    auto lhs = cv::gapi::kernels<J::Foo>();
-    auto rhs = cv::gapi::kernels<>();
-    auto pkg = cv::gapi::combine(lhs, rhs);
+    auto lhs = ncvslideio::gapi::kernels<J::Foo>();
+    auto rhs = ncvslideio::gapi::kernels<>();
+    auto pkg = ncvslideio::gapi::combine(lhs, rhs);
 
     EXPECT_EQ(1u, pkg.size());
     EXPECT_TRUE(pkg.includes<J::Foo>());
@@ -332,30 +332,30 @@ TEST(KernelPackage, TestWithEmptyRHS)
 
 TEST(KernelPackage, Return_Unique_Backends)
 {
-    auto pkg = cv::gapi::kernels<cpu::GClone, fluid::BGR2Gray, fluid::GAdd>();
+    auto pkg = ncvslideio::gapi::kernels<cpu::GClone, fluid::BGR2Gray, fluid::GAdd>();
     EXPECT_EQ(2u, pkg.backends().size());
 }
 
 TEST(KernelPackage, Can_Use_Custom_Kernel)
 {
-    cv::GMat in[2];
-    auto out = I::GClone::on(cv::gapi::add(in[0], in[1]));
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
+    ncvslideio::GMat in[2];
+    auto out = I::GClone::on(ncvslideio::gapi::add(in[0], in[1]));
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
 
-    auto pkg = cv::gapi::kernels<cpu::GClone>();
+    auto pkg = ncvslideio::gapi::kernels<cpu::GClone>();
 
-    EXPECT_NO_THROW(cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-                        compile({in_meta, in_meta}, cv::compile_args(pkg)));
+    EXPECT_NO_THROW(ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+                        compile({in_meta, in_meta}, ncvslideio::compile_args(pkg)));
 }
 
 TEST(KernelPackage, CombineMultiple)
 {
     namespace J = Jupiter;
     namespace S = Saturn;
-    auto a = cv::gapi::kernels<J::Foo>();
-    auto b = cv::gapi::kernels<J::Bar>();
-    auto c = cv::gapi::kernels<S::Qux>();
-    auto pkg = cv::gapi::combine(a, b, c);
+    auto a = ncvslideio::gapi::kernels<J::Foo>();
+    auto b = ncvslideio::gapi::kernels<J::Bar>();
+    auto c = ncvslideio::gapi::kernels<S::Qux>();
+    auto pkg = ncvslideio::gapi::combine(a, b, c);
 
     EXPECT_EQ(3u, pkg.size());
     EXPECT_TRUE(pkg.includes<J::Foo>());
@@ -370,13 +370,13 @@ TEST_F(HeteroGraph, Call_Custom_Kernel_Default_Backend)
     //            |
     // in1 -------`
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC3),
-            in_mat2 = cv::Mat::eye(3, 3, CV_8UC3),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
+            in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
             out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GClone>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GClone>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::CPU_CUSTOM_CLONE));
 }
@@ -388,13 +388,13 @@ TEST_F(HeteroGraph, Call_Custom_Kernel_Not_Default_Backend)
     //            |
     // in1 -------`
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC3),
-            in_mat2 = cv::Mat::eye(3, 3, CV_8UC3),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
+            in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
             out_mat;
 
-    auto pkg = cv::gapi::kernels<fluid::GClone>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    auto pkg = ncvslideio::gapi::kernels<fluid::GClone>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::FLUID_CUSTOM_CLONE));
 }
@@ -406,13 +406,13 @@ TEST_F(HeteroGraph, Replace_Default_To_Same_Backend)
     //            |
     // in1 -------`
 
-    cv::Mat in_mat1 = cv::Mat::eye(3, 3, CV_8UC3),
-            in_mat2 = cv::Mat::eye(3, 3, CV_8UC3),
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
+            in_mat2 = ncvslideio::Mat::eye(3, 3, CV_8UC3),
             out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GClone, cpu::BGR2Gray>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GClone, cpu::BGR2Gray>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::CPU_CUSTOM_BGR2GRAY));
 }
@@ -424,13 +424,13 @@ TEST_F(HeteroGraph, Replace_Default_To_Another_Backend)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
             out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GClone, fluid::BGR2Gray>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GClone, fluid::BGR2Gray>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::FLUID_CUSTOM_BGR2GRAY));
 }
@@ -442,13 +442,13 @@ TEST_F(HeteroGraph, Use_Only_Same_Backend)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GAdd, cpu::GClone, cpu::BGR2Gray>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(cv::gapi::use_only{pkg}));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GAdd, cpu::GClone, cpu::BGR2Gray>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg}));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::CPU_CUSTOM_ADD));
     EXPECT_TRUE(checkCallKernel(KernelTags::CPU_CUSTOM_CLONE));
@@ -462,13 +462,13 @@ TEST_F(HeteroGraph, Use_Only_Another_Backend)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<fluid::GAdd, fluid::GClone, fluid::BGR2Gray>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(cv::gapi::use_only{pkg}));
+    auto pkg = ncvslideio::gapi::kernels<fluid::GAdd, fluid::GClone, fluid::BGR2Gray>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg}));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::FLUID_CUSTOM_ADD));
     EXPECT_TRUE(checkCallKernel(KernelTags::FLUID_CUSTOM_CLONE));
@@ -482,13 +482,13 @@ TEST_F(HeteroGraph, Use_Only_Hetero_Backend)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GAdd, fluid::GClone, fluid::BGR2Gray>();
-    cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(cv::gapi::use_only{pkg}));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GAdd, fluid::GClone, fluid::BGR2Gray>();
+    ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg}));
 
     EXPECT_TRUE(checkCallKernel(KernelTags::CPU_CUSTOM_ADD));
     EXPECT_TRUE(checkCallKernel(KernelTags::FLUID_CUSTOM_CLONE));
@@ -502,13 +502,13 @@ TEST_F(HeteroGraph, Use_Only_Not_Found_Default)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<fluid::GClone, fluid::BGR2Gray>();
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(cv::gapi::use_only{pkg})));
+    auto pkg = ncvslideio::gapi::kernels<fluid::GClone, fluid::BGR2Gray>();
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg})));
 }
 
 TEST_F(HeteroGraph, Use_Only_Not_Found_Custom)
@@ -518,13 +518,13 @@ TEST_F(HeteroGraph, Use_Only_Not_Found_Custom)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GAdd, fluid::BGR2Gray>();
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat), cv::compile_args(cv::gapi::use_only{pkg})));
+    auto pkg = ncvslideio::gapi::kernels<cpu::GAdd, fluid::BGR2Gray>();
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(ncvslideio::gapi::use_only{pkg})));
 }
 
 TEST_F(HeteroGraph, Use_Only_Other_Package_Ignored)
@@ -534,16 +534,16 @@ TEST_F(HeteroGraph, Use_Only_Other_Package_Ignored)
     //            |
     //in1 --------`
 
-    cv::Mat in_mat1(300, 300, CV_8UC3),
+    ncvslideio::Mat in_mat1(300, 300, CV_8UC3),
             in_mat2(300, 300, CV_8UC3),
         out_mat;
 
-    auto pkg = cv::gapi::kernels<cpu::GAdd, fluid::BGR2Gray>();
-    auto clone_pkg = cv::gapi::kernels<cpu::GClone>();
+    auto pkg = ncvslideio::gapi::kernels<cpu::GAdd, fluid::BGR2Gray>();
+    auto clone_pkg = ncvslideio::gapi::kernels<cpu::GClone>();
 
-    EXPECT_ANY_THROW(cv::GComputation(cv::GIn(in[0], in[1]), cv::GOut(out)).
-        apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat),
-              cv::compile_args(clone_pkg, cv::gapi::use_only{pkg})));
+    EXPECT_ANY_THROW(ncvslideio::GComputation(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out)).
+        apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat),
+              ncvslideio::compile_args(clone_pkg, ncvslideio::gapi::use_only{pkg})));
 }
 
 } // namespace opencv_test

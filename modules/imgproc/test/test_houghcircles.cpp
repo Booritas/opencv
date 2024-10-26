@@ -51,12 +51,12 @@ namespace opencv_test { namespace {
 
 //#define GENERATE_DATA // generate data in debug mode via CPU code path (without IPP / OpenCL and other accelerators)
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static string getTestCaseName(const string& picture_name, double minDist, double edgeThreshold, double accumThreshold, int minRadius, int maxRadius)
 {
-    string results_name = cv::format("circles_%s_%.0f_%.0f_%.0f_%d_%d",
+    string results_name = ncvslideio::format("circles_%s_%.0f_%.0f_%.0f_%d_%d",
         picture_name.c_str(), minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
     string temp(results_name);
     size_t pos = temp.find_first_of("\\/.");
@@ -79,7 +79,7 @@ static void highlightCircles(const string& imagePath, const vector<Vec3f>& circl
         float x = circle[0];
         float y = circle[1];
         float r = max(circle[2], 2.0f);
-        cv::circle(imgDebug, Point(int(x), int(y)), int(r), yellow);
+        ncvslideio::circle(imgDebug, Point(int(x), int(y)), int(r), yellow);
     }
     imwrite(outputImagePath, imgDebug);
 }
@@ -123,7 +123,7 @@ public:
 
         vector<CircleType> circles;
         const double dp = 1.0;
-        HoughCircles(src, circles, cv::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
+        HoughCircles(src, circles, ncvslideio::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
 
         string imgProc = string(cvtest::TS::ptr()->get_data_path()) + "imgproc/";
 #if DEBUG_IMAGES

@@ -5,7 +5,7 @@
 //! @{
 
 //! @name Interpolation modes
-//! @sa cv::InterpolationFlags
+//! @sa ncvslideio::InterpolationFlags
 //! @{
 #define CV_HAL_INTER_NEAREST 0
 #define CV_HAL_INTER_LINEAR 1
@@ -21,14 +21,14 @@
 //! @}
 
 //! @name Morphology operations
-//! @sa cv::MorphTypes
+//! @sa ncvslideio::MorphTypes
 //! @{
 #define CV_HAL_MORPH_ERODE 0
 #define CV_HAL_MORPH_DILATE 1
 //! @}
 
 //! @name Threshold types
-//! @sa cv::ThresholdTypes
+//! @sa ncvslideio::ThresholdTypes
 //! @{
 #define CV_HAL_THRESH_BINARY      0
 #define CV_HAL_THRESH_BINARY_INV  1
@@ -41,7 +41,7 @@
 //! @}
 
 //! @name Adaptive threshold algorithm
-//! @sa cv::AdaptiveThresholdTypes
+//! @sa ncvslideio::AdaptiveThresholdTypes
 //! @{
 #define CV_HAL_ADAPTIVE_THRESH_MEAN_C     0
 #define CV_HAL_ADAPTIVE_THRESH_GAUSSIAN_C 1

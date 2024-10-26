@@ -12,7 +12,7 @@
 
 #define GAPI_DbgAssertNoOp(expr) {                  \
     constexpr bool _assert_tmp = false && (expr);   \
-    cv::util::suppress_unused_warning(_assert_tmp); \
+    ncvslideio::util::suppress_unused_warning(_assert_tmp); \
 }
 
 #if !defined(GAPI_STANDALONE)
@@ -25,7 +25,7 @@
 #  define GAPI_DbgAssert(expr) GAPI_DbgAssertNoOp(expr)
 #endif
 
-#define GAPI_Error(msg) CV_Error(cv::Error::StsError, msg)
+#define GAPI_Error(msg) CV_Error(ncvslideio::Error::StsError, msg)
 
 #else
 #include <stdexcept>
@@ -38,7 +38,7 @@ namespace detail
     {
         std::stringstream ss;
         ss << file << ":" << line << ": Assertion " << str << " in function " << func << " failed\n";
-        cv::util::throw_error(std::logic_error(ss.str()));
+        ncvslideio::util::throw_error(std::logic_error(ss.str()));
     }
 }
 

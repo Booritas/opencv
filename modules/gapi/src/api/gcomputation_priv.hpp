@@ -19,26 +19,26 @@
 
 #include "backends/common/serialization.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 struct GraphInfo
 {
     using Ptr = std::shared_ptr<GraphInfo>;
-    cv::GTypesInfo inputs;
-    cv::GTypesInfo outputs;
+    ncvslideio::GTypesInfo inputs;
+    ncvslideio::GTypesInfo outputs;
 };
 
 class GComputation::Priv
 {
 public:
     struct Expr {
-        cv::GProtoArgs m_ins;
-        cv::GProtoArgs m_outs;
+        ncvslideio::GProtoArgs m_ins;
+        ncvslideio::GProtoArgs m_outs;
     };
 
-    using Dump = cv::gapi::s11n::GSerialized;
+    using Dump = ncvslideio::gapi::s11n::GSerialized;
 
-    using Shape = cv::util::variant
+    using Shape = ncvslideio::util::variant
         < Expr    // An expression-based graph
         , Dump    // A deserialized graph
         >;

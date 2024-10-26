@@ -20,7 +20,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char* argv[])
 {

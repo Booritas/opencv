@@ -57,7 +57,7 @@ CV_EXPORTS @interface KeyPoint : NSObject
 @property int classId;
 
 #ifdef __cplusplus
-@property(readonly) cv::KeyPoint& nativeRef;
+@property(readonly) ncvslideio::KeyPoint& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -69,7 +69,7 @@ CV_EXPORTS @interface KeyPoint : NSObject
 - (instancetype)initWithX:(float)x y:(float)y size:(float)size angle:(float)angle;
 - (instancetype)initWithX:(float)x y:(float)y size:(float)size;
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::KeyPoint&)keyPoint;
++ (instancetype)fromNative:(ncvslideio::KeyPoint&)keyPoint;
 #endif
 
 #pragma mark - Common Methods

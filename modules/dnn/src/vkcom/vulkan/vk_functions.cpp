@@ -15,9 +15,9 @@
 #define VK_FUNC(func) PFN_##func func = nullptr;
 #define VK_FUNC_MANDATORY(func) PFN_##func func = nullptr;
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #include "function_list.inl.hpp"
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 #endif // HAVE_VULKAN

@@ -110,7 +110,7 @@ public:
         {
             for (int i = 0; i < numInps; i++)
             {
-                String inpfile = _tf(basename + cv::format(".input_%d.npy", i));
+                String inpfile = _tf(basename + ncvslideio::format(".input_%d.npy", i));
                 inps.push_back(blobFromNPY(inpfile));
             }
         }
@@ -124,7 +124,7 @@ public:
         {
             for (int i = 0; i < numOuts; i++)
             {
-                String outfile = _tf(basename + cv::format("_%d.npy", i));
+                String outfile = _tf(basename + ncvslideio::format("_%d.npy", i));
                 refs.push_back(blobFromNPY(outfile));
             }
         }
@@ -146,7 +146,7 @@ public:
         {
             for (int i = 0; i < numInps; i++)
             {
-                net.setInput(inps[i], inp_name + cv::format("_%d", i));
+                net.setInput(inps[i], inp_name + ncvslideio::format("_%d", i));
             }
         }
         else
@@ -674,30 +674,30 @@ TEST(Layer_LSTM_Test_Accuracy_, Reverse)
 {
     // This handcrafted setup calculates (approximately) the prefix sum of the
     // input, assuming the inputs are suitably small.
-    cv::Mat input(2, 1, CV_32FC1);
+    ncvslideio::Mat input(2, 1, CV_32FC1);
     input.at<float>(0, 0) = 1e-5f;
     input.at<float>(1, 0) = 2e-5f;
 
-    cv::Mat Wx(4, 1, CV_32FC1);
+    ncvslideio::Mat Wx(4, 1, CV_32FC1);
     Wx.at<float>(0, 0) = 0.f;  // Input gate
     Wx.at<float>(1, 0) = 0.f;  // Forget gate
     Wx.at<float>(2, 0) = 0.f;  // Output gate
     Wx.at<float>(3, 0) = 1.f;  // Update signal
 
-    cv::Mat Wh(4, 1, CV_32FC1);
+    ncvslideio::Mat Wh(4, 1, CV_32FC1);
     Wh.at<float>(0, 0) = 0.f;  // Input gate
     Wh.at<float>(1, 0) = 0.f;  // Forget gate
     Wh.at<float>(2, 0) = 0.f;  // Output gate
     Wh.at<float>(3, 0) = 0.f;  // Update signal
 
-    cv::Mat bias(4, 1, CV_32FC1);
+    ncvslideio::Mat bias(4, 1, CV_32FC1);
     bias.at<float>(0, 0) = 1e10f;  // Input gate - always allows input to c
     bias.at<float>(1, 0) = 1e10f;  // Forget gate - never forget anything on c
     bias.at<float>(2, 0) = 1e10f;  // Output gate - always output everything
     bias.at<float>(3, 0) = 0.f;  // Update signal
 
-    cv::Mat hInternal = cv::Mat::zeros(1, 1, CV_32FC1);
-    cv::Mat cInternal = cv::Mat::zeros(1, 1, CV_32FC1);
+    ncvslideio::Mat hInternal = ncvslideio::Mat::zeros(1, 1, CV_32FC1);
+    ncvslideio::Mat cInternal = ncvslideio::Mat::zeros(1, 1, CV_32FC1);
 
     LayerParams lp;
     lp.set("reverse", true);
@@ -709,14 +709,14 @@ TEST(Layer_LSTM_Test_Accuracy_, Reverse)
     lp.blobs.push_back(hInternal);
     lp.blobs.push_back(cInternal);
 
-    cv::Ptr<cv::dnn::LSTMLayer> layer = LSTMLayer::create(lp);
-    std::vector<cv::Mat> outputs;
-    std::vector<cv::Mat> inputs;
+    ncvslideio::Ptr<ncvslideio::dnn::LSTMLayer> layer = LSTMLayer::create(lp);
+    std::vector<ncvslideio::Mat> outputs;
+    std::vector<ncvslideio::Mat> inputs;
     inputs.push_back(input);
     runLayer(layer, inputs, outputs);
 
     ASSERT_EQ(1, outputs.size());
-    cv::Mat out = outputs[0];
+    ncvslideio::Mat out = outputs[0];
     ASSERT_EQ(3, out.dims);
     ASSERT_EQ(shape(2, 1, 1), shape(out));
     float* data = reinterpret_cast<float*>(out.data);
@@ -1453,7 +1453,7 @@ TEST_P(Test_DLDT_two_inputs_3dim, as_IR)
     Mat out = net.forward();
 
     Mat ref;
-    cv::add(firstInp, secondInp, ref, Mat(), CV_32F);
+    ncvslideio::add(firstInp, secondInp, ref, Mat(), CV_32F);
     normAssert(out, ref, "", l1, lInf);
 }
 
@@ -1480,7 +1480,7 @@ public:
         return backendId == DNN_BACKEND_OPENCV;
     }
 
-    virtual void forward(cv::InputArrayOfArrays inputs, cv::OutputArrayOfArrays outputs, cv::OutputArrayOfArrays internals) CV_OVERRIDE {}
+    virtual void forward(ncvslideio::InputArrayOfArrays inputs, ncvslideio::OutputArrayOfArrays outputs, ncvslideio::OutputArrayOfArrays internals) CV_OVERRIDE {}
 };
 
 typedef DNNTestLayer Test_DLDT_layers;
@@ -2189,7 +2189,7 @@ struct Layer_Test_Slice : public testing::TestWithParam<tuple<Backend, Target> >
             net.setPreferableTarget(targetId);
             Mat out = net.forward();
 
-            EXPECT_GT(cv::norm(out, NORM_INF), 0);
+            EXPECT_GT(ncvslideio::norm(out, NORM_INF), 0);
             normAssert(out, input(range));
 #if 0
             cout << input(range).clone().reshape(1, 1) << endl;

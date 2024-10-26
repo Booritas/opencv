@@ -13,7 +13,7 @@
 
 namespace
 {
-#define STEREO_CPU [] () { return cv::compile_args(cv::gapi::use_only{cv::gapi::calib3d::cpu::kernels()}); }
+#define STEREO_CPU [] () { return ncvslideio::compile_args(ncvslideio::gapi::use_only{ncvslideio::gapi::calib3d::cpu::kernels()}); }
 }  // anonymous namespace
 
 namespace opencv_test
@@ -21,15 +21,15 @@ namespace opencv_test
 
 INSTANTIATE_TEST_CASE_P(CPU_Tests, TestGAPIStereo,
                         Combine(Values(CV_8UC1),
-                                Values(cv::Size(1280, 720)),
+                                Values(ncvslideio::Size(1280, 720)),
                                 Values(CV_32FC1),
                                 Values(STEREO_CPU),
-                                Values(cv::gapi::StereoOutputFormat::DEPTH_FLOAT16,
-                                       cv::gapi::StereoOutputFormat::DEPTH_FLOAT32,
-                                       cv::gapi::StereoOutputFormat::DISPARITY_FIXED16_12_4,
-                                       cv::gapi::StereoOutputFormat::DEPTH_16F,
-                                       cv::gapi::StereoOutputFormat::DEPTH_32F,
-                                       cv::gapi::StereoOutputFormat::DISPARITY_16Q_11_4),
+                                Values(ncvslideio::gapi::StereoOutputFormat::DEPTH_FLOAT16,
+                                       ncvslideio::gapi::StereoOutputFormat::DEPTH_FLOAT32,
+                                       ncvslideio::gapi::StereoOutputFormat::DISPARITY_FIXED16_12_4,
+                                       ncvslideio::gapi::StereoOutputFormat::DEPTH_16F,
+                                       ncvslideio::gapi::StereoOutputFormat::DEPTH_32F,
+                                       ncvslideio::gapi::StereoOutputFormat::DISPARITY_16Q_11_4),
                                 Values(16),
                                 Values(43),
                                 Values(63.5),

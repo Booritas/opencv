@@ -12,9 +12,9 @@
 #include "api/gbackend_priv.hpp"
 #include "compiler/gislandmodel.hpp" // GIslandExecutable
 
-cv::gapi::GBackend cv::gapi::compound::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::compound::backend()
 {
     // A pointer to dummy Priv is used to uniquely identify backends
-    static cv::gapi::GBackend this_backend(std::make_shared<cv::gapi::GBackend::Priv>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<ncvslideio::gapi::GBackend::Priv>());
     return this_backend;
 }

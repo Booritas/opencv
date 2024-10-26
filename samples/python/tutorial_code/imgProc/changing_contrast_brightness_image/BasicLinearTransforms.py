@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='Code for Changing the contrast and
 parser.add_argument('--input', help='Path to input image.', default='lena.jpg')
 args = parser.parse_args()
 
-image = cv.imread(cv.samples.findFile(args.input))
+image = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if image is None:
     print('Could not open or find the image: ', args.input)
     exit(0)
@@ -36,7 +36,7 @@ except ValueError:
 
 # Do the operation new_image(i,j) = alpha*image(i,j) + beta
 # Instead of these 'for' loops we could have used simply:
-# new_image = cv.convertScaleAbs(image, alpha=alpha, beta=beta)
+# new_image = ncvslideio.convertScaleAbs(image, alpha=alpha, beta=beta)
 # but we wanted to show you how to access the pixels :)
 ## [basic-linear-transform-operation]
 for y in range(image.shape[0]):

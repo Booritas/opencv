@@ -11,7 +11,7 @@
 
 #include <opencv2/imgproc.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 struct Model::Impl
@@ -263,7 +263,7 @@ public:
 
         double conf;
         Point maxLoc;
-        cv::minMaxLoc(out, nullptr, &conf, nullptr, &maxLoc);
+        ncvslideio::minMaxLoc(out, nullptr, &conf, nullptr, &maxLoc);
         return {maxLoc.x, static_cast<float>(conf)};
     }
 
@@ -275,8 +275,8 @@ protected:
 
         Mat exp;
         const float max = *std::max_element(input.begin<float>(), input.end<float>());
-        cv::exp((input - max), exp);
-        outblob.getMat() = exp / cv::sum(exp)[0];
+        ncvslideio::exp((input - max), exp);
+        outblob.getMat() = exp / ncvslideio::sum(exp)[0];
     }
 
 protected:
@@ -1043,7 +1043,7 @@ struct TextDetectionModel_Impl : public Model::Impl
     }
 
     virtual
-    std::vector<cv::RotatedRect> detectTextRectangles(InputArray frame)
+    std::vector<ncvslideio::RotatedRect> detectTextRectangles(InputArray frame)
     {
         CV_TRACE_FUNCTION();
         std::vector<float> confidences;
@@ -1108,7 +1108,7 @@ void TextDetectionModel::detect(
 
 void TextDetectionModel::detectTextRectangles(
         InputArray frame,
-        CV_OUT std::vector<cv::RotatedRect>& detections,
+        CV_OUT std::vector<ncvslideio::RotatedRect>& detections,
         CV_OUT std::vector<float>& confidences
 ) const
 {
@@ -1118,7 +1118,7 @@ void TextDetectionModel::detectTextRectangles(
 
 void TextDetectionModel::detectTextRectangles(
         InputArray frame,
-        CV_OUT std::vector<cv::RotatedRect>& detections
+        CV_OUT std::vector<ncvslideio::RotatedRect>& detections
 ) const
 {
     detections = TextDetectionModel_Impl::from(impl).detectTextRectangles(frame);
@@ -1158,10 +1158,10 @@ struct TextDetectionModel_EAST_Impl : public TextDetectionModel_Impl
 #endif
 
     virtual
-    std::vector<cv::RotatedRect> detectTextRectangles(InputArray frame, CV_OUT std::vector<float>& confidences) CV_OVERRIDE
+    std::vector<ncvslideio::RotatedRect> detectTextRectangles(InputArray frame, CV_OUT std::vector<float>& confidences) CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
-        std::vector<cv::RotatedRect> results;
+        std::vector<ncvslideio::RotatedRect> results;
 
         std::vector<Mat> outs;
         processFrame(frame, outs);
@@ -1358,11 +1358,11 @@ struct TextDetectionModel_DB_Impl : public TextDetectionModel_Impl
 
 
     virtual
-    std::vector<cv::RotatedRect> detectTextRectangles(InputArray frame, CV_OUT std::vector<float>& confidences) CV_OVERRIDE
+    std::vector<ncvslideio::RotatedRect> detectTextRectangles(InputArray frame, CV_OUT std::vector<float>& confidences) CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
         std::vector< std::vector<Point2f> > contours = detect(frame, confidences);
-        std::vector<cv::RotatedRect> results; results.reserve(contours.size());
+        std::vector<ncvslideio::RotatedRect> results; results.reserve(contours.size());
         for (size_t i = 0; i < contours.size(); i++)
         {
             auto& contour = contours[i];
@@ -1491,7 +1491,7 @@ struct TextDetectionModel_DB_Impl : public TextDetectionModel_Impl
         }
         std::vector<std::vector<Point>> roiContours = {roiContour};
         fillPoly(mask, roiContours, Scalar(1));
-        double score = cv::mean(binROI, mask).val[0];
+        double score = ncvslideio::mean(binROI, mask).val[0];
 
         return score;
     }

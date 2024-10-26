@@ -25,14 +25,14 @@ enum class Direction: int {Invalid, In, Out};
 template<class H, class... Metatypes>
 class Preserved
 {
-    using S = typename cv::detail::MkSeq<sizeof...(Metatypes)>::type;
-    std::tuple<cv::util::optional<Metatypes>...> m_data;
+    using S = typename ncvslideio::detail::MkSeq<sizeof...(Metatypes)>::type;
+    std::tuple<ncvslideio::util::optional<Metatypes>...> m_data;
 
     template<class T>
-    cv::util::optional<T> get(ade::ConstTypedGraph<Metatypes...> g, H h) {
+    ncvslideio::util::optional<T> get(ade::ConstTypedGraph<Metatypes...> g, H h) {
         return g.metadata(h).template contains<T>()
-            ? cv::util::make_optional(g.metadata(h).template get<T>())
-            : cv::util::optional<T>{};
+            ? ncvslideio::util::make_optional(g.metadata(h).template get<T>())
+            : ncvslideio::util::optional<T>{};
     }
     template<std::size_t Id>
     int set(ade::TypedGraph<Metatypes...> &g, H &h) {
@@ -42,7 +42,7 @@ class Preserved
         return 0;
     }
     template<int... IIs>
-    void copyTo_impl(ade::TypedGraph<Metatypes...> &g, H h, cv::detail::Seq<IIs...>) {
+    void copyTo_impl(ade::TypedGraph<Metatypes...> &g, H h, ncvslideio::detail::Seq<IIs...>) {
         int unused[] = {0, set<IIs>(g, h)...};
         (void) unused;
     }

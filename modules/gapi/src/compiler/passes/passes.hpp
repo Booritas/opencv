@@ -24,7 +24,7 @@ namespace ade {
 }
 
 // Forward declarations - internal
-namespace cv {
+namespace ncvslideio {
     class GKernelPackage;
 
 namespace gapi {
@@ -75,6 +75,6 @@ void intrinFinalize(ade::passes::PassContext &ctx);
 
 }} // namespace gimpl::passes
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_COMPILER_PASSES_HPP

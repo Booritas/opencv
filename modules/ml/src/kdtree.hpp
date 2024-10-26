@@ -3,7 +3,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace ml
 {
@@ -88,7 +88,7 @@ public:
     CV_PROP Mat points; //!< all the points. It can be a reordered copy of the input vector set or the original vector set.
     CV_PROP std::vector<int> labels; //!< the parallel array of labels.
     CV_PROP int maxDepth; //!< maximum depth of the search tree. Do not modify it
-    CV_PROP_RW int normType; //!< type of the distance (cv::NORM_L1 or cv::NORM_L2) used for search. Initially set to cv::NORM_L2, but you can modify it
+    CV_PROP_RW int normType; //!< type of the distance (ncvslideio::NORM_L1 or ncvslideio::NORM_L2) used for search. Initially set to ncvslideio::NORM_L2, but you can modify it
 };
 
 }

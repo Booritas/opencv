@@ -14,21 +14,21 @@
 #include <opencv2/gapi/util/throw.hpp>
 #include <opencv2/gapi/own/assert.hpp>
 
-cv::gapi::wip::draw::FTTextRender::Priv::Priv(const std::string& path)
+ncvslideio::gapi::wip::draw::FTTextRender::Priv::Priv(const std::string& path)
 {
     if (FT_Init_FreeType(&m_library) != 0)
     {
-        cv::util::throw_error(std::runtime_error("Failed to initialize FT"));
+        ncvslideio::util::throw_error(std::runtime_error("Failed to initialize FT"));
     }
 
     if (FT_New_Face(m_library, path.c_str(), 0, &m_face))
     {
         FT_Done_FreeType(m_library);
-        cv::util::throw_error(std::runtime_error("Failed to create a font face"));
+        ncvslideio::util::throw_error(std::runtime_error("Failed to create a font face"));
     }
 }
 
-cv::Size cv::gapi::wip::draw::FTTextRender::Priv::getTextSize(const std::wstring& text, int fh, int* baseline)
+ncvslideio::Size ncvslideio::gapi::wip::draw::FTTextRender::Priv::getTextSize(const std::wstring& text, int fh, int* baseline)
 {
     //
     //
@@ -99,7 +99,7 @@ cv::Size cv::gapi::wip::draw::FTTextRender::Priv::getTextSize(const std::wstring
     GAPI_Assert(!FT_Set_Pixel_Sizes(m_face, fh, fh) &&
                 "Failed to set pixel size");
 
-    cv::Point pen(0, 0);
+    ncvslideio::Point pen(0, 0);
 
     int max_bot      = 0;
     int max_top      = 0;
@@ -151,15 +151,15 @@ cv::Size cv::gapi::wip::draw::FTTextRender::Priv::getTextSize(const std::wstring
     return {pen.x, max_bot + max_top};
 }
 
-void cv::gapi::wip::draw::FTTextRender::Priv::putText(cv::Mat& mat,
+void ncvslideio::gapi::wip::draw::FTTextRender::Priv::putText(ncvslideio::Mat& mat,
                                                        const std::wstring& text,
-                                                       const cv::Point& org,
+                                                       const ncvslideio::Point& org,
                                                        int fh)
 {
     GAPI_Assert(!FT_Set_Pixel_Sizes(m_face, fh, fh) &&
                 "Failed to set pixel size");
 
-    cv::Point pen = org;
+    ncvslideio::Point pen = org;
     for (const auto& wc : text)
     {
         GAPI_Assert(!FT_Load_Char(m_face, wc, FT_LOAD_RENDER) &&
@@ -171,7 +171,7 @@ void cv::gapi::wip::draw::FTTextRender::Priv::putText(cv::Mat& mat,
             continue;
         }
 
-        cv::Mat glyph(bitmap->rows, bitmap->width, CV_8UC1, bitmap->buffer, bitmap->pitch);
+        ncvslideio::Mat glyph(bitmap->rows, bitmap->width, CV_8UC1, bitmap->buffer, bitmap->pitch);
 
         int left    = m_face->glyph->bitmap_left;
         int top     = m_face->glyph->bitmap_top;
@@ -182,7 +182,7 @@ void cv::gapi::wip::draw::FTTextRender::Priv::putText(cv::Mat& mat,
             left = 0;
         }
 
-        cv::Rect rect(pen.x + left, org.y - top, glyph.cols, glyph.rows);
+        ncvslideio::Rect rect(pen.x + left, org.y - top, glyph.cols, glyph.rows);
 
         auto roi = mat(rect);
         roi += glyph;
@@ -190,27 +190,27 @@ void cv::gapi::wip::draw::FTTextRender::Priv::putText(cv::Mat& mat,
     }
 }
 
-cv::gapi::wip::draw::FTTextRender::Priv::~Priv()
+ncvslideio::gapi::wip::draw::FTTextRender::Priv::~Priv()
 {
     FT_Done_Face(m_face);
     FT_Done_FreeType(m_library);
 }
 
-cv::gapi::wip::draw::FTTextRender::FTTextRender(const std::string& path)
+ncvslideio::gapi::wip::draw::FTTextRender::FTTextRender(const std::string& path)
     : m_priv(new Priv(path))
 {
 }
 
-cv::Size cv::gapi::wip::draw::FTTextRender::getTextSize(const std::wstring& text,
+ncvslideio::Size ncvslideio::gapi::wip::draw::FTTextRender::getTextSize(const std::wstring& text,
                                                          int fh,
                                                          int* baseline)
 {
     return m_priv->getTextSize(text, fh, baseline);
 }
 
-void cv::gapi::wip::draw::FTTextRender::putText(cv::Mat& mat,
+void ncvslideio::gapi::wip::draw::FTTextRender::putText(ncvslideio::Mat& mat,
                                                  const std::wstring& text,
-                                                 const cv::Point& org,
+                                                 const ncvslideio::Point& org,
                                                  int fh)
 {
     m_priv->putText(mat, text, org, fh);
@@ -218,19 +218,19 @@ void cv::gapi::wip::draw::FTTextRender::putText(cv::Mat& mat,
 
 #else
 
-cv::Size cv::gapi::wip::draw::FTTextRender::getTextSize(const std::wstring&, int, int*)
+ncvslideio::Size ncvslideio::gapi::wip::draw::FTTextRender::getTextSize(const std::wstring&, int, int*)
 {
-    cv::util::throw_error(std::runtime_error("Freetype not found"));
+    ncvslideio::util::throw_error(std::runtime_error("Freetype not found"));
 }
 
-void cv::gapi::wip::draw::FTTextRender::putText(cv::Mat&, const std::wstring&, const cv::Point&, int)
+void ncvslideio::gapi::wip::draw::FTTextRender::putText(ncvslideio::Mat&, const std::wstring&, const ncvslideio::Point&, int)
 {
-    cv::util::throw_error(std::runtime_error("Freetype not found"));
+    ncvslideio::util::throw_error(std::runtime_error("Freetype not found"));
 }
 
-cv::gapi::wip::draw::FTTextRender::FTTextRender(const std::string&)
+ncvslideio::gapi::wip::draw::FTTextRender::FTTextRender(const std::string&)
 {
-    cv::util::throw_error(std::runtime_error("Freetype not found"));
+    ncvslideio::util::throw_error(std::runtime_error("Freetype not found"));
 }
 
 #endif // HAVE_FREETYPE

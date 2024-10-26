@@ -21,14 +21,14 @@ struct CvCapture
     virtual bool setProperty(int, double) { return 0; }
     virtual bool grabFrame() { return true; }
     virtual IplImage* retrieveFrame(int) { return 0; }
-    virtual int getCaptureDomain() { return cv::CAP_ANY; } // Return the type of the capture object: CAP_DSHOW, etc...
+    virtual int getCaptureDomain() { return ncvslideio::CAP_ANY; } // Return the type of the capture object: CAP_DSHOW, etc...
 };
 
 struct CvVideoWriter
 {
     virtual ~CvVideoWriter() {}
     virtual bool writeFrame(const IplImage*) { return false; }
-    virtual int getCaptureDomain() const { return cv::CAP_ANY; } // Return the type of the capture object: CAP_FFMPEG, etc...
+    virtual int getCaptureDomain() const { return ncvslideio::CAP_ANY; } // Return the type of the capture object: CAP_FFMPEG, etc...
     virtual double getProperty(int) const { return 0; }
 };
 
@@ -36,7 +36,7 @@ struct CvVideoWriter
 
 // Modern classes
 
-namespace cv
+namespace ncvslideio
 {
 namespace
 {
@@ -186,7 +186,7 @@ public:
             {
                 found = true;
                 CV_LOG_INFO(NULL, "VIDEOIO: unused parameter: [" << param.key << "]=" <<
-                    cv::format("%lld / 0x%016llx", (long long)param.value, (long long)param.value));
+                    ncvslideio::format("%lld / 0x%016llx", (long long)param.value, (long long)param.value));
             }
         }
         return found;
@@ -229,7 +229,7 @@ public:
     virtual bool setProperty(int, double) { return false; }
     virtual bool isOpened() const = 0;
     virtual void write(InputArray) = 0;
-    virtual int getCaptureDomain() const { return cv::CAP_ANY; } // Return the type of the capture object: CAP_FFMPEG, etc...
+    virtual int getCaptureDomain() const { return ncvslideio::CAP_ANY; } // Return the type of the capture object: CAP_FFMPEG, etc...
 };
 
 namespace internal {
@@ -251,14 +251,14 @@ public:
     {
         switch(propId)
         {
-            case cv::CAP_PROP_ORIENTATION_AUTO:
+            case ncvslideio::CAP_PROP_ORIENTATION_AUTO:
                 return static_cast<double>(autorotate);
 
-            case cv::CAP_PROP_FRAME_WIDTH:
-                return shouldSwapWidthHeight() ? getProperty_(cv::CAP_PROP_FRAME_HEIGHT) : getProperty_(cv::CAP_PROP_FRAME_WIDTH);
+            case ncvslideio::CAP_PROP_FRAME_WIDTH:
+                return shouldSwapWidthHeight() ? getProperty_(ncvslideio::CAP_PROP_FRAME_HEIGHT) : getProperty_(ncvslideio::CAP_PROP_FRAME_WIDTH);
 
-            case cv::CAP_PROP_FRAME_HEIGHT:
-                return shouldSwapWidthHeight() ? getProperty_(cv::CAP_PROP_FRAME_WIDTH) : getProperty_(cv::CAP_PROP_FRAME_HEIGHT);
+            case ncvslideio::CAP_PROP_FRAME_HEIGHT:
+                return shouldSwapWidthHeight() ? getProperty_(ncvslideio::CAP_PROP_FRAME_WIDTH) : getProperty_(ncvslideio::CAP_PROP_FRAME_HEIGHT);
 
             default:
                 return getProperty_(propId);
@@ -268,7 +268,7 @@ public:
     {
         switch(propId)
         {
-            case cv::CAP_PROP_ORIENTATION_AUTO:
+            case ncvslideio::CAP_PROP_ORIENTATION_AUTO:
                 autorotate = (value != 0);
                 return true;
 
@@ -294,7 +294,7 @@ protected:
     {
         if (!autorotate)
             return false;
-        int rotation = static_cast<int>(getProperty(cv::CAP_PROP_ORIENTATION_META));
+        int rotation = static_cast<int>(getProperty(ncvslideio::CAP_PROP_ORIENTATION_META));
         return std::abs(rotation % 180) == 90;
     }
     void applyMetadataRotation(OutputArray mat) const
@@ -305,17 +305,17 @@ protected:
         {
             return;
         }
-        cv::RotateFlags flag;
+        ncvslideio::RotateFlags flag;
         if(rotation_angle == 90 || rotation_angle == -270) { // Rotate clockwise 90 degrees
-            flag = cv::ROTATE_90_CLOCKWISE;
+            flag = ncvslideio::ROTATE_90_CLOCKWISE;
         } else if(rotation_angle == 270 || rotation_angle == -90) { // Rotate clockwise 270 degrees
-            flag = cv::ROTATE_90_COUNTERCLOCKWISE;
+            flag = ncvslideio::ROTATE_90_COUNTERCLOCKWISE;
         } else if(rotation_angle == 180 || rotation_angle == -180) { // Rotate clockwise 180 degrees
-            flag = cv::ROTATE_180;
+            flag = ncvslideio::ROTATE_180;
         } else { // Unsupported rotation
             return;
         }
-        cv::rotate(mat, mat, flag);
+        ncvslideio::rotate(mat, mat, flag);
     }
 
 protected:
@@ -330,8 +330,8 @@ Ptr<IVideoWriter> cvCreateVideoWriter_FFMPEG_proxy(const std::string& filename, 
                                                    double fps, const Size& frameSize,
                                                    const VideoWriterParameters& params);
 
-Ptr<IVideoCapture> createGStreamerCapture_file(const std::string& filename, const cv::VideoCaptureParameters& params);
-Ptr<IVideoCapture> createGStreamerCapture_cam(int index, const cv::VideoCaptureParameters& params);
+Ptr<IVideoCapture> createGStreamerCapture_file(const std::string& filename, const ncvslideio::VideoCaptureParameters& params);
+Ptr<IVideoCapture> createGStreamerCapture_cam(int index, const ncvslideio::VideoCaptureParameters& params);
 Ptr<IVideoWriter> create_GStreamer_writer(const std::string& filename, int fourcc,
                                           double fps, const Size& frameSize,
                                           const VideoWriterParameters& params);
@@ -415,10 +415,10 @@ std::ostream& operator<<(std::ostream& out, const VideoAccelerationType& va_type
     case VIDEO_ACCELERATION_VAAPI: out << "VAAPI"; return out;
     case VIDEO_ACCELERATION_MFX: out << "MFX"; return out;
     }
-    out << cv::format("UNKNOWN(0x%ux)", static_cast<unsigned int>(va_type));
+    out << ncvslideio::format("UNKNOWN(0x%ux)", static_cast<unsigned int>(va_type));
     return out;
 }
 
-} // cv::
+} // ncvslideio::
 
 #endif // CAP_INTERFACE_HPP

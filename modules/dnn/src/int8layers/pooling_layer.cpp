@@ -15,7 +15,7 @@
 using std::max;
 using std::min;
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {

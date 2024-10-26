@@ -12,7 +12,7 @@ class AudioDrawing:
         self.inputType = args.inputType
         self.draw = args.draw
         self.graph = args.graph
-        self.audio = cv.samples.findFile(args.audio)
+        self.audio = ncvslideio.samples.findFile(args.audio)
         self.audioStream = args.audioStream
 
         self.windowType = args.windowType
@@ -67,15 +67,15 @@ class AudioDrawing:
             if self.graph == "ampl":
                 imgAmplitude = self.drawAmplitude(inputAudio)
                 imgAmplitude = self.drawAmplitudeScale(imgAmplitude, inputAudio, samplingRate)
-                cv.imshow("Display window", imgAmplitude)
-                cv.waitKey(0)
+                ncvslideio.imshow("Display window", imgAmplitude)
+                ncvslideio.waitKey(0)
 
             elif self.graph == "spec":
                 stft = self.STFT(inputAudio)
                 imgSpec = self.drawSpectrogram(stft)
                 imgSpec = self.drawSpectrogramColorbar(imgSpec, inputAudio, samplingRate, stft)
-                cv.imshow("Display window", imgSpec)
-                cv.waitKey(0)
+                ncvslideio.imshow("Display window", imgSpec)
+                ncvslideio.waitKey(0)
 
             elif self.graph == "ampl_and_spec":
                 imgAmplitude = self.drawAmplitude(inputAudio)
@@ -86,8 +86,8 @@ class AudioDrawing:
                 imgSpec = self.drawSpectrogramColorbar(imgSpec, inputAudio, samplingRate, stft)
 
                 imgTotal = self.concatenateImages(imgAmplitude, imgSpec)
-                cv.imshow("Display window", imgTotal)
-                cv.waitKey(0)
+                ncvslideio.imshow("Display window", imgTotal)
+                ncvslideio.waitKey(0)
 
         elif self.draw == "dynamic":
 
@@ -99,25 +99,25 @@ class AudioDrawing:
 
 
     def readAudioFile(self, file):
-        cap = cv.VideoCapture(file)
+        cap = ncvslideio.VideoCapture(file)
 
-        params = [cv.CAP_PROP_AUDIO_STREAM, self.audioStream,
-                cv.CAP_PROP_VIDEO_STREAM, -1,
-                cv.CAP_PROP_AUDIO_DATA_DEPTH, cv.CV_16S]
+        params = [ncvslideio.CAP_PROP_AUDIO_STREAM, self.audioStream,
+                ncvslideio.CAP_PROP_VIDEO_STREAM, -1,
+                ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH, ncvslideio.CV_16S]
         params = np.asarray(params)
 
-        cap.open(file, cv.CAP_ANY, params)
+        cap.open(file, ncvslideio.CAP_ANY, params)
         if cap.isOpened() == False:
             print("Error : Can't read audio file: '", self.audio, "' with audioStream = ", self.audioStream)
             print("Error: problems with audio reading, check input arguments")
             exit()
-        audioBaseIndex = int(cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
-        numberOfChannels = int(cap.get(cv.CAP_PROP_AUDIO_TOTAL_CHANNELS))
+        audioBaseIndex = int(cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
+        numberOfChannels = int(cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_CHANNELS))
 
-        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(cv.CAP_PROP_AUDIO_DATA_DEPTH)))))
-        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH)))))
+        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
         print("CAP_PROP_AUDIO_TOTAL_CHANNELS: ", numberOfChannels)
-        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(cv.CAP_PROP_AUDIO_TOTAL_STREAMS))
+        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_STREAMS))
 
         frame = []
         frame = np.asarray(frame)
@@ -135,31 +135,31 @@ class AudioDrawing:
 
         inputAudio = np.asarray(inputAudio)
         print("Number of samples: ", len(inputAudio))
-        samplingRate = int(cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        samplingRate = int(cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
         return samplingRate, inputAudio
 
 
     def readAudioMicrophone(self):
-        cap = cv.VideoCapture()
+        cap = ncvslideio.VideoCapture()
 
-        params = [cv.CAP_PROP_AUDIO_STREAM, 0, cv.CAP_PROP_VIDEO_STREAM, -1]
+        params = [ncvslideio.CAP_PROP_AUDIO_STREAM, 0, ncvslideio.CAP_PROP_VIDEO_STREAM, -1]
         params = np.asarray(params)
 
-        cap.open(0, cv.CAP_ANY, params)
+        cap.open(0, ncvslideio.CAP_ANY, params)
         if cap.isOpened() == False:
             print("Error: Can't open microphone")
             print("Error: problems with audio reading, check input arguments")
             exit()
-        audioBaseIndex = int(cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
-        numberOfChannels = int(cap.get(cv.CAP_PROP_AUDIO_TOTAL_CHANNELS))
+        audioBaseIndex = int(cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
+        numberOfChannels = int(cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_CHANNELS))
 
-        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(cv.CAP_PROP_AUDIO_DATA_DEPTH)))))
-        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH)))))
+        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
         print("CAP_PROP_AUDIO_TOTAL_CHANNELS: ", numberOfChannels)
-        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(cv.CAP_PROP_AUDIO_TOTAL_STREAMS))
+        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_STREAMS))
 
-        cvTickFreq = cv.getTickFrequency()
-        sysTimeCurr = cv.getTickCount()
+        cvTickFreq = ncvslideio.getTickFrequency()
+        sysTimeCurr = ncvslideio.getTickCount()
         sysTimePrev = sysTimeCurr
 
         frame = []
@@ -173,14 +173,14 @@ class AudioDrawing:
                 frame = cap.retrieve(frame, audioBaseIndex)
                 for i in range(len(frame[1][0])):
                     inputAudio.append(frame[1][0][i])
-                sysTimeCurr = cv.getTickCount()
+                sysTimeCurr = ncvslideio.getTickCount()
             else:
                 print("Error: Grab error")
                 break
 
         inputAudio = np.asarray(inputAudio)
         print("Number of samples: ", len(inputAudio))
-        samplingRate = int(cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        samplingRate = int(cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
 
         return samplingRate, inputAudio
 
@@ -201,11 +201,11 @@ class AudioDrawing:
         img += 255  # white background
 
         audio = np.array(0)
-        audio = cv.resize(inputAudio, (1, frameVectorCols), interpolation=cv.INTER_LINEAR)
+        audio = ncvslideio.resize(inputAudio, (1, frameVectorCols), interpolation=ncvslideio.INTER_LINEAR)
         reshapeAudio = np.reshape(audio, (-1))
 
         # normalization data by maximum element
-        minCv, maxCv, _, _ = cv.minMaxLoc(reshapeAudio)
+        minCv, maxCv, _, _ = ncvslideio.minMaxLoc(reshapeAudio)
         maxElem = int(max(abs(minCv), abs(maxCv)))
 
         # if all data values are zero (silence)
@@ -215,9 +215,9 @@ class AudioDrawing:
             reshapeAudio[i] = middle - reshapeAudio[i] * middle // maxElem
 
         for i in range(1, frameVectorCols, 1):
-            cv.line(img, (i - 1, int(reshapeAudio[i - 1])), (i, int(reshapeAudio[i])), color, thickness)
+            ncvslideio.line(img, (i - 1, int(reshapeAudio[i - 1])), (i, int(reshapeAudio[i])), color, thickness)
 
-        img = cv.resize(img, (900, 400), interpolation=cv.INTER_AREA)
+        img = ncvslideio.resize(img, (900, 400), interpolation=ncvslideio.INTER_AREA)
         return img
 
 
@@ -265,15 +265,15 @@ class AudioDrawing:
         gridThickness = 1
         gridColor = (0, 0, 0)
         textColor = (0, 0, 0)
-        font = cv.FONT_HERSHEY_SIMPLEX
+        font = ncvslideio.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
 
         # horizontal axis under the graph
-        cv.line(imgTotal, (preCol, totalRows - aftLine),
+        ncvslideio.line(imgTotal, (preCol, totalRows - aftLine),
                 (preCol + frameVectorCols, totalRows - aftLine),
                 gridColor, gridThickness)
         # vertical axis for amplitude
-        cv.line(imgTotal, (preCol, preLine), (preCol, preLine + frameVectorRows),
+        ncvslideio.line(imgTotal, (preCol, preLine), (preCol, preLine + frameVectorRows),
                 gridColor, gridThickness)
 
         # parameters for layout calculation
@@ -293,9 +293,9 @@ class AudioDrawing:
             if self.enableGrid is True:
                 d1 = a1
                 d2 = preLine
-                cv.line(imgTotal, (a1, a2), (d1, d2), gridColor, gridThickness)
-            cv.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
-            cv.putText(imgTotal, str(int(xList[i])), (b1 - indentLeftX, b2 + indentDownX),
+                ncvslideio.line(imgTotal, (a1, a2), (d1, d2), gridColor, gridThickness)
+            ncvslideio.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
+            ncvslideio.putText(imgTotal, str(int(xList[i])), (b1 - indentLeftX, b2 + indentDownX),
                     font, fontScale, textColor, textThickness)
 
         # drawing layout for y axis
@@ -308,11 +308,11 @@ class AudioDrawing:
             if self.enableGrid is True:
                 d1 = preCol + frameVectorCols
                 d2 = a2
-                cv.line(imgTotal, (a1, a2), (d1, d2), gridColor, gridThickness)
-            cv.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
-            cv.putText(imgTotal, str(int(yList[i])), (b1 - indentLeftY, b2 + indentDownY),
+                ncvslideio.line(imgTotal, (a1, a2), (d1, d2), gridColor, gridThickness)
+            ncvslideio.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
+            ncvslideio.putText(imgTotal, str(int(yList[i])), (b1 - indentLeftY, b2 + indentDownY),
                     font, fontScale, textColor, textThickness)
-        imgTotal = cv.resize(imgTotal, (self.cols, self.rows), interpolation=cv.INTER_AREA)
+        imgTotal = ncvslideio.resize(imgTotal, (self.cols, self.rows), interpolation=ncvslideio.INTER_AREA)
         return imgTotal
 
 
@@ -358,7 +358,7 @@ class AudioDrawing:
                 section *= Hamming_wind
 
             dst = np.empty(0)
-            dst = cv.dft(section, dst, flags=cv.DFT_COMPLEX_OUTPUT)
+            dst = ncvslideio.dft(section, dst, flags=ncvslideio.DFT_COMPLEX_OUTPUT)
             reshape_dst = np.reshape(dst, (-1))
             # we need only the first part of the spectrum, the second part is symmetrical
             complexArr = np.zeros(len(dst) // 4, dtype=complex)
@@ -383,14 +383,14 @@ class AudioDrawing:
 
         imgSpec = np.zeros((frameVectorRows, frameVectorCols, 3), np.uint8)
         stftMat = np.zeros((frameVectorRows, frameVectorCols), np.float64)
-        cv.normalize(stft, stftMat, 1.0, 0.0, cv.NORM_INF)
+        ncvslideio.normalize(stft, stftMat, 1.0, 0.0, ncvslideio.NORM_INF)
 
         for i in range(frameVectorRows):
             for j in range(frameVectorCols):
                 imgSpec[frameVectorRows - i - 1, j] = int(stftMat[i][j] * colormapImageRows)
 
-        imgSpec = cv.applyColorMap(imgSpec, cv.COLORMAP_INFERNO)
-        imgSpec = cv.resize(imgSpec, (900, 400), interpolation=cv.INTER_LINEAR)
+        imgSpec = ncvslideio.applyColorMap(imgSpec, ncvslideio.COLORMAP_INFERNO)
+        imgSpec = ncvslideio.resize(imgSpec, (900, 400), interpolation=ncvslideio.INTER_LINEAR)
         return imgSpec
 
 
@@ -426,8 +426,8 @@ class AudioDrawing:
         for i in range(colorArrSize):
             imgColorBar[i] += colorArrSize - 1 - i
 
-        imgColorBar = cv.applyColorMap(imgColorBar, cv.COLORMAP_INFERNO)
-        imgColorBar = cv.resize(imgColorBar, (colColor, frameVectorRows), interpolation=cv.INTER_AREA)  #
+        imgColorBar = ncvslideio.applyColorMap(imgColorBar, ncvslideio.COLORMAP_INFERNO)
+        imgColorBar = ncvslideio.resize(imgColorBar, (colColor, frameVectorRows), interpolation=ncvslideio.INTER_AREA)  #
 
         imgTotal[preLine: preLine + frameVectorRows,
         preCol + frameVectorCols + ind_col:
@@ -460,7 +460,7 @@ class AudioDrawing:
         textColor = (0, 0, 0)
         gridThickness = 1
         gridColor = (0, 0, 0)
-        font = cv.FONT_HERSHEY_SIMPLEX
+        font = ncvslideio.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
 
         serifSize = 10
@@ -470,10 +470,10 @@ class AudioDrawing:
         indentLeftY = 2 * preCol // 3
 
         # horizontal axis
-        cv.line(imgTotal, (preCol, totalRows - aftLine), (preCol + frameVectorCols, totalRows - aftLine),
+        ncvslideio.line(imgTotal, (preCol, totalRows - aftLine), (preCol + frameVectorCols, totalRows - aftLine),
                 gridColor, gridThickness)
         # vertical axis
-        cv.line(imgTotal, (preCol, preLine), (preCol, preLine + frameVectorRows),
+        ncvslideio.line(imgTotal, (preCol, preLine), (preCol, preLine + frameVectorRows),
                 gridColor, gridThickness)
 
         # drawing layout for x axis
@@ -483,8 +483,8 @@ class AudioDrawing:
             a2 = frameVectorRows + preLine
             b1 = a1
             b2 = a2 + serifSize
-            cv.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
-            cv.putText(imgTotal, str(int(xList[i])), (b1 - indentLeftX, b2 + indentDownX),
+            ncvslideio.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
+            ncvslideio.putText(imgTotal, str(int(xList[i])), (b1 - indentLeftX, b2 + indentDownX),
                     font, fontScale, textColor, textThickness)
 
         # drawing layout for y axis
@@ -494,8 +494,8 @@ class AudioDrawing:
             a2 = totalRows - aftLine - i * numY
             b1 = preCol - serifSize
             b2 = a2
-            cv.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
-            cv.putText(imgTotal, str(int(yList[i])), (b1 - indentLeftY, b2 + indentDownY),
+            ncvslideio.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
+            ncvslideio.putText(imgTotal, str(int(yList[i])), (b1 - indentLeftY, b2 + indentDownY),
                     font, fontScale, textColor, textThickness)
 
         # drawing layout for z axis
@@ -505,10 +505,10 @@ class AudioDrawing:
             a2 = totalRows - aftLine - i * numZ
             b1 = a1 + serifSize
             b2 = a2
-            cv.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
-            cv.putText(imgTotal, str(int(zList[i])), (b1 + 10, b2 + indentDownY),
+            ncvslideio.line(imgTotal, (a1, a2), (b1, b2), gridColor, gridThickness)
+            ncvslideio.putText(imgTotal, str(int(zList[i])), (b1 + 10, b2 + indentDownY),
                     font, fontScale, textColor, textThickness)
-        imgTotal = cv.resize(imgTotal, (self.cols, self.rows), interpolation=cv.INTER_AREA)
+        imgTotal = ncvslideio.resize(imgTotal, (self.cols, self.rows), interpolation=ncvslideio.INTER_AREA)
         return imgTotal
 
 
@@ -528,25 +528,25 @@ class AudioDrawing:
 
 
     def dynamicFile(self, file):
-        cap = cv.VideoCapture(file)
-        params = [cv.CAP_PROP_AUDIO_STREAM, self.audioStream,
-                cv.CAP_PROP_VIDEO_STREAM, -1,
-                cv.CAP_PROP_AUDIO_DATA_DEPTH, cv.CV_16S]
+        cap = ncvslideio.VideoCapture(file)
+        params = [ncvslideio.CAP_PROP_AUDIO_STREAM, self.audioStream,
+                ncvslideio.CAP_PROP_VIDEO_STREAM, -1,
+                ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH, ncvslideio.CV_16S]
         params = np.asarray(params)
 
-        cap.open(file, cv.CAP_ANY, params)
+        cap.open(file, ncvslideio.CAP_ANY, params)
         if cap.isOpened() == False:
             print("ERROR! Can't to open file")
             return
 
-        audioBaseIndex = int(cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
-        numberOfChannels = int(cap.get(cv.CAP_PROP_AUDIO_TOTAL_CHANNELS))
-        samplingRate = int(cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        audioBaseIndex = int(cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
+        numberOfChannels = int(cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_CHANNELS))
+        samplingRate = int(cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
 
-        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(cv.CAP_PROP_AUDIO_DATA_DEPTH)))))
-        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH)))))
+        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
         print("CAP_PROP_AUDIO_TOTAL_CHANNELS: ", numberOfChannels)
-        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(cv.CAP_PROP_AUDIO_TOTAL_STREAMS))
+        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_STREAMS))
 
         step = int(self.updateTime * samplingRate)
         frameSize = int(self.frameSizeTime * samplingRate)
@@ -591,15 +591,15 @@ class AudioDrawing:
                     if self.graph == "ampl":
                         imgAmplitude = self.drawAmplitude(section)
                         imgAmplitude = self.drawAmplitudeScale(imgAmplitude, section, samplingRate, xmin, xmax)
-                        cv.imshow("Display amplitude graph", imgAmplitude)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display amplitude graph", imgAmplitude)
+                        ncvslideio.waitKey(self.waitTime)
 
                     elif self.graph == "spec":
                         stft = self.STFT(section)
                         imgSpec = self.drawSpectrogram(stft)
                         imgSpec = self.drawSpectrogramColorbar(imgSpec, section, samplingRate, stft, xmin, xmax)
-                        cv.imshow("Display spectrogram", imgSpec)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display spectrogram", imgSpec)
+                        ncvslideio.waitKey(self.waitTime)
 
                     elif self.graph == "ampl_and_spec":
 
@@ -611,32 +611,32 @@ class AudioDrawing:
                         imgSpec = self.drawSpectrogramColorbar(imgSpec, section, samplingRate, stft, xmin, xmax)
 
                         imgTotal = self.concatenateImages(imgAmplitude, imgSpec)
-                        cv.imshow("Display amplitude graph and spectrogram", imgTotal)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display amplitude graph and spectrogram", imgTotal)
+                        ncvslideio.waitKey(self.waitTime)
             else:
                 break
 
 
     def dynamicMicrophone(self):
-        cap = cv.VideoCapture()
-        params = [cv.CAP_PROP_AUDIO_STREAM, 0, cv.CAP_PROP_VIDEO_STREAM, -1]
+        cap = ncvslideio.VideoCapture()
+        params = [ncvslideio.CAP_PROP_AUDIO_STREAM, 0, ncvslideio.CAP_PROP_VIDEO_STREAM, -1]
         params = np.asarray(params)
 
-        cap.open(0, cv.CAP_ANY, params)
+        cap.open(0, ncvslideio.CAP_ANY, params)
         if cap.isOpened() == False:
             print("ERROR! Can't to open file")
             return
-        audioBaseIndex = int(cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
-        numberOfChannels = int(cap.get(cv.CAP_PROP_AUDIO_TOTAL_CHANNELS))
+        audioBaseIndex = int(cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
+        numberOfChannels = int(cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_CHANNELS))
 
-        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(cv.CAP_PROP_AUDIO_DATA_DEPTH)))))
-        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        print("CAP_PROP_AUDIO_DATA_DEPTH: ", str((int(cap.get(ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH)))))
+        print("CAP_PROP_AUDIO_SAMPLES_PER_SECOND: ", cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
         print("CAP_PROP_AUDIO_TOTAL_CHANNELS: ", numberOfChannels)
-        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(cv.CAP_PROP_AUDIO_TOTAL_STREAMS))
+        print("CAP_PROP_AUDIO_TOTAL_STREAMS: ", cap.get(ncvslideio.CAP_PROP_AUDIO_TOTAL_STREAMS))
 
         frame = []
         frame = np.asarray(frame)
-        samplingRate = int(cap.get(cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
+        samplingRate = int(cap.get(ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND))
 
         step = int(self.updateTime * samplingRate)
         frameSize = int(self.frameSizeTime * samplingRate)
@@ -647,8 +647,8 @@ class AudioDrawing:
         buffer = []
         section = np.zeros(frameSize, dtype=np.int16)
 
-        cvTickFreq = cv.getTickFrequency()
-        sysTimeCurr = cv.getTickCount()
+        cvTickFreq = ncvslideio.getTickFrequency()
+        sysTimeCurr = ncvslideio.getTickCount()
         sysTimePrev = sysTimeCurr
         self.waitTime = self.updateTime * 1000
         while ((sysTimeCurr - sysTimePrev) / cvTickFreq < self.microTime):
@@ -660,7 +660,7 @@ class AudioDrawing:
                 for i in range(len(frame[1][0])):
                     buffer.append(frame[1][0][i])
 
-                sysTimeCurr = cv.getTickCount()
+                sysTimeCurr = ncvslideio.getTickCount()
                 buffer_size = len(buffer)
                 if (buffer_size >= step):
 
@@ -683,15 +683,15 @@ class AudioDrawing:
                     if self.graph == "ampl":
                         imgAmplitude = self.drawAmplitude(section)
                         imgAmplitude = self.drawAmplitudeScale(imgAmplitude, section, samplingRate, xmin, xmax)
-                        cv.imshow("Display amplitude graph", imgAmplitude)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display amplitude graph", imgAmplitude)
+                        ncvslideio.waitKey(self.waitTime)
 
                     elif self.graph == "spec":
                         stft = self.STFT(section)
                         imgSpec = self.drawSpectrogram(stft)
                         imgSpec = self.drawSpectrogramColorbar(imgSpec, section, samplingRate, stft, xmin, xmax)
-                        cv.imshow("Display spectrogram", imgSpec)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display spectrogram", imgSpec)
+                        ncvslideio.waitKey(self.waitTime)
 
                     elif self.graph == "ampl_and_spec":
                         imgAmplitude = self.drawAmplitude(section)
@@ -702,8 +702,8 @@ class AudioDrawing:
                         imgSpec = self.drawSpectrogramColorbar(imgSpec, section, samplingRate, stft, xmin, xmax)
 
                         imgTotal = self.concatenateImages(imgAmplitude, imgSpec)
-                        cv.imshow("Display amplitude graph and spectrogram", imgTotal)
-                        cv.waitKey(self.waitTime)
+                        ncvslideio.imshow("Display amplitude graph and spectrogram", imgTotal)
+                        ncvslideio.waitKey(self.waitTime)
             else:
                 break
 
@@ -797,7 +797,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", '--updateTime', dest="updateTime", type=int, default=1,
                         help="update time of sliding window in seconds")
     parser.add_argument("-w", '--waitTime', dest="waitTime", type=int, default=10,
-                        help="parameter to cv.waitKey() for dynamic update, takes values in milliseconds")
+                        help="parameter to ncvslideio.waitKey() for dynamic update, takes values in milliseconds")
 
     args = parser.parse_args()
 

@@ -20,7 +20,7 @@
 #include "backend.hpp"
 #include "factory.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -378,7 +378,7 @@ void NetImplOpenVINO::initBackend(const std::vector<LayerPin>& blobsToKeep_)
             if (!fused)
             {
                 std::vector<std::string> inputNames;
-                std::vector<cv::Mat> inputs;
+                std::vector<ncvslideio::Mat> inputs;
 
                 auto curr_pos = inpLd.consumers.begin();
                 auto compare = [&ld](const LayerPin& lp) { return lp.lid == ld.id; };
@@ -857,7 +857,7 @@ Net Net::readFromModelOptimizer(
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 
 
 
@@ -868,16 +868,16 @@ CV__DNN_INLINE_NS_END
 #include "plugin_api.hpp"
 
 
-namespace cv { namespace dnn_backend {
+namespace ncvslideio { namespace dnn_backend {
 
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 
 class NetworkBackendOpenVINO : public NetworkBackend
 {
 public:
     void switchBackend(Net& net) CV_OVERRIDE
     {
-        cv::dnn::switchToOpenVINOBackend(net);
+        ncvslideio::dnn::switchToOpenVINOBackend(net);
     }
     Net readNetwork(const std::string& loaderID, const std::string& model, const std::string& config) CV_OVERRIDE
     {
@@ -923,7 +923,7 @@ CvResult cv_getInstanceNetworkBackend(CV_OUT CvPluginDNNNetworkBackend* handle) 
     {
         if (!handle)
             return CV_ERROR_FAIL;
-        *handle = cv::dnn_backend::getInstanceNetworkBackendOpenVINO().get();
+        *handle = ncvslideio::dnn_backend::getInstanceNetworkBackendOpenVINO().get();
         return CV_ERROR_OK;
     }
     catch (...)

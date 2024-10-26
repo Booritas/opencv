@@ -51,7 +51,7 @@
 
 #define CV_ERROR_DNN_BACKEND_INFERENCE_ENGINE_NN_BUILDER_2019 do { CV_Error(Error::StsNotImplemented, "This OpenCV version is built without Inference Engine NN Builder API support (legacy API is not supported anymore)"); } while (0)
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 CV__DNN_INLINE_NS_BEGIN
 namespace openvino {
@@ -94,6 +94,6 @@ static inline std::vector<T> getShape(const Mat& mat)
 
 #endif  // HAVE_INF_ENGINE
 
-}}  // namespace dnn, namespace cv
+}}  // namespace dnn, namespace ncvslideio
 
 #endif  // __OPENCV_DNN_OP_INF_ENGINE_HPP__

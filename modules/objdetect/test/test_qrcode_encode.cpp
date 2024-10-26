@@ -410,8 +410,8 @@ TEST(Objdetect_QRCode_Encode_Decode_Structured_Append, regression)
             Mat resized_src;
             hconcat(qrcodes, resized_src);
 
-            std::vector<cv::String> decoded_info;
-            cv::String output_info;
+            std::vector<ncvslideio::String> decoded_info;
+            ncvslideio::String output_info;
             EXPECT_TRUE(QRCodeDetector().decodeMulti(resized_src, corners, decoded_info));
             for (size_t k = 0; k < decoded_info.size(); ++k)
             {
@@ -439,16 +439,16 @@ TEST_P(Objdetect_QRCode_Encode_Decode_Structured_Append_Parameterized, regressio
 {
     const std::string input_data = "the quick brown fox jumps over the lazy dog";
 
-    std::vector<cv::Mat> result_qrcodes;
+    std::vector<ncvslideio::Mat> result_qrcodes;
 
-    cv::QRCodeEncoder::Params params;
+    ncvslideio::QRCodeEncoder::Params params;
     int encode_mode = GetParam();
-    params.mode = static_cast<cv::QRCodeEncoder::EncodeMode>(encode_mode);
+    params.mode = static_cast<ncvslideio::QRCodeEncoder::EncodeMode>(encode_mode);
 
     for(size_t struct_num = 2; struct_num < 5; ++struct_num)
     {
         params.structure_number = static_cast<int>(struct_num);
-        cv::Ptr<cv::QRCodeEncoder> encoder = cv::QRCodeEncoder::create(params);
+        ncvslideio::Ptr<ncvslideio::QRCodeEncoder> encoder = ncvslideio::QRCodeEncoder::create(params);
         encoder->encodeStructuredAppend(input_data, result_qrcodes);
         EXPECT_EQ(result_qrcodes.size(), struct_num) << "The number of QR Codes requested is not equal"<<
                                                     "to the one returned";
@@ -458,18 +458,18 @@ INSTANTIATE_TEST_CASE_P(/**/, Objdetect_QRCode_Encode_Decode_Structured_Append_P
 
 TEST(Objdetect_QRCode_Encode_Decode, regression_issue22029)
 {
-    const cv::String msg = "OpenCV";
+    const ncvslideio::String msg = "OpenCV";
     const int min_version = 1;
     const int max_version = 40;
 
     for ( int v = min_version ; v <= max_version ; v++ )
     {
-        SCOPED_TRACE(cv::format("version=%d",v));
+        SCOPED_TRACE(ncvslideio::format("version=%d",v));
 
         Mat qrimg;
         QRCodeEncoder::Params params;
         params.version = v;
-        Ptr<QRCodeEncoder> qrcode_enc = cv::QRCodeEncoder::create(params);
+        Ptr<QRCodeEncoder> qrcode_enc = ncvslideio::QRCodeEncoder::create(params);
         qrcode_enc->encode(msg, qrimg);
 
         const int white_margin = 2;
@@ -537,17 +537,17 @@ TEST(Objdetect_QRCode_Encode_Decode, regression_issue22029)
 // This test reproduces issue https://github.com/opencv/opencv/issues/24366 only in a loop
 TEST(Objdetect_QRCode_Encode_Decode, auto_version_pick)
 {
-    cv::QRCodeEncoder::Params params;
-    params.correction_level = cv::QRCodeEncoder::CORRECT_LEVEL_L;
-    params.mode = cv::QRCodeEncoder::EncodeMode::MODE_AUTO;
+    ncvslideio::QRCodeEncoder::Params params;
+    params.correction_level = ncvslideio::QRCodeEncoder::CORRECT_LEVEL_L;
+    params.mode = ncvslideio::QRCodeEncoder::EncodeMode::MODE_AUTO;
 
-    cv::Ptr<cv::QRCodeEncoder> encoder = cv::QRCodeEncoder::create(params);
+    ncvslideio::Ptr<ncvslideio::QRCodeEncoder> encoder = ncvslideio::QRCodeEncoder::create(params);
 
     for (int len = 1; len < 19; len++) {
         std::string input;
         input.resize(len);
-        cv::randu(Mat(1, len, CV_8U, &input[0]), 'a', 'z' + 1);
-        cv::Mat qrcode;
+        ncvslideio::randu(Mat(1, len, CV_8U, &input[0]), 'a', 'z' + 1);
+        ncvslideio::Mat qrcode;
         encoder->encode(input, qrcode);
     }
 }
@@ -561,8 +561,8 @@ TEST_P(Objdetect_QRCode_decoding, error_correction)
     const std::string expected = get<1>(GetParam());
 
     QRCodeDetector qrcode;
-    cv::String decoded_msg;
-    Mat src = cv::imread(findDataFile("qrcode/" + filename), IMREAD_GRAYSCALE);
+    ncvslideio::String decoded_msg;
+    Mat src = ncvslideio::imread(findDataFile("qrcode/" + filename), IMREAD_GRAYSCALE);
 
     std::vector<Point2f> corners(4);
     corners[0] = Point2f(0, 0);

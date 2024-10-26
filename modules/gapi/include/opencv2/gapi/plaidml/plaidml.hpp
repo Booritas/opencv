@@ -11,7 +11,7 @@
 #include <string>
 #include <opencv2/gapi/gcommon.hpp> // CompileArgTag
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -42,12 +42,12 @@ struct config
 
 namespace detail
 {
-    template<> struct CompileArgTag<cv::gapi::plaidml::config>
+    template<> struct CompileArgTag<ncvslideio::gapi::plaidml::config>
     {
         static const char* tag() { return "gapi.plaidml.config"; }
     };
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_PLAIDML_PLAIDML_HPP

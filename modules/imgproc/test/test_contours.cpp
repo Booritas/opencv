@@ -54,7 +54,7 @@ public:
     void clear();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     int prepare_test_case( int test_case_idx );
     int validate_test_results( int test_case_idx );
     void run_func();
@@ -125,7 +125,7 @@ void CV_FindContourTest::clear()
 }
 
 
-int CV_FindContourTest::read_params( const cv::FileStorage& fs )
+int CV_FindContourTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int t;
     int code = cvtest::BaseTest::read_params( fs );
@@ -289,7 +289,7 @@ int CV_FindContourTest::validate_test_results( int /*test_case_idx*/ )
 {
     int code = cvtest::TS::OK;
 
-    cvCmpS( img[0], 0, img[0], cv::CMP_GT );
+    cvCmpS( img[0], 0, img[0], ncvslideio::CMP_GT );
 
     if( count != count2 )
     {
@@ -475,15 +475,15 @@ TEST(Imgproc_FindContours, hilbert)
 TEST(Imgproc_FindContours, border)
 {
     Mat img;
-    cv::copyMakeBorder(Mat::zeros(8, 10, CV_8U), img, 1, 1, 1, 1, BORDER_CONSTANT, Scalar(1));
+    ncvslideio::copyMakeBorder(Mat::zeros(8, 10, CV_8U), img, 1, 1, 1, 1, BORDER_CONSTANT, Scalar(1));
 
-    std::vector<std::vector<cv::Point> > contours;
+    std::vector<std::vector<ncvslideio::Point> > contours;
     findContours(img, contours, RETR_LIST, CHAIN_APPROX_NONE);
 
     Mat img_draw_contours = Mat::zeros(img.size(), CV_8U);
     for (size_t cpt = 0; cpt < contours.size(); cpt++)
     {
-      drawContours(img_draw_contours, contours, static_cast<int>(cpt), cv::Scalar(1));
+      drawContours(img_draw_contours, contours, static_cast<int>(cpt), ncvslideio::Scalar(1));
     }
 
     ASSERT_EQ(0, cvtest::norm(img, img_draw_contours, NORM_INF));
@@ -550,7 +550,7 @@ TEST(Imgproc_PointPolygonTest, regression_10222)
     contour.push_back(Point(100000, 0));
 
     const Point2f point(40000, 40000);
-    const double result = cv::pointPolygonTest(contour, point, false);
+    const double result = ncvslideio::pointPolygonTest(contour, point, false);
     EXPECT_GT(result, 0) << "Desired result: point is inside polygon - actual result: point is not inside polygon";
 }
 

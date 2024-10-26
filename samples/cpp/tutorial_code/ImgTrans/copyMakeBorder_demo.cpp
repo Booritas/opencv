@@ -8,7 +8,7 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 //![variables]
 // Declare the variables

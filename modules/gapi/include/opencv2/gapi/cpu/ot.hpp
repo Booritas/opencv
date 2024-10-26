@@ -11,7 +11,7 @@
 #include <opencv2/core/cvdef.h>     // GAPI_EXPORTS
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 /**
  * @brief This namespace contains G-API Operation Types for
@@ -23,7 +23,7 @@ GAPI_EXPORTS_W GKernelPackage kernels();
 } // namespace cpu
 } // namespace ot
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 
 #endif // OPENCV_GAPI_CPU_OT_API_HPP

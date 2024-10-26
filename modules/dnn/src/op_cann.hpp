@@ -52,7 +52,7 @@
 
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #ifdef HAVE_CANN
 
@@ -164,6 +164,6 @@ CV__DNN_INLINE_NS_END
 
 #endif // HAVE_CANN
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn
 
 #endif // OPENCV_DNN_OP_CANN_HPP

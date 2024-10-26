@@ -23,8 +23,8 @@ public:
     ImageCollection(const char *dirname_template = "opencv_test_images")
         : first_idx(0), last_idx(0), width(0)
     {
-        dirname = cv::tempfile(dirname_template);
-        cv::utils::fs::createDirectory(dirname);
+        dirname = ncvslideio::tempfile(dirname_template);
+        ncvslideio::utils::fs::createDirectory(dirname);
     }
     ~ImageCollection()
     {
@@ -32,7 +32,7 @@ public:
     }
     void cleanup()
     {
-        cv::utils::fs::remove_all(dirname);
+        ncvslideio::utils::fs::remove_all(dirname);
     }
     void generate(size_t count, size_t first = 0, size_t width_ = 4, const string & base_ = "test", const string & ext_ = "png")
     {
@@ -232,57 +232,57 @@ TEST(videoio_images, extract_pattern)
     unsigned offset = 0;
 
     // Min and max values
-    EXPECT_EQ("%01d.png", cv::icvExtractPattern("0.png", &offset));
+    EXPECT_EQ("%01d.png", ncvslideio::icvExtractPattern("0.png", &offset));
     EXPECT_EQ(0u, offset);
-    EXPECT_EQ("%09d.png", cv::icvExtractPattern("999999999.png", &offset));
+    EXPECT_EQ("%09d.png", ncvslideio::icvExtractPattern("999999999.png", &offset));
     EXPECT_EQ(999999999u, offset);
 
     // Regular usage - start, end, middle
-    EXPECT_EQ("abc%04ddef.png", cv::icvExtractPattern("abc0048def.png", &offset));
+    EXPECT_EQ("abc%04ddef.png", ncvslideio::icvExtractPattern("abc0048def.png", &offset));
     EXPECT_EQ(48u, offset);
-    EXPECT_EQ("%05dabcdef.png", cv::icvExtractPattern("00049abcdef.png", &offset));
+    EXPECT_EQ("%05dabcdef.png", ncvslideio::icvExtractPattern("00049abcdef.png", &offset));
     EXPECT_EQ(49u, offset);
-    EXPECT_EQ("abcdef%06d.png", cv::icvExtractPattern("abcdef000050.png", &offset));
+    EXPECT_EQ("abcdef%06d.png", ncvslideio::icvExtractPattern("abcdef000050.png", &offset));
     EXPECT_EQ(50u, offset);
 
     // Minus handling (should not handle)
-    EXPECT_EQ("abcdef-%01d.png", cv::icvExtractPattern("abcdef-8.png", &offset));
+    EXPECT_EQ("abcdef-%01d.png", ncvslideio::icvExtractPattern("abcdef-8.png", &offset));
     EXPECT_EQ(8u, offset);
 
     // Two numbers (should select first)
     // TODO: shouldn't it be last number?
-    EXPECT_EQ("%01d-abcdef-8.png", cv::icvExtractPattern("7-abcdef-8.png", &offset));
+    EXPECT_EQ("%01d-abcdef-8.png", ncvslideio::icvExtractPattern("7-abcdef-8.png", &offset));
     EXPECT_EQ(7u, offset);
 
     // Paths (should select filename)
-    EXPECT_EQ("images005/abcdef%03d.png", cv::icvExtractPattern("images005/abcdef006.png", &offset));
+    EXPECT_EQ("images005/abcdef%03d.png", ncvslideio::icvExtractPattern("images005/abcdef006.png", &offset));
     EXPECT_EQ(6u, offset);
     // TODO: fix
-    // EXPECT_EQ("images03\\abcdef%02d.png", cv::icvExtractPattern("images03\\abcdef04.png", &offset));
+    // EXPECT_EQ("images03\\abcdef%02d.png", ncvslideio::icvExtractPattern("images03\\abcdef04.png", &offset));
     // EXPECT_EQ(4, offset);
     EXPECT_EQ("/home/user/test/0/3348/../../3442/./0/1/3/4/5/14304324234/%01d.png",
-              cv::icvExtractPattern("/home/user/test/0/3348/../../3442/./0/1/3/4/5/14304324234/2.png", &offset));
+              ncvslideio::icvExtractPattern("/home/user/test/0/3348/../../3442/./0/1/3/4/5/14304324234/2.png", &offset));
     EXPECT_EQ(2u, offset);
 
     // Patterns '%0?[0-9][du]'
-    EXPECT_EQ("test%d.png", cv::icvExtractPattern("test%d.png", &offset));
+    EXPECT_EQ("test%d.png", ncvslideio::icvExtractPattern("test%d.png", &offset));
     EXPECT_EQ(0u, offset);
-    EXPECT_EQ("test%0d.png", cv::icvExtractPattern("test%0d.png", &offset));
+    EXPECT_EQ("test%0d.png", ncvslideio::icvExtractPattern("test%0d.png", &offset));
     EXPECT_EQ(0u, offset);
-    EXPECT_EQ("test%09d.png", cv::icvExtractPattern("test%09d.png", &offset));
+    EXPECT_EQ("test%09d.png", ncvslideio::icvExtractPattern("test%09d.png", &offset));
     EXPECT_EQ(0u, offset);
-    EXPECT_EQ("test%5u.png", cv::icvExtractPattern("test%5u.png", &offset));
+    EXPECT_EQ("test%5u.png", ncvslideio::icvExtractPattern("test%5u.png", &offset));
     EXPECT_EQ(0u, offset);
 
     // Invalid arguments
-    EXPECT_THROW(cv::icvExtractPattern(string(), &offset), cv::Exception);
+    EXPECT_THROW(ncvslideio::icvExtractPattern(string(), &offset), ncvslideio::Exception);
     // TODO: fix?
     // EXPECT_EQ(0u, offset);
-    EXPECT_THROW(cv::icvExtractPattern("test%010d.png", &offset), cv::Exception);
+    EXPECT_THROW(ncvslideio::icvExtractPattern("test%010d.png", &offset), ncvslideio::Exception);
     EXPECT_EQ(0u, offset);
-    EXPECT_THROW(cv::icvExtractPattern("1000000000.png", &offset), cv::Exception);
+    EXPECT_THROW(ncvslideio::icvExtractPattern("1000000000.png", &offset), ncvslideio::Exception);
     EXPECT_EQ(0u, offset);
-    EXPECT_THROW(cv::icvExtractPattern("1.png", NULL), cv::Exception);
+    EXPECT_THROW(ncvslideio::icvExtractPattern("1.png", NULL), ncvslideio::Exception);
 }
 
 // TODO: should writer overwrite files?

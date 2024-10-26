@@ -44,7 +44,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-using namespace cv;
+using namespace ncvslideio;
 
 Mat img0, img1, img2, res, res1, final, final1, blend;
 

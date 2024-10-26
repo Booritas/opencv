@@ -44,7 +44,7 @@
 #include "opencv2/ts/cuda_perf.hpp"
 #include "opencv2/core/cuda.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 namespace perf
@@ -262,20 +262,20 @@ namespace perf
     void printCudaInfo()
     {
         printOsInfo();
-        for (int i = 0; i < cv::cuda::getCudaEnabledDeviceCount(); i++)
-            cv::cuda::printCudaDeviceInfo(i);
+        for (int i = 0; i < ncvslideio::cuda::getCudaEnabledDeviceCount(); i++)
+            ncvslideio::cuda::printCudaDeviceInfo(i);
     }
 
     struct KeypointIdxCompare
     {
-        std::vector<cv::KeyPoint>* keypoints;
+        std::vector<ncvslideio::KeyPoint>* keypoints;
 
-        explicit KeypointIdxCompare(std::vector<cv::KeyPoint>* _keypoints) : keypoints(_keypoints) {}
+        explicit KeypointIdxCompare(std::vector<ncvslideio::KeyPoint>* _keypoints) : keypoints(_keypoints) {}
 
         bool operator ()(size_t i1, size_t i2) const
         {
-            cv::KeyPoint kp1 = (*keypoints)[i1];
-            cv::KeyPoint kp2 = (*keypoints)[i2];
+            ncvslideio::KeyPoint kp1 = (*keypoints)[i1];
+            ncvslideio::KeyPoint kp2 = (*keypoints)[i2];
             if (kp1.pt.x != kp2.pt.x)
                 return kp1.pt.x < kp2.pt.x;
             if (kp1.pt.y != kp2.pt.y)
@@ -286,7 +286,7 @@ namespace perf
         }
     };
 
-    void sortKeyPoints(std::vector<cv::KeyPoint>& keypoints, cv::InputOutputArray _descriptors)
+    void sortKeyPoints(std::vector<ncvslideio::KeyPoint>& keypoints, ncvslideio::InputOutputArray _descriptors)
     {
         std::vector<size_t> indexies(keypoints.size());
         for (size_t i = 0; i < indexies.size(); ++i)
@@ -294,12 +294,12 @@ namespace perf
 
         std::sort(indexies.begin(), indexies.end(), KeypointIdxCompare(&keypoints));
 
-        std::vector<cv::KeyPoint> new_keypoints;
-        cv::Mat new_descriptors;
+        std::vector<ncvslideio::KeyPoint> new_keypoints;
+        ncvslideio::Mat new_descriptors;
 
         new_keypoints.resize(keypoints.size());
 
-        cv::Mat descriptors;
+        ncvslideio::Mat descriptors;
         if (_descriptors.needed())
         {
             descriptors = _descriptors.getMat();

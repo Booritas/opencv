@@ -17,7 +17,7 @@
 #include "compiler/gobjref.hpp"
 #include "api/gnode.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 // TODO namespace gimpl?
@@ -30,7 +30,7 @@ struct GOrigin
             const GNode& n,
             std::size_t p = INVALID_PORT,
             const gimpl::HostCtor h = {},
-            cv::detail::OpaqueKind kind = cv::detail::OpaqueKind::CV_UNKNOWN);
+            ncvslideio::detail::OpaqueKind kind = ncvslideio::detail::OpaqueKind::CV_UNKNOWN);
     GOrigin(GShape s, gimpl::ConstVal value);
 
     const GShape          shape;           // Shape of a produced object
@@ -47,12 +47,12 @@ namespace detail
     {
         bool operator() (const GOrigin &lhs, const GOrigin &rhs) const;
     };
-} // namespace cv::details
+} // namespace ncvslideio::details
 
 // TODO introduce a hash on GOrigin and define this via unordered_ ?
 using GOriginSet = std::set<GOrigin, detail::GOriginCmp>;
 template<typename T> using GOriginMap = std::map<GOrigin, T, detail::GOriginCmp>;
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GORIGIN_HPP

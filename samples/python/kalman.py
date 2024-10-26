@@ -30,7 +30,7 @@ from math import cos, sin, sqrt, pi
 def main():
     img_height = 500
     img_width = 500
-    kalman = cv.KalmanFilter(2, 1, 0)
+    kalman = ncvslideio.KalmanFilter(2, 1, 0)
 
     code = long(-1)
     num_circle_steps = 12
@@ -71,24 +71,24 @@ def main():
             improved_pt = calc_point(kalman.statePost[0, 0])
 
             # plot points
-            cv.drawMarker(img, measurement_pt, (0, 0, 255), cv.MARKER_SQUARE, 5, 2)
-            cv.drawMarker(img, predict_pt, (0, 255, 255), cv.MARKER_SQUARE, 5, 2)
-            cv.drawMarker(img, improved_pt, (0, 255, 0), cv.MARKER_SQUARE, 5, 2)
-            cv.drawMarker(img, state_pt, (255, 255, 255), cv.MARKER_STAR, 10, 1)
+            ncvslideio.drawMarker(img, measurement_pt, (0, 0, 255), ncvslideio.MARKER_SQUARE, 5, 2)
+            ncvslideio.drawMarker(img, predict_pt, (0, 255, 255), ncvslideio.MARKER_SQUARE, 5, 2)
+            ncvslideio.drawMarker(img, improved_pt, (0, 255, 0), ncvslideio.MARKER_SQUARE, 5, 2)
+            ncvslideio.drawMarker(img, state_pt, (255, 255, 255), ncvslideio.MARKER_STAR, 10, 1)
             # forecast one step
-            cv.drawMarker(img, calc_point(np.dot(kalman.transitionMatrix, kalman.statePost)[0, 0]),
-                          (255, 255, 0), cv.MARKER_SQUARE, 12, 1)
+            ncvslideio.drawMarker(img, calc_point(np.dot(kalman.transitionMatrix, kalman.statePost)[0, 0]),
+                          (255, 255, 0), ncvslideio.MARKER_SQUARE, 12, 1)
 
-            cv.line(img, state_pt, measurement_pt, (0, 0, 255), 1, cv.LINE_AA, 0)  # red measurement error
-            cv.line(img, state_pt, predict_pt, (0, 255, 255), 1, cv.LINE_AA, 0)  # yellow pre-meas error
-            cv.line(img, state_pt, improved_pt, (0, 255, 0), 1, cv.LINE_AA, 0)  # green post-meas error
+            ncvslideio.line(img, state_pt, measurement_pt, (0, 0, 255), 1, ncvslideio.LINE_AA, 0)  # red measurement error
+            ncvslideio.line(img, state_pt, predict_pt, (0, 255, 255), 1, ncvslideio.LINE_AA, 0)  # yellow pre-meas error
+            ncvslideio.line(img, state_pt, improved_pt, (0, 255, 0), 1, ncvslideio.LINE_AA, 0)  # green post-meas error
 
             # update the real process
             process_noise = sqrt(kalman.processNoiseCov[0, 0]) * np.random.randn(2, 1)
             state = np.dot(kalman.transitionMatrix, state) + process_noise  # x_k+1 = F x_k + w_k
 
-            cv.imshow("Kalman", img)
-            code = cv.waitKey(1000)
+            ncvslideio.imshow("Kalman", img)
+            code = ncvslideio.waitKey(1000)
             if code != -1:
                 break
 
@@ -101,4 +101,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

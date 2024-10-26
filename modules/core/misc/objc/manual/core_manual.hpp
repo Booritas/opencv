@@ -4,7 +4,7 @@
 
 #ifdef OPENCV_BINDINGS_PARSER
 
-namespace cv
+namespace ncvslideio
 {
 CV_EXPORTS_W void add(InputArray src1, Scalar srcScalar, OutputArray dst, InputArray mask=noArray(), int dtype=-1);
 

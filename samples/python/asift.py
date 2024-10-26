@@ -51,18 +51,18 @@ def affine_skew(tilt, phi, img, mask=None):
         A = np.float32([[c,-s], [ s, c]])
         corners = [[0, 0], [w, 0], [w, h], [0, h]]
         tcorners = np.int32( np.dot(corners, A.T) )
-        x, y, w, h = cv.boundingRect(tcorners.reshape(1,-1,2))
+        x, y, w, h = ncvslideio.boundingRect(tcorners.reshape(1,-1,2))
         A = np.hstack([A, [[-x], [-y]]])
-        img = cv.warpAffine(img, A, (w, h), flags=cv.INTER_LINEAR, borderMode=cv.BORDER_REPLICATE)
+        img = ncvslideio.warpAffine(img, A, (w, h), flags=ncvslideio.INTER_LINEAR, borderMode=ncvslideio.BORDER_REPLICATE)
     if tilt != 1.0:
         s = 0.8*np.sqrt(tilt*tilt-1)
-        img = cv.GaussianBlur(img, (0, 0), sigmaX=s, sigmaY=0.01)
-        img = cv.resize(img, (0, 0), fx=1.0/tilt, fy=1.0, interpolation=cv.INTER_NEAREST)
+        img = ncvslideio.GaussianBlur(img, (0, 0), sigmaX=s, sigmaY=0.01)
+        img = ncvslideio.resize(img, (0, 0), fx=1.0/tilt, fy=1.0, interpolation=ncvslideio.INTER_NEAREST)
         A[0] /= tilt
     if phi != 0.0 or tilt != 1.0:
         h, w = img.shape[:2]
-        mask = cv.warpAffine(mask, A, (w, h), flags=cv.INTER_NEAREST)
-    Ai = cv.invertAffineTransform(A)
+        mask = ncvslideio.warpAffine(mask, A, (w, h), flags=ncvslideio.INTER_NEAREST)
+    Ai = ncvslideio.invertAffineTransform(A)
     return img, mask, Ai
 
 
@@ -118,8 +118,8 @@ def main():
         fn1 = 'aero1.jpg'
         fn2 = 'aero3.jpg'
 
-    img1 = cv.imread(cv.samples.findFile(fn1), cv.IMREAD_GRAYSCALE)
-    img2 = cv.imread(cv.samples.findFile(fn2), cv.IMREAD_GRAYSCALE)
+    img1 = ncvslideio.imread(ncvslideio.samples.findFile(fn1), ncvslideio.IMREAD_GRAYSCALE)
+    img2 = ncvslideio.imread(ncvslideio.samples.findFile(fn2), ncvslideio.IMREAD_GRAYSCALE)
     detector, matcher = init_feature(feature_name)
 
     if img1 is None:
@@ -136,7 +136,7 @@ def main():
 
     print('using', feature_name)
 
-    pool=ThreadPool(processes = cv.getNumberOfCPUs())
+    pool=ThreadPool(processes = ncvslideio.getNumberOfCPUs())
     kp1, desc1 = affine_detect(detector, img1, pool=pool)
     kp2, desc2 = affine_detect(detector, img2, pool=pool)
     print('img1 - %d features, img2 - %d features' % (len(kp1), len(kp2)))
@@ -146,7 +146,7 @@ def main():
             raw_matches = matcher.knnMatch(desc1, trainDescriptors = desc2, k = 2) #2
         p1, p2, kp_pairs = filter_matches(kp1, kp2, raw_matches)
         if len(p1) >= 4:
-            H, status = cv.findHomography(p1, p2, cv.RANSAC, 5.0)
+            H, status = ncvslideio.findHomography(p1, p2, ncvslideio.RANSAC, 5.0)
             print('%d / %d  inliers/matched' % (np.sum(status), len(status)))
             # do not draw outliers (there will be a lot of them)
             kp_pairs = [kpp for kpp, flag in zip(kp_pairs, status) if flag]
@@ -158,11 +158,11 @@ def main():
 
 
     match_and_draw('affine find_obj')
-    cv.waitKey()
+    ncvslideio.waitKey()
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -131,10 +131,10 @@ OCL_TEST_P(Gemm, Accuracy)
     for (int i = 0; i < test_loop_times; ++i)
     {
         generateTestData();
-        SCOPED_TRACE(cv::format("i=%d: M=%d N=%d K=%d", i, M, N, K));
+        SCOPED_TRACE(ncvslideio::format("i=%d: M=%d N=%d K=%d", i, M, N, K));
 
-        OCL_OFF(cv::gemm(A_roi, B_roi, alpha, C_roi, beta, D_roi, flags));
-        OCL_ON(cv::gemm(uA_roi, uB_roi, alpha, uC_roi, beta, uD_roi, flags));
+        OCL_OFF(ncvslideio::gemm(A_roi, B_roi, alpha, C_roi, beta, D_roi, flags));
+        OCL_ON(ncvslideio::gemm(uA_roi, uB_roi, alpha, uC_roi, beta, uD_roi, flags));
 
         double eps = D_roi.size().area() * (1e-5 * K);
         OCL_EXPECT_MATS_NEAR(D, eps);
@@ -154,10 +154,10 @@ OCL_TEST(Gemm, small)
     randu(A, -1, 1);
     randu(B, -1, 1);
 
-    OCL_OFF(cv::gemm(A, B, 1, noArray(), 0, C, GEMM_2_T));
-    OCL_ON(cv::gemm(A, B, 1, noArray(), 0, uC, GEMM_2_T));
+    OCL_OFF(ncvslideio::gemm(A, B, 1, noArray(), 0, C, GEMM_2_T));
+    OCL_ON(ncvslideio::gemm(A, B, 1, noArray(), 0, uC, GEMM_2_T));
 
-    EXPECT_LE(cvtest::norm(C, uC, cv::NORM_INF), 1e-5);
+    EXPECT_LE(cvtest::norm(C, uC, ncvslideio::NORM_INF), 1e-5);
 }
 
 } } // namespace opencv_test::ocl

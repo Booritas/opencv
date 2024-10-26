@@ -53,7 +53,7 @@ public:
     void clear();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void run_func(void);
     int prepare_test_case( int test_case_idx );
     int validate_test_results( int test_case_idx );
@@ -115,7 +115,7 @@ void CV_BaseHistTest::clear()
 }
 
 
-int CV_BaseHistTest::read_params( const cv::FileStorage& fs )
+int CV_BaseHistTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::BaseTest::read_params( fs );
     if( code < 0 )
@@ -618,10 +618,10 @@ void CV_MinMaxHistTest::run_func(void)
 {
     if( hist_type != CV_HIST_ARRAY && test_cpp )
     {
-        cv::SparseMat h;
+        ncvslideio::SparseMat h;
         ((CvSparseMat*)hist[0]->bins)->copyToSparseMat(h);
         double _min_val = 0, _max_val = 0;
-        cv::minMaxLoc(h, &_min_val, &_max_val, min_idx, max_idx );
+        ncvslideio::minMaxLoc(h, &_min_val, &_max_val, min_idx, max_idx );
         min_val = (float)_min_val;
         max_val = (float)_max_val;
     }
@@ -716,9 +716,9 @@ void CV_NormHistTest::run_func(void)
 {
     if( hist_type != CV_HIST_ARRAY && test_cpp )
     {
-        cv::SparseMat h;
+        ncvslideio::SparseMat h;
         ((CvSparseMat*)hist[0]->bins)->copyToSparseMat(h);
-        cv::normalize(h, h, factor, CV_L1);
+        ncvslideio::normalize(h, h, factor, CV_L1);
         cvReleaseSparseMat((CvSparseMat**)&hist[0]->bins);
         hist[0]->bins = cvCreateSparseMat(h);
     }
@@ -965,11 +965,11 @@ void CV_CompareHistTest::run_func(void)
     int k;
     if( hist_type != CV_HIST_ARRAY && test_cpp )
     {
-        cv::SparseMat h0, h1;
+        ncvslideio::SparseMat h0, h1;
         ((CvSparseMat*)hist[0]->bins)->copyToSparseMat(h0);
         ((CvSparseMat*)hist[1]->bins)->copyToSparseMat(h1);
         for( k = 0; k < MAX_METHOD; k++ )
-            result[k] = cv::compareHist(h0, h1, k);
+            result[k] = ncvslideio::compareHist(h0, h1, k);
     }
     else
         for( k = 0; k < MAX_METHOD; k++ )
@@ -1197,13 +1197,13 @@ void CV_CalcHistTest::run_func(void)
         }
     }
 
-    std::vector<cv::Mat> imagesv(cdims);
+    std::vector<ncvslideio::Mat> imagesv(cdims);
     std::copy(images.begin(), images.begin() + cdims, imagesv.begin());
 
     Mat mask = images[CV_MAX_DIM];
     if( !CV_IS_SPARSE_HIST(hist[0]) )
     {
-        cv::Mat H = cv::cvarrToMat(hist[0]->bins);
+        ncvslideio::Mat H = ncvslideio::cvarrToMat(hist[0]->bins);
         if(huniform)
         {
             vector<int> emptyChannels;
@@ -1220,11 +1220,11 @@ void CV_CalcHistTest::run_func(void)
                     vranges[i*2+1] = hist[0]->thresh[i][1];
                 }
             }
-            cv::calcHist(imagesv, emptyChannels, mask, H, hSize, vranges);
+            ncvslideio::calcHist(imagesv, emptyChannels, mask, H, hSize, vranges);
         }
         else
         {
-            cv::calcHist( &imagesv[0], (int)imagesv.size(), 0, mask,
+            ncvslideio::calcHist( &imagesv[0], (int)imagesv.size(), 0, mask,
                           H, cvGetDims(hist[0]->bins), H.size, hranges, huniform );
         }
     }
@@ -1234,13 +1234,13 @@ void CV_CalcHistTest::run_func(void)
 
         cvZero( hist[0]->bins );
 
-        cv::SparseMat sH;
+        ncvslideio::SparseMat sH;
         sparsemat->copyToSparseMat(sH);
 
-        cv::calcHist( &imagesv[0], (int)imagesv.size(), 0, mask, sH, sH.dims(),
+        ncvslideio::calcHist( &imagesv[0], (int)imagesv.size(), 0, mask, sH, sH.dims(),
                       sH.dims() > 0 ? sH.hdr->size : 0, hranges, huniform, false);
 
-        cv::SparseMatConstIterator it = sH.begin();
+        ncvslideio::SparseMatConstIterator it = sH.begin();
         int nz = (int)sH.nzcount();
         for(int i = 0; i < nz; i++, ++it )
         {
@@ -1492,16 +1492,16 @@ void CV_CalcBackProjectTest::run_func(void)
         }
     }
 
-    std::vector<cv::Mat> imagesv(hdims);
+    std::vector<ncvslideio::Mat> imagesv(hdims);
     std::copy(images.begin(), images.begin() + hdims, imagesv.begin());
 
-    cv::Mat dst = images[CV_MAX_DIM+1];
+    ncvslideio::Mat dst = images[CV_MAX_DIM+1];
 
     CV_Assert( dst.size() == imagesv[0].size() && dst.depth() == imagesv[0].depth() );
 
     if( !CV_IS_SPARSE_HIST(hist[0]) )
     {
-        cv::Mat H = cv::cvarrToMat(hist[0]->bins);
+        ncvslideio::Mat H = ncvslideio::cvarrToMat(hist[0]->bins);
         if(huniform)
         {
             vector<int> emptyChannels;
@@ -1515,19 +1515,19 @@ void CV_CalcBackProjectTest::run_func(void)
                     vranges[i*2+1] = hist[0]->thresh[i][1];
                 }
             }
-            cv::calcBackProject(imagesv, emptyChannels, H, dst, vranges, 1);
+            ncvslideio::calcBackProject(imagesv, emptyChannels, H, dst, vranges, 1);
         }
         else
         {
-            cv::calcBackProject( &imagesv[0], (int)imagesv.size(),
+            ncvslideio::calcBackProject( &imagesv[0], (int)imagesv.size(),
                                  0, H, dst, hranges, 1, false );
         }
     }
     else
     {
-        cv::SparseMat sH;
+        ncvslideio::SparseMat sH;
         ((const CvSparseMat*)hist[0]->bins)->copyToSparseMat(sH);
-        cv::calcBackProject( &imagesv[0], (int)imagesv.size(),
+        ncvslideio::calcBackProject( &imagesv[0], (int)imagesv.size(),
                              0, sH, dst, hranges, 1, huniform );
     }
 }
@@ -1929,12 +1929,12 @@ TEST(Imgproc_Hist_BayesianProb, accuracy) { CV_BayesianProbTest test; test.safe_
 
 TEST(Imgproc_Hist_Calc, calcHist_regression_11544)
 {
-    cv::Mat1w m = cv::Mat1w::zeros(10, 10);
+    ncvslideio::Mat1w m = ncvslideio::Mat1w::zeros(10, 10);
     int n_images = 1;
     int channels[] = { 0 };
-    cv::Mat mask;
-    cv::MatND hist1, hist2;
-    cv::MatND hist1_opt, hist2_opt;
+    ncvslideio::Mat mask;
+    ncvslideio::MatND hist1, hist2;
+    ncvslideio::MatND hist1_opt, hist2_opt;
     int dims = 1;
     int hist_size[] = { 1000 };
     float range1[] = { 0, 900 };
@@ -1943,12 +1943,12 @@ TEST(Imgproc_Hist_Calc, calcHist_regression_11544)
     const float* ranges2[] = { range2 };
 
     setUseOptimized(false);
-    cv::calcHist(&m, n_images, channels, mask, hist1, dims, hist_size, ranges1);
-    cv::calcHist(&m, n_images, channels, mask, hist2, dims, hist_size, ranges2);
+    ncvslideio::calcHist(&m, n_images, channels, mask, hist1, dims, hist_size, ranges1);
+    ncvslideio::calcHist(&m, n_images, channels, mask, hist2, dims, hist_size, ranges2);
 
     setUseOptimized(true);
-    cv::calcHist(&m, n_images, channels, mask, hist1_opt, dims, hist_size, ranges1);
-    cv::calcHist(&m, n_images, channels, mask, hist2_opt, dims, hist_size, ranges2);
+    ncvslideio::calcHist(&m, n_images, channels, mask, hist1_opt, dims, hist_size, ranges1);
+    ncvslideio::calcHist(&m, n_images, channels, mask, hist2_opt, dims, hist_size, ranges2);
 
     for(int i = 0; i < 1000; i++)
     {
@@ -1963,34 +1963,34 @@ TEST(Imgproc_Hist_Calc, badarg)
     float range1[] = {0, 10};
     float range2[] = {10, 20};
     const float * ranges[] = {range1, range2};
-    Mat img = cv::Mat::zeros(10, 10, CV_8UC1);
-    Mat imgInt = cv::Mat::zeros(10, 10, CV_32SC1);
+    Mat img = ncvslideio::Mat::zeros(10, 10, CV_8UC1);
+    Mat imgInt = ncvslideio::Mat::zeros(10, 10, CV_32SC1);
     Mat hist;
     const int hist_size[] = { 100, 100 };
     // base run
-    EXPECT_NO_THROW(cv::calcHist(&img, 1, channels, noArray(), hist, 1, hist_size, ranges, true));
+    EXPECT_NO_THROW(ncvslideio::calcHist(&img, 1, channels, noArray(), hist, 1, hist_size, ranges, true));
     // bad parameters
-    EXPECT_THROW(cv::calcHist(NULL, 1, channels, noArray(), hist, 1, hist_size, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&img, 0, channels, noArray(), hist, 1, hist_size, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&img, 1, NULL, noArray(), hist, 2, hist_size, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&img, 1, channels, noArray(), noArray(), 1, hist_size, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&img, 1, channels, noArray(), hist, -1, hist_size, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&img, 1, channels, noArray(), hist, 1, NULL, ranges, true), cv::Exception);
-    EXPECT_THROW(cv::calcHist(&imgInt, 1, channels, noArray(), hist, 1, hist_size, NULL, true), cv::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(NULL, 1, channels, noArray(), hist, 1, hist_size, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&img, 0, channels, noArray(), hist, 1, hist_size, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&img, 1, NULL, noArray(), hist, 2, hist_size, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&img, 1, channels, noArray(), noArray(), 1, hist_size, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&img, 1, channels, noArray(), hist, -1, hist_size, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&img, 1, channels, noArray(), hist, 1, NULL, ranges, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcHist(&imgInt, 1, channels, noArray(), hist, 1, hist_size, NULL, true), ncvslideio::Exception);
     // special case
-    EXPECT_NO_THROW(cv::calcHist(&img, 1, channels, noArray(), hist, 1, hist_size, NULL, true));
+    EXPECT_NO_THROW(ncvslideio::calcHist(&img, 1, channels, noArray(), hist, 1, hist_size, NULL, true));
 
     Mat backProj;
     // base run
-    EXPECT_NO_THROW(cv::calcBackProject(&img, 1, channels, hist, backProj, ranges, 1, true));
+    EXPECT_NO_THROW(ncvslideio::calcBackProject(&img, 1, channels, hist, backProj, ranges, 1, true));
     // bad parameters
-    EXPECT_THROW(cv::calcBackProject(NULL, 1, channels, hist, backProj, ranges, 1, true), cv::Exception);
-    EXPECT_THROW(cv::calcBackProject(&img, 0, channels, hist, backProj, ranges, 1, true), cv::Exception);
-    EXPECT_THROW(cv::calcBackProject(&img, 1, channels, noArray(), backProj, ranges, 1, true), cv::Exception);
-    EXPECT_THROW(cv::calcBackProject(&img, 1, channels, hist, noArray(), ranges, 1, true), cv::Exception);
-    EXPECT_THROW(cv::calcBackProject(&imgInt, 1, channels, hist, backProj, NULL, 1, true), cv::Exception);
+    EXPECT_THROW(ncvslideio::calcBackProject(NULL, 1, channels, hist, backProj, ranges, 1, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcBackProject(&img, 0, channels, hist, backProj, ranges, 1, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcBackProject(&img, 1, channels, noArray(), backProj, ranges, 1, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcBackProject(&img, 1, channels, hist, noArray(), ranges, 1, true), ncvslideio::Exception);
+    EXPECT_THROW(ncvslideio::calcBackProject(&imgInt, 1, channels, hist, backProj, NULL, 1, true), ncvslideio::Exception);
     // special case
-    EXPECT_NO_THROW(cv::calcBackProject(&img, 1, channels, hist, backProj, NULL, 1, true));
+    EXPECT_NO_THROW(ncvslideio::calcBackProject(&img, 1, channels, hist, backProj, NULL, 1, true));
 }
 
 TEST(Imgproc_Hist_Calc, IPP_ranges_with_equal_exponent_21595)
@@ -2001,9 +2001,9 @@ TEST(Imgproc_Hist_Calc, IPP_ranges_with_equal_exponent_21595)
     const int hist_size[] = { 2 };
 
     uint8_t m[1][6] = { { 0, 1, 0, 1 , 1, 1 } };
-    cv::Mat images_u = Mat(1, 6, CV_8UC1, m);
-    cv::Mat histogram_u;
-    cv::calcHist(&images_u, 1, channels, noArray(), histogram_u, 1, hist_size, ranges);
+    ncvslideio::Mat images_u = Mat(1, 6, CV_8UC1, m);
+    ncvslideio::Mat histogram_u;
+    ncvslideio::calcHist(&images_u, 1, channels, noArray(), histogram_u, 1, hist_size, ranges);
 
     ASSERT_EQ(histogram_u.at<float>(0), 2.f) << "0 not counts correctly, res: " << histogram_u.at<float>(0);
     ASSERT_EQ(histogram_u.at<float>(1), 4.f) << "1 not counts correctly, res: " << histogram_u.at<float>(0);
@@ -2017,9 +2017,9 @@ TEST(Imgproc_Hist_Calc, IPP_ranges_with_nonequal_exponent_21595)
     const int hist_size[] = { 3 };
 
     uint8_t m[1][6] = { { 0, 1, 0, 1 , 1, 1 } };
-    cv::Mat images_u = Mat(1, 6, CV_8UC1, m);
-    cv::Mat histogram_u;
-    cv::calcHist(&images_u, 1, channels, noArray(), histogram_u, 1, hist_size, ranges);
+    ncvslideio::Mat images_u = Mat(1, 6, CV_8UC1, m);
+    ncvslideio::Mat histogram_u;
+    ncvslideio::calcHist(&images_u, 1, channels, noArray(), histogram_u, 1, hist_size, ranges);
 
     ASSERT_EQ(histogram_u.at<float>(0), 0.f) << "not equal to zero, res: " << histogram_u.at<float>(0);
     ASSERT_EQ(histogram_u.at<float>(1), 2.f) << "0 not counts correctly, res: " << histogram_u.at<float>(1);
@@ -2061,28 +2061,28 @@ void equalizeHistReference(const Mat& src, Mat& dst)
         lut[i] = saturate_cast<uchar>(sum * scale);
     }
 
-    cv::LUT(src, lut, dst);
+    ncvslideio::LUT(src, lut, dst);
 }
 
-typedef ::testing::TestWithParam<std::tuple<cv::Size, int>> Imgproc_Equalize_Hist;
+typedef ::testing::TestWithParam<std::tuple<ncvslideio::Size, int>> Imgproc_Equalize_Hist;
 
 TEST_P(Imgproc_Equalize_Hist, accuracy)
 {
     auto p = GetParam();
-    cv::Size size = std::get<0>(p);
+    ncvslideio::Size size = std::get<0>(p);
     int idx = std::get<1>(p);
 
     RNG &rng = cvtest::TS::ptr()->get_rng();
     rng.state += idx;
 
-    cv::Mat src(size, CV_8U);
+    ncvslideio::Mat src(size, CV_8U);
     cvtest::randUni(rng, src, Scalar::all(0), Scalar::all(255));
 
-    cv::Mat dst, gold;
+    ncvslideio::Mat dst, gold;
 
     equalizeHistReference(src, gold);
 
-    cv::equalizeHist(src, dst);
+    ncvslideio::equalizeHist(src, dst);
 
     ASSERT_EQ(CV_8UC1, dst.type());
     ASSERT_EQ(gold.size(), dst.size());
@@ -2092,7 +2092,7 @@ TEST_P(Imgproc_Equalize_Hist, accuracy)
 }
 
 INSTANTIATE_TEST_CASE_P(Imgproc_Hist, Imgproc_Equalize_Hist, ::testing::Combine(
-                        ::testing::Values(cv::Size(123, 321), cv::Size(256, 256), cv::Size(1024, 768)),
+                        ::testing::Values(ncvslideio::Size(123, 321), ncvslideio::Size(256, 256), ncvslideio::Size(1024, 768)),
                         ::testing::Range(0, 10)));
 
 }} // namespace

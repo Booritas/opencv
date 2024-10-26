@@ -30,18 +30,18 @@ def visualize(input, faces, fps, thickness=2):
             print('Face {}, top-left coordinates: ({:.0f}, {:.0f}), box width: {:.0f}, box height {:.0f}, score: {:.2f}'.format(idx, face[0], face[1], face[2], face[3], face[-1]))
 
             coords = face[:-1].astype(np.int32)
-            cv.rectangle(input, (coords[0], coords[1]), (coords[0]+coords[2], coords[1]+coords[3]), (0, 255, 0), thickness)
-            cv.circle(input, (coords[4], coords[5]), 2, (255, 0, 0), thickness)
-            cv.circle(input, (coords[6], coords[7]), 2, (0, 0, 255), thickness)
-            cv.circle(input, (coords[8], coords[9]), 2, (0, 255, 0), thickness)
-            cv.circle(input, (coords[10], coords[11]), 2, (255, 0, 255), thickness)
-            cv.circle(input, (coords[12], coords[13]), 2, (0, 255, 255), thickness)
-    cv.putText(input, 'FPS: {:.2f}'.format(fps), (1, 16), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            ncvslideio.rectangle(input, (coords[0], coords[1]), (coords[0]+coords[2], coords[1]+coords[3]), (0, 255, 0), thickness)
+            ncvslideio.circle(input, (coords[4], coords[5]), 2, (255, 0, 0), thickness)
+            ncvslideio.circle(input, (coords[6], coords[7]), 2, (0, 0, 255), thickness)
+            ncvslideio.circle(input, (coords[8], coords[9]), 2, (0, 255, 0), thickness)
+            ncvslideio.circle(input, (coords[10], coords[11]), 2, (255, 0, 255), thickness)
+            ncvslideio.circle(input, (coords[12], coords[13]), 2, (0, 255, 255), thickness)
+    ncvslideio.putText(input, 'FPS: {:.2f}'.format(fps), (1, 16), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 if __name__ == '__main__':
 
     ## [initialize_FaceDetectorYN]
-    detector = cv.FaceDetectorYN.create(
+    detector = ncvslideio.FaceDetectorYN.create(
         args.face_detection_model,
         "",
         (320, 320),
@@ -51,15 +51,15 @@ if __name__ == '__main__':
     )
     ## [initialize_FaceDetectorYN]
 
-    tm = cv.TickMeter()
+    tm = ncvslideio.TickMeter()
 
     # If input is an image
     if args.image1 is not None:
-        img1 = cv.imread(cv.samples.findFile(args.image1))
+        img1 = ncvslideio.imread(ncvslideio.samples.findFile(args.image1))
         img1Width = int(img1.shape[1]*args.scale)
         img1Height = int(img1.shape[0]*args.scale)
 
-        img1 = cv.resize(img1, (img1Width, img1Height))
+        img1 = ncvslideio.resize(img1, (img1Width, img1Height))
         tm.start()
 
         ## [inference]
@@ -78,13 +78,13 @@ if __name__ == '__main__':
         # Save results if save is true
         if args.save:
             print('Results saved to result.jpg\n')
-            cv.imwrite('result.jpg', img1)
+            ncvslideio.imwrite('result.jpg', img1)
 
         # Visualize results in a new window
-        cv.imshow("image1", img1)
+        ncvslideio.imshow("image1", img1)
 
         if args.image2 is not None:
-            img2 = cv.imread(cv.samples.findFile(args.image2))
+            img2 = ncvslideio.imread(ncvslideio.samples.findFile(args.image2))
 
             tm.reset()
             tm.start()
@@ -93,10 +93,10 @@ if __name__ == '__main__':
             tm.stop()
             assert faces2[1] is not None, 'Cannot find a face in {}'.format(args.image2)
             visualize(img2, faces2, tm.getFPS())
-            cv.imshow("image2", img2)
+            ncvslideio.imshow("image2", img2)
 
             ## [initialize_FaceRecognizerSF]
-            recognizer = cv.FaceRecognizerSF.create(
+            recognizer = ncvslideio.FaceRecognizerSF.create(
             args.face_recognition_model,"")
             ## [initialize_FaceRecognizerSF]
 
@@ -114,8 +114,8 @@ if __name__ == '__main__':
             l2_similarity_threshold = 1.128
 
             ## [match]
-            cosine_score = recognizer.match(face1_feature, face2_feature, cv.FaceRecognizerSF_FR_COSINE)
-            l2_score = recognizer.match(face1_feature, face2_feature, cv.FaceRecognizerSF_FR_NORM_L2)
+            cosine_score = recognizer.match(face1_feature, face2_feature, ncvslideio.FaceRecognizerSF_FR_COSINE)
+            l2_score = recognizer.match(face1_feature, face2_feature, ncvslideio.FaceRecognizerSF_FR_NORM_L2)
             ## [match]
 
             msg = 'different identities'
@@ -127,24 +127,24 @@ if __name__ == '__main__':
             if l2_score <= l2_similarity_threshold:
                 msg = 'the same identity'
             print('They have {}. NormL2 Distance: {}, threshold: {} (lower value means higher similarity, min 0.0).'.format(msg, l2_score, l2_similarity_threshold))
-        cv.waitKey(0)
+        ncvslideio.waitKey(0)
     else: # Omit input to call default camera
         if args.video is not None:
             deviceId = args.video
         else:
             deviceId = 0
-        cap = cv.VideoCapture(deviceId)
-        frameWidth = int(cap.get(cv.CAP_PROP_FRAME_WIDTH)*args.scale)
-        frameHeight = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT)*args.scale)
+        cap = ncvslideio.VideoCapture(deviceId)
+        frameWidth = int(cap.get(ncvslideio.CAP_PROP_FRAME_WIDTH)*args.scale)
+        frameHeight = int(cap.get(ncvslideio.CAP_PROP_FRAME_HEIGHT)*args.scale)
         detector.setInputSize([frameWidth, frameHeight])
 
-        while cv.waitKey(1) < 0:
+        while ncvslideio.waitKey(1) < 0:
             hasFrame, frame = cap.read()
             if not hasFrame:
                 print('No frames grabbed!')
                 break
 
-            frame = cv.resize(frame, (frameWidth, frameHeight))
+            frame = ncvslideio.resize(frame, (frameWidth, frameHeight))
 
             # Inference
             tm.start()
@@ -155,5 +155,5 @@ if __name__ == '__main__':
             visualize(frame, faces, tm.getFPS())
 
             # Visualize results
-            cv.imshow('Live', frame)
-    cv.destroyAllWindows()
+            ncvslideio.imshow('Live', frame)
+    ncvslideio.destroyAllWindows()

@@ -7,13 +7,13 @@
 #ifndef OPENCV_GAPI_UTIL_COMPILER_HINTS_HPP
 #define OPENCV_GAPI_UTIL_COMPILER_HINTS_HPP
 
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {
     //! Utility template function to prevent "unused" warnings by various compilers.
     template<typename T> void suppress_unused_warning( const T& ) {}
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 #endif /* OPENCV_GAPI_UTIL_COMPILER_HINTS_HPP */

@@ -3,7 +3,7 @@
 ''' This is a sample for histogram plotting for RGB images and grayscale images for better understanding of colour distribution
 
 Benefit : Learn how to draw histogram of images
-          Get familier with cv.calcHist, cv.equalizeHist,cv.normalize and some drawing functions
+          Get familier with ncvslideio.calcHist, ncvslideio.equalizeHist,ncvslideio.normalize and some drawing functions
 
 Level : Beginner or Intermediate
 
@@ -30,11 +30,11 @@ def hist_curve(im):
     elif im.shape[2] == 3:
         color = [ (255,0,0),(0,255,0),(0,0,255) ]
     for ch, col in enumerate(color):
-        hist_item = cv.calcHist([im],[ch],None,[256],[0,256])
-        cv.normalize(hist_item,hist_item,0,255,cv.NORM_MINMAX)
+        hist_item = ncvslideio.calcHist([im],[ch],None,[256],[0,256])
+        ncvslideio.normalize(hist_item,hist_item,0,255,ncvslideio.NORM_MINMAX)
         hist=np.int32(np.around(hist_item))
         pts = np.int32(np.column_stack((bins,hist)))
-        cv.polylines(h,[pts],False,col)
+        ncvslideio.polylines(h,[pts],False,col)
     y=np.flipud(h)
     return y
 
@@ -43,12 +43,12 @@ def hist_lines(im):
     if len(im.shape)!=2:
         print("hist_lines applicable only for grayscale images")
         #print("so converting image to grayscale for representation"
-        im = cv.cvtColor(im,cv.COLOR_BGR2GRAY)
-    hist_item = cv.calcHist([im],[0],None,[256],[0,256])
-    cv.normalize(hist_item,hist_item,0,255,cv.NORM_MINMAX)
+        im = ncvslideio.cvtColor(im,ncvslideio.COLOR_BGR2GRAY)
+    hist_item = ncvslideio.calcHist([im],[0],None,[256],[0,256])
+    ncvslideio.normalize(hist_item,hist_item,0,255,ncvslideio.NORM_MINMAX)
     hist = np.int32(np.around(hist_item))
     for x,y in enumerate(hist):
-        cv.line(h,(x,0),(x,y[0]),(255,255,255))
+        ncvslideio.line(h,(x,0),(x,y[0]),(255,255,255))
     y = np.flipud(h)
     return y
 
@@ -62,13 +62,13 @@ def main():
         fname = 'lena.jpg'
         print("usage : python hist.py <image_file>")
 
-    im = cv.imread(cv.samples.findFile(fname))
+    im = ncvslideio.imread(ncvslideio.samples.findFile(fname))
 
     if im is None:
         print('Failed to load image file:', fname)
         sys.exit(1)
 
-    gray = cv.cvtColor(im,cv.COLOR_BGR2GRAY)
+    gray = ncvslideio.cvtColor(im,ncvslideio.COLOR_BGR2GRAY)
 
 
     print(''' Histogram plotting \n
@@ -81,39 +81,39 @@ def main():
     Esc - exit \n
     ''')
 
-    cv.imshow('image',im)
+    ncvslideio.imshow('image',im)
     while True:
-        k = cv.waitKey(0)
+        k = ncvslideio.waitKey(0)
         if k == ord('a'):
             curve = hist_curve(im)
-            cv.imshow('histogram',curve)
-            cv.imshow('image',im)
+            ncvslideio.imshow('histogram',curve)
+            ncvslideio.imshow('image',im)
             print('a')
         elif k == ord('b'):
             print('b')
             lines = hist_lines(im)
-            cv.imshow('histogram',lines)
-            cv.imshow('image',gray)
+            ncvslideio.imshow('histogram',lines)
+            ncvslideio.imshow('image',gray)
         elif k == ord('c'):
             print('c')
-            equ = cv.equalizeHist(gray)
+            equ = ncvslideio.equalizeHist(gray)
             lines = hist_lines(equ)
-            cv.imshow('histogram',lines)
-            cv.imshow('image',equ)
+            ncvslideio.imshow('histogram',lines)
+            ncvslideio.imshow('image',equ)
         elif k == ord('d'):
             print('d')
             curve = hist_curve(gray)
-            cv.imshow('histogram',curve)
-            cv.imshow('image',gray)
+            ncvslideio.imshow('histogram',curve)
+            ncvslideio.imshow('image',gray)
         elif k == ord('e'):
             print('e')
-            norm = cv.normalize(gray, gray, alpha = 0,beta = 255,norm_type = cv.NORM_MINMAX)
+            norm = ncvslideio.normalize(gray, gray, alpha = 0,beta = 255,norm_type = ncvslideio.NORM_MINMAX)
             lines = hist_lines(norm)
-            cv.imshow('histogram',lines)
-            cv.imshow('image',norm)
+            ncvslideio.imshow('histogram',lines)
+            ncvslideio.imshow('image',norm)
         elif k == 27:
             print('ESC')
-            cv.destroyAllWindows()
+            ncvslideio.destroyAllWindows()
             break
 
     print('Done')
@@ -122,4 +122,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

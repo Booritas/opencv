@@ -15,7 +15,7 @@
 
 class sycl_inverse_kernel;  // can be omitted - modern SYCL versions doesn't require this
 
-using namespace cv;
+using namespace ncvslideio;
 
 
 class App
@@ -28,10 +28,10 @@ public:
 
     void initSYCL();
 
-    void process_frame(cv::Mat& frame);
+    void process_frame(ncvslideio::Mat& frame);
 
     /// to check result with CPU-only reference code
-    Mat process_frame_reference(const cv::Mat& frame);
+    Mat process_frame_reference(const ncvslideio::Mat& frame);
 
     int run();
 
@@ -56,8 +56,8 @@ private:
 
     std::string                 m_file_name;
     int                         m_camera_id;
-    cv::VideoCapture            m_cap;
-    cv::Mat                     m_frame;
+    ncvslideio::VideoCapture            m_cap;
+    ncvslideio::Mat                     m_frame;
 
     cl::sycl::queue sycl_queue;
 };
@@ -117,7 +117,7 @@ void App::initSYCL()
         // bind OpenCL context/device/queue from SYCL to OpenCV
         try
         {
-            auto ctx = cv::ocl::OpenCLExecutionContext::create(
+            auto ctx = ncvslideio::ocl::OpenCLExecutionContext::create(
                     platform.get_info<info::platform::name>(),
                     platform.get(),
                     sycl_queue.get_context().get(),
@@ -125,11 +125,11 @@ void App::initSYCL()
                 );
             ctx.bind();
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             std::cerr << "OpenCV: Can't bind SYCL OpenCL context/device/queue: " << e.what() << std::endl;
         }
-        std::cout << "OpenCV uses OpenCL: " << (cv::ocl::useOpenCL() ? "True" : "False") << std::endl;
+        std::cout << "OpenCV uses OpenCL: " << (ncvslideio::ocl::useOpenCL() ? "True" : "False") << std::endl;
     }
 } // initSYCL()
 
@@ -153,11 +153,11 @@ void App::initVideoSource()
 } // initVideoSource()
 
 
-void App::process_frame(cv::Mat& frame)
+void App::process_frame(ncvslideio::Mat& frame)
 {
     using namespace cl::sycl;
 
-    // cv::Mat => cl::sycl::buffer
+    // ncvslideio::Mat => cl::sycl::buffer
     {
         CV_Assert(frame.isContinuous());
         CV_CheckTypeEQ(frame.type(), CV_8UC1, "");
@@ -184,7 +184,7 @@ void App::process_frame(cv::Mat& frame)
         UMat blurResult;
         {
             UMat umat_buffer = frame.getUMat(ACCESS_RW);
-            cv::blur(umat_buffer, blurResult, Size(3, 3));  // UMat doesn't support inplace
+            ncvslideio::blur(umat_buffer, blurResult, Size(3, 3));  // UMat doesn't support inplace
         }
         Mat result;
         blurResult.copyTo(result);
@@ -192,12 +192,12 @@ void App::process_frame(cv::Mat& frame)
     }
 }
 
-Mat App::process_frame_reference(const cv::Mat& frame)
+Mat App::process_frame_reference(const ncvslideio::Mat& frame)
 {
     Mat result;
-    cv::bitwise_not(frame, result);
+    ncvslideio::bitwise_not(frame, result);
     Mat blurResult;
-    cv::blur(result, blurResult, Size(3, 3));  // avoid inplace
+    ncvslideio::blur(result, blurResult, Size(3, 3));  // avoid inplace
     blurResult.copyTo(result);
     return result;
 }
@@ -218,7 +218,7 @@ int App::run()
 
     int processedFrames = 0;
 
-    cv::TickMeter timer;
+    ncvslideio::TickMeter timer;
 
     // Iterate over all frames
     while (isRunning() && m_cap.read(m_frame))
@@ -245,7 +245,7 @@ int App::run()
 
         if (checkWithReference)
         {
-            double diffInf = cv::norm(reference_result, m_frameGray, NORM_INF);
+            double diffInf = ncvslideio::norm(reference_result, m_frameGray, NORM_INF);
             if (diffInf > 0)
             {
                 std::cerr << "Result is not accurate. diffInf=" << diffInf << std::endl;
@@ -258,7 +258,7 @@ int App::run()
 
         std::ostringstream msg;
         msg << "Frame " << processedFrames << " (" << m_frame.size
-            << ")   Time: " << cv::format("%.2f", timer.getTimeMilli()) << " msec"
+            << ")   Time: " << ncvslideio::format("%.2f", timer.getTimeMilli()) << " msec"
             << " (process: " << (m_process ? "True" : "False") << ")";
         std::cout << msg.str() << std::endl;
         putText(img_to_show, msg.str(), Point(5, 150), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
         }
         app.run();
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         std::cout << "FATAL: OpenCV error: " << e.what() << std::endl;
         return 1;

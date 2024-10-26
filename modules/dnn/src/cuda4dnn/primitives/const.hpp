@@ -15,14 +15,14 @@
 
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class ConstOp final : public CUDABackendNode {
     public:
         using wrapper_type = GetCUDABackendWrapperType<T>;
 
-        ConstOp(csl::Stream stream_, const cv::Mat& data)
+        ConstOp(csl::Stream stream_, const ncvslideio::Mat& data)
             : stream(std::move(stream_))
         {
             constTensor = csl::makeTensorHeader<T>(data);
@@ -30,8 +30,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(outputs.size() == 1 && inputs.size() == 0);
@@ -46,6 +46,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         csl::Tensor<T> constTensor;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_CONST_HPP */

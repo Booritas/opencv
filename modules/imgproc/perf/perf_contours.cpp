@@ -100,7 +100,7 @@ PERF_TEST_P(TestBoundingRect, BoundingRect,
     Mat pts(n, 2, ptType);
     declare.in(pts, WARMUP_RNG);
 
-    cv::Rect rect;
+    ncvslideio::Rect rect;
     TEST_CYCLE() rect = boundingRect(pts);
 
     SANITY_CHECK_NOTHING();

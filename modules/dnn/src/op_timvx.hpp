@@ -20,7 +20,7 @@
 #include "tim/vx/tensor.h"
 #endif  // HAVE_TIMVX
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -182,6 +182,6 @@ private:
 void forwardTimVX(std::vector<Ptr<BackendWrapper> > &outputs, const Ptr<BackendNode>& node);
 bool haveTimVX();
 } // namespace dnn
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_DNN_OP_TIMVX_HPP

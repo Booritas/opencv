@@ -9,7 +9,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 using std::vector;
 

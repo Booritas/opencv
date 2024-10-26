@@ -34,7 +34,7 @@ ShortTermImagelessTracker::ShortTermImagelessTracker(vas::ot::Tracker::InitParam
 ShortTermImagelessTracker::~ShortTermImagelessTracker() {
 }
 
-int32_t ShortTermImagelessTracker::TrackObjects(const cv::Mat &mat, const std::vector<Detection> &detections,
+int32_t ShortTermImagelessTracker::TrackObjects(const ncvslideio::Mat &mat, const std::vector<Detection> &detections,
                                                 std::vector<std::shared_ptr<Tracklet>> *tracklets, float delta_t) {
     PROF_START(PROF_COMPONENTS_OT_SHORTTERM_RUN_TRACKER);
 
@@ -45,7 +45,7 @@ int32_t ShortTermImagelessTracker::TrackObjects(const cv::Mat &mat, const std::v
         input_img_height = mat.rows / 3 * 2;
     }
 
-    const cv::Rect2f image_boundary(0.0f, 0.0f, static_cast<float>(input_img_width),
+    const ncvslideio::Rect2f image_boundary(0.0f, 0.0f, static_cast<float>(input_img_width),
                                     static_cast<float>(input_img_height));
 
     TRACE("Start TrackObjects frame_count_: %d, detection: %d, tracklet: %d ----------------", frame_count_,
@@ -63,7 +63,7 @@ int32_t ShortTermImagelessTracker::TrackObjects(const cv::Mat &mat, const std::v
     // Predict tracklets state
     for (auto &tracklet : tracklets_) {
         auto sttimgless_tracklet = std::dynamic_pointer_cast<ShortTermImagelessTracklet>(tracklet);
-        cv::Rect2f predicted_rect = sttimgless_tracklet->kalman_filter->Predict(delta_t);
+        ncvslideio::Rect2f predicted_rect = sttimgless_tracklet->kalman_filter->Predict(delta_t);
         sttimgless_tracklet->predicted = predicted_rect;
         sttimgless_tracklet->trajectory.push_back(predicted_rect);
         sttimgless_tracklet->trajectory_filtered.push_back(predicted_rect);
@@ -116,7 +116,7 @@ int32_t ShortTermImagelessTracker::TrackObjects(const cv::Mat &mat, const std::v
             if (t_associated_d_index[t] >= 0) {
                 tracklet->association_delta_t = 0.0f;
                 int32_t associated_d_index = t_associated_d_index[t];
-                const cv::Rect2f &d_bounding_box = detections[associated_d_index].rect & image_boundary;
+                const ncvslideio::Rect2f &d_bounding_box = detections[associated_d_index].rect & image_boundary;
 
                 // Apply associated detection to tracklet
                 tracklet->association_idx = detections[associated_d_index].index;
@@ -213,7 +213,7 @@ int32_t ShortTermImagelessTracker::TrackObjects(const cv::Mat &mat, const std::v
             tracklet->label = detections[d].class_label;
             tracklet->association_idx = detections[d].index;
 
-            const cv::Rect2f &bounding_box = detections[d].rect & image_boundary;
+            const ncvslideio::Rect2f &bounding_box = detections[d].rect & image_boundary;
             tracklet->InitTrajectory(bounding_box);
             tracklet->kalman_filter.reset(new KalmanFilterNoOpencv(bounding_box));
             tracklets_.push_back(std::move(tracklet));

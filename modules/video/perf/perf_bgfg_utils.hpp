@@ -12,7 +12,7 @@ using namespace perf;
 
 namespace {
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void cvtFrameFmt(std::vector<Mat>& input, std::vector<Mat>& output)
 {
@@ -28,12 +28,12 @@ static void prepareData(VideoCapture& cap, int cn, std::vector<Mat>& frame_buffe
     int nFrame = (int)frame_buffer.size();
     for (int i = 0; i < skipFrames; i++)
     {
-        cv::Mat frame;
+        ncvslideio::Mat frame;
         cap >> frame;
     }
     for (int i = 0; i < nFrame; i++)
     {
-        cv::Mat frame;
+        ncvslideio::Mat frame;
         cap >> frame;
         ASSERT_FALSE(frame.empty());
         frame_buffer_init.push_back(frame);

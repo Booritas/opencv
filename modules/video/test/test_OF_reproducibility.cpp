@@ -57,7 +57,7 @@ TEST_P(DenseOpticalFlow_DIS, MultithreadReproducibility)
     OFParams params = GetParam();
     Size size = get<0>(params);
 
-    int nThreads = cv::getNumThreads();
+    int nThreads = ncvslideio::getNumThreads();
     if (nThreads == 1)
         throw SkipTestException("Single thread environment");
     for (int iter = 0; iter <= loopsCount; iter++)
@@ -82,16 +82,16 @@ TEST_P(DenseOpticalFlow_DIS, MultithreadReproducibility)
         algo->setUseMeanNormalization(use_mean_normalization);
         algo->setUseSpatialPropagation(use_spatial_propagation);
 
-        cv::setNumThreads(nThreads);
+        ncvslideio::setNumThreads(nThreads);
         Mat resMultiThread;
         algo->calc(frame1, frame2, resMultiThread);
 
-        cv::setNumThreads(1);
+        ncvslideio::setNumThreads(1);
         Mat resSingleThread;
         algo->calc(frame1, frame2, resSingleThread);
 
-        EXPECT_LE(cv::norm(resSingleThread, resMultiThread, NORM_INF), MAX_DIF);
-        EXPECT_LE(cv::norm(resSingleThread, resMultiThread, NORM_L1), MAX_MEAN_DIF * frame1.total());
+        EXPECT_LE(ncvslideio::norm(resSingleThread, resMultiThread, NORM_INF), MAX_DIF);
+        EXPECT_LE(ncvslideio::norm(resSingleThread, resMultiThread, NORM_L1), MAX_MEAN_DIF * frame1.total());
 
         // resulting flow should be within the frame bounds:
         double min_val, max_val;
@@ -114,7 +114,7 @@ TEST_P(DenseOpticalFlow_VariationalRefinement, MultithreadReproducibility)
     OFParams params = GetParam();
     Size size = get<0>(params);
 
-    int nThreads = cv::getNumThreads();
+    int nThreads = ncvslideio::getNumThreads();
     if (nThreads == 1)
         throw SkipTestException("Single thread environment");
     for (int iter = 0; iter <= loopsCount; iter++)
@@ -134,18 +134,18 @@ TEST_P(DenseOpticalFlow_VariationalRefinement, MultithreadReproducibility)
         var->setFixedPointIterations(rng.uniform(1, 20));
         var->setOmega(rng.uniform(1.01f, 1.99f));
 
-        cv::setNumThreads(nThreads);
+        ncvslideio::setNumThreads(nThreads);
         Mat resMultiThread;
         flow.copyTo(resMultiThread);
         var->calc(frame1, frame2, resMultiThread);
 
-        cv::setNumThreads(1);
+        ncvslideio::setNumThreads(1);
         Mat resSingleThread;
         flow.copyTo(resSingleThread);
         var->calc(frame1, frame2, resSingleThread);
 
-        EXPECT_LE(cv::norm(resSingleThread, resMultiThread, NORM_INF), MAX_DIF);
-        EXPECT_LE(cv::norm(resSingleThread, resMultiThread, NORM_L1), MAX_MEAN_DIF * frame1.total());
+        EXPECT_LE(ncvslideio::norm(resSingleThread, resMultiThread, NORM_INF), MAX_DIF);
+        EXPECT_LE(ncvslideio::norm(resSingleThread, resMultiThread, NORM_L1), MAX_MEAN_DIF * frame1.total());
 
         // resulting flow should be within the frame bounds:
         double min_val, max_val;

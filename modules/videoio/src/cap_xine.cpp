@@ -52,7 +52,7 @@
 #include <xine.h>
 #include <xine/xineutils.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 class XINECapture : public IVideoCapture
 {
@@ -182,7 +182,7 @@ class XINECapture : public IVideoCapture
         case XINE_IMGFMT_YV12: // actual format seems to be I420 (or IYUV)
         {
             Mat frame(Size(xine_frame.width, xine_frame.height * 3 / 2), CV_8UC1, xine_frame.data);
-            cv::cvtColor(frame, out, cv::COLOR_YUV2BGR_I420);
+            ncvslideio::cvtColor(frame, out, ncvslideio::COLOR_YUV2BGR_I420);
             res = true;
         }
         break;
@@ -190,7 +190,7 @@ class XINECapture : public IVideoCapture
         case XINE_IMGFMT_YUY2:
         {
             Mat frame(Size(xine_frame.width, xine_frame.height), CV_8UC2, xine_frame.data);
-            cv::cvtColor(frame, out, cv::COLOR_YUV2BGR_YUY2);
+            ncvslideio::cvtColor(frame, out, ncvslideio::COLOR_YUV2BGR_YUY2);
             res = true;
         }
         break;
@@ -346,7 +346,7 @@ protected:
     }
 };
 
-Ptr<IVideoCapture> cv::createXINECapture(const std::string &filename)
+Ptr<IVideoCapture> ncvslideio::createXINECapture(const std::string &filename)
 {
     Ptr<XINECapture> res = makePtr<XINECapture>();
     if (res && res->open(filename.c_str()))

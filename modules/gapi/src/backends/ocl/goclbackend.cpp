@@ -33,42 +33,42 @@
 //
 // If not, we need to introduce that!
 using GOCLModel = ade::TypedGraph
-    < cv::gimpl::OCLUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::OCLUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGOCLModel = ade::ConstTypedGraph
-    < cv::gimpl::OCLUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::OCLUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 namespace
 {
-    class GOCLBackendImpl final: public cv::gapi::GBackend::Priv
+    class GOCLBackendImpl final: public ncvslideio::gapi::GBackend::Priv
     {
         virtual void unpackKernel(ade::Graph            &graph,
                                   const ade::NodeHandle &op_node,
-                                  const cv::GKernelImpl &impl) override
+                                  const ncvslideio::GKernelImpl &impl) override
         {
             GOCLModel gm(graph);
-            auto ocl_impl = cv::util::any_cast<cv::GOCLKernel>(impl.opaque);
-            gm.metadata(op_node).set(cv::gimpl::OCLUnit{ocl_impl});
+            auto ocl_impl = ncvslideio::util::any_cast<ncvslideio::GOCLKernel>(impl.opaque);
+            gm.metadata(op_node).set(ncvslideio::gimpl::OCLUnit{ocl_impl});
         }
 
         virtual EPtr compile(const ade::Graph &graph,
-                             const cv::GCompileArgs &,
+                             const ncvslideio::GCompileArgs &,
                              const std::vector<ade::NodeHandle> &nodes) const override
         {
-            return EPtr{new cv::gimpl::GOCLExecutable(graph, nodes)};
+            return EPtr{new ncvslideio::gimpl::GOCLExecutable(graph, nodes)};
         }
 
-        virtual bool supportsConst(cv::GShape shape) const override
+        virtual bool supportsConst(ncvslideio::GShape shape) const override
         {
             // Supports all types of const values
-            return shape == cv::GShape::GOPAQUE
-                || shape == cv::GShape::GSCALAR
-                || shape == cv::GShape::GARRAY;
+            return shape == ncvslideio::GShape::GOPAQUE
+                || shape == ncvslideio::GShape::GSCALAR
+                || shape == ncvslideio::GShape::GARRAY;
             // yes, value-initialized GMats are not supported currently
             // as in-island data -- compiler will lift these values to the
             // GIslandModel's SLOT level (will be handled uniformly)
@@ -76,14 +76,14 @@ namespace
    };
 }
 
-cv::gapi::GBackend cv::gapi::ocl::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::ocl::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GOCLBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GOCLBackendImpl>());
     return this_backend;
 }
 
 // GOCLExcecutable implementation //////////////////////////////////////////////
-cv::gimpl::GOCLExecutable::GOCLExecutable(const ade::Graph &g,
+ncvslideio::gimpl::GOCLExecutable::GOCLExecutable(const ade::Graph &g,
                                           const std::vector<ade::NodeHandle> &nodes)
     : m_g(g), m_gm(m_g)
 {
@@ -106,8 +106,8 @@ cv::gimpl::GOCLExecutable::GOCLExecutable(const ade::Graph &g,
             //preallocate internal Mats in advance
             if (desc.storage == Data::Storage::INTERNAL && desc.shape == GShape::GMAT)
             {
-                const auto mat_desc = util::get<cv::GMatDesc>(desc.meta);
-                auto& mat = m_res.slot<cv::Mat>()[desc.rc];
+                const auto mat_desc = util::get<ncvslideio::GMatDesc>(desc.meta);
+                auto& mat = m_res.slot<ncvslideio::Mat>()[desc.rc];
                 createMat(mat_desc, mat);
             }
             break;
@@ -118,44 +118,44 @@ cv::gimpl::GOCLExecutable::GOCLExecutable(const ade::Graph &g,
 }
 
 // FIXME: Document what it does
-cv::GArg cv::gimpl::GOCLExecutable::packArg(const GArg &arg)
+ncvslideio::GArg ncvslideio::gimpl::GOCLExecutable::packArg(const GArg &arg)
 {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-              && arg.kind != cv::detail::ArgKind::GSCALAR
-              && arg.kind != cv::detail::ArgKind::GARRAY
-              && arg.kind != cv::detail::ArgKind::GOPAQUE
-              && arg.kind != cv::detail::ArgKind::GFRAME);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+              && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+              && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+              && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE
+              && arg.kind != ncvslideio::detail::ArgKind::GFRAME);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF)
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF)
     {
         // All other cases - pass as-is, with no transformations to GArg contents.
         return arg;
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case GShape::GMAT:    return GArg(m_res.slot<cv::UMat>()[ref.id]);
-    case GShape::GSCALAR: return GArg(m_res.slot<cv::Scalar>()[ref.id]);
+    case GShape::GMAT:    return GArg(m_res.slot<ncvslideio::UMat>()[ref.id]);
+    case GShape::GSCALAR: return GArg(m_res.slot<ncvslideio::Scalar>()[ref.id]);
     // Note: .at() is intentional for GArray as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case GShape::GARRAY:  return GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
+    case GShape::GARRAY:  return GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
     // Note: .at() is intentional for GOpaque as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case GShape::GOPAQUE:  return GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
-    case GShape::GFRAME: return GArg(m_res.slot<cv::MediaFrame>().at(ref.id));
+    case GShape::GOPAQUE:  return GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
+    case GShape::GFRAME: return GArg(m_res.slot<ncvslideio::MediaFrame>().at(ref.id));
     default:
         util::throw_error(std::logic_error("Unsupported GShape type"));
         break;
     }
 }
 
-void cv::gimpl::GOCLExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::GOCLExecutable::run(std::vector<InObj>  &&input_objs,
                                     std::vector<OutObj> &&output_objs)
 {
     // Update resources with run-time information - what this Island
@@ -163,18 +163,18 @@ void cv::gimpl::GOCLExecutable::run(std::vector<InObj>  &&input_objs,
     // FIXME: Check input/output objects against GIsland protocol
 
     // NB: We must clean-up m_res before this function returns because internally (bindInArg,
-    //     bindOutArg) we work with cv::UMats, not cv::Mats that were originally placed into the
-    //     input/output objects. If this is not done and cv::UMat "leaves" the local function scope,
+    //     bindOutArg) we work with ncvslideio::UMats, not ncvslideio::Mats that were originally placed into the
+    //     input/output objects. If this is not done and ncvslideio::UMat "leaves" the local function scope,
     //     certain problems may occur.
     //
-    //     For example, if the original output (cv::Mat) is re-initialized by the user but we still
-    //     hold cv::UMat -> we get cv::UMat that has a parent that was already destroyed. Also,
+    //     For example, if the original output (ncvslideio::Mat) is re-initialized by the user but we still
+    //     hold ncvslideio::UMat -> we get ncvslideio::UMat that has a parent that was already destroyed. Also,
     //     since we don't own the data (the user does), there's no point holding it after we're done
-    const auto clean_up = [&input_objs, &output_objs] (cv::gimpl::Mag* p)
+    const auto clean_up = [&input_objs, &output_objs] (ncvslideio::gimpl::Mag* p)
     {
         // Only clean-up UMat entries from current scope, we know that inputs and outputs are stored
         // as UMats from the context below, so the following procedure is safe
-        auto& umats = p->slot<cv::UMat>();
+        auto& umats = p->slot<ncvslideio::UMat>();
         // NB: avoid clearing the whole magazine, there's also pre-allocated internal data
         for (auto& it : input_objs)  umats.erase(it.first.id);
         for (auto& it : output_objs) umats.erase(it.first.id);
@@ -184,17 +184,17 @@ void cv::gimpl::GOCLExecutable::run(std::vector<InObj>  &&input_objs,
         for (auto &it : output_objs) magazine::unbind(*p, it.first);
     };
     // RAII wrapper to clean-up m_res
-    std::unique_ptr<cv::gimpl::Mag, decltype(clean_up)> cleaner(&m_res, clean_up);
+    std::unique_ptr<ncvslideio::gimpl::Mag, decltype(clean_up)> cleaner(&m_res, clean_up);
 
     const auto bindUMat = [this](const RcDesc& rc) {
-            auto& mag_umat = m_res.template slot<cv::UMat>()[rc.id];
-            mag_umat = m_res.template slot<cv::Mat>()[rc.id].getUMat(ACCESS_READ);
+            auto& mag_umat = m_res.template slot<ncvslideio::UMat>()[rc.id];
+            mag_umat = m_res.template slot<ncvslideio::Mat>()[rc.id].getUMat(ACCESS_READ);
     };
 
     for (auto& it : input_objs) {
         const auto& rc = it.first;
         magazine::bindInArg (m_res, rc, it.second);
-        // There is already cv::Mat in the magazine after bindInArg call,
+        // There is already ncvslideio::Mat in the magazine after bindInArg call,
         // extract UMat from it, put into the magazine
         if (rc.shape == GShape::GMAT) bindUMat(rc);
     }
@@ -280,8 +280,8 @@ void cv::gimpl::GOCLExecutable::run(std::vector<InObj>  &&input_objs,
         magazine::writeBack(m_res, rc, g_arg);
         if (rc.shape == GShape::GMAT)
         {
-            uchar* out_arg_data = m_res.template slot<cv::Mat>()[rc.id].data;
-            auto& mag_mat = m_res.template slot<cv::UMat>().at(rc.id);
+            uchar* out_arg_data = m_res.template slot<ncvslideio::Mat>()[rc.id].data;
+            auto& mag_mat = m_res.template slot<ncvslideio::UMat>().at(rc.id);
             GAPI_Assert((out_arg_data == (mag_mat.getMat(ACCESS_RW).data)) && " data for output parameters was reallocated ?");
         }
     }

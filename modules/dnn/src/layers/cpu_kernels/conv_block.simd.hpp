@@ -4,7 +4,7 @@
 
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
@@ -721,4 +721,4 @@ void convBlockMR1_F16(int np, const char* _a, const char* _b, float *c, const fl
 #endif // CV_CPU_OPTIMIZATION_DECLARATIONS_ONLY
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

@@ -6,7 +6,7 @@
 #include "internal.hpp"
 #include "../include/op_naryeltwise.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -182,7 +182,7 @@ bool OpNary::computeGroupCount()
     }
     else
     {
-        CV_Error(cv::Error::StsNotImplemented, "shader type is not supported at compute GroupCount.");
+        CV_Error(ncvslideio::Error::StsNotImplemented, "shader type is not supported at compute GroupCount.");
     }
 
     CV_Assert(group_x_ <= MAX_GROUP_COUNT_X);
@@ -194,4 +194,4 @@ bool OpNary::computeGroupCount()
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

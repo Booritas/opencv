@@ -168,7 +168,7 @@ public:
     {
         feature_size_ = feature_size;
         CV_UNUSED(key_size);
-        CV_Error(cv::Error::StsUnsupportedFormat, "LSH is not implemented for that type" );
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "LSH is not implemented for that type" );
     }
 
     /** Add a feature to the table
@@ -246,7 +246,7 @@ public:
      */
     size_t getKey(const ElementType* /*feature*/) const
     {
-        CV_Error(cv::Error::StsUnsupportedFormat, "LSH is not implemented for that type" );
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "LSH is not implemented for that type" );
         return 0;
     }
 
@@ -274,7 +274,7 @@ private:
         const size_t key_size_upper_bound = (std::min)(sizeof(BucketKey) * CHAR_BIT + 1, sizeof(size_t) * CHAR_BIT);
         if (key_size < key_size_lower_bound || key_size >= key_size_upper_bound)
         {
-            CV_Error(cv::Error::StsBadArg, cv::format("Invalid key_size (=%d). Valid values for your system are %d <= key_size < %d.", (int)key_size, (int)key_size_lower_bound, (int)key_size_upper_bound));
+            CV_Error(ncvslideio::Error::StsBadArg, ncvslideio::format("Invalid key_size (=%d). Valid values for your system are %d <= key_size < %d.", (int)key_size, (int)key_size_lower_bound, (int)key_size_upper_bound));
         }
 
         speed_level_ = kHash;
@@ -360,7 +360,7 @@ inline LshTable<unsigned char>::LshTable(unsigned int feature_size, unsigned int
     std::vector<int> indices(feature_size * CHAR_BIT);
     for (size_t i = 0; i < feature_size * CHAR_BIT; ++i) indices[i] = (int)i;
 #ifndef OPENCV_FLANN_USE_STD_RAND
-    cv::randShuffle(indices);
+    ncvslideio::randShuffle(indices);
 #else
     std::random_shuffle(indices.begin(), indices.end());
 #endif

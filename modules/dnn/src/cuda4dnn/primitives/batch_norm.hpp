@@ -14,14 +14,14 @@
 
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class BatchNormOp final : public CUDABackendNode {
     public:
         using wrapper_type = GetCUDABackendWrapperType<T>;
 
-        BatchNormOp(csl::Stream stream_, const cv::Mat& weights, const cv::Mat& bias)
+        BatchNormOp(csl::Stream stream_, const ncvslideio::Mat& weights, const ncvslideio::Mat& bias)
             : stream(std::move(stream_))
         {
             biasTensor = csl::makeTensorHeader<T>(bias);
@@ -32,8 +32,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(inputs.size() == 1 && outputs.size() == 1);
@@ -53,6 +53,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         csl::Tensor<T> weightsTensor, biasTensor;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_BATCH_NORM_HPP */

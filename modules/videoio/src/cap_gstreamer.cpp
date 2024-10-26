@@ -84,7 +84,7 @@
 #define GSTREAMER_INTERRUPT_READ_DEFAULT_TIMEOUT_NS (30 * GST_SECOND)
 
 
-namespace cv {
+namespace ncvslideio {
 
 static void toFraction(double decimal, CV_OUT int& numerator, CV_OUT int& denominator);
 static void handleMessage(GstElement * pipeline);
@@ -388,13 +388,13 @@ public:
     virtual double getProperty(int propId) const CV_OVERRIDE;
     virtual bool setProperty(int propId, double value) CV_OVERRIDE;
     virtual bool isOpened() const CV_OVERRIDE { return (bool)pipeline; }
-    virtual int getCaptureDomain() CV_OVERRIDE { return cv::CAP_GSTREAMER; }
-    bool open(int id, const cv::VideoCaptureParameters& params);
-    bool open(const String &filename_, const cv::VideoCaptureParameters& params);
+    virtual int getCaptureDomain() CV_OVERRIDE { return ncvslideio::CAP_GSTREAMER; }
+    bool open(int id, const ncvslideio::VideoCaptureParameters& params);
+    bool open(const String &filename_, const ncvslideio::VideoCaptureParameters& params);
     static void newPad(GstElement * /*elem*/, GstPad     *pad, gpointer    data);
-    bool configureHW(const cv::VideoCaptureParameters&);
-    bool configureStreamsProperty(const cv::VideoCaptureParameters&);
-    bool setAudioProperties(const cv::VideoCaptureParameters&);
+    bool configureHW(const ncvslideio::VideoCaptureParameters&);
+    bool configureStreamsProperty(const ncvslideio::VideoCaptureParameters&);
+    bool setAudioProperties(const ncvslideio::VideoCaptureParameters&);
 
 protected:
     bool isPipelinePlaying();
@@ -456,7 +456,7 @@ GStreamerCapture::~GStreamerCapture()
     }
 }
 
-bool GStreamerCapture::configureHW(const cv::VideoCaptureParameters& params)
+bool GStreamerCapture::configureHW(const ncvslideio::VideoCaptureParameters& params)
 {
     if (params.has(CAP_PROP_HW_ACCELERATION))
     {
@@ -484,7 +484,7 @@ bool GStreamerCapture::configureHW(const cv::VideoCaptureParameters& params)
     return true;
 }
 
-bool GStreamerCapture::configureStreamsProperty(const cv::VideoCaptureParameters& params)
+bool GStreamerCapture::configureStreamsProperty(const ncvslideio::VideoCaptureParameters& params)
 {
     if (params.has(CAP_PROP_VIDEO_STREAM))
     {
@@ -511,7 +511,7 @@ bool GStreamerCapture::configureStreamsProperty(const cv::VideoCaptureParameters
     return true;
 }
 
-bool GStreamerCapture::setAudioProperties(const cv::VideoCaptureParameters& params)
+bool GStreamerCapture::setAudioProperties(const ncvslideio::VideoCaptureParameters& params)
 {
     if (params.has(CAP_PROP_AUDIO_DATA_DEPTH))
     {
@@ -854,7 +854,7 @@ bool GStreamerCapture::configureAudioFrame()
     copy(bufferAudioData.begin(), bufferAudioData.begin() + (int)chunkLengthOfBytes, std::back_inserter(audioDataInUse));
     bufferAudioData.erase(bufferAudioData.begin(), bufferAudioData.begin() + (int)chunkLengthOfBytes);
 
-    cv::Mat data;
+    ncvslideio::Mat data;
 
     if (audioFormat == "S8")
     {
@@ -1350,7 +1350,7 @@ void GStreamerCapture::newPad(GstElement *, GstPad *pad, gpointer data)
  *  is really slow if we need to restart the pipeline over and over again.
  *
  */
-bool GStreamerCapture::open(int id, const cv::VideoCaptureParameters& params)
+bool GStreamerCapture::open(int id, const ncvslideio::VideoCaptureParameters& params)
 {
     gst_initializer::init();
 
@@ -1363,7 +1363,7 @@ bool GStreamerCapture::open(int id, const cv::VideoCaptureParameters& params)
     return open(desc.str(), params);
 }
 
-bool GStreamerCapture::open(const String &filename_, const cv::VideoCaptureParameters& params)
+bool GStreamerCapture::open(const String &filename_, const ncvslideio::VideoCaptureParameters& params)
 {
     gst_initializer::init();
 
@@ -2094,7 +2094,7 @@ bool GStreamerCapture::setProperty(int propId, double value)
             std::string propName = get_gst_propname(propId);
             if (!propName.empty())
             {
-                gint32 val = cv::saturate_cast<gint32>(value);
+                gint32 val = ncvslideio::saturate_cast<gint32>(value);
                 g_object_set(G_OBJECT(v4l2src.get()), propName.c_str(), &val, NULL);
                 return true;
             }
@@ -2103,9 +2103,9 @@ bool GStreamerCapture::setProperty(int propId, double value)
     case CAP_PROP_GAIN:
     case CAP_PROP_CONVERT_RGB:
         break;
-    case cv::CAP_PROP_HW_ACCELERATION:
+    case ncvslideio::CAP_PROP_HW_ACCELERATION:
         return false; // open-only
-    case cv::CAP_PROP_HW_DEVICE:
+    case ncvslideio::CAP_PROP_HW_DEVICE:
         return false; // open-only
     case CAP_PROP_GSTREAMER_QUEUE_LENGTH:
     {
@@ -2160,7 +2160,7 @@ bool GStreamerCapture::setProperty(int propId, double value)
 }
 
 
-Ptr<IVideoCapture> createGStreamerCapture_file(const String& filename, const cv::VideoCaptureParameters& params)
+Ptr<IVideoCapture> createGStreamerCapture_file(const String& filename, const ncvslideio::VideoCaptureParameters& params)
 {
     Ptr<GStreamerCapture> cap = makePtr<GStreamerCapture>();
     if (cap && cap->open(filename, params))
@@ -2168,7 +2168,7 @@ Ptr<IVideoCapture> createGStreamerCapture_file(const String& filename, const cv:
     return Ptr<IVideoCapture>();
 }
 
-Ptr<IVideoCapture> createGStreamerCapture_cam(int index, const cv::VideoCaptureParameters& params)
+Ptr<IVideoCapture> createGStreamerCapture_cam(int index, const ncvslideio::VideoCaptureParameters& params)
 {
     Ptr<GStreamerCapture> cap = makePtr<GStreamerCapture>();
     if (cap && cap->open(index, params))
@@ -2207,7 +2207,7 @@ public:
         }
     }
 
-    int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_GSTREAMER; }
+    int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_GSTREAMER; }
 
     bool open(const std::string &filename, int fourcc,
               double fps, const Size &frameSize, const VideoWriterParameters& params );
@@ -2366,7 +2366,7 @@ const char* CvVideoWriter_GStreamer::filenameToMimetype(const char *filename)
  *
  */
 bool CvVideoWriter_GStreamer::open( const std::string &filename, int fourcc,
-                                    double fps, const cv::Size &frameSize,
+                                    double fps, const ncvslideio::Size &frameSize,
                                     const VideoWriterParameters& params )
 {
     // check arguments
@@ -2752,7 +2752,7 @@ double CvVideoWriter_GStreamer::getProperty(int propId) const
 }
 
 Ptr<IVideoWriter> create_GStreamer_writer(const std::string& filename, int fourcc, double fps,
-                                          const cv::Size& frameSize, const VideoWriterParameters& params)
+                                          const ncvslideio::Size& frameSize, const VideoWriterParameters& params)
 {
     Ptr<CvVideoWriter_GStreamer> ret = makePtr<CvVideoWriter_GStreamer>();
     if (ret->open(filename, fourcc, fps, frameSize, params))
@@ -2845,7 +2845,7 @@ void handleMessage(GstElement * pipeline)
     }
 }
 
-}  // namespace cv
+}  // namespace ncvslideio
 
 //==================================================================================================
 
@@ -2858,7 +2858,7 @@ void handleMessage(GstElement * pipeline)
 #define WRITER_API_VERSION 1
 #include "plugin_writer_api.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 static
 CvResult CV_API_CALL cv_capture_open_with_params(
@@ -2873,7 +2873,7 @@ CvResult CV_API_CALL cv_capture_open_with_params(
     GStreamerCapture *cap = 0;
     try
     {
-        cv::VideoCaptureParameters parameters(params, n_params);
+        ncvslideio::VideoCaptureParameters parameters(params, n_params);
         cap = new GStreamerCapture();
         bool res;
         if (filename)
@@ -3020,7 +3020,7 @@ CvResult CV_API_CALL cv_writer_open_with_params(
     CvVideoWriter_GStreamer* wrt = 0;
     try
     {
-        cv::Size sz { width, height };
+        ncvslideio::Size sz { width, height };
         VideoWriterParameters parameters(params, n_params);
         wrt = new CvVideoWriter_GStreamer();
         if (wrt && wrt->open(filename, fourcc, fps, sz, parameters))
@@ -3094,9 +3094,9 @@ CvResult CV_API_CALL cv_writer_write(CvPluginWriter handle, const unsigned char 
     try
     {
         CvVideoWriter_GStreamer* instance = (CvVideoWriter_GStreamer*)handle;
-        const cv::Size sz = { width, height };
+        const ncvslideio::Size sz = { width, height };
         const int image_type = CV_MAKE_TYPE(instance->getIplDepth(), cn);
-        cv::Mat img(sz, image_type, (void*)data, step);
+        ncvslideio::Mat img(sz, image_type, (void*)data, step);
         instance->write(img);
         return CV_ERROR_OK;
     }
@@ -3158,14 +3158,14 @@ static const OpenCV_VideoIO_Writer_Plugin_API writer_api =
 const OpenCV_VideoIO_Capture_Plugin_API* opencv_videoio_capture_plugin_init_v1(int requested_abi_version, int requested_api_version, void* /*reserved=NULL*/) CV_NOEXCEPT
 {
     if (requested_abi_version == CAPTURE_ABI_VERSION && requested_api_version <= CAPTURE_API_VERSION)
-        return &cv::capture_api;
+        return &ncvslideio::capture_api;
     return NULL;
 }
 
 const OpenCV_VideoIO_Writer_Plugin_API* opencv_videoio_writer_plugin_init_v1(int requested_abi_version, int requested_api_version, void* /*reserved=NULL*/) CV_NOEXCEPT
 {
     if (requested_abi_version == WRITER_ABI_VERSION && requested_api_version <= WRITER_API_VERSION)
-        return &cv::writer_api;
+        return &ncvslideio::writer_api;
     return NULL;
 }
 

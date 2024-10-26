@@ -16,7 +16,7 @@ namespace calib {
     class calibController
     {
     protected:
-        cv::Ptr<calibrationData> mCalibData;
+        ncvslideio::Ptr<calibrationData> mCalibData;
         int mCalibFlags;
         unsigned mMinFramesNum;
         bool mNeedTuning;
@@ -26,7 +26,7 @@ namespace calib {
         double estimateCoverageQuality();
     public:
         calibController();
-        calibController(cv::Ptr<calibrationData> data, int initialFlags, bool autoTuning,
+        calibController(ncvslideio::Ptr<calibrationData> data, int initialFlags, bool autoTuning,
                         int minFramesNum);
 
         void updateState();
@@ -43,7 +43,7 @@ namespace calib {
     class calibDataController
     {
     protected:
-        cv::Ptr<calibrationData> mCalibData;
+        ncvslideio::Ptr<calibrationData> mCalibData;
         std::stack<cameraParameters> mParamsStack;
         std::string mParamsFileName;
         unsigned mMaxFramesNum;
@@ -51,7 +51,7 @@ namespace calib {
 
         double estimateGridSubsetQuality(size_t excludedIndex);
     public:
-        calibDataController(cv::Ptr<calibrationData> data, int maxFrames, double convParameter);
+        calibDataController(ncvslideio::Ptr<calibrationData> data, int maxFrames, double convParameter);
         calibDataController();
 
         void filterFrames();

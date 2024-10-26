@@ -44,7 +44,7 @@
 #include "opencv2/imgproc.hpp"
 #include "hdr_common.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class MergeDebevecImpl CV_FINAL : public MergeDebevec

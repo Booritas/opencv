@@ -2,7 +2,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 CV_EXPORTS_W void setErrorVerbosity(bool verbose);
@@ -11,7 +11,7 @@ CV_EXPORTS_W void setErrorVerbosity(bool verbose);
 
 #ifdef OPENCV_BINDINGS_PARSER
 
-namespace cv
+namespace ncvslideio
 {
 CV_EXPORTS_W void add(InputArray src1, Scalar src2, OutputArray dst, InputArray mask=noArray(), int dtype=-1);
 

@@ -43,7 +43,7 @@
 #include<iostream>
 #include<fstream>
 
-namespace cv {
+namespace ncvslideio {
 
 const float FLOW_TAG_FLOAT = 202021.25f;
 const char *FLOW_TAG_STRING = "PIEH";

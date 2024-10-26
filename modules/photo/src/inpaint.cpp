@@ -50,7 +50,7 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #undef CV_MAT_ELEM_PTR_FAST
 #define CV_MAT_ELEM_PTR_FAST( mat, row, col, pix_size )  \
@@ -58,12 +58,12 @@ using namespace cv;
 
 template<typename T>
 typename std::enable_if<std::is_floating_point<T>::value, T>::type round_cast(float val) {
-   return cv::saturate_cast<T>(val);
+   return ncvslideio::saturate_cast<T>(val);
 }
 
 template<typename T>
 typename std::enable_if<!std::is_floating_point<T>::value, T>::type round_cast(float val) {
-   return cv::saturate_cast<T>(val + 0.5);
+   return ncvslideio::saturate_cast<T>(val + 0.5);
 }
 
 inline float
@@ -151,12 +151,12 @@ public:
     }
 };
 
-static inline float VectorScalMult(const cv::Point2f& v1, const cv::Point2f& v2)
+static inline float VectorScalMult(const ncvslideio::Point2f& v1, const ncvslideio::Point2f& v2)
 {
    return v1.x*v2.x+v1.y*v2.y;
 }
 
-static inline float VectorLength(const cv::Point2f& v1)
+static inline float VectorLength(const ncvslideio::Point2f& v1)
 {
     return v1.x*v1.x+v1.y*v1.y;
 }
@@ -259,7 +259,7 @@ icvTeleaInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *He
                            FastMarching_solve(i+1,j,i,j+1,f,t));
                t.at<float>(i,j) = dist;
 
-               cv::Point2f gradT[3];
+               ncvslideio::Point2f gradT[3];
                for (color=0; color<=2; color++) {
                   if (f.at<uchar>(i,j+1)!=INSIDE) {
                      if (f.at<uchar>(i,j-1)!=INSIDE) {
@@ -289,7 +289,7 @@ icvTeleaInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *He
                   }
                }
 
-               cv::Point2f gradI,r;
+               ncvslideio::Point2f gradI,r;
                float Jx[3] = {0,0,0};
                float Jy[3] = {0,0,0};
                float Ia[3] = {0,0,0};
@@ -380,7 +380,7 @@ icvTeleaInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *He
                t.at<float>(i,j) = dist;
 
                for (color=0; color<=0; color++) {
-                  cv::Point2f gradI,gradT,r;
+                  ncvslideio::Point2f gradI,gradT,r;
                   float Ia=0,Jx=0,Jy=0,s=1.0e-20f,w,dst,lev,dir,sat;
 
                   if (f.at<uchar>(i,j+1)!=INSIDE) {
@@ -500,7 +500,7 @@ icvNSInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *Heap)
                            FastMarching_solve(i+1,j,i,j+1,f,t));
                t.at<float>(i,j) = dist;
 
-               cv::Point2f gradI,r;
+               ncvslideio::Point2f gradI,r;
                float Ia[3]={0,0,0};
                float s[3]={1.0e-20f,1.0e-20f,1.0e-20f};
                float w,dst,dir;
@@ -564,7 +564,7 @@ icvNSInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *Heap)
                   }
                }
                for (color=0; color<=2; color++) {
-                  out.at<PixelT>(i-1,j-1)[color] = cv::saturate_cast<uchar>((double)Ia[color]/s[color]);
+                  out.at<PixelT>(i-1,j-1)[color] = ncvslideio::saturate_cast<uchar>((double)Ia[color]/s[color]);
                }
 
                f.at<uchar>(i,j) = BAND;
@@ -593,7 +593,7 @@ icvNSInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *Heap)
                t.at<float>(i,j) = dist;
 
                {
-                  cv::Point2f gradI,r;
+                  ncvslideio::Point2f gradI,r;
                   float Ia=0,s=1.0e-20f,w,dst,dir;
 
                   for (k=i-range; k<=i+range; k++) {
@@ -652,7 +652,7 @@ icvNSInpaintFMM(Mat &f, Mat &t, Mat &out, int range, CvPriorityQueueFloat *Heap)
                         }
                      }
                   }
-                  out.at<data_type>(i-1,j-1) = cv::saturate_cast<data_type>((double)Ia/s);
+                  out.at<data_type>(i-1,j-1) = ncvslideio::saturate_cast<data_type>((double)Ia/s);
                }
 
                f.at<uchar>(i,j) = BAND;
@@ -691,26 +691,26 @@ static void
 icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
            double inpaintRange, int flags )
 {
-    cv::Mat mask, band, f, t, out;
-    cv::Ptr<CvPriorityQueueFloat> Heap, Out;
-    cv::Mat el_range, el_cross; // structuring elements for dilate
+    ncvslideio::Mat mask, band, f, t, out;
+    ncvslideio::Ptr<CvPriorityQueueFloat> Heap, Out;
+    ncvslideio::Mat el_range, el_cross; // structuring elements for dilate
 
     int range=cvRound(inpaintRange);
     int erows, ecols;
 
     if((input_img.size() != output_img.size()) || (input_img.size() != inpaint_mask.size()))
-        CV_Error( cv::Error::StsUnmatchedSizes, "All the input and output images must have the same size" );
+        CV_Error( ncvslideio::Error::StsUnmatchedSizes, "All the input and output images must have the same size" );
 
     if( (input_img.type() != CV_8U &&
          input_img.type() != CV_16U &&
          input_img.type() != CV_32F &&
         input_img.type() != CV_8UC3) ||
         (input_img.type() != output_img.type()) )
-        CV_Error( cv::Error::StsUnsupportedFormat,
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat,
         "8-bit, 16-bit unsigned or 32-bit float 1-channel and 8-bit 3-channel input/output images are supported" );
 
     if( inpaint_mask.type() != CV_8UC1 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "The mask must be 8-bit 1-channel image" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "The mask must be 8-bit 1-channel image" );
 
     range = MAX(range,1);
     range = MIN(range,100);
@@ -722,7 +722,7 @@ icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
     t.create(erows, ecols, CV_32FC1);
     band.create(erows, ecols, CV_8UC1);
     mask.create(erows, ecols, CV_8UC1);
-    el_cross = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3), cv::Point(1, 1));
+    el_cross = ncvslideio::getStructuringElement(ncvslideio::MORPH_CROSS, ncvslideio::Size(3, 3), ncvslideio::Point(1, 1));
 
     input_img.copyTo( output_img );
     mask.setTo(Scalar(KNOWN,0,0,0));
@@ -730,8 +730,8 @@ icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
     SET_BORDER1_C1(mask,uchar,0);
     f.setTo(Scalar(KNOWN,0,0,0));
     t.setTo(Scalar(1.0e6f,0,0,0));
-    cv::dilate(mask, band, el_cross, cv::Point(1, 1));
-    Heap=cv::makePtr<CvPriorityQueueFloat>();
+    ncvslideio::dilate(mask, band, el_cross, ncvslideio::Point(1, 1));
+    Heap=ncvslideio::makePtr<CvPriorityQueueFloat>();
     subtract(band, mask, band);
     SET_BORDER1_C1(band,uchar,0);
     if (!Heap->Add(band))
@@ -741,13 +741,13 @@ icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
     f.setTo(Scalar(INSIDE,0,0,0),mask);
     t.setTo(Scalar(0,0,0,0),band);
 
-    if( flags == cv::INPAINT_TELEA )
+    if( flags == ncvslideio::INPAINT_TELEA )
     {
         out.create(erows, ecols, CV_8UC1);
-        el_range = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * range + 1, 2 * range + 1));
-        cv::dilate(mask, out, el_range);
+        el_range = ncvslideio::getStructuringElement(ncvslideio::MORPH_RECT, ncvslideio::Size(2 * range + 1, 2 * range + 1));
+        ncvslideio::dilate(mask, out, el_range);
         subtract(out, mask, out);
-        Out=cv::makePtr<CvPriorityQueueFloat>();
+        Out=ncvslideio::makePtr<CvPriorityQueueFloat>();
         if (!Out->Add(band))
             return;
         subtract(out, band, out);
@@ -765,10 +765,10 @@ icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
                 icvTeleaInpaintFMM<float>(mask,t,output_img,range,Heap);
                 break;
             default:
-                CV_Error( cv::Error::StsBadArg, "Unsupportedformat of the input image" );
+                CV_Error( ncvslideio::Error::StsBadArg, "Unsupportedformat of the input image" );
         }
     }
-    else if (flags == cv::INPAINT_NS) {
+    else if (flags == ncvslideio::INPAINT_NS) {
         switch(output_img.depth())
         {
             case CV_8U:
@@ -781,14 +781,14 @@ icvInpaint( const Mat &input_img, const Mat &inpaint_mask, Mat &output_img,
                 icvNSInpaintFMM<float>(mask,t,output_img,range,Heap);
                 break;
             default:
-                CV_Error( cv::Error::StsBadArg, "Unsupported format of the input image" );
+                CV_Error( ncvslideio::Error::StsBadArg, "Unsupported format of the input image" );
         }
     } else {
-        CV_Error( cv::Error::StsBadArg, "The flags argument must be one of INPAINT_TELEA or INPAINT_NS" );
+        CV_Error( ncvslideio::Error::StsBadArg, "The flags argument must be one of INPAINT_TELEA or INPAINT_NS" );
     }
 }
 
-void cv::inpaint( InputArray _src, InputArray _mask, OutputArray _dst,
+void ncvslideio::inpaint( InputArray _src, InputArray _mask, OutputArray _dst,
                   double inpaintRange, int flags )
 {
     CV_INSTRUMENT_REGION();

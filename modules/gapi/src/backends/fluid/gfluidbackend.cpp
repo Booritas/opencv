@@ -43,39 +43,39 @@
 //
 // If not, we need to introduce that!
 using GFluidModel = ade::TypedGraph
-    < cv::gimpl::FluidUnit
-    , cv::gimpl::FluidData
-    , cv::gimpl::Protocol
-    , cv::gimpl::FluidUseOwnBorderBuffer
+    < ncvslideio::gimpl::FluidUnit
+    , ncvslideio::gimpl::FluidData
+    , ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::FluidUseOwnBorderBuffer
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstFluidModel = ade::ConstTypedGraph
-    < cv::gimpl::FluidUnit
-    , cv::gimpl::FluidData
-    , cv::gimpl::Protocol
-    , cv::gimpl::FluidUseOwnBorderBuffer
+    < ncvslideio::gimpl::FluidUnit
+    , ncvslideio::gimpl::FluidData
+    , ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::FluidUseOwnBorderBuffer
     >;
 
 // FluidBackend middle-layer implementation ////////////////////////////////////
 namespace
 {
-    class GFluidBackendImpl final: public cv::gapi::GBackend::Priv
+    class GFluidBackendImpl final: public ncvslideio::gapi::GBackend::Priv
     {
         virtual void unpackKernel(ade::Graph            &graph,
                                   const ade::NodeHandle &op_node,
-                                  const cv::GKernelImpl &impl) override
+                                  const ncvslideio::GKernelImpl &impl) override
         {
             GFluidModel fm(graph);
-            auto fluid_impl = cv::util::any_cast<cv::GFluidKernel>(impl.opaque);
-            fm.metadata(op_node).set(cv::gimpl::FluidUnit{fluid_impl, {}, 0, -1, {}, 0.0});
+            auto fluid_impl = ncvslideio::util::any_cast<ncvslideio::GFluidKernel>(impl.opaque);
+            fm.metadata(op_node).set(ncvslideio::gimpl::FluidUnit{fluid_impl, {}, 0, -1, {}, 0.0});
         }
 
         virtual EPtr compile(const ade::Graph &graph,
-                             const cv::GCompileArgs &args,
+                             const ncvslideio::GCompileArgs &args,
                              const std::vector<ade::NodeHandle> &nodes) const override
         {
-            using namespace cv::gimpl;
+            using namespace ncvslideio::gimpl;
             GModel::ConstGraph g(graph);
             auto isl_graph = g.metadata().get<IslandModel>().model;
             GIslandModel::Graph gim(*isl_graph);
@@ -86,22 +86,22 @@ namespace
                     return gim.metadata(nh).get<NodeKind>().k == NodeKind::ISLAND;
                 });
 
-            const auto out_rois = cv::gapi::getCompileArg<cv::GFluidOutputRois>(args);
+            const auto out_rois = ncvslideio::gapi::getCompileArg<ncvslideio::GFluidOutputRois>(args);
             if (num_islands > 1 && out_rois.has_value())
-                cv::util::throw_error(std::logic_error("GFluidOutputRois feature supports only one-island graphs"));
+                ncvslideio::util::throw_error(std::logic_error("GFluidOutputRois feature supports only one-island graphs"));
 
-            auto rois = out_rois.value_or(cv::GFluidOutputRois());
+            auto rois = out_rois.value_or(ncvslideio::GFluidOutputRois());
 
             auto graph_data = fluidExtractInputDataFromGraph(graph, nodes);
-            const auto parallel_out_rois = cv::gapi::getCompileArg<cv::GFluidParallelOutputRois>(args);
-            const auto gpfor             = cv::gapi::getCompileArg<cv::GFluidParallelFor>(args);
+            const auto parallel_out_rois = ncvslideio::gapi::getCompileArg<ncvslideio::GFluidParallelOutputRois>(args);
+            const auto gpfor             = ncvslideio::gapi::getCompileArg<ncvslideio::GFluidParallelFor>(args);
 
 #if !defined(GAPI_STANDALONE)
             auto default_pfor = [](std::size_t count, std::function<void(std::size_t)> f){
-                struct Body : cv::ParallelLoopBody {
+                struct Body : ncvslideio::ParallelLoopBody {
                     decltype(f) func;
                     Body( decltype(f) && _f) : func(_f){}
-                    virtual void operator() (const cv::Range& r) const CV_OVERRIDE
+                    virtual void operator() (const ncvslideio::Range& r) const CV_OVERRIDE
                     {
                         for (std::size_t i : ade::util::iota(r.start, r.end))
                         {
@@ -109,7 +109,7 @@ namespace
                         }
                     }
                 };
-                cv::parallel_for_(cv::Range{0,static_cast<int>(count)}, Body{std::move(f)});
+                ncvslideio::parallel_for_(ncvslideio::Range{0,static_cast<int>(count)}, Body{std::move(f)});
             };
 #else
             auto default_pfor = [](std::size_t count, std::function<void(std::size_t)> f){
@@ -122,8 +122,8 @@ namespace
             auto pfor  = gpfor.has_value() ? gpfor.value().parallel_for : default_pfor;
 
             return parallel_out_rois.has_value() ?
-                       EPtr{new cv::gimpl::GParallelFluidExecutable (graph, graph_data, std::move(parallel_out_rois.value().parallel_rois), pfor)}
-                     : EPtr{new cv::gimpl::GFluidExecutable         (graph, graph_data, std::move(rois.rois))}
+                       EPtr{new ncvslideio::gimpl::GParallelFluidExecutable (graph, graph_data, std::move(parallel_out_rois.value().parallel_rois), pfor)}
+                     : EPtr{new ncvslideio::gimpl::GFluidExecutable         (graph, graph_data, std::move(rois.rois))}
             ;
         }
 
@@ -132,15 +132,15 @@ namespace
     };
 }
 
-cv::gapi::GBackend cv::gapi::fluid::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::fluid::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GFluidBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GFluidBackendImpl>());
     return this_backend;
 }
 
 // FluidAgent implementation ///////////////////////////////////////////////////
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 struct FluidMapper
 {
     FluidMapper(double ratio, int lpi) : m_ratio(ratio), m_lpi(lpi) {}
@@ -206,9 +206,9 @@ private:
 public:
     using FluidAgent::FluidAgent;
 };
-}} // namespace cv::gimpl
+}} // namespace ncvslideio::gimpl
 
-cv::gimpl::FluidAgent::FluidAgent(const ade::Graph &g, ade::NodeHandle nh)
+ncvslideio::gimpl::FluidAgent::FluidAgent(const ade::Graph &g, ade::NodeHandle nh)
     : k(GConstFluidModel(g).metadata(nh).get<FluidUnit>().k)        // init(0)
     , op_handle(nh)                                                 // init(1)
     , op_name(GModel::ConstGraph(g).metadata(nh).get<Op>().k.name)  // init(2)
@@ -219,7 +219,7 @@ cv::gimpl::FluidAgent::FluidAgent(const ade::Graph &g, ade::NodeHandle nh)
     for (auto out_data : nh->outNodes())
     {
         const auto  &d      = cm.metadata(out_data).get<Data>();
-        cv::GMatDesc d_meta = cv::util::get<cv::GMatDesc>(d.meta);
+        ncvslideio::GMatDesc d_meta = ncvslideio::util::get<ncvslideio::GMatDesc>(d.meta);
         out_w.insert(d_meta.size.width);
         out_h.insert(d_meta.size.height);
     }
@@ -228,7 +228,7 @@ cv::gimpl::FluidAgent::FluidAgent(const ade::Graph &g, ade::NodeHandle nh)
     GAPI_Assert(out_w.size() == 1 && out_h.size() == 1);
 }
 
-void cv::gimpl::FluidAgent::reset()
+void ncvslideio::gimpl::FluidAgent::reset()
 {
     m_producedLines = 0;
 
@@ -292,12 +292,12 @@ static int calcResizeWindow(int inH, int outH)
     }
 }
 
-static int maxLineConsumption(const cv::GFluidKernel::Kind kind, int window, int inH, int outH, int lpi, std::size_t inPort)
+static int maxLineConsumption(const ncvslideio::GFluidKernel::Kind kind, int window, int inH, int outH, int lpi, std::size_t inPort)
 {
     switch (kind)
     {
-    case cv::GFluidKernel::Kind::Filter: return window + lpi - 1; break;
-    case cv::GFluidKernel::Kind::Resize:
+    case ncvslideio::GFluidKernel::Kind::Filter: return window + lpi - 1; break;
+    case ncvslideio::GFluidKernel::Kind::Resize:
     {
         if  (inH >= outH)
         {
@@ -312,19 +312,19 @@ static int maxLineConsumption(const cv::GFluidKernel::Kind kind, int window, int
             return (inH == 1) ? 1 : 2 + lpi - 1;
         }
     } break;
-    case cv::GFluidKernel::Kind::YUV420toRGB: return inPort == 0 ? 2 : 1; break;
+    case ncvslideio::GFluidKernel::Kind::YUV420toRGB: return inPort == 0 ? 2 : 1; break;
     default: GAPI_Error("InternalError"); return 0;
     }
 }
 
-static int borderSize(const cv::GFluidKernel::Kind kind, int window)
+static int borderSize(const ncvslideio::GFluidKernel::Kind kind, int window)
 {
     switch (kind)
     {
-    case cv::GFluidKernel::Kind::Filter: return (window - 1) / 2; break;
+    case ncvslideio::GFluidKernel::Kind::Filter: return (window - 1) / 2; break;
     // Resize never reads from border pixels
-    case cv::GFluidKernel::Kind::Resize: return 0; break;
-    case cv::GFluidKernel::Kind::YUV420toRGB: return 0; break;
+    case ncvslideio::GFluidKernel::Kind::Resize: return 0; break;
+    case ncvslideio::GFluidKernel::Kind::YUV420toRGB: return 0; break;
     default: GAPI_Error("InternalError"); return 0;
     }
 }
@@ -368,12 +368,12 @@ inline int upscaleWindowEnd(int outCoord, double ratio, int inSz)
 }
 } // anonymous namespace
 
-int cv::gimpl::FluidDownscaleMapper::firstWindow(int outCoord, int lpi) const
+int ncvslideio::gimpl::FluidDownscaleMapper::firstWindow(int outCoord, int lpi) const
 {
     return windowEnd(outCoord + lpi - 1, m_ratio) - windowStart(outCoord, m_ratio);
 }
 
-std::pair<int,int> cv::gimpl::FluidDownscaleMapper::linesReadAndNextWindow(int outCoord, int lpi) const
+std::pair<int,int> ncvslideio::gimpl::FluidDownscaleMapper::linesReadAndNextWindow(int outCoord, int lpi) const
 {
     auto nextStartIdx = outCoord + 1 + m_lpi - 1;
     auto nextEndIdx   = nextStartIdx + lpi - 1;
@@ -388,12 +388,12 @@ std::pair<int,int> cv::gimpl::FluidDownscaleMapper::linesReadAndNextWindow(int o
     return std::make_pair(lines_read, next_window);
 }
 
-int cv::gimpl::FluidUpscaleMapper::firstWindow(int outCoord, int lpi) const
+int ncvslideio::gimpl::FluidUpscaleMapper::firstWindow(int outCoord, int lpi) const
 {
     return upscaleWindowEnd(outCoord + lpi - 1, m_ratio, m_inHeight) - upscaleWindowStart(outCoord, m_ratio);
 }
 
-std::pair<int,int> cv::gimpl::FluidUpscaleMapper::linesReadAndNextWindow(int outCoord, int lpi) const
+std::pair<int,int> ncvslideio::gimpl::FluidUpscaleMapper::linesReadAndNextWindow(int outCoord, int lpi) const
 {
     auto nextStartIdx = outCoord + 1 + m_lpi - 1;
     auto nextEndIdx   = nextStartIdx + lpi - 1;
@@ -408,45 +408,45 @@ std::pair<int,int> cv::gimpl::FluidUpscaleMapper::linesReadAndNextWindow(int out
     return std::make_pair(lines_read, next_window);
 }
 
-int cv::gimpl::FluidFilterAgent::firstWindow(std::size_t) const
+int ncvslideio::gimpl::FluidFilterAgent::firstWindow(std::size_t) const
 {
     int lpi = std::min(k.m_lpi, m_outputLines - m_producedLines);
     return m_window + lpi - 1;
 }
 
-std::pair<int,int> cv::gimpl::FluidFilterAgent::linesReadAndnextWindow(std::size_t) const
+std::pair<int,int> ncvslideio::gimpl::FluidFilterAgent::linesReadAndnextWindow(std::size_t) const
 {
     int lpi = std::min(k.m_lpi, m_outputLines - m_producedLines - k.m_lpi);
     return std::make_pair(k.m_lpi, m_window - 1 + lpi);
 }
 
-int cv::gimpl::FluidResizeAgent::firstWindow(std::size_t) const
+int ncvslideio::gimpl::FluidResizeAgent::firstWindow(std::size_t) const
 {
     auto outIdx = out_buffers[0]->priv().y();
     auto lpi = std::min(m_outputLines - m_producedLines, k.m_lpi);
     return m_mapper->firstWindow(outIdx, lpi);
 }
 
-std::pair<int,int> cv::gimpl::FluidResizeAgent::linesReadAndnextWindow(std::size_t) const
+std::pair<int,int> ncvslideio::gimpl::FluidResizeAgent::linesReadAndnextWindow(std::size_t) const
 {
     auto outIdx = out_buffers[0]->priv().y();
     auto lpi = std::min(m_outputLines - m_producedLines - k.m_lpi, k.m_lpi);
     return m_mapper->linesReadAndNextWindow(outIdx, lpi);
 }
 
-int cv::gimpl::Fluid420toRGBAgent::firstWindow(std::size_t inPort) const
+int ncvslideio::gimpl::Fluid420toRGBAgent::firstWindow(std::size_t inPort) const
 {
     // 2 lines for Y, 1 for UV
     return inPort == 0 ? 2 : 1;
 }
 
-std::pair<int,int> cv::gimpl::Fluid420toRGBAgent::linesReadAndnextWindow(std::size_t inPort) const
+std::pair<int,int> ncvslideio::gimpl::Fluid420toRGBAgent::linesReadAndnextWindow(std::size_t inPort) const
 {
     // 2 lines for Y, 1 for UV
     return inPort == 0 ? std::make_pair(2, 2) : std::make_pair(1, 1);
 }
 
-void cv::gimpl::FluidResizeAgent::setRatio(double ratio)
+void ncvslideio::gimpl::FluidResizeAgent::setRatio(double ratio)
 {
     if (ratio >= 1.0)
     {
@@ -458,7 +458,7 @@ void cv::gimpl::FluidResizeAgent::setRatio(double ratio)
     }
 }
 
-bool cv::gimpl::FluidAgent::canRead() const
+bool ncvslideio::gimpl::FluidAgent::canRead() const
 {
     // An agent can work if every input buffer have enough data to start
     for (const auto& in_view : in_views)
@@ -472,7 +472,7 @@ bool cv::gimpl::FluidAgent::canRead() const
     return true;
 }
 
-bool cv::gimpl::FluidAgent::canWrite() const
+bool ncvslideio::gimpl::FluidAgent::canWrite() const
 {
     // An agent can work if there is space to write in its output
     // allocated buffers
@@ -490,12 +490,12 @@ bool cv::gimpl::FluidAgent::canWrite() const
     return true;
 }
 
-bool cv::gimpl::FluidAgent::canWork() const
+bool ncvslideio::gimpl::FluidAgent::canWork() const
 {
     return canRead() && canWrite();
 }
 
-void cv::gimpl::FluidAgent::doWork()
+void ncvslideio::gimpl::FluidAgent::doWork()
 {
     GAPI_DbgAssert(m_outputLines > m_producedLines);
     for (auto& in_view : in_views)
@@ -526,14 +526,14 @@ void cv::gimpl::FluidAgent::doWork()
     m_producedLines += k.m_lpi;
 }
 
-bool cv::gimpl::FluidAgent::done() const
+bool ncvslideio::gimpl::FluidAgent::done() const
 {
     // m_producedLines is a multiple of LPI, while original
     // height may be not.
     return m_producedLines >= m_outputLines;
 }
 
-void cv::gimpl::FluidAgent::debug(std::ostream &os)
+void ncvslideio::gimpl::FluidAgent::debug(std::ostream &os)
 {
     os << "Fluid Agent " << std::hex << this
        << " (" << op_name << ") --"
@@ -552,9 +552,9 @@ void cv::gimpl::FluidAgent::debug(std::ostream &os)
 
 // GCPUExcecutable implementation //////////////////////////////////////////////
 
-void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
-                                                 std::vector<cv::Rect>& rois,
-                                                 const std::vector<cv::Rect>& out_rois)
+void ncvslideio::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
+                                                 std::vector<ncvslideio::Rect>& rois,
+                                                 const std::vector<ncvslideio::Rect>& out_rois)
 {
     GConstFluidModel fg(m_g);
     auto proto = m_gm.metadata().get<Protocol>();
@@ -591,9 +591,9 @@ void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
             readStarts[id] = 0;
 
             const auto& out_roi = out_rois[idx];
-            if (out_roi == cv::Rect{})
+            if (out_roi == ncvslideio::Rect{})
             {
-                rois[id] = cv::Rect{ 0, 0, desc.size.width, desc.size.height };
+                rois[id] = ncvslideio::Rect{ 0, 0, desc.size.width, desc.size.height };
             }
             else
             {
@@ -638,14 +638,14 @@ void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
                     const auto& in_meta = util::get<GMatDesc>(in_data.meta);
                     const auto& fd = fg.metadata(in_node).get<FluidData>();
 
-                    auto adjFilterRoi = [](cv::Rect produced, int b, int max_height) {
+                    auto adjFilterRoi = [](ncvslideio::Rect produced, int b, int max_height) {
                         // Extend with border roi which should be produced, crop to logical image size
-                        cv::Rect roi = {produced.x, produced.y - b, produced.width, produced.height + 2*b};
-                        cv::Rect fullImg{ 0, 0, produced.width, max_height };
+                        ncvslideio::Rect roi = {produced.x, produced.y - b, produced.width, produced.height + 2*b};
+                        ncvslideio::Rect fullImg{ 0, 0, produced.width, max_height };
                         return roi & fullImg;
                     };
 
-                    auto adjResizeRoi = [](cv::Rect produced, cv::Size inSz, cv::Size outSz) {
+                    auto adjResizeRoi = [](ncvslideio::Rect produced, ncvslideio::Size inSz, ncvslideio::Size outSz) {
                         auto map = [](int outCoord, int producedSz, int inSize, int outSize) {
                             double ratio = (double)inSize / outSize;
                             int w0 = 0, w1 = 0;
@@ -670,30 +670,30 @@ void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
                         auto x0 = mapX.first;
                         auto x1 = mapX.second;
 
-                        cv::Rect roi = {x0, y0, x1 - x0, y1 - y0};
+                        ncvslideio::Rect roi = {x0, y0, x1 - x0, y1 - y0};
                         return roi;
                     };
 
-                    auto adj420Roi = [&](cv::Rect produced, std::size_t port) {
+                    auto adj420Roi = [&](ncvslideio::Rect produced, std::size_t port) {
                         GAPI_Assert(produced.x % 2 == 0);
                         GAPI_Assert(produced.y % 2 == 0);
                         GAPI_Assert(produced.width % 2 == 0);
                         GAPI_Assert(produced.height % 2 == 0);
 
-                        cv::Rect roi;
+                        ncvslideio::Rect roi;
                         switch (port) {
                         case 0: roi = produced; break;
                         case 1:
-                        case 2: roi = cv::Rect{ produced.x/2, produced.y/2, produced.width/2, produced.height/2 }; break;
+                        case 2: roi = ncvslideio::Rect{ produced.x/2, produced.y/2, produced.width/2, produced.height/2 }; break;
                         default: GAPI_Error("InternalError");
                         }
                         return roi;
                     };
 
-                    cv::Rect produced = rois[m_id_map.at(data.rc)];
+                    ncvslideio::Rect produced = rois[m_id_map.at(data.rc)];
 
                     // Apply resize-specific roi transformations
-                    cv::Rect resized;
+                    ncvslideio::Rect resized;
                     switch (fg.metadata(oh).get<FluidUnit>().k.m_kind)
                     {
                     case GFluidKernel::Kind::Filter:      resized = produced; break;
@@ -726,7 +726,7 @@ void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
                     auto roi = adjFilterRoi(resized, fd.border_size, in_meta.size.height);
 
                     auto in_id = m_id_map.at(in_data.rc);
-                    if (rois[in_id] == cv::Rect{})
+                    if (rois[in_id] == ncvslideio::Rect{})
                     {
                         readStarts[in_id] = readStart;
                         rois[in_id] = roi;
@@ -744,7 +744,7 @@ void cv::gimpl::GFluidExecutable::initBufferRois(std::vector<int>& readStarts,
     } // while (!nodesToVisit.empty())
 }
 
-cv::gimpl::FluidGraphInputData cv::gimpl::fluidExtractInputDataFromGraph(const ade::Graph &g, const std::vector<ade::NodeHandle> &nodes)
+ncvslideio::gimpl::FluidGraphInputData ncvslideio::gimpl::fluidExtractInputDataFromGraph(const ade::Graph &g, const std::vector<ade::NodeHandle> &nodes)
 {
     decltype(FluidGraphInputData::m_agents_data)       agents_data;
     decltype(FluidGraphInputData::m_scratch_users)     scratch_users;
@@ -825,9 +825,9 @@ cv::gimpl::FluidGraphInputData cv::gimpl::fluidExtractInputDataFromGraph(const a
     return FluidGraphInputData {std::move(agents_data), std::move(scratch_users), std::move(id_map), std::move(all_gmat_ids), mat_count};
 }
 
-cv::gimpl::GFluidExecutable::GFluidExecutable(const ade::Graph                       &g,
-                                              const cv::gimpl::FluidGraphInputData   &traverse_res,
-                                              const std::vector<cv::Rect> &outputRois)
+ncvslideio::gimpl::GFluidExecutable::GFluidExecutable(const ade::Graph                       &g,
+                                              const ncvslideio::gimpl::FluidGraphInputData   &traverse_res,
+                                              const std::vector<ncvslideio::Rect> &outputRois)
     : m_g(g), m_gm(m_g),
       m_num_int_buffers (traverse_res.m_mat_count),
       m_scratch_users   (traverse_res.m_scratch_users),
@@ -923,7 +923,7 @@ cv::gimpl::GFluidExecutable::GFluidExecutable(const ade::Graph                  
     GAPI_LOG_INFO(NULL, "Internal buffers: " << std::fixed << std::setprecision(2) << static_cast<float>(total_buffers_size())/1024 << " KB\n");
 }
 
-std::size_t cv::gimpl::GFluidExecutable::total_buffers_size() const
+std::size_t ncvslideio::gimpl::GFluidExecutable::total_buffers_size() const
 {
     GConstFluidModel fg(m_g);
     std::size_t total_size = 0;
@@ -949,7 +949,7 @@ namespace
 {
     void resetFluidData(ade::Graph& graph)
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
         GModel::Graph g(graph);
         GFluidModel fg(graph);
         for (const auto& node : g.nodes())
@@ -968,7 +968,7 @@ namespace
 
     void initFluidUnits(ade::Graph& graph)
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
         GModel::Graph g(graph);
         GFluidModel fg(graph);
 
@@ -982,9 +982,9 @@ namespace
                 for (const auto& in : node->inNodes())
                 {
                     const auto& d = g.metadata(in).get<Data>();
-                    if (d.shape == cv::GShape::GMAT)
+                    if (d.shape == ncvslideio::GShape::GMAT)
                     {
-                        const auto& meta = cv::util::get<cv::GMatDesc>(d.meta);
+                        const auto& meta = ncvslideio::util::get<ncvslideio::GMatDesc>(d.meta);
                         in_hs.insert(meta.size.height);
                     }
                 }
@@ -992,9 +992,9 @@ namespace
                 for (const auto& out : node->outNodes())
                 {
                     const auto& d = g.metadata(out).get<Data>();
-                    if (d.shape == cv::GShape::GMAT)
+                    if (d.shape == ncvslideio::GShape::GMAT)
                     {
-                        const auto& meta = cv::util::get<cv::GMatDesc>(d.meta);
+                        const auto& meta = ncvslideio::util::get<ncvslideio::GMatDesc>(d.meta);
                         out_ws.insert(meta.size.width);
                         out_hs.insert(meta.size.height);
                     }
@@ -1004,7 +1004,7 @@ namespace
 
                 GAPI_Assert((out_ws.size() == 1 && out_hs.size() == 1) &&
                             ((in_hs.size() == 1) ||
-                            ((in_hs.size() == 2) && fu.k.m_kind == cv::GFluidKernel::Kind::YUV420toRGB)));
+                            ((in_hs.size() == 2) && fu.k.m_kind == ncvslideio::GFluidKernel::Kind::YUV420toRGB)));
 
                 const auto &op = g.metadata(node).get<Op>();
                 fu.line_consumption.resize(op.args.size(), 0);
@@ -1018,7 +1018,7 @@ namespace
                 for (const auto& in_edge : node->inEdges())
                 {
                     const auto& d = g.metadata(in_edge->srcNode()).get<Data>();
-                    if (d.shape == cv::GShape::GMAT)
+                    if (d.shape == ncvslideio::GShape::GMAT)
                     {
                         auto port = g.metadata(in_edge).get<Input>().port;
                         fu.line_consumption[port] = maxLineConsumption(fu.k.m_kind, fu.window, in_h, out_h, fu.k.m_lpi, port);
@@ -1039,7 +1039,7 @@ namespace
     // call only consumption related stuff during reshape
     void initLineConsumption(ade::Graph& graph)
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
         GModel::Graph g(graph);
         GFluidModel fg(graph);
 
@@ -1071,7 +1071,7 @@ namespace
 
     void calcLatency(ade::Graph& graph)
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
         GModel::Graph g(graph);
         GFluidModel fg(graph);
 
@@ -1113,7 +1113,7 @@ namespace
 
     void calcSkew(ade::Graph& graph)
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
         GModel::Graph g(graph);
         GFluidModel fg(graph);
 
@@ -1144,13 +1144,13 @@ namespace
     }
 }
 
-void cv::gimpl::GFluidExecutable::makeReshape(const std::vector<cv::Rect> &out_rois)
+void ncvslideio::gimpl::GFluidExecutable::makeReshape(const std::vector<ncvslideio::Rect> &out_rois)
 {
     GConstFluidModel fg(m_g);
 
     // Calculate rois for each fluid buffer
     std::vector<int> readStarts(m_num_int_buffers);
-    std::vector<cv::Rect> rois(m_num_int_buffers);
+    std::vector<ncvslideio::Rect> rois(m_num_int_buffers);
     initBufferRois(readStarts, rois, out_rois);
 
     // NB: Allocate ALL buffer object at once, and avoid any further reallocations
@@ -1161,7 +1161,7 @@ void cv::gimpl::GFluidExecutable::makeReshape(const std::vector<cv::Rect> &out_r
         auto nh = it.second;
         const auto & d  = m_gm.metadata(nh).get<Data>();
         const auto &fd  = fg.metadata(nh).get<FluidData>();
-        const auto meta = cv::util::get<GMatDesc>(d.meta);
+        const auto meta = ncvslideio::util::get<GMatDesc>(d.meta);
 
         m_buffers[id].priv().init(meta, fd.lpi_write, readStarts[id], rois[id]);
 
@@ -1225,7 +1225,7 @@ void cv::gimpl::GFluidExecutable::makeReshape(const std::vector<cv::Rect> &out_r
     m_script.reserve(10000);
 }
 
-void cv::gimpl::GFluidExecutable::reshape(ade::Graph &g, const GCompileArgs &args)
+void ncvslideio::gimpl::GFluidExecutable::reshape(ade::Graph &g, const GCompileArgs &args)
 {
     // FIXME: Probably this needs to be integrated into common pass re-run routine
     // Backends may want to mark with passes to re-run on reshape and framework could
@@ -1236,16 +1236,16 @@ void cv::gimpl::GFluidExecutable::reshape(ade::Graph &g, const GCompileArgs &arg
     initLineConsumption(g);
     calcLatency(g);
     calcSkew(g);
-    const auto out_rois = cv::gapi::getCompileArg<cv::GFluidOutputRois>(args).value_or(cv::GFluidOutputRois());
+    const auto out_rois = ncvslideio::gapi::getCompileArg<ncvslideio::GFluidOutputRois>(args).value_or(ncvslideio::GFluidOutputRois());
     makeReshape(out_rois.rois);
 }
 
 // FIXME: Document what it does
-void cv::gimpl::GFluidExecutable::bindInArg(const cv::gimpl::RcDesc &rc, const GRunArg &arg)
+void ncvslideio::gimpl::GFluidExecutable::bindInArg(const ncvslideio::gimpl::RcDesc &rc, const GRunArg &arg)
 {
     magazine::bindInArg(m_res, rc, arg);
     if (rc.shape == GShape::GMAT) {
-        auto& mat = m_res.slot<cv::Mat>()[rc.id];
+        auto& mat = m_res.slot<ncvslideio::Mat>()[rc.id];
         // fluid::Buffer::bindTo() is not connected to magazine::bindIn/OutArg and unbind() calls,
         // it's simply called each run() without any requirement to call some fluid-specific
         // unbind() at the end of run()
@@ -1253,48 +1253,48 @@ void cv::gimpl::GFluidExecutable::bindInArg(const cv::gimpl::RcDesc &rc, const G
     }
 }
 
-void cv::gimpl::GFluidExecutable::bindOutArg(const cv::gimpl::RcDesc &rc, const GRunArgP &arg)
+void ncvslideio::gimpl::GFluidExecutable::bindOutArg(const ncvslideio::gimpl::RcDesc &rc, const GRunArgP &arg)
 {
     // Only GMat is supported as return type
     if (rc.shape != GShape::GMAT) {
         util::throw_error(std::logic_error("Unsupported return GShape type"));
     }
     magazine::bindOutArg(m_res, rc, arg);
-    auto& mat = m_res.slot<cv::Mat>()[rc.id];
+    auto& mat = m_res.slot<ncvslideio::Mat>()[rc.id];
     m_buffers[m_id_map.at(rc.id)].priv().bindTo(mat, false);
 }
 
-void cv::gimpl::GFluidExecutable::packArg(cv::GArg &in_arg, const cv::GArg &op_arg)
+void ncvslideio::gimpl::GFluidExecutable::packArg(ncvslideio::GArg &in_arg, const ncvslideio::GArg &op_arg)
 {
-    GAPI_Assert(op_arg.kind != cv::detail::ArgKind::GMAT
-           && op_arg.kind != cv::detail::ArgKind::GSCALAR
-           && op_arg.kind != cv::detail::ArgKind::GARRAY
-           && op_arg.kind != cv::detail::ArgKind::GOPAQUE);
+    GAPI_Assert(op_arg.kind != ncvslideio::detail::ArgKind::GMAT
+           && op_arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+           && op_arg.kind != ncvslideio::detail::ArgKind::GARRAY
+           && op_arg.kind != ncvslideio::detail::ArgKind::GOPAQUE);
 
-    if (op_arg.kind == cv::detail::ArgKind::GOBJREF)
+    if (op_arg.kind == ncvslideio::detail::ArgKind::GOBJREF)
     {
-        const cv::gimpl::RcDesc &ref = op_arg.get<cv::gimpl::RcDesc>();
+        const ncvslideio::gimpl::RcDesc &ref = op_arg.get<ncvslideio::gimpl::RcDesc>();
         if (ref.shape == GShape::GSCALAR)
         {
-            in_arg = GArg(m_res.slot<cv::Scalar>()[ref.id]);
+            in_arg = GArg(m_res.slot<ncvslideio::Scalar>()[ref.id]);
         }
         else if (ref.shape == GShape::GARRAY)
         {
-            in_arg = GArg(m_res.slot<cv::detail::VectorRef>()[ref.id]);
+            in_arg = GArg(m_res.slot<ncvslideio::detail::VectorRef>()[ref.id]);
         }
         else if (ref.shape == GShape::GOPAQUE)
         {
-            in_arg = GArg(m_res.slot<cv::detail::OpaqueRef>()[ref.id]);
+            in_arg = GArg(m_res.slot<ncvslideio::detail::OpaqueRef>()[ref.id]);
         }
     }
 }
 
-void cv::gimpl::GFluidExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::GFluidExecutable::run(std::vector<InObj>  &&input_objs,
                                       std::vector<OutObj> &&output_objs)
 {
     run(input_objs, output_objs);
 }
-void cv::gimpl::GFluidExecutable::run(std::vector<InObj>  &input_objs,
+void ncvslideio::gimpl::GFluidExecutable::run(std::vector<InObj>  &input_objs,
                                       std::vector<OutObj> &output_objs)
 {
     // Bind input buffers from parameters
@@ -1308,7 +1308,7 @@ void cv::gimpl::GFluidExecutable::run(std::vector<InObj>  &input_objs,
     for (auto &agent : m_agents)
     {
         agent->reset();
-        // Pass input cv::Scalar's to agent argument
+        // Pass input ncvslideio::Scalar's to agent argument
         const auto& op = m_gm.metadata(agent->op_handle).get<Op>();
         for (const auto it : ade::util::indexed(op.args))
         {
@@ -1373,7 +1373,7 @@ void cv::gimpl::GFluidExecutable::run(std::vector<InObj>  &input_objs,
     for (auto &it : output_objs) magazine::unbind(m_res, it.first);
 }
 
-cv::gimpl::GParallelFluidExecutable::GParallelFluidExecutable(const ade::Graph                      &g,
+ncvslideio::gimpl::GParallelFluidExecutable::GParallelFluidExecutable(const ade::Graph                      &g,
                                                               const FluidGraphInputData             &graph_data,
                                                               const std::vector<GFluidOutputRois>   &parallelOutputRois,
                                                               const decltype(parallel_for)          &pfor)
@@ -1385,13 +1385,13 @@ cv::gimpl::GParallelFluidExecutable::GParallelFluidExecutable(const ade::Graph  
 }
 
 
-void cv::gimpl::GParallelFluidExecutable::reshape(ade::Graph&, const GCompileArgs& )
+void ncvslideio::gimpl::GParallelFluidExecutable::reshape(ade::Graph&, const GCompileArgs& )
 {
     //TODO: implement ?
     GAPI_Error("Not Implemented;");
 }
 
-void cv::gimpl::GParallelFluidExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::GParallelFluidExecutable::run(std::vector<InObj>  &&input_objs,
                                               std::vector<OutObj> &&output_objs)
 {
     parallel_for(tiles.size(), [&, this](std::size_t index){
@@ -1405,7 +1405,7 @@ void cv::gimpl::GParallelFluidExecutable::run(std::vector<InObj>  &&input_objs,
 // Need to fix this for heterogeneous (island-based) processing
 void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupContext &ectx)
 {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
 
     // FIXME: all passes were moved to "exec" stage since Fluid
     // should check Islands configuration first (which is now quite
@@ -1415,7 +1415,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_fluid_data", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         auto isl_graph = g.metadata().get<IslandModel>().model;
@@ -1436,7 +1436,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
             case NodeKind::ISLAND:
             {
                 const auto isl = gim.metadata(nh).get<FusedIsland>().object;
-                if (isl->backend() == cv::gapi::fluid::backend())
+                if (isl->backend() == ncvslideio::gapi::fluid::backend())
                 {
                     // Add FluidData to all data nodes inside island,
                     // set internal = true if node is not a slot in terms of higher-level GIslandModel
@@ -1462,7 +1462,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
                         return false;
                     }
                     const auto isl = gim.metadata(node).get<FusedIsland>().object;
-                    return isl->backend() == cv::gapi::fluid::backend();
+                    return isl->backend() == ncvslideio::gapi::fluid::backend();
                 };
 
                 if (ade::util::any_of(ade::util::chain(nh->inNodes(), nh->outNodes()), isFluidIsland))
@@ -1484,7 +1484,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_fluid_unit_windows_and_borders", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         GFluidModel fg(ctx.graph);
@@ -1510,7 +1510,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_fluid_units", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         initFluidUnits(ctx.graph);
@@ -1518,7 +1518,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_line_consumption", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         initLineConsumption(ctx.graph);
@@ -1526,7 +1526,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "calc_latency", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         calcLatency(ctx.graph);
@@ -1534,7 +1534,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "calc_skew", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         calcSkew(ctx.graph);
@@ -1543,7 +1543,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_buffer_borders", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         GFluidModel fg(ctx.graph);
@@ -1603,7 +1603,7 @@ void GFluidBackendImpl::addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupC
     ectx.addPass("exec", "init_view_borders", [](ade::passes::PassContext &ctx)
     {
         GModel::Graph g(ctx.graph);
-        if (!GModel::isActive(g, cv::gapi::fluid::backend()))  // FIXME: Rearchitect this!
+        if (!GModel::isActive(g, ncvslideio::gapi::fluid::backend()))  // FIXME: Rearchitect this!
             return;
 
         GFluidModel fg(ctx.graph);

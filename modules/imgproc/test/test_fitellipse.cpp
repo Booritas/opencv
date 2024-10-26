@@ -16,7 +16,7 @@ static bool check_pt_in_ellipse(const Point2f& pt, const RotatedRect& el) {
     double x_dist = 0.5 * el.size.width * cos(pt_angle + el_angle);
     double y_dist = 0.5 * el.size.height * sin(pt_angle + el_angle);
     double el_dist = sqrt(x_dist * x_dist + y_dist * y_dist);
-    return cv::norm(to_pt) < el_dist;
+    return ncvslideio::norm(to_pt) < el_dist;
 }
 
 // Return true if mass center of fitted points lies inside ellipse

@@ -9,7 +9,7 @@
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 /// Function Headers
 void update_map( int &ind, Mat &map_x, Mat &map_y );

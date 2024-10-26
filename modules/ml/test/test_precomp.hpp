@@ -10,7 +10,7 @@ using std::ifstream;
 
 namespace opencv_test {
 
-using namespace cv::ml;
+using namespace ncvslideio::ml;
 
 #define CV_NBAYES   "nbayes"
 #define CV_KNEAREST "knearest"
@@ -23,18 +23,18 @@ using namespace cv::ml;
 #define CV_ERTREES  "ertrees"
 #define CV_SVMSGD   "svmsgd"
 
-using cv::Ptr;
-using cv::ml::StatModel;
-using cv::ml::TrainData;
-using cv::ml::NormalBayesClassifier;
-using cv::ml::SVM;
-using cv::ml::KNearest;
-using cv::ml::ParamGrid;
-using cv::ml::ANN_MLP;
-using cv::ml::DTrees;
-using cv::ml::Boost;
-using cv::ml::RTrees;
-using cv::ml::SVMSGD;
+using ncvslideio::Ptr;
+using ncvslideio::ml::StatModel;
+using ncvslideio::ml::TrainData;
+using ncvslideio::ml::NormalBayesClassifier;
+using ncvslideio::ml::SVM;
+using ncvslideio::ml::KNearest;
+using ncvslideio::ml::ParamGrid;
+using ncvslideio::ml::ANN_MLP;
+using ncvslideio::ml::DTrees;
+using ncvslideio::ml::Boost;
+using ncvslideio::ml::RTrees;
+using ncvslideio::ml::SVMSGD;
 
 void defaultDistribs( Mat& means, vector<Mat>& covs, int type=CV_32FC1 );
 void generateData( Mat& data, Mat& labels, const vector<int>& sizes, const Mat& _means, const vector<Mat>& covs, int dataType, int labelType );

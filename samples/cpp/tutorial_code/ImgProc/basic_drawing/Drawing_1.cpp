@@ -9,7 +9,7 @@
 
 #define w 400
 
-using namespace cv;
+using namespace ncvslideio;
 
 /// Function headers
 void MyEllipse( Mat img, double angle );

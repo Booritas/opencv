@@ -13,11 +13,11 @@
 namespace opencv_test
 {
 
-using namespace cv::gapi_test_kernels;
+using namespace ncvslideio::gapi_test_kernels;
 
 G_TYPED_KERNEL(TCopy, <GMat(GMat)>, "test.fluid.copy")
 {
-    static GMatDesc outMeta(const cv::GMatDesc &in) {
+    static GMatDesc outMeta(const ncvslideio::GMatDesc &in) {
         return in;
     }
 };
@@ -26,8 +26,8 @@ GAPI_FLUID_KERNEL(FCopy, TCopy, false)
 {
     static const int Window = 1;
 
-    static void run(const cv::gapi::fluid::View   &in,
-                          cv::gapi::fluid::Buffer &out)
+    static void run(const ncvslideio::gapi::fluid::View   &in,
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         const uint8_t* in_row  = in .InLine <uint8_t>(0);
         uint8_t* out_row = out.OutLine<uint8_t>();
@@ -41,13 +41,13 @@ GAPI_FLUID_KERNEL(FCopy, TCopy, false)
     }
 };
 
-GAPI_FLUID_KERNEL(FResizeNN1Lpi, cv::gapi::imgproc::GResize, false)
+GAPI_FLUID_KERNEL(FResizeNN1Lpi, ncvslideio::gapi::imgproc::GResize, false)
 {
     static const int Window = 1;
     static const auto Kind = GFluidKernel::Kind::Resize;
 
-    static void run(const cv::gapi::fluid::View& in, cv::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
-                    cv::gapi::fluid::Buffer& out)
+    static void run(const ncvslideio::gapi::fluid::View& in, ncvslideio::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
+                    ncvslideio::gapi::fluid::Buffer& out)
 
     {
         auto length = out.length();
@@ -78,18 +78,18 @@ namespace
 namespace func
 {
 template <class Mapper>
-void initScratch(const cv::GMatDesc& in, cv::Size outSz, cv::gapi::fluid::Buffer &scratch)
+void initScratch(const ncvslideio::GMatDesc& in, ncvslideio::Size outSz, ncvslideio::gapi::fluid::Buffer &scratch)
 {
     CV_Assert(in.depth == CV_8U && in.chan == 1);
 
-    cv::Size scratch_size{static_cast<int>(outSz.width * sizeof(typename Mapper::Unit)), 1};
+    ncvslideio::Size scratch_size{static_cast<int>(outSz.width * sizeof(typename Mapper::Unit)), 1};
 
-    cv::GMatDesc desc;
+    ncvslideio::GMatDesc desc;
     desc.chan  = 1;
     desc.depth = CV_8UC1;
     desc.size  = scratch_size;
 
-    cv::gapi::fluid::Buffer buffer(desc);
+    ncvslideio::gapi::fluid::Buffer buffer(desc);
     scratch = std::move(buffer);
 
     auto mapX = scratch.OutLine<typename Mapper::Unit>();
@@ -102,7 +102,7 @@ void initScratch(const cv::GMatDesc& in, cv::Size outSz, cv::gapi::fluid::Buffer
 }
 
 template <class Mapper>
-inline void calcRow(const cv::gapi::fluid::View& in, cv::gapi::fluid::Buffer& out, cv::gapi::fluid::Buffer &scratch)
+inline void calcRow(const ncvslideio::gapi::fluid::View& in, ncvslideio::gapi::fluid::Buffer& out, ncvslideio::gapi::fluid::Buffer &scratch)
 {
     double vRatio = (double)in.meta().size.height / out.meta().size.height;
     auto mapX = scratch.OutLine<typename Mapper::Unit>();
@@ -203,23 +203,23 @@ struct Mapper
 } // namespace areaUpscale
 } // anonymous namespace
 
-GAPI_FLUID_KERNEL(FResizeLinear1Lpi, cv::gapi::imgproc::GResize, true)
+GAPI_FLUID_KERNEL(FResizeLinear1Lpi, ncvslideio::gapi::imgproc::GResize, true)
 {
     static const int Window = 1;
     static const auto Kind = GFluidKernel::Kind::Resize;
 
-    static void initScratch(const cv::GMatDesc& in,
-                            cv::Size outSz, double /*fx*/, double /*fy*/, int /*interp*/,
-                            cv::gapi::fluid::Buffer &scratch)
+    static void initScratch(const ncvslideio::GMatDesc& in,
+                            ncvslideio::Size outSz, double /*fx*/, double /*fy*/, int /*interp*/,
+                            ncvslideio::gapi::fluid::Buffer &scratch)
     {
         func::initScratch<linear::Mapper>(in, outSz, scratch);
     }
 
-    static void resetScratch(cv::gapi::fluid::Buffer& /*scratch*/)
+    static void resetScratch(ncvslideio::gapi::fluid::Buffer& /*scratch*/)
     {}
 
-    static void run(const cv::gapi::fluid::View& in, cv::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
-                    cv::gapi::fluid::Buffer& out, cv::gapi::fluid::Buffer &scratch)
+    static void run(const ncvslideio::gapi::fluid::View& in, ncvslideio::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
+                    ncvslideio::gapi::fluid::Buffer& out, ncvslideio::gapi::fluid::Buffer &scratch)
 
     {
         func::calcRow<linear::Mapper>(in, out, scratch);
@@ -238,13 +238,13 @@ auto endInCoord = [](int outCoord, double ratio) {
 };
 } // namespace
 
-GAPI_FLUID_KERNEL(FResizeArea1Lpi, cv::gapi::imgproc::GResize, false)
+GAPI_FLUID_KERNEL(FResizeArea1Lpi, ncvslideio::gapi::imgproc::GResize, false)
 {
     static const int Window = 1;
     static const auto Kind = GFluidKernel::Kind::Resize;
 
-    static void run(const cv::gapi::fluid::View& in, cv::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
-                    cv::gapi::fluid::Buffer& out)
+    static void run(const ncvslideio::gapi::fluid::View& in, ncvslideio::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
+                    ncvslideio::gapi::fluid::Buffer& out)
 
     {
         auto firstOutLineIdx = out.y();
@@ -302,23 +302,23 @@ GAPI_FLUID_KERNEL(FResizeArea1Lpi, cv::gapi::imgproc::GResize, false)
     }
 };
 
-GAPI_FLUID_KERNEL(FResizeAreaUpscale1Lpi, cv::gapi::imgproc::GResize, true)
+GAPI_FLUID_KERNEL(FResizeAreaUpscale1Lpi, ncvslideio::gapi::imgproc::GResize, true)
 {
     static const int Window = 1;
     static const auto Kind = GFluidKernel::Kind::Resize;
 
-    static void initScratch(const cv::GMatDesc& in,
-                            cv::Size outSz, double /*fx*/, double /*fy*/, int /*interp*/,
-                            cv::gapi::fluid::Buffer &scratch)
+    static void initScratch(const ncvslideio::GMatDesc& in,
+                            ncvslideio::Size outSz, double /*fx*/, double /*fy*/, int /*interp*/,
+                            ncvslideio::gapi::fluid::Buffer &scratch)
     {
         func::initScratch<areaUpscale::Mapper>(in, outSz, scratch);
     }
 
-    static void resetScratch(cv::gapi::fluid::Buffer& /*scratch*/)
+    static void resetScratch(ncvslideio::gapi::fluid::Buffer& /*scratch*/)
     {}
 
-    static void run(const cv::gapi::fluid::View& in, cv::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
-                    cv::gapi::fluid::Buffer& out, cv::gapi::fluid::Buffer &scratch)
+    static void run(const ncvslideio::gapi::fluid::View& in, ncvslideio::Size /*sz*/, double /*fx*/, double /*fy*/, int /*interp*/,
+                    ncvslideio::gapi::fluid::Buffer& out, ncvslideio::gapi::fluid::Buffer &scratch)
     {
         func::calcRow<areaUpscale::Mapper>(in, out, scratch);
     }
@@ -326,7 +326,7 @@ GAPI_FLUID_KERNEL(FResizeAreaUpscale1Lpi, cv::gapi::imgproc::GResize, true)
 
 #define ADD_RESIZE_KERNEL_WITH_LPI(interp, lpi, scratch)                                                                           \
 struct Resize##interp##lpi##LpiHelper : public FResize##interp##1Lpi { static const int LPI = lpi; };                              \
-struct FResize##interp##lpi##Lpi : public cv::GFluidKernelImpl<Resize##interp##lpi##LpiHelper, cv::gapi::imgproc::GResize, scratch>{};
+struct FResize##interp##lpi##Lpi : public ncvslideio::GFluidKernelImpl<Resize##interp##lpi##LpiHelper, ncvslideio::gapi::imgproc::GResize, scratch>{};
 
 ADD_RESIZE_KERNEL_WITH_LPI(NN, 2, false)
 ADD_RESIZE_KERNEL_WITH_LPI(NN, 3, false)
@@ -345,10 +345,10 @@ ADD_RESIZE_KERNEL_WITH_LPI(AreaUpscale, 3, true)
 ADD_RESIZE_KERNEL_WITH_LPI(AreaUpscale, 4, true)
 #undef ADD_RESIZE_KERNEL_WITH_LPI
 
-static auto fluidResizeTestPackage = [](int interpolation, cv::Size szIn, cv::Size szOut, int lpi = 1)
+static auto fluidResizeTestPackage = [](int interpolation, ncvslideio::Size szIn, ncvslideio::Size szOut, int lpi = 1)
 {
-    using namespace cv;
-    using namespace cv::gapi;
+    using namespace ncvslideio;
+    using namespace ncvslideio::gapi;
     bool upscale = szIn.width < szOut.width || szIn.height < szOut.height;
 
 #define RESIZE_CASE(interp, lpi) \
@@ -364,7 +364,7 @@ static auto fluidResizeTestPackage = [](int interpolation, cv::Size szIn, cv::Si
     default: CV_Assert(false);  \
     }
 
-    cv::GKernelPackage pkg;
+    ncvslideio::GKernelPackage pkg;
     switch (interpolation)
     {
     case INTER_NEAREST: RESIZE_SWITCH(NN); break;
@@ -388,89 +388,89 @@ static auto fluidResizeTestPackage = [](int interpolation, cv::Size szIn, cv::Si
 #undef RESIZE_CASE
 };
 
-struct ResizeTestFluid : public TestWithParam<std::tuple<int, int, cv::Size, std::tuple<cv::Size, cv::Rect>, int, double>> {};
+struct ResizeTestFluid : public TestWithParam<std::tuple<int, int, ncvslideio::Size, std::tuple<ncvslideio::Size, ncvslideio::Rect>, int, double>> {};
 TEST_P(ResizeTestFluid, SanityTest)
 {
     int type = 0, interp = 0;
-    cv::Size sz_in, sz_out;
+    ncvslideio::Size sz_in, sz_out;
     int lpi = 0;
     double tolerance = 0.0;
-    cv::Rect outRoi;
-    std::tuple<cv::Size, cv::Rect> outSizeAndRoi;
+    ncvslideio::Rect outRoi;
+    std::tuple<ncvslideio::Size, ncvslideio::Rect> outSizeAndRoi;
     std::tie(type, interp, sz_in, outSizeAndRoi, lpi, tolerance) = GetParam();
     std::tie(sz_out, outRoi) = outSizeAndRoi;
-    if (outRoi == cv::Rect{}) outRoi = {0,0,sz_out.width,sz_out.height};
+    if (outRoi == ncvslideio::Rect{}) outRoi = {0,0,sz_out.width,sz_out.height};
     if (outRoi.width == 0) outRoi.width = sz_out.width;
     double fx = 0, fy = 0;
 
-    cv::Mat in_mat1 (sz_in, type );
-    cv::Scalar mean = cv::Scalar(127);
-    cv::Scalar stddev = cv::Scalar(40.f);
+    ncvslideio::Mat in_mat1 (sz_in, type );
+    ncvslideio::Scalar mean = ncvslideio::Scalar(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar(40.f);
 
-    cv::randn(in_mat1, mean, stddev);
+    ncvslideio::randn(in_mat1, mean, stddev);
 
-    cv::Mat out_mat = cv::Mat::zeros(sz_out, type);
-    cv::Mat out_mat_ocv = cv::Mat::zeros(sz_out, type);
+    ncvslideio::Mat out_mat = ncvslideio::Mat::zeros(sz_out, type);
+    ncvslideio::Mat out_mat_ocv = ncvslideio::Mat::zeros(sz_out, type);
 
-    cv::GMat in;
-    auto mid = TBlur3x3::on(in, cv::BORDER_REPLICATE, {});
-    auto out = cv::gapi::resize(mid, sz_out, fx, fy, interp);
+    ncvslideio::GMat in;
+    auto mid = TBlur3x3::on(in, ncvslideio::BORDER_REPLICATE, {});
+    auto out = ncvslideio::gapi::resize(mid, sz_out, fx, fy, interp);
 
-    cv::GComputation c(in, out);
-    c.apply(in_mat1, out_mat, cv::compile_args(GFluidOutputRois{{outRoi}}, fluidResizeTestPackage(interp, sz_in, sz_out, lpi)));
+    ncvslideio::GComputation c(in, out);
+    c.apply(in_mat1, out_mat, ncvslideio::compile_args(GFluidOutputRois{{outRoi}}, fluidResizeTestPackage(interp, sz_in, sz_out, lpi)));
 
-    cv::Mat mid_mat;
-    cv::blur(in_mat1, mid_mat, {3,3}, {-1,-1},  cv::BORDER_REPLICATE);
-    cv::resize(mid_mat, out_mat_ocv, sz_out, fx, fy, interp);
+    ncvslideio::Mat mid_mat;
+    ncvslideio::blur(in_mat1, mid_mat, {3,3}, {-1,-1},  ncvslideio::BORDER_REPLICATE);
+    ncvslideio::resize(mid_mat, out_mat_ocv, sz_out, fx, fy, interp);
 
     EXPECT_LE(cvtest::norm(out_mat(outRoi), out_mat_ocv(outRoi), NORM_INF), tolerance);
 }
 
 INSTANTIATE_TEST_CASE_P(ResizeTestCPU, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_NEAREST, cv::INTER_LINEAR),
-                                Values(cv::Size(8, 7),
-                                       cv::Size(8, 8),
-                                       cv::Size(8, 64),
-                                       cv::Size(8, 25),
-                                       cv::Size(16, 8),
-                                       cv::Size(16, 7)),
-                                Values(std::make_tuple(cv::Size(5, 4), cv::Rect{}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 0, 0, 2}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 1, 0, 2}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 2, 0, 2}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 0, 0, 3}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 2, 0, 2}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 4, 0, 3}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 0, 0, 3}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 1, 0, 2}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 3, 0, 1})),
+                                Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR),
+                                Values(ncvslideio::Size(8, 7),
+                                       ncvslideio::Size(8, 8),
+                                       ncvslideio::Size(8, 64),
+                                       ncvslideio::Size(8, 25),
+                                       ncvslideio::Size(16, 8),
+                                       ncvslideio::Size(16, 7)),
+                                Values(std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 0, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 1, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 2, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 0, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 2, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 4, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 0, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 1, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 3, 0, 1})),
                                 Values(1, 2, 3, 4), // lpi
                                 Values(0.0)));
 
 INSTANTIATE_TEST_CASE_P(ResizeAreaTestCPU, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_AREA),
-                                Values(cv::Size(8, 7),
-                                       cv::Size(8, 8),
-                                       cv::Size(8, 64),
-                                       cv::Size(8, 25),
-                                       cv::Size(16, 8),
-                                       cv::Size(16, 7)),
-                                Values(std::make_tuple(cv::Size(5, 4), cv::Rect{}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 0, 0, 2}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 1, 0, 2}),
-                                       std::make_tuple(cv::Size(5, 4), cv::Rect{0, 2, 0, 2}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 0, 0, 3}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 2, 0, 2}),
-                                       std::make_tuple(cv::Size(7, 7), cv::Rect{0, 4, 0, 3}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 0, 0, 3}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 1, 0, 2}),
-                                       std::make_tuple(cv::Size(8, 4), cv::Rect{0, 3, 0, 1})),
+                                Values(ncvslideio::INTER_AREA),
+                                Values(ncvslideio::Size(8, 7),
+                                       ncvslideio::Size(8, 8),
+                                       ncvslideio::Size(8, 64),
+                                       ncvslideio::Size(8, 25),
+                                       ncvslideio::Size(16, 8),
+                                       ncvslideio::Size(16, 7)),
+                                Values(std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 0, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 1, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(5, 4), ncvslideio::Rect{0, 2, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 0, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 2, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(7, 7), ncvslideio::Rect{0, 4, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 0, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 1, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(8, 4), ncvslideio::Rect{0, 3, 0, 1})),
                                 Values(1, 2, 3, 4), // lpi
                                 // Actually this tolerance only for cases where OpenCV
                                 // uses ResizeAreaFast
@@ -478,88 +478,88 @@ INSTANTIATE_TEST_CASE_P(ResizeAreaTestCPU, ResizeTestFluid,
 
 INSTANTIATE_TEST_CASE_P(ResizeUpscaleTestCPU, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_AREA),
-                                Values(cv::Size(1, 5),
-                                       cv::Size(3, 5),
-                                       cv::Size(7, 5),
-                                       cv::Size(1, 7),
-                                       cv::Size(3, 7),
-                                       cv::Size(7, 7)),
-                                Values(std::make_tuple(cv::Size(8, 8), cv::Rect{0,0,8,2}),
-                                       std::make_tuple(cv::Size(8, 8), cv::Rect{0,2,8,2}),
-                                       std::make_tuple(cv::Size(8, 8), cv::Rect{0,4,8,2}),
-                                       std::make_tuple(cv::Size(8, 8), cv::Rect{0,6,8,2}),
-                                       std::make_tuple(cv::Size(8, 8), cv::Rect{0,0,8,8}),
-                                       std::make_tuple(cv::Size(16, 8), cv::Rect{}),
-                                       std::make_tuple(cv::Size(16, 64), cv::Rect{0, 0,16,16}),
-                                       std::make_tuple(cv::Size(16, 64), cv::Rect{0,16,16,16}),
-                                       std::make_tuple(cv::Size(16, 64), cv::Rect{0,32,16,16}),
-                                       std::make_tuple(cv::Size(16, 64), cv::Rect{0,48,16,16}),
-                                       std::make_tuple(cv::Size(16, 64), cv::Rect{0, 0,16,64}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0, 0,16, 7}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0, 7,16, 6}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0,13,16, 6}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0,19,16, 6}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0, 0,16, 7}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0, 7,16, 7}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0,14,16, 7}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0,21,16, 4}),
-                                       std::make_tuple(cv::Size(16, 25), cv::Rect{0, 0,16,25}),
-                                       std::make_tuple(cv::Size(16, 7), cv::Rect{}),
-                                       std::make_tuple(cv::Size(16, 8), cv::Rect{})),
+                                Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR, ncvslideio::INTER_AREA),
+                                Values(ncvslideio::Size(1, 5),
+                                       ncvslideio::Size(3, 5),
+                                       ncvslideio::Size(7, 5),
+                                       ncvslideio::Size(1, 7),
+                                       ncvslideio::Size(3, 7),
+                                       ncvslideio::Size(7, 7)),
+                                Values(std::make_tuple(ncvslideio::Size(8, 8), ncvslideio::Rect{0,0,8,2}),
+                                       std::make_tuple(ncvslideio::Size(8, 8), ncvslideio::Rect{0,2,8,2}),
+                                       std::make_tuple(ncvslideio::Size(8, 8), ncvslideio::Rect{0,4,8,2}),
+                                       std::make_tuple(ncvslideio::Size(8, 8), ncvslideio::Rect{0,6,8,2}),
+                                       std::make_tuple(ncvslideio::Size(8, 8), ncvslideio::Rect{0,0,8,8}),
+                                       std::make_tuple(ncvslideio::Size(16, 8), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(16, 64), ncvslideio::Rect{0, 0,16,16}),
+                                       std::make_tuple(ncvslideio::Size(16, 64), ncvslideio::Rect{0,16,16,16}),
+                                       std::make_tuple(ncvslideio::Size(16, 64), ncvslideio::Rect{0,32,16,16}),
+                                       std::make_tuple(ncvslideio::Size(16, 64), ncvslideio::Rect{0,48,16,16}),
+                                       std::make_tuple(ncvslideio::Size(16, 64), ncvslideio::Rect{0, 0,16,64}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0, 0,16, 7}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0, 7,16, 6}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0,13,16, 6}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0,19,16, 6}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0, 0,16, 7}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0, 7,16, 7}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0,14,16, 7}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0,21,16, 4}),
+                                       std::make_tuple(ncvslideio::Size(16, 25), ncvslideio::Rect{0, 0,16,25}),
+                                       std::make_tuple(ncvslideio::Size(16, 7), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(16, 8), ncvslideio::Rect{})),
                                 Values(1, 2, 3, 4), // lpi
                                 Values(0.0)));
 
 INSTANTIATE_TEST_CASE_P(ResizeUpscaleOneDimDownscaleAnother, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_AREA),
-                                Values(cv::Size(6, 6),
-                                       cv::Size(8, 7),
-                                       cv::Size(8, 8),
-                                       cv::Size(8, 10),
-                                       cv::Size(10, 8),
-                                       cv::Size(10, 7)),
-                                Values(std::make_tuple(cv::Size(11, 5), cv::Rect{}),
-                                       std::make_tuple(cv::Size(11, 5), cv::Rect{0, 0, 0, 2}),
-                                       std::make_tuple(cv::Size(11, 5), cv::Rect{0, 2, 0, 2}),
-                                       std::make_tuple(cv::Size(11, 5), cv::Rect{0, 4, 0, 1}),
-                                       std::make_tuple(cv::Size(12, 2), cv::Rect{}),
-                                       std::make_tuple(cv::Size(12, 2), cv::Rect{0, 0, 0, 1}),
-                                       std::make_tuple(cv::Size(12, 2), cv::Rect{0, 1, 0, 1}),
-                                       std::make_tuple(cv::Size(23, 3), cv::Rect{}),
-                                       std::make_tuple(cv::Size(23, 3), cv::Rect{0, 0, 0, 1}),
-                                       std::make_tuple(cv::Size(23, 3), cv::Rect{0, 1, 0, 1}),
-                                       std::make_tuple(cv::Size(23, 3), cv::Rect{0, 2, 0, 1}),
-                                       std::make_tuple(cv::Size(3, 24), cv::Rect{}),
-                                       std::make_tuple(cv::Size(3, 24), cv::Rect{0,  0, 0, 6}),
-                                       std::make_tuple(cv::Size(3, 24), cv::Rect{0,  6, 0, 6}),
-                                       std::make_tuple(cv::Size(3, 24), cv::Rect{0, 12, 0, 6}),
-                                       std::make_tuple(cv::Size(3, 24), cv::Rect{0, 18, 0, 6}),
-                                       std::make_tuple(cv::Size(5, 11), cv::Rect{}),
-                                       std::make_tuple(cv::Size(5, 11), cv::Rect{0, 0, 0, 3}),
-                                       std::make_tuple(cv::Size(5, 11), cv::Rect{0, 3, 0, 3}),
-                                       std::make_tuple(cv::Size(5, 11), cv::Rect{0, 6, 0, 3}),
-                                       std::make_tuple(cv::Size(5, 11), cv::Rect{0, 9, 0, 2})),
+                                Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR, ncvslideio::INTER_AREA),
+                                Values(ncvslideio::Size(6, 6),
+                                       ncvslideio::Size(8, 7),
+                                       ncvslideio::Size(8, 8),
+                                       ncvslideio::Size(8, 10),
+                                       ncvslideio::Size(10, 8),
+                                       ncvslideio::Size(10, 7)),
+                                Values(std::make_tuple(ncvslideio::Size(11, 5), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(11, 5), ncvslideio::Rect{0, 0, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(11, 5), ncvslideio::Rect{0, 2, 0, 2}),
+                                       std::make_tuple(ncvslideio::Size(11, 5), ncvslideio::Rect{0, 4, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(12, 2), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(12, 2), ncvslideio::Rect{0, 0, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(12, 2), ncvslideio::Rect{0, 1, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(23, 3), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(23, 3), ncvslideio::Rect{0, 0, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(23, 3), ncvslideio::Rect{0, 1, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(23, 3), ncvslideio::Rect{0, 2, 0, 1}),
+                                       std::make_tuple(ncvslideio::Size(3, 24), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(3, 24), ncvslideio::Rect{0,  0, 0, 6}),
+                                       std::make_tuple(ncvslideio::Size(3, 24), ncvslideio::Rect{0,  6, 0, 6}),
+                                       std::make_tuple(ncvslideio::Size(3, 24), ncvslideio::Rect{0, 12, 0, 6}),
+                                       std::make_tuple(ncvslideio::Size(3, 24), ncvslideio::Rect{0, 18, 0, 6}),
+                                       std::make_tuple(ncvslideio::Size(5, 11), ncvslideio::Rect{}),
+                                       std::make_tuple(ncvslideio::Size(5, 11), ncvslideio::Rect{0, 0, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(5, 11), ncvslideio::Rect{0, 3, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(5, 11), ncvslideio::Rect{0, 6, 0, 3}),
+                                       std::make_tuple(ncvslideio::Size(5, 11), ncvslideio::Rect{0, 9, 0, 2})),
                                 Values(1, 2, 3, 4), // lpi
                                 Values(0.0)));
 
 INSTANTIATE_TEST_CASE_P(Resize400_384TestCPU, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_AREA),
-                                Values(cv::Size(128, 400)),
-                                Values(std::make_tuple(cv::Size(128, 384), cv::Rect{})),
+                                Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR, ncvslideio::INTER_AREA),
+                                Values(ncvslideio::Size(128, 400)),
+                                Values(std::make_tuple(ncvslideio::Size(128, 384), ncvslideio::Rect{})),
                                 Values(1, 2, 3, 4), // lpi
                                 Values(0.0)));
 
 INSTANTIATE_TEST_CASE_P(Resize220_400TestCPU, ResizeTestFluid,
                         Combine(Values(CV_8UC1),
-                                Values(cv::INTER_LINEAR),
-                                Values(cv::Size(220, 220)),
-                                Values(std::make_tuple(cv::Size(400, 400), cv::Rect{})),
+                                Values(ncvslideio::INTER_LINEAR),
+                                Values(ncvslideio::Size(220, 220)),
+                                Values(std::make_tuple(ncvslideio::Size(400, 400), ncvslideio::Rect{})),
                                 Values(1, 2, 3, 4), // lpi
                                 Values(0.0)));
 
-static auto cvBlur = [](const cv::Mat& in, cv::Mat& out, int kernelSize)
+static auto cvBlur = [](const ncvslideio::Mat& in, ncvslideio::Mat& out, int kernelSize)
 {
     if (kernelSize == 1)
     {
@@ -567,11 +567,11 @@ static auto cvBlur = [](const cv::Mat& in, cv::Mat& out, int kernelSize)
     }
     else
     {
-        cv::blur(in, out, {kernelSize, kernelSize});
+        ncvslideio::blur(in, out, {kernelSize, kernelSize});
     }
 };
 
-using SizesWithRois = std::tuple<cv::Size, cv::Rect, cv::Size, cv::Rect>;
+using SizesWithRois = std::tuple<ncvslideio::Size, ncvslideio::Rect, ncvslideio::Size, ncvslideio::Rect>;
 struct ResizeAndAnotherReaderTest : public TestWithParam<std::tuple<int, int, bool, SizesWithRois>>{};
 TEST_P(ResizeAndAnotherReaderTest, SanityTest)
 {
@@ -580,41 +580,41 @@ TEST_P(ResizeAndAnotherReaderTest, SanityTest)
     SizesWithRois sizesWithRois;
     std::tie(interp, kernelSize, readFromInput, sizesWithRois) = GetParam();
 
-    cv::Size sz,  resizedSz;
-    cv::Rect roi, resizedRoi;
+    ncvslideio::Size sz,  resizedSz;
+    ncvslideio::Rect roi, resizedRoi;
     std::tie(sz, roi, resizedSz, resizedRoi) = sizesWithRois;
 
-    cv::Mat in_mat(sz, CV_8UC1);
-    cv::Scalar mean = cv::Scalar(127);
-    cv::Scalar stddev = cv::Scalar(40.f);
-    cv::randn(in_mat, mean, stddev);
+    ncvslideio::Mat in_mat(sz, CV_8UC1);
+    ncvslideio::Scalar mean = ncvslideio::Scalar(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar(40.f);
+    ncvslideio::randn(in_mat, mean, stddev);
 
-    cv::Mat gapi_resize_out = cv::Mat::zeros(resizedSz, CV_8UC1);
-    cv::Mat gapi_blur_out = cv::Mat::zeros(sz, CV_8UC1);
+    ncvslideio::Mat gapi_resize_out = ncvslideio::Mat::zeros(resizedSz, CV_8UC1);
+    ncvslideio::Mat gapi_blur_out = ncvslideio::Mat::zeros(sz, CV_8UC1);
 
     auto blur = kernelSize == 1 ? &TBlur1x1::on : kernelSize == 3 ? &TBlur3x3::on : &TBlur5x5::on;
 
-    cv::GMat in, resize_out, blur_out;
+    ncvslideio::GMat in, resize_out, blur_out;
 
     if (readFromInput)
     {
         resize_out = gapi::resize(in, resizedSz, 0, 0, interp);
-        blur_out   = blur(in, cv::BORDER_DEFAULT, {});
+        blur_out   = blur(in, ncvslideio::BORDER_DEFAULT, {});
     }
     else
     {
         auto mid   = TCopy::on(in);
         resize_out = gapi::resize(mid, resizedSz, 0, 0, interp);
-        blur_out   = blur(mid, cv::BORDER_DEFAULT, {});
+        blur_out   = blur(mid, ncvslideio::BORDER_DEFAULT, {});
     }
 
-    cv::GComputation c(GIn(in), GOut(resize_out, blur_out));
-    c.apply(gin(in_mat), gout(gapi_resize_out, gapi_blur_out), cv::compile_args(GFluidOutputRois{{resizedRoi, roi}},
+    ncvslideio::GComputation c(GIn(in), GOut(resize_out, blur_out));
+    c.apply(gin(in_mat), gout(gapi_resize_out, gapi_blur_out), ncvslideio::compile_args(GFluidOutputRois{{resizedRoi, roi}},
                                                                                 fluidResizeTestPackage(interp, sz, resizedSz)));
 
-    cv::Mat ocv_resize_out = cv::Mat::zeros(resizedSz, CV_8UC1);
-    cv::resize(in_mat, ocv_resize_out, resizedSz, 0, 0, interp);
-    cv::Mat ocv_blur_out = cv::Mat::zeros(sz, CV_8UC1);
+    ncvslideio::Mat ocv_resize_out = ncvslideio::Mat::zeros(resizedSz, CV_8UC1);
+    ncvslideio::resize(in_mat, ocv_resize_out, resizedSz, 0, 0, interp);
+    ncvslideio::Mat ocv_blur_out = ncvslideio::Mat::zeros(sz, CV_8UC1);
     cvBlur(in_mat, ocv_blur_out, kernelSize);
 
     EXPECT_EQ(0, cvtest::norm(gapi_resize_out(resizedRoi), ocv_resize_out(resizedRoi), NORM_INF));
@@ -622,71 +622,71 @@ TEST_P(ResizeAndAnotherReaderTest, SanityTest)
 }
 
 INSTANTIATE_TEST_CASE_P(ResizeTestCPU, ResizeAndAnotherReaderTest,
-                        Combine(Values(cv::INTER_NEAREST, cv::INTER_LINEAR),
+                        Combine(Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR),
                                 Values(1, 3, 5),
                                 testing::Bool(), // Read from input directly or place a copy node at start
-                                Values(std::make_tuple(cv::Size{8,8}, cv::Rect{0,0,8,8},
-                                                       cv::Size{4,4}, cv::Rect{0,0,4,4}),
-                                       std::make_tuple(cv::Size{8,8}, cv::Rect{0,0,8,2},
-                                                       cv::Size{4,4}, cv::Rect{0,0,4,1}),
-                                       std::make_tuple(cv::Size{8,8}, cv::Rect{0,2,8,4},
-                                                       cv::Size{4,4}, cv::Rect{0,1,4,2}),
-                                       std::make_tuple(cv::Size{8,8}, cv::Rect{0,4,8,4},
-                                                       cv::Size{4,4}, cv::Rect{0,2,4,2}),
-                                       std::make_tuple(cv::Size{64,64}, cv::Rect{0, 0,64,64},
-                                                       cv::Size{49,49}, cv::Rect{0, 0,49,49}),
-                                       std::make_tuple(cv::Size{64,64}, cv::Rect{0, 0,64,15},
-                                                       cv::Size{49,49}, cv::Rect{0, 0,49,11}),
-                                       std::make_tuple(cv::Size{64,64}, cv::Rect{0,11,64,23},
-                                                       cv::Size{49,49}, cv::Rect{0, 9,49,17}),
-                                       std::make_tuple(cv::Size{64,64}, cv::Rect{0,50,64,14},
-                                                       cv::Size{49,49}, cv::Rect{0,39,49,10}))));
+                                Values(std::make_tuple(ncvslideio::Size{8,8}, ncvslideio::Rect{0,0,8,8},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,0,4,4}),
+                                       std::make_tuple(ncvslideio::Size{8,8}, ncvslideio::Rect{0,0,8,2},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,0,4,1}),
+                                       std::make_tuple(ncvslideio::Size{8,8}, ncvslideio::Rect{0,2,8,4},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,1,4,2}),
+                                       std::make_tuple(ncvslideio::Size{8,8}, ncvslideio::Rect{0,4,8,4},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,2,4,2}),
+                                       std::make_tuple(ncvslideio::Size{64,64}, ncvslideio::Rect{0, 0,64,64},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 0,49,49}),
+                                       std::make_tuple(ncvslideio::Size{64,64}, ncvslideio::Rect{0, 0,64,15},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 0,49,11}),
+                                       std::make_tuple(ncvslideio::Size{64,64}, ncvslideio::Rect{0,11,64,23},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 9,49,17}),
+                                       std::make_tuple(ncvslideio::Size{64,64}, ncvslideio::Rect{0,50,64,14},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0,39,49,10}))));
 
-struct BlursAfterResizeTest : public TestWithParam<std::tuple<int, int, int, bool, std::tuple<cv::Size, cv::Size, cv::Rect>>>{};
+struct BlursAfterResizeTest : public TestWithParam<std::tuple<int, int, int, bool, std::tuple<ncvslideio::Size, ncvslideio::Size, ncvslideio::Rect>>>{};
 TEST_P(BlursAfterResizeTest, SanityTest)
 {
     bool readFromInput = false;
     int interp = -1, kernelSize1 = -1, kernelSize2 = -1;
-    std::tuple<cv::Size, cv::Size, cv::Rect> sizesWithRoi;
+    std::tuple<ncvslideio::Size, ncvslideio::Size, ncvslideio::Rect> sizesWithRoi;
     std::tie(interp, kernelSize1, kernelSize2, readFromInput, sizesWithRoi) = GetParam();
 
-    cv::Size inSz,  outSz;
-    cv::Rect outRoi;
+    ncvslideio::Size inSz,  outSz;
+    ncvslideio::Rect outRoi;
     std::tie(inSz, outSz, outRoi) = sizesWithRoi;
 
-    cv::Mat in_mat(inSz, CV_8UC1);
-    cv::Scalar mean = cv::Scalar(127);
-    cv::Scalar stddev = cv::Scalar(40.f);
-    cv::randn(in_mat, mean, stddev);
-    cv::Mat gapi_out1 = cv::Mat::zeros(outSz, CV_8UC1);
-    cv::Mat gapi_out2 = cv::Mat::zeros(outSz, CV_8UC1);
+    ncvslideio::Mat in_mat(inSz, CV_8UC1);
+    ncvslideio::Scalar mean = ncvslideio::Scalar(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar(40.f);
+    ncvslideio::randn(in_mat, mean, stddev);
+    ncvslideio::Mat gapi_out1 = ncvslideio::Mat::zeros(outSz, CV_8UC1);
+    ncvslideio::Mat gapi_out2 = ncvslideio::Mat::zeros(outSz, CV_8UC1);
 
     auto blur1 = kernelSize1 == 1 ? &TBlur1x1::on : kernelSize1 == 3 ? &TBlur3x3::on : &TBlur5x5::on;
     auto blur2 = kernelSize2 == 1 ? &TBlur1x1::on : kernelSize2 == 3 ? &TBlur3x3::on : &TBlur5x5::on;
 
-    cv::GMat in, out1, out2;
+    ncvslideio::GMat in, out1, out2;
     if (readFromInput)
     {
         auto resized = gapi::resize(in, outSz, 0, 0, interp);
-        out1 = blur1(resized, cv::BORDER_DEFAULT, {});
-        out2 = blur2(resized, cv::BORDER_DEFAULT, {});
+        out1 = blur1(resized, ncvslideio::BORDER_DEFAULT, {});
+        out2 = blur2(resized, ncvslideio::BORDER_DEFAULT, {});
     }
     else
     {
         auto mid = TCopy::on(in);
         auto resized = gapi::resize(mid, outSz, 0, 0, interp);
-        out1 = blur1(resized, cv::BORDER_DEFAULT, {});
-        out2 = blur2(resized, cv::BORDER_DEFAULT, {});
+        out1 = blur1(resized, ncvslideio::BORDER_DEFAULT, {});
+        out2 = blur2(resized, ncvslideio::BORDER_DEFAULT, {});
     }
 
-    cv::GComputation c(GIn(in), GOut(out1, out2));
-    c.apply(gin(in_mat), gout(gapi_out1, gapi_out2), cv::compile_args(GFluidOutputRois{{outRoi, outRoi}},
+    ncvslideio::GComputation c(GIn(in), GOut(out1, out2));
+    c.apply(gin(in_mat), gout(gapi_out1, gapi_out2), ncvslideio::compile_args(GFluidOutputRois{{outRoi, outRoi}},
                                                                       fluidResizeTestPackage(interp, inSz, outSz)));
 
-    cv::Mat ocv_out1 = cv::Mat::zeros(outSz, CV_8UC1);
-    cv::Mat ocv_out2 = cv::Mat::zeros(outSz, CV_8UC1);
-    cv::Mat resized = cv::Mat::zeros(outSz, CV_8UC1);
-    cv::resize(in_mat, resized, outSz, 0, 0, interp);
+    ncvslideio::Mat ocv_out1 = ncvslideio::Mat::zeros(outSz, CV_8UC1);
+    ncvslideio::Mat ocv_out2 = ncvslideio::Mat::zeros(outSz, CV_8UC1);
+    ncvslideio::Mat resized = ncvslideio::Mat::zeros(outSz, CV_8UC1);
+    ncvslideio::resize(in_mat, resized, outSz, 0, 0, interp);
     cvBlur(resized, ocv_out1, kernelSize1);
     cvBlur(resized, ocv_out2, kernelSize2);
 
@@ -695,139 +695,139 @@ TEST_P(BlursAfterResizeTest, SanityTest)
 }
 
 INSTANTIATE_TEST_CASE_P(ResizeTestCPU, BlursAfterResizeTest,
-                        Combine(Values(cv::INTER_NEAREST, cv::INTER_LINEAR),
+                        Combine(Values(ncvslideio::INTER_NEAREST, ncvslideio::INTER_LINEAR),
                                 Values(1, 3, 5),
                                 Values(1, 3, 5),
                                 testing::Bool(), // Read from input directly or place a copy node at start
-                                Values(std::make_tuple(cv::Size{8,8},
-                                                       cv::Size{4,4}, cv::Rect{0,0,4,4}),
-                                       std::make_tuple(cv::Size{8,8},
-                                                       cv::Size{4,4}, cv::Rect{0,0,4,1}),
-                                       std::make_tuple(cv::Size{8,8},
-                                                       cv::Size{4,4}, cv::Rect{0,1,4,2}),
-                                       std::make_tuple(cv::Size{8,8},
-                                                       cv::Size{4,4}, cv::Rect{0,2,4,2}),
-                                       std::make_tuple(cv::Size{64,64},
-                                                       cv::Size{49,49}, cv::Rect{0, 0,49,49}),
-                                       std::make_tuple(cv::Size{64,64},
-                                                       cv::Size{49,49}, cv::Rect{0, 0,49,11}),
-                                       std::make_tuple(cv::Size{64,64},
-                                                       cv::Size{49,49}, cv::Rect{0, 9,49,17}),
-                                       std::make_tuple(cv::Size{64,64},
-                                                       cv::Size{49,49}, cv::Rect{0,39,49,10}))));
+                                Values(std::make_tuple(ncvslideio::Size{8,8},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,0,4,4}),
+                                       std::make_tuple(ncvslideio::Size{8,8},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,0,4,1}),
+                                       std::make_tuple(ncvslideio::Size{8,8},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,1,4,2}),
+                                       std::make_tuple(ncvslideio::Size{8,8},
+                                                       ncvslideio::Size{4,4}, ncvslideio::Rect{0,2,4,2}),
+                                       std::make_tuple(ncvslideio::Size{64,64},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 0,49,49}),
+                                       std::make_tuple(ncvslideio::Size{64,64},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 0,49,11}),
+                                       std::make_tuple(ncvslideio::Size{64,64},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0, 9,49,17}),
+                                       std::make_tuple(ncvslideio::Size{64,64},
+                                                       ncvslideio::Size{49,49}, ncvslideio::Rect{0,39,49,10}))));
 
-struct NV12PlusResizeTest : public TestWithParam <std::tuple<cv::Size, cv::Size, cv::Rect>> {};
+struct NV12PlusResizeTest : public TestWithParam <std::tuple<ncvslideio::Size, ncvslideio::Size, ncvslideio::Rect>> {};
 TEST_P(NV12PlusResizeTest, Test)
 {
-    cv::Size y_sz, out_sz;
-    cv::Rect roi;
+    ncvslideio::Size y_sz, out_sz;
+    ncvslideio::Rect roi;
     std::tie(y_sz, out_sz, roi) = GetParam();
-    int interp = cv::INTER_LINEAR;
+    int interp = ncvslideio::INTER_LINEAR;
 
-    cv::Size uv_sz(y_sz.width / 2, y_sz.height / 2);
-    cv::Size in_sz(y_sz.width, y_sz.height*3/2);
+    ncvslideio::Size uv_sz(y_sz.width / 2, y_sz.height / 2);
+    ncvslideio::Size in_sz(y_sz.width, y_sz.height*3/2);
 
-    cv::Mat in_mat = cv::Mat(in_sz, CV_8UC1);
+    ncvslideio::Mat in_mat = ncvslideio::Mat(in_sz, CV_8UC1);
 
-    cv::Scalar mean   = cv::Scalar(127.0f);
-    cv::Scalar stddev = cv::Scalar(40.f);
-    cv::randn(in_mat, mean, stddev);
+    ncvslideio::Scalar mean   = ncvslideio::Scalar(127.0f);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar(40.f);
+    ncvslideio::randn(in_mat, mean, stddev);
 
-    cv::Mat y_mat  = cv::Mat(y_sz, CV_8UC1, in_mat.data);
-    cv::Mat uv_mat = cv::Mat(uv_sz, CV_8UC2, in_mat.data + in_mat.step1() * y_sz.height);
-    cv::Mat out_mat, out_mat_ocv;
+    ncvslideio::Mat y_mat  = ncvslideio::Mat(y_sz, CV_8UC1, in_mat.data);
+    ncvslideio::Mat uv_mat = ncvslideio::Mat(uv_sz, CV_8UC2, in_mat.data + in_mat.step1() * y_sz.height);
+    ncvslideio::Mat out_mat, out_mat_ocv;
 
-    cv::GMat y, uv;
-    auto rgb = cv::gapi::NV12toRGB(y, uv);
-    auto out = cv::gapi::resize(rgb, out_sz, 0, 0, interp);
-    cv::GComputation c(cv::GIn(y, uv), cv::GOut(out));
+    ncvslideio::GMat y, uv;
+    auto rgb = ncvslideio::gapi::NV12toRGB(y, uv);
+    auto out = ncvslideio::gapi::resize(rgb, out_sz, 0, 0, interp);
+    ncvslideio::GComputation c(ncvslideio::GIn(y, uv), ncvslideio::GOut(out));
 
-    auto pkg = cv::gapi::combine(fluidTestPackage, cv::gapi::imgproc::fluid::kernels());
+    auto pkg = ncvslideio::gapi::combine(fluidTestPackage, ncvslideio::gapi::imgproc::fluid::kernels());
 
-    c.apply(cv::gin(y_mat, uv_mat), cv::gout(out_mat)
-           ,cv::compile_args(pkg, cv::GFluidOutputRois{{roi}}));
+    c.apply(ncvslideio::gin(y_mat, uv_mat), ncvslideio::gout(out_mat)
+           ,ncvslideio::compile_args(pkg, ncvslideio::GFluidOutputRois{{roi}}));
 
-    cv::Mat rgb_mat;
-    cv::cvtColor(in_mat, rgb_mat, cv::COLOR_YUV2RGB_NV12);
-    cv::resize(rgb_mat, out_mat_ocv, out_sz, 0, 0, interp);
+    ncvslideio::Mat rgb_mat;
+    ncvslideio::cvtColor(in_mat, rgb_mat, ncvslideio::COLOR_YUV2RGB_NV12);
+    ncvslideio::resize(rgb_mat, out_mat_ocv, out_sz, 0, 0, interp);
     EXPECT_TRUE(Tolerance_FloatRel_IntAbs(1e-5, 1).to_compare_f()(out_mat(roi), out_mat_ocv(roi)));
 }
 
 INSTANTIATE_TEST_CASE_P(Fluid, NV12PlusResizeTest,
-                        Values(std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 0, 4, 4})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 0, 4, 1})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 1, 4, 2})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 2, 4, 2})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0,  0, 49, 49})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0,  0, 49, 12})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0, 11, 49, 15})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0, 39, 49, 10})
-                              ,std::make_tuple(cv::Size{1920, 1080},
-                                               cv::Size{ 320,  256}, cv::Rect{0, 0, 320, 64})
-                              ,std::make_tuple(cv::Size{1920, 1080},
-                                               cv::Size{ 320,  256}, cv::Rect{0, 64, 320, 64})
-                              ,std::make_tuple(cv::Size{1920, 1080},
-                                               cv::Size{ 320,  256}, cv::Rect{0, 128, 320, 64})
-                              ,std::make_tuple(cv::Size{1920, 1080},
-                                               cv::Size{ 320,  256}, cv::Rect{0, 192, 320, 64})
-                              ,std::make_tuple(cv::Size{256, 400},
-                                               cv::Size{ 32,  64}, cv::Rect{0,  0, 32, 16})
-                              ,std::make_tuple(cv::Size{256, 400},
-                                               cv::Size{ 32,  64}, cv::Rect{0, 16, 32, 16})
-                              ,std::make_tuple(cv::Size{256, 400},
-                                               cv::Size{ 32,  64}, cv::Rect{0, 32, 32, 16})
-                              ,std::make_tuple(cv::Size{256, 400},
-                                               cv::Size{ 32,  64}, cv::Rect{0, 48, 32, 16})
+                        Values(std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 0, 4, 4})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 0, 4, 1})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 1, 4, 2})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 2, 4, 2})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0,  0, 49, 49})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0,  0, 49, 12})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0, 11, 49, 15})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0, 39, 49, 10})
+                              ,std::make_tuple(ncvslideio::Size{1920, 1080},
+                                               ncvslideio::Size{ 320,  256}, ncvslideio::Rect{0, 0, 320, 64})
+                              ,std::make_tuple(ncvslideio::Size{1920, 1080},
+                                               ncvslideio::Size{ 320,  256}, ncvslideio::Rect{0, 64, 320, 64})
+                              ,std::make_tuple(ncvslideio::Size{1920, 1080},
+                                               ncvslideio::Size{ 320,  256}, ncvslideio::Rect{0, 128, 320, 64})
+                              ,std::make_tuple(ncvslideio::Size{1920, 1080},
+                                               ncvslideio::Size{ 320,  256}, ncvslideio::Rect{0, 192, 320, 64})
+                              ,std::make_tuple(ncvslideio::Size{256, 400},
+                                               ncvslideio::Size{ 32,  64}, ncvslideio::Rect{0,  0, 32, 16})
+                              ,std::make_tuple(ncvslideio::Size{256, 400},
+                                               ncvslideio::Size{ 32,  64}, ncvslideio::Rect{0, 16, 32, 16})
+                              ,std::make_tuple(ncvslideio::Size{256, 400},
+                                               ncvslideio::Size{ 32,  64}, ncvslideio::Rect{0, 32, 32, 16})
+                              ,std::make_tuple(ncvslideio::Size{256, 400},
+                                               ncvslideio::Size{ 32,  64}, ncvslideio::Rect{0, 48, 32, 16})
                                ));
 
-struct Preproc4lpiTest : public TestWithParam <std::tuple<cv::Size, cv::Size, cv::Rect>>{};
+struct Preproc4lpiTest : public TestWithParam <std::tuple<ncvslideio::Size, ncvslideio::Size, ncvslideio::Rect>>{};
 TEST_P(Preproc4lpiTest, Test)
 {
     using namespace gapi_test_kernels;
-    cv::Size y_sz, out_sz;
-    cv::Rect roi;
+    ncvslideio::Size y_sz, out_sz;
+    ncvslideio::Rect roi;
     std::tie(y_sz, out_sz, roi) = GetParam();
-    int interp = cv::INTER_LINEAR;
+    int interp = ncvslideio::INTER_LINEAR;
 
-    cv::Size uv_sz(y_sz.width / 2, y_sz.height / 2);
-    cv::Size in_sz(y_sz.width, y_sz.height*3/2);
+    ncvslideio::Size uv_sz(y_sz.width / 2, y_sz.height / 2);
+    ncvslideio::Size in_sz(y_sz.width, y_sz.height*3/2);
 
-    cv::Mat in_mat = cv::Mat(in_sz, CV_8UC1);
-    cv::randn(in_mat, cv::Scalar::all(127.0f), cv::Scalar::all(40.f));
+    ncvslideio::Mat in_mat = ncvslideio::Mat(in_sz, CV_8UC1);
+    ncvslideio::randn(in_mat, ncvslideio::Scalar::all(127.0f), ncvslideio::Scalar::all(40.f));
 
-    cv::Mat y_mat  = cv::Mat(y_sz, CV_8UC1, in_mat.data);
-    cv::Mat uv_mat = cv::Mat(uv_sz, CV_8UC2, in_mat.data + in_mat.step1() * y_sz.height);
-    cv::Mat out_mat, out_mat_ocv;
+    ncvslideio::Mat y_mat  = ncvslideio::Mat(y_sz, CV_8UC1, in_mat.data);
+    ncvslideio::Mat uv_mat = ncvslideio::Mat(uv_sz, CV_8UC2, in_mat.data + in_mat.step1() * y_sz.height);
+    ncvslideio::Mat out_mat, out_mat_ocv;
 
-    cv::GMat y, uv;
-    auto rgb = cv::gapi::NV12toRGB(y, uv);
+    ncvslideio::GMat y, uv;
+    auto rgb = ncvslideio::gapi::NV12toRGB(y, uv);
     auto splitted = split3_4lpi(rgb);
 
-    cv::GMat resized[3] = { cv::gapi::resize(std::get<0>(splitted), out_sz, 0, 0, interp)
-                          , cv::gapi::resize(std::get<1>(splitted), out_sz, 0, 0, interp)
-                          , cv::gapi::resize(std::get<2>(splitted), out_sz, 0, 0, interp) };
+    ncvslideio::GMat resized[3] = { ncvslideio::gapi::resize(std::get<0>(splitted), out_sz, 0, 0, interp)
+                          , ncvslideio::gapi::resize(std::get<1>(splitted), out_sz, 0, 0, interp)
+                          , ncvslideio::gapi::resize(std::get<2>(splitted), out_sz, 0, 0, interp) };
 
     auto out = merge3_4lpi(resized[0], resized[1], resized[2]);
 
-    cv::GComputation c(cv::GIn(y, uv), cv::GOut(out));
+    ncvslideio::GComputation c(ncvslideio::GIn(y, uv), ncvslideio::GOut(out));
 
-    auto pkg = cv::gapi::combine(cv::gapi::core::fluid::kernels(),
+    auto pkg = ncvslideio::gapi::combine(ncvslideio::gapi::core::fluid::kernels(),
                                  fluidResizeTestPackage(interp, in_sz, out_sz, 4));
 
-    c.apply(cv::gin(y_mat, uv_mat), cv::gout(out_mat)
-           ,cv::compile_args(pkg, cv::GFluidOutputRois{{roi}}));
+    c.apply(ncvslideio::gin(y_mat, uv_mat), ncvslideio::gout(out_mat)
+           ,ncvslideio::compile_args(pkg, ncvslideio::GFluidOutputRois{{roi}}));
 
-    cv::Mat rgb_mat;
-    cv::cvtColor(in_mat, rgb_mat, cv::COLOR_YUV2RGB_NV12);
-    cv::resize(rgb_mat, out_mat_ocv, out_sz, 0, 0, interp);
+    ncvslideio::Mat rgb_mat;
+    ncvslideio::cvtColor(in_mat, rgb_mat, ncvslideio::COLOR_YUV2RGB_NV12);
+    ncvslideio::resize(rgb_mat, out_mat_ocv, out_sz, 0, 0, interp);
 
 #if defined(__arm__) || defined(__aarch64__)
     EXPECT_GE(2, cvtest::norm(out_mat(roi), out_mat_ocv(roi), NORM_INF));
@@ -837,34 +837,34 @@ TEST_P(Preproc4lpiTest, Test)
 }
 
 INSTANTIATE_TEST_CASE_P(Fluid, Preproc4lpiTest,
-                        Values(std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 0, 4, 4})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 0, 4, 1})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 1, 4, 2})
-                              ,std::make_tuple(cv::Size{8, 8},
-                                               cv::Size{4, 4}, cv::Rect{0, 2, 4, 2})
-                              ,std::make_tuple(cv::Size{24, 24},
-                                               cv::Size{12, 12}, cv::Rect{0, 0, 12, 3})
-                              ,std::make_tuple(cv::Size{24, 24},
-                                               cv::Size{12, 12}, cv::Rect{0, 3, 12, 3})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0,  0, 49, 49})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0,  0, 49, 12})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0, 11, 49, 15})
-                              ,std::make_tuple(cv::Size{64, 64},
-                                               cv::Size{49, 49}, cv::Rect{0, 39, 49, 10})
-                              ,std::make_tuple(cv::Size{640, 480},
-                                               cv::Size{300, 199}, cv::Rect{0, 0, 300, 50})
-                              ,std::make_tuple(cv::Size{640, 480},
-                                               cv::Size{300, 199}, cv::Rect{0, 50, 300, 50})
-                              ,std::make_tuple(cv::Size{640, 480},
-                                               cv::Size{300, 199}, cv::Rect{0, 100, 300, 50})
-                              ,std::make_tuple(cv::Size{640, 480},
-                                               cv::Size{300, 199}, cv::Rect{0, 150, 300, 49})
+                        Values(std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 0, 4, 4})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 0, 4, 1})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 1, 4, 2})
+                              ,std::make_tuple(ncvslideio::Size{8, 8},
+                                               ncvslideio::Size{4, 4}, ncvslideio::Rect{0, 2, 4, 2})
+                              ,std::make_tuple(ncvslideio::Size{24, 24},
+                                               ncvslideio::Size{12, 12}, ncvslideio::Rect{0, 0, 12, 3})
+                              ,std::make_tuple(ncvslideio::Size{24, 24},
+                                               ncvslideio::Size{12, 12}, ncvslideio::Rect{0, 3, 12, 3})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0,  0, 49, 49})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0,  0, 49, 12})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0, 11, 49, 15})
+                              ,std::make_tuple(ncvslideio::Size{64, 64},
+                                               ncvslideio::Size{49, 49}, ncvslideio::Rect{0, 39, 49, 10})
+                              ,std::make_tuple(ncvslideio::Size{640, 480},
+                                               ncvslideio::Size{300, 199}, ncvslideio::Rect{0, 0, 300, 50})
+                              ,std::make_tuple(ncvslideio::Size{640, 480},
+                                               ncvslideio::Size{300, 199}, ncvslideio::Rect{0, 50, 300, 50})
+                              ,std::make_tuple(ncvslideio::Size{640, 480},
+                                               ncvslideio::Size{300, 199}, ncvslideio::Rect{0, 100, 300, 50})
+                              ,std::make_tuple(ncvslideio::Size{640, 480},
+                                               ncvslideio::Size{300, 199}, ncvslideio::Rect{0, 150, 300, 49})
                               ));
 
 

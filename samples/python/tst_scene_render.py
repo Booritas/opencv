@@ -88,7 +88,7 @@ class TestSceneRender():
             self.currentRect = self.initialRect + int( 30*cos(self.time*self.speed) + 50*sin(self.time*self.speed))
             if self.deformation:
                 self.currentRect[1:3] += int(self.h/20*cos(self.time))
-            cv.fillConvexPoly(img, self.currentRect, (0, 0, 255))
+            ncvslideio.fillConvexPoly(img, self.currentRect, (0, 0, 255))
 
         self.time += self.timeStep
         return img
@@ -98,17 +98,17 @@ class TestSceneRender():
 
 
 def main():
-    backGr = cv.imread(cv.samples.findFile('graf1.png'))
-    fgr = cv.imread(cv.samples.findFile('box.png'))
+    backGr = ncvslideio.imread(ncvslideio.samples.findFile('graf1.png'))
+    fgr = ncvslideio.imread(ncvslideio.samples.findFile('box.png'))
 
     render = TestSceneRender(backGr, fgr)
 
     while True:
 
         img = render.getNextFrame()
-        cv.imshow('img', img)
+        ncvslideio.imshow('img', img)
 
-        ch = cv.waitKey(3)
+        ch = ncvslideio.waitKey(3)
         if  ch == 27:
             break
 
@@ -118,4 +118,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

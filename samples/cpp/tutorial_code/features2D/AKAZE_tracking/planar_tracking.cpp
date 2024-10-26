@@ -11,7 +11,7 @@
 #include "utils.h" // Drawing and printing functions
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const double akaze_thresh = 3e-4; // AKAZE detection threshold set to locate about 1000 keypoints
 const double ransac_thresh = 2.5f; // RANSAC inlier threshold
@@ -43,7 +43,7 @@ protected:
 
 void Tracker::setFirstFrame(const Mat frame, vector<Point2f> bb, string title, Stats& stats)
 {
-    cv::Point *ptMask = new cv::Point[bb.size()];
+    ncvslideio::Point *ptMask = new ncvslideio::Point[bb.size()];
     const Point* ptContain = { &ptMask[0] };
     int iSize = static_cast<int>(bb.size());
     for (size_t i=0; i<bb.size(); i++) {
@@ -51,8 +51,8 @@ void Tracker::setFirstFrame(const Mat frame, vector<Point2f> bb, string title, S
         ptMask[i].y = static_cast<int>(bb[i].y);
     }
     first_frame = frame.clone();
-    cv::Mat matMask = cv::Mat::zeros(frame.size(), CV_8UC1);
-    cv::fillPoly(matMask, &ptContain, &iSize, 1, cv::Scalar::all(255));
+    ncvslideio::Mat matMask = ncvslideio::Mat::zeros(frame.size(), CV_8UC1);
+    ncvslideio::fillPoly(matMask, &ptContain, &iSize, 1, ncvslideio::Scalar::all(255));
     detector->detectAndCompute(first_frame, matMask, first_kp, first_desc);
     stats.keypoints = (int)first_kp.size();
     drawBoundingBox(first_frame, bb);
@@ -162,16 +162,16 @@ int main(int argc, char **argv)
     while ( waitKey(1) < 1 )
     {
         video_in >> frame;
-        cv::resizeWindow(video_name, frame.size());
+        ncvslideio::resizeWindow(video_name, frame.size());
         imshow(video_name, frame);
     }
 
     vector<Point2f> bb;
-    cv::Rect uBox = cv::selectROI(video_name, frame);
-    bb.push_back(cv::Point2f(static_cast<float>(uBox.x), static_cast<float>(uBox.y)));
-    bb.push_back(cv::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y)));
-    bb.push_back(cv::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y+uBox.height)));
-    bb.push_back(cv::Point2f(static_cast<float>(uBox.x), static_cast<float>(uBox.y+uBox.height)));
+    ncvslideio::Rect uBox = ncvslideio::selectROI(video_name, frame);
+    bb.push_back(ncvslideio::Point2f(static_cast<float>(uBox.x), static_cast<float>(uBox.y)));
+    bb.push_back(ncvslideio::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y)));
+    bb.push_back(ncvslideio::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y+uBox.height)));
+    bb.push_back(ncvslideio::Point2f(static_cast<float>(uBox.x), static_cast<float>(uBox.y+uBox.height)));
 
     akaze_tracker.setFirstFrame(frame, bb, "AKAZE", stats);
     orb_tracker.setFirstFrame(frame, bb, "ORB", stats);
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
         drawStatistics(akaze_res, akaze_draw_stats);
         drawStatistics(orb_res, orb_draw_stats);
         vconcat(akaze_res, orb_res, res_frame);
-        cv::imshow(video_name, res_frame);
+        ncvslideio::imshow(video_name, res_frame);
         if(waitKey(1)==27) break; //quit on ESC button
     }
     akaze_stats /= i - 1;

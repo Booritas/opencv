@@ -56,12 +56,12 @@ class LetterStatModel(object):
 
 class RTrees(LetterStatModel):
     def __init__(self):
-        self.model = cv.ml.RTrees_create()
+        self.model = ncvslideio.ml.RTrees_create()
 
     def train(self, samples, responses):
         #sample_n, var_n = samples.shape
         self.model.setMaxDepth(20)
-        self.model.train(samples, cv.ml.ROW_SAMPLE, responses.astype(int))
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, responses.astype(int))
 
     def predict(self, samples):
         _ret, resp = self.model.predict(samples)
@@ -70,10 +70,10 @@ class RTrees(LetterStatModel):
 
 class KNearest(LetterStatModel):
     def __init__(self):
-        self.model = cv.ml.KNearest_create()
+        self.model = ncvslideio.ml.KNearest_create()
 
     def train(self, samples, responses):
-        self.model.train(samples, cv.ml.ROW_SAMPLE, responses)
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, responses)
 
     def predict(self, samples):
         _retval, results, _neigh_resp, _dists = self.model.findNearest(samples, k = 10)
@@ -82,17 +82,17 @@ class KNearest(LetterStatModel):
 
 class Boost(LetterStatModel):
     def __init__(self):
-        self.model = cv.ml.Boost_create()
+        self.model = ncvslideio.ml.Boost_create()
 
     def train(self, samples, responses):
         _sample_n, var_n = samples.shape
         new_samples = self.unroll_samples(samples)
         new_responses = self.unroll_responses(responses)
-        var_types = np.array([cv.ml.VAR_NUMERICAL] * var_n + [cv.ml.VAR_CATEGORICAL, cv.ml.VAR_CATEGORICAL], np.uint8)
+        var_types = np.array([ncvslideio.ml.VAR_NUMERICAL] * var_n + [ncvslideio.ml.VAR_CATEGORICAL, ncvslideio.ml.VAR_CATEGORICAL], np.uint8)
 
         self.model.setWeakCount(15)
         self.model.setMaxDepth(10)
-        self.model.train(cv.ml.TrainData_create(new_samples, cv.ml.ROW_SAMPLE, new_responses.astype(int), varType = var_types))
+        self.model.train(ncvslideio.ml.TrainData_create(new_samples, ncvslideio.ml.ROW_SAMPLE, new_responses.astype(int), varType = var_types))
 
     def predict(self, samples):
         new_samples = self.unroll_samples(samples)
@@ -103,14 +103,14 @@ class Boost(LetterStatModel):
 
 class SVM(LetterStatModel):
     def __init__(self):
-        self.model = cv.ml.SVM_create()
+        self.model = ncvslideio.ml.SVM_create()
 
     def train(self, samples, responses):
-        self.model.setType(cv.ml.SVM_C_SVC)
+        self.model.setType(ncvslideio.ml.SVM_C_SVC)
         self.model.setC(1)
-        self.model.setKernel(cv.ml.SVM_RBF)
+        self.model.setKernel(ncvslideio.ml.SVM_RBF)
         self.model.setGamma(.1)
-        self.model.train(samples, cv.ml.ROW_SAMPLE, responses.astype(int))
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, responses.astype(int))
 
     def predict(self, samples):
         _ret, resp = self.model.predict(samples)
@@ -119,7 +119,7 @@ class SVM(LetterStatModel):
 
 class MLP(LetterStatModel):
     def __init__(self):
-        self.model = cv.ml.ANN_MLP_create()
+        self.model = ncvslideio.ml.ANN_MLP_create()
 
     def train(self, samples, responses):
         _sample_n, var_n = samples.shape
@@ -127,13 +127,13 @@ class MLP(LetterStatModel):
         layer_sizes = np.int32([var_n, 100, 100, self.class_n])
 
         self.model.setLayerSizes(layer_sizes)
-        self.model.setTrainMethod(cv.ml.ANN_MLP_BACKPROP)
+        self.model.setTrainMethod(ncvslideio.ml.ANN_MLP_BACKPROP)
         self.model.setBackpropMomentumScale(0)
         self.model.setBackpropWeightScale(0.001)
-        self.model.setTermCriteria((cv.TERM_CRITERIA_COUNT, 20, 0.01))
-        self.model.setActivationFunction(cv.ml.ANN_MLP_SIGMOID_SYM, 2, 1)
+        self.model.setTermCriteria((ncvslideio.TERM_CRITERIA_COUNT, 20, 0.01))
+        self.model.setActivationFunction(ncvslideio.ml.ANN_MLP_SIGMOID_SYM, 2, 1)
 
-        self.model.train(samples, cv.ml.ROW_SAMPLE, np.float32(new_responses))
+        self.model.train(samples, ncvslideio.ml.ROW_SAMPLE, np.float32(new_responses))
 
     def predict(self, samples):
         _ret, resp = self.model.predict(samples)

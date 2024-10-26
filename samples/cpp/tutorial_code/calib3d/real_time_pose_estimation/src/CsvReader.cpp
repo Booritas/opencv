@@ -44,7 +44,7 @@ void CsvReader::readPLY(vector<Point3f> &list_vertex, vector<vector<int> > &list
              getline(liness, y, _separator);
              getline(liness, z);
 
-             cv::Point3f tmp_p;
+             ncvslideio::Point3f tmp_p;
              tmp_p.x = (float)StringToInt(x);
              tmp_p.y = (float)StringToInt(y);
              tmp_p.z = (float)StringToInt(z);

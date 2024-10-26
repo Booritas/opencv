@@ -10,7 +10,7 @@
 #include "apriltag/predefined_dictionaries_apriltag.hpp"
 #include <opencv2/objdetect/aruco_dictionary.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 using namespace std;
@@ -25,7 +25,7 @@ Dictionary::Dictionary(const Mat &_bytesList, int _markerSize, int _maxcorr) {
 }
 
 
-bool Dictionary::readDictionary(const cv::FileNode& fn) {
+bool Dictionary::readDictionary(const ncvslideio::FileNode& fn) {
     int nMarkers = 0, _markerSize = 0;
     if (fn.empty() || !readParameter("nmarkers", nMarkers, fn) || !readParameter("markersize", _markerSize, fn))
         return false;
@@ -88,7 +88,7 @@ bool Dictionary::identify(const Mat &onlyBits, int &idx, int &rotation, double m
         int currentMinDistance = markerSize * markerSize + 1;
         int currentRotation = -1;
         for(unsigned int r = 0; r < 4; r++) {
-            int currentHamming = cv::hal::normHamming(
+            int currentHamming = ncvslideio::hal::normHamming(
                     bytesList.ptr(m)+r*candidateBytes.cols,
                     candidateBytes.ptr(),
                     candidateBytes.cols);
@@ -121,7 +121,7 @@ int Dictionary::getDistanceToId(InputArray bits, int id, bool allRotations) cons
     Mat candidateBytes = getByteListFromBits(bits.getMat());
     int currentMinDistance = int(bits.total() * bits.total());
     for(unsigned int r = 0; r < nRotations; r++) {
-        int currentHamming = cv::hal::normHamming(
+        int currentHamming = ncvslideio::hal::normHamming(
                 bytesList.ptr(id) + r*candidateBytes.cols,
                 candidateBytes.ptr(),
                 candidateBytes.cols);
@@ -152,7 +152,7 @@ void Dictionary::generateImageMarker(int id, int sidePixels, OutputArray _img, i
     bits.copyTo(innerRegion);
 
     // resize tiny marker to output size
-    cv::resize(tinyMarker, _img.getMat(), _img.getMat().size(), 0, 0, INTER_NEAREST);
+    ncvslideio::resize(tinyMarker, _img.getMat(), _img.getMat().size(), 0, 0, INTER_NEAREST);
 }
 
 
@@ -347,7 +347,7 @@ static int _getSelfDistance(const Mat &marker) {
     Mat bytes = Dictionary::getByteListFromBits(marker);
     int minHamming = (int)marker.total() + 1;
     for(int r = 1; r < 4; r++) {
-        int currentHamming = cv::hal::normHamming(bytes.ptr(), bytes.ptr() + bytes.cols*r, bytes.cols);
+        int currentHamming = ncvslideio::hal::normHamming(bytes.ptr(), bytes.ptr() + bytes.cols*r, bytes.cols);
         if(currentHamming < minHamming) minHamming = currentHamming;
     }
     return minHamming;

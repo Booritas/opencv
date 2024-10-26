@@ -41,10 +41,10 @@ import argparse
 
 from video import create_capture, presets
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-            cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD,
-           cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+            ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD,
+           ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 class App(object):
 
@@ -55,34 +55,34 @@ class App(object):
 
     def createTracker(self):
         if self.trackerAlgorithm == 'mil':
-            tracker = cv.TrackerMIL_create()
+            tracker = ncvslideio.TrackerMIL_create()
         elif self.trackerAlgorithm == 'goturn':
-            params = cv.TrackerGOTURN_Params()
+            params = ncvslideio.TrackerGOTURN_Params()
             params.modelTxt = self.args.goturn
             params.modelBin = self.args.goturn_model
-            tracker = cv.TrackerGOTURN_create(params)
+            tracker = ncvslideio.TrackerGOTURN_create(params)
         elif self.trackerAlgorithm == 'dasiamrpn':
-            params = cv.TrackerDaSiamRPN_Params()
+            params = ncvslideio.TrackerDaSiamRPN_Params()
             params.model = self.args.dasiamrpn_net
             params.kernel_cls1 = self.args.dasiamrpn_kernel_cls1
             params.kernel_r1 = self.args.dasiamrpn_kernel_r1
             params.backend = args.backend
             params.target = args.target
-            tracker = cv.TrackerDaSiamRPN_create(params)
+            tracker = ncvslideio.TrackerDaSiamRPN_create(params)
         elif self.trackerAlgorithm == 'nanotrack':
-            params = cv.TrackerNano_Params()
+            params = ncvslideio.TrackerNano_Params()
             params.backbone = args.nanotrack_backbone
             params.neckhead = args.nanotrack_headneck
             params.backend = args.backend
             params.target = args.target
-            tracker = cv.TrackerNano_create(params)
+            tracker = ncvslideio.TrackerNano_create(params)
         elif self.trackerAlgorithm == 'vittrack':
-            params = cv.TrackerVit_Params()
+            params = ncvslideio.TrackerVit_Params()
             params.net = args.vittrack_net
             params.tracking_score_threshold = args.tracking_score_threshold
             params.backend = args.backend
             params.target = args.target
-            tracker = cv.TrackerVit_create(params)
+            tracker = ncvslideio.TrackerVit_create(params)
         else:
             sys.exit("Tracker {} is not recognized. Please use one of three available: mil, goturn, dasiamrpn, nanotrack.".format(self.trackerAlgorithm))
         return tracker
@@ -90,7 +90,7 @@ class App(object):
     def initializeTracker(self, image):
         while True:
             print('==> Select object ROI for tracker ...')
-            bbox = cv.selectROI('tracking', image)
+            bbox = ncvslideio.selectROI('tracking', image)
             print('ROI: {}'.format(bbox))
             if bbox[2] <= 0 or bbox[3] <= 0:
                 sys.exit("ROI selection cancelled. Exiting...")
@@ -108,7 +108,7 @@ class App(object):
     def run(self):
         videoPath = self.args.input
         print('Using video: {}'.format(videoPath))
-        camera = create_capture(cv.samples.findFileOrKeep(videoPath), presets['cube'])
+        camera = create_capture(ncvslideio.samples.findFileOrKeep(videoPath), presets['cube'])
         if not camera.isOpened():
             sys.exit("Can't open video stream: {}".format(videoPath))
 
@@ -117,7 +117,7 @@ class App(object):
             sys.exit("Can't read first frame")
         assert image is not None
 
-        cv.namedWindow('tracking')
+        ncvslideio.namedWindow('tracking')
         self.initializeTracker(image)
 
         print("==> Tracking is started. Press 'SPACE' to re-initialize tracker or 'ESC' for exit...")
@@ -132,10 +132,10 @@ class App(object):
             #print(ok, newbox)
 
             if ok:
-                cv.rectangle(image, newbox, (200,0,0))
+                ncvslideio.rectangle(image, newbox, (200,0,0))
 
-            cv.imshow("tracking", image)
-            k = cv.waitKey(1)
+            ncvslideio.imshow("tracking", image)
+            k = ncvslideio.waitKey(1)
             if k == 32:  # SPACE
                 self.initializeTracker(image)
             if k == 27:  # ESC
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     parser.add_argument("--nanotrack_headneck", type=str, default="nanotrack_head_sim.onnx", help="Path to onnx model of NanoTrack headNeck")
     parser.add_argument("--vittrack_net", type=str, default="vitTracker.onnx", help="Path to onnx model of  vittrack")
     parser.add_argument('--tracking_score_threshold', type=float,  help="Tracking score threshold. If a bbox of score >= 0.3, it is considered as found ")
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                 help="Choose one of computation backends: "
                         "%d: automatically (by default), "
                         "%d: Halide language (http://halide-lang.org/), "
@@ -166,7 +166,7 @@ if __name__ == '__main__':
                         "%d: OpenCV implementation, "
                         "%d: VKCOM, "
                         "%d: CUDA"% backends)
-    parser.add_argument("--target", choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument("--target", choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                 help="Choose one of target computation devices: "
                         '%d: CPU target (by default), '
                         '%d: OpenCL, '
@@ -178,4 +178,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     App(args).run()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

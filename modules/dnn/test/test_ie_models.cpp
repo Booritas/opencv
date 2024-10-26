@@ -56,8 +56,8 @@ static void initDLDTDataPath()
 #endif
 }
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 struct OpenVINOModelTestCaseInfo
 {
@@ -157,7 +157,7 @@ inline static std::string getOpenVINOModel(const std::string &modelName, bool is
 }
 
 void runIE(Target target, const std::string& xmlPath, const std::string& binPath,
-           std::map<std::string, cv::Mat>& inputsMap, std::map<std::string, cv::Mat>& outputsMap)
+           std::map<std::string, ncvslideio::Mat>& inputsMap, std::map<std::string, ncvslideio::Mat>& outputsMap)
 {
     SCOPED_TRACE("runIE");
 
@@ -299,8 +299,8 @@ void runIE(Target target, const std::string& xmlPath, const std::string& binPath
 }
 
 void runCV(Backend backendId, Target targetId, const std::string& xmlPath, const std::string& binPath,
-           const std::map<std::string, cv::Mat>& inputsMap,
-           std::map<std::string, cv::Mat>& outputsMap)
+           const std::map<std::string, ncvslideio::Mat>& inputsMap,
+           std::map<std::string, ncvslideio::Mat>& outputsMap)
 {
     SCOPED_TRACE("runOCV");
 
@@ -386,8 +386,8 @@ TEST_P(DNNTestOpenVINO, models)
     std::string xmlPath = findDataFile(modelPath + ".xml", false);
     std::string binPath = findDataFile(modelPath + ".bin", false);
 
-    std::map<std::string, cv::Mat> inputsMap;
-    std::map<std::string, cv::Mat> ieOutputsMap, cvOutputsMap;
+    std::map<std::string, ncvslideio::Mat> inputsMap;
+    std::map<std::string, ncvslideio::Mat> ieOutputsMap, cvOutputsMap;
     // Single Myriad device cannot be shared across multiple processes.
     if (targetId == DNN_TARGET_MYRIAD)
         resetMyriadDevice();
@@ -420,7 +420,7 @@ TEST_P(DNNTestOpenVINO, models)
 
         dstIt->second.convertTo(dstIt->second, srcIt.second.type());
 
-        double normInf = cvtest::norm(srcIt.second, dstIt->second, cv::NORM_INF);
+        double normInf = cvtest::norm(srcIt.second, dstIt->second, ncvslideio::NORM_INF);
         EXPECT_LE(normInf, eps) << "output=" << srcIt.first;
     }
 }

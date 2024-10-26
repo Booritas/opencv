@@ -57,7 +57,7 @@
 #  endif
 #endif
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifdef DEBUG_CIRCLES
 void drawPoints(const std::vector<Point2f> &points, Mat &outImage, int radius = 2,  Scalar color = Scalar::all(255), int thickness = -1)
@@ -114,7 +114,7 @@ void CirclesGridClusterFinder::hierarchicalClustering(const std::vector<Point2f>
         distsMask.col(maxIdx).setTo(0);
         Mat tmpRow = dists.row(minIdx);
         Mat tmpCol = dists.col(minIdx);
-        cv::min(dists.row(minLoc.x), dists.row(minLoc.y), tmpRow);
+        ncvslideio::min(dists.row(minLoc.x), dists.row(minLoc.y), tmpRow);
         tmpRow = tmpRow.t();
         tmpRow.copyTo(tmpCol);
 
@@ -135,7 +135,7 @@ void CirclesGridClusterFinder::hierarchicalClustering(const std::vector<Point2f>
     }
 }
 
-void CirclesGridClusterFinder::findGrid(const std::vector<cv::Point2f> &points, cv::Size _patternSize, std::vector<Point2f>& centers)
+void CirclesGridClusterFinder::findGrid(const std::vector<ncvslideio::Point2f> &points, ncvslideio::Size _patternSize, std::vector<Point2f>& centers)
 {
   patternSize = _patternSize;
   centers.clear();
@@ -188,7 +188,7 @@ void CirclesGridClusterFinder::findGrid(const std::vector<cv::Point2f> &points, 
   parsePatternPoints(patternPoints, rectifiedPatternPoints, centers);
 }
 
-void CirclesGridClusterFinder::findCorners(const std::vector<cv::Point2f> &hull2f, std::vector<cv::Point2f> &corners)
+void CirclesGridClusterFinder::findCorners(const std::vector<ncvslideio::Point2f> &hull2f, std::vector<ncvslideio::Point2f> &corners)
 {
   //find angles (cosines) of vertices in convex hull
   std::vector<float> angles;
@@ -209,7 +209,7 @@ void CirclesGridClusterFinder::findCorners(const std::vector<cv::Point2f> &hull2
   CV_Assert(sortedIndices.cols == 1);
   const int cornersCount = isAsymmetricGrid ? 6 : 4;
   Mat cornersIndices;
-  cv::sort(sortedIndices.rowRange(0, cornersCount), cornersIndices, SORT_EVERY_COLUMN + SORT_ASCENDING);
+  ncvslideio::sort(sortedIndices.rowRange(0, cornersCount), cornersIndices, SORT_EVERY_COLUMN + SORT_ASCENDING);
   corners.clear();
   for(int i=0; i<cornersCount; i++)
   {
@@ -217,7 +217,7 @@ void CirclesGridClusterFinder::findCorners(const std::vector<cv::Point2f> &hull2
   }
 }
 
-void CirclesGridClusterFinder::findOutsideCorners(const std::vector<cv::Point2f> &corners, std::vector<cv::Point2f> &outsideCorners)
+void CirclesGridClusterFinder::findOutsideCorners(const std::vector<ncvslideio::Point2f> &corners, std::vector<ncvslideio::Point2f> &outsideCorners)
 {
   CV_Assert(!corners.empty());
   outsideCorners.clear();
@@ -294,7 +294,7 @@ void CirclesGridClusterFinder::findOutsideCorners(const std::vector<cv::Point2f>
 }
 
 namespace {
-double pointLineDistance(const cv::Point2f &p, const cv::Vec4f &line)
+double pointLineDistance(const ncvslideio::Point2f &p, const ncvslideio::Vec4f &line)
 {
   Vec3f pa( line[0], line[1], 1 );
   Vec3f pb( line[2], line[3], 1 );
@@ -304,7 +304,7 @@ double pointLineDistance(const cv::Point2f &p, const cv::Vec4f &line)
 }
 }
 
-void CirclesGridClusterFinder::getSortedCorners(const std::vector<cv::Point2f> &hull2f, const std::vector<cv::Point2f> &patternPoints, const std::vector<cv::Point2f> &corners, const std::vector<cv::Point2f> &outsideCorners, std::vector<cv::Point2f> &sortedCorners)
+void CirclesGridClusterFinder::getSortedCorners(const std::vector<ncvslideio::Point2f> &hull2f, const std::vector<ncvslideio::Point2f> &patternPoints, const std::vector<ncvslideio::Point2f> &corners, const std::vector<ncvslideio::Point2f> &outsideCorners, std::vector<ncvslideio::Point2f> &sortedCorners)
 {
   Point2f firstCorner;
   if(isAsymmetricGrid)
@@ -380,7 +380,7 @@ void CirclesGridClusterFinder::getSortedCorners(const std::vector<cv::Point2f> &
   }
 }
 
-void CirclesGridClusterFinder::rectifyPatternPoints(const std::vector<cv::Point2f> &patternPoints, const std::vector<cv::Point2f> &sortedCorners, std::vector<cv::Point2f> &rectifiedPatternPoints)
+void CirclesGridClusterFinder::rectifyPatternPoints(const std::vector<ncvslideio::Point2f> &patternPoints, const std::vector<ncvslideio::Point2f> &sortedCorners, std::vector<ncvslideio::Point2f> &rectifiedPatternPoints)
 {
   //indices of corner points in pattern
   std::vector<Point> trueIndices;
@@ -416,7 +416,7 @@ void CirclesGridClusterFinder::rectifyPatternPoints(const std::vector<cv::Point2
   convertPointsFromHomogeneous(rectifiedPointsMat, rectifiedPatternPoints);
 }
 
-void CirclesGridClusterFinder::parsePatternPoints(const std::vector<cv::Point2f> &patternPoints, const std::vector<cv::Point2f> &rectifiedPatternPoints, std::vector<cv::Point2f> &centers)
+void CirclesGridClusterFinder::parsePatternPoints(const std::vector<ncvslideio::Point2f> &patternPoints, const std::vector<ncvslideio::Point2f> &rectifiedPatternPoints, std::vector<ncvslideio::Point2f> &centers)
 {
 #ifndef HAVE_OPENCV_FLANN
   CV_UNUSED(patternPoints);
@@ -518,7 +518,7 @@ size_t Graph::getDegree(size_t id) const
   return it->second.neighbors.size();
 }
 
-void Graph::floydWarshall(cv::Mat &distanceMatrix, int infinity) const
+void Graph::floydWarshall(ncvslideio::Mat &distanceMatrix, int infinity) const
 {
   const int edgeWeight = 1;
 
@@ -564,7 +564,7 @@ const Graph::Neighbors& Graph::getNeighbors(size_t id) const
   return it->second.neighbors;
 }
 
-CirclesGridFinder::Segment::Segment(cv::Point2f _s, cv::Point2f _e) :
+CirclesGridFinder::Segment::Segment(ncvslideio::Point2f _s, ncvslideio::Point2f _e) :
   s(_s), e(_e)
 {
 }
@@ -647,7 +647,7 @@ bool CirclesGridFinder::findHoles()
   //CV_Error( 0, "Detection is not correct" );
 }
 
-void CirclesGridFinder::rng2gridGraph(Graph &rng, std::vector<cv::Point2f> &vectors) const
+void CirclesGridFinder::rng2gridGraph(Graph &rng, std::vector<ncvslideio::Point2f> &vectors) const
 {
   for (size_t i = 0; i < rng.getVerticesCount(); i++)
   {
@@ -1199,7 +1199,7 @@ void CirclesGridFinder::findBasis(const std::vector<Point2f> &samples, std::vect
     CV_Error(0, "Number of basis graphs is not 2");
 }
 
-void CirclesGridFinder::computeRNG(Graph &rng, std::vector<cv::Point2f> &vectors, Mat *drawImage) const
+void CirclesGridFinder::computeRNG(Graph &rng, std::vector<ncvslideio::Point2f> &vectors, Mat *drawImage) const
 {
   rng = Graph(keypoints.size());
   vectors.clear();
@@ -1472,7 +1472,7 @@ static bool areIndicesCorrect(Point pos, std::vector<std::vector<size_t> > *poin
   return (static_cast<size_t> (pos.y) < points->size() && static_cast<size_t> (pos.x) < points->at(pos.y).size());
 }
 
-void CirclesGridFinder::getAsymmetricHoles(std::vector<cv::Point2f> &outHoles) const
+void CirclesGridFinder::getAsymmetricHoles(std::vector<ncvslideio::Point2f> &outHoles) const
 {
   outHoles.clear();
 

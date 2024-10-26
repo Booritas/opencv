@@ -7,7 +7,7 @@
 
 #include "../cvdef.h"
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 class AllocatorStatisticsInterface
 {

@@ -9,10 +9,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/shuffle_channel.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ShuffleChannelLayerImpl CV_FINAL : public ShuffleChannelLayer
 {
@@ -164,4 +164,4 @@ Ptr<Layer> ShuffleChannelLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

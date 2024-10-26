@@ -67,7 +67,7 @@ public:
         for (int i = 0; i < inp.size[0] * inp.size[1]; ++i)
         {
             Mat slice(inp.size[2], inp.size[3], CV_32F, inpData);
-            cv::flip(slice, slice, 1);
+            ncvslideio::flip(slice, slice, 1);
             inpData += slice.total();
         }
         netDefault.setInput(inp);
@@ -639,7 +639,7 @@ TEST_P(Test_layers_backends, Padding)
 {
     static const int kNumRuns = 10;
     std::vector<int> paddings(8);
-    cv::RNG& rng = cv::theRNG();
+    ncvslideio::RNG& rng = ncvslideio::theRNG();
     for (int t = 0; t < kNumRuns; ++t)
     {
         for (int i = 0; i < paddings.size(); ++i)
@@ -1485,7 +1485,7 @@ TEST_P(Eltwise, Accuracy)
     eltwiseParam.set("operation", op);
     if (op == "sum" && weighted)
     {
-        RNG& rng = cv::theRNG();
+        RNG& rng = ncvslideio::theRNG();
         std::vector<float> coeff(1 + numConv);
         for (int i = 0; i < coeff.size(); ++i)
         {

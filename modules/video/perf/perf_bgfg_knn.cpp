@@ -14,7 +14,7 @@ typedef tuple<std::string, int> VideoKNNParamType;
 typedef TestBaseWithParam<VideoKNNParamType> KNN_Apply;
 typedef TestBaseWithParam<VideoKNNParamType> KNN_GetBackgroundImage;
 
-PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video/1920x1080.avi"), Values(1,3)))
+PERF_TEST_P(KNN_Apply, KNN, Combine(Values("ncvslideio/video/768x576.avi", "ncvslideio/video/1920x1080.avi"), Values(1,3)))
 {
     VideoKNNParamType params = GetParam();
 
@@ -25,7 +25,7 @@ PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video/192
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer);
@@ -34,7 +34,7 @@ PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video/192
 
     TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
+        Ptr<ncvslideio::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
         knn->setDetectShadows(false);
         foreground.release();
         for (int i = 0; i < nFrame; i++)
@@ -46,8 +46,8 @@ PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video/192
 }
 
 PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
-        std::make_pair<string, int>("cv/video/768x576.avi", 5),
-        std::make_pair<string, int>("cv/video/1920x1080.avi", 5)))
+        std::make_pair<string, int>("ncvslideio/video/768x576.avi", 5),
+        std::make_pair<string, int>("ncvslideio/video/1920x1080.avi", 5)))
 {
     VideoKNNParamType params = GetParam();
 
@@ -59,7 +59,7 @@ PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer, skipFrames);
@@ -68,7 +68,7 @@ PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
 
     TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
+        Ptr<ncvslideio::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
         knn->setDetectShadows(false);
         foreground.release();
         background.release();

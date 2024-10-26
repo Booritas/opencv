@@ -49,7 +49,7 @@
 
 #include "usac.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 int RANSACUpdateNumIters( double p, double ep, int modelPoints, int maxIters )
@@ -103,7 +103,7 @@ public:
 
     bool getSubset( const Mat& m1, const Mat& m2, Mat& ms1, Mat& ms2, RNG& rng, int maxAttempts=1000 ) const
     {
-        cv::AutoBuffer<int> _idx(modelPoints);
+        ncvslideio::AutoBuffer<int> _idx(modelPoints);
         int* idx = _idx.data();
 
         const int d1 = m1.channels() > 1 ? m1.channels() : m1.cols;
@@ -1011,7 +1011,7 @@ Mat estimateAffine2D(InputArray _from, InputArray _to, OutputArray _inliers,
 {
 
     if (method >= USAC_DEFAULT && method <= USAC_MAGSAC)
-        return cv::usac::estimateAffine2D(_from, _to, _inliers, method,
+        return ncvslideio::usac::estimateAffine2D(_from, _to, _inliers, method,
             ransacReprojThreshold, (int)maxIters, confidence, (int)refineIters);
 
     Mat from = _from.getMat(), to = _to.getMat();
@@ -1182,4 +1182,4 @@ Mat estimateAffinePartial2D(InputArray _from, InputArray _to, OutputArray _inlie
     return H;
 }
 
-} // namespace cv
+} // namespace ncvslideio

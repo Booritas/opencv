@@ -6,7 +6,7 @@
 #include <opencv2/core/simd_intrinsics.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const int N = 100005, K = 2000;
 

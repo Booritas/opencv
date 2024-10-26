@@ -67,7 +67,7 @@ ivx::Graph createProcessingGraph(ivx::Image& inputImage, ivx::Image& outputImage
 
 int ovxDemo(std::string inputPath, UserMemoryMode mode)
 {
-    using namespace cv;
+    using namespace ncvslideio;
     using namespace ivx;
 
     Mat frame;
@@ -84,7 +84,7 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
     try
     {
         Context context = Context::create();
-        //put user data from cv::Mat to vx_image
+        //put user data from ncvslideio::Mat to vx_image
         vx_df_image color = Image::matTypeToFormat(frame.type());
         vx_uint32 width = frame.cols, height = frame.rows;
         Image ivxImage;
@@ -102,13 +102,13 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
         Mat output;
         if (mode == COPY || mode == MAP)
         {
-            //we will copy or map data from vx_image to cv::Mat
+            //we will copy or map data from vx_image to ncvslideio::Mat
             ivxResult = ivx::Image::create(context, width, height, VX_DF_IMAGE_U8);
         }
         else // if (mode == MAP_TO_VX)
         {
             //create vx_image based on user data, no copying required
-            output = cv::Mat(height, width, CV_8U, cv::Scalar(0));
+            output = ncvslideio::Mat(height, width, CV_8U, ncvslideio::Scalar(0));
             ivxResult = Image::createFromHandle(context, Image::matTypeToFormat(CV_8U),
                                                 Image::createAddressing(output), output.data);
         }
@@ -123,7 +123,7 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
             // Graph execution
             graph.process();
 
-            //getting resulting image in cv::Mat
+            //getting resulting image in ncvslideio::Mat
             Image::Patch resultPatch;
             std::vector<void*> ptrs;
             std::vector<void*> prevPtrs(ivxResult.planes());
@@ -133,7 +133,7 @@ int ovxDemo(std::string inputPath, UserMemoryMode mode)
             }
             else if (mode == MAP)
             {
-                //create cv::Mat based on vx_image mapped data
+                //create ncvslideio::Mat based on vx_image mapped data
                 resultPatch.map(ivxResult, 0, ivxResult.getValidRegion(), VX_READ_AND_WRITE);
                 //generally this is very bad idea!
                 //but in our case unmap() won't happen until output is in use
@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
         "map: map resulting VX image to user memory}"
         ;
 
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     parser.about("OpenVX interoperability sample demonstrating OpenVX wrappers usage."
                  "The application opens a video and processes it with OpenVX graph while outputting result in a window");
     if (parser.has("help"))

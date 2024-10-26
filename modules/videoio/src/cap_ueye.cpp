@@ -27,7 +27,7 @@ slowly.
 #include <memory>
 #include <thread>
 
-namespace cv
+namespace ncvslideio
 {
 namespace
 {
@@ -44,7 +44,7 @@ struct VideoCapture_uEye CV_FINAL: public IVideoCapture
 {
     int getCaptureDomain() CV_OVERRIDE
     {
-        return cv::CAP_UEYE;
+        return ncvslideio::CAP_UEYE;
     }
 
     VideoCapture_uEye(int camera);
@@ -82,7 +82,7 @@ struct VideoCapture_uEye CV_FINAL: public IVideoCapture
 
 Ptr<IVideoCapture> create_ueye_camera(int camera)
 {
-    return cv::makePtr<VideoCapture_uEye>(camera);
+    return ncvslideio::makePtr<VideoCapture_uEye>(camera);
 }
 
 namespace
@@ -221,7 +221,7 @@ bool VideoCapture_uEye::setProperty(int property_id, double value)
             start_camera();
         }
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "VIDEOIO(UEYE:" << cam_id << "): " <<  e.what());
         return false;
@@ -258,7 +258,7 @@ bool VideoCapture_uEye::grabFrame()
         ASSERT_UEYE(ret);
         locked_image = last;
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "VIDEOIO(UEYE:" << cam_id << "): " <<  e.what());
         close();
@@ -276,7 +276,7 @@ bool VideoCapture_uEye::retrieveFrame(int /*outputType*/, OutputArray frame)
     {
         unlock_image_buffer();
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "VIDEOIO(UEYE:" << cam_id << "): " <<  e.what());
         return false;
@@ -347,7 +347,7 @@ void VideoCapture_uEye::close()
     {
         stop_camera();
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         CV_LOG_ERROR(NULL, "VIDEOIO(UEYE:" << cam_id << "): " <<  e.what());
     }
@@ -364,7 +364,7 @@ void VideoCapture_uEye::unlock_image_buffer()
     std::swap(locked_image, tmp_buffer);
     ASSERT_UEYE(is_UnlockSeqBuf(cam_id, IS_IGNORE_PARAMETER, tmp_buffer));
 }
-} // namespace cv
+} // namespace ncvslideio
 
 // plugin glue
 #if defined(BUILD_PLUGIN)
@@ -373,7 +373,7 @@ void VideoCapture_uEye::unlock_image_buffer()
 #define API_VERSION 0
 #include "plugin_api.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace
@@ -502,12 +502,12 @@ const OpenCV_VideoIO_Plugin_API_preview plugin_api =
     }
 };
 } // namespace
-} // namespace cv
+} // namespace ncvslideio
 
 const OpenCV_VideoIO_Plugin_API_preview* opencv_videoio_plugin_init_v0(int requested_abi_version, int requested_api_version, void* /*reserved=NULL*/) CV_NOEXCEPT
 {
     if (requested_abi_version == ABI_VERSION && requested_api_version <= API_VERSION)
-        return &cv::plugin_api;
+        return &ncvslideio::plugin_api;
     return NULL;
 }
 

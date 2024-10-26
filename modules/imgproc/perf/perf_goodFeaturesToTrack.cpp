@@ -10,7 +10,7 @@ typedef perf::TestBaseWithParam<Image_MaxCorners_QualityLevel_MinDistance_BlockS
 
 PERF_TEST_P(Image_MaxCorners_QualityLevel_MinDistance_BlockSize_gradientSize_UseHarris, goodFeaturesToTrack,
             testing::Combine(
-                testing::Values( "stitching/a1.png", "cv/shared/pic5.png"),
+                testing::Values( "stitching/a1.png", "ncvslideio/shared/pic5.png"),
                 testing::Values( 100, 500 ),
                 testing::Values( 0.1, 0.01 ),
                 testing::Values( 3, 5 ),
@@ -43,7 +43,7 @@ PERF_TEST_P(Image_MaxCorners_QualityLevel_MinDistance_BlockSize_gradientSize_Use
 
 PERF_TEST_P(Image_MaxCorners_QualityLevel_MinDistance_BlockSize_gradientSize_UseHarris, goodFeaturesToTrackWithQuality,
             testing::Combine(
-                    testing::Values( "stitching/a1.png", "cv/shared/pic5.png"),
+                    testing::Values( "stitching/a1.png", "ncvslideio/shared/pic5.png"),
                     testing::Values( 50 ),
                     testing::Values( 0.01 ),
                     testing::Values( 3 ),

@@ -46,7 +46,7 @@
 
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 template <typename T>
@@ -117,7 +117,7 @@ static void threshGeneric(Size roi, const T* src, size_t src_step, T* dst,
         return;
 
     default:
-        CV_Error( cv::Error::StsBadArg, "" ); return;
+        CV_Error( ncvslideio::Error::StsBadArg, "" ); return;
     }
 }
 
@@ -719,7 +719,7 @@ thresh_16s( const Mat& _src, Mat& _dst, short thresh, short maxval, int type )
         }
         break;
     default:
-        CV_Error( cv::Error::StsBadArg, "" ); return;
+        CV_Error( ncvslideio::Error::StsBadArg, "" ); return;
     }
 #else
     threshGeneric<short>(roi, src, src_step, dst, dst_step, thresh, maxval, type);
@@ -925,7 +925,7 @@ thresh_32f( const Mat& _src, Mat& _dst, float thresh, float maxval, int type )
             }
             break;
         default:
-            CV_Error( cv::Error::StsBadArg, "" ); return;
+            CV_Error( ncvslideio::Error::StsBadArg, "" ); return;
     }
 #else
     threshGeneric<float>(roi, src, src_step, dst, dst_step, thresh, maxval, type);
@@ -1096,7 +1096,7 @@ thresh_64f(const Mat& _src, Mat& _dst, double thresh, double maxval, int type)
         }
         break;
     default:
-        CV_Error(cv::Error::StsBadArg, ""); return;
+        CV_Error(ncvslideio::Error::StsBadArg, ""); return;
     }
 #else
     threshGeneric<double>(roi, src, src_step, dst, dst_step, thresh, maxval, type);
@@ -1537,7 +1537,7 @@ static bool openvx_threshold(Mat src, Mat dst, int thresh, int maxval, int type)
 
 }
 
-double cv::threshold( InputArray _src, OutputArray _dst, double thresh, double maxval, int type )
+double ncvslideio::threshold( InputArray _src, OutputArray _dst, double thresh, double maxval, int type )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1549,11 +1549,11 @@ double cv::threshold( InputArray _src, OutputArray _dst, double thresh, double m
     _dst.create( src.size(), src.type() );
     Mat dst = _dst.getMat();
 
-    int automatic_thresh = (type & ~cv::THRESH_MASK);
+    int automatic_thresh = (type & ~ncvslideio::THRESH_MASK);
     type &= THRESH_MASK;
 
-    CV_Assert( automatic_thresh != (cv::THRESH_OTSU | cv::THRESH_TRIANGLE) );
-    if( automatic_thresh == cv::THRESH_OTSU )
+    CV_Assert( automatic_thresh != (ncvslideio::THRESH_OTSU | ncvslideio::THRESH_TRIANGLE) );
+    if( automatic_thresh == ncvslideio::THRESH_OTSU )
     {
         int src_type = src.type();
         CV_CheckType(src_type, src_type == CV_8UC1 || src_type == CV_16UC1, "THRESH_OTSU mode");
@@ -1564,7 +1564,7 @@ double cv::threshold( InputArray _src, OutputArray _dst, double thresh, double m
         thresh = src.type() == CV_8UC1 ? getThreshVal_Otsu_8u( src )
                                        : getThreshVal_Otsu_16u( src );
     }
-    else if( automatic_thresh == cv::THRESH_TRIANGLE )
+    else if( automatic_thresh == ncvslideio::THRESH_TRIANGLE )
     {
         CV_Assert( src.type() == CV_8UC1 );
         thresh = getThreshVal_Triangle_8u( src );
@@ -1661,7 +1661,7 @@ double cv::threshold( InputArray _src, OutputArray _dst, double thresh, double m
     else if( src.depth() == CV_64F )
         ;
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     parallel_for_(Range(0, dst.rows),
                   ThresholdRunner(src, dst, thresh, maxval, type),
@@ -1670,7 +1670,7 @@ double cv::threshold( InputArray _src, OutputArray _dst, double thresh, double m
 }
 
 
-void cv::adaptiveThreshold( InputArray _src, OutputArray _dst, double maxValue,
+void ncvslideio::adaptiveThreshold( InputArray _src, OutputArray _dst, double maxValue,
                             int method, int type, int blockSize, double delta )
 {
     CV_INSTRUMENT_REGION();
@@ -1709,21 +1709,21 @@ void cv::adaptiveThreshold( InputArray _src, OutputArray _dst, double maxValue,
         meanfloat.convertTo(mean, src.type());
     }
     else
-        CV_Error( cv::Error::StsBadFlag, "Unknown/unsupported adaptive threshold method" );
+        CV_Error( ncvslideio::Error::StsBadFlag, "Unknown/unsupported adaptive threshold method" );
 
     int i, j;
     uchar imaxval = saturate_cast<uchar>(maxValue);
     int idelta = type == THRESH_BINARY ? cvCeil(delta) : cvFloor(delta);
     uchar tab[768];
 
-    if( type == cv::THRESH_BINARY )
+    if( type == ncvslideio::THRESH_BINARY )
         for( i = 0; i < 768; i++ )
             tab[i] = (uchar)(i - 255 > -idelta ? imaxval : 0);
-    else if( type == cv::THRESH_BINARY_INV )
+    else if( type == ncvslideio::THRESH_BINARY_INV )
         for( i = 0; i < 768; i++ )
             tab[i] = (uchar)(i - 255 <= -idelta ? imaxval : 0);
     else
-        CV_Error( cv::Error::StsBadFlag, "Unknown/unsupported threshold type" );
+        CV_Error( ncvslideio::Error::StsBadFlag, "Unknown/unsupported threshold type" );
 
     if( src.isContinuous() && mean.isContinuous() && dst.isContinuous() )
     {
@@ -1745,12 +1745,12 @@ void cv::adaptiveThreshold( InputArray _src, OutputArray _dst, double maxValue,
 CV_IMPL double
 cvThreshold( const void* srcarr, void* dstarr, double thresh, double maxval, int type )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), dst0 = dst;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), dst0 = dst;
 
     CV_Assert( src.size == dst.size && src.channels() == dst.channels() &&
         (src.depth() == dst.depth() || dst.depth() == CV_8U));
 
-    thresh = cv::threshold( src, dst, thresh, maxval, type );
+    thresh = ncvslideio::threshold( src, dst, thresh, maxval, type );
     if( dst0.data != dst.data )
         dst.convertTo( dst0, dst0.depth() );
     return thresh;
@@ -1761,9 +1761,9 @@ CV_IMPL void
 cvAdaptiveThreshold( const void *srcIm, void *dstIm, double maxValue,
                      int method, int type, int blockSize, double delta )
 {
-    cv::Mat src = cv::cvarrToMat(srcIm), dst = cv::cvarrToMat(dstIm);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcIm), dst = ncvslideio::cvarrToMat(dstIm);
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
-    cv::adaptiveThreshold( src, dst, maxValue, method, type, blockSize, delta );
+    ncvslideio::adaptiveThreshold( src, dst, maxValue, method, type, blockSize, delta );
 }
 
 /* End of file. */

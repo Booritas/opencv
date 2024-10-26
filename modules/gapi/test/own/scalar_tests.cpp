@@ -13,7 +13,7 @@ namespace opencv_test
 
 TEST(Scalar, CreateEmpty)
 {
-    cv::gapi::own::Scalar s;
+    ncvslideio::gapi::own::Scalar s;
 
     for (int i = 0; i < 4; ++i)
     {
@@ -23,7 +23,7 @@ TEST(Scalar, CreateEmpty)
 
 TEST(Scalar, CreateFromVal)
 {
-    cv::gapi::own::Scalar s(5.0);
+    ncvslideio::gapi::own::Scalar s(5.0);
 
     EXPECT_EQ(5.0, s[0]);
     EXPECT_EQ(0.0, s[1]);
@@ -33,7 +33,7 @@ TEST(Scalar, CreateFromVal)
 
 TEST(Scalar, CreateFromVals)
 {
-    cv::gapi::own::Scalar s(5.3, 3.3, 4.1, -2.0);
+    ncvslideio::gapi::own::Scalar s(5.3, 3.3, 4.1, -2.0);
 
     EXPECT_EQ(5.3, s[0]);
     EXPECT_EQ(3.3, s[1]);

@@ -167,10 +167,10 @@ TEST_P(Canny_Modes, accuracy)
 
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const std::string fname = cvtest::findDataFile("shared/fruits.png");
-        const Mat original = cv::imread(fname, IMREAD_GRAYSCALE);
+        const Mat original = ncvslideio::imread(fname, IMREAD_GRAYSCALE);
 
         const double thresh1 = rng.uniform(0., range);
         const double thresh2 = rng.uniform(0., range * 0.3);
@@ -196,7 +196,7 @@ TEST_P(Canny_Modes, accuracy)
         // regular function
         Mat result;
         {
-            cv::Canny(img, result, thresh1, thresh2, aperture, trueGradient);
+            ncvslideio::Canny(img, result, thresh1, thresh2, aperture, trueGradient);
         }
 
         // custom derivatives
@@ -205,10 +205,10 @@ TEST_P(Canny_Modes, accuracy)
             Mat dxkernel = cvtest::calcSobelKernel2D(1, 0, aperture, 0);
             Mat dykernel = cvtest::calcSobelKernel2D(0, 1, aperture, 0);
             Point anchor(aperture / 2, aperture / 2);
-            cv::Mat dx, dy;
+            ncvslideio::Mat dx, dy;
             cvtest::filter2D(img, dx, CV_16S, dxkernel, anchor, 0, BORDER_REPLICATE);
             cvtest::filter2D(img, dy, CV_16S, dykernel, anchor, 0, BORDER_REPLICATE);
-            cv::Canny(dx, dy, customResult, thresh1, thresh2, trueGradient);
+            ncvslideio::Canny(dx, dy, customResult, thresh1, thresh2, trueGradient);
         }
 
         Mat reference;
@@ -265,7 +265,7 @@ PARAM_TEST_CASE(CannyVX, ImagePath, ApertureSize, L2gradient)
 
     void loadImage()
     {
-        src = cv::imread(cvtest::TS::ptr()->get_data_path() + imgPath, IMREAD_GRAYSCALE);
+        src = ncvslideio::imread(cvtest::TS::ptr()->get_data_path() + imgPath, IMREAD_GRAYSCALE);
         ASSERT_FALSE(src.empty()) << "can't load image: " << imgPath;
     }
 };
@@ -278,11 +278,11 @@ TEST_P(CannyVX, Accuracy)
 
         setUseOpenVX(false);
         Mat canny;
-        cv::Canny(src, canny, 100, 150, 3);
+        ncvslideio::Canny(src, canny, 100, 150, 3);
 
         setUseOpenVX(true);
         Mat cannyVX;
-        cv::Canny(src, cannyVX, 100, 150, 3);
+        ncvslideio::Canny(src, cannyVX, 100, 150, 3);
 
         // 'smart' diff check (excluding isolated pixels)
         Mat diff, diff1;
@@ -291,7 +291,7 @@ TEST_P(CannyVX, Accuracy)
         const int minPixelsAroud = 3; // empirical number
         diff1 = diff1 > 255/9 * minPixelsAroud;
         erode(diff1, diff1, Mat());
-        double error = cv::norm(diff1, NORM_L1) / 255;
+        double error = ncvslideio::norm(diff1, NORM_L1) / 255;
         const int maxError = std::min(10, diff.size().area()/100); // empirical number
         if(error > maxError)
         {

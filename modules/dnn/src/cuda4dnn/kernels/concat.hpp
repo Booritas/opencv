@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void concat(
@@ -22,6 +22,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
     template <class T>
     void concat_with_offsets(const csl::Stream& stream, csl::TensorSpan<T> output, csl::TensorView<T> input, std::vector<std::size_t> axis_offsets);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_CONCAT_HPP */

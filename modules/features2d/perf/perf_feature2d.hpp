@@ -33,7 +33,7 @@ typedef tuple<Feature2DType, string> Feature2DType_String_t;
 typedef perf::TestBaseWithParam<Feature2DType_String_t> feature2d;
 
 #define TEST_IMAGES testing::Values(\
-    "cv/detectors_descriptors_evaluation/images_datasets/leuven/img1.png",\
+    "ncvslideio/detectors_descriptors_evaluation/images_datasets/leuven/img1.png",\
     "stitching/a3.png", \
     "stitching/s2.jpg")
 

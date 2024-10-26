@@ -45,7 +45,7 @@
 
 #include "opencv2/core/cuda.hpp"
 
-namespace cv { namespace cuda {
+namespace ncvslideio { namespace cuda {
 
 //! @addtogroup photo_denoise
 //! @{
@@ -152,6 +152,6 @@ CV_WRAP inline void fastNlMeansDenoisingColored(const GpuMat& src, CV_OUT GpuMat
 
 //! @} photo
 
-}} // namespace cv { namespace cuda {
+}} // namespace ncvslideio { namespace cuda {
 
 #endif /* OPENCV_PHOTO_CUDA_HPP */

@@ -95,8 +95,8 @@ PARAM_TEST_CASE(CvtColor, MatDepth, bool)
         {
             generateTestData(channelsIn, channelsOut);
 
-            OCL_OFF(cv::cvtColor(src_roi, dst_roi, code, channelsOut));
-            OCL_ON(cv::cvtColor(usrc_roi, udst_roi, code, channelsOut));
+            OCL_OFF(ncvslideio::cvtColor(src_roi, dst_roi, code, channelsOut));
+            OCL_ON(ncvslideio::cvtColor(usrc_roi, udst_roi, code, channelsOut));
 
             int h_limit = 256;
             switch (code)
@@ -112,10 +112,10 @@ PARAM_TEST_CASE(CvtColor, MatDepth, bool)
                 dst_roi.convertTo(gold, CV_32FC3);
                 udst_roi.getMat(ACCESS_READ).convertTo(actual, CV_32FC3);
                 Mat absdiff1, absdiff2, absdiff3;
-                cv::absdiff(gold, actual, absdiff1);
-                cv::absdiff(gold, actual + h_limit, absdiff2);
-                cv::absdiff(gold, actual - h_limit, absdiff3);
-                Mat diff = cv::min(cv::min(absdiff1, absdiff2), absdiff3);
+                ncvslideio::absdiff(gold, actual, absdiff1);
+                ncvslideio::absdiff(gold, actual + h_limit, absdiff2);
+                ncvslideio::absdiff(gold, actual - h_limit, absdiff3);
+                Mat diff = ncvslideio::min(ncvslideio::min(absdiff1, absdiff2), absdiff3);
                 EXPECT_LE(cvtest::norm(diff, NORM_INF), threshold);
                 break;
             }
@@ -151,7 +151,7 @@ OCL_TEST_P(CvtColor, BGR2GRAY) { performTest(3, 1, CVTCODE(BGR2GRAY)); }
 OCL_TEST_P(CvtColor, GRAY2BGR) { performTest(1, 3, CVTCODE(GRAY2BGR)); }
 OCL_TEST_P(CvtColor, RGBA2GRAY) { performTest(4, 1, CVTCODE(RGBA2GRAY)); }
 OCL_TEST_P(CvtColor, GRAY2RGBA) { performTest(1, 4, CVTCODE(GRAY2RGBA)); }
-OCL_TEST_P(CvtColor, BGRA2GRAY) { performTest(4, 1, CVTCODE(BGRA2GRAY), cv::ocl::Device::getDefault().isNVidia() ? 1 : 1e-3); }
+OCL_TEST_P(CvtColor, BGRA2GRAY) { performTest(4, 1, CVTCODE(BGRA2GRAY), ncvslideio::ocl::Device::getDefault().isNVidia() ? 1 : 1e-3); }
 OCL_TEST_P(CvtColor, GRAY2BGRA) { performTest(1, 4, CVTCODE(GRAY2BGRA)); }
 
 // RGB <-> YUV

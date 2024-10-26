@@ -14,7 +14,7 @@ from tests_common import NewOpenCVTests
 class mser_test(NewOpenCVTests):
     def test_mser(self):
 
-        img = self.get_sample('cv/mser/puzzle.png', 0)
+        img = self.get_sample('ncvslideio/mser/puzzle.png', 0)
         smallImg = [
          [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
          [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
@@ -33,7 +33,7 @@ class mser_test(NewOpenCVTests):
         ]
         thresharr = [ 0, 70, 120, 180, 255 ]
         kDelta = 5
-        mserExtractor = cv.MSER_create()
+        mserExtractor = ncvslideio.MSER_create()
         mserExtractor.setDelta(kDelta)
         np.random.seed(10)
 
@@ -53,11 +53,11 @@ class mser_test(NewOpenCVTests):
             mserExtractor.setMinArea(kMinArea)
             mserExtractor.setMaxArea(kMaxArea)
             if invert:
-                cv.bitwise_not(src, src)
+                ncvslideio.bitwise_not(src, src)
             if binarize:
-                _, src = cv.threshold(src, thresh, 255, cv.THRESH_BINARY)
+                _, src = ncvslideio.threshold(src, thresh, 255, ncvslideio.THRESH_BINARY)
             if blur:
-                src = cv.GaussianBlur(src, (5, 5), 1.5, 1.5)
+                src = ncvslideio.GaussianBlur(src, (5, 5), 1.5, 1.5)
             minRegs = 7 if use_big_image else 2
             maxRegs = 1000 if use_big_image else 20
             if binarize and (thresh == 0 or thresh == 255):

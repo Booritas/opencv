@@ -21,7 +21,7 @@
 #  include "opencv2/core/eigen.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 dls::dls(const Mat& opoints, const Mat& ipoints)
 {
@@ -658,4 +658,4 @@ bool dls::positive_eigenvalues(const Mat * eigenvalues)
     return *(it) > 0 && *(it+1) > 0 && *(it+2) > 0;
 }
 
-} // namespace cv
+} // namespace ncvslideio

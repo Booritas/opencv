@@ -19,14 +19,14 @@
 
 #include "backends/common/serialization.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace s11n {
 namespace {
 
-void putData(GSerialized& s, const cv::gimpl::GModel::ConstGraph& cg, const ade::NodeHandle &nh) {
+void putData(GSerialized& s, const ncvslideio::gimpl::GModel::ConstGraph& cg, const ade::NodeHandle &nh) {
     const auto gdata = cg.metadata(nh).get<gimpl::Data>();
-    const auto it = ade::util::find_if(s.m_datas, [&gdata](const cv::gimpl::Data &cd) {
+    const auto it = ade::util::find_if(s.m_datas, [&gdata](const ncvslideio::gimpl::Data &cd) {
             return cd.rc == gdata.rc && cd.shape == gdata.shape;
         });
     if (s.m_datas.end() == it) {
@@ -42,59 +42,59 @@ void putData(GSerialized& s, const cv::gimpl::GModel::ConstGraph& cg, const ade:
     }
 }
 
-void putOp(GSerialized& s, const cv::gimpl::GModel::ConstGraph& cg, const ade::NodeHandle &nh) {
+void putOp(GSerialized& s, const ncvslideio::gimpl::GModel::ConstGraph& cg, const ade::NodeHandle &nh) {
     const auto& op = cg.metadata(nh).get<gimpl::Op>();
     for (const auto &in_nh  : nh->inNodes())  { putData(s, cg, in_nh);  }
     for (const auto &out_nh : nh->outNodes()) { putData(s, cg, out_nh); }
     s.m_ops.push_back(op);
 }
 
-ade::NodeHandle mkDataNode(ade::Graph& g, const cv::gimpl::Data& data) {
-    cv::gimpl::GModel::Graph gm(g);
+ade::NodeHandle mkDataNode(ade::Graph& g, const ncvslideio::gimpl::Data& data) {
+    ncvslideio::gimpl::GModel::Graph gm(g);
     auto nh = gm.createNode();
-    gm.metadata(nh).set(cv::gimpl::NodeType{cv::gimpl::NodeType::DATA});
+    gm.metadata(nh).set(ncvslideio::gimpl::NodeType{ncvslideio::gimpl::NodeType::DATA});
     gm.metadata(nh).set(data);
     return nh;
 }
 
-ade::NodeHandle mkConstDataNode(ade::Graph& g, const cv::gimpl::Data& data, const cv::gimpl::ConstValue& const_data) {
+ade::NodeHandle mkConstDataNode(ade::Graph& g, const ncvslideio::gimpl::Data& data, const ncvslideio::gimpl::ConstValue& const_data) {
     auto nh = mkDataNode(g, data);
 
-    cv::gimpl::GModel::Graph gm(g);
+    ncvslideio::gimpl::GModel::Graph gm(g);
     gm.metadata(nh).set(const_data);
     return nh;
 }
 
-void mkOpNode(ade::Graph& g, const cv::gimpl::Op& op) {
-    cv::gimpl::GModel::Graph gm(g);
+void mkOpNode(ade::Graph& g, const ncvslideio::gimpl::Op& op) {
+    ncvslideio::gimpl::GModel::Graph gm(g);
     auto nh = gm.createNode();
-    gm.metadata(nh).set(cv::gimpl::NodeType{cv::gimpl::NodeType::OP});
+    gm.metadata(nh).set(ncvslideio::gimpl::NodeType{ncvslideio::gimpl::NodeType::OP});
     gm.metadata(nh).set(op);
 }
 
 void linkNodes(ade::Graph& g) {
-    std::map<cv::gimpl::RcDesc, ade::NodeHandle> dataNodes;
-    cv::gimpl::GModel::Graph gm(g);
+    std::map<ncvslideio::gimpl::RcDesc, ade::NodeHandle> dataNodes;
+    ncvslideio::gimpl::GModel::Graph gm(g);
 
     for (const auto& nh : g.nodes()) {
-        if (gm.metadata(nh).get<cv::gimpl::NodeType>().t == cv::gimpl::NodeType::DATA) {
+        if (gm.metadata(nh).get<ncvslideio::gimpl::NodeType>().t == ncvslideio::gimpl::NodeType::DATA) {
             const auto &d = gm.metadata(nh).get<gimpl::Data>();
-            const auto rc = cv::gimpl::RcDesc{d.rc, d.shape, d.ctor};
+            const auto rc = ncvslideio::gimpl::RcDesc{d.rc, d.shape, d.ctor};
             dataNodes[rc] = nh;
         }
     }
 
     for (const auto& nh : g.nodes()) {
-        if (gm.metadata(nh).get<cv::gimpl::NodeType>().t == cv::gimpl::NodeType::OP) {
+        if (gm.metadata(nh).get<ncvslideio::gimpl::NodeType>().t == ncvslideio::gimpl::NodeType::OP) {
             const auto& op = gm.metadata(nh).get<gimpl::Op>();
             for (const auto in : ade::util::indexed(op.args)) {
                 const auto& arg = ade::util::value(in);
-                if (arg.kind == cv::detail::ArgKind::GOBJREF) {
+                if (arg.kind == ncvslideio::detail::ArgKind::GOBJREF) {
                     const auto idx = ade::util::index(in);
                     const auto rc  = arg.get<gimpl::RcDesc>();
                     const auto& in_nh = dataNodes.at(rc);
                     const auto& in_eh = g.link(in_nh, nh);
-                    gm.metadata(in_eh).set(cv::gimpl::Input{idx});
+                    gm.metadata(in_eh).set(ncvslideio::gimpl::Input{idx});
                 }
             }
 
@@ -103,14 +103,14 @@ void linkNodes(ade::Graph& g) {
                 const auto& rc  = ade::util::value(out);
                 const auto& out_nh = dataNodes.at(rc);
                 const auto& out_eh = g.link(nh, out_nh);
-                gm.metadata(out_eh).set(cv::gimpl::Output{idx});
+                gm.metadata(out_eh).set(ncvslideio::gimpl::Output{idx});
             }
         }
     }
 }
 
 void relinkProto(ade::Graph& g) {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
     // identify which node handles map to the protocol
     // input/output object in the reconstructed graph
     using S = std::set<RcDesc>;                  // FIXME: use ...
@@ -161,65 +161,65 @@ void relinkProto(ade::Graph& g) {
 
 // OpenCV types ////////////////////////////////////////////////////////////////
 
-IOStream& operator<< (IOStream& os, const cv::Point &pt) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Point &pt) {
     return os << pt.x << pt.y;
 }
-IIStream& operator>> (IIStream& is, cv::Point& pt) {
+IIStream& operator>> (IIStream& is, ncvslideio::Point& pt) {
     return is >> pt.x >> pt.y;
 }
 
-IOStream& operator<< (IOStream& os, const cv::Point2f &pt) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Point2f &pt) {
     return os << pt.x << pt.y;
 }
-IIStream& operator>> (IIStream& is, cv::Point2f& pt) {
+IIStream& operator>> (IIStream& is, ncvslideio::Point2f& pt) {
     return is >> pt.x >> pt.y;
 }
 
-IOStream& operator<< (IOStream& os, const cv::Point3f &pt) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Point3f &pt) {
     return os << pt.x << pt.y << pt.z;
 }
-IIStream& operator>> (IIStream& is, cv::Point3f& pt) {
+IIStream& operator>> (IIStream& is, ncvslideio::Point3f& pt) {
     return is >> pt.x >> pt.y >> pt.z;
 }
 
-IOStream& operator<< (IOStream& os, const cv::Size &sz) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Size &sz) {
     return os << sz.width << sz.height;
 }
-IIStream& operator>> (IIStream& is, cv::Size& sz) {
+IIStream& operator>> (IIStream& is, ncvslideio::Size& sz) {
     return is >> sz.width >> sz.height;
 }
 
-IOStream& operator<< (IOStream& os, const cv::Rect &rc) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Rect &rc) {
     return os << rc.x << rc.y << rc.width << rc.height;
 }
-IIStream& operator>> (IIStream& is, cv::Rect& rc) {
+IIStream& operator>> (IIStream& is, ncvslideio::Rect& rc) {
     return is >> rc.x >> rc.y >> rc.width >> rc.height;
 }
 
-IOStream& operator<< (IOStream& os, const cv::Scalar &s) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Scalar &s) {
     return os << s.val[0] << s.val[1] << s.val[2] << s.val[3];
 }
-IIStream& operator>> (IIStream& is, cv::Scalar& s) {
+IIStream& operator>> (IIStream& is, ncvslideio::Scalar& s) {
     return is >> s.val[0] >> s.val[1] >> s.val[2] >> s.val[3];
 }
-IOStream& operator<< (IOStream& os, const cv::RMat& mat) {
+IOStream& operator<< (IOStream& os, const ncvslideio::RMat& mat) {
     mat.serialize(os);
     return os;
 }
-IIStream& operator>> (IIStream& is, cv::RMat&) {
+IIStream& operator>> (IIStream& is, ncvslideio::RMat&) {
     util::throw_error(std::logic_error("operator>> for RMat should never be called. "
-                                        "Instead, cv::gapi::deserialize<cv::GRunArgs, AdapterTypes...>() "
+                                        "Instead, ncvslideio::gapi::deserialize<ncvslideio::GRunArgs, AdapterTypes...>() "
                                         "should be used"));
     return is;
 }
 
-IOStream& operator<< (IOStream& os, const cv::MediaFrame &frame) {
+IOStream& operator<< (IOStream& os, const ncvslideio::MediaFrame &frame) {
     frame.serialize(os);
     return os;
 }
-IIStream& operator>> (IIStream& is, cv::MediaFrame &) {
+IIStream& operator>> (IIStream& is, ncvslideio::MediaFrame &) {
     util::throw_error(std::logic_error("operator>> for MediaFrame should never be called. "
-                                        "Instead, cv::gapi::deserialize<cv::GRunArgs, AdapterTypes...>() "
+                                        "Instead, ncvslideio::gapi::deserialize<ncvslideio::GRunArgs, AdapterTypes...>() "
                                         "should be used"));
     return is;
 }
@@ -237,14 +237,14 @@ template<typename T>
         for (auto &&it : ade::util::iota(sz)) is >> arr[it];
 }
 template<typename T>
-void write_mat_data(IOStream &os, const cv::Mat &m) {
+void write_mat_data(IOStream &os, const ncvslideio::Mat &m) {
     // Write every row individually (handles the case when Mat is a view)
     for (auto &&r : ade::util::iota(m.rows)) {
         write_plain(os, m.ptr<T>(r), m.cols*m.channels());
     }
 }
 template<typename T>
-void read_mat_data(IIStream &is, cv::Mat &m) {
+void read_mat_data(IIStream &is, ncvslideio::Mat &m) {
     // Write every row individually (handles the case when Mat is aligned)
     for (auto &&r : ade::util::iota(m.rows)) {
         read_plain(is, m.ptr<T>(r), m.cols*m.channels());
@@ -258,14 +258,14 @@ void read_plain(IIStream &is, uchar *arr, std::size_t sz) {
     for (auto &&it : ade::util::iota(sz)) is >> arr[it];
 }
 template<typename T>
-void write_mat_data(IOStream &os, const cv::Mat &m) {
+void write_mat_data(IOStream &os, const ncvslideio::Mat &m) {
     // Write every row individually (handles the case when Mat is a view)
     for (auto &&r : ade::util::iota(m.rows)) {
         write_plain(os, m.ptr(r), m.cols*m.channels()*sizeof(T));
     }
 }
 template<typename T>
-void read_mat_data(IIStream &is, cv::Mat &m) {
+void read_mat_data(IIStream &is, ncvslideio::Mat &m) {
     // Write every row individually (handles the case when Mat is aligned)
     for (auto &&r : ade::util::iota(m.rows)) {
         read_plain(is, m.ptr(r), m.cols*m.channels()*sizeof(T));
@@ -274,7 +274,7 @@ void read_mat_data(IIStream &is, cv::Mat &m) {
 #endif
 } // namespace
 
-IOStream& operator<< (IOStream& os, const cv::Mat &m) {
+IOStream& operator<< (IOStream& os, const ncvslideio::Mat &m) {
 #if !defined(GAPI_STANDALONE)
     GAPI_Assert(m.size.dims() == 2 && "Only 2D images are supported now");
 #else
@@ -293,10 +293,10 @@ IOStream& operator<< (IOStream& os, const cv::Mat &m) {
     }
     return os;
 }
-IIStream& operator>> (IIStream& is, cv::Mat& m) {
+IIStream& operator>> (IIStream& is, ncvslideio::Mat& m) {
     int rows = -1, cols = -1, type = 0;
     is >> rows >> cols >> type;
-    m.create(cv::Size(cols, rows), type);
+    m.create(ncvslideio::Size(cols, rows), type);
     switch (m.depth()) {
     case CV_8U:  read_mat_data< uint8_t>(is, m); break;
     case CV_8S:  read_mat_data<    char>(is, m); break;
@@ -310,65 +310,65 @@ IIStream& operator>> (IIStream& is, cv::Mat& m) {
     return is;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Text &t) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Text &t) {
     return os << t.bottom_left_origin << t.color << t.ff << t.fs << t.lt << t.org << t.text << t.thick;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Text &t) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Text &t) {
     return is >> t.bottom_left_origin >> t.color >> t.ff >> t.fs >> t.lt >> t.org >> t.text >> t.thick;
 }
 
-IOStream& operator<< (IOStream&, const cv::gapi::wip::draw::FText &) {
+IOStream& operator<< (IOStream&, const ncvslideio::gapi::wip::draw::FText &) {
     GAPI_Error("Serialization: Unsupported << for FText");
 }
-IIStream& operator>> (IIStream&,       cv::gapi::wip::draw::FText &) {
+IIStream& operator>> (IIStream&,       ncvslideio::gapi::wip::draw::FText &) {
     GAPI_Error("Serialization: Unsupported >> for FText");
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Circle &c) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Circle &c) {
     return os << c.center << c.color << c.lt << c.radius << c.shift << c.thick;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Circle &c) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Circle &c) {
     return is >> c.center >> c.color >> c.lt >> c.radius >> c.shift >> c.thick;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Rect &r) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Rect &r) {
     return os << r.color << r.lt << r.rect << r.shift << r.thick;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Rect &r) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Rect &r) {
     return is >> r.color >> r.lt >> r.rect >> r.shift >> r.thick;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Image &i) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Image &i) {
     return os << i.org << i.alpha << i.img;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Image &i) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Image &i) {
     return is >> i.org >> i.alpha >> i.img;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Mosaic &m) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Mosaic &m) {
     return os << m.cellSz << m.decim << m.mos;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Mosaic &m) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Mosaic &m) {
     return is >> m.cellSz >> m.decim >> m.mos;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Poly &p) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Poly &p) {
     return os << p.color << p.lt << p.points << p.shift << p.thick;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Poly &p) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Poly &p) {
     return is >> p.color >> p.lt >> p.points >> p.shift >> p.thick;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Line &l) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Line &l) {
     return os << l.color << l.lt << l.pt1 << l.pt2 << l.shift << l.thick;
 }
-IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Line &l) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Line &l) {
     return is >> l.color >> l.lt >> l.pt1 >> l.pt2 >> l.shift >> l.thick;
 }
 
 // G-API types /////////////////////////////////////////////////////////////////
 
-IOStream& operator<< (IOStream& os, const cv::GCompileArg& arg)
+IOStream& operator<< (IOStream& os, const ncvslideio::GCompileArg& arg)
 {
     ByteMemoryOutStream tmpS;
     arg.serialize(tmpS);
@@ -382,37 +382,37 @@ IOStream& operator<< (IOStream& os, const cv::GCompileArg& arg)
 
 // Stubs (empty types)
 
-IOStream& operator<< (IOStream& os, cv::util::monostate  ) {return os;}
-IIStream& operator>> (IIStream& is, cv::util::monostate &) {return is;}
+IOStream& operator<< (IOStream& os, ncvslideio::util::monostate  ) {return os;}
+IIStream& operator>> (IIStream& is, ncvslideio::util::monostate &) {return is;}
 
-IOStream& operator<< (IOStream& os, const cv::GScalarDesc &) {return os;}
-IIStream& operator>> (IIStream& is,       cv::GScalarDesc &) {return is;}
+IOStream& operator<< (IOStream& os, const ncvslideio::GScalarDesc &) {return os;}
+IIStream& operator>> (IIStream& is,       ncvslideio::GScalarDesc &) {return is;}
 
-IOStream& operator<< (IOStream& os, const cv::GOpaqueDesc &) {return os;}
-IIStream& operator>> (IIStream& is,       cv::GOpaqueDesc &) {return is;}
+IOStream& operator<< (IOStream& os, const ncvslideio::GOpaqueDesc &) {return os;}
+IIStream& operator>> (IIStream& is,       ncvslideio::GOpaqueDesc &) {return is;}
 
-IOStream& operator<< (IOStream& os, const cv::GArrayDesc &) {return os;}
-IIStream& operator>> (IIStream& is,       cv::GArrayDesc &) {return is;}
+IOStream& operator<< (IOStream& os, const ncvslideio::GArrayDesc &) {return os;}
+IIStream& operator>> (IIStream& is,       ncvslideio::GArrayDesc &) {return is;}
 
 #if !defined(GAPI_STANDALONE)
-IOStream& operator<< (IOStream& os, const cv::UMat &)
+IOStream& operator<< (IOStream& os, const ncvslideio::UMat &)
 {
     GAPI_Error("Serialization: Unsupported << for UMat");
     return os;
 }
-IIStream& operator >> (IIStream& is, cv::UMat &)
+IIStream& operator >> (IIStream& is, ncvslideio::UMat &)
 {
     GAPI_Error("Serialization: Unsupported >> for UMat");
     return is;
 }
 #endif // !defined(GAPI_STANDALONE)
 
-IOStream& operator<< (IOStream& os, const cv::gapi::wip::IStreamSource::Ptr &)
+IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::IStreamSource::Ptr &)
 {
     GAPI_Error("Serialization: Unsupported << for IStreamSource::Ptr");
     return os;
 }
-IIStream& operator >> (IIStream& is, cv::gapi::wip::IStreamSource::Ptr &)
+IIStream& operator >> (IIStream& is, ncvslideio::gapi::wip::IStreamSource::Ptr &)
 {
     GAPI_Assert("Serialization: Unsupported >> for IStreamSource::Ptr");
     return is;
@@ -437,7 +437,7 @@ struct putToStream<Ref, std::tuple<T, Ts...>>
 {
     static void put(IOStream& os, const Ref &r)
     {
-        if (r.getKind() == cv::detail::GOpaqueTraits<T>::kind) {
+        if (r.getKind() == ncvslideio::detail::GOpaqueTraits<T>::kind) {
             os << r.template rref<T>();
         } else {
             putToStream<Ref, std::tuple<Ts...> >::put(os, r);
@@ -451,7 +451,7 @@ struct getFromStream;
 template<typename Ref>
 struct getFromStream<Ref, std::tuple<>>
 {
-    static void get(IIStream&, Ref &, cv::detail::OpaqueKind)
+    static void get(IIStream&, Ref &, ncvslideio::detail::OpaqueKind)
     {
         GAPI_Error("Unsupported type for GArray/GOpaque deserialization");
     }
@@ -460,8 +460,8 @@ struct getFromStream<Ref, std::tuple<>>
 template<typename Ref, typename T, typename... Ts>
 struct getFromStream<Ref, std::tuple<T, Ts...>>
 {
-    static void get(IIStream& is, Ref &r, cv::detail::OpaqueKind kind) {
-        if (kind == cv::detail::GOpaqueTraits<T>::kind) {
+    static void get(IIStream& is, Ref &r, ncvslideio::detail::OpaqueKind kind) {
+        if (kind == ncvslideio::detail::GOpaqueTraits<T>::kind) {
             r.template reset<T>();
             auto& val = r.template wref<T>();
             is >> val;
@@ -472,31 +472,31 @@ struct getFromStream<Ref, std::tuple<T, Ts...>>
 };
 }
 
-IOStream& operator<< (IOStream& os, const cv::detail::VectorRef& ref)
+IOStream& operator<< (IOStream& os, const ncvslideio::detail::VectorRef& ref)
 {
     os << ref.getKind();
-    putToStream<cv::detail::VectorRef, cv::detail::GOpaqueTraitsArrayTypes>::put(os, ref);
+    putToStream<ncvslideio::detail::VectorRef, ncvslideio::detail::GOpaqueTraitsArrayTypes>::put(os, ref);
     return os;
 }
-IIStream& operator >> (IIStream& is, cv::detail::VectorRef& ref)
+IIStream& operator >> (IIStream& is, ncvslideio::detail::VectorRef& ref)
 {
-    cv::detail::OpaqueKind kind;
+    ncvslideio::detail::OpaqueKind kind;
     is >> kind;
-    getFromStream<cv::detail::VectorRef, cv::detail::GOpaqueTraitsArrayTypes>::get(is, ref, kind);
+    getFromStream<ncvslideio::detail::VectorRef, ncvslideio::detail::GOpaqueTraitsArrayTypes>::get(is, ref, kind);
     return is;
 }
 
-IOStream& operator<< (IOStream& os, const cv::detail::OpaqueRef& ref)
+IOStream& operator<< (IOStream& os, const ncvslideio::detail::OpaqueRef& ref)
 {
     os << ref.getKind();
-    putToStream<cv::detail::OpaqueRef, cv::detail::GOpaqueTraitsOpaqueTypes>::put(os, ref);
+    putToStream<ncvslideio::detail::OpaqueRef, ncvslideio::detail::GOpaqueTraitsOpaqueTypes>::put(os, ref);
     return os;
 }
-IIStream& operator >> (IIStream& is, cv::detail::OpaqueRef& ref)
+IIStream& operator >> (IIStream& is, ncvslideio::detail::OpaqueRef& ref)
 {
-    cv::detail::OpaqueKind kind;
+    ncvslideio::detail::OpaqueKind kind;
     is >> kind;
-    getFromStream<cv::detail::OpaqueRef, cv::detail::GOpaqueTraitsOpaqueTypes>::get(is, ref, kind);
+    getFromStream<ncvslideio::detail::OpaqueRef, ncvslideio::detail::GOpaqueTraitsOpaqueTypes>::get(is, ref, kind);
     return is;
 }
 // Enums and structures
@@ -511,90 +511,90 @@ template<typename E> IIStream& get_enum(IIStream& is, E &e) {
 }
 } // anonymous namespace
 
-IOStream& operator<< (IOStream& os, cv::GShape  sh) {
+IOStream& operator<< (IOStream& os, ncvslideio::GShape  sh) {
     return put_enum(os, sh);
 }
-IIStream& operator>> (IIStream& is, cv::GShape &sh) {
-    return get_enum<cv::GShape>(is, sh);
+IIStream& operator>> (IIStream& is, ncvslideio::GShape &sh) {
+    return get_enum<ncvslideio::GShape>(is, sh);
 }
-IOStream& operator<< (IOStream& os, cv::detail::ArgKind  k) {
+IOStream& operator<< (IOStream& os, ncvslideio::detail::ArgKind  k) {
     return put_enum(os, k);
 }
-IIStream& operator>> (IIStream& is, cv::detail::ArgKind &k) {
-    return get_enum<cv::detail::ArgKind>(is, k);
+IIStream& operator>> (IIStream& is, ncvslideio::detail::ArgKind &k) {
+    return get_enum<ncvslideio::detail::ArgKind>(is, k);
 }
-IOStream& operator<< (IOStream& os, cv::detail::OpaqueKind  k) {
+IOStream& operator<< (IOStream& os, ncvslideio::detail::OpaqueKind  k) {
     return put_enum(os, k);
 }
-IIStream& operator>> (IIStream& is, cv::detail::OpaqueKind &k) {
-    return get_enum<cv::detail::OpaqueKind>(is, k);
+IIStream& operator>> (IIStream& is, ncvslideio::detail::OpaqueKind &k) {
+    return get_enum<ncvslideio::detail::OpaqueKind>(is, k);
 }
-IOStream& operator<< (IOStream& os, cv::gimpl::Data::Storage s) {
+IOStream& operator<< (IOStream& os, ncvslideio::gimpl::Data::Storage s) {
     return put_enum(os, s);
 }
-IIStream& operator>> (IIStream& is, cv::gimpl::Data::Storage &s) {
-    return get_enum<cv::gimpl::Data::Storage>(is, s);
+IIStream& operator>> (IIStream& is, ncvslideio::gimpl::Data::Storage &s) {
+    return get_enum<ncvslideio::gimpl::Data::Storage>(is, s);
 }
 
-IOStream& operator<< (IOStream& os, const cv::GArg &arg) {
+IOStream& operator<< (IOStream& os, const ncvslideio::GArg &arg) {
     // Only GOBJREF and OPAQUE_VAL kinds can be serialized/deserialized
-    GAPI_Assert(   arg.kind == cv::detail::ArgKind::OPAQUE_VAL
-                || arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(   arg.kind == ncvslideio::detail::ArgKind::OPAQUE_VAL
+                || arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     os << arg.kind << arg.opaque_kind;
-    if (arg.kind == cv::detail::ArgKind::GOBJREF) {
-        os << arg.get<cv::gimpl::RcDesc>();
+    if (arg.kind == ncvslideio::detail::ArgKind::GOBJREF) {
+        os << arg.get<ncvslideio::gimpl::RcDesc>();
     } else {
-        GAPI_Assert(arg.kind == cv::detail::ArgKind::OPAQUE_VAL);
-        GAPI_Assert(arg.opaque_kind != cv::detail::OpaqueKind::CV_UNKNOWN);
+        GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::OPAQUE_VAL);
+        GAPI_Assert(arg.opaque_kind != ncvslideio::detail::OpaqueKind::CV_UNKNOWN);
         switch (arg.opaque_kind) {
-        case cv::detail::OpaqueKind::CV_BOOL:    os << arg.get<bool>();         break;
-        case cv::detail::OpaqueKind::CV_INT:     os << arg.get<int>();          break;
-        case cv::detail::OpaqueKind::CV_UINT64:  os << arg.get<uint64_t>();     break;
-        case cv::detail::OpaqueKind::CV_DOUBLE:  os << arg.get<double>();       break;
-        case cv::detail::OpaqueKind::CV_FLOAT:   os << arg.get<float>();        break;
-        case cv::detail::OpaqueKind::CV_STRING:  os << arg.get<std::string>();  break;
-        case cv::detail::OpaqueKind::CV_POINT:   os << arg.get<cv::Point>();    break;
-        case cv::detail::OpaqueKind::CV_SIZE:    os << arg.get<cv::Size>();     break;
-        case cv::detail::OpaqueKind::CV_RECT:    os << arg.get<cv::Rect>();     break;
-        case cv::detail::OpaqueKind::CV_SCALAR:  os << arg.get<cv::Scalar>();   break;
-        case cv::detail::OpaqueKind::CV_MAT:     os << arg.get<cv::Mat>();      break;
+        case ncvslideio::detail::OpaqueKind::CV_BOOL:    os << arg.get<bool>();         break;
+        case ncvslideio::detail::OpaqueKind::CV_INT:     os << arg.get<int>();          break;
+        case ncvslideio::detail::OpaqueKind::CV_UINT64:  os << arg.get<uint64_t>();     break;
+        case ncvslideio::detail::OpaqueKind::CV_DOUBLE:  os << arg.get<double>();       break;
+        case ncvslideio::detail::OpaqueKind::CV_FLOAT:   os << arg.get<float>();        break;
+        case ncvslideio::detail::OpaqueKind::CV_STRING:  os << arg.get<std::string>();  break;
+        case ncvslideio::detail::OpaqueKind::CV_POINT:   os << arg.get<ncvslideio::Point>();    break;
+        case ncvslideio::detail::OpaqueKind::CV_SIZE:    os << arg.get<ncvslideio::Size>();     break;
+        case ncvslideio::detail::OpaqueKind::CV_RECT:    os << arg.get<ncvslideio::Rect>();     break;
+        case ncvslideio::detail::OpaqueKind::CV_SCALAR:  os << arg.get<ncvslideio::Scalar>();   break;
+        case ncvslideio::detail::OpaqueKind::CV_MAT:     os << arg.get<ncvslideio::Mat>();      break;
         default: GAPI_Error("GArg: Unsupported (unknown?) opaque value type");
         }
     }
     return os;
 }
 
-IIStream& operator>> (IIStream& is, cv::GArg &arg) {
+IIStream& operator>> (IIStream& is, ncvslideio::GArg &arg) {
     is >> arg.kind >> arg.opaque_kind;
 
     // Only GOBJREF and OPAQUE_VAL kinds can be serialized/deserialized
-    GAPI_Assert(   arg.kind == cv::detail::ArgKind::OPAQUE_VAL
-                || arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(   arg.kind == ncvslideio::detail::ArgKind::OPAQUE_VAL
+                || arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
-    if (arg.kind == cv::detail::ArgKind::GOBJREF) {
-        cv::gimpl::RcDesc rc;
+    if (arg.kind == ncvslideio::detail::ArgKind::GOBJREF) {
+        ncvslideio::gimpl::RcDesc rc;
         is >> rc;
         arg = (GArg(rc));
     } else {
-        GAPI_Assert(arg.kind == cv::detail::ArgKind::OPAQUE_VAL);
-        GAPI_Assert(arg.opaque_kind != cv::detail::OpaqueKind::CV_UNKNOWN);
+        GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::OPAQUE_VAL);
+        GAPI_Assert(arg.opaque_kind != ncvslideio::detail::OpaqueKind::CV_UNKNOWN);
         switch (arg.opaque_kind) {
-#define HANDLE_CASE(E,T) case cv::detail::OpaqueKind::CV_##E:           \
-            { T t{}; is >> t; arg = (cv::GArg(t)); } break
+#define HANDLE_CASE(E,T) case ncvslideio::detail::OpaqueKind::CV_##E:           \
+            { T t{}; is >> t; arg = (ncvslideio::GArg(t)); } break
             HANDLE_CASE(BOOL    , bool);
             HANDLE_CASE(INT     , int);
             HANDLE_CASE(UINT64  , uint64_t);
             HANDLE_CASE(DOUBLE  , double);
             HANDLE_CASE(FLOAT   , float);
             HANDLE_CASE(STRING  , std::string);
-            HANDLE_CASE(POINT   , cv::Point);
-            HANDLE_CASE(POINT2F , cv::Point2f);
-            HANDLE_CASE(POINT3F , cv::Point3f);
-            HANDLE_CASE(SIZE    , cv::Size);
-            HANDLE_CASE(RECT    , cv::Rect);
-            HANDLE_CASE(SCALAR  , cv::Scalar);
-            HANDLE_CASE(MAT     , cv::Mat);
+            HANDLE_CASE(POINT   , ncvslideio::Point);
+            HANDLE_CASE(POINT2F , ncvslideio::Point2f);
+            HANDLE_CASE(POINT3F , ncvslideio::Point3f);
+            HANDLE_CASE(SIZE    , ncvslideio::Size);
+            HANDLE_CASE(RECT    , ncvslideio::Rect);
+            HANDLE_CASE(SCALAR  , ncvslideio::Scalar);
+            HANDLE_CASE(MAT     , ncvslideio::Mat);
 #undef HANDLE_CASE
         default: GAPI_Error("GArg: Unsupported (unknown?) opaque value type");
         }
@@ -602,55 +602,55 @@ IIStream& operator>> (IIStream& is, cv::GArg &arg) {
     return is;
 }
 
-IOStream& operator<< (IOStream& os, const cv::GKernel &k) {
+IOStream& operator<< (IOStream& os, const ncvslideio::GKernel &k) {
     return os << k.name << k.tag << k.outShapes;
 }
-IIStream& operator>> (IIStream& is, cv::GKernel &k) {
+IIStream& operator>> (IIStream& is, ncvslideio::GKernel &k) {
     return is >> const_cast<std::string&>(k.name)
               >> const_cast<std::string&>(k.tag)
-              >> const_cast<cv::GShapes&>(k.outShapes);
+              >> const_cast<ncvslideio::GShapes&>(k.outShapes);
 }
 
 
-IOStream& operator<< (IOStream& os, const cv::GMatDesc &d) {
+IOStream& operator<< (IOStream& os, const ncvslideio::GMatDesc &d) {
     return os << d.depth << d.chan << d.size << d.planar << d.dims;
 }
-IIStream& operator>> (IIStream& is, cv::GMatDesc &d) {
+IIStream& operator>> (IIStream& is, ncvslideio::GMatDesc &d) {
     return is >> d.depth >> d.chan >> d.size >> d.planar >> d.dims;
 }
 
-IOStream& operator<< (IOStream& os, const cv::GFrameDesc &d) {
+IOStream& operator<< (IOStream& os, const ncvslideio::GFrameDesc &d) {
     return put_enum(os, d.fmt) << d.size;
 }
-IIStream& operator>> (IIStream& is,       cv::GFrameDesc &d) {
+IIStream& operator>> (IIStream& is,       ncvslideio::GFrameDesc &d) {
     return get_enum(is, d.fmt) >> d.size;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::RcDesc &rc) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::RcDesc &rc) {
     // FIXME: HostCtor is not serialized!
     return os << rc.id << rc.shape;
 }
-IIStream& operator>> (IIStream& is, cv::gimpl::RcDesc &rc) {
+IIStream& operator>> (IIStream& is, ncvslideio::gimpl::RcDesc &rc) {
     // FIXME: HostCtor is not deserialized!
     return is >> rc.id >> rc.shape;
 }
 
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::Op &op) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Op &op) {
     return os << op.k << op.args << op.outs;
 }
-IIStream& operator>> (IIStream& is, cv::gimpl::Op &op) {
+IIStream& operator>> (IIStream& is, ncvslideio::gimpl::Op &op) {
     return is >> op.k >> op.args >> op.outs;
 }
 
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::Data &d) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Data &d) {
     // FIXME: HostCtor is not stored here!!
     // FIXME: Storage may be incorrect for subgraph-to-graph process
     return os << d.shape << d.rc << d.meta << d.storage << d.kind;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::ConstValue &cd) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::ConstValue &cd) {
     return os << cd.arg;
 }
 
@@ -662,7 +662,7 @@ struct initCtor;
 template<typename Ref>
 struct initCtor<Ref, std::tuple<>>
 {
-    static void init(cv::gimpl::Data&)
+    static void init(ncvslideio::gimpl::Data&)
     {
         GAPI_Error("Unsupported type for GArray/GOpaque deserialization");
     }
@@ -671,8 +671,8 @@ struct initCtor<Ref, std::tuple<>>
 template<typename Ref, typename T, typename... Ts>
 struct initCtor<Ref, std::tuple<T, Ts...>>
 {
-    static void init(cv::gimpl::Data& d) {
-        if (d.kind == cv::detail::GOpaqueTraits<T>::kind) {
+    static void init(ncvslideio::gimpl::Data& d) {
+        if (d.kind == ncvslideio::detail::GOpaqueTraits<T>::kind) {
             static std::function<void(Ref&)> ctor = [](Ref& ref){ref.template reset<T>();};
             d.ctor = ctor;
         } else {
@@ -682,38 +682,38 @@ struct initCtor<Ref, std::tuple<T, Ts...>>
 };
 } // anonymous namespace
 
-IIStream& operator>> (IIStream& is, cv::gimpl::Data &d) {
+IIStream& operator>> (IIStream& is, ncvslideio::gimpl::Data &d) {
     // FIXME: HostCtor is not stored here!!
     // FIXME: Storage may be incorrect for subgraph-to-graph process
     is >> d.shape >> d.rc >> d.meta >> d.storage >> d.kind;
-    if (d.shape == cv::GShape::GARRAY)
+    if (d.shape == ncvslideio::GShape::GARRAY)
     {
-        initCtor<cv::detail::VectorRef, cv::detail::GOpaqueTraitsArrayTypes>::init(d);
+        initCtor<ncvslideio::detail::VectorRef, ncvslideio::detail::GOpaqueTraitsArrayTypes>::init(d);
     }
-    else if (d.shape == cv::GShape::GOPAQUE)
+    else if (d.shape == ncvslideio::GShape::GOPAQUE)
     {
-        initCtor<cv::detail::OpaqueRef, cv::detail::GOpaqueTraitsOpaqueTypes>::init(d);
+        initCtor<ncvslideio::detail::OpaqueRef, ncvslideio::detail::GOpaqueTraitsOpaqueTypes>::init(d);
     }
     return is;
 }
 
-IIStream& operator>> (IIStream& is, cv::gimpl::ConstValue &cd) {
+IIStream& operator>> (IIStream& is, ncvslideio::gimpl::ConstValue &cd) {
     return is >> cd.arg;
 }
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::DataObjectCounter &c) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::DataObjectCounter &c) {
     return os << c.m_next_data_id;
 }
-IIStream& operator>> (IIStream& is,       cv::gimpl::DataObjectCounter &c) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::DataObjectCounter &c) {
     return is >> c.m_next_data_id;
 }
 
 
-IOStream& operator<< (IOStream& os, const cv::gimpl::Protocol &p) {
+IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Protocol &p) {
     // NB: in_nhs/out_nhs are not written!
     return os << p.inputs << p.outputs;
 }
-IIStream& operator>> (IIStream& is,       cv::gimpl::Protocol &p) {
+IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::Protocol &p) {
     // NB: in_nhs/out_nhs are reconstructed at a later phase
     return is >> p.inputs >> p.outputs;
 }
@@ -722,25 +722,25 @@ IIStream& operator>> (IIStream& is,       cv::gimpl::Protocol &p) {
 void serialize( IOStream& os
               , const ade::Graph &g
               , const std::vector<ade::NodeHandle> &nodes) {
-    cv::gimpl::GModel::ConstGraph cg(g);
-    serialize(os, g, cg.metadata().get<cv::gimpl::Protocol>(), nodes);
+    ncvslideio::gimpl::GModel::ConstGraph cg(g);
+    serialize(os, g, cg.metadata().get<ncvslideio::gimpl::Protocol>(), nodes);
 }
 
 void serialize( IOStream& os
               , const ade::Graph &g
-              , const cv::gimpl::Protocol &p
+              , const ncvslideio::gimpl::Protocol &p
               , const std::vector<ade::NodeHandle> &nodes) {
-    cv::gimpl::GModel::ConstGraph cg(g);
+    ncvslideio::gimpl::GModel::ConstGraph cg(g);
     GSerialized s;
     for (auto &nh : nodes) {
-        switch (cg.metadata(nh).get<cv::gimpl::NodeType>().t)
+        switch (cg.metadata(nh).get<ncvslideio::gimpl::NodeType>().t)
         {
-        case cv::gimpl::NodeType::OP:   putOp  (s, cg, nh); break;
-        case cv::gimpl::NodeType::DATA: putData(s, cg, nh); break;
+        case ncvslideio::gimpl::NodeType::OP:   putOp  (s, cg, nh); break;
+        case ncvslideio::gimpl::NodeType::DATA: putData(s, cg, nh); break;
         default: util::throw_error(std::logic_error("Unknown NodeType"));
         }
     }
-    s.m_counter = cg.metadata().get<cv::gimpl::DataObjectCounter>();
+    s.m_counter = cg.metadata().get<ncvslideio::gimpl::DataObjectCounter>();
     s.m_proto   = p;
     os << s.m_ops << s.m_datas << s.m_counter << s.m_proto << s.m_const_datas;
 }
@@ -765,19 +765,19 @@ void reconstruct(const GSerialized &s, ade::Graph &g) {
 
             mkConstDataNode(g, d, cit->second);
         } else {
-            cv::gapi::s11n::mkDataNode(g, d);
+            ncvslideio::gapi::s11n::mkDataNode(g, d);
         }
 
         tag ++;
     }
-    for (const auto& op : s.m_ops)   cv::gapi::s11n::mkOpNode(g, op);
-    cv::gapi::s11n::linkNodes(g);
+    for (const auto& op : s.m_ops)   ncvslideio::gapi::s11n::mkOpNode(g, op);
+    ncvslideio::gapi::s11n::linkNodes(g);
 
-    cv::gimpl::GModel::Graph gm(g);
+    ncvslideio::gimpl::GModel::Graph gm(g);
     gm.metadata().set(s.m_counter);
     gm.metadata().set(s.m_proto);
-    cv::gapi::s11n::relinkProto(g);
-    gm.metadata().set(cv::gimpl::Deserialized{});
+    ncvslideio::gapi::s11n::relinkProto(g);
+    gm.metadata().set(ncvslideio::gimpl::Deserialized{});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -945,14 +945,14 @@ GAPI_EXPORTS std::unique_ptr<IIStream> detail::getInStream(const std::vector<cha
     return std::unique_ptr<ByteMemoryInStream>(new ByteMemoryInStream(p));
 }
 
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GCompileArgs &ca) {
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GCompileArgs &ca) {
     os << ca;
 }
 
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GMetaArgs &ma) {
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GMetaArgs &ma) {
     os << ma;
 }
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GRunArgs &ra) {
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GRunArgs &ra) {
     os << ra;
 }
 GAPI_EXPORTS void serialize(IOStream& os, const std::vector<std::string> &vs) {
@@ -976,4 +976,4 @@ GAPI_EXPORTS std::vector<std::string> vector_of_strings_deserialize(IIStream& is
 
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

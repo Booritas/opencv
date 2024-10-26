@@ -38,7 +38,7 @@ struct Layer_Slice : public TestBaseWithParam<tuple<Backend, Target> >
             net.setPreferableTarget(targetId);
             Mat out = net.forward();
 
-            EXPECT_GT(cv::norm(out, NORM_INF), 0);
+            EXPECT_GT(ncvslideio::norm(out, NORM_INF), 0);
 #if 0
             //normAssert(out, input(range));
             cout << input(range).clone().reshape(1, 1) << endl;
@@ -985,7 +985,7 @@ struct Layer_Elementwise : public TestBaseWithParam<tuple<Backend, Target>> {
 
         LayerParams lp;
         lp.type = op_type;
-        lp.name = cv::format("PerfLayer/%s", op_type.c_str());
+        lp.name = ncvslideio::format("PerfLayer/%s", op_type.c_str());
 
         Net net;
         net.addLayerToPrev(lp.name, lp.type, lp);

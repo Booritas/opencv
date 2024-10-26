@@ -50,16 +50,16 @@
 #include <vector>
 #include "directx.inc.hpp"
 #else // HAVE_DIRECTX
-#define NO_DIRECTX_SUPPORT_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without DirectX support")
+#define NO_DIRECTX_SUPPORT_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without DirectX support")
 #endif
 
 #ifndef HAVE_OPENCL
-#define NO_OPENCL_SUPPORT_ERROR CV_Error(cv::Error::StsBadFunc, "OpenCV was build without OpenCL support")
+#define NO_OPENCL_SUPPORT_ERROR CV_Error(ncvslideio::Error::StsBadFunc, "OpenCV was build without OpenCL support")
 #endif // HAVE_OPENCL
 
-using namespace cv::ocl;
+using namespace ncvslideio::ocl;
 
-namespace cv { namespace directx {
+namespace ncvslideio { namespace directx {
 
 int getTypeFromDXGI_FORMAT(const int iDXGI_FORMAT)
 {
@@ -252,7 +252,7 @@ public:
             clGetExtensionFunctionAddressForPlatform(platform, "clEnqueueReleaseD3D11ObjectsNV");
         if (!clCreateFromD3D11Texture2DNV || !clEnqueueAcquireD3D11ObjectsNV || !clEnqueueReleaseD3D11ObjectsNV)
         {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D11_NV");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D11_NV");
         }
         device->AddRef();
     }
@@ -279,7 +279,7 @@ public:
             clGetExtensionFunctionAddressForPlatform(platform, "clEnqueueReleaseD3D11ObjectsKHR");
         if (!clCreateFromD3D11Texture2DKHR || !clEnqueueAcquireD3D11ObjectsKHR || !clEnqueueReleaseD3D11ObjectsKHR)
         {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D11");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D11");
         }
         device->AddRef();
     }
@@ -307,7 +307,7 @@ public:
             clGetExtensionFunctionAddressForPlatform(platform, "clEnqueueReleaseDX9MediaSurfacesKHR");
         if (!clCreateFromDX9MediaSurfaceKHR || !clEnqueueAcquireDX9MediaSurfacesKHR || !clEnqueueReleaseDX9MediaSurfacesKHR)
         {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D9");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D9");
         }
         if (device)
             device->AddRef();
@@ -340,7 +340,7 @@ public:
             clGetExtensionFunctionAddressForPlatform(platform, "clEnqueueReleaseD3D10ObjectsKHR");
         if (!clCreateFromD3D10Texture2DKHR || !clEnqueueAcquireD3D10ObjectsKHR || !clEnqueueReleaseD3D10ObjectsKHR)
         {
-            CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D10");
+            CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't find functions for D3D10");
         }
         device->AddRef();
     }
@@ -367,14 +367,14 @@ Context& initializeContextFromD3D11Device(ID3D11Device* pD3D11Device)
     cl_uint numPlatforms;
     cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
     if (numPlatforms == 0)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
     std::vector<cl_platform_id> platforms(numPlatforms);
     status = clGetPlatformIDs(numPlatforms, &platforms[0], NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get platforms");
 
     // TODO Filter platforms by name from OPENCV_OPENCL_DEVICE
 
@@ -548,7 +548,7 @@ Context& initializeContextFromD3D11Device(ID3D11Device* pD3D11Device)
         }
     }
 
-    CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
+    CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
 #endif
 }
 
@@ -563,14 +563,14 @@ Context& initializeContextFromD3D10Device(ID3D10Device* pD3D10Device)
     cl_uint numPlatforms;
     cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
     if (numPlatforms == 0)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
     std::vector<cl_platform_id> platforms(numPlatforms);
     status = clGetPlatformIDs(numPlatforms, &platforms[0], NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get platforms");
 
     // TODO Filter platforms by name from OPENCV_OPENCL_DEVICE
     for (int i = 0; i < (int)numPlatforms; i++)
@@ -660,7 +660,7 @@ Context& initializeContextFromD3D10Device(ID3D10Device* pD3D10Device)
             return const_cast<Context&>(clExecCtx.getContext());
         }
     }
-    CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
+    CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
 #endif
 }
 
@@ -675,14 +675,14 @@ Context& initializeContextFromDirect3DDevice9Ex(IDirect3DDevice9Ex* pDirect3DDev
     cl_uint numPlatforms;
     cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
     if (numPlatforms == 0)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
     std::vector<cl_platform_id> platforms(numPlatforms);
     status = clGetPlatformIDs(numPlatforms, &platforms[0], NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get platforms");
 
     // TODO Filter platforms by name from OPENCV_OPENCL_DEVICE
     for (int i = 0; i < (int)numPlatforms; i++)
@@ -774,7 +774,7 @@ Context& initializeContextFromDirect3DDevice9Ex(IDirect3DDevice9Ex* pDirect3DDev
             return const_cast<Context&>(clExecCtx.getContext());
         }
     }
-    CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
+    CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
 #endif
 }
 
@@ -789,14 +789,14 @@ Context& initializeContextFromDirect3DDevice9(IDirect3DDevice9* pDirect3DDevice9
     cl_uint numPlatforms;
     cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get number of platforms");
     if (numPlatforms == 0)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: No available platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: No available platforms");
 
     std::vector<cl_platform_id> platforms(numPlatforms);
     status = clGetPlatformIDs(numPlatforms, &platforms[0], NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't get platforms");
+        CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't get platforms");
 
     // TODO Filter platforms by name from OPENCV_OPENCL_DEVICE
     for (int i = 0; i < (int)numPlatforms; i++)
@@ -890,11 +890,11 @@ Context& initializeContextFromDirect3DDevice9(IDirect3DDevice9* pDirect3DDevice9
             return const_cast<Context&>(clExecCtx.getContext());
         }
     }
-    CV_Error(cv::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
+    CV_Error(ncvslideio::Error::OpenCLInitError, "OpenCL: Can't create context for DirectX interop");
 #endif
 }
 
-} // namespace cv::ocl
+} // namespace ncvslideio::ocl
 
 } // namespace directx
 
@@ -914,7 +914,7 @@ bool ocl_convert_nv12_to_bgr(
     int rows)
 {
     ocl::Kernel k;
-    k.create("YUV2BGR_NV12_8u", cv::ocl::core::cvtclr_dx_oclsrc, "");
+    k.create("YUV2BGR_NV12_8u", ncvslideio::ocl::core::cvtclr_dx_oclsrc, "");
     if (k.empty())
         return false;
 
@@ -935,7 +935,7 @@ bool ocl_convert_bgr_to_nv12(
     cl_mem clImageUV)
 {
     ocl::Kernel k;
-    k.create("BGR2YUV_NV12_8u", cv::ocl::core::cvtclr_dx_oclsrc, "");
+    k.create("BGR2YUV_NV12_8u", ncvslideio::ocl::core::cvtclr_dx_oclsrc, "");
     if (k.empty())
         return false;
 
@@ -978,7 +978,7 @@ static void __convertToD3D11Texture2DKHR(InputArray src, ID3D11Texture2D* pD3D11
     cl_context context = (cl_context)ctx.ptr();
     OpenCL_D3D11* impl = ctx.getUserContext<OpenCL_D3D11>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     cl_int status = 0;
     cl_mem clImage = 0;
@@ -987,14 +987,14 @@ static void __convertToD3D11Texture2DKHR(InputArray src, ID3D11Texture2D* pD3D11
 #endif
     clImage = impl->clCreateFromD3D11Texture2DKHR(context, CL_MEM_WRITE_ONLY, pD3D11Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         clImageUV = impl->clCreateFromD3D11Texture2DKHR(context, CL_MEM_WRITE_ONLY, pD3D11Texture2D, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
     }
 #endif
 
@@ -1002,21 +1002,21 @@ static void __convertToD3D11Texture2DKHR(InputArray src, ID3D11Texture2D* pD3D11
 
     status = impl->clEnqueueAcquireD3D11ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = impl->clEnqueueAcquireD3D11ObjectsKHR(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
 
         if(!ocl::ocl_convert_bgr_to_nv12(clBuffer, (int)u.step[0], u.cols, u.rows, clImage, clImageUV))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
 
         status = impl->clEnqueueReleaseD3D11ObjectsKHR(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
     }
     else
 #endif
@@ -1027,27 +1027,27 @@ static void __convertToD3D11Texture2DKHR(InputArray src, ID3D11Texture2D* pD3D11
 
         status = clEnqueueCopyBufferToImage(q, clBuffer, clImage, offset, origin, region, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
     }
 
     status = impl->clEnqueueReleaseD3D11ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
     }
 #endif
 }
@@ -1078,7 +1078,7 @@ static void __convertToD3D11Texture2DNV(InputArray src, ID3D11Texture2D* pD3D11T
     cl_context context = (cl_context)ctx.ptr();
     OpenCL_D3D11_NV* impl = ctx.getUserContext<OpenCL_D3D11_NV>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     cl_int status = 0;
     cl_mem clImage = 0;
@@ -1087,34 +1087,34 @@ static void __convertToD3D11Texture2DNV(InputArray src, ID3D11Texture2D* pD3D11T
 #endif
     clImage = impl->clCreateFromD3D11Texture2DNV(context, CL_MEM_WRITE_ONLY, pD3D11Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if (DXGI_FORMAT_NV12 == desc.Format)
     {
         clImageUV = impl->clCreateFromD3D11Texture2DNV(context, CL_MEM_WRITE_ONLY, pD3D11Texture2D, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
     }
 #endif
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireD3D11ObjectsNV(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = impl->clEnqueueAcquireD3D11ObjectsNV(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
 
         if(!ocl::ocl_convert_bgr_to_nv12(clBuffer, (int)u.step[0], u.cols, u.rows, clImage, clImageUV))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_bgr_to_nv12 failed");
 
         status = impl->clEnqueueReleaseD3D11ObjectsNV(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
     }
     else
 #endif
@@ -1125,27 +1125,27 @@ static void __convertToD3D11Texture2DNV(InputArray src, ID3D11Texture2D* pD3D11T
 
         status = clEnqueueCopyBufferToImage(q, clBuffer, clImage, offset, origin, region, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
     }
 
     status = impl->clEnqueueReleaseD3D11ObjectsNV(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
     }
 #endif
 }
@@ -1174,14 +1174,14 @@ static void __convertFromD3D11Texture2DKHR(ID3D11Texture2D* pD3D11Texture2D, Out
     cl_context context = (cl_context)ctx.ptr();
     OpenCL_D3D11* impl = ctx.getUserContext<OpenCL_D3D11>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     cl_int status = 0;
     cl_mem clImage = 0;
 
     clImage = impl->clCreateFromD3D11Texture2DKHR(context, CL_MEM_READ_ONLY, pD3D11Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
 
 #ifdef HAVE_DIRECTX_NV12
     cl_mem clImageUV = 0;
@@ -1189,7 +1189,7 @@ static void __convertFromD3D11Texture2DKHR(ID3D11Texture2D* pD3D11Texture2D, Out
     {
         clImageUV = impl->clCreateFromD3D11Texture2DKHR(context, CL_MEM_READ_ONLY, pD3D11Texture2D, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DKHR failed");
     }
 #endif
 
@@ -1197,21 +1197,21 @@ static void __convertFromD3D11Texture2DKHR(ID3D11Texture2D* pD3D11Texture2D, Out
 
     status = impl->clEnqueueAcquireD3D11ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = impl->clEnqueueAcquireD3D11ObjectsKHR(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsKHR failed");
 
         if(!ocl::ocl_convert_nv12_to_bgr(clImage, clImageUV, clBuffer, (int)u.step[0], u.cols, u.rows))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
 
         status = impl->clEnqueueReleaseD3D11ObjectsKHR(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
     }
     else
 #endif
@@ -1222,27 +1222,27 @@ static void __convertFromD3D11Texture2DKHR(ID3D11Texture2D* pD3D11Texture2D, Out
 
         status = clEnqueueCopyImageToBuffer(q, clImage, clBuffer, origin, region, offset, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
     }
 
     status = impl->clEnqueueReleaseD3D11ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
     }
 #endif
 }
@@ -1271,14 +1271,14 @@ static void __convertFromD3D11Texture2DNV(ID3D11Texture2D* pD3D11Texture2D, Outp
     cl_context context = (cl_context)ctx.ptr();
     OpenCL_D3D11_NV* impl = ctx.getUserContext<OpenCL_D3D11_NV>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     cl_int status = 0;
     cl_mem clImage = 0;
 
     clImage = impl->clCreateFromD3D11Texture2DNV(context, CL_MEM_READ_ONLY, pD3D11Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
 
 #ifdef HAVE_DIRECTX_NV12
     cl_mem clImageUV = 0;
@@ -1286,28 +1286,28 @@ static void __convertFromD3D11Texture2DNV(ID3D11Texture2D* pD3D11Texture2D, Outp
     {
         clImageUV = impl->clCreateFromD3D11Texture2DNV(context, CL_MEM_READ_ONLY, pD3D11Texture2D, 1, &status);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D11Texture2DNV failed");
     }
 #endif
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireD3D11ObjectsNV(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if (DXGI_FORMAT::DXGI_FORMAT_NV12 == desc.Format)
     {
         status = impl->clEnqueueAcquireD3D11ObjectsNV(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D11ObjectsNV failed");
 
         if (!ocl::ocl_convert_nv12_to_bgr(clImage, clImageUV, clBuffer, (int)u.step[0], u.cols, u.rows))
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: ocl_convert_nv12_to_bgr failed");
 
         status = impl->clEnqueueReleaseD3D11ObjectsNV(q, 1, &clImageUV, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
     }
     else
 #endif
@@ -1318,27 +1318,27 @@ static void __convertFromD3D11Texture2DNV(ID3D11Texture2D* pD3D11Texture2D, Outp
 
         status = clEnqueueCopyImageToBuffer(q, clImage, clBuffer, origin, region, offset, 0, NULL, NULL);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
     }
 
     status = impl->clEnqueueReleaseD3D11ObjectsNV(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D11ObjectsNV failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 
 #ifdef HAVE_DIRECTX_NV12
     if(DXGI_FORMAT_NV12 == desc.Format)
     {
         status = clReleaseMemObject(clImageUV);
         if (status != CL_SUCCESS)
-            CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+            CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
     }
 #endif
 }
@@ -1366,7 +1366,7 @@ void convertToD3D11Texture2D(InputArray src, ID3D11Texture2D* pD3D11Texture2D)
         __convertToD3D11Texture2DKHR(src, pD3D11Texture2D);
     }
     else {
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
     }
 #endif
 }
@@ -1393,7 +1393,7 @@ void convertFromD3D11Texture2D(ID3D11Texture2D* pD3D11Texture2D, OutputArray dst
         __convertFromD3D11Texture2DKHR(pD3D11Texture2D, dst);
     }
     else {
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
     }
 #endif
 }
@@ -1408,7 +1408,7 @@ void convertToD3D10Texture2D(InputArray src, ID3D10Texture2D* pD3D10Texture2D)
     ocl::Context& ctx = ocl::OpenCLExecutionContext::getCurrent().getContext();
     OpenCL_D3D10* impl = ctx.getUserContext<OpenCL_D3D10>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     D3D10_TEXTURE2D_DESC desc = { 0 };
     pD3D10Texture2D->GetDesc(&desc);
@@ -1431,31 +1431,31 @@ void convertToD3D10Texture2D(InputArray src, ID3D10Texture2D* pD3D10Texture2D)
     cl_int status = 0;
     cl_mem clImage = impl->clCreateFromD3D10Texture2DKHR(context, CL_MEM_WRITE_ONLY, pD3D10Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D10Texture2DKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D10Texture2DKHR failed");
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireD3D10ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D10ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D10ObjectsKHR failed");
     size_t offset = 0; // TODO
     size_t dst_origin[3] = {0, 0, 0};
     size_t region[3] = {(size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyBufferToImage(q, clBuffer, clImage, offset, dst_origin, region, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
     status = impl->clEnqueueReleaseD3D10ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D10ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D10ObjectsKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 #else
     // TODO memcpy
     NO_OPENCL_SUPPORT_ERROR;
@@ -1471,7 +1471,7 @@ void convertFromD3D10Texture2D(ID3D10Texture2D* pD3D10Texture2D, OutputArray dst
     ocl::Context& ctx = ocl::OpenCLExecutionContext::getCurrent().getContext();
     OpenCL_D3D10* impl = ctx.getUserContext<OpenCL_D3D10>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     D3D10_TEXTURE2D_DESC desc = { 0 };
     pD3D10Texture2D->GetDesc(&desc);
@@ -1492,31 +1492,31 @@ void convertFromD3D10Texture2D(ID3D10Texture2D* pD3D10Texture2D, OutputArray dst
     cl_int status = 0;
     cl_mem clImage = impl->clCreateFromD3D10Texture2DKHR(context, CL_MEM_READ_ONLY, pD3D10Texture2D, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D10Texture2DKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromD3D10Texture2DKHR failed");
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireD3D10ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D10ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireD3D10ObjectsKHR failed");
     size_t offset = 0; // TODO
     size_t src_origin[3] = {0, 0, 0};
     size_t region[3] = {(size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyImageToBuffer(q, clImage, clBuffer, src_origin, region, offset, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
     status = impl->clEnqueueReleaseD3D10ObjectsKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D10ObjectsKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseD3D10ObjectsKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 #else
     // TODO memcpy
     NO_OPENCL_SUPPORT_ERROR;
@@ -1533,12 +1533,12 @@ void convertToDirect3DSurface9(InputArray src, IDirect3DSurface9* pDirect3DSurfa
     ocl::Context& ctx = ocl::OpenCLExecutionContext::getCurrent().getContext();
     OpenCL_D3D9* impl = ctx.getUserContext<OpenCL_D3D9>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     D3DSURFACE_DESC desc;
     if (FAILED(pDirect3DSurface9->GetDesc(&desc)))
     {
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Can't get D3D surface description");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Can't get D3D surface description");
     }
 
     int srcType = src.type();
@@ -1562,31 +1562,31 @@ void convertToDirect3DSurface9(InputArray src, IDirect3DSurface9* pDirect3DSurfa
         impl->deviceEx ? CL_ADAPTER_D3D9EX_KHR : CL_ADAPTER_D3D9_KHR,
             &surfaceInfo, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromDX9MediaSurfaceKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromDX9MediaSurfaceKHR failed");
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_READ);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireDX9MediaSurfacesKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireDX9MediaSurfacesKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireDX9MediaSurfacesKHR failed");
     size_t offset = 0; // TODO
     size_t dst_origin[3] = {0, 0, 0};
     size_t region[3] = {(size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyBufferToImage(q, clBuffer, clImage, offset, dst_origin, region, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyBufferToImage failed");
     status = impl->clEnqueueReleaseDX9MediaSurfacesKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseDX9MediaSurfacesKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseDX9MediaSurfacesKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 #else
     // TODO pDirect3DSurface9->LockRect() + memcpy + Unlock()
     NO_OPENCL_SUPPORT_ERROR;
@@ -1603,12 +1603,12 @@ void convertFromDirect3DSurface9(IDirect3DSurface9* pDirect3DSurface9, OutputArr
     ocl::Context& ctx = ocl::OpenCLExecutionContext::getCurrent().getContext();
     OpenCL_D3D9* impl = ctx.getUserContext<OpenCL_D3D9>().get();
     if (nullptr == impl)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Context initilized without DirectX interoperability");
 
     D3DSURFACE_DESC desc;
     if (FAILED(pDirect3DSurface9->GetDesc(&desc)))
     {
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: Can't get D3D surface description");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: Can't get D3D surface description");
     }
 
     int surfaceType = getTypeFromD3DFORMAT(desc.Format);
@@ -1630,35 +1630,35 @@ void convertFromDirect3DSurface9(IDirect3DSurface9* pDirect3DSurface9, OutputArr
             impl->deviceEx ? CL_ADAPTER_D3D9EX_KHR : CL_ADAPTER_D3D9_KHR,
             &surfaceInfo, 0, &status);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clCreateFromDX9MediaSurfaceKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clCreateFromDX9MediaSurfaceKHR failed");
 
     cl_mem clBuffer = (cl_mem)u.handle(ACCESS_WRITE);
 
     cl_command_queue q = (cl_command_queue)Queue::getDefault().ptr();
     status = impl->clEnqueueAcquireDX9MediaSurfacesKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireDX9MediaSurfacesKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueAcquireDX9MediaSurfacesKHR failed");
     size_t offset = 0; // TODO
     size_t src_origin[3] = {0, 0, 0};
     size_t region[3] = {(size_t)u.cols, (size_t)u.rows, 1};
     status = clEnqueueCopyImageToBuffer(q, clImage, clBuffer, src_origin, region, offset, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueCopyImageToBuffer failed");
     status = impl->clEnqueueReleaseDX9MediaSurfacesKHR(q, 1, &clImage, 0, NULL, NULL);
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseDX9MediaSurfacesKHR failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clEnqueueReleaseDX9MediaSurfacesKHR failed");
 
     status = clFinish(q); // TODO Use events
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clFinish failed");
 
     status = clReleaseMemObject(clImage); // TODO RAII
     if (status != CL_SUCCESS)
-        CV_Error(cv::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
+        CV_Error(ncvslideio::Error::OpenCLApiCallError, "OpenCL: clReleaseMem failed");
 #else
     // TODO pDirect3DSurface9->LockRect() + memcpy + Unlock()
     NO_OPENCL_SUPPORT_ERROR;
 #endif
 }
 
-} } // namespace cv::directx
+} } // namespace ncvslideio::directx

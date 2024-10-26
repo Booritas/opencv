@@ -111,7 +111,7 @@ static void fast_gemm_pack##N##suffix( int m, int k, const void* A_, \
 #define FAST_GEMM_PACK_f32_12(src, dst) FAST_GEMM_PACK_COPY((src), (dst), 12)
 #define FAST_GEMM_PACK_f32_16(src, dst) FAST_GEMM_PACK_COPY((src), (dst), 16)
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
@@ -909,7 +909,7 @@ void fastGemmBatchKernel(size_t batch, const size_t *A_offsets, const size_t *B_
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
 
-}} // cv::dnn
+}} // ncvslideio::dnn
 
 #undef FAST_GEMM_STORAGE
 #undef FAST_GEMM_MAX_STACKBUF

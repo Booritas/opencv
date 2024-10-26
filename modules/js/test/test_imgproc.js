@@ -73,19 +73,19 @@ QUnit.module('Image Processing', {});
 QUnit.test('test_imgProc', function(assert) {
     // calcHist
     {
-        let vec1 = new cv.Mat.ones(new cv.Size(20, 20), cv.CV_8UC1); // eslint-disable-line new-cap
-        let source = new cv.MatVector();
+        let vec1 = new ncvslideio.Mat.ones(new ncvslideio.Size(20, 20), ncvslideio.CV_8UC1); // eslint-disable-line new-cap
+        let source = new ncvslideio.MatVector();
         source.push_back(vec1);
         let channels = [0];
         let histSize = [256];
         let ranges =[0, 256];
 
-        let hist = new cv.Mat();
-        let mask = new cv.Mat();
-        let binSize = cv._malloc(4);
-        let binView = new Int32Array(cv.HEAP8.buffer, binSize);
+        let hist = new ncvslideio.Mat();
+        let mask = new ncvslideio.Mat();
+        let binSize = ncvslideio._malloc(4);
+        let binView = new Int32Array(ncvslideio.HEAP8.buffer, binSize);
         binView[0] = 10;
-        cv.calcHist(source, channels, mask, hist, histSize, ranges, false);
+        ncvslideio.calcHist(source, channels, mask, hist, histSize, ranges, false);
 
         // hist should contains a N X 1 array.
         let size = hist.size();
@@ -93,7 +93,7 @@ QUnit.test('test_imgProc', function(assert) {
         assert.equal(size.width, 1);
 
         // default parameters
-        cv.calcHist(source, channels, mask, hist, histSize, ranges);
+        ncvslideio.calcHist(source, channels, mask, hist, histSize, ranges);
         size = hist.size();
         assert.equal(size.height, 256);
         assert.equal(size.width, 1);
@@ -102,26 +102,26 @@ QUnit.test('test_imgProc', function(assert) {
         // let dataView = hist.data;
 
         // Free resource
-        cv._free(binSize);
+        ncvslideio._free(binSize);
         mask.delete();
         hist.delete();
     }
 
     // cvtColor
     {
-        let source = new cv.Mat(10, 10, cv.CV_8UC3);
-        let dest = new cv.Mat();
+        let source = new ncvslideio.Mat(10, 10, ncvslideio.CV_8UC3);
+        let dest = new ncvslideio.Mat();
 
-        cv.cvtColor(source, dest, cv.COLOR_BGR2GRAY, 0);
+        ncvslideio.cvtColor(source, dest, ncvslideio.COLOR_BGR2GRAY, 0);
         assert.equal(dest.channels(), 1);
 
-        cv.cvtColor(source, dest, cv.COLOR_BGR2GRAY);
+        ncvslideio.cvtColor(source, dest, ncvslideio.COLOR_BGR2GRAY);
         assert.equal(dest.channels(), 1);
 
-        cv.cvtColor(source, dest, cv.COLOR_BGR2BGRA, 0);
+        ncvslideio.cvtColor(source, dest, ncvslideio.COLOR_BGR2BGRA, 0);
         assert.equal(dest.channels(), 4);
 
-        cv.cvtColor(source, dest, cv.COLOR_BGR2BGRA);
+        ncvslideio.cvtColor(source, dest, ncvslideio.COLOR_BGR2BGRA);
         assert.equal(dest.channels(), 4);
 
         dest.delete();
@@ -129,10 +129,10 @@ QUnit.test('test_imgProc', function(assert) {
     }
     // equalizeHist
     {
-        let source = new cv.Mat(10, 10, cv.CV_8UC1);
-        let dest = new cv.Mat();
+        let source = new ncvslideio.Mat(10, 10, ncvslideio.CV_8UC1);
+        let dest = new ncvslideio.Mat();
 
-        cv.equalizeHist(source, dest);
+        ncvslideio.equalizeHist(source, dest);
 
         // eualizeHist changes the content of a image, but does not alter meta data
         // of it.
@@ -145,15 +145,15 @@ QUnit.test('test_imgProc', function(assert) {
 
     // floodFill
     {
-        let center = new cv.Point(5, 5);
-        let rect = new cv.Rect(0, 0, 0, 0);
-        let img = new cv.Mat.zeros(10, 10, cv.CV_8UC1);
-        let color = new cv.Scalar (255);
-        cv.circle(img, center, 3, color, 1);
+        let center = new ncvslideio.Point(5, 5);
+        let rect = new ncvslideio.Rect(0, 0, 0, 0);
+        let img = new ncvslideio.Mat.zeros(10, 10, ncvslideio.CV_8UC1);
+        let color = new ncvslideio.Scalar (255);
+        ncvslideio.circle(img, center, 3, color, 1);
 
-        let edge = new cv.Mat();
-        cv.Canny(img, edge, 100, 255);
-        cv.copyMakeBorder(edge, edge, 1, 1, 1, 1, cv.BORDER_REPLICATE);
+        let edge = new ncvslideio.Mat();
+        ncvslideio.Canny(img, edge, 100, 255);
+        ncvslideio.copyMakeBorder(edge, edge, 1, 1, 1, 1, ncvslideio.BORDER_REPLICATE);
 
         let expected_img_data = new Uint8Array([
             0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -168,24 +168,24 @@ QUnit.test('test_imgProc', function(assert) {
             0,   0,   0,   0,   0,   0,   0,   0,   0,   0]);
 
         let img_elem = 10*10*1;
-        let expected_img_data_ptr = cv._malloc(img_elem);
-        let expected_img_data_heap = new Uint8Array(cv.HEAPU8.buffer,
+        let expected_img_data_ptr = ncvslideio._malloc(img_elem);
+        let expected_img_data_heap = new Uint8Array(ncvslideio.HEAPU8.buffer,
                                                     expected_img_data_ptr,
                                                     img_elem);
         expected_img_data_heap.set(new Uint8Array(expected_img_data.buffer));
 
-        let expected_img = new cv.Mat(  10, 10, cv.CV_8UC1, expected_img_data_ptr, 0);
+        let expected_img = new ncvslideio.Mat(  10, 10, ncvslideio.CV_8UC1, expected_img_data_ptr, 0);
 
-        let expected_rect = new cv.Rect(3,3,3,3);
+        let expected_rect = new ncvslideio.Rect(3,3,3,3);
 
-        let compare_result = new cv.Mat(10, 10, cv.CV_8UC1);
+        let compare_result = new ncvslideio.Mat(10, 10, ncvslideio.CV_8UC1);
 
-        cv.floodFill(img, edge, center, color, rect);
+        ncvslideio.floodFill(img, edge, center, color, rect);
 
-        cv.compare (img, expected_img, compare_result, cv.CMP_EQ);
+        ncvslideio.compare (img, expected_img, compare_result, ncvslideio.CMP_EQ);
 
         // expect every pixels are the same.
-        assert.equal (cv.countNonZero(compare_result), img.total());
+        assert.equal (ncvslideio.countNonZero(compare_result), img.total());
         assert.equal (rect.x, expected_rect.x);
         assert.equal (rect.y, expected_rect.y);
         assert.equal (rect.width, expected_rect.width);
@@ -202,7 +202,7 @@ QUnit.test('test_imgProc', function(assert) {
         let img_width = 6;
         let img_height = 6;
 
-        let img = new cv.Mat.zeros(img_height, img_width, cv.CV_8UC1);
+        let img = new ncvslideio.Mat.zeros(img_height, img_width, ncvslideio.CV_8UC1);
 
         let npts = 4;
         let square_point_data = new Uint8Array([
@@ -210,10 +210,10 @@ QUnit.test('test_imgProc', function(assert) {
             4, 1,
             4, 4,
             1, 4]);
-        let square_points = cv.matFromArray(npts, 1, cv.CV_32SC2, square_point_data);
-        let pts = new cv.MatVector();
+        let square_points = ncvslideio.matFromArray(npts, 1, ncvslideio.CV_32SC2, square_point_data);
+        let pts = new ncvslideio.MatVector();
         pts.push_back (square_points);
-        let color = new cv.Scalar (255);
+        let color = new ncvslideio.Scalar (255);
 
         let expected_img_data = new Uint8Array([
             0,   0,   0,   0,   0,   0,
@@ -222,16 +222,16 @@ QUnit.test('test_imgProc', function(assert) {
             0, 255, 255, 255, 255,   0,
             0, 255, 255, 255, 255,   0,
             0,   0,   0,   0,   0,   0]);
-        let expected_img = cv.matFromArray(img_height, img_width, cv.CV_8UC1, expected_img_data);
+        let expected_img = ncvslideio.matFromArray(img_height, img_width, ncvslideio.CV_8UC1, expected_img_data);
 
-        cv.fillPoly(img, pts, color);
+        ncvslideio.fillPoly(img, pts, color);
 
-        let compare_result = new cv.Mat(img_height, img_width, cv.CV_8UC1);
+        let compare_result = new ncvslideio.Mat(img_height, img_width, ncvslideio.CV_8UC1);
 
-        cv.compare (img, expected_img, compare_result, cv.CMP_EQ);
+        ncvslideio.compare (img, expected_img, compare_result, ncvslideio.CMP_EQ);
 
         // expect every pixels are the same.
-        assert.equal (cv.countNonZero(compare_result), img.total());
+        assert.equal (ncvslideio.countNonZero(compare_result), img.total());
 
         img.delete();
         square_points.delete();
@@ -245,7 +245,7 @@ QUnit.test('test_imgProc', function(assert) {
         let img_width = 6;
         let img_height = 6;
 
-        let img = new cv.Mat.zeros(img_height, img_width, cv.CV_8UC1);
+        let img = new ncvslideio.Mat.zeros(img_height, img_width, ncvslideio.CV_8UC1);
 
         let npts = 4;
         let square_point_data = new Uint8Array([
@@ -253,8 +253,8 @@ QUnit.test('test_imgProc', function(assert) {
             4, 1,
             4, 4,
             1, 4]);
-        let square_points = cv.matFromArray(npts, 1, cv.CV_32SC2, square_point_data);
-        let color = new cv.Scalar (255);
+        let square_points = ncvslideio.matFromArray(npts, 1, ncvslideio.CV_32SC2, square_point_data);
+        let color = new ncvslideio.Scalar (255);
 
         let expected_img_data = new Uint8Array([
             0,   0,   0,   0,   0,   0,
@@ -263,16 +263,16 @@ QUnit.test('test_imgProc', function(assert) {
             0, 255, 255, 255, 255,   0,
             0, 255, 255, 255, 255,   0,
             0,   0,   0,   0,   0,   0]);
-        let expected_img = cv.matFromArray(img_height, img_width, cv.CV_8UC1, expected_img_data);
+        let expected_img = ncvslideio.matFromArray(img_height, img_width, ncvslideio.CV_8UC1, expected_img_data);
 
-        cv.fillConvexPoly(img, square_points, color);
+        ncvslideio.fillConvexPoly(img, square_points, color);
 
-        let compare_result = new cv.Mat(img_height, img_width, cv.CV_8UC1);
+        let compare_result = new ncvslideio.Mat(img_height, img_width, ncvslideio.CV_8UC1);
 
-        cv.compare (img, expected_img, compare_result, cv.CMP_EQ);
+        ncvslideio.compare (img, expected_img, compare_result, ncvslideio.CMP_EQ);
 
         // expect every pixels are the same.
-        assert.equal (cv.countNonZero(compare_result), img.total());
+        assert.equal (ncvslideio.countNonZero(compare_result), img.total());
 
         img.delete();
         square_points.delete();
@@ -287,15 +287,15 @@ QUnit.test('test_segmentation', function(assert) {
 
     // threshold
     {
-        let source = new cv.Mat(1, 5, cv.CV_8UC1);
+        let source = new ncvslideio.Mat(1, 5, ncvslideio.CV_8UC1);
         let sourceView = source.data;
         sourceView[0] = 0; // < threshold
         sourceView[1] = 100; // < threshold
         sourceView[2] = 200; // > threshold
 
-        let dest = new cv.Mat();
+        let dest = new ncvslideio.Mat();
 
-        cv.threshold(source, dest, THRESHOLD, THRESHOLD_MAX, cv.THRESH_BINARY);
+        ncvslideio.threshold(source, dest, THRESHOLD, THRESHOLD_MAX, ncvslideio.THRESH_BINARY);
 
         let destView = dest.data;
         assert.equal(destView[0], 0);
@@ -305,17 +305,17 @@ QUnit.test('test_segmentation', function(assert) {
 
     // adaptiveThreshold
     {
-        let source = cv.Mat.zeros(1, 5, cv.CV_8UC1);
+        let source = ncvslideio.Mat.zeros(1, 5, ncvslideio.CV_8UC1);
         let sourceView = source.data;
         sourceView[0] = 50;
         sourceView[1] = 150;
         sourceView[2] = 200;
 
-        let dest = new cv.Mat();
+        let dest = new ncvslideio.Mat();
         const C = 0;
         const blockSize = 3;
-        cv.adaptiveThreshold(source, dest, THRESHOLD_MAX,
-                             cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, blockSize, C);
+        ncvslideio.adaptiveThreshold(source, dest, THRESHOLD_MAX,
+                             ncvslideio.ADAPTIVE_THRESH_MEAN_C, ncvslideio.THRESH_BINARY, blockSize, C);
 
         let destView = dest.data;
         assert.equal(destView[0], 0);
@@ -327,7 +327,7 @@ QUnit.test('test_segmentation', function(assert) {
 QUnit.test('test_shape', function(assert) {
     // moments
     {
-        let points = new cv.Mat(1, 4, cv.CV_32SC2);
+        let points = new ncvslideio.Mat(1, 4, ncvslideio.CV_32SC2);
         let data32S = points.data32S;
         data32S[0]=50;
         data32S[1]=56;
@@ -338,8 +338,8 @@ QUnit.test('test_shape', function(assert) {
         data32S[6]=49;
         data32S[7]=51;
 
-        let m = cv.moments(points, false);
-        let area = cv.contourArea(points, false);
+        let m = ncvslideio.moments(points, false);
+        let area = ncvslideio.contourArea(points, false);
 
         assert.equal(m.m00, 0);
         assert.equal(m.m01, 0);
@@ -347,8 +347,8 @@ QUnit.test('test_shape', function(assert) {
         assert.equal(area, 0);
 
         // default parameters
-        m = cv.moments(points);
-        area = cv.contourArea(points);
+        m = ncvslideio.moments(points);
+        area = ncvslideio.contourArea(points);
         assert.equal(m.m00, 0);
         assert.equal(m.m01, 0);
         assert.equal(m.m10, 0);
@@ -360,7 +360,7 @@ QUnit.test('test_shape', function(assert) {
 
 QUnit.test('test_min_enclosing', function(assert) {
     {
-        let points = new cv.Mat(4, 1, cv.CV_32FC2);
+        let points = new ncvslideio.Mat(4, 1, ncvslideio.CV_32FC2);
 
         points.data32F[0] = 0;
         points.data32F[1] = 0;
@@ -371,7 +371,7 @@ QUnit.test('test_min_enclosing', function(assert) {
         points.data32F[6] = 0;
         points.data32F[7] = 1;
 
-        let circle = cv.minEnclosingCircle(points);
+        let circle = ncvslideio.minEnclosingCircle(points);
 
         assert.deepEqual(circle.center, {x: 0.5, y: 0.5});
         assert.ok(Math.abs(circle.radius - Math.sqrt(2) / 2) < 0.001);
@@ -383,10 +383,10 @@ QUnit.test('test_min_enclosing', function(assert) {
 QUnit.test('test_filter', function(assert) {
     // blur
     {
-        let mat1 = cv.Mat.ones(5, 5, cv.CV_8UC3);
-        let mat2 = new cv.Mat();
+        let mat1 = ncvslideio.Mat.ones(5, 5, ncvslideio.CV_8UC3);
+        let mat2 = new ncvslideio.Mat();
 
-        cv.blur(mat1, mat2, {height: 3, width: 3}, {x: -1, y: -1}, cv.BORDER_DEFAULT);
+        ncvslideio.blur(mat1, mat2, {height: 3, width: 3}, {x: -1, y: -1}, ncvslideio.BORDER_DEFAULT);
 
         // Verify result.
         let size = mat2.size();
@@ -394,7 +394,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.height, 5);
         assert.equal(size.width, 5);
 
-        cv.blur(mat1, mat2, {height: 3, width: 3}, {x: -1, y: -1});
+        ncvslideio.blur(mat1, mat2, {height: 3, width: 3}, {x: -1, y: -1});
 
         // Verify result.
         size = mat2.size();
@@ -402,7 +402,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.height, 5);
         assert.equal(size.width, 5);
 
-        cv.blur(mat1, mat2, {height: 3, width: 3});
+        ncvslideio.blur(mat1, mat2, {height: 3, width: 3});
 
         // Verify result.
         size = mat2.size();
@@ -416,11 +416,11 @@ QUnit.test('test_filter', function(assert) {
 
     // GaussianBlur
     {
-        let mat1 = cv.Mat.ones(7, 7, cv.CV_8UC1);
-        let mat2 = new cv.Mat();
+        let mat1 = ncvslideio.Mat.ones(7, 7, ncvslideio.CV_8UC1);
+        let mat2 = new ncvslideio.Mat();
 
-        cv.GaussianBlur(mat1, mat2, new cv.Size(3, 3), 0, 0, // eslint-disable-line new-cap
-                        cv.BORDER_DEFAULT);
+        ncvslideio.GaussianBlur(mat1, mat2, new ncvslideio.Size(3, 3), 0, 0, // eslint-disable-line new-cap
+                        ncvslideio.BORDER_DEFAULT);
 
         // Verify result.
         let size = mat2.size();
@@ -431,10 +431,10 @@ QUnit.test('test_filter', function(assert) {
 
     // medianBlur
     {
-        let mat1 = cv.Mat.ones(9, 9, cv.CV_8UC3);
-        let mat2 = new cv.Mat();
+        let mat1 = ncvslideio.Mat.ones(9, 9, ncvslideio.CV_8UC3);
+        let mat2 = new ncvslideio.Mat();
 
-        cv.medianBlur(mat1, mat2, 3);
+        ncvslideio.medianBlur(mat1, mat2, 3);
 
         // Verify result.
         let size = mat2.size();
@@ -445,10 +445,10 @@ QUnit.test('test_filter', function(assert) {
 
     // Transpose
     {
-        let mat1 = cv.Mat.eye(9, 9, cv.CV_8UC3);
-        let mat2 = new cv.Mat();
+        let mat1 = ncvslideio.Mat.eye(9, 9, ncvslideio.CV_8UC3);
+        let mat2 = new ncvslideio.Mat();
 
-        cv.transpose(mat1, mat2);
+        ncvslideio.transpose(mat1, mat2);
 
         // Verify result.
         let size = mat2.size();
@@ -459,10 +459,10 @@ QUnit.test('test_filter', function(assert) {
 
     // bilateralFilter
     {
-        let mat1 = cv.Mat.ones(11, 11, cv.CV_8UC3);
-        let mat2 = new cv.Mat();
+        let mat1 = ncvslideio.Mat.ones(11, 11, ncvslideio.CV_8UC3);
+        let mat2 = new ncvslideio.Mat();
 
-        cv.bilateralFilter(mat1, mat2, 3, 6, 1.5, cv.BORDER_DEFAULT);
+        ncvslideio.bilateralFilter(mat1, mat2, 3, 6, 1.5, ncvslideio.BORDER_DEFAULT);
 
         // Verify result.
         let size = mat2.size();
@@ -471,7 +471,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.width, 11);
 
         // default parameters
-        cv.bilateralFilter(mat1, mat2, 3, 6, 1.5);
+        ncvslideio.bilateralFilter(mat1, mat2, 3, 6, 1.5);
         // Verify result.
         size = mat2.size();
         assert.equal(mat2.channels(), 3);
@@ -484,10 +484,10 @@ QUnit.test('test_filter', function(assert) {
 
     // Watershed
     {
-        let mat = cv.Mat.ones(11, 11, cv.CV_8UC3);
-        let out = new cv.Mat(11, 11, cv.CV_32SC1);
+        let mat = ncvslideio.Mat.ones(11, 11, ncvslideio.CV_8UC3);
+        let out = new ncvslideio.Mat(11, 11, ncvslideio.CV_32SC1);
 
-        cv.watershed(mat, out);
+        ncvslideio.watershed(mat, out);
 
         // Verify result.
         let size = out.size();
@@ -502,18 +502,18 @@ QUnit.test('test_filter', function(assert) {
 
     // Concat
     {
-        let mat = cv.Mat.ones({height: 10, width: 5}, cv.CV_8UC3);
-        let mat2 = cv.Mat.eye({height: 10, width: 5}, cv.CV_8UC3);
-        let mat3 = cv.Mat.eye({height: 10, width: 5}, cv.CV_8UC3);
+        let mat = ncvslideio.Mat.ones({height: 10, width: 5}, ncvslideio.CV_8UC3);
+        let mat2 = ncvslideio.Mat.eye({height: 10, width: 5}, ncvslideio.CV_8UC3);
+        let mat3 = ncvslideio.Mat.eye({height: 10, width: 5}, ncvslideio.CV_8UC3);
 
 
-        let out = new cv.Mat();
-        let input = new cv.MatVector();
+        let out = new ncvslideio.Mat();
+        let input = new ncvslideio.MatVector();
         input.push_back(mat);
         input.push_back(mat2);
         input.push_back(mat3);
 
-        cv.vconcat(input, out);
+        ncvslideio.vconcat(input, out);
 
         // Verify result.
         let size = out.size();
@@ -522,7 +522,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.width, 5);
         assert.equal(out.elemSize1(), 1);
 
-        cv.hconcat(input, out);
+        ncvslideio.hconcat(input, out);
 
         // Verify result.
         size = out.size();
@@ -538,11 +538,11 @@ QUnit.test('test_filter', function(assert) {
 
     // distanceTransform letiants
     {
-        let mat = cv.Mat.ones(11, 11, cv.CV_8UC1);
-        let out = new cv.Mat(11, 11, cv.CV_32FC1);
-        let labels = new cv.Mat(11, 11, cv.CV_32FC1);
+        let mat = ncvslideio.Mat.ones(11, 11, ncvslideio.CV_8UC1);
+        let out = new ncvslideio.Mat(11, 11, ncvslideio.CV_32FC1);
+        let labels = new ncvslideio.Mat(11, 11, ncvslideio.CV_32FC1);
         const maskSize = 3;
-        cv.distanceTransform(mat, out, cv.DIST_L2, maskSize, cv.CV_32F);
+        ncvslideio.distanceTransform(mat, out, ncvslideio.DIST_L2, maskSize, ncvslideio.CV_32F);
 
         // Verify result.
         let size = out.size();
@@ -552,8 +552,8 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(out.elemSize1(), 4);
 
 
-        cv.distanceTransformWithLabels(mat, out, labels, cv.DIST_L2, maskSize,
-                                       cv.DIST_LABEL_CCOMP);
+        ncvslideio.distanceTransformWithLabels(mat, out, labels, ncvslideio.DIST_L2, maskSize,
+                                       ncvslideio.DIST_LABEL_CCOMP);
 
         // Verify result.
         size = out.size();
@@ -581,22 +581,22 @@ QUnit.test('test_filter', function(assert) {
         let expectedMin = new Uint8Array([0, 2, 0, 4, 0, 6, 0, 8, 0]);
         let expectedMax = new Uint8Array([1, 4, 3, 8, 5, 12, 7, 16, 9]);
 
-        let dataPtr = cv._malloc(3*3*1);
-        let dataPtr2 = cv._malloc(3*3*1);
+        let dataPtr = ncvslideio._malloc(3*3*1);
+        let dataPtr2 = ncvslideio._malloc(3*3*1);
 
-        let dataHeap = new Uint8Array(cv.HEAPU8.buffer, dataPtr, 3*3*1);
+        let dataHeap = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr, 3*3*1);
         dataHeap.set(new Uint8Array(data1.buffer));
 
-        let dataHeap2 = new Uint8Array(cv.HEAPU8.buffer, dataPtr2, 3*3*1);
+        let dataHeap2 = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr2, 3*3*1);
         dataHeap2.set(new Uint8Array(data2.buffer));
 
 
-        let mat1 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr, 0);
-        let mat2 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr2, 0);
+        let mat1 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr, 0);
+        let mat2 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr2, 0);
 
-        let mat3 = new cv.Mat();
+        let mat3 = new ncvslideio.Mat();
 
-        cv.min(mat1, mat2, mat3);
+        ncvslideio.min(mat1, mat2, mat3);
         // Verify result.
         let size = mat2.size();
         assert.equal(mat2.channels(), 1);
@@ -606,7 +606,7 @@ QUnit.test('test_filter', function(assert) {
         assert.deepEqual(mat3.data, expectedMin);
 
 
-        cv.max(mat1, mat2, mat3);
+        ncvslideio.max(mat1, mat2, mat3);
         // Verify result.
         size = mat2.size();
         assert.equal(mat2.channels(), 1);
@@ -615,8 +615,8 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(mat3.data, expectedMax);
 
-        cv._free(dataPtr);
-        cv._free(dataPtr2);
+        ncvslideio._free(dataPtr);
+        ncvslideio._free(dataPtr2);
     }
 
     // Bitwise operations
@@ -630,23 +630,23 @@ QUnit.test('test_filter', function(assert) {
 
         let expectedNot = new Uint8Array([255, 254, 253, 251, 247, 239, 223, 191, 127]);
 
-        let dataPtr = cv._malloc(3*3*1);
-        let dataPtr2 = cv._malloc(3*3*1);
+        let dataPtr = ncvslideio._malloc(3*3*1);
+        let dataPtr2 = ncvslideio._malloc(3*3*1);
 
-        let dataHeap = new Uint8Array(cv.HEAPU8.buffer, dataPtr, 3*3*1);
+        let dataHeap = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr, 3*3*1);
         dataHeap.set(new Uint8Array(data1.buffer));
 
-        let dataHeap2 = new Uint8Array(cv.HEAPU8.buffer, dataPtr2, 3*3*1);
+        let dataHeap2 = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr2, 3*3*1);
         dataHeap2.set(new Uint8Array(data2.buffer));
 
 
-        let mat1 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr, 0);
-        let mat2 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr2, 0);
+        let mat1 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr, 0);
+        let mat2 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr2, 0);
 
-        let mat3 = new cv.Mat();
-        let none = new cv.Mat();
+        let mat3 = new ncvslideio.Mat();
+        let none = new ncvslideio.Mat();
 
-        cv.bitwise_not(mat1, mat3, none);
+        ncvslideio.bitwise_not(mat1, mat3, none);
         // Verify result.
         let size = mat3.size();
         assert.equal(mat3.channels(), 1);
@@ -655,7 +655,7 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(mat3.data, expectedNot);
 
-        cv.bitwise_and(mat1, mat2, mat3, none);
+        ncvslideio.bitwise_and(mat1, mat2, mat3, none);
         // Verify result.
         size = mat3.size();
         assert.equal(mat3.channels(), 1);
@@ -665,7 +665,7 @@ QUnit.test('test_filter', function(assert) {
         assert.deepEqual(mat3.data, expectedAnd);
 
 
-        cv.bitwise_or(mat1, mat2, mat3, none);
+        ncvslideio.bitwise_or(mat1, mat2, mat3, none);
         // Verify result.
         size = mat3.size();
         assert.equal(mat3.channels(), 1);
@@ -674,7 +674,7 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(mat3.data, expectedOr);
 
-        cv.bitwise_xor(mat1, mat2, mat3, none);
+        ncvslideio.bitwise_xor(mat1, mat2, mat3, none);
         // Verify result.
         size = mat3.size();
         assert.equal(mat3.channels(), 1);
@@ -683,8 +683,8 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(mat3.data, expectedXor);
 
-        cv._free(dataPtr);
-        cv._free(dataPtr2);
+        ncvslideio._free(dataPtr);
+        ncvslideio._free(dataPtr2);
     }
 
     // Arithmetic operations
@@ -703,25 +703,25 @@ QUnit.test('test_filter', function(assert) {
         // 4*data1 - data2 + 3
         let expectedWeightedAdd = new Uint8Array([3, 5, 7, 9, 11, 13, 15, 17, 19]);
 
-        let dataPtr = cv._malloc(3*3*1);
-        let dataPtr2 = cv._malloc(3*3*1);
-        let dataPtr3 = cv._malloc(3*3*1);
+        let dataPtr = ncvslideio._malloc(3*3*1);
+        let dataPtr2 = ncvslideio._malloc(3*3*1);
+        let dataPtr3 = ncvslideio._malloc(3*3*1);
 
-        let dataHeap = new Uint8Array(cv.HEAPU8.buffer, dataPtr, 3*3*1);
+        let dataHeap = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr, 3*3*1);
         dataHeap.set(new Uint8Array(data1.buffer));
-        let dataHeap2 = new Uint8Array(cv.HEAPU8.buffer, dataPtr2, 3*3*1);
+        let dataHeap2 = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr2, 3*3*1);
         dataHeap2.set(new Uint8Array(data2.buffer));
-        let dataHeap3 = new Uint8Array(cv.HEAPU8.buffer, dataPtr3, 3*3*1);
+        let dataHeap3 = new Uint8Array(ncvslideio.HEAPU8.buffer, dataPtr3, 3*3*1);
         dataHeap3.set(new Uint8Array(data3.buffer));
 
-        let mat1 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr, 0);
-        let mat2 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr2, 0);
-        let mat3 = new cv.Mat(3, 3, cv.CV_8UC1, dataPtr3, 0);
+        let mat1 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr, 0);
+        let mat2 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr2, 0);
+        let mat3 = new ncvslideio.Mat(3, 3, ncvslideio.CV_8UC1, dataPtr3, 0);
 
-        let dst = new cv.Mat();
-        let none = new cv.Mat();
+        let dst = new ncvslideio.Mat();
+        let none = new ncvslideio.Mat();
 
-        cv.absdiff(mat1, mat2, dst);
+        ncvslideio.absdiff(mat1, mat2, dst);
         // Verify result.
         let size = dst.size();
         assert.equal(dst.channels(), 1);
@@ -730,7 +730,7 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(dst.data, expectedAbsDiff);
 
-        cv.add(mat1, mat2, dst, none, -1);
+        ncvslideio.add(mat1, mat2, dst, none, -1);
         // Verify result.
         size = dst.size();
         assert.equal(dst.channels(), 1);
@@ -739,7 +739,7 @@ QUnit.test('test_filter', function(assert) {
 
         assert.deepEqual(dst.data, expectedAdd);
 
-        cv.addWeighted(mat1, alpha, mat2, beta, gamma, dst, -1);
+        ncvslideio.addWeighted(mat1, alpha, mat2, beta, gamma, dst, -1);
         // Verify result.
         size = dst.size();
         assert.equal(dst.channels(), 1);
@@ -749,7 +749,7 @@ QUnit.test('test_filter', function(assert) {
         assert.deepEqual(dst.data, expectedWeightedAdd);
 
         // default parameter
-        cv.addWeighted(mat1, alpha, mat2, beta, gamma, dst);
+        ncvslideio.addWeighted(mat1, alpha, mat2, beta, gamma, dst);
         // Verify result.
         size = dst.size();
         assert.equal(dst.channels(), 1);
@@ -767,12 +767,12 @@ QUnit.test('test_filter', function(assert) {
 
     // Integral letiants
     {
-        let mat = cv.Mat.eye({height: 100, width: 100}, cv.CV_8UC3);
-        let sum = new cv.Mat();
-        let sqSum = new cv.Mat();
-        let title = new cv.Mat();
+        let mat = ncvslideio.Mat.eye({height: 100, width: 100}, ncvslideio.CV_8UC3);
+        let sum = new ncvslideio.Mat();
+        let sqSum = new ncvslideio.Mat();
+        let title = new ncvslideio.Mat();
 
-        cv.integral(mat, sum, -1);
+        ncvslideio.integral(mat, sum, -1);
 
         // Verify result.
         let size = sum.size();
@@ -780,7 +780,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.height, 100+1);
         assert.equal(size.width, 100+1);
 
-        cv.integral2(mat, sum, sqSum, -1, -1);
+        ncvslideio.integral2(mat, sum, sqSum, -1, -1);
         // Verify result.
         size = sum.size();
         assert.equal(sum.channels(), 3);
@@ -800,12 +800,12 @@ QUnit.test('test_filter', function(assert) {
 
     // Mean, meanSTDev
     {
-        let mat = cv.Mat.eye({height: 100, width: 100}, cv.CV_8UC3);
-        let sum = new cv.Mat();
-        let sqSum = new cv.Mat();
-        let title = new cv.Mat();
+        let mat = ncvslideio.Mat.eye({height: 100, width: 100}, ncvslideio.CV_8UC3);
+        let sum = new ncvslideio.Mat();
+        let sqSum = new ncvslideio.Mat();
+        let title = new ncvslideio.Mat();
 
-        cv.integral(mat, sum, -1);
+        ncvslideio.integral(mat, sum, -1);
 
         // Verify result.
         let size = sum.size();
@@ -813,7 +813,7 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.height, 100+1);
         assert.equal(size.width, 100+1);
 
-        cv.integral2(mat, sum, sqSum, -1, -1);
+        ncvslideio.integral2(mat, sum, sqSum, -1, -1);
         // Verify result.
         size = sum.size();
         assert.equal(sum.channels(), 3);
@@ -833,10 +833,10 @@ QUnit.test('test_filter', function(assert) {
 
     // Invert
     {
-        let inv1 = new cv.Mat();
-        let inv2 = new cv.Mat();
-        let inv3 = new cv.Mat();
-        let inv4 = new cv.Mat();
+        let inv1 = new ncvslideio.Mat();
+        let inv2 = new ncvslideio.Mat();
+        let inv3 = new ncvslideio.Mat();
+        let inv4 = new ncvslideio.Mat();
 
 
         let data1 = new Float32Array([1, 0, 0,
@@ -865,24 +865,24 @@ QUnit.test('test_filter', function(assert) {
                                           -1, 23/2, -9,
                                           1, -9, 7]);
 
-        let dataPtr1 = cv._malloc(3*3*4);
-        let dataPtr2 = cv._malloc(3*3*4);
-        let dataPtr3 = cv._malloc(4*4*4);
-        let dataPtr4 = cv._malloc(3*3*4);
+        let dataPtr1 = ncvslideio._malloc(3*3*4);
+        let dataPtr2 = ncvslideio._malloc(3*3*4);
+        let dataPtr3 = ncvslideio._malloc(4*4*4);
+        let dataPtr4 = ncvslideio._malloc(3*3*4);
 
-        let dataHeap = new Float32Array(cv.HEAP32.buffer, dataPtr1, 3*3);
+        let dataHeap = new Float32Array(ncvslideio.HEAP32.buffer, dataPtr1, 3*3);
         dataHeap.set(new Float32Array(data1.buffer));
-        let dataHeap2 = new Float32Array(cv.HEAP32.buffer, dataPtr2, 3*3);
+        let dataHeap2 = new Float32Array(ncvslideio.HEAP32.buffer, dataPtr2, 3*3);
         dataHeap2.set(new Float32Array(data2.buffer));
-        let dataHeap3 = new Float32Array(cv.HEAP32.buffer, dataPtr3, 4*4);
+        let dataHeap3 = new Float32Array(ncvslideio.HEAP32.buffer, dataPtr3, 4*4);
         dataHeap3.set(new Float32Array(data3.buffer));
-        let dataHeap4 = new Float32Array(cv.HEAP32.buffer, dataPtr4, 3*3);
+        let dataHeap4 = new Float32Array(ncvslideio.HEAP32.buffer, dataPtr4, 3*3);
         dataHeap4.set(new Float32Array(data4.buffer));
 
-        let mat1 = new cv.Mat(3, 3, cv.CV_32FC1, dataPtr1, 0);
-        let mat2 = new cv.Mat(3, 3, cv.CV_32FC1, dataPtr2, 0);
-        let mat3 = new cv.Mat(4, 4, cv.CV_32FC1, dataPtr3, 0);
-        let mat4 = new cv.Mat(3, 3, cv.CV_32FC1, dataPtr4, 0);
+        let mat1 = new ncvslideio.Mat(3, 3, ncvslideio.CV_32FC1, dataPtr1, 0);
+        let mat2 = new ncvslideio.Mat(3, 3, ncvslideio.CV_32FC1, dataPtr2, 0);
+        let mat3 = new ncvslideio.Mat(4, 4, ncvslideio.CV_32FC1, dataPtr3, 0);
+        let mat4 = new ncvslideio.Mat(3, 3, ncvslideio.CV_32FC1, dataPtr4, 0);
 
         QUnit.assert.deepEqualWithTolerance = function( value, expected, tolerance ) {
             for (let i = 0; i < value.length; i= i+1) {
@@ -894,7 +894,7 @@ QUnit.test('test_filter', function(assert) {
             }
         };
 
-        cv.invert(mat1, inv1, 0);
+        ncvslideio.invert(mat1, inv1, 0);
         // Verify result.
         let size = inv1.size();
         assert.equal(inv1.channels(), 1);
@@ -903,11 +903,11 @@ QUnit.test('test_filter', function(assert) {
         assert.deepEqualWithTolerance(inv1.data32F, expected1, 0.0001);
 
 
-        cv.invert(mat2, inv2, 0);
+        ncvslideio.invert(mat2, inv2, 0);
         // Verify result.
         assert.deepEqualWithTolerance(inv3.data32F, expected3, 0.0001);
 
-        cv.invert(mat3, inv3, 0);
+        ncvslideio.invert(mat3, inv3, 0);
         // Verify result.
         size = inv3.size();
         assert.equal(inv3.channels(), 1);
@@ -915,15 +915,15 @@ QUnit.test('test_filter', function(assert) {
         assert.equal(size.width, 4);
         assert.deepEqualWithTolerance(inv3.data32F, expected3, 0.0001);
 
-        cv.invert(mat3, inv3, 1);
+        ncvslideio.invert(mat3, inv3, 1);
         // Verify result.
         assert.deepEqualWithTolerance(inv3.data32F, expected3, 0.0001);
 
-        cv.invert(mat4, inv4, 2);
+        ncvslideio.invert(mat4, inv4, 2);
         // Verify result.
         assert.deepEqualWithTolerance(inv4.data32F, expected4, 0.0001);
 
-        cv.invert(mat4, inv4, 3);
+        ncvslideio.invert(mat4, inv4, 3);
         // Verify result.
         assert.deepEqualWithTolerance(inv4.data32F, expected4, 0.0001);
 
@@ -938,10 +938,10 @@ QUnit.test('test_filter', function(assert) {
     }
     //Rotate
     {
-        let dst = new cv.Mat();
-        let src = cv.matFromArray(3, 2, cv.CV_8U, [1,2,3,4,5,6]);
+        let dst = new ncvslideio.Mat();
+        let src = ncvslideio.matFromArray(3, 2, ncvslideio.CV_8U, [1,2,3,4,5,6]);
 
-        cv.rotate(src, dst, cv.ROTATE_90_CLOCKWISE);
+        ncvslideio.rotate(src, dst, ncvslideio.ROTATE_90_CLOCKWISE);
 
         let size = dst.size();
         assert.equal(size.height, 2, "ROTATE_HEIGHT");
@@ -957,13 +957,13 @@ QUnit.test('test_filter', function(assert) {
 });
 
 QUnit.test('warpPolar', function(assert) {
-  const lines = new cv.Mat(255, 255, cv.CV_8U, new cv.Scalar(0));
+  const lines = new ncvslideio.Mat(255, 255, ncvslideio.CV_8U, new ncvslideio.Scalar(0));
   for (let r = 0; r < lines.rows; r++) {
-    lines.row(r).setTo(new cv.Scalar(r));
+    lines.row(r).setTo(new ncvslideio.Scalar(r));
   }
-  cv.warpPolar(lines, lines, { width: 5, height: 5 }, new cv.Point(2, 2), 3,
-    cv.INTER_CUBIC | cv.WARP_FILL_OUTLIERS | cv.WARP_INVERSE_MAP);
-  assert.ok(lines instanceof cv.Mat);
+  ncvslideio.warpPolar(lines, lines, { width: 5, height: 5 }, new ncvslideio.Point(2, 2), 3,
+    ncvslideio.INTER_CUBIC | ncvslideio.WARP_FILL_OUTLIERS | ncvslideio.WARP_INVERSE_MAP);
+  assert.ok(lines instanceof ncvslideio.Mat);
   assert.deepEqual(Array.from(lines.data), [
     159, 172, 191, 210, 223,
     146, 159, 191, 223, 236,
@@ -975,23 +975,23 @@ QUnit.test('warpPolar', function(assert) {
 
 
 QUnit.test('IntelligentScissorsMB', function(assert) {
-  const lines = new cv.Mat(50, 100, cv.CV_8U, new cv.Scalar(0));
-  lines.row(10).setTo(new cv.Scalar(255));
-  assert.ok(lines instanceof cv.Mat);
+  const lines = new ncvslideio.Mat(50, 100, ncvslideio.CV_8U, new ncvslideio.Scalar(0));
+  lines.row(10).setTo(new ncvslideio.Scalar(255));
+  assert.ok(lines instanceof ncvslideio.Mat);
 
-  let tool = new cv.segmentation_IntelligentScissorsMB();
+  let tool = new ncvslideio.segmentation_IntelligentScissorsMB();
   tool.applyImage(lines);
-  assert.ok(lines instanceof cv.Mat);
+  assert.ok(lines instanceof ncvslideio.Mat);
   lines.delete();
 
-  tool.buildMap(new cv.Point(10, 10));
+  tool.buildMap(new ncvslideio.Point(10, 10));
 
-  let contour = new cv.Mat();
-  tool.getContour(new cv.Point(50, 10), contour);
-  assert.equal(contour.type(), cv.CV_32SC2);
+  let contour = new ncvslideio.Mat();
+  tool.getContour(new ncvslideio.Point(50, 10), contour);
+  assert.equal(contour.type(), ncvslideio.CV_32SC2);
   assert.ok(contour.total() == 41, contour.total());
 
-  tool.getContour(new cv.Point(80, 10), contour);
-  assert.equal(contour.type(), cv.CV_32SC2);
+  tool.getContour(new ncvslideio.Point(80, 10), contour);
+  assert.equal(contour.type(), ncvslideio.CV_32SC2);
   assert.ok(contour.total() == 71, contour.total());
 });

@@ -15,7 +15,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -42,7 +42,7 @@ public:
     using SessionsTable = std::map<mfxSession, session_ptr>;
     using ExecutionDataTable = std::map<mfxSession, ExecutionData>;
 
-    using frame_t = cv::gapi::wip::Data;
+    using frame_t = ncvslideio::gapi::wip::Data;
     using frames_container_t = std::queue<frame_t>;
     using operation_t = std::function<ExecutionStatus(EngineSession&)>;
 
@@ -101,7 +101,7 @@ public:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ENGINE_PROCESSING_ENGINE_BASE_HPP

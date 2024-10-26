@@ -44,13 +44,13 @@
 
 using namespace opencv_test;
 using namespace testing;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace opencv_test {
 namespace ocl {
 
-#define UMAT_TEST_SIZES testing::Values(cv::Size(1, 1), cv::Size(1,128), cv::Size(128, 1), \
-    cv::Size(128, 128), cv::Size(640, 480), cv::Size(751, 373), cv::Size(1200, 1200))
+#define UMAT_TEST_SIZES testing::Values(ncvslideio::Size(1, 1), ncvslideio::Size(1,128), ncvslideio::Size(128, 1), \
+    ncvslideio::Size(128, 128), ncvslideio::Size(640, 480), ncvslideio::Size(751, 373), ncvslideio::Size(1200, 1200))
 
 /////////////////////////////// Basic Tests ////////////////////////////////
 
@@ -264,7 +264,7 @@ TEST_P(UMatBasicTests, GetUMat)
 }
 
 INSTANTIATE_TEST_CASE_P(UMat, UMatBasicTests, Combine(testing::Values(CV_8U, CV_64F), testing::Values(1, 2),
-    testing::Values(cv::Size(1, 1), cv::Size(1, 128), cv::Size(128, 1), cv::Size(128, 128), cv::Size(640, 480)), Bool()));
+    testing::Values(ncvslideio::Size(1, 1), ncvslideio::Size(1, 128), ncvslideio::Size(128, 1), ncvslideio::Size(128, 128), ncvslideio::Size(640, 480)), Bool()));
 
 //////////////////////////////////////////////////////////////// Reshape ////////////////////////////////////////////////////////////////////////
 
@@ -354,7 +354,7 @@ TEST_P(UMatTestReshape, reshape)
 
 INSTANTIATE_TEST_CASE_P(UMat, UMatTestReshape, Combine(OCL_ALL_DEPTHS, OCL_ALL_CHANNELS, UMAT_TEST_SIZES, Bool() ));
 
-static void check_ndim_shape(const cv::UMat &mat, int cn, int ndims, const int *sizes)
+static void check_ndim_shape(const ncvslideio::UMat &mat, int cn, int ndims, const int *sizes)
 {
     EXPECT_EQ(mat.channels(), cn);
     EXPECT_EQ(mat.dims, ndims);
@@ -368,8 +368,8 @@ static void check_ndim_shape(const cv::UMat &mat, int cn, int ndims, const int *
 
 TEST(UMatTestReshape, reshape_ndims_2)
 {
-    const cv::UMat A(8, 16, CV_8UC3);
-    cv::UMat B;
+    const ncvslideio::UMat A(8, 16, CV_8UC3);
+    ncvslideio::UMat B;
 
     {
         int new_sizes_mask[] = { 0, 3, 4, 4 };
@@ -386,7 +386,7 @@ TEST(UMatTestReshape, reshape_ndims_2)
     }
     {
         int new_sizes[] = { 2, 5, 1, 3 };
-        cv::UMat A_sliced = A(cv::Range::all(), cv::Range(0, 15));
+        ncvslideio::UMat A_sliced = A(ncvslideio::Range::all(), ncvslideio::Range(0, 15));
         ASSERT_ANY_THROW(A_sliced.reshape(4, 4, new_sizes));
     }
 }
@@ -394,8 +394,8 @@ TEST(UMatTestReshape, reshape_ndims_2)
 TEST(UMatTestReshape, reshape_ndims_4)
 {
     const int sizes[] = { 2, 6, 4, 12 };
-    const cv::UMat A(4, sizes, CV_8UC3);
-    cv::UMat B;
+    const ncvslideio::UMat A(4, sizes, CV_8UC3);
+    ncvslideio::UMat B;
 
     {
         int new_sizes_mask[] = { 0, 864 };
@@ -499,7 +499,7 @@ INSTANTIATE_TEST_CASE_P(UMat, UMatTestRoi, Combine(OCL_ALL_DEPTHS, OCL_ALL_CHANN
 TEST(UMatTestRoi, adjustRoiOverflow)
 {
     UMat m(15, 10, CV_32S);
-    UMat roi(m, cv::Range(2, 10), cv::Range(3,6));
+    UMat roi(m, ncvslideio::Range(2, 10), ncvslideio::Range(3,6));
     int rowsInROI = roi.rows;
     roi.adjustROI(1, 0, 0, 0);
 
@@ -601,7 +601,7 @@ TEST_P(UMatTestUMatOperations, diag)
     EXPECT_MAT_NEAR(b, ub, 0);
     new_diag = randomMat(Size(ua.rows, 1), type, -100, 100);
     new_diag.copyTo(ub);
-    ua = cv::UMat::diag(ub);
+    ua = ncvslideio::UMat::diag(ub);
     EXPECT_MAT_NEAR(ua.diag(), new_diag.t(), 0);
 }
 
@@ -624,13 +624,13 @@ PARAM_TEST_CASE(getUMat, int, int, Size, bool)
 
         type = CV_MAKE_TYPE(depth, cn);
 
-        isOpenCL_enabled = cv::ocl::useOpenCL();
-        cv::ocl::setUseOpenCL(useOpenCL);
+        isOpenCL_enabled = ncvslideio::ocl::useOpenCL();
+        ncvslideio::ocl::setUseOpenCL(useOpenCL);
     }
 
     virtual void TearDown()
     {
-        cv::ocl::setUseOpenCL(isOpenCL_enabled);
+        ncvslideio::ocl::setUseOpenCL(isOpenCL_enabled);
     }
 
     // UMat created from user allocated host memory (USE_HOST_PTR)
@@ -642,14 +642,14 @@ PARAM_TEST_CASE(getUMat, int, int, Size, bool)
 
         {
             Mat m = Mat(size, type, pData, step);
-            m.setTo(cv::Scalar::all(2));
+            m.setTo(ncvslideio::Scalar::all(2));
 
             UMat u = m.getUMat(ACCESS_RW);
-            cv::add(u, cv::Scalar::all(2), u);
+            ncvslideio::add(u, ncvslideio::Scalar::all(2), u);
 
             Mat d = u.getMat(ACCESS_READ);
 
-            Mat expected(m.size(), m.type(), cv::Scalar::all(4));
+            Mat expected(m.size(), m.type(), ncvslideio::Scalar::all(4));
             double norm = cvtest::norm(d, expected, NORM_INF);
 
             EXPECT_EQ(0, norm);
@@ -675,20 +675,20 @@ TEST_P(getUMat, custom_ptr_align_64b)
 
 TEST_P(getUMat, custom_ptr_align_none)
 {
-    custom_ptr_test(4096, cv::alignSize(CV_ELEM_SIZE(type), 4));
+    custom_ptr_test(4096, ncvslideio::alignSize(CV_ELEM_SIZE(type), 4));
 }
 
 TEST_P(getUMat, self_allocated)
 {
     Mat m = Mat(size, type);
-    m.setTo(cv::Scalar::all(2));
+    m.setTo(ncvslideio::Scalar::all(2));
 
     UMat u = m.getUMat(ACCESS_RW);
-    cv::add(u, cv::Scalar::all(2), u);
+    ncvslideio::add(u, ncvslideio::Scalar::all(2), u);
 
     Mat d = u.getMat(ACCESS_READ);
 
-    Mat expected(m.size(), m.type(), cv::Scalar::all(4));
+    Mat expected(m.size(), m.type(), ncvslideio::Scalar::all(4));
     double norm = cvtest::norm(d, expected, NORM_INF);
 
     EXPECT_EQ(0, norm);
@@ -697,7 +697,7 @@ TEST_P(getUMat, self_allocated)
 INSTANTIATE_TEST_CASE_P(UMat, getUMat, Combine(
         Values(CV_8U, CV_64F), // depth
         Values(1, 3), // channels
-        Values(cv::Size(1, 1), cv::Size(255, 255), cv::Size(256, 256)), // Size
+        Values(ncvslideio::Size(1, 1), ncvslideio::Size(255, 255), ncvslideio::Size(256, 256)), // Size
         Bool() // useOpenCL
 ));
 
@@ -714,7 +714,7 @@ TEST(UMat, BufferPoolGrowing)
     const int ITERATIONS = 200;
 #endif
     const Size sz(1920, 1080);
-    BufferPoolController* c = cv::ocl::getOpenCLAllocator()->getBufferPoolController();
+    BufferPoolController* c = ncvslideio::ocl::getOpenCLAllocator()->getBufferPoolController();
     if (c)
     {
         size_t oldMaxReservedSize = c->getMaxReservedSize();
@@ -817,8 +817,8 @@ bool CV_UMatTest::TestUMat()
         std::cout << "ra: " << ra << std::endl;
         std::cout << "rb: " << rb << std::endl;*/
 
-        cv::max(ra, rb, rc);
-        cv::max(ura, urb, urc);
+        ncvslideio::max(ra, rb, rc);
+        ncvslideio::max(ura, urb, urc);
         urc.copyTo(rc0);
 
         /*std::cout << "==============================================\nafter op:\n";
@@ -829,17 +829,17 @@ bool CV_UMatTest::TestUMat()
 
         {
             UMat tmp = rc0.getUMat(ACCESS_WRITE);
-            cv::max(ura, urb, tmp);
+            ncvslideio::max(ura, urb, tmp);
         }
         CHECK_DIFF(rc0, rc);
 
         ura.copyTo(urc);
-        cv::max(urc, urb, urc);
+        ncvslideio::max(urc, urb, urc);
         urc.copyTo(rc0);
         CHECK_DIFF(rc0, rc);
 
         rc = ra ^ rb;
-        cv::bitwise_xor(ura, urb, urc);
+        ncvslideio::bitwise_xor(ura, urb, urc);
         urc.copyTo(rc0);
 
         /*std::cout << "==============================================\nafter op:\n";
@@ -849,13 +849,13 @@ bool CV_UMatTest::TestUMat()
         CHECK_DIFF(rc0, rc);
 
         rc = ra + rb;
-        cv::add(ura, urb, urc);
+        ncvslideio::add(ura, urb, urc);
         urc.copyTo(rc0);
 
         CHECK_DIFF(rc0, rc);
 
-        cv::subtract(ra, Scalar::all(5), rc);
-        cv::subtract(ura, Scalar::all(5), urc);
+        ncvslideio::subtract(ra, Scalar::all(5), rc);
+        ncvslideio::subtract(ura, Scalar::all(5), urc);
         urc.copyTo(rc0);
 
         CHECK_DIFF(rc0, rc);
@@ -872,8 +872,8 @@ bool CV_UMatTest::TestUMat()
 void CV_UMatTest::run( int /* start_from */)
 {
     printf("Use OpenCL: %s\nHave OpenCL: %s\n",
-           cv::ocl::useOpenCL() ? "TRUE" : "FALSE",
-           cv::ocl::haveOpenCL() ? "TRUE" : "FALSE" );
+           ncvslideio::ocl::useOpenCL() ? "TRUE" : "FALSE",
+           ncvslideio::ocl::haveOpenCL() ? "TRUE" : "FALSE" );
 
     if (!TestUMat())
         return;
@@ -926,12 +926,12 @@ TEST(UMat, Sync)
 
     {
         Mat m = um.getMat(ACCESS_WRITE);
-        m.setTo(cv::Scalar::all(17));
+        m.setTo(ncvslideio::Scalar::all(17));
     }
 
-    um.setTo(cv::Scalar::all(19));
+    um.setTo(ncvslideio::Scalar::all(19));
 
-    EXPECT_EQ(0, cvtest::norm(um.getMat(ACCESS_READ), cv::Mat(um.size(), um.type(), 19), NORM_INF));
+    EXPECT_EQ(0, cvtest::norm(um.getMat(ACCESS_READ), ncvslideio::Mat(um.size(), um.type(), 19), NORM_INF));
 }
 
 TEST(UMat, SyncTemp)
@@ -943,12 +943,12 @@ TEST(UMat, SyncTemp)
 
         {
             Mat m2 = um.getMat(ACCESS_WRITE);
-            m2.setTo(cv::Scalar::all(17));
+            m2.setTo(ncvslideio::Scalar::all(17));
         }
 
-        um.setTo(cv::Scalar::all(19));
+        um.setTo(ncvslideio::Scalar::all(19));
 
-        EXPECT_EQ(0, cvtest::norm(um.getMat(ACCESS_READ), cv::Mat(um.size(), um.type(), 19), NORM_INF));
+        EXPECT_EQ(0, cvtest::norm(um.getMat(ACCESS_READ), ncvslideio::Mat(um.size(), um.type(), 19), NORM_INF));
     }
 }
 
@@ -976,19 +976,19 @@ TEST(UMat, setOpenCL)
     return; // test skipped
 #else
     // save the current state
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     Mat m = (Mat_<uchar>(3,3)<<0,1,2,3,4,5,6,7,8);
 
-    cv::ocl::setUseOpenCL(true);
+    ncvslideio::ocl::setUseOpenCL(true);
     UMat um1;
     m.copyTo(um1);
 
-    cv::ocl::setUseOpenCL(false);
+    ncvslideio::ocl::setUseOpenCL(false);
     UMat um2;
     m.copyTo(um2);
 
-    cv::ocl::setUseOpenCL(true);
+    ncvslideio::ocl::setUseOpenCL(true);
     countNonZero(um1);
     countNonZero(um2);
 
@@ -999,7 +999,7 @@ TEST(UMat, setOpenCL)
     EXPECT_MAT_NEAR(um1, m, 0);
     EXPECT_MAT_NEAR(um1, um2, 0);
 
-    cv::ocl::setUseOpenCL(false);
+    ncvslideio::ocl::setUseOpenCL(false);
     countNonZero(um1);
     countNonZero(um2);
 
@@ -1011,7 +1011,7 @@ TEST(UMat, setOpenCL)
     EXPECT_MAT_NEAR(um1, m, 0);
 
     // reset state to the previous one
-    cv::ocl::setUseOpenCL(useOCL);
+    ncvslideio::ocl::setUseOpenCL(useOCL);
 #endif
 }
 
@@ -1028,18 +1028,18 @@ TEST(UMat, ReadBufferRect)
 // Use iGPU or OPENCV_OPENCL_DEVICE=:CPU: to catch problem
 TEST(UMat, synchronization_map_unmap)
 {
-    class TestParallelLoopBody : public cv::ParallelLoopBody
+    class TestParallelLoopBody : public ncvslideio::ParallelLoopBody
     {
         UMat u_;
     public:
         TestParallelLoopBody(const UMat& u) : u_(u) { }
-        void operator() (const cv::Range& range) const
+        void operator() (const ncvslideio::Range& range) const
         {
             printf("range: %d, %d -- begin\n", range.start, range.end);
             for (int i = 0; i < 10; i++)
             {
                 printf("%d: %d map...\n", range.start, i);
-                Mat m = u_.getMat(cv::ACCESS_READ);
+                Mat m = u_.getMat(ncvslideio::ACCESS_READ);
 
                 printf("%d: %d unmap...\n", range.start, i);
                 m.release();
@@ -1050,9 +1050,9 @@ TEST(UMat, synchronization_map_unmap)
     try
     {
         UMat u(1000, 1000, CV_32FC1, Scalar::all(0));
-        parallel_for_(cv::Range(0, 2), TestParallelLoopBody(u));
+        parallel_for_(ncvslideio::Range(0, 2), TestParallelLoopBody(u));
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         FAIL() << "Exception: " << e.what();
         ADD_FAILURE();
@@ -1073,11 +1073,11 @@ TEST(UMat, async_unmap)
             Mat m = Mat(1000, 1000, CV_8UC1, Scalar::all(0));
             UMat u = m.getUMat(ACCESS_READ);
             UMat dst;
-            cv::add(u, Scalar::all(0), dst); // start async operation
+            ncvslideio::add(u, Scalar::all(0), dst); // start async operation
             u.release();
             m.release();
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             printf("i = %d... %s\n", i, e.what());
             ADD_FAILURE();
@@ -1120,7 +1120,7 @@ TEST(UMat, unmap_in_class)
         l.processData(m);
         UMat result = l.getResult();
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         printf("exception... %s\n", e.what());
         ADD_FAILURE();
@@ -1135,12 +1135,12 @@ TEST(UMat, unmap_in_class)
 
 TEST(UMat, map_unmap_counting)
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         std::cout << "OpenCL is not enabled. Skip test" << std::endl;
         return;
     }
-    std::cout << "Host memory: " << cv::ocl::Device::getDefault().hostUnifiedMemory() << std::endl;
+    std::cout << "Host memory: " << ncvslideio::ocl::Device::getDefault().hostUnifiedMemory() << std::endl;
     Mat m(Size(10, 10), CV_8UC1, Scalar::all(0));
     UMat um = m.getUMat(ACCESS_RW);
     {
@@ -1159,7 +1159,7 @@ static void process_with_async_cleanup(Mat& frame)
     UMat blurResult;
     {
         UMat umat_buffer = frame.getUMat(ACCESS_READ);
-        cv::blur(umat_buffer, blurResult, Size(3, 3));  // UMat doesn't support inplace, this call is not synchronized
+        ncvslideio::blur(umat_buffer, blurResult, Size(3, 3));  // UMat doesn't support inplace, this call is not synchronized
     }
     Mat result;
     blurResult.copyTo(result);
@@ -1183,7 +1183,7 @@ TEST(UMat, async_cleanup_without_call_chain_warning)
 // Case 1: reuse of old src Mat in OCL pipe. Hard to catch!
 OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_1_VeryLongTest)
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         std::cout << "OpenCL is not enabled. Skip test" << std::endl;
         return;
@@ -1199,7 +1199,7 @@ OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_1_VeryLongTest)
 
         // Generate reference data as additional check
         OCL_OFF(src.convertTo(dst_ref, dtype));
-        cv::ocl::setUseOpenCL(true); // restore OpenCL state
+        ncvslideio::ocl::setUseOpenCL(true); // restore OpenCL state
 
         UMat dst(srcSize, dtype);
 
@@ -1208,7 +1208,7 @@ OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_1_VeryLongTest)
         {
             UMat tmpUMat = src.getUMat(ACCESS_RW);
             tmpUMat.convertTo(dst, dtype);
-            ::cv::ocl::finish(); // force kernel to complete to start cleanup sooner
+            ::ncvslideio::ocl::finish(); // force kernel to complete to start cleanup sooner
         }
 
         EXPECT_MAT_NEAR(dst_ref, dst, 1);
@@ -1219,7 +1219,7 @@ OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_1_VeryLongTest)
 // Case 2: concurrent deallocation of UMatData between UMat and Mat deallocators. Hard to catch!
 OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_2_VeryLongTest)
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         std::cout << "OpenCL is not enabled. Skip test" << std::endl;
         return;
@@ -1241,7 +1241,7 @@ OCL_TEST(UMat, DISABLED_OCL_ThreadSafe_CleanupCallback_2_VeryLongTest)
                 UMat tmpUMat = src.getUMat(ACCESS_RW);
                 tmpUMat.convertTo(dst, dtype);
             }
-            ::cv::ocl::finish(); // force kernel to complete to start cleanup sooner
+            ::ncvslideio::ocl::finish(); // force kernel to complete to start cleanup sooner
         }
         printf(".\n"); fflush(stdout);
     }
@@ -1257,7 +1257,7 @@ TEST(UMat, DISABLED_Test_same_behaviour_read_and_read)
         UMat u(Size(10, 10), CV_8UC1, Scalar::all(0));
         Mat m = u.getMat(ACCESS_READ);
         UMat dst;
-        cv::add(u, Scalar::all(1), dst);
+        ncvslideio::add(u, Scalar::all(1), dst);
     }
     catch (...)
     {
@@ -1274,7 +1274,7 @@ TEST(UMat, DISABLED_Test_same_behaviour_read_and_write)
     {
         UMat u(Size(10, 10), CV_8UC1, Scalar::all(0));
         Mat m = u.getMat(ACCESS_READ);
-        cv::add(u, Scalar::all(1), u);
+        ncvslideio::add(u, Scalar::all(1), u);
     }
     catch (...)
     {
@@ -1291,7 +1291,7 @@ TEST(UMat, DISABLED_Test_same_behaviour_write_and_read)
         UMat u(Size(10, 10), CV_8UC1, Scalar::all(0));
         Mat m = u.getMat(ACCESS_WRITE);
         UMat dst;
-        cv::add(u, Scalar::all(1), dst);
+        ncvslideio::add(u, Scalar::all(1), dst);
     }
     catch (...)
     {
@@ -1307,7 +1307,7 @@ TEST(UMat, DISABLED_Test_same_behaviour_write_and_write)
     {
         UMat u(Size(10, 10), CV_8UC1, Scalar::all(0));
         Mat m = u.getMat(ACCESS_WRITE);
-        cv::add(u, Scalar::all(1), u);
+        ncvslideio::add(u, Scalar::all(1), u);
     }
     catch (...)
     {
@@ -1325,7 +1325,7 @@ TEST(UMat, mat_umat_sync)
     }
 
     UMat uDiff;
-    cv::compare(u, 255, uDiff, CMP_NE);
+    ncvslideio::compare(u, 255, uDiff, CMP_NE);
     ASSERT_EQ(0, countNonZero(uDiff));
 }
 
@@ -1338,7 +1338,7 @@ TEST(UMat, testTempObjects_UMat)
     }
 
     UMat uDiff;
-    cv::compare(u, 255, uDiff, CMP_NE);
+    ncvslideio::compare(u, 255, uDiff, CMP_NE);
     ASSERT_EQ(0, countNonZero(uDiff));
 }
 
@@ -1410,18 +1410,18 @@ TEST(UMat, testTempObjects_Mat_issue_8693)
 TEST(UMat, resize_Mat_issue_13577)
 {
     // save the current state
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
-    cv::ocl::setUseOpenCL(false);
+    ncvslideio::ocl::setUseOpenCL(false);
     UMat foo(10, 10, CV_32FC1);
-    cv::resize(foo, foo, cv::Size(), .5, .5);
+    ncvslideio::resize(foo, foo, ncvslideio::Size(), .5, .5);
 
-    cv::ocl::setUseOpenCL(useOCL);  // restore state
+    ncvslideio::ocl::setUseOpenCL(useOCL);  // restore state
 }
 
 TEST(UMat, exceptions_refcounts_issue_20594)
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         // skip test, difficult to create exception scenario without OpenCL
         std::cout << "OpenCL is not enabled. Skip test" << std::endl;

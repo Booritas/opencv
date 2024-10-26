@@ -41,7 +41,7 @@
 #include "precomp.hpp"
 
 
-double cv::matchShapes(InputArray contour1, InputArray contour2, int method, double)
+double ncvslideio::matchShapes(InputArray contour1, InputArray contour2, int method, double)
 {
     CV_INSTRUMENT_REGION();
 
@@ -158,7 +158,7 @@ double cv::matchShapes(InputArray contour1, InputArray contour2, int method, dou
         }
         break;
     default:
-        CV_Error( cv::Error::StsBadArg, "Unknown comparison method" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown comparison method" );
     }
 
     //If anyA and anyB are both true, the result is correct.
@@ -175,11 +175,11 @@ CV_IMPL  double
 cvMatchShapes( const void* _contour1, const void* _contour2,
                int method, double parameter )
 {
-    cv::AutoBuffer<double> abuf1, abuf2;
-    cv::Mat contour1 = cv::cvarrToMat(_contour1, false, false, 0, &abuf1);
-    cv::Mat contour2 = cv::cvarrToMat(_contour2, false, false, 0, &abuf2);
+    ncvslideio::AutoBuffer<double> abuf1, abuf2;
+    ncvslideio::Mat contour1 = ncvslideio::cvarrToMat(_contour1, false, false, 0, &abuf1);
+    ncvslideio::Mat contour2 = ncvslideio::cvarrToMat(_contour2, false, false, 0, &abuf2);
 
-    return cv::matchShapes(contour1, contour2, method, parameter);
+    return ncvslideio::matchShapes(contour1, contour2, method, parameter);
 }
 
 /* End of file. */

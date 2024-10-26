@@ -51,7 +51,7 @@
 #include "resize.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace opt_LASX
 {

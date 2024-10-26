@@ -58,7 +58,7 @@ Making a project
     @code{.cpp}
     #include <opencv2/opencv.hpp>
 
-    using namespace cv;
+    using namespace ncvslideio;
 
     int main( int argc, char** argv )
     {
@@ -170,7 +170,7 @@ Eclipse:
 Say you have or create a new file, *helloworld.cpp* in a directory called *foo*:
 @code{.cpp}
 #include <opencv2/opencv.hpp>
-using namespace cv;
+using namespace ncvslideio;
 
 int main ( int argc, char **argv )
 {

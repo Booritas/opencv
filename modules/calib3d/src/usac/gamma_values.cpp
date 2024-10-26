@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 
 class GammaValuesImpl : public GammaValues {
     std::vector<double> gamma_complete, gamma_incomplete, gamma;
@@ -110,7 +110,7 @@ public:
                 1.72250366e-03, 1.44640449e-03, 1.21427410e-03, 1.01916714e-03,
                 8.55224023e-04, 7.17503448e-04, 6.01840372e-04, 5.04725511e-04,
                 4.23203257e-04, 3.54478559e-04};
-        } else CV_Error(cv::Error::StsNotImplemented, "Not implemented for specific DoF!");
+        } else CV_Error(ncvslideio::Error::StsNotImplemented, "Not implemented for specific DoF!");
         // allocate tables
         gamma_complete = std::vector<double>(max_size_table);
         gamma_incomplete = std::vector<double>(max_size_table);

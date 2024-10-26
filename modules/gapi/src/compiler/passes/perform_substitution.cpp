@@ -8,7 +8,7 @@
 
 #include "ade/util/zip_range.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 namespace {
 using Graph = GModel::Graph;
 
@@ -91,4 +91,4 @@ void performSubstitution(GModel::Graph& graph,
 }
 
 }  // namespace gimpl
-}  // namespace cv
+}  // namespace ncvslideio

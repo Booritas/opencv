@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/hal/interface.h"
 #include "cvutils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -161,4 +161,4 @@ int threshold(const uchar* src_data, size_t src_step,
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio

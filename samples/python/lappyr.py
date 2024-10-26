@@ -30,8 +30,8 @@ def build_lappyr(img, leveln=6, dtype=np.int16):
     img = dtype(img)
     levels = []
     for _i in xrange(leveln-1):
-        next_img = cv.pyrDown(img)
-        img1 = cv.pyrUp(next_img, dstsize=getsize(img))
+        next_img = ncvslideio.pyrDown(img)
+        img1 = ncvslideio.pyrUp(next_img, dstsize=getsize(img))
         levels.append(img-img1)
         img = next_img
     levels.append(img)
@@ -40,7 +40,7 @@ def build_lappyr(img, leveln=6, dtype=np.int16):
 def merge_lappyr(levels):
     img = levels[-1]
     for lev_img in levels[-2::-1]:
-        img = cv.pyrUp(img, dstsize=getsize(lev_img))
+        img = ncvslideio.pyrUp(img, dstsize=getsize(lev_img))
         img += lev_img
     return np.uint8(np.clip(img, 0, 255))
 
@@ -55,22 +55,22 @@ def main():
     cap = video.create_capture(fn)
 
     leveln = 6
-    cv.namedWindow('level control')
+    ncvslideio.namedWindow('level control')
     for i in xrange(leveln):
-        cv.createTrackbar('%d'%i, 'level control', 5, 50, nothing)
+        ncvslideio.createTrackbar('%d'%i, 'level control', 5, 50, nothing)
 
     while True:
         _ret, frame = cap.read()
 
         pyr = build_lappyr(frame, leveln)
         for i in xrange(leveln):
-            v = int(cv.getTrackbarPos('%d'%i, 'level control') / 5)
+            v = int(ncvslideio.getTrackbarPos('%d'%i, 'level control') / 5)
             pyr[i] *= v
         res = merge_lappyr(pyr)
 
-        cv.imshow('laplacian pyramid filter', res)
+        ncvslideio.imshow('laplacian pyramid filter', res)
 
-        if cv.waitKey(1) == 27:
+        if ncvslideio.waitKey(1) == 27:
             break
 
     print('Done')
@@ -79,4 +79,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

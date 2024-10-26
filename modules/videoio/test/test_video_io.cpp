@@ -44,7 +44,7 @@ public:
     void doTest()
     {
         if (!videoio_registry::hasBackend(apiPref))
-            throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+            throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
         if (cvtest::skipUnstableTests && apiPref == CAP_MSMF && (ext == "h264" || ext == "h265" || ext == "mpg"))
             throw SkipTestException("Unstable MSMF test");
         writeVideo();
@@ -143,7 +143,7 @@ public:
     void doFrameCountTest()
     {
         if (!videoio_registry::hasBackend(apiPref))
-            throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+            throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
         if (cvtest::skipUnstableTests && apiPref == CAP_MSMF && (ext == "h264" || ext == "h265" || ext == "mpg"))
             throw SkipTestException("Unstable MSMF test");
         VideoCapture cap;
@@ -202,26 +202,26 @@ public:
 
     void doTimestampTest()
     {
-        if (!isBackendAvailable(apiPref, cv::videoio_registry::getStreamBackends()))
-            throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+        if (!isBackendAvailable(apiPref, ncvslideio::videoio_registry::getStreamBackends()))
+            throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
 
         if (((apiPref == CAP_GSTREAMER) && (ext == "avi")))
-            throw SkipTestException(cv::String("Backend ") +  cv::videoio_registry::getBackendName(apiPref) +
-                    cv::String(" does not support CAP_PROP_POS_MSEC option"));
+            throw SkipTestException(ncvslideio::String("Backend ") +  ncvslideio::videoio_registry::getBackendName(apiPref) +
+                    ncvslideio::String(" does not support CAP_PROP_POS_MSEC option"));
 
         if (((apiPref == CAP_FFMPEG || apiPref == CAP_GSTREAMER) && ((ext == "h264") || (ext == "h265"))))
-            throw SkipTestException(cv::String("Backend ") +  cv::videoio_registry::getBackendName(apiPref) +
-                    cv::String(" does not support CAP_PROP_POS_MSEC option"));
+            throw SkipTestException(ncvslideio::String("Backend ") +  ncvslideio::videoio_registry::getBackendName(apiPref) +
+                    ncvslideio::String(" does not support CAP_PROP_POS_MSEC option"));
 
         VideoCapture cap;
         EXPECT_NO_THROW(cap.open(video_file, apiPref));
         if (!cap.isOpened())
-            throw SkipTestException(cv::String("Backend ") +  cv::videoio_registry::getBackendName(apiPref) +
-                    cv::String(" can't open the video: ")  + video_file);
+            throw SkipTestException(ncvslideio::String("Backend ") +  ncvslideio::videoio_registry::getBackendName(apiPref) +
+                    ncvslideio::String(" can't open the video: ")  + video_file);
 
         int frame_count = (int)cap.get(CAP_PROP_FRAME_COUNT);
 
-        // HACK: Video consists of 125 frames, but cv::VideoCapture with FFmpeg reports only 122 frames for mpg video.
+        // HACK: Video consists of 125 frames, but ncvslideio::VideoCapture with FFmpeg reports only 122 frames for mpg video.
         // mpg file reports 5.08 sec * 24 fps => property returns 122 frames,but actual number of frames returned is 125
         // HACK: CAP_PROP_FRAME_COUNT is not supported for vmw + MSMF. Just force check for all 125 frames
         if (ext == "mpg")
@@ -280,7 +280,7 @@ public:
         ext = p.ext;
         fourcc = fourccFromString(p.fourcc);
         PSNR_GT = p.PSNR;
-        video_file = cv::tempfile((fourccToString(fourcc) + "." + ext).c_str());
+        video_file = ncvslideio::tempfile((fourccToString(fourcc) + "." + ext).c_str());
         frame_count = 100;
         fps = 25.;
         apiPref = p.api;
@@ -469,7 +469,7 @@ public:
         ext = p.ext;
         fourcc = fourccFromString(p.fourcc);
         if (ext.size() == 3)
-            video_file = cv::tempfile((fourccToString(fourcc) + "." + ext).c_str());
+            video_file = ncvslideio::tempfile((fourccToString(fourcc) + "." + ext).c_str());
         else
             video_file = ext;
         fps = 25.;
@@ -487,14 +487,14 @@ public:
 
 TEST_P(Videoio_Writer, write_nothing)
 {
-    if (!cv::videoio_registry::hasBackend(apiPref))
-        throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+    if (!ncvslideio::videoio_registry::hasBackend(apiPref))
+        throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
 
     VideoWriter writer;
     EXPECT_NO_THROW(writer.open(video_file, apiPref, fourcc, fps, frame_size, true));
     ASSERT_TRUE(writer.isOpened());
 #if 0  // no frames
-    cv::Mat m(frame_size, CV_8UC3, Scalar::all(127));
+    ncvslideio::Mat m(frame_size, CV_8UC3, Scalar::all(127));
     writer << m;
 #endif
     EXPECT_NO_THROW(writer.release());
@@ -549,8 +549,8 @@ typedef Videoio_Writer Videoio_Writer_bad_fourcc;
 
 TEST_P(Videoio_Writer_bad_fourcc, nocrash)
 {
-    if (!isBackendAvailable(apiPref, cv::videoio_registry::getStreamBackends()))
-        throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+    if (!isBackendAvailable(apiPref, ncvslideio::videoio_registry::getStreamBackends()))
+        throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
 
     VideoWriter writer;
     EXPECT_NO_THROW(writer.open(video_file, apiPref, fourcc, fps, frame_size, true));
@@ -609,7 +609,7 @@ TEST_P(safe_capture, frames_independency)
 {
     VideoCaptureAPIs apiPref = GetParam();
     if (!videoio_registry::hasBackend(apiPref))
-        throw SkipTestException(cv::String("Backend is not available/disabled: ") + cv::videoio_registry::getBackendName(apiPref));
+        throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + ncvslideio::videoio_registry::getBackendName(apiPref));
 
     VideoCapture cap;
     String video_file = BunnyParameters::getFilename(String(".avi"));
@@ -630,7 +630,7 @@ TEST_P(safe_capture, frames_independency)
     }
 
     for(int i = 0; i < 10; i++)
-        EXPECT_EQ(0, cv::norm(frames[i], hardCopies[i], NORM_INF)) << i;
+        EXPECT_EQ(0, ncvslideio::norm(frames[i], hardCopies[i], NORM_INF)) << i;
 }
 
 static VideoCaptureAPIs safe_apis[] = {CAP_FFMPEG, CAP_GSTREAMER, CAP_MSMF,CAP_AVFOUNDATION};
@@ -675,9 +675,9 @@ TEST_P(videocapture_acceleration, read)
         throw SkipTestException("Format/codec is not supported");
 
 
-    std::string backend_name = cv::videoio_registry::getBackendName(backend);
+    std::string backend_name = ncvslideio::videoio_registry::getBackendName(backend);
     if (!videoio_registry::hasBackend(backend))
-        throw SkipTestException(cv::String("Backend is not available/disabled: ") + backend_name);
+        throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + backend_name);
 
 
     // HW reader
@@ -685,9 +685,9 @@ TEST_P(videocapture_acceleration, read)
     if (use_umat)
     {
         if (backend != CAP_FFMPEG)
-            throw SkipTestException(cv::String("UMat/OpenCL mapping is not supported by current backend: ") + backend_name);
-        if (!cv::videoio_registry::isBackendBuiltIn(backend))
-            throw SkipTestException(cv::String("UMat/OpenCL mapping is not supported through plugins yet: ") + backend_name);
+            throw SkipTestException(ncvslideio::String("UMat/OpenCL mapping is not supported by current backend: ") + backend_name);
+        if (!ncvslideio::videoio_registry::isBackendBuiltIn(backend))
+            throw SkipTestException(ncvslideio::String("UMat/OpenCL mapping is not supported through plugins yet: ") + backend_name);
         params.push_back(CAP_PROP_HW_ACCELERATION_USE_OPENCL);
         params.push_back(1);
     }
@@ -725,7 +725,7 @@ TEST_P(videocapture_acceleration, read)
     double min_psnr_original = 1000;
     for (int i = 0; i < frameNum; i++)
     {
-        SCOPED_TRACE(cv::format("frame=%d", i));
+        SCOPED_TRACE(ncvslideio::format("frame=%d", i));
         Mat frame;
         if (use_umat)
         {
@@ -774,7 +774,7 @@ TEST_P(videocapture_acceleration, read)
 
         if (cvtest::debugLevel > 0)
         {
-            imwrite(cv::format("test_frame%03d.png", i), frame);
+            imwrite(ncvslideio::format("test_frame%03d.png", i), frame);
         }
 
         Mat original(frame.size(), CV_8UC3, Scalar::all(0));
@@ -786,7 +786,7 @@ TEST_P(videocapture_acceleration, read)
 
     std::ostringstream ss; ss << actual_va;
     std::string actual_va_str = ss.str();
-    std::cout << "VideoCapture with acceleration = " << cv::format("%-6s @ %-10s", actual_va_str.c_str(), backend_name.c_str())
+    std::cout << "VideoCapture with acceleration = " << ncvslideio::format("%-6s @ %-10s", actual_va_str.c_str(), backend_name.c_str())
             << " on " << filename
             << " with PSNR-original = " << min_psnr_original
             << std::endl << std::flush;
@@ -849,9 +849,9 @@ TEST_P(videowriter_acceleration, write)
     double psnr_threshold = get<0>(param).PSNR;
     VideoAccelerationType va_type = get<1>(param);
     bool use_umat = get<2>(param);
-    std::string backend_name = cv::videoio_registry::getBackendName(backend);
+    std::string backend_name = ncvslideio::videoio_registry::getBackendName(backend);
     if (!videoio_registry::hasBackend(backend))
-        throw SkipTestException(cv::String("Backend is not available/disabled: ") + backend_name);
+        throw SkipTestException(ncvslideio::String("Backend is not available/disabled: ") + backend_name);
 
     const Size sz(640, 480);
     const int frameNum = 15;
@@ -865,9 +865,9 @@ TEST_P(videowriter_acceleration, write)
         std::vector<int> params = { VIDEOWRITER_PROP_HW_ACCELERATION, static_cast<int>(va_type) };
         if (use_umat) {
             if (backend != CAP_FFMPEG)
-                throw SkipTestException(cv::String("UMat/OpenCL mapping is not supported by current backend: ") + backend_name);
-            if (!cv::videoio_registry::isBackendBuiltIn(backend))
-                throw SkipTestException(cv::String("UMat/OpenCL mapping is not supported through plugins yet: ") + backend_name);
+                throw SkipTestException(ncvslideio::String("UMat/OpenCL mapping is not supported by current backend: ") + backend_name);
+            if (!ncvslideio::videoio_registry::isBackendBuiltIn(backend))
+                throw SkipTestException(ncvslideio::String("UMat/OpenCL mapping is not supported through plugins yet: ") + backend_name);
             params.push_back(VIDEOWRITER_PROP_HW_ACCELERATION_USE_OPENCL);
             params.push_back(1);
         }
@@ -974,7 +974,7 @@ TEST_P(videowriter_acceleration, write)
         {
             std::ostringstream ss; ss << actual_va;
             std::string actual_va_str = ss.str();
-            std::cout << "VideoWriter with acceleration = " << cv::format("%-6s @ %-10s", actual_va_str.c_str(), backend_name.c_str())
+            std::cout << "VideoWriter with acceleration = " << ncvslideio::format("%-6s @ %-10s", actual_va_str.c_str(), backend_name.c_str())
                     << " on codec=" << codecid << " (." << extension << ")"
                     << ", bitrate = " << fileSize / (frameNum / fps)
                     << ", with PSNR-original = " << min_psnr

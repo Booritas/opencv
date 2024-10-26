@@ -19,7 +19,7 @@ namespace utils {
 
 using double_ms_t = std::chrono::duration<double, std::milli>;
 
-inline void createNDMat(cv::Mat& mat, const std::vector<int>& dims, int depth) {
+inline void createNDMat(ncvslideio::Mat& mat, const std::vector<int>& dims, int depth) {
     GAPI_Assert(!dims.empty());
     mat.create(dims, depth);
     if (dims.size() == 1) {
@@ -28,22 +28,22 @@ inline void createNDMat(cv::Mat& mat, const std::vector<int>& dims, int depth) {
     }
 }
 
-inline void generateRandom(cv::Mat& out) {
+inline void generateRandom(ncvslideio::Mat& out) {
     switch (out.depth()) {
         case CV_8U:
-            cv::randu(out, 0, 255);
+            ncvslideio::randu(out, 0, 255);
             break;
         case CV_32F:
-            cv::randu(out, 0.f, 1.f);
+            ncvslideio::randu(out, 0.f, 1.f);
             break;
         case CV_16F: {
             std::vector<int> dims;
             for (int i = 0; i < out.size.dims(); ++i) {
                 dims.push_back(out.size[i]);
             }
-            cv::Mat fp32_mat;
+            ncvslideio::Mat fp32_mat;
             createNDMat(fp32_mat, dims, CV_32F);
-            cv::randu(fp32_mat, 0.f, 1.f);
+            ncvslideio::randu(fp32_mat, 0.f, 1.f);
             fp32_mat.convertTo(out, out.type());
             break;
         }

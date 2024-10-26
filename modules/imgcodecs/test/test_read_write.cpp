@@ -26,10 +26,10 @@ const tuple <ImreadModes, int> resize_flag_and_dims[] =
 const tuple<string, Size> images[] =
 {
 #ifdef HAVE_JPEG
-    make_tuple<string, Size>("../cv/imgproc/stuff.jpg", Size(640, 480)),
+    make_tuple<string, Size>("../ncvslideio/imgproc/stuff.jpg", Size(640, 480)),
 #endif
 #if defined(HAVE_PNG) || defined(HAVE_SPNG)
-    make_tuple<string, Size>("../cv/shared/pic1.png", Size(400, 300)),
+    make_tuple<string, Size>("../ncvslideio/shared/pic1.png", Size(400, 300)),
 #endif
     make_tuple<string, Size>("../highgui/readwrite/ordinary.bmp", Size(480, 272)),
 };
@@ -106,7 +106,7 @@ TEST(Imgcodecs_Image, read_write_bmp)
         stringstream s; s << i;
         const string digit = s.str();
         const string src_name = TS::ptr()->get_data_path() + "../python/images/QCIF_0" + digit + ".bmp";
-        const string dst_name = cv::tempfile((digit + ".bmp").c_str());
+        const string dst_name = ncvslideio::tempfile((digit + ".bmp").c_str());
         Mat image = imread(src_name);
         ASSERT_FALSE(image.empty());
 
@@ -209,7 +209,7 @@ void test_image_io(const Mat& image, const std::string& fname, const std::string
         cvtColor(loaded, loaded, COLOR_RGB2BGR);
     }
 
-    EXPECT_EQ(0, cv::norm(loaded, buf_loaded, NORM_INF)) << "imread() and imdecode() calls must provide the same result (bit-exact)";
+    EXPECT_EQ(0, ncvslideio::norm(loaded, buf_loaded, NORM_INF)) << "imread() and imdecode() calls must provide the same result (bit-exact)";
 
     double psnr = cvtest::PSNR(loaded, image);
     EXPECT_GT(psnr, psnrThreshold);
@@ -233,7 +233,7 @@ void test_image_io(const Mat& image, const std::string& fname, const std::string
 TEST_P(Imgcodecs_Image, read_write_BGR)
 {
     const string ext = this->GetParam();
-    const string fname = cv::tempfile(ext.c_str());
+    const string fname = ncvslideio::tempfile(ext.c_str());
 
     double psnrThreshold = 100;
     if (ext == "jpg")
@@ -263,7 +263,7 @@ TEST_P(Imgcodecs_Image, read_write_GRAYSCALE)
     )
         throw SkipTestException("GRAYSCALE mode is not supported");
 
-    const string fname = cv::tempfile(ext.c_str());
+    const string fname = ncvslideio::tempfile(ext.c_str());
 
     double psnrThreshold = 100;
     if (ext == "jpg")
@@ -305,20 +305,20 @@ TEST(Imgcodecs_Image, imread_overload)
         void * ptr = img.data;
         imread(imgName, img);
         ASSERT_FALSE(img.empty());
-        EXPECT_EQ(cv::norm(ref, img, NORM_INF), 0);
+        EXPECT_EQ(ncvslideio::norm(ref, img, NORM_INF), 0);
         EXPECT_EQ(img.data, ptr); // no reallocation
     }
     {
         Mat img; // empty image
         imread(imgName, img);
         ASSERT_FALSE(img.empty());
-        EXPECT_EQ(cv::norm(ref, img, NORM_INF), 0);
+        EXPECT_EQ(ncvslideio::norm(ref, img, NORM_INF), 0);
     }
     {
         UMat img; // empty UMat
         imread(imgName, img);
         ASSERT_FALSE(img.empty());
-        EXPECT_EQ(cv::norm(ref, img, NORM_INF), 0);
+        EXPECT_EQ(ncvslideio::norm(ref, img, NORM_INF), 0);
     }
 }
 
@@ -327,7 +327,7 @@ TEST(Imgcodecs_Image, imread_overload)
 TEST(Imgcodecs_Image, write_umat)
 {
     const string src_name = TS::ptr()->get_data_path() + "../python/images/baboon.bmp";
-    const string dst_name = cv::tempfile(".bmp");
+    const string dst_name = ncvslideio::tempfile(".bmp");
 
     Mat image1 = imread(src_name);
     ASSERT_FALSE(image1.empty());
@@ -371,7 +371,7 @@ TEST(Imgcodecs_Image, multipage_collection_read_pages_iterator)
     auto collectionBegin = collection.begin();
     for(size_t i = 0; i < collection.size(); ++i, ++collectionBegin)
     {
-        double diff = cv::norm(collectionBegin.operator*(), imread(page_files[i]), NORM_INF);
+        double diff = ncvslideio::norm(collectionBegin.operator*(), imread(page_files[i]), NORM_INF);
         EXPECT_EQ(0., diff);
     }
 }
@@ -397,10 +397,10 @@ TEST(Imgcodecs_Image, multipage_collection_two_iterator)
     firstIter++;
     for(size_t i = 1; i < collection.size(); i += 2, ++firstIter, ++firstIter, ++secondIter, ++secondIter) {
         Mat mat = *firstIter;
-        double diff = cv::norm(mat, imread(page_files[i]), NORM_INF);
+        double diff = ncvslideio::norm(mat, imread(page_files[i]), NORM_INF);
         EXPECT_EQ(0., diff);
         Mat evenMat = *secondIter;
-        diff = cv::norm(evenMat, imread(page_files[i-1]), NORM_INF);
+        diff = ncvslideio::norm(evenMat, imread(page_files[i-1]), NORM_INF);
         EXPECT_EQ(0., diff);
     }
 }
@@ -416,7 +416,7 @@ TEST(Imgcodecs_Image, multipage_collection_operator_plusplus)
     auto secondIter = firstIter++;
 
     // firstIter points to second page, secondIter points to first page
-    double diff = cv::norm(*firstIter, *secondIter, NORM_INF);
+    double diff = ncvslideio::norm(*firstIter, *secondIter, NORM_INF);
     EXPECT_NE(diff, 0.);
 }
 
@@ -439,9 +439,9 @@ TEST(Imgcodecs_Image, multipage_collection_backward_decoding)
     // backward decoding -> 5,4,3,2,1,0
     for(int i = (int)collection.size() - 1; i >= 0; --i)
     {
-        cv::Mat ithPage = imread(page_files[i]);
+        ncvslideio::Mat ithPage = imread(page_files[i]);
         EXPECT_FALSE(ithPage.empty());
-        double diff = cv::norm(collection[i], ithPage, NORM_INF);
+        double diff = ncvslideio::norm(collection[i], ithPage, NORM_INF);
         EXPECT_EQ(diff, 0.);
     }
 
@@ -450,7 +450,7 @@ TEST(Imgcodecs_Image, multipage_collection_backward_decoding)
         collection.releaseCache(i);
     }
 
-    double diff = cv::norm(collection[2], imread(page_files[2]), NORM_INF);
+    double diff = ncvslideio::norm(collection[2], imread(page_files[2]), NORM_INF);
     EXPECT_EQ(diff, 0.);
 }
 
@@ -472,9 +472,9 @@ TEST(ImgCodecs, multipage_collection_decoding_range_based_for_loop_test)
     size_t index = 0;
     for(auto &i: collection)
     {
-        cv::Mat ithPage = imread(page_files[index]);
+        ncvslideio::Mat ithPage = imread(page_files[index]);
         EXPECT_FALSE(ithPage.empty());
-        double diff = cv::norm(i, ithPage, NORM_INF);
+        double diff = ncvslideio::norm(i, ithPage, NORM_INF);
         EXPECT_EQ(0., diff);
         ++index;
     }
@@ -483,9 +483,9 @@ TEST(ImgCodecs, multipage_collection_decoding_range_based_for_loop_test)
     index = 0;
     for(auto &&i: collection)
     {
-        cv::Mat ithPage = imread(page_files[index]);
+        ncvslideio::Mat ithPage = imread(page_files[index]);
         EXPECT_FALSE(ithPage.empty());
-        double diff = cv::norm(i, ithPage, NORM_INF);
+        double diff = ncvslideio::norm(i, ithPage, NORM_INF);
         EXPECT_EQ(0., diff);
         ++index;
     }
@@ -516,8 +516,8 @@ TEST(ImgCodecs, multipage_collection_two_iterator_operatorpp)
          auto img1 = *it1;
          ++it2;
          ++it1;
-         EXPECT_TRUE(cv::norm(img2, img[i+3], NORM_INF) == 0);
-         EXPECT_TRUE(cv::norm(img1, img[i], NORM_INF) == 0);
+         EXPECT_TRUE(ncvslideio::norm(img2, img[i+3], NORM_INF) == 0);
+         EXPECT_TRUE(ncvslideio::norm(img1, img[i], NORM_INF) == 0);
     }
 }
 
@@ -525,7 +525,7 @@ TEST(ImgCodecs, multipage_collection_two_iterator_operatorpp)
 TEST(Imgcodecs, imencodemulti_regression_26207)
 {
     vector<Mat> imgs;
-    const cv::Mat img(100, 100, CV_8UC1, cv::Scalar::all(0));
+    const ncvslideio::Mat img(100, 100, CV_8UC1, ncvslideio::Scalar::all(0));
     imgs.push_back(img);
     std::vector<uchar> buf;
     bool ret = false;
@@ -548,7 +548,7 @@ TEST(Imgcodecs, imencodemulti_regression_26207)
     // Count stored images from buffer.
     // imcount() doesn't support buffer, so encoded buffer outputs to file temporary.
     const size_t len = buf.size();
-    const string filename = cv::tempfile(".tiff");
+    const string filename = ncvslideio::tempfile(".tiff");
     FILE *f = fopen(filename.c_str(), "wb");
     EXPECT_NE(f, nullptr);
     EXPECT_EQ(len, fwrite(&buf[0], 1, len, f));
@@ -565,13 +565,13 @@ TEST(Imgcodecs, imencode_regression_26207_extra)
 {
     // CV_32F is not supported depth for BMP Encoder.
     // Encoded buffer contains CV_8U image which is fallbacked.
-    const cv::Mat src(100, 100, CV_32FC1, cv::Scalar::all(0));
+    const ncvslideio::Mat src(100, 100, CV_32FC1, ncvslideio::Scalar::all(0));
     std::vector<uchar> buf;
     bool ret = false;
     EXPECT_NO_THROW(ret = imencode(".bmp", src, buf));
     EXPECT_TRUE(ret);
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
     EXPECT_NO_THROW(dst = imdecode(buf, IMREAD_GRAYSCALE));
     EXPECT_FALSE(dst.empty());
     EXPECT_EQ(CV_8UC1, dst.type());
@@ -580,13 +580,13 @@ TEST(Imgcodecs, imwrite_regression_26207_extra)
 {
     // CV_32F is not supported depth for BMP Encoder.
     // Encoded buffer contains CV_8U image which is fallbacked.
-    const cv::Mat src(100, 100, CV_32FC1, cv::Scalar::all(0));
-    const string filename = cv::tempfile(".bmp");
+    const ncvslideio::Mat src(100, 100, CV_32FC1, ncvslideio::Scalar::all(0));
+    const string filename = ncvslideio::tempfile(".bmp");
     bool ret = false;
     EXPECT_NO_THROW(ret = imwrite(filename, src));
     EXPECT_TRUE(ret);
 
-    cv::Mat dst;
+    ncvslideio::Mat dst;
     EXPECT_NO_THROW(dst = imread(filename, IMREAD_GRAYSCALE));
     EXPECT_FALSE(dst.empty());
     EXPECT_EQ(CV_8UC1, dst.type());
@@ -595,21 +595,21 @@ TEST(Imgcodecs, imwrite_regression_26207_extra)
 
 TEST(Imgcodecs_Params, imwrite_regression_22752)
 {
-    const Mat img(16, 16, CV_8UC3, cv::Scalar::all(0));
+    const Mat img(16, 16, CV_8UC3, ncvslideio::Scalar::all(0));
     vector<int> params;
     params.push_back(IMWRITE_JPEG_QUALITY);
 //  params.push_back(100)); // Forget it.
-    EXPECT_ANY_THROW(cv::imwrite("test.jpg", img, params));  // parameters size or missing JPEG codec
+    EXPECT_ANY_THROW(ncvslideio::imwrite("test.jpg", img, params));  // parameters size or missing JPEG codec
 }
 
 TEST(Imgcodecs_Params, imencode_regression_22752)
 {
-    const Mat img(16, 16, CV_8UC3, cv::Scalar::all(0));
+    const Mat img(16, 16, CV_8UC3, ncvslideio::Scalar::all(0));
     vector<int> params;
     params.push_back(IMWRITE_JPEG_QUALITY);
 //  params.push_back(100)); // Forget it.
     vector<uchar> buf;
-    EXPECT_ANY_THROW(cv::imencode("test.jpg", img, buf, params));  // parameters size or missing JPEG codec
+    EXPECT_ANY_THROW(ncvslideio::imencode("test.jpg", img, buf, params));  // parameters size or missing JPEG codec
 }
 
 }} // namespace

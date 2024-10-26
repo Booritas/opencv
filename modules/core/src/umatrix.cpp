@@ -47,7 +47,7 @@
 
 ///////////////////////////////// UMat implementation ///////////////////////////////
 
-namespace cv {
+namespace ncvslideio {
 
 // forward decls, implementation is below in this file
 void setSize(UMat& m, int _dims, const int* _sz, const size_t* _steps,
@@ -142,14 +142,14 @@ static size_t getUMatDataLockIndex(const UMatData* u)
 void UMatData::lock()
 {
     size_t idx = getUMatDataLockIndex(this);
-    //printf("%d lock(%d)\n", cv::utils::getThreadID(), (int)idx);
+    //printf("%d lock(%d)\n", ncvslideio::utils::getThreadID(), (int)idx);
     umatLocks[idx].lock();
 }
 
 void UMatData::unlock()
 {
     size_t idx = getUMatDataLockIndex(this);
-    //printf("%d unlock(%d)\n", cv::utils::getThreadID(), (int)idx);
+    //printf("%d unlock(%d)\n", ncvslideio::utils::getThreadID(), (int)idx);
     umatLocks[idx].unlock();
 }
 
@@ -539,7 +539,7 @@ void setSize( UMat& m, int _dims, const int* _sz,
             m.step.p[i] = total;
             int64 total1 = (int64)total*s;
             if( (uint64)total1 != (size_t)total1 )
-                CV_Error( cv::Error::StsOutOfRange, "The total matrix size does not fit to \"size_t\" type" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "The total matrix size does not fit to \"size_t\" type" );
             total = (size_t)total1;
         }
     }
@@ -555,7 +555,7 @@ void setSize( UMat& m, int _dims, const int* _sz,
 
 void UMat::updateContinuityFlag()
 {
-    flags = cv::updateContinuityFlag(flags, dims, size.p, step.p);
+    flags = ncvslideio::updateContinuityFlag(flags, dims, size.p, step.p);
 }
 
 
@@ -587,7 +587,7 @@ UMat Mat::getUMat(AccessFlag accessFlags, UMatUsageFlags usageFlags) const
             int dleft = ofs.x;
             int dright = wholeSize.width - src.cols - ofs.x;
             src.adjustROI(dtop, dbottom, dleft, dright);
-            return src.getUMat(accessFlags, usageFlags)(cv::Rect(ofs.x, ofs.y, sz.width, sz.height));
+            return src.getUMat(accessFlags, usageFlags)(ncvslideio::Rect(ofs.x, ofs.y, sz.width, sz.height));
         }
     }
     CV_Assert(data == datastart);
@@ -606,7 +606,7 @@ UMat Mat::getUMat(AccessFlag accessFlags, UMatUsageFlags usageFlags) const
     {
         allocated = UMat::getStdAllocator()->allocate(new_u, accessFlags, usageFlags);
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         fprintf(stderr, "Exception: %s\n", e.what());
     }
@@ -660,7 +660,7 @@ void UMat::create(int d, const int* _sizes, int _type, UMatUsageFlags _usageFlag
     // ...then don't change the existing usageFlags
     // it is not possible to change usage from non-default to USAGE_DEFAULT through create()
     // ...instead must construct UMat()
-    if (_usageFlags == cv::USAGE_DEFAULT)
+    if (_usageFlags == ncvslideio::USAGE_DEFAULT)
     {
         _usageFlags = usageFlags;
     }
@@ -965,16 +965,16 @@ UMat UMat::reshape(int new_cn, int new_rows) const
     {
         int total_size = total_width * rows;
         if( !isContinuous() )
-            CV_Error( cv::Error::BadStep,
+            CV_Error( ncvslideio::Error::BadStep,
             "The matrix is not continuous, thus its number of rows can not be changed" );
 
         if( (unsigned)new_rows > (unsigned)total_size )
-            CV_Error( cv::Error::StsOutOfRange, "Bad new number of rows" );
+            CV_Error( ncvslideio::Error::StsOutOfRange, "Bad new number of rows" );
 
         total_width = total_size / new_rows;
 
         if( total_width * new_rows != total_size )
-            CV_Error( cv::Error::StsBadArg, "The total number of matrix elements "
+            CV_Error( ncvslideio::Error::StsBadArg, "The total number of matrix elements "
                                     "is not divisible by the new number of rows" );
 
         hdr.rows = new_rows;
@@ -984,7 +984,7 @@ UMat UMat::reshape(int new_cn, int new_rows) const
     int new_width = total_width / new_cn;
 
     if( new_width * new_cn != total_width )
-        CV_Error( cv::Error::BadNumChannels,
+        CV_Error( ncvslideio::Error::BadNumChannels,
         "The total width is not divisible by the new number of channels" );
 
     hdr.cols = new_width;
@@ -1050,13 +1050,13 @@ UMat UMat::reshape(int _cn, int _newndims, const int* _newsz) const
             else if (i < dims)
                 newsz_buf[i] = this->size[i];
             else
-                CV_Error(cv::Error::StsOutOfRange, "Copy dimension (which has zero size) is not present in source matrix");
+                CV_Error(ncvslideio::Error::StsOutOfRange, "Copy dimension (which has zero size) is not present in source matrix");
 
             total_elem1 *= (size_t)newsz_buf[i];
         }
 
         if (total_elem1 != total_elem1_ref)
-            CV_Error(cv::Error::StsUnmatchedSizes, "Requested and source matrices have different count of elements");
+            CV_Error(ncvslideio::Error::StsUnmatchedSizes, "Requested and source matrices have different count of elements");
 
         UMat hdr = *this;
         hdr.flags = (hdr.flags & ~CV_MAT_CN_MASK) | ((_cn-1) << CV_CN_SHIFT);
@@ -1065,7 +1065,7 @@ UMat UMat::reshape(int _cn, int _newndims, const int* _newsz) const
         return hdr;
     }
 
-    CV_Error(cv::Error::StsNotImplemented, "Reshaping of n-dimensional non-continuous matrices is not supported yet");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "Reshaping of n-dimensional non-continuous matrices is not supported yet");
 }
 
 Mat UMat::getMat(AccessFlag accessFlags) const

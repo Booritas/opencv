@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class SliceOp final : public CUDABackendNode {
@@ -33,8 +33,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             /* sometimes the output shape is passed in the form of a second input tensor
@@ -61,6 +61,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         std::vector<std::vector<std::size_t>> offsets;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_SLICE_HPP */

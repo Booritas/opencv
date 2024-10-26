@@ -12,7 +12,7 @@
 #endif
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 #ifndef HAVE_ONEVPL
 static mfxIMPL getImpl()
@@ -24,7 +24,7 @@ static mfxIMPL getImpl()
 
 static size_t getExtraSurfaceNum()
 {
-    static const size_t res = cv::utils::getConfigurationParameterSizeT("OPENCV_VIDEOIO_MFX_EXTRA_SURFACE_NUM", 1);
+    static const size_t res = ncvslideio::utils::getConfigurationParameterSizeT("OPENCV_VIDEOIO_MFX_EXTRA_SURFACE_NUM", 1);
     return res;
 }
 
@@ -173,7 +173,7 @@ SurfacePool * SurfacePool::_create(const mfxFrameAllocRequest &request, const mf
 
 mfxFrameSurface1 *SurfacePool::getFreeSurface()
 {
-    const int64 start = cv::getTickCount();
+    const int64 start = ncvslideio::getTickCount();
     do
     {
         for(std::vector<mfxFrameSurface1>::iterator i = surfaces.begin(); i != surfaces.end(); ++i)
@@ -181,7 +181,7 @@ mfxFrameSurface1 *SurfacePool::getFreeSurface()
                 return &(*i);
         sleep_ms(10);
     }
-    while((cv::getTickCount() - start) / cv::getTickFrequency() < getPoolTimeoutSec()); // seconds
+    while((ncvslideio::getTickCount() - start) / ncvslideio::getTickFrequency() < getPoolTimeoutSec()); // seconds
     DBG(cout << "No free surface!" << std::endl);
     return 0;
 }

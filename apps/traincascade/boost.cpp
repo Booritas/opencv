@@ -1,30 +1,30 @@
 #include "opencv2/core.hpp"
 #include "opencv2/core/utility.hpp"
 
-using cv::Size;
-using cv::Mat;
-using cv::Point;
-using cv::FileStorage;
-using cv::Rect;
-using cv::Ptr;
-using cv::FileNode;
-using cv::Mat_;
-using cv::Range;
-using cv::FileNodeIterator;
-using cv::ParallelLoopBody;
+using ncvslideio::Size;
+using ncvslideio::Mat;
+using ncvslideio::Point;
+using ncvslideio::FileStorage;
+using ncvslideio::Rect;
+using ncvslideio::Ptr;
+using ncvslideio::FileNode;
+using ncvslideio::Mat_;
+using ncvslideio::Range;
+using ncvslideio::FileNodeIterator;
+using ncvslideio::ParallelLoopBody;
 
 
-using cv::Size;
-using cv::Mat;
-using cv::Point;
-using cv::FileStorage;
-using cv::Rect;
-using cv::Ptr;
-using cv::FileNode;
-using cv::Mat_;
-using cv::Range;
-using cv::FileNodeIterator;
-using cv::ParallelLoopBody;
+using ncvslideio::Size;
+using ncvslideio::Mat;
+using ncvslideio::Point;
+using ncvslideio::FileStorage;
+using ncvslideio::Rect;
+using ncvslideio::Ptr;
+using ncvslideio::FileNode;
+using ncvslideio::Mat_;
+using ncvslideio::Range;
+using ncvslideio::FileNodeIterator;
+using ncvslideio::ParallelLoopBody;
 
 
 #include "boost.h"
@@ -86,10 +86,10 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
     int* dsti;
 
     if( !CV_IS_MAT(idx_arr) )
-        CV_ERROR( cv::Error::StsBadArg, "Invalid index array" );
+        CV_ERROR( ncvslideio::Error::StsBadArg, "Invalid index array" );
 
     if( idx_arr->rows != 1 && idx_arr->cols != 1 )
-        CV_ERROR( cv::Error::StsBadSize, "the index array must be 1-dimensional" );
+        CV_ERROR( ncvslideio::Error::StsBadSize, "the index array must be 1-dimensional" );
 
     idx_total = idx_arr->rows + idx_arr->cols - 1;
     srcb = idx_arr->data.ptr;
@@ -105,20 +105,20 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
         // idx_arr is array of 1's and 0's -
         // i.e. it is a mask of the selected components
         if( idx_total != data_arr_size )
-            CV_ERROR( cv::Error::StsUnmatchedSizes,
+            CV_ERROR( ncvslideio::Error::StsUnmatchedSizes,
             "Component mask should contain as many elements as the total number of input variables" );
 
         for( i = 0; i < idx_total; i++ )
             idx_selected += srcb[i*step] != 0;
 
         if( idx_selected == 0 )
-            CV_ERROR( cv::Error::StsOutOfRange, "No components/input_variables is selected!" );
+            CV_ERROR( ncvslideio::Error::StsOutOfRange, "No components/input_variables is selected!" );
 
         break;
     case CV_32SC1:
         // idx_arr is array of integer indices of selected components
         if( idx_total > data_arr_size )
-            CV_ERROR( cv::Error::StsOutOfRange,
+            CV_ERROR( ncvslideio::Error::StsOutOfRange,
             "index array may not contain more elements than the total number of input variables" );
         idx_selected = idx_total;
         // check if sorted already
@@ -134,7 +134,7 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
         }
         break;
     default:
-        CV_ERROR( cv::Error::StsUnsupportedFormat, "Unsupported index array data type "
+        CV_ERROR( ncvslideio::Error::StsUnsupportedFormat, "Unsupported index array data type "
                                            "(it should be 8uC1, 8sC1 or 32sC1)" );
     }
 
@@ -156,13 +156,13 @@ static CvMat* cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, b
             qsort( dsti, idx_total, sizeof(dsti[0]), icvCmpIntegers );
 
         if( dsti[0] < 0 || dsti[idx_total-1] >= data_arr_size )
-            CV_ERROR( cv::Error::StsOutOfRange, "the index array elements are out of range" );
+            CV_ERROR( ncvslideio::Error::StsOutOfRange, "the index array elements are out of range" );
 
         if( check_for_duplicates )
         {
             for( i = 1; i < idx_total; i++ )
                 if( dsti[i] <= dsti[i-1] )
-                    CV_ERROR( cv::Error::StsBadArg, "There are duplicated index array elements" );
+                    CV_ERROR( ncvslideio::Error::StsBadArg, "There are duplicated index array elements" );
         }
     }
 
@@ -218,7 +218,7 @@ bool CvCascadeBoostParams::read( const FileNode &node )
                  !boostTypeStr.compare( CC_LOGIT_BOOST ) ? CvBoost::LOGIT :
                  !boostTypeStr.compare( CC_GENTLE_BOOST ) ? CvBoost::GENTLE : -1;
     if (boost_type == -1)
-        CV_Error( cv::Error::StsBadArg, "unsupported Boost type" );
+        CV_Error( ncvslideio::Error::StsBadArg, "unsupported Boost type" );
     node[CC_MINHITRATE] >> minHitRate;
     node[CC_MAXFALSEALARM] >> maxFalseAlarm;
     node[CC_TRIM_RATE] >> weight_trim_rate ;
@@ -228,7 +228,7 @@ bool CvCascadeBoostParams::read( const FileNode &node )
          maxFalseAlarm <= 0 || maxFalseAlarm > 1 ||
          weight_trim_rate <= 0 || weight_trim_rate > 1 ||
          max_depth <= 0 || weak_count <= 0 )
-        CV_Error( cv::Error::StsBadArg, "bad parameters range");
+        CV_Error( ncvslideio::Error::StsBadArg, "bad parameters range");
     return true;
 }
 
@@ -309,7 +309,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data( const CvMat* _subsample_id
     bool isMakeRootCopy = true;
 
     if( !data_root )
-        CV_Error( cv::Error::StsError, "No training data has been set" );
+        CV_Error( ncvslideio::Error::StsError, "No training data has been set" );
 
     if( _subsample_idx )
     {
@@ -375,7 +375,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data( const CvMat* _subsample_id
                 co[i*2+1] = -1;
         }
 
-        cv::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
+        ncvslideio::AutoBuffer<uchar> inn_buf(sample_count*(2*sizeof(int) + sizeof(float)));
         // subsample ordered variables
         for( int vi = 0; vi < numPrecalcIdx; vi++ )
         {
@@ -534,7 +534,7 @@ void CvCascadeBoostTrainData::setData( const CvFeatureEvaluator* _featureEvaluat
     have_priors = false;
     is_classifier = true;
 
-    rng = &cv::theRNG();
+    rng = &ncvslideio::theRNG();
 
     set_params( _params );
 
@@ -547,7 +547,7 @@ void CvCascadeBoostTrainData::setData( const CvFeatureEvaluator* _featureEvaluat
     // TODO: check responses: elements must be 0 or 1
 
     if( _precalcValBufSize < 0 || _precalcIdxBufSize < 0)
-        CV_Error( cv::Error::StsOutOfRange, "_numPrecalcVal and _numPrecalcIdx must be positive or 0" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "_numPrecalcVal and _numPrecalcIdx must be positive or 0" );
 
     var_count = var_all = featureEvaluator->getNumFeatures() * featureEvaluator->getFeatureSize();
     sample_count = _numSamples;
@@ -602,7 +602,7 @@ void CvCascadeBoostTrainData::setData( const CvFeatureEvaluator* _featureEvaluat
 
     if ((uint64)effective_buf_width * (uint64)effective_buf_height != effective_buf_size)
     {
-        CV_Error(cv::Error::StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
+        CV_Error(ncvslideio::Error::StsBadArg, "The memory buffer cannot be allocated since its size exceeds integer fields limit");
     }
 
     if ( is_buf_16u )
@@ -738,7 +738,7 @@ void CvCascadeBoostTrainData::get_ord_var_data( CvDTreeNode* n, int vi, float* o
     }
     else // vi >= numPrecalcIdx
     {
-        cv::AutoBuffer<float> abuf(nodeSampleCount);
+        ncvslideio::AutoBuffer<float> abuf(nodeSampleCount);
         float* sampleValues = &abuf[0];
 
         if ( vi < numPrecalcVal )
@@ -813,7 +813,7 @@ struct FeatureIdxOnlyPrecalc : ParallelLoopBody
     }
     void operator()( const Range& range ) const
     {
-        cv::AutoBuffer<float> valCache(sample_count);
+        ncvslideio::AutoBuffer<float> valCache(sample_count);
         float* valCachePtr = valCache.data();
         for ( int fi = range.start; fi < range.end; fi++)
         {
@@ -914,7 +914,7 @@ CvDTreeNode* CvCascadeBoostTree::predict( int sampleIdx ) const
 {
     CvDTreeNode* node = root;
     if( !node )
-        CV_Error( cv::Error::StsError, "The tree has not been trained yet" );
+        CV_Error( ncvslideio::Error::StsError, "The tree has not been trained yet" );
 
     if ( ((CvCascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount() == 0 ) // ordered
     {
@@ -1082,7 +1082,7 @@ void CvCascadeBoostTree::split_node_data( CvDTreeNode* node )
     int workVarCount = data->get_work_var_count();
     CvMat* buf = data->buf;
     size_t length_buf_row = data->get_length_subbuf();
-    cv::AutoBuffer<uchar> inn_buf(n*(3*sizeof(int)+sizeof(float)));
+    ncvslideio::AutoBuffer<uchar> inn_buf(n*(3*sizeof(int)+sizeof(float)));
     int* tempBuf = (int*)inn_buf.data();
     bool splitInputData;
 
@@ -1396,7 +1396,7 @@ void CvCascadeBoost::update_weights( CvBoostTree* tree )
     const int* sampleIdx = 0;
     int inn_buf_size = ((params.boost_type == LOGIT) || (params.boost_type == GENTLE) ? n*sizeof(int) : 0) +
                        ( !tree ? n*sizeof(int) : 0 );
-    cv::AutoBuffer<uchar> inn_buf(inn_buf_size);
+    ncvslideio::AutoBuffer<uchar> inn_buf(inn_buf_size);
     uchar* cur_inn_buf_pos = inn_buf.data();
     if ( (params.boost_type == LOGIT) || (params.boost_type == GENTLE) )
     {

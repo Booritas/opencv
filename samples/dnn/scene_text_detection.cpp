@@ -5,8 +5,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/dnn/dnn.hpp>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 std::string keys =
         "{ help  h                          | | Print help message. }"

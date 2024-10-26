@@ -5,7 +5,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help()
 {
@@ -40,7 +40,7 @@ int main( int argc, const char** argv )
     CascadeClassifier cascade, nestedCascade;
     double scale;
 
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{cascade|data/haarcascades/haarcascade_frontalface_alt.xml|}"
         "{nested-cascade|data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|}"
         "{help h ||}{scale|1|}{try-flip||}{@filename||}"
@@ -206,7 +206,7 @@ void detectAndDraw( UMat& img, Mat& canvas, CascadeClassifier& cascade,
     double alpha = nframes > 50 ? 0.01 : 1./nframes;
     avgfps = avgfps*(1-alpha) + fps*alpha;
 
-    putText(canvas, cv::format("OpenCL: %s, fps: %.1f", ocl::useOpenCL() ? "ON" : "OFF", avgfps), Point(50, 30),
+    putText(canvas, ncvslideio::format("OpenCL: %s, fps: %.1f", ocl::useOpenCL() ? "ON" : "OFF", avgfps), Point(50, 30),
             FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0,255,0), 2);
 
     for ( size_t i = 0; i < faces.size(); i++ )

@@ -5,7 +5,7 @@
 #include "precomp.hpp"
 #include "bufferpool.impl.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 void MatAllocator::map(UMatData*, AccessFlag) const
 {
@@ -267,7 +267,7 @@ void setSize( Mat& m, int _dims, const int* _sz, const size_t* _steps, bool auto
             m.step.p[i] = total;
             uint64 total1 = (uint64)total*s;
             if( (uint64)total1 != (size_t)total1 )
-                CV_Error( cv::Error::StsOutOfRange, "The total matrix size does not fit to \"size_t\" type" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "The total matrix size does not fit to \"size_t\" type" );
             total = (size_t)total1;
         }
     }
@@ -304,7 +304,7 @@ int updateContinuityFlag(int flags, int dims, const int* size, const size_t* ste
 
 void Mat::updateContinuityFlag()
 {
-    flags = cv::updateContinuityFlag(flags, dims, size.p, step.p);
+    flags = ncvslideio::updateContinuityFlag(flags, dims, size.p, step.p);
 }
 
 void finalizeHdr(Mat& m)
@@ -1070,9 +1070,9 @@ void Mat::push_back(const Mat& elems)
     bool eq = size == elems.size;
     size.p[0] = int(r);
     if( !eq )
-        CV_Error(cv::Error::StsUnmatchedSizes, "Pushed vector length is not equal to matrix row length");
+        CV_Error(ncvslideio::Error::StsUnmatchedSizes, "Pushed vector length is not equal to matrix row length");
     if( type() != elems.type() )
-        CV_Error(cv::Error::StsUnmatchedFormats, "Pushed vector type is not the same as matrix type");
+        CV_Error(ncvslideio::Error::StsUnmatchedFormats, "Pushed vector type is not the same as matrix type");
 
     if( isSubmatrix() || dataend + step.p[0]*delta > datalimit )
         reserve( std::max(r + delta, (r*3+1)/2) );
@@ -1168,16 +1168,16 @@ Mat Mat::reshape(int new_cn, int new_rows) const
     {
         int total_size = total_width * rows;
         if( !isContinuous() )
-            CV_Error( cv::Error::BadStep,
+            CV_Error( ncvslideio::Error::BadStep,
             "The matrix is not continuous, thus its number of rows can not be changed" );
 
         if( (unsigned)new_rows > (unsigned)total_size )
-            CV_Error( cv::Error::StsOutOfRange, "Bad new number of rows" );
+            CV_Error( ncvslideio::Error::StsOutOfRange, "Bad new number of rows" );
 
         total_width = total_size / new_rows;
 
         if( total_width * new_rows != total_size )
-            CV_Error( cv::Error::StsBadArg, "The total number of matrix elements "
+            CV_Error( ncvslideio::Error::StsBadArg, "The total number of matrix elements "
                                     "is not divisible by the new number of rows" );
 
         hdr.rows = new_rows;
@@ -1187,7 +1187,7 @@ Mat Mat::reshape(int new_cn, int new_rows) const
     int new_width = total_width / new_cn;
 
     if( new_width * new_cn != total_width )
-        CV_Error( cv::Error::BadNumChannels,
+        CV_Error( ncvslideio::Error::BadNumChannels,
         "The total width is not divisible by the new number of channels" );
 
     hdr.cols = new_width;
@@ -1229,13 +1229,13 @@ Mat Mat::reshape(int _cn, int _newndims, const int* _newsz) const
             else if (i < dims)
                 newsz_buf[i] = this->size[i];
             else
-                CV_Error(cv::Error::StsOutOfRange, "Copy dimension (which has zero size) is not present in source matrix");
+                CV_Error(ncvslideio::Error::StsOutOfRange, "Copy dimension (which has zero size) is not present in source matrix");
 
             total_elem1 *= (size_t)newsz_buf[i];
         }
 
         if (total_elem1 != total_elem1_ref)
-            CV_Error(cv::Error::StsUnmatchedSizes, "Requested and source matrices have different count of elements");
+            CV_Error(ncvslideio::Error::StsUnmatchedSizes, "Requested and source matrices have different count of elements");
 
         Mat hdr = *this;
         hdr.flags = (hdr.flags & ~CV_MAT_CN_MASK) | ((_cn-1) << CV_CN_SHIFT);
@@ -1244,7 +1244,7 @@ Mat Mat::reshape(int _cn, int _newndims, const int* _newsz) const
         return hdr;
     }
 
-    CV_Error(cv::Error::StsNotImplemented, "Reshaping of n-dimensional non-continuous matrices is not supported yet");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "Reshaping of n-dimensional non-continuous matrices is not supported yet");
     // TBD
 }
 
@@ -1356,4 +1356,4 @@ Size getContinuousSize2D(Mat& m1, Mat& m2, Mat& m3, int widthScale)
                               m1.cols, m1.rows, widthScale);
 }
 
-} // cv::
+} // ncvslideio::

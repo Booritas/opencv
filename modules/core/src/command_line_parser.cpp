@@ -4,7 +4,7 @@
 #include "precomp.hpp"
 #include <sstream>
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace {
@@ -464,7 +464,7 @@ std::vector<String> CommandLineParser::Impl::split_range_string(const String& _s
         {
             if (begin == true)
             {
-                throw cv::Exception(cv::Error::StsParseError,
+                throw ncvslideio::Exception(ncvslideio::Error::StsParseError,
                          String("error in split_range_string(")
                          + str
                          + String(", ")
@@ -484,7 +484,7 @@ std::vector<String> CommandLineParser::Impl::split_range_string(const String& _s
         {
             if (begin == false)
             {
-                throw cv::Exception(cv::Error::StsParseError,
+                throw ncvslideio::Exception(ncvslideio::Error::StsParseError,
                          String("error in split_range_string(")
                          + str
                          + String(", ")
@@ -508,7 +508,7 @@ std::vector<String> CommandLineParser::Impl::split_range_string(const String& _s
 
     if (begin == true)
     {
-        throw cv::Exception(cv::Error::StsParseError,
+        throw ncvslideio::Exception(ncvslideio::Error::StsParseError,
                  String("error in split_range_string(")
                  + str
                  + String(", ")

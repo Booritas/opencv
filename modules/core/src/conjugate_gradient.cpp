@@ -44,7 +44,7 @@
 #define dprintf(x)
 #define print_matrix(x)
 
-namespace cv
+namespace ncvslideio
 {
     double MinProblemSolver::Function::getGradientEps() const { return 1e-3; }
     void MinProblemSolver::Function::getGradient(const double* x, double* grad)

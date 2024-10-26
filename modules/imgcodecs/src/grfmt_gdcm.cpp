@@ -53,12 +53,12 @@
 static const size_t preamble_skip = 128;
 static const size_t magic_len = 4;
 
-inline cv::String getMagic()
+inline ncvslideio::String getMagic()
 {
-    return cv::String("\x44\x49\x43\x4D", 4);
+    return ncvslideio::String("\x44\x49\x43\x4D", 4);
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 /************************ DICOM decoder *****************************/

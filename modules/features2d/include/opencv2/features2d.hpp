@@ -73,7 +73,7 @@
   @}
  */
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup features2d_main
@@ -208,14 +208,14 @@ public:
 
     virtual void write( FileStorage&) const CV_OVERRIDE;
 
-    // see corresponding cv::Algorithm method
+    // see corresponding ncvslideio::Algorithm method
     CV_WRAP virtual void read( const FileNode&) CV_OVERRIDE;
 
     //! Return true if detector object is empty
     CV_WRAP virtual bool empty() const CV_OVERRIDE;
     CV_WRAP virtual String getDefaultName() const CV_OVERRIDE;
 
-    // see corresponding cv::Algorithm method
+    // see corresponding ncvslideio::Algorithm method
     CV_WRAP inline void write(FileStorage& fs, const String& name) const { Algorithm::write(fs, name); }
 #if CV_VERSION_MAJOR < 5
     inline void write(const Ptr<FileStorage>& fs, const String& name) const { CV_Assert(fs); Algorithm::write(*fs, name); }
@@ -616,9 +616,9 @@ FastFeatureDetector::TYPE_5_8
 
 Detects corners using the FAST algorithm by @cite Rosten06 .
 
-@note In Python API, types are given as cv.FAST_FEATURE_DETECTOR_TYPE_5_8,
-cv.FAST_FEATURE_DETECTOR_TYPE_7_12 and cv.FAST_FEATURE_DETECTOR_TYPE_9_16. For corner
-detection, use cv.FAST.detect() method.
+@note In Python API, types are given as ncvslideio.FAST_FEATURE_DETECTOR_TYPE_5_8,
+cv.FAST_FEATURE_DETECTOR_TYPE_7_12 and ncvslideio.FAST_FEATURE_DETECTOR_TYPE_9_16. For corner
+detection, use ncvslideio.FAST.detect() method.
  */
 CV_EXPORTS void FAST( InputArray image, CV_OUT std::vector<KeyPoint>& keypoints,
                       int threshold, bool nonmaxSuppression, FastFeatureDetector::DetectorType type );
@@ -782,7 +782,7 @@ public:
   CV_WRAP virtual SimpleBlobDetector::Params getParams() const = 0;
 
   CV_WRAP virtual String getDefaultName() const CV_OVERRIDE;
-  CV_WRAP virtual const std::vector<std::vector<cv::Point> >& getBlobContours() const;
+  CV_WRAP virtual const std::vector<std::vector<ncvslideio::Point> >& getBlobContours() const;
 };
 
 
@@ -1155,7 +1155,7 @@ public:
         read(fs.root());
     }
     // Reads matcher object from a file node
-    // see corresponding cv::Algorithm method
+    // see corresponding ncvslideio::Algorithm method
     CV_WRAP virtual void read( const FileNode& ) CV_OVERRIDE;
     // Writes matcher object to a file storage
     virtual void write( FileStorage& ) const CV_OVERRIDE;
@@ -1184,7 +1184,7 @@ public:
     CV_WRAP static Ptr<DescriptorMatcher> create( const DescriptorMatcher::MatcherType& matcherType );
 
 
-    // see corresponding cv::Algorithm method
+    // see corresponding ncvslideio::Algorithm method
     CV_WRAP inline void write(FileStorage& fs, const String& name) const { Algorithm::write(fs, name); }
 #if CV_VERSION_MAJOR < 5
     inline void write(const Ptr<FileStorage>& fs, const String& name) const { CV_Assert(fs); Algorithm::write(*fs, name); }
@@ -1285,7 +1285,7 @@ protected:
 
 /** @brief Flann-based descriptor matcher.
 
-This matcher trains cv::flann::Index on a train descriptor collection and calls its nearest search
+This matcher trains ncvslideio::flann::Index on a train descriptor collection and calls its nearest search
 methods to find the best matches. So, this matcher may be faster when matching a large train
 collection than the brute force matcher. FlannBasedMatcher does not support masking permissible
 matches of descriptor sets because flann::Index does not support this. :
@@ -1365,8 +1365,8 @@ output image. See possible flags bit values below.
 DrawMatchesFlags. See details above in drawMatches .
 
 @note
-For Python API, flags are modified as cv.DRAW_MATCHES_FLAGS_DEFAULT,
-cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS, cv.DRAW_MATCHES_FLAGS_DRAW_OVER_OUTIMG,
+For Python API, flags are modified as ncvslideio.DRAW_MATCHES_FLAGS_DEFAULT,
+cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS, ncvslideio.DRAW_MATCHES_FLAGS_DRAW_OVER_OUTIMG,
 cv.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS
  */
 CV_EXPORTS_W void drawKeypoints( InputArray image, const std::vector<KeyPoint>& keypoints, InputOutputArray outImage,
@@ -1392,7 +1392,7 @@ drawn.
 DrawMatchesFlags.
 
 This function draws matches of keypoints from two images in the output image. Match is a line
-connecting two keypoints (circles). See cv::DrawMatchesFlags.
+connecting two keypoints (circles). See ncvslideio::DrawMatchesFlags.
  */
 CV_EXPORTS_W void drawMatches( InputArray img1, const std::vector<KeyPoint>& keypoints1,
                              InputArray img2, const std::vector<KeyPoint>& keypoints2,
@@ -1500,7 +1500,7 @@ class CV_EXPORTS_W BOWKMeansTrainer : public BOWTrainer
 public:
     /** @brief The constructor.
 
-    @see cv::kmeans
+    @see ncvslideio::kmeans
     */
     CV_WRAP BOWKMeansTrainer( int clusterCount, const TermCriteria& termcrit=TermCriteria(),
                       int attempts=3, int flags=KMEANS_PP_CENTERS );
@@ -1597,6 +1597,6 @@ protected:
 
 //! @} features2d_category
 
-} /* namespace cv */
+} /* namespace ncvslideio */
 
 #endif

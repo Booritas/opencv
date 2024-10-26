@@ -12,11 +12,11 @@ class algorithm_rw_test(NewOpenCVTests):
         os.close(fd)
 
         # some arbitrary non-default parameters
-        gold = cv.AKAZE_create(descriptor_size=1, descriptor_channels=2, nOctaves=3, threshold=4.0)
-        gold.write(cv.FileStorage(fname, cv.FILE_STORAGE_WRITE), "AKAZE")
+        gold = ncvslideio.AKAZE_create(descriptor_size=1, descriptor_channels=2, nOctaves=3, threshold=4.0)
+        gold.write(ncvslideio.FileStorage(fname, ncvslideio.FILE_STORAGE_WRITE), "AKAZE")
 
-        fs = cv.FileStorage(fname, cv.FILE_STORAGE_READ)
-        algorithm = cv.AKAZE_create()
+        fs = ncvslideio.FileStorage(fname, ncvslideio.FILE_STORAGE_READ)
+        algorithm = ncvslideio.AKAZE_create()
         algorithm.read(fs.getNode("AKAZE"))
 
         self.assertEqual(algorithm.getDescriptorSize(), 1)

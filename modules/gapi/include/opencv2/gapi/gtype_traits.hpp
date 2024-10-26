@@ -22,7 +22,7 @@
 #include <opencv2/gapi/util/util.hpp>
 #include <opencv2/gapi/own/convert.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace detail
 {
@@ -49,17 +49,17 @@ namespace detail
         OPAQUE = OPAQUE_VAL,  // deprecated value used for compatibility, use OPAQUE_VAL instead
 #endif
         GOBJREF,      // <internal> reference to object
-        GMAT,         // a cv::GMat
-        GMATP,        // a cv::GMatP
-        GFRAME,       // a cv::GFrame
-        GSCALAR,      // a cv::GScalar
-        GARRAY,       // a cv::GArrayU  (note - exactly GArrayU,  not GArray<T>!)
-        GOPAQUE,      // a cv::GOpaqueU (note - exactly GOpaqueU, not GOpaque<T>!)
+        GMAT,         // a ncvslideio::GMat
+        GMATP,        // a ncvslideio::GMatP
+        GFRAME,       // a ncvslideio::GFrame
+        GSCALAR,      // a ncvslideio::GScalar
+        GARRAY,       // a ncvslideio::GArrayU  (note - exactly GArrayU,  not GArray<T>!)
+        GOPAQUE,      // a ncvslideio::GOpaqueU (note - exactly GOpaqueU, not GOpaque<T>!)
     };
 
     // Describe G-API types (G-types) with traits.  Mostly used by
-    // cv::GArg to store meta information about types passed into
-    // operation arguments. Please note that cv::GComputation is
+    // ncvslideio::GArg to store meta information about types passed into
+    // operation arguments. Please note that ncvslideio::GComputation is
     // defined on GProtoArgs, not GArgs!
     template<typename T> struct GTypeTraits;
     template<typename T> struct GTypeTraits
@@ -67,51 +67,51 @@ namespace detail
         static constexpr const ArgKind kind = ArgKind::OPAQUE_VAL;
         static constexpr const OpaqueKind op_kind = OpaqueKind::CV_UNKNOWN;
     };
-    template<>           struct GTypeTraits<cv::GMat>
+    template<>           struct GTypeTraits<ncvslideio::GMat>
     {
         static constexpr const ArgKind kind = ArgKind::GMAT;
         static constexpr const GShape shape = GShape::GMAT;
         static constexpr const OpaqueKind op_kind = OpaqueKind::CV_UNKNOWN;
     };
-    template<>           struct GTypeTraits<cv::GMatP>
+    template<>           struct GTypeTraits<ncvslideio::GMatP>
     {
         static constexpr const ArgKind kind = ArgKind::GMATP;
         static constexpr const GShape shape = GShape::GMAT;
         static constexpr const OpaqueKind op_kind = OpaqueKind::CV_UNKNOWN;
     };
-    template<>           struct GTypeTraits<cv::GFrame>
+    template<>           struct GTypeTraits<ncvslideio::GFrame>
     {
         static constexpr const ArgKind kind = ArgKind::GFRAME;
         static constexpr const GShape shape = GShape::GFRAME;
         static constexpr const OpaqueKind op_kind = OpaqueKind::CV_UNKNOWN;
     };
-    template<>           struct GTypeTraits<cv::GScalar>
+    template<>           struct GTypeTraits<ncvslideio::GScalar>
     {
         static constexpr const ArgKind kind = ArgKind::GSCALAR;
         static constexpr const GShape shape = GShape::GSCALAR;
         static constexpr const OpaqueKind op_kind = OpaqueKind::CV_UNKNOWN;
     };
-    template<class T> struct GTypeTraits<cv::GArray<T> >
+    template<class T> struct GTypeTraits<ncvslideio::GArray<T> >
     {
         static constexpr const ArgKind kind = ArgKind::GARRAY;
         static constexpr const GShape shape = GShape::GARRAY;
         static constexpr const OpaqueKind op_kind = GOpaqueTraits<T>::kind;
         using host_type  = std::vector<T>;
-        using strip_type = cv::detail::VectorRef;
-        static cv::detail::GArrayU   wrap_value(const cv::GArray<T>  &t) { return t.strip();}
-        static cv::detail::VectorRef wrap_in   (const std::vector<T> &t) { return detail::VectorRef(t); }
-        static cv::detail::VectorRef wrap_out  (      std::vector<T> &t) { return detail::VectorRef(t); }
+        using strip_type = ncvslideio::detail::VectorRef;
+        static ncvslideio::detail::GArrayU   wrap_value(const ncvslideio::GArray<T>  &t) { return t.strip();}
+        static ncvslideio::detail::VectorRef wrap_in   (const std::vector<T> &t) { return detail::VectorRef(t); }
+        static ncvslideio::detail::VectorRef wrap_out  (      std::vector<T> &t) { return detail::VectorRef(t); }
     };
-    template<class T> struct GTypeTraits<cv::GOpaque<T> >
+    template<class T> struct GTypeTraits<ncvslideio::GOpaque<T> >
     {
         static constexpr const ArgKind kind = ArgKind::GOPAQUE;
         static constexpr const GShape shape = GShape::GOPAQUE;
         static constexpr const OpaqueKind op_kind = GOpaqueTraits<T>::kind;
         using host_type  = T;
-        using strip_type = cv::detail::OpaqueRef;
-        static cv::detail::GOpaqueU  wrap_value(const cv::GOpaque<T>  &t) { return t.strip();}
-        static cv::detail::OpaqueRef wrap_in   (const T &t) { return detail::OpaqueRef(t); }
-        static cv::detail::OpaqueRef wrap_out  (      T &t) { return detail::OpaqueRef(t); }
+        using strip_type = ncvslideio::detail::OpaqueRef;
+        static ncvslideio::detail::GOpaqueU  wrap_value(const ncvslideio::GOpaque<T>  &t) { return t.strip();}
+        static ncvslideio::detail::OpaqueRef wrap_in   (const T &t) { return detail::OpaqueRef(t); }
+        static ncvslideio::detail::OpaqueRef wrap_out  (      T &t) { return detail::OpaqueRef(t); }
     };
 
     // Tests if Trait for type T requires extra marshalling ("custom wrap") or not.
@@ -133,19 +133,19 @@ namespace detail
     // and GMat behavior is correct for GMatP)
     template<typename T> struct GTypeOf;
 #if !defined(GAPI_STANDALONE)
-    template<>           struct GTypeOf<cv::UMat>              { using type = cv::GMat;      };
+    template<>           struct GTypeOf<ncvslideio::UMat>              { using type = ncvslideio::GMat;      };
 #endif // !defined(GAPI_STANDALONE)
-    template<>           struct GTypeOf<cv::Mat>               { using type = cv::GMat;      };
-    template<>           struct GTypeOf<cv::RMat>              { using type = cv::GMat;      };
-    template<>           struct GTypeOf<cv::Scalar>            { using type = cv::GScalar;   };
-    template<typename U> struct GTypeOf<std::vector<U> >       { using type = cv::GArray<U>; };
-    template<typename U> struct GTypeOf                        { using type = cv::GOpaque<U>;};
-    template<>           struct GTypeOf<cv::MediaFrame>        { using type = cv::GFrame;    };
+    template<>           struct GTypeOf<ncvslideio::Mat>               { using type = ncvslideio::GMat;      };
+    template<>           struct GTypeOf<ncvslideio::RMat>              { using type = ncvslideio::GMat;      };
+    template<>           struct GTypeOf<ncvslideio::Scalar>            { using type = ncvslideio::GScalar;   };
+    template<typename U> struct GTypeOf<std::vector<U> >       { using type = ncvslideio::GArray<U>; };
+    template<typename U> struct GTypeOf                        { using type = ncvslideio::GOpaque<U>;};
+    template<>           struct GTypeOf<ncvslideio::MediaFrame>        { using type = ncvslideio::GFrame;    };
 
     // FIXME: This is not quite correct since IStreamSource may
     // produce not only Mat but also MediaFrame, Scalar and vector
     // data. TODO: Extend the type dispatching on these types too.
-    template<>           struct GTypeOf<cv::gapi::wip::IStreamSource::Ptr> { using type = cv::GMat;};
+    template<>           struct GTypeOf<ncvslideio::gapi::wip::IStreamSource::Ptr> { using type = ncvslideio::GMat;};
     template<class T> using g_type_of_t = typename GTypeOf<T>::type;
 
     // Marshalling helper for G-types and its Host types. Helps G-API
@@ -162,20 +162,20 @@ namespace detail
     //   stored in G-API metadata.
     //
     //   Example:
-    //   - cv::GMat arguments are passed as-is.
+    //   - ncvslideio::GMat arguments are passed as-is.
     //   - integers, pointers, STL containers, user types are passed as-is.
-    //   - cv::GArray<T> is converted to cv::GArrayU.
+    //   - ncvslideio::GArray<T> is converted to ncvslideio::GArrayU.
     //
     // * wrap_in() / wrap_out() - convert Host type associated with
     //   G-type to internal representation type.
     //
     //   - For "simple" (non-template) G-types, returns value as-is.
-    //     Example: cv::GMat has host type cv::Mat, when user passes a
-    //              cv::Mat, system stores it internally as cv::Mat.
+    //     Example: ncvslideio::GMat has host type ncvslideio::Mat, when user passes a
+    //              ncvslideio::Mat, system stores it internally as ncvslideio::Mat.
     //
     //   - For "complex" (template) G-types, utilizes custom
     //     wrap_in()/wrap_out() as described in Traits.
-    //     Example: cv::GArray<T> has host type std::vector<T>, when
+    //     Example: ncvslideio::GArray<T> has host type std::vector<T>, when
     //              user passes a std::vector<T>, system stores it
     //              internally as VectorRef (with <T> stripped away).
     template<typename T, class Custom = void> struct WrapValue
@@ -197,16 +197,16 @@ namespace detail
         }
         template<typename U> static auto wrap_in (const U &u) -> typename GTypeTraits<T>::strip_type
         {
-            static_assert(!(cv::detail::has_gshape<GTypeTraits<U>>::value
-                            || cv::detail::contains<typename std::decay<U>::type, GAPI_OWN_TYPES_LIST>::value),
-                          "gin/gout must not be used with G* classes or cv::gapi::own::*");
+            static_assert(!(ncvslideio::detail::has_gshape<GTypeTraits<U>>::value
+                            || ncvslideio::detail::contains<typename std::decay<U>::type, GAPI_OWN_TYPES_LIST>::value),
+                          "gin/gout must not be used with G* classes or ncvslideio::gapi::own::*");
             return GTypeTraits<T>::wrap_in(u);
         }
         template<typename U> static auto wrap_out(U &u) -> typename GTypeTraits<T>::strip_type
         {
-            static_assert(!(cv::detail::has_gshape<GTypeTraits<U>>::value
-                            || cv::detail::contains<typename std::decay<U>::type, GAPI_OWN_TYPES_LIST>::value),
-                          "gin/gout must not be used with G* classes or cv::gapi::own::*");
+            static_assert(!(ncvslideio::detail::has_gshape<GTypeTraits<U>>::value
+                            || ncvslideio::detail::contains<typename std::decay<U>::type, GAPI_OWN_TYPES_LIST>::value),
+                          "gin/gout must not be used with G* classes or ncvslideio::gapi::own::*");
             return GTypeTraits<T>::wrap_out(u);
         }
     };
@@ -237,6 +237,6 @@ template<typename T> struct GObtainCtor<GOpaque<T> > {
     static HostCtor get() { return HostCtor{ConstructOpaque{&GOpaque<T>::Ctor}}; }
 };
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GTYPE_TRAITS_HPP

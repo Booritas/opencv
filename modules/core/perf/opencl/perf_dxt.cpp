@@ -78,16 +78,16 @@ OCL_PERF_TEST_P(DftFixture, Dft, ::testing::Combine(Values(C2C, R2R, C2R, R2C),
     int in_cn = 0, out_cn = 0;
     switch (dft_type)
     {
-    case R2R: flags |= cv::DFT_REAL_OUTPUT; in_cn = 1; out_cn = 1; break;
-    case C2R: flags |= cv::DFT_REAL_OUTPUT; in_cn = 2; out_cn = 2; break;
-    case R2C: flags |= cv::DFT_COMPLEX_OUTPUT; in_cn = 1; out_cn = 2; break;
-    case C2C: flags |= cv::DFT_COMPLEX_OUTPUT; in_cn = 2; out_cn = 2; break;
+    case R2R: flags |= ncvslideio::DFT_REAL_OUTPUT; in_cn = 1; out_cn = 1; break;
+    case C2R: flags |= ncvslideio::DFT_REAL_OUTPUT; in_cn = 2; out_cn = 2; break;
+    case R2C: flags |= ncvslideio::DFT_COMPLEX_OUTPUT; in_cn = 1; out_cn = 2; break;
+    case C2C: flags |= ncvslideio::DFT_COMPLEX_OUTPUT; in_cn = 2; out_cn = 2; break;
     }
 
     UMat src(srcSize, CV_MAKE_TYPE(CV_32F, in_cn)), dst(srcSize, CV_MAKE_TYPE(CV_32F, out_cn));
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::dft(src, dst, flags);
+    OCL_TEST_CYCLE() ncvslideio::dft(src, dst, flags);
 
     SANITY_CHECK(dst, 1e-5, ERROR_RELATIVE);
 }
@@ -108,7 +108,7 @@ OCL_PERF_TEST_P(MulSpectrumsFixture, MulSpectrums,
     UMat src1(srcSize, CV_32FC2), src2(srcSize, CV_32FC2), dst(srcSize, CV_32FC2);
     declare.in(src1, src2, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::mulSpectrums(src1, src2, dst, 0, conj);
+    OCL_TEST_CYCLE() ncvslideio::mulSpectrums(src1, src2, dst, 0, conj);
 
     SANITY_CHECK(dst, 1e-3);
 }

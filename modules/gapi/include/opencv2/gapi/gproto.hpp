@@ -21,7 +21,7 @@
 #include <opencv2/gapi/garg.hpp>
 #include <opencv2/gapi/gmetaarg.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 // FIXME: user shouldn't deal with it - put to detail?
 // GProtoArg is an union type over G-types which can serve as
@@ -79,7 +79,7 @@ public:
 };
 
 template<typename Tg>
-cv::GIOProtoArgs<Tg>& operator += (cv::GIOProtoArgs<Tg> &lhs, const cv::GIOProtoArgs<Tg> &rhs)
+ncvslideio::GIOProtoArgs<Tg>& operator += (ncvslideio::GIOProtoArgs<Tg> &lhs, const ncvslideio::GIOProtoArgs<Tg> &rhs)
 {
     lhs.m_args.reserve(lhs.m_args.size() + rhs.m_args.size());
     lhs.m_args.insert(lhs.m_args.end(), rhs.m_args.begin(), rhs.m_args.end());
@@ -154,6 +154,6 @@ bool GAPI_EXPORTS can_describe(const GMetaArg&  meta,  const GRunArgP& argp);
 void GAPI_EXPORTS validate_input_arg(const GRunArg& arg);
 void GAPI_EXPORTS validate_input_args(const GRunArgs& args);
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GPROTO_HPP

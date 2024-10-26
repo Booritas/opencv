@@ -15,7 +15,7 @@ TEST(ML_RTrees, getVotes)
     int max_votes = -1;
     int val;
     // RTrees for classification
-    Ptr<ml::RTrees> rt = cv::ml::RTrees::create();
+    Ptr<ml::RTrees> rt = ncvslideio::ml::RTrees::create();
 
     //data
     Mat data(n, 4, CV_32F);
@@ -55,7 +55,7 @@ TEST(ML_RTrees, 11142_sample_weights_regression)
 {
     int n = 3;
     // RTrees for regression
-    Ptr<ml::RTrees> rt = cv::ml::RTrees::create();
+    Ptr<ml::RTrees> rt = ncvslideio::ml::RTrees::create();
     //simple regression problem of x -> 2x
     Mat data = (Mat_<float>(n,1) << 1, 2, 3);
     Mat values = (Mat_<float>(n,1) << 2, 4, 6);
@@ -76,7 +76,7 @@ TEST(ML_RTrees, 11142_sample_weights_classification)
 {
     int n = 12;
     // RTrees for classification
-    Ptr<ml::RTrees> rt = cv::ml::RTrees::create();
+    Ptr<ml::RTrees> rt = ncvslideio::ml::RTrees::create();
 
     Mat data(n, 4, CV_32F);
     randu(data, 0, 10);
@@ -99,11 +99,11 @@ TEST(ML_RTrees, bug_12974_throw_exception_when_predict_different_feature_count)
 {
     int numFeatures = 5;
     // create a 5 feature dataset and train the model
-    cv::Ptr<RTrees> model = RTrees::create();
+    ncvslideio::Ptr<RTrees> model = RTrees::create();
     Mat samples(10, numFeatures, CV_32F);
     randu(samples, 0, 10);
     Mat labels = (Mat_<int>(10,1) << 0,0,0,0,0,1,1,1,1,1);
-    cv::Ptr<TrainData> trainData = TrainData::create(samples, cv::ml::ROW_SAMPLE, labels);
+    ncvslideio::Ptr<TrainData> trainData = TrainData::create(samples, ncvslideio::ml::ROW_SAMPLE, labels);
     model->train(trainData);
     // try to predict on data which have fewer features - this should throw an exception
     for(int i = 1; i < numFeatures - 1; ++i) {

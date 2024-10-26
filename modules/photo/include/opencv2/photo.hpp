@@ -81,7 +81,7 @@ This module includes photo processing algorithms
 @}
   */
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup photo
@@ -104,7 +104,7 @@ needs to be inpainted.
 @param dst Output image with the same size and type as src .
 @param inpaintRadius Radius of a circular neighborhood of each point inpainted that is considered
 by the algorithm.
-@param flags Inpainting method that could be cv::INPAINT_NS or cv::INPAINT_TELEA
+@param flags Inpainting method that could be ncvslideio::INPAINT_NS or ncvslideio::INPAINT_TELEA
 
 The function reconstructs the selected image area from the pixel near the area boundary. The
 function may be used to remove dust and scratches from a scanned photo, or to remove undesirable
@@ -734,7 +734,7 @@ content @cite PM03 .
 @param mask Input 8-bit 1 or 3-channel image.
 @param p Point in dst image where object is placed.
 @param blend Output image with the same size and type as dst.
-@param flags Cloning method that could be cv::NORMAL_CLONE, cv::MIXED_CLONE or cv::MONOCHROME_TRANSFER
+@param flags Cloning method that could be ncvslideio::NORMAL_CLONE, ncvslideio::MIXED_CLONE or ncvslideio::MONOCHROME_TRANSFER
  */
 CV_EXPORTS_W void seamlessClone( InputArray src, InputArray dst, InputArray mask, Point p,
         OutputArray blend, int flags);
@@ -804,7 +804,7 @@ filters are used in many different applications @cite EM11 .
 
 @param src Input 8-bit 3-channel image.
 @param dst Output 8-bit 3-channel image.
-@param flags Edge preserving filters: cv::RECURS_FILTER or cv::NORMCONV_FILTER
+@param flags Edge preserving filters: ncvslideio::RECURS_FILTER or ncvslideio::NORMCONV_FILTER
 @param sigma_s %Range between 0 to 200.
 @param sigma_r %Range between 0 to 1.
  */

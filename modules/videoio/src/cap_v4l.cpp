@@ -16,7 +16,7 @@ For Release:  OpenCV-Linux Beta4  opencv-0.9.6
 Tested On:    LMLBT44 with 8 video inputs
 Patched Comments:
 
-TW: The cv cam utils that came with the initial release of OpenCV for LINUX Beta4
+TW: The ncvslideio cam utils that came with the initial release of OpenCV for LINUX Beta4
 were not working.  I have rewritten them so they work for me. At the same time, trying
 to keep the original code as ML wrote it as unchanged as possible.  No one likes to debug
 someone elses code, so I resisted changes as much as possible.  I have tried to keep the
@@ -50,7 +50,7 @@ TW: You can select any video source, but this package was limited from the start
 ONE camera opened at any ONE time.
 This is an original program limitation.
 If you are interested, I will make my version available to other OpenCV users.  The big
-difference in mine is you may pass the camera number as part of the cv argument, but this
+difference in mine is you may pass the camera number as part of the ncvslideio argument, but this
 convention is non standard for current OpenCV calls and the camera number is not currently
 passed into the called routine.
 
@@ -307,7 +307,7 @@ enum {
 // if enabled, then bad JPEG warnings become errors and cause NULL returned instead of image
 #define V4L_ABORT_BADJPEG
 
-namespace cv {
+namespace ncvslideio {
 
 static const char* decode_ioctl_code(unsigned long ioctlCode)
 {
@@ -363,7 +363,7 @@ struct Buffer
 
 struct CvCaptureCAM_V4L CV_FINAL : public IVideoCapture
 {
-    int getCaptureDomain() /*const*/ CV_OVERRIDE { return cv::CAP_V4L; }
+    int getCaptureDomain() /*const*/ CV_OVERRIDE { return ncvslideio::CAP_V4L; }
 
     int deviceHandle;
     bool v4l_buffersRequested;
@@ -382,16 +382,16 @@ struct CvCaptureCAM_V4L CV_FINAL : public IVideoCapture
     __u32 fps;
     bool convert_rgb;
     bool returnFrame;
-    // To select a video input set cv::CAP_PROP_CHANNEL to channel number.
+    // To select a video input set ncvslideio::CAP_PROP_CHANNEL to channel number.
     // If the new channel number is than 0, then a video input will not change
     int channelNumber;
     // Normalize properties. If set parameters will be converted to/from [0,1) range.
     // Enabled by default (as OpenCV 3.x does).
     // Value is initialized from the environment variable `OPENCV_VIDEOIO_V4L_RANGE_NORMALIZED`:
-    // To select real parameters mode after devise is open set cv::CAP_PROP_MODE to 0
+    // To select real parameters mode after devise is open set ncvslideio::CAP_PROP_MODE to 0
     // any other value revert the backward compatibility mode (with normalized properties).
     // Range normalization affects the following parameters:
-    // cv::CAP_PROP_*: BRIGHTNESS,CONTRAST,SATURATION,HUE,GAIN,EXPOSURE,FOCUS,AUTOFOCUS,AUTO_EXPOSURE.
+    // ncvslideio::CAP_PROP_*: BRIGHTNESS,CONTRAST,SATURATION,HUE,GAIN,EXPOSURE,FOCUS,AUTOFOCUS,AUTO_EXPOSURE.
     bool normalizePropRange;
 
     /* V4L2 variables */
@@ -426,7 +426,7 @@ struct CvCaptureCAM_V4L CV_FINAL : public IVideoCapture
     bool streaming(bool startStream);
     bool setFps(int value);
     bool tryIoctl(unsigned long ioctlCode, void *parameter, bool failIfBusy = true, int attempts = 10) const;
-    bool controlInfo(int property_id, __u32 &v4l2id, cv::Range &range) const;
+    bool controlInfo(int property_id, __u32 &v4l2id, ncvslideio::Range &range) const;
     bool icvControl(__u32 v4l2id, int &value, bool isSet) const;
 
     bool icvSetFrameSize(int _width, int _height);
@@ -554,7 +554,7 @@ bool CvCaptureCAM_V4L::try_init_v4l2()
     the following settings and recompile/reinstall.  This set of settings is based on
     the most commonly encountered input video source types (like my bttv card) */
 
-    // The cv::CAP_PROP_MODE used for set the video input channel number
+    // The ncvslideio::CAP_PROP_MODE used for set the video input channel number
     if (!setVideoInputChannel())
     {
         CV_LOG_DEBUG(NULL, "VIDEOIO(V4L2:" << deviceName << "): Unable to set Video Input Channel");
@@ -879,13 +879,13 @@ bool CvCaptureCAM_V4L::v4l2_reset()
 
 bool CvCaptureCAM_V4L::open(int _index)
 {
-    cv::String name;
+    ncvslideio::String name;
     /* Select camera, or rather, V4L video source */
     if (_index < 0) // Asking for the first device available
     {
         for (int autoindex = 0; autoindex < MAX_CAMERAS; ++autoindex)
         {
-            name = cv::format("/dev/video%d", autoindex);
+            name = ncvslideio::format("/dev/video%d", autoindex);
             /* Test using an open to see if this new device name really does exists. */
             int h = ::open(name.c_str(), O_RDONLY);
             if (h != -1)
@@ -904,7 +904,7 @@ bool CvCaptureCAM_V4L::open(int _index)
     }
     else
     {
-        name = cv::format("/dev/video%d", _index);
+        name = ncvslideio::format("/dev/video%d", _index);
     }
 
     bool res = open(name);
@@ -1406,7 +1406,7 @@ static int sonix_decompress(int width, int height, unsigned char *inp, unsigned 
 
 void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
 {
-    cv::Size imageSize;
+    ncvslideio::Size imageSize;
     unsigned char *start;
 
     if (V4L2_TYPE_IS_MULTIPLANAR(type)) {
@@ -1421,11 +1421,11 @@ void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
             offset += bytesused;
         }
 
-        imageSize = cv::Size(form.fmt.pix_mp.width, form.fmt.pix_mp.height);
+        imageSize = ncvslideio::Size(form.fmt.pix_mp.width, form.fmt.pix_mp.height);
     } else {
         start = (unsigned char*)currentBuffer.memories[MEMORY_ORIG].start;
 
-        imageSize = cv::Size(form.fmt.pix.width, form.fmt.pix.height);
+        imageSize = ncvslideio::Size(form.fmt.pix.width, form.fmt.pix.height);
     }
     // Not found conversion
     switch (palette)
@@ -1440,45 +1440,45 @@ void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
     // Converted by cvtColor or imdecode
     switch (palette) {
     case V4L2_PIX_FMT_YVU420:
-        cv::cvtColor(cv::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
                      COLOR_YUV2BGR_YV12);
         return;
     case V4L2_PIX_FMT_YUV420:
-        cv::cvtColor(cv::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
                      COLOR_YUV2BGR_IYUV);
         return;
     case V4L2_PIX_FMT_NV12:
-        cv::cvtColor(cv::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
                      COLOR_YUV2BGR_NV12);
         return;
     case V4L2_PIX_FMT_NV21:
-        cv::cvtColor(cv::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize.height * 3 / 2, imageSize.width, CV_8U, start), frame,
                      COLOR_YUV2BGR_NV21);
         return;
 #ifdef HAVE_JPEG
     case V4L2_PIX_FMT_MJPEG:
     case V4L2_PIX_FMT_JPEG:
         CV_LOG_DEBUG(NULL, "VIDEOIO(V4L2:" << deviceName << "): decoding JPEG frame: size=" << currentBuffer.bytesused);
-        cv::imdecode(Mat(1, currentBuffer.bytesused, CV_8U, start), IMREAD_COLOR, &frame);
+        ncvslideio::imdecode(Mat(1, currentBuffer.bytesused, CV_8U, start), IMREAD_COLOR, &frame);
         return;
 #endif
     case V4L2_PIX_FMT_YUYV:
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC2, start), frame, COLOR_YUV2BGR_YUYV);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC2, start), frame, COLOR_YUV2BGR_YUYV);
         return;
     case V4L2_PIX_FMT_UYVY:
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC2, start), frame, COLOR_YUV2BGR_UYVY);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC2, start), frame, COLOR_YUV2BGR_UYVY);
         return;
     case V4L2_PIX_FMT_RGB24:
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC3, start), frame, COLOR_RGB2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC3, start), frame, COLOR_RGB2BGR);
         return;
     case V4L2_PIX_FMT_Y16:
     {
         // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-y16.html
         // This is a grey-scale image with a depth of 16 bits per pixel. The least significant byte is stored at lower memory addresses (little-endian).
         // Note: 10-bits precision is not supported
-        cv::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
-        cv::extractChannel(cv::Mat(imageSize, CV_8UC2, start), temp, 1);  // 1 - second channel
-        cv::cvtColor(temp, frame, COLOR_GRAY2BGR);
+        ncvslideio::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
+        ncvslideio::extractChannel(ncvslideio::Mat(imageSize, CV_8UC2, start), temp, 1);  // 1 - second channel
+        ncvslideio::cvtColor(temp, frame, COLOR_GRAY2BGR);
         return;
     }
     case V4L2_PIX_FMT_Y16_BE:
@@ -1486,23 +1486,23 @@ void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
         // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-y16-be.html
         // This is a grey-scale image with a depth of 16 bits per pixel. The most significant byte is stored at lower memory addresses (big-endian).
         // Note: 10-bits precision is not supported
-        cv::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
-        cv::extractChannel(cv::Mat(imageSize, CV_8UC2, start), temp, 0);  // 0 - first channel
-        cv::cvtColor(temp, frame, COLOR_GRAY2BGR);
+        ncvslideio::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
+        ncvslideio::extractChannel(ncvslideio::Mat(imageSize, CV_8UC2, start), temp, 0);  // 0 - first channel
+        ncvslideio::cvtColor(temp, frame, COLOR_GRAY2BGR);
         return;
     }
     case V4L2_PIX_FMT_Y12:
     {
-        cv::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
-        cv::Mat(imageSize, CV_16UC1, start).convertTo(temp, CV_8U, 1.0 / 16);
-        cv::cvtColor(temp, frame, COLOR_GRAY2BGR);
+        ncvslideio::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
+        ncvslideio::Mat(imageSize, CV_16UC1, start).convertTo(temp, CV_8U, 1.0 / 16);
+        ncvslideio::cvtColor(temp, frame, COLOR_GRAY2BGR);
         return;
     }
     case V4L2_PIX_FMT_Y10:
     {
-        cv::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
-        cv::Mat(imageSize, CV_16UC1, start).convertTo(temp, CV_8U, 1.0 / 4);
-        cv::cvtColor(temp, frame, COLOR_GRAY2BGR);
+        ncvslideio::Mat temp(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
+        ncvslideio::Mat(imageSize, CV_16UC1, start).convertTo(temp, CV_8U, 1.0 / 4);
+        ncvslideio::cvtColor(temp, frame, COLOR_GRAY2BGR);
         return;
     }
     case V4L2_PIX_FMT_SN9C10X:
@@ -1511,36 +1511,36 @@ void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
         sonix_decompress(imageSize.width, imageSize.height,
                 start, (unsigned char*)buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
 
-        cv::Mat cv_buf(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
-        cv::cvtColor(cv_buf, frame, COLOR_BayerRG2BGR);
+        ncvslideio::Mat cv_buf(imageSize, CV_8UC1, buffers[MAX_V4L_BUFFERS].memories[MEMORY_RGB].start);
+        ncvslideio::cvtColor(cv_buf, frame, COLOR_BayerRG2BGR);
         return;
     }
     case V4L2_PIX_FMT_SRGGB8:
     {
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerBG2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerBG2BGR);
         return;
     }
     case V4L2_PIX_FMT_SBGGR8:
     {
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerRG2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerRG2BGR);
         return;
     }
     case V4L2_PIX_FMT_SGBRG8:
     {
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerGR2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerGR2BGR);
         return;
     }
     case V4L2_PIX_FMT_SGRBG8:
     {
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerGB2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC1, start), frame, COLOR_BayerGB2BGR);
         return;
     }
     case V4L2_PIX_FMT_GREY:
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC1, start), frame, COLOR_GRAY2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC1, start), frame, COLOR_GRAY2BGR);
         break;
     case V4L2_PIX_FMT_XBGR32:
     case V4L2_PIX_FMT_ABGR32:
-        cv::cvtColor(cv::Mat(imageSize, CV_8UC4, start), frame, COLOR_BGRA2BGR);
+        ncvslideio::cvtColor(ncvslideio::Mat(imageSize, CV_8UC4, start), frame, COLOR_BGRA2BGR);
         break;
     case V4L2_PIX_FMT_BGR24:
     default:
@@ -1549,90 +1549,90 @@ void CvCaptureCAM_V4L::convertToRgb(const Buffer &currentBuffer)
     }
 }
 
-static inline cv::String capPropertyName(int prop)
+static inline ncvslideio::String capPropertyName(int prop)
 {
     switch (prop) {
-    case cv::CAP_PROP_POS_MSEC:
+    case ncvslideio::CAP_PROP_POS_MSEC:
         return "pos_msec";
-    case cv::CAP_PROP_POS_FRAMES:
+    case ncvslideio::CAP_PROP_POS_FRAMES:
         return "pos_frames";
-    case cv::CAP_PROP_POS_AVI_RATIO:
+    case ncvslideio::CAP_PROP_POS_AVI_RATIO:
         return "pos_avi_ratio";
-    case cv::CAP_PROP_FRAME_COUNT:
+    case ncvslideio::CAP_PROP_FRAME_COUNT:
         return "frame_count";
-    case cv::CAP_PROP_FRAME_HEIGHT:
+    case ncvslideio::CAP_PROP_FRAME_HEIGHT:
         return "height";
-    case cv::CAP_PROP_FRAME_WIDTH:
+    case ncvslideio::CAP_PROP_FRAME_WIDTH:
         return "width";
-    case cv::CAP_PROP_CONVERT_RGB:
+    case ncvslideio::CAP_PROP_CONVERT_RGB:
         return "convert_rgb";
-    case cv::CAP_PROP_FORMAT:
+    case ncvslideio::CAP_PROP_FORMAT:
         return "format";
-    case cv::CAP_PROP_MODE:
+    case ncvslideio::CAP_PROP_MODE:
         return "mode";
-    case cv::CAP_PROP_FOURCC:
+    case ncvslideio::CAP_PROP_FOURCC:
         return "fourcc";
-    case cv::CAP_PROP_AUTO_EXPOSURE:
+    case ncvslideio::CAP_PROP_AUTO_EXPOSURE:
         return "auto_exposure";
-    case cv::CAP_PROP_EXPOSURE:
+    case ncvslideio::CAP_PROP_EXPOSURE:
         return "exposure";
-    case cv::CAP_PROP_TEMPERATURE:
+    case ncvslideio::CAP_PROP_TEMPERATURE:
         return "temperature";
-    case cv::CAP_PROP_FPS:
+    case ncvslideio::CAP_PROP_FPS:
         return "fps";
-    case cv::CAP_PROP_BRIGHTNESS:
+    case ncvslideio::CAP_PROP_BRIGHTNESS:
         return "brightness";
-    case cv::CAP_PROP_CONTRAST:
+    case ncvslideio::CAP_PROP_CONTRAST:
         return "contrast";
-    case cv::CAP_PROP_SATURATION:
+    case ncvslideio::CAP_PROP_SATURATION:
         return "saturation";
-    case cv::CAP_PROP_HUE:
+    case ncvslideio::CAP_PROP_HUE:
         return "hue";
-    case cv::CAP_PROP_GAIN:
+    case ncvslideio::CAP_PROP_GAIN:
         return "gain";
-    case cv::CAP_PROP_RECTIFICATION:
+    case ncvslideio::CAP_PROP_RECTIFICATION:
         return "rectification";
-    case cv::CAP_PROP_MONOCHROME:
+    case ncvslideio::CAP_PROP_MONOCHROME:
         return "monochrome";
-    case cv::CAP_PROP_SHARPNESS:
+    case ncvslideio::CAP_PROP_SHARPNESS:
         return "sharpness";
-    case cv::CAP_PROP_GAMMA:
+    case ncvslideio::CAP_PROP_GAMMA:
         return "gamma";
-    case cv::CAP_PROP_TRIGGER:
+    case ncvslideio::CAP_PROP_TRIGGER:
         return "trigger";
-    case cv::CAP_PROP_TRIGGER_DELAY:
+    case ncvslideio::CAP_PROP_TRIGGER_DELAY:
         return "trigger_delay";
-    case cv::CAP_PROP_WHITE_BALANCE_RED_V:
+    case ncvslideio::CAP_PROP_WHITE_BALANCE_RED_V:
         return "white_balance_red_v";
-    case cv::CAP_PROP_ZOOM:
+    case ncvslideio::CAP_PROP_ZOOM:
         return "zoom";
-    case cv::CAP_PROP_FOCUS:
+    case ncvslideio::CAP_PROP_FOCUS:
         return "focus";
-    case cv::CAP_PROP_GUID:
+    case ncvslideio::CAP_PROP_GUID:
         return "guid";
-    case cv::CAP_PROP_ISO_SPEED:
+    case ncvslideio::CAP_PROP_ISO_SPEED:
         return "iso_speed";
-    case cv::CAP_PROP_BACKLIGHT:
+    case ncvslideio::CAP_PROP_BACKLIGHT:
         return "backlight";
-    case cv::CAP_PROP_PAN:
+    case ncvslideio::CAP_PROP_PAN:
         return "pan";
-    case cv::CAP_PROP_TILT:
+    case ncvslideio::CAP_PROP_TILT:
         return "tilt";
-    case cv::CAP_PROP_ROLL:
+    case ncvslideio::CAP_PROP_ROLL:
         return "roll";
-    case cv::CAP_PROP_IRIS:
+    case ncvslideio::CAP_PROP_IRIS:
         return "iris";
-    case cv::CAP_PROP_SETTINGS:
+    case ncvslideio::CAP_PROP_SETTINGS:
         return "dialog_settings";
-    case cv::CAP_PROP_BUFFERSIZE:
+    case ncvslideio::CAP_PROP_BUFFERSIZE:
         return "buffersize";
-    case cv::CAP_PROP_AUTOFOCUS:
+    case ncvslideio::CAP_PROP_AUTOFOCUS:
         return "autofocus";
-    case cv::CAP_PROP_WHITE_BALANCE_BLUE_U:
+    case ncvslideio::CAP_PROP_WHITE_BALANCE_BLUE_U:
         return "white_balance_blue_u";
-    case cv::CAP_PROP_SAR_NUM:
+    case ncvslideio::CAP_PROP_SAR_NUM:
         return "sar_num";
-    case cv::CAP_PROP_SAR_DEN:
+    case ncvslideio::CAP_PROP_SAR_DEN:
         return "sar_den";
     case CAP_PROP_AUTO_WB:
         return "auto wb";
@@ -1643,84 +1643,84 @@ static inline cv::String capPropertyName(int prop)
     case CAP_PROP_ORIENTATION_AUTO:
         return "orientation auto";
     default:
-        return cv::format("unknown (%d)", prop);
+        return ncvslideio::format("unknown (%d)", prop);
     }
 }
 
 static inline int capPropertyToV4L2(int prop)
 {
     switch (prop) {
-    case cv::CAP_PROP_FPS:
+    case ncvslideio::CAP_PROP_FPS:
         return -1;
-    case cv::CAP_PROP_FOURCC:
+    case ncvslideio::CAP_PROP_FOURCC:
         return -1;
-    case cv::CAP_PROP_FRAME_COUNT:
+    case ncvslideio::CAP_PROP_FRAME_COUNT:
         return V4L2_CID_MPEG_VIDEO_B_FRAMES;
-    case cv::CAP_PROP_FORMAT:
+    case ncvslideio::CAP_PROP_FORMAT:
         return -1;
-    case cv::CAP_PROP_MODE:
+    case ncvslideio::CAP_PROP_MODE:
         return -1;
-    case cv::CAP_PROP_BRIGHTNESS:
+    case ncvslideio::CAP_PROP_BRIGHTNESS:
         return V4L2_CID_BRIGHTNESS;
-    case cv::CAP_PROP_CONTRAST:
+    case ncvslideio::CAP_PROP_CONTRAST:
         return V4L2_CID_CONTRAST;
-    case cv::CAP_PROP_SATURATION:
+    case ncvslideio::CAP_PROP_SATURATION:
         return V4L2_CID_SATURATION;
-    case cv::CAP_PROP_HUE:
+    case ncvslideio::CAP_PROP_HUE:
         return V4L2_CID_HUE;
-    case cv::CAP_PROP_GAIN:
+    case ncvslideio::CAP_PROP_GAIN:
         return V4L2_CID_GAIN;
-    case cv::CAP_PROP_EXPOSURE:
+    case ncvslideio::CAP_PROP_EXPOSURE:
         return V4L2_CID_EXPOSURE_ABSOLUTE;
-    case cv::CAP_PROP_CONVERT_RGB:
+    case ncvslideio::CAP_PROP_CONVERT_RGB:
         return -1;
-    case cv::CAP_PROP_WHITE_BALANCE_BLUE_U:
+    case ncvslideio::CAP_PROP_WHITE_BALANCE_BLUE_U:
         return V4L2_CID_BLUE_BALANCE;
-    case cv::CAP_PROP_RECTIFICATION:
+    case ncvslideio::CAP_PROP_RECTIFICATION:
         return -1;
-    case cv::CAP_PROP_MONOCHROME:
+    case ncvslideio::CAP_PROP_MONOCHROME:
         return -1;
-    case cv::CAP_PROP_SHARPNESS:
+    case ncvslideio::CAP_PROP_SHARPNESS:
         return V4L2_CID_SHARPNESS;
-    case cv::CAP_PROP_AUTO_EXPOSURE:
+    case ncvslideio::CAP_PROP_AUTO_EXPOSURE:
         return V4L2_CID_EXPOSURE_AUTO;
-    case cv::CAP_PROP_GAMMA:
+    case ncvslideio::CAP_PROP_GAMMA:
         return V4L2_CID_GAMMA;
-    case cv::CAP_PROP_TEMPERATURE:
+    case ncvslideio::CAP_PROP_TEMPERATURE:
         return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
-    case cv::CAP_PROP_TRIGGER:
+    case ncvslideio::CAP_PROP_TRIGGER:
         return -1;
-    case cv::CAP_PROP_TRIGGER_DELAY:
+    case ncvslideio::CAP_PROP_TRIGGER_DELAY:
         return -1;
-    case cv::CAP_PROP_WHITE_BALANCE_RED_V:
+    case ncvslideio::CAP_PROP_WHITE_BALANCE_RED_V:
         return V4L2_CID_RED_BALANCE;
-    case cv::CAP_PROP_ZOOM:
+    case ncvslideio::CAP_PROP_ZOOM:
         return V4L2_CID_ZOOM_ABSOLUTE;
-    case cv::CAP_PROP_FOCUS:
+    case ncvslideio::CAP_PROP_FOCUS:
         return V4L2_CID_FOCUS_ABSOLUTE;
-    case cv::CAP_PROP_GUID:
+    case ncvslideio::CAP_PROP_GUID:
         return -1;
-    case cv::CAP_PROP_ISO_SPEED:
+    case ncvslideio::CAP_PROP_ISO_SPEED:
         return V4L2_CID_ISO_SENSITIVITY;
-    case cv::CAP_PROP_BACKLIGHT:
+    case ncvslideio::CAP_PROP_BACKLIGHT:
         return V4L2_CID_BACKLIGHT_COMPENSATION;
-    case cv::CAP_PROP_PAN:
+    case ncvslideio::CAP_PROP_PAN:
         return V4L2_CID_PAN_ABSOLUTE;
-    case cv::CAP_PROP_TILT:
+    case ncvslideio::CAP_PROP_TILT:
         return V4L2_CID_TILT_ABSOLUTE;
-    case cv::CAP_PROP_ROLL:
+    case ncvslideio::CAP_PROP_ROLL:
         return V4L2_CID_ROTATE;
-    case cv::CAP_PROP_IRIS:
+    case ncvslideio::CAP_PROP_IRIS:
         return V4L2_CID_IRIS_ABSOLUTE;
-    case cv::CAP_PROP_SETTINGS:
+    case ncvslideio::CAP_PROP_SETTINGS:
         return -1;
-    case cv::CAP_PROP_BUFFERSIZE:
+    case ncvslideio::CAP_PROP_BUFFERSIZE:
         return -1;
-    case cv::CAP_PROP_AUTOFOCUS:
+    case ncvslideio::CAP_PROP_AUTOFOCUS:
         return V4L2_CID_FOCUS_AUTO;
-    case cv::CAP_PROP_SAR_NUM:
+    case ncvslideio::CAP_PROP_SAR_NUM:
         return V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_HEIGHT;
-    case cv::CAP_PROP_SAR_DEN:
+    case ncvslideio::CAP_PROP_SAR_DEN:
         return V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_WIDTH;
     case CAP_PROP_AUTO_WB:
         return V4L2_CID_AUTO_WHITE_BALANCE;
@@ -1735,15 +1735,15 @@ static inline int capPropertyToV4L2(int prop)
 static inline bool compatibleRange(int property_id)
 {
     switch (property_id) {
-    case cv::CAP_PROP_BRIGHTNESS:
-    case cv::CAP_PROP_CONTRAST:
-    case cv::CAP_PROP_SATURATION:
-    case cv::CAP_PROP_HUE:
-    case cv::CAP_PROP_GAIN:
-    case cv::CAP_PROP_EXPOSURE:
-    case cv::CAP_PROP_FOCUS:
-    case cv::CAP_PROP_AUTOFOCUS:
-    case cv::CAP_PROP_AUTO_EXPOSURE:
+    case ncvslideio::CAP_PROP_BRIGHTNESS:
+    case ncvslideio::CAP_PROP_CONTRAST:
+    case ncvslideio::CAP_PROP_SATURATION:
+    case ncvslideio::CAP_PROP_HUE:
+    case ncvslideio::CAP_PROP_GAIN:
+    case ncvslideio::CAP_PROP_EXPOSURE:
+    case ncvslideio::CAP_PROP_FOCUS:
+    case ncvslideio::CAP_PROP_AUTOFOCUS:
+    case ncvslideio::CAP_PROP_AUTO_EXPOSURE:
         return true;
     default:
         break;
@@ -1751,7 +1751,7 @@ static inline bool compatibleRange(int property_id)
     return false;
 }
 
-bool CvCaptureCAM_V4L::controlInfo(int property_id, __u32 &_v4l2id, cv::Range &range) const
+bool CvCaptureCAM_V4L::controlInfo(int property_id, __u32 &_v4l2id, ncvslideio::Range &range) const
 {
     /* initialisations */
     int v4l2id = capPropertyToV4L2(property_id);
@@ -1762,7 +1762,7 @@ bool CvCaptureCAM_V4L::controlInfo(int property_id, __u32 &_v4l2id, cv::Range &r
         return false;
     }
     _v4l2id = __u32(v4l2id);
-    range = cv::Range(queryctrl.minimum, queryctrl.maximum);
+    range = ncvslideio::Range(queryctrl.minimum, queryctrl.maximum);
     if (normalizePropRange) {
         switch(property_id)
         {
@@ -1818,29 +1818,29 @@ bool CvCaptureCAM_V4L::icvControl(__u32 v4l2id, int &value, bool isSet) const
 double CvCaptureCAM_V4L::getProperty(int property_id) const
 {
     switch (property_id) {
-    case cv::CAP_PROP_FRAME_WIDTH:
+    case ncvslideio::CAP_PROP_FRAME_WIDTH:
         if (V4L2_TYPE_IS_MULTIPLANAR(type))
             return form.fmt.pix_mp.width;
         else
             return form.fmt.pix.width;
-    case cv::CAP_PROP_FRAME_HEIGHT:
+    case ncvslideio::CAP_PROP_FRAME_HEIGHT:
         if (V4L2_TYPE_IS_MULTIPLANAR(type))
             return form.fmt.pix_mp.height;
         else
             return form.fmt.pix.height;
-    case cv::CAP_PROP_FOURCC:
+    case ncvslideio::CAP_PROP_FOURCC:
         return palette;
-    case cv::CAP_PROP_FORMAT:
+    case ncvslideio::CAP_PROP_FORMAT:
         return frame.type();
-    case cv::CAP_PROP_MODE:
+    case ncvslideio::CAP_PROP_MODE:
         if (normalizePropRange)
             return palette;
         return normalizePropRange;
-    case cv::CAP_PROP_CONVERT_RGB:
+    case ncvslideio::CAP_PROP_CONVERT_RGB:
         return convert_rgb;
-    case cv::CAP_PROP_BUFFERSIZE:
+    case ncvslideio::CAP_PROP_BUFFERSIZE:
         return bufferSize;
-    case cv::CAP_PROP_FPS:
+    case ncvslideio::CAP_PROP_FPS:
     {
         v4l2_streamparm sp = v4l2_streamparm();
         sp.type = type;
@@ -1850,16 +1850,16 @@ double CvCaptureCAM_V4L::getProperty(int property_id) const
         }
         return sp.parm.capture.timeperframe.denominator / (double)sp.parm.capture.timeperframe.numerator;
     }
-    case cv::CAP_PROP_POS_MSEC:
+    case ncvslideio::CAP_PROP_POS_MSEC:
         if (FirstCapture)
             return 0;
 
         return 1000 * timestamp.tv_sec + ((double)timestamp.tv_usec) / 1000;
-    case cv::CAP_PROP_CHANNEL:
+    case ncvslideio::CAP_PROP_CHANNEL:
         return channelNumber;
     default:
     {
-        cv::Range range;
+        ncvslideio::Range range;
         __u32 v4l2id;
         if(!controlInfo(property_id, v4l2id, range))
             return -1.0;
@@ -1896,15 +1896,15 @@ bool CvCaptureCAM_V4L::setProperty( int property_id, double _value )
 {
     int value = cvRound(_value);
     switch (property_id) {
-    case cv::CAP_PROP_FRAME_WIDTH:
+    case ncvslideio::CAP_PROP_FRAME_WIDTH:
         return icvSetFrameSize(value, 0);
-    case cv::CAP_PROP_FRAME_HEIGHT:
+    case ncvslideio::CAP_PROP_FRAME_HEIGHT:
         return icvSetFrameSize(0, value);
-    case cv::CAP_PROP_FPS:
+    case ncvslideio::CAP_PROP_FPS:
         if (fps == static_cast<__u32>(value))
             return true;
         return setFps(value);
-    case cv::CAP_PROP_CONVERT_RGB:
+    case ncvslideio::CAP_PROP_CONVERT_RGB:
         if (bool(value)) {
             convert_rgb = convertableToRgb();
             return convert_rgb;
@@ -1912,7 +1912,7 @@ bool CvCaptureCAM_V4L::setProperty( int property_id, double _value )
             convert_rgb = false;
             return true;
         }
-    case cv::CAP_PROP_FOURCC:
+    case ncvslideio::CAP_PROP_FOURCC:
     {
         if (palette == static_cast<__u32>(value))
             return true;
@@ -1926,10 +1926,10 @@ bool CvCaptureCAM_V4L::setProperty( int property_id, double _value )
         v4l2_reset();
         return false;
     }
-    case cv::CAP_PROP_MODE:
+    case ncvslideio::CAP_PROP_MODE:
         normalizePropRange = bool(value);
         return true;
-    case cv::CAP_PROP_BUFFERSIZE:
+    case ncvslideio::CAP_PROP_BUFFERSIZE:
         if (bufferSize == value)
             return true;
 
@@ -1939,7 +1939,7 @@ bool CvCaptureCAM_V4L::setProperty( int property_id, double _value )
         }
         bufferSize = value;
         return v4l2_reset();
-    case cv::CAP_PROP_CHANNEL:
+    case ncvslideio::CAP_PROP_CHANNEL:
     {
         if (value < 0) {
             channelNumber = -1;
@@ -1959,12 +1959,12 @@ bool CvCaptureCAM_V4L::setProperty( int property_id, double _value )
     }
     default:
     {
-        cv::Range range;
+        ncvslideio::Range range;
         __u32 v4l2id;
         if (!controlInfo(property_id, v4l2id, range))
             return false;
         if (normalizePropRange && compatibleRange(property_id))
-            value = cv::saturate_cast<int>(_value * range.size() + range.start);
+            value = ncvslideio::saturate_cast<int>(_value * range.size() + range.start);
         return icvControl(v4l2id, value, true);
     }
     }
@@ -2197,6 +2197,6 @@ bool VideoCapture_V4L_waitAny(const std::vector<VideoCapture>& streams, CV_OUT s
     return res;
 }
 
-} // cv::
+} // ncvslideio::
 
 #endif

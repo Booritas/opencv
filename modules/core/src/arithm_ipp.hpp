@@ -3,7 +3,7 @@
 // of this distribution and at http://opencv.org/license.html
 #if ARITHM_USE_IPP
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 //=======================================
 // Arithmetic and logical operations
@@ -401,7 +401,7 @@ inline int arithm_ipp_mul32f(const float *src1, size_t step1, const float *src2,
 #define arithm_ipp_64f(...) 0
 **/
 
-}} // cv::hal::
+}} // ncvslideio::hal::
 
 #define ARITHM_CALL_IPP(fun, ...)       \
 {                                       \

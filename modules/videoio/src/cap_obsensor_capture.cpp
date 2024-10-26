@@ -25,7 +25,7 @@
 #include "cap_obsensor/obsensor_stream_channel_interface.hpp"
 
 #if defined(HAVE_OBSENSOR) && !defined(HAVE_OBSENSOR_ORBBEC_SDK)
-namespace cv {
+namespace ncvslideio {
 Ptr<IVideoCapture> create_obsensor_capture(int index)
 {
     return makePtr<VideoCapture_obsensor>(index);
@@ -219,5 +219,5 @@ bool VideoCapture_obsensor::setProperty(int propIdx, double /*propVal*/)
     return false;
 }
 
-} // namespace cv::
+} // namespace ncvslideio::
 #endif // HAVE_OBSENSOR

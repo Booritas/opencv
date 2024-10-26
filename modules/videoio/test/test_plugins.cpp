@@ -62,7 +62,7 @@ void dumpBackendInfo(VideoCaptureAPIs backend, enum VideoBackendMode mode)
         cout << name << " - PLUGIN (" << description << ") ABI=" << version_ABI << " API=" << version_API << endl;
         return;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         if (e.code == Error::StsNotImplemented)
         {
@@ -80,21 +80,21 @@ void dumpBackendInfo(VideoCaptureAPIs backend, enum VideoBackendMode mode)
 
 TEST(VideoIO_Plugins, query)
 {
-    const std::vector<cv::VideoCaptureAPIs> camera_backends = cv::videoio_registry::getCameraBackends();
+    const std::vector<ncvslideio::VideoCaptureAPIs> camera_backends = ncvslideio::videoio_registry::getCameraBackends();
     cout << "== Camera APIs (" << camera_backends.size() << "):" << endl;
     for (auto backend : camera_backends)
     {
         dumpBackendInfo(backend, MODE_CAMERA);
     }
 
-    const std::vector<cv::VideoCaptureAPIs> stream_backends = cv::videoio_registry::getStreamBackends();
+    const std::vector<ncvslideio::VideoCaptureAPIs> stream_backends = ncvslideio::videoio_registry::getStreamBackends();
     cout << "== Stream capture APIs (" << stream_backends.size() << "):" << endl;
     for (auto backend : stream_backends)
     {
         dumpBackendInfo(backend, MODE_STREAM);
     }
 
-    const std::vector<cv::VideoCaptureAPIs> writer_backends = cv::videoio_registry::getWriterBackends();
+    const std::vector<ncvslideio::VideoCaptureAPIs> writer_backends = ncvslideio::videoio_registry::getWriterBackends();
     cout << "== Writer APIs (" << writer_backends.size() << "):" << endl;
     for (auto backend : writer_backends)
     {

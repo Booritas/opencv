@@ -71,10 +71,10 @@ public:
         ASSERT_FALSE(net.empty());
 
         for (int i = 0; i < numInps; i++)
-            inps[i] = blobFromNPY(inpPath + ((numInps > 1) ? cv::format("_%d.npy", i) : ".npy"));
+            inps[i] = blobFromNPY(inpPath + ((numInps > 1) ? ncvslideio::format("_%d.npy", i) : ".npy"));
 
         for (int i = 0; i < numOuts; i++)
-            refs[i] = blobFromNPY(outPath + ((numOuts > 1) ? cv::format("_%d.npy", i) : ".npy"));
+            refs[i] = blobFromNPY(outPath + ((numOuts > 1) ? ncvslideio::format("_%d.npy", i) : ".npy"));
 
         qnet = net.quantize(inps, CV_8S, CV_8S, perChannel);
         qnet.getInputDetails(inputScale, inputZp);
@@ -87,7 +87,7 @@ public:
         for (int i = 0; i < numInps; i++)
         {
             inps[i].convertTo(inps_int8[i], CV_8S, 1.f/inputScale[i], inputZp[i]);
-            String inp_name = numInps > 1 ? (importer == "Caffe" ? cv::format("input_%d", i) : cv::format("%d", i)) : "";
+            String inp_name = numInps > 1 ? (importer == "Caffe" ? ncvslideio::format("input_%d", i) : ncvslideio::format("%d", i)) : "";
             qnet.setInput(inps_int8[i], inp_name);
         }
         qnet.forward(outs_int8);
@@ -641,7 +641,7 @@ public:
     }
 
     void testDarknetModel(const std::string& cfg, const std::string& weights,
-                          const cv::Mat& ref, double scoreDiff, double iouDiff,
+                          const ncvslideio::Mat& ref, double scoreDiff, double iouDiff,
                           float confThreshold = 0.24, float nmsThreshold = 0.4, bool perChannel = true)
     {
         CV_Assert(ref.cols == 7);

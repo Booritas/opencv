@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
     console.log('opencv.js loaded');
     if (isNodeJs) {
-      global.cv = cv;
+      global.ncvslideio = ncvslideio;
       global.combine = HelpFunc.combine;
       global.log = HelpFunc.log;
       global.decodeParams2Case = HelpFunc.decodeParams2Case;
@@ -41,16 +41,16 @@ function perf() {
 
     function addBlurCase(suite, type) {
         suite.add('blur', function() {
-            cv.blur(src, dst, ksize, new cv.Point(-1,-1), borderType);
+            ncvslideio.blur(src, dst, ksize, new ncvslideio.Point(-1,-1), borderType);
           }, {
               'setup': function() {
                 let size = this.params.size;
-                let matType = cv[this.params.matType];
-                let borderType = cv[this.params.borderType];
+                let matType = ncvslideio[this.params.matType];
+                let borderType = ncvslideio[this.params.borderType];
                 let ksizeNum = this.params.ksize;
-                let ksize = new cv.Size(ksizeNum, ksizeNum);
-                let src = new cv.Mat(size, matType);
-                let dst = new cv.Mat(size, matType);
+                let ksize = new ncvslideio.Size(ksizeNum, ksizeNum);
+                let src = new ncvslideio.Mat(size, matType);
+                let dst = new ncvslideio.Mat(size, matType);
                 },
               'teardown': function() {
                 src.delete();
@@ -77,11 +77,11 @@ function perf() {
       totalCaseNum = 0;
       currentCaseId = 0;
 
-      if (/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*BORDER\_\w+\)/g.test(paramsContent.toString())) {
-          let params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*BORDER\_\w+\)/g)[0];
+      if (/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*BORDER\_\w+\)/g.test(paramsContent.toString())) {
+          let params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*BORDER\_\w+\)/g)[0];
           let paramObjs = [];
           paramObjs.push({name:"size", value:"", reg:[""], index:0});
-          paramObjs.push({name:"matType", value:"", reg:["/CV\_[0-9]+[FSUfsu]C[0-9]/"], index:1});
+          paramObjs.push({name:"matType", value:"", reg:["/ncvslideio\_[0-9]+[FSUfsu]C[0-9]/"], index:1});
           paramObjs.push({name:"borderMode", value: "", reg:["/BORDER\_\\w+/"], index:2});
           let locationList = decodeParams2Case(params, paramObjs,blurCombinations);
 
@@ -106,8 +106,8 @@ function perf() {
     if (isNodeJs) {
       const args = process.argv.slice(2);
       let paramsContent = '';
-      if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*BORDER\_\w+\)/g.test(args.toString())) {
-        paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*BORDER\_\w+\)/g)[0];
+      if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*BORDER\_\w+\)/g.test(args.toString())) {
+        paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*BORDER\_\w+\)/g)[0];
       }
       genBenchmarkCase(paramsContent);
     } else {
@@ -122,11 +122,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

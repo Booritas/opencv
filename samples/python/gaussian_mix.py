@@ -29,10 +29,10 @@ def make_gaussians(cluster_n, img_size):
 
 def draw_gaussain(img, mean, cov, color):
     x, y = mean
-    w, u, _vt = cv.SVDecomp(cov)
+    w, u, _vt = ncvslideio.SVDecomp(cov)
     ang = np.arctan2(u[1, 0], u[0, 0])*(180/np.pi)
     s1, s2 = np.sqrt(w)*3.0
-    cv.ellipse(img, (int(x), int(y)), (int(s1), int(s2)), ang, 0, 360, color, 1, cv.LINE_AA)
+    ncvslideio.ellipse(img, (int(x), int(y)), (int(s1), int(s2)), ang, 0, 360, color, 1, ncvslideio.LINE_AA)
 
 
 def main():
@@ -46,9 +46,9 @@ def main():
         points, ref_distrs = make_gaussians(cluster_n, img_size)
 
         print('EM (opencv) ...')
-        em = cv.ml.EM_create()
+        em = ncvslideio.ml.EM_create()
         em.setClustersNumber(cluster_n)
-        em.setCovarianceMatrixType(cv.ml.EM_COV_MAT_GENERIC)
+        em.setCovarianceMatrixType(ncvslideio.ml.EM_COV_MAT_GENERIC)
         em.trainEM(points)
         means = em.getMeans()
         covs = em.getCovs()  # Known bug: https://github.com/opencv/opencv/pull/4232
@@ -57,14 +57,14 @@ def main():
 
         img = np.zeros((img_size, img_size, 3), np.uint8)
         for x, y in np.int32(points):
-            cv.circle(img, (x, y), 1, (255, 255, 255), -1)
+            ncvslideio.circle(img, (x, y), 1, (255, 255, 255), -1)
         for m, cov in ref_distrs:
             draw_gaussain(img, m, cov, (0, 255, 0))
         for m, cov in found_distrs:
             draw_gaussain(img, m, cov, (0, 0, 255))
 
-        cv.imshow('gaussian mixture', img)
-        ch = cv.waitKey(0)
+        ncvslideio.imshow('gaussian mixture', img)
+        ch = ncvslideio.waitKey(0)
         if ch == 27:
             break
 
@@ -74,4 +74,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

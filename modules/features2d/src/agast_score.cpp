@@ -44,7 +44,7 @@ The references are:
 
 #include "agast_score.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 void makeAgastOffsets(int pixel[16], int rowStride, AgastFeatureDetector::DetectorType type)
@@ -9860,4 +9860,4 @@ int agast_cornerScore<AgastFeatureDetector::OAST_9_16>(const uchar* ptr, const i
 
 #endif // !(defined __i386__ || defined(_M_IX86) || defined __x86_64__ || defined(_M_X64))
 
-} // namespace cv
+} // namespace ncvslideio

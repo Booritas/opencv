@@ -24,7 +24,7 @@
 #include "KAZEFeatures.h"
 #include "utils.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 // Namespaces

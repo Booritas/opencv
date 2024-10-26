@@ -13,7 +13,7 @@
 #include <opencv2/gapi/util/optional.hpp>
 #include <opencv2/gapi/own/assert.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace own {
 
@@ -27,7 +27,7 @@ namespace own {
 // Again, the implementation is highly inefficient right now.
 template<class T>
 class last_written_value {
-    cv::util::optional<T> m_data;
+    ncvslideio::util::optional<T> m_data;
 
     std::mutex m_mutex;
     std::condition_variable m_cond_empty;
@@ -66,7 +66,7 @@ void last_written_value<T>::unsafe_pop(T &t) {
 template<typename T>
 void last_written_value<T>::push(const T& t) {
     std::unique_lock<std::mutex> lock(m_mutex);
-    m_data = cv::util::make_optional(t);
+    m_data = ncvslideio::util::make_optional(t);
     lock.unlock();
     m_cond_empty.notify_one();
 }
@@ -100,6 +100,6 @@ void last_written_value<T>::clear() {
     m_data.reset();
 }
 
-}}} // namespace cv::gapi::own
+}}} // namespace ncvslideio::gapi::own
 
 #endif //  OPENCV_GAPI_EXECUTOR_CONC_QUEUE_HPP

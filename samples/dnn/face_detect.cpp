@@ -5,13 +5,13 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static
 void visualize(Mat& input, int frame, Mat& faces, double fps, int thickness = 2)
 {
-    std::string fpsString = cv::format("FPS : %.2f", (float)fps);
+    std::string fpsString = ncvslideio::format("FPS : %.2f", (float)fps);
     if (frame >= 0)
         cout << "Frame " << frame << ", ";
     cout << "FPS: " << fpsString << endl;
@@ -21,7 +21,7 @@ void visualize(Mat& input, int frame, Mat& faces, double fps, int thickness = 2)
         cout << "Face " << i
              << ", top-left coordinates: (" << faces.at<float>(i, 0) << ", " << faces.at<float>(i, 1) << "), "
              << "box width: " << faces.at<float>(i, 2)  << ", box height: " << faces.at<float>(i, 3) << ", "
-             << "score: " << cv::format("%.2f", faces.at<float>(i, 14))
+             << "score: " << ncvslideio::format("%.2f", faces.at<float>(i, 14))
              << endl;
 
         // Draw bounding box
@@ -263,8 +263,8 @@ int main(int argc, char** argv)
 
             if (saveFrame)
             {
-                std::string frame_name = cv::format("frame_%05d.png", nFrame);
-                std::string result_name = cv::format("result_%05d.jpg", nFrame);
+                std::string frame_name = ncvslideio::format("frame_%05d.png", nFrame);
+                std::string result_name = ncvslideio::format("result_%05d.jpg", nFrame);
                 cout << "Saving '" << frame_name << "' and '" << result_name << "' ...\n";
                 imwrite(frame_name, frame);
                 imwrite(result_name, result);

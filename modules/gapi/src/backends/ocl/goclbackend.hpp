@@ -21,7 +21,7 @@
 #include "backends/common/gbackend.hpp"
 #include "compiler/gislandmodel.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 struct OCLUnit
 {

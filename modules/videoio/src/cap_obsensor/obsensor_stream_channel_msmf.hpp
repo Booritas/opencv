@@ -44,7 +44,7 @@
 #include <ksproxy.h> //IKsControl
 #include <ksmedia.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace obsensor {
 template <class T>
 class ComPtr
@@ -177,6 +177,6 @@ public:
 private:
     long refCount_ = 1;
 };
-}} // namespace cv::obsensor::
+}} // namespace ncvslideio::obsensor::
 #endif // HAVE_OBSENSOR_MSMF
 #endif // OPENCV_VIDEOIO_OBSENSOR_STREAM_CHANNEL_MSMF_HPP

@@ -56,7 +56,7 @@
 #include <ImfRgbaFile.h>
 #include "grfmt_base.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 using namespace Imf;

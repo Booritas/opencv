@@ -18,29 +18,29 @@ namespace {
 
 namespace I
 {
-    G_TYPED_KERNEL(Foo, <cv::GMat(cv::GMat)>, "test.kernels.foo")
+    G_TYPED_KERNEL(Foo, <ncvslideio::GMat(ncvslideio::GMat)>, "test.kernels.foo")
     {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in) { return in; }
     };
 
-    G_TYPED_KERNEL(Bar, <cv::GMat(cv::GMat,cv::GMat)>, "test.kernels.bar")
+    G_TYPED_KERNEL(Bar, <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GMat)>, "test.kernels.bar")
     {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in, const cv::GMatDesc &) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in, const ncvslideio::GMatDesc &) { return in; }
     };
 
-    G_TYPED_KERNEL(Baz, <cv::GScalar(cv::GMat)>, "test.kernels.baz")
+    G_TYPED_KERNEL(Baz, <ncvslideio::GScalar(ncvslideio::GMat)>, "test.kernels.baz")
     {
-        static cv::GScalarDesc outMeta(const cv::GMatDesc &) { return cv::empty_scalar_desc(); }
+        static ncvslideio::GScalarDesc outMeta(const ncvslideio::GMatDesc &) { return ncvslideio::empty_scalar_desc(); }
     };
 
-    G_TYPED_KERNEL(Qux, <cv::GMat(cv::GMat, cv::GScalar)>, "test.kernels.qux")
+    G_TYPED_KERNEL(Qux, <ncvslideio::GMat(ncvslideio::GMat, ncvslideio::GScalar)>, "test.kernels.qux")
     {
-        static cv::GMatDesc outMeta(const cv::GMatDesc &in, const cv::GScalarDesc &) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in, const ncvslideio::GScalarDesc &) { return in; }
     };
 
-    G_TYPED_KERNEL(Quux, <cv::GMat(cv::GScalar, cv::GMat)>, "test.kernels.quux")
+    G_TYPED_KERNEL(Quux, <ncvslideio::GMat(ncvslideio::GScalar, ncvslideio::GMat)>, "test.kernels.quux")
     {
-        static cv::GMatDesc outMeta(const cv::GScalarDesc &, const cv::GMatDesc& in) { return in; }
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GScalarDesc &, const ncvslideio::GMatDesc& in) { return in; }
     };
 }
 
@@ -49,36 +49,36 @@ namespace Jupiter
 {
     namespace detail
     {
-        static cv::gapi::GBackend backend(std::make_shared<cv::gapi::GBackend::Priv>());
+        static ncvslideio::gapi::GBackend backend(std::make_shared<ncvslideio::gapi::GBackend::Priv>());
     }
 
-    inline cv::gapi::GBackend backend() { return detail::backend; }
+    inline ncvslideio::gapi::GBackend backend() { return detail::backend; }
 
     GAPI_OCV_KERNEL(Foo, I::Foo)
     {
-        static void run(const cv::Mat &, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Bar, I::Bar)
     {
-        static void run(const cv::Mat &, const cv::Mat &, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, const ncvslideio::Mat &, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Baz, I::Baz)
     {
-        static void run(const cv::Mat &, cv::Scalar &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, ncvslideio::Scalar &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Qux, I::Qux)
     {
-        static void run(const cv::Mat &, const cv::Scalar&, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, const ncvslideio::Scalar&, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
 
     GAPI_OCV_KERNEL(Quux, I::Quux)
     {
-        static void run(const cv::Scalar&, const cv::Mat&, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Scalar&, const ncvslideio::Mat&, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
 } // namespace Jupiter
 
@@ -87,36 +87,36 @@ namespace Saturn
 {
     namespace detail
     {
-        static cv::gapi::GBackend backend(std::make_shared<cv::gapi::GBackend::Priv>());
+        static ncvslideio::gapi::GBackend backend(std::make_shared<ncvslideio::gapi::GBackend::Priv>());
     }
 
-    inline cv::gapi::GBackend backend() { return detail::backend; }
+    inline ncvslideio::gapi::GBackend backend() { return detail::backend; }
 
     GAPI_OCV_KERNEL(Foo, I::Foo)
     {
-        static void run(const cv::Mat &, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Bar, I::Bar)
     {
-        static void run(const cv::Mat &, const cv::Mat &, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, const ncvslideio::Mat &, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Baz, I::Baz)
     {
-        static void run(const cv::Mat &, cv::Scalar &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, ncvslideio::Scalar &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
     GAPI_OCV_KERNEL(Qux, I::Qux)
     {
-        static void run(const cv::Mat &, const cv::Scalar&, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Mat &, const ncvslideio::Scalar&, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
 
     GAPI_OCV_KERNEL(Quux, I::Quux)
     {
-        static void run(const cv::Scalar&, const cv::Mat&, cv::Mat &) { /*Do nothing*/ }
-        static cv::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
+        static void run(const ncvslideio::Scalar&, const ncvslideio::Mat&, ncvslideio::Mat &) { /*Do nothing*/ }
+        static ncvslideio::gapi::GBackend backend() { return detail::backend; } // FIXME: Must be removed
     };
 } // namespace Saturn
 } // anonymous namespace

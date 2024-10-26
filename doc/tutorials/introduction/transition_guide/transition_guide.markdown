@@ -127,7 +127,7 @@ Although rewritten _ml_ algorithms in 3.0 allow you to load old trained models f
 
 The following code snippets from the `points_classifier.cpp` example illustrate differences in model training process:
 @code{.cpp}
-using namespace cv;
+using namespace ncvslideio;
 // ======== version 2.4 ========
 Mat trainSamples, trainClasses;
 prepare_train_data( trainSamples, trainClasses );
@@ -176,7 +176,7 @@ Some classes now use general methods `detect`, `compute` or `detectAndCompute` p
 
 Following code snippets illustrate the difference (from `video_homography.cpp` example):
 @code{.cpp}
-using namespace cv;
+using namespace ncvslideio;
 // ====== 2.4 =======
 #include "opencv2/features2d/features2d.hpp"
 BriefDescriptorExtractor brief(32);
@@ -187,7 +187,7 @@ brief.compute(gray, query_kpts, query_desc); //Compute brief descriptors at each
 // ====== 3.0 =======
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
-using namespace cv::xfeatures2d;
+using namespace ncvslideio::xfeatures2d;
 Ptr<BriefDescriptorExtractor> brief = BriefDescriptorExtractor::create(32);
 Ptr<FastFeatureDetector> detector = FastFeatureDetector::create(10, true);
 // ...

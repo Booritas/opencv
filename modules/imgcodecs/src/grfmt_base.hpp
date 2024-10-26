@@ -9,7 +9,7 @@
 #include "bitstrm.hpp"
 #include "exif.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class BaseImageDecoder;

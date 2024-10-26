@@ -21,7 +21,7 @@
 #include <opencv2/gapi/fluid/gfluidbuffer.hpp>
 
 // FIXME: namespace scheme for backends?
-namespace cv {
+namespace ncvslideio {
 
 namespace gapi
 {
@@ -39,7 +39,7 @@ namespace fluid
      *
      * @sa gapi_std_backends
      */
-    GAPI_EXPORTS cv::gapi::GBackend backend();
+    GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
     /** @} */
 } // namespace fluid
 } // namespace gapi
@@ -56,10 +56,10 @@ public:
     };
 
     // This function is a generic "doWork" callback
-    using F = std::function<void(const cv::GArgs&, const std::vector<gapi::fluid::Buffer*> &)>;
+    using F = std::function<void(const ncvslideio::GArgs&, const std::vector<gapi::fluid::Buffer*> &)>;
 
     // This function is a generic "initScratch" callback
-    using IS = std::function<void(const cv::GMetaArgs &, const cv::GArgs&, gapi::fluid::Buffer &)>;
+    using IS = std::function<void(const ncvslideio::GMetaArgs &, const ncvslideio::GArgs&, gapi::fluid::Buffer &)>;
 
     // This function is a generic "resetScratch" callback
     using RS = std::function<void(gapi::fluid::Buffer &)>;
@@ -111,7 +111,7 @@ public:
  */
 struct GFluidOutputRois
 {
-    std::vector<cv::Rect> rois;
+    std::vector<ncvslideio::Rect> rois;
 };
 
 /**
@@ -170,42 +170,42 @@ template<> struct CompileArgTag<GFluidParallelOutputRois>
 namespace detail
 {
 template<class T> struct fluid_get_in;
-template<> struct fluid_get_in<cv::GMat>
+template<> struct fluid_get_in<ncvslideio::GMat>
 {
-    static const cv::gapi::fluid::View& get(const cv::GArgs &in_args, int idx)
+    static const ncvslideio::gapi::fluid::View& get(const ncvslideio::GArgs &in_args, int idx)
     {
-        return *in_args[idx].unsafe_get<cv::gapi::fluid::View*>();
+        return *in_args[idx].unsafe_get<ncvslideio::gapi::fluid::View*>();
     }
 };
 
-template<> struct fluid_get_in<cv::GScalar>
+template<> struct fluid_get_in<ncvslideio::GScalar>
 {
     // FIXME: change to return by reference when moved to own::Scalar
-    static cv::Scalar get(const cv::GArgs &in_args, int idx)
+    static ncvslideio::Scalar get(const ncvslideio::GArgs &in_args, int idx)
     {
-        return in_args[idx].unsafe_get<cv::Scalar>();
+        return in_args[idx].unsafe_get<ncvslideio::Scalar>();
     }
 };
 
-template<typename U> struct fluid_get_in<cv::GArray<U>>
+template<typename U> struct fluid_get_in<ncvslideio::GArray<U>>
 {
-    static const std::vector<U>& get(const cv::GArgs &in_args, int idx)
+    static const std::vector<U>& get(const ncvslideio::GArgs &in_args, int idx)
     {
-        return in_args.at(idx).unsafe_get<cv::detail::VectorRef>().rref<U>();
+        return in_args.at(idx).unsafe_get<ncvslideio::detail::VectorRef>().rref<U>();
     }
 };
 
-template<typename U> struct fluid_get_in<cv::GOpaque<U>>
+template<typename U> struct fluid_get_in<ncvslideio::GOpaque<U>>
 {
-    static const U& get(const cv::GArgs &in_args, int idx)
+    static const U& get(const ncvslideio::GArgs &in_args, int idx)
     {
-        return in_args.at(idx).unsafe_get<cv::detail::OpaqueRef>().rref<U>();
+        return in_args.at(idx).unsafe_get<ncvslideio::detail::OpaqueRef>().rref<U>();
     }
 };
 
 template<class T> struct fluid_get_in
 {
-    static const T& get(const cv::GArgs &in_args, int idx)
+    static const T& get(const ncvslideio::GArgs &in_args, int idx)
     {
         return in_args[idx].unsafe_get<T>();
     }
@@ -219,16 +219,16 @@ struct scratch_helper<true, Impl, Ins...>
 {
     // Init
     template<int... IIs>
-    static void help_init_impl(const cv::GMetaArgs &metas,
-                               const cv::GArgs     &in_args,
+    static void help_init_impl(const ncvslideio::GMetaArgs &metas,
+                               const ncvslideio::GArgs     &in_args,
                                gapi::fluid::Buffer &scratch_buf,
                                detail::Seq<IIs...>)
     {
         Impl::initScratch(get_in_meta<Ins>(metas, in_args, IIs)..., scratch_buf);
     }
 
-    static void help_init(const cv::GMetaArgs &metas,
-                          const cv::GArgs     &in_args,
+    static void help_init(const ncvslideio::GMetaArgs &metas,
+                          const ncvslideio::GArgs     &in_args,
                           gapi::fluid::Buffer &b)
     {
         help_init_impl(metas, in_args, b, typename detail::MkSeq<sizeof...(Ins)>::type());
@@ -244,8 +244,8 @@ struct scratch_helper<true, Impl, Ins...>
 template<typename Impl, typename... Ins>
 struct scratch_helper<false, Impl, Ins...>
 {
-    static void help_init(const cv::GMetaArgs &,
-                          const cv::GArgs     &,
+    static void help_init(const ncvslideio::GMetaArgs &,
+                          const ncvslideio::GArgs     &,
                           gapi::fluid::Buffer &)
     {
         GAPI_Error("InternalError");
@@ -258,7 +258,7 @@ struct scratch_helper<false, Impl, Ins...>
 
 template<typename T> struct is_gmat_type
 {
-    static const constexpr bool value = std::is_same<cv::GMat, T>::value;
+    static const constexpr bool value = std::is_same<ncvslideio::GMat, T>::value;
 };
 
 template<bool CallCustomGetBorder, typename Impl, typename... Ins>
@@ -269,14 +269,14 @@ struct get_border_helper<true, Impl, Ins...>
 {
     template<int... IIs>
     static gapi::fluid::BorderOpt get_border_impl(const GMetaArgs &metas,
-                                                  const cv::GArgs &in_args,
-                                                  cv::detail::Seq<IIs...>)
+                                                  const ncvslideio::GArgs &in_args,
+                                                  ncvslideio::detail::Seq<IIs...>)
     {
-        return util::make_optional(Impl::getBorder(cv::detail::get_in_meta<Ins>(metas, in_args, IIs)...));
+        return util::make_optional(Impl::getBorder(ncvslideio::detail::get_in_meta<Ins>(metas, in_args, IIs)...));
     }
 
     static gapi::fluid::BorderOpt help(const GMetaArgs &metas,
-                                       const cv::GArgs &in_args)
+                                       const ncvslideio::GArgs &in_args)
     {
         return get_border_impl(metas, in_args, typename detail::MkSeq<sizeof...(Ins)>::type());
     }
@@ -285,8 +285,8 @@ struct get_border_helper<true, Impl, Ins...>
 template<typename Impl, typename... Ins>
 struct get_border_helper<false, Impl, Ins...>
 {
-    static gapi::fluid::BorderOpt help(const cv::GMetaArgs &,
-                                       const cv::GArgs     &)
+    static gapi::fluid::BorderOpt help(const ncvslideio::GMetaArgs &,
+                                       const ncvslideio::GArgs     &)
     {
         return {};
     }
@@ -300,13 +300,13 @@ struct get_window_helper<true, Impl, Ins...>
 {
     template<int... IIs>
     static int get_window_impl(const GMetaArgs &metas,
-                               const cv::GArgs &in_args,
-                               cv::detail::Seq<IIs...>)
+                               const ncvslideio::GArgs &in_args,
+                               ncvslideio::detail::Seq<IIs...>)
     {
-        return Impl::getWindow(cv::detail::get_in_meta<Ins>(metas, in_args, IIs)...);
+        return Impl::getWindow(ncvslideio::detail::get_in_meta<Ins>(metas, in_args, IIs)...);
     }
 
-    static int help(const GMetaArgs &metas, const cv::GArgs &in_args)
+    static int help(const GMetaArgs &metas, const ncvslideio::GArgs &in_args)
     {
         return get_window_impl(metas, in_args, typename detail::MkSeq<sizeof...(Ins)>::type());
     }
@@ -315,8 +315,8 @@ struct get_window_helper<true, Impl, Ins...>
 template<typename Impl, typename... Ins>
 struct get_window_helper<false, Impl, Ins...>
 {
-    static int help(const cv::GMetaArgs &,
-                    const cv::GArgs     &)
+    static int help(const ncvslideio::GMetaArgs &,
+                    const ncvslideio::GArgs     &)
     {
         return Impl::Window;
     }
@@ -364,7 +364,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
 
     // Execution dispatcher ////////////////////////////////////////////////////
     template<int... IIs, int... OIs>
-    static void call_impl(const cv::GArgs &in_args,
+    static void call_impl(const ncvslideio::GArgs &in_args,
                           const std::vector<gapi::fluid::Buffer*> &out_bufs,
                           detail::Seq<IIs...>,
                           detail::Seq<OIs...>)
@@ -372,7 +372,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
         Impl::run(fluid_get_in<Ins>::get(in_args, IIs)..., *out_bufs[OIs]...);
     }
 
-    static void call(const cv::GArgs &in_args,
+    static void call(const ncvslideio::GArgs &in_args,
                      const std::vector<gapi::fluid::Buffer*> &out_bufs)
     {
         constexpr int numOuts = (sizeof...(Outs)) + (UseScratch ? 1 : 0);
@@ -383,7 +383,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
 
     // Scratch buffer initialization dispatcher ////////////////////////////////
     static void init_scratch(const GMetaArgs &metas,
-                             const cv::GArgs &in_args,
+                             const ncvslideio::GArgs &in_args,
                              gapi::fluid::Buffer &b)
     {
         scratch_helper<UseScratch, Impl, Ins...>::help_init(metas, in_args, b);
@@ -395,7 +395,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
         scratch_helper<UseScratch, Impl, Ins...>::help_reset(scratch_buf);
     }
 
-    static gapi::fluid::BorderOpt getBorder(const GMetaArgs &metas, const cv::GArgs &in_args)
+    static gapi::fluid::BorderOpt getBorder(const GMetaArgs &metas, const ncvslideio::GArgs &in_args)
     {
         constexpr bool hasWindow = has_Window<Impl, const int>::value;
 
@@ -404,7 +404,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
         return get_border_helper<callCustomGetBorder<hasWindow, Impl>::value, Impl, Ins...>::help(metas, in_args);
     }
 
-    static int getWindow(const GMetaArgs &metas, const cv::GArgs &in_args)
+    static int getWindow(const GMetaArgs &metas, const ncvslideio::GArgs &in_args)
     {
         constexpr bool callCustomGetWindow = !(has_Window<Impl, const int>::value);
         return get_window_helper<callCustomGetWindow, Impl, Ins...>::help(metas, in_args);
@@ -414,7 +414,7 @@ struct FluidCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...>, UseScratch
 
 
 template<class Impl, class K, bool UseScratch>
-class GFluidKernelImpl : public cv::detail::KernelTag
+class GFluidKernelImpl : public ncvslideio::detail::KernelTag
 {
     static const int LPI = 1;
     static const auto Kind = GFluidKernel::Kind::Filter;
@@ -432,11 +432,11 @@ public:
                             &P::call, &P::init_scratch, &P::reset_scratch, &P::getBorder, &P::getWindow);
     }
 
-    static cv::gapi::GBackend backend() { return cv::gapi::fluid::backend(); }
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::fluid::backend(); }
 };
 
-#define GAPI_FLUID_KERNEL(Name, API, Scratch) struct Name: public cv::GFluidKernelImpl<Name, API, Scratch>
+#define GAPI_FLUID_KERNEL(Name, API, Scratch) struct Name: public ncvslideio::GFluidKernelImpl<Name, API, Scratch>
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GCPUKERNEL_HPP

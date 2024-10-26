@@ -22,7 +22,7 @@
 #include <string>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static string helphelp(char** argv)
 {
@@ -397,7 +397,7 @@ int main(int argc, char** argv)
     "\tENTER - Confirm the selection. Grab next object in video mode.\n"
     "\tq - Exit the program\n";
 
-    cv::CommandLineParser parser(argc, argv, "{help h||}{w||}{h||}{s|1|}{i||}{o||}{@input|0|}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{help h||}{w||}{h||}{s|1|}{i||}{o||}{@input|0|}");
     if (parser.has("help"))
     {
         puts(helphelp(argv).c_str());
@@ -490,7 +490,7 @@ int main(int argc, char** argv)
     setMouseCallback("View", onMouse, 0);
     bool boardFound = false;
 
-    string indexFilename = cv::format("%s_index.yml", outprefix.c_str());
+    string indexFilename = ncvslideio::format("%s_index.yml", outprefix.c_str());
 
     vector<string> capturedImgList;
     vector<Rect> roiList;

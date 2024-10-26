@@ -9,7 +9,7 @@
 #include "cuda4dnn/init.hpp"
 #include "net_impl.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 
@@ -105,5 +105,5 @@ void Net::Impl::initCUDABackend(const std::vector<LayerPin>& blobsToKeep_)
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 #endif  // HAVE_CUDA

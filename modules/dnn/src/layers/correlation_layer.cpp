@@ -9,7 +9,7 @@
 #include "layers_common.hpp"
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class CorrelationLayerImpl CV_FINAL : public CorrelationLayer
 {
@@ -204,4 +204,4 @@ Ptr<CorrelationLayer> CorrelationLayer::create(const LayerParams& params)
     return Ptr<CorrelationLayer>(new CorrelationLayerImpl(params));
 }
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

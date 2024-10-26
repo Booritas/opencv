@@ -27,8 +27,8 @@
 #define LOGLN(msg) std::cout << msg << std::endl
 
 using namespace std;
-using namespace cv;
-using namespace cv::detail;
+using namespace ncvslideio;
+using namespace ncvslideio::detail;
 
 static void printUsage(char** argv)
 {
@@ -394,7 +394,7 @@ int main(int argc, char* argv[])
 #endif
 
 #if 0
-    cv::setBreakOnError(true);
+    ncvslideio::setBreakOnError(true);
 #endif
 
     int retval = parseCmdArgs(argc, argv);
@@ -639,47 +639,47 @@ int main(int argc, char* argv[])
     if (try_cuda && cuda::getCudaEnabledDeviceCount() > 0)
     {
         if (warp_type == "plane")
-            warper_creator = makePtr<cv::PlaneWarperGpu>();
+            warper_creator = makePtr<ncvslideio::PlaneWarperGpu>();
         else if (warp_type == "cylindrical")
-            warper_creator = makePtr<cv::CylindricalWarperGpu>();
+            warper_creator = makePtr<ncvslideio::CylindricalWarperGpu>();
         else if (warp_type == "spherical")
-            warper_creator = makePtr<cv::SphericalWarperGpu>();
+            warper_creator = makePtr<ncvslideio::SphericalWarperGpu>();
     }
     else
 #endif
     {
         if (warp_type == "plane")
-            warper_creator = makePtr<cv::PlaneWarper>();
+            warper_creator = makePtr<ncvslideio::PlaneWarper>();
         else if (warp_type == "affine")
-            warper_creator = makePtr<cv::AffineWarper>();
+            warper_creator = makePtr<ncvslideio::AffineWarper>();
         else if (warp_type == "cylindrical")
-            warper_creator = makePtr<cv::CylindricalWarper>();
+            warper_creator = makePtr<ncvslideio::CylindricalWarper>();
         else if (warp_type == "spherical")
-            warper_creator = makePtr<cv::SphericalWarper>();
+            warper_creator = makePtr<ncvslideio::SphericalWarper>();
         else if (warp_type == "fisheye")
-            warper_creator = makePtr<cv::FisheyeWarper>();
+            warper_creator = makePtr<ncvslideio::FisheyeWarper>();
         else if (warp_type == "stereographic")
-            warper_creator = makePtr<cv::StereographicWarper>();
+            warper_creator = makePtr<ncvslideio::StereographicWarper>();
         else if (warp_type == "compressedPlaneA2B1")
-            warper_creator = makePtr<cv::CompressedRectilinearWarper>(2.0f, 1.0f);
+            warper_creator = makePtr<ncvslideio::CompressedRectilinearWarper>(2.0f, 1.0f);
         else if (warp_type == "compressedPlaneA1.5B1")
-            warper_creator = makePtr<cv::CompressedRectilinearWarper>(1.5f, 1.0f);
+            warper_creator = makePtr<ncvslideio::CompressedRectilinearWarper>(1.5f, 1.0f);
         else if (warp_type == "compressedPlanePortraitA2B1")
-            warper_creator = makePtr<cv::CompressedRectilinearPortraitWarper>(2.0f, 1.0f);
+            warper_creator = makePtr<ncvslideio::CompressedRectilinearPortraitWarper>(2.0f, 1.0f);
         else if (warp_type == "compressedPlanePortraitA1.5B1")
-            warper_creator = makePtr<cv::CompressedRectilinearPortraitWarper>(1.5f, 1.0f);
+            warper_creator = makePtr<ncvslideio::CompressedRectilinearPortraitWarper>(1.5f, 1.0f);
         else if (warp_type == "paniniA2B1")
-            warper_creator = makePtr<cv::PaniniWarper>(2.0f, 1.0f);
+            warper_creator = makePtr<ncvslideio::PaniniWarper>(2.0f, 1.0f);
         else if (warp_type == "paniniA1.5B1")
-            warper_creator = makePtr<cv::PaniniWarper>(1.5f, 1.0f);
+            warper_creator = makePtr<ncvslideio::PaniniWarper>(1.5f, 1.0f);
         else if (warp_type == "paniniPortraitA2B1")
-            warper_creator = makePtr<cv::PaniniPortraitWarper>(2.0f, 1.0f);
+            warper_creator = makePtr<ncvslideio::PaniniPortraitWarper>(2.0f, 1.0f);
         else if (warp_type == "paniniPortraitA1.5B1")
-            warper_creator = makePtr<cv::PaniniPortraitWarper>(1.5f, 1.0f);
+            warper_creator = makePtr<ncvslideio::PaniniPortraitWarper>(1.5f, 1.0f);
         else if (warp_type == "mercator")
-            warper_creator = makePtr<cv::MercatorWarper>();
+            warper_creator = makePtr<ncvslideio::MercatorWarper>();
         else if (warp_type == "transverseMercator")
-            warper_creator = makePtr<cv::TransverseMercatorWarper>();
+            warper_creator = makePtr<ncvslideio::TransverseMercatorWarper>();
     }
 
     if (!warper_creator)

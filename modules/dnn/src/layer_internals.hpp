@@ -5,7 +5,7 @@
 #ifndef __OPENCV_DNN_SRC_LAYER_INTERNALS_HPP__
 #define __OPENCV_DNN_SRC_LAYER_INTERNALS_HPP__
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 inline namespace detail {
 
@@ -254,7 +254,7 @@ struct DataLayer : public Layer
                     {
                         Mat inp = getPlane(inputData, n, c);
 
-                        std::vector<cv::Range> plane(4, Range::all());
+                        std::vector<ncvslideio::Range> plane(4, Range::all());
                         plane[0] = Range(n, n + 1);
                         plane[1] = Range(c, c + 1);
                         UMat out = outputs[i](plane).reshape(1, inp.dims, inp.size);
@@ -339,5 +339,5 @@ struct DataLayer : public Layer
 
 }  // namespace detail
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 #endif  // __OPENCV_DNN_SRC_LAYER_INTERNALS_HPP__

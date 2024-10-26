@@ -32,12 +32,12 @@ bool pyopencv_to_safe(PyObject* obj, _Tp& value, const ArgInfo& info)
     }
     catch (const std::exception &e)
     {
-        PyErr_SetString(opencv_error, cv::format("Conversion error: %s, what: %s", info.name, e.what()).c_str());
+        PyErr_SetString(opencv_error, ncvslideio::format("Conversion error: %s, what: %s", info.name, e.what()).c_str());
         return false;
     }
     catch (...)
     {
-        PyErr_SetString(opencv_error, cv::format("Conversion error: %s", info.name).c_str());
+        PyErr_SetString(opencv_error, ncvslideio::format("Conversion error: %s", info.name).c_str());
         return false;
     }
 }
@@ -62,13 +62,13 @@ PyObject* pyopencv_from(const T& src) { return PyOpenCV_Converter<T>::from(src);
 // --- Matx
 
 template<typename _Tp, int m, int n>
-bool pyopencv_to(PyObject* o, cv::Matx<_Tp, m, n>& mx, const ArgInfo& info)
+bool pyopencv_to(PyObject* o, ncvslideio::Matx<_Tp, m, n>& mx, const ArgInfo& info)
 {
     if (!o || o == Py_None) {
         return true;
     }
 
-    cv::Mat tmp;
+    ncvslideio::Mat tmp;
     if (!pyopencv_to(o, tmp, info)) {
         return false;
     }
@@ -78,9 +78,9 @@ bool pyopencv_to(PyObject* o, cv::Matx<_Tp, m, n>& mx, const ArgInfo& info)
 }
 
 template<typename _Tp, int m, int n>
-PyObject* pyopencv_from(const cv::Matx<_Tp, m, n>& matx)
+PyObject* pyopencv_from(const ncvslideio::Matx<_Tp, m, n>& matx)
 {
-    return pyopencv_from(cv::Mat(matx));
+    return pyopencv_from(ncvslideio::Mat(matx));
 }
 
 // --- bool
@@ -88,24 +88,24 @@ template<> bool pyopencv_to(PyObject* obj, bool& value, const ArgInfo& info);
 template<> PyObject* pyopencv_from(const bool& value);
 
 // --- Mat
-template<> bool pyopencv_to(PyObject* o, cv::Mat& m, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Mat& m);
+template<> bool pyopencv_to(PyObject* o, ncvslideio::Mat& m, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Mat& m);
 
 // --- Ptr
 template<typename T>
-struct PyOpenCV_Converter< cv::Ptr<T> >
+struct PyOpenCV_Converter< ncvslideio::Ptr<T> >
 {
-    static PyObject* from(const cv::Ptr<T>& p)
+    static PyObject* from(const ncvslideio::Ptr<T>& p)
     {
         if (!p)
             Py_RETURN_NONE;
         return pyopencv_from(*p);
     }
-    static bool to(PyObject *o, cv::Ptr<T>& p, const ArgInfo& info)
+    static bool to(PyObject *o, ncvslideio::Ptr<T>& p, const ArgInfo& info)
     {
         if (!o || o == Py_None)
             return true;
-        p = cv::makePtr<T>();
+        p = ncvslideio::makePtr<T>();
         return pyopencv_to(o, *p, info);
     }
 };
@@ -115,8 +115,8 @@ template<> bool pyopencv_to(PyObject* obj, void*& ptr, const ArgInfo& info);
 PyObject* pyopencv_from(void*& ptr);
 
 // --- Scalar
-template<> bool pyopencv_to(PyObject *o, cv::Scalar& s, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Scalar& src);
+template<> bool pyopencv_to(PyObject *o, ncvslideio::Scalar& s, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Scalar& src);
 
 // --- size_t
 template<> bool pyopencv_to(PyObject* obj, size_t& value, const ArgInfo& info);
@@ -199,79 +199,79 @@ template<> bool pyopencv_to(PyObject* obj, float& value, const ArgInfo& info);
 template<> PyObject* pyopencv_from(const float& value);
 
 // --- string
-template<> bool pyopencv_to(PyObject* obj, cv::String &value, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::String& value);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::String &value, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::String& value);
 #if CV_VERSION_MAJOR == 3
 template<> PyObject* pyopencv_from(const std::string& value);
 #endif
 
 // --- Size
-template<> bool pyopencv_to(PyObject* obj, cv::Size& sz, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Size& sz);
-template<> bool pyopencv_to(PyObject* obj, cv::Size_<float>& sz, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Size_<float>& sz);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Size& sz, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Size& sz);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Size_<float>& sz, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Size_<float>& sz);
 
 // --- Rect
-template<> bool pyopencv_to(PyObject* obj, cv::Rect& r, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Rect& r);
-template<> bool pyopencv_to(PyObject* obj, cv::Rect2f& r, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Rect2f& r);
-template<> bool pyopencv_to(PyObject* obj, cv::Rect2d& r, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Rect2d& r);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Rect& r, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Rect& r);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Rect2f& r, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Rect2f& r);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Rect2d& r, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Rect2d& r);
 
 // --- RotatedRect
-template<> bool pyopencv_to(PyObject* obj, cv::RotatedRect& dst, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::RotatedRect& src);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::RotatedRect& dst, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::RotatedRect& src);
 
 // --- Range
-template<> bool pyopencv_to(PyObject* obj, cv::Range& r, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Range& r);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Range& r, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Range& r);
 
 // --- Point
-template<> bool pyopencv_to(PyObject* obj, cv::Point& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point& p);
-template<> bool pyopencv_to(PyObject* obj, cv::Point2f& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point2f& p);
-template<> bool pyopencv_to(PyObject* obj, cv::Point2d& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point2d& p);
-template<> bool pyopencv_to(PyObject* obj, cv::Point3i& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point3i& p);
-template<> bool pyopencv_to(PyObject* obj, cv::Point3f& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point3f& p);
-template<> bool pyopencv_to(PyObject* obj, cv::Point3d& p, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::Point3d& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point2f& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point2f& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point2d& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point2d& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point3i& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point3i& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point3f& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point3f& p);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::Point3d& p, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::Point3d& p);
 
 // --- Vec
 template<typename _Tp, int cn>
-bool pyopencv_to(PyObject* o, cv::Vec<_Tp, cn>& vec, const ArgInfo& info)
+bool pyopencv_to(PyObject* o, ncvslideio::Vec<_Tp, cn>& vec, const ArgInfo& info)
 {
-    return pyopencv_to(o, (cv::Matx<_Tp, cn, 1>&)vec, info);
+    return pyopencv_to(o, (ncvslideio::Matx<_Tp, cn, 1>&)vec, info);
 }
-bool pyopencv_to(PyObject* obj, cv::Vec4d& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec4d& v);
-bool pyopencv_to(PyObject* obj, cv::Vec4f& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec4f& v);
-bool pyopencv_to(PyObject* obj, cv::Vec4i& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec4i& v);
-bool pyopencv_to(PyObject* obj, cv::Vec3d& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec3d& v);
-bool pyopencv_to(PyObject* obj, cv::Vec3f& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec3f& v);
-bool pyopencv_to(PyObject* obj, cv::Vec3i& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec3i& v);
-bool pyopencv_to(PyObject* obj, cv::Vec2d& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec2d& v);
-bool pyopencv_to(PyObject* obj, cv::Vec2f& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec2f& v);
-bool pyopencv_to(PyObject* obj, cv::Vec2i& v, ArgInfo& info);
-PyObject* pyopencv_from(const cv::Vec2i& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec4d& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec4d& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec4f& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec4f& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec4i& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec4i& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec3d& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec3d& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec3f& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec3f& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec3i& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec3i& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec2d& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec2d& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec2f& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec2f& v);
+bool pyopencv_to(PyObject* obj, ncvslideio::Vec2i& v, ArgInfo& info);
+PyObject* pyopencv_from(const ncvslideio::Vec2i& v);
 
 // --- TermCriteria
-template<> bool pyopencv_to(PyObject* obj, cv::TermCriteria& dst, const ArgInfo& info);
-template<> PyObject* pyopencv_from(const cv::TermCriteria& src);
+template<> bool pyopencv_to(PyObject* obj, ncvslideio::TermCriteria& dst, const ArgInfo& info);
+template<> PyObject* pyopencv_from(const ncvslideio::TermCriteria& src);
 
 // --- Moments
-template<> PyObject* pyopencv_from(const cv::Moments& m);
+template<> PyObject* pyopencv_from(const ncvslideio::Moments& m);
 
 // --- pair
 template<> PyObject* pyopencv_from(const std::pair<int, double>& src);
@@ -459,12 +459,12 @@ struct IsRepresentableAsMatDataType : FalseType
 };
 
 template <class T>
-struct IsRepresentableAsMatDataType<T, typename VoidType<typename cv::DataType<T>::channel_type>::type> : TrueType
+struct IsRepresentableAsMatDataType<T, typename VoidType<typename ncvslideio::DataType<T>::channel_type>::type> : TrueType
 {
 };
 
 // https://github.com/opencv/opencv/issues/20930
-template <> struct IsRepresentableAsMatDataType<cv::RotatedRect, void> : FalseType {};
+template <> struct IsRepresentableAsMatDataType<ncvslideio::RotatedRect, void> : FalseType {};
 
 } // namespace traits
 
@@ -534,7 +534,7 @@ private:
     static PyObject* from(const std::vector<Tp>& value, ::traits::TrueType)
     {
         // Underlying type is representable as Mat Data Type, so faster return type is available
-        typedef cv::DataType<Tp> DType;
+        typedef ncvslideio::DataType<Tp> DType;
         typedef typename DType::channel_type UnderlyingArrayType;
 
         // If Mat is always exposed as NumPy array this code path can be reduced to the following snipped:
@@ -561,16 +561,16 @@ private:
         {
             // NumPy arrays with shape (N, 1) and (N) are not equal, so correct error message should distinguish
             // them too.
-            cv::String shape;
+            ncvslideio::String shape;
             if (cols > 1)
             {
-                shape = cv::format("(%d x %d)", static_cast<int>(value.size()), cols);
+                shape = ncvslideio::format("(%d x %d)", static_cast<int>(value.size()), cols);
             }
             else
             {
-                shape = cv::format("(%d)", static_cast<int>(value.size()));
+                shape = ncvslideio::format("(%d)", static_cast<int>(value.size()));
             }
-            const cv::String error_message = cv::format("Can't allocate NumPy array for vector with dtype=%d and shape=%s",
+            const ncvslideio::String error_message = ncvslideio::format("Can't allocate NumPy array for vector with dtype=%d and shape=%s",
                                                 static_cast<int>(target_type), shape.c_str());
             emit_failmsg(PyExc_MemoryError, error_message.c_str());
             return array;

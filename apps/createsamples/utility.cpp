@@ -58,7 +58,7 @@
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifndef PATH_MAX
 #define PATH_MAX 512

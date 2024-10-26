@@ -39,7 +39,7 @@ PERF_TEST_P_(BuildOptFlowPyramidPerfTest, TestPerformance)
 
     TEST_CYCLE()
     {
-        c.apply(cv::gin(in_mat1), cv::gout(outPyrGAPI, outMaxLevelSc));
+        c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(outPyrGAPI, outMaxLevelSc));
     }
     outMaxLevelGAPI = static_cast<int>(outMaxLevelSc[0]);
 
@@ -51,7 +51,7 @@ PERF_TEST_P_(BuildOptFlowPyramidPerfTest, TestPerformance)
 
 PERF_TEST_P_(OptFlowLKPerfTest, TestPerformance)
 {
-    std::vector<cv::Point2f> outPtsOCV,    outPtsGAPI,    inPts;
+    std::vector<ncvslideio::Point2f> outPtsOCV,    outPtsGAPI,    inPts;
     std::vector<uchar>       outStatusOCV, outStatusGAPI;
     std::vector<float>       outErrOCV,    outErrGAPI;
 
@@ -63,14 +63,14 @@ PERF_TEST_P_(OptFlowLKPerfTest, TestPerformance)
     OptFlowLKTestOutput outOCV  { outPtsOCV,  outStatusOCV,  outErrOCV };
     OptFlowLKTestOutput outGAPI { outPtsGAPI, outStatusGAPI, outErrGAPI };
 
-    cv::GComputation c = runOCVnGAPIOptFlowLK(*this, inPts, params, outOCV, outGAPI);
+    ncvslideio::GComputation c = runOCVnGAPIOptFlowLK(*this, inPts, params, outOCV, outGAPI);
 
     declare.in(in_mat1, in_mat2, inPts).out(outPtsGAPI, outStatusGAPI, outErrGAPI);
 
     TEST_CYCLE()
     {
-        c.apply(cv::gin(in_mat1, in_mat2, inPts, std::vector<cv::Point2f>{ }),
-                cv::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
+        c.apply(ncvslideio::gin(in_mat1, in_mat2, inPts, std::vector<ncvslideio::Point2f>{ }),
+                ncvslideio::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
     }
 
     // Comparison //////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ PERF_TEST_P_(OptFlowLKPerfTest, TestPerformance)
 
 PERF_TEST_P_(OptFlowLKForPyrPerfTest, TestPerformance)
 {
-    std::vector<cv::Mat>     inPyr1, inPyr2;
-    std::vector<cv::Point2f> outPtsOCV,    outPtsGAPI,    inPts;
+    std::vector<ncvslideio::Mat>     inPyr1, inPyr2;
+    std::vector<ncvslideio::Point2f> outPtsOCV,    outPtsGAPI,    inPts;
     std::vector<uchar>       outStatusOCV, outStatusGAPI;
     std::vector<float>       outErrOCV,    outErrGAPI;
 
@@ -94,18 +94,18 @@ PERF_TEST_P_(OptFlowLKForPyrPerfTest, TestPerformance)
              params.pointsNum, params.winSize, params.criteria,
              withDeriv, params.compileArgs) = GetParam();
 
-    OptFlowLKTestInput<std::vector<cv::Mat>> in { inPyr1, inPyr2, inPts };
+    OptFlowLKTestInput<std::vector<ncvslideio::Mat>> in { inPyr1, inPyr2, inPts };
     OptFlowLKTestOutput outOCV  { outPtsOCV,  outStatusOCV,  outErrOCV };
     OptFlowLKTestOutput outGAPI { outPtsGAPI, outStatusGAPI, outErrGAPI };
 
-    cv::GComputation c = runOCVnGAPIOptFlowLKForPyr(*this, in, params, withDeriv, outOCV, outGAPI);
+    ncvslideio::GComputation c = runOCVnGAPIOptFlowLKForPyr(*this, in, params, withDeriv, outOCV, outGAPI);
 
     declare.in(inPyr1, inPyr2, inPts).out(outPtsGAPI, outStatusGAPI, outErrGAPI);
 
     TEST_CYCLE()
     {
-        c.apply(cv::gin(inPyr1, inPyr2, inPts, std::vector<cv::Point2f>{ }),
-                cv::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
+        c.apply(ncvslideio::gin(inPyr1, inPyr2, inPts, std::vector<ncvslideio::Point2f>{ }),
+                ncvslideio::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
     }
 
     // Comparison //////////////////////////////////////////////////////////////
@@ -136,14 +136,14 @@ PERF_TEST_P_(BuildPyr_CalcOptFlow_PipelinePerfTest, TestPerformance)
     OptFlowLKTestOutput outOCV  { outPtsOCV,  outStatusOCV,  outErrOCV };
     OptFlowLKTestOutput outGAPI { outPtsGAPI, outStatusGAPI, outErrGAPI };
 
-    cv::GComputation c = runOCVnGAPIOptFlowPipeline(*this, params, outOCV, outGAPI, inPts);
+    ncvslideio::GComputation c = runOCVnGAPIOptFlowPipeline(*this, params, outOCV, outGAPI, inPts);
 
     declare.in(in_mat1, in_mat2, inPts).out(outPtsGAPI, outStatusGAPI, outErrGAPI);
 
     TEST_CYCLE()
     {
-        c.apply(cv::gin(in_mat1, in_mat2, inPts, std::vector<cv::Point2f>{ }),
-                cv::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
+        c.apply(ncvslideio::gin(in_mat1, in_mat2, inPts, std::vector<ncvslideio::Point2f>{ }),
+                ncvslideio::gout(outPtsGAPI, outStatusGAPI, outErrGAPI));
     }
 
     // Comparison //////////////////////////////////////////////////////////////
@@ -158,14 +158,14 @@ PERF_TEST_P_(BuildPyr_CalcOptFlow_PipelinePerfTest, TestPerformance)
 
 PERF_TEST_P_(BackgroundSubtractorPerfTest, TestPerformance)
 {
-    namespace gvideo = cv::gapi::video;
+    namespace gvideo = ncvslideio::gapi::video;
 
     gvideo::BackgroundSubtractorType opType;
     std::string filePath = "";
     bool detectShadows = false;
     double learningRate = -1.;
     std::size_t testNumFrames = 0;
-    cv::GCompileArgs compileArgs;
+    ncvslideio::GCompileArgs compileArgs;
     CompareMats cmpF;
 
     std::tie(opType, filePath, detectShadows, learningRate, testNumFrames,
@@ -192,11 +192,11 @@ PERF_TEST_P_(BackgroundSubtractorPerfTest, TestPerformance)
                                                  learningRate);
 
     // Retrieving frames
-    std::vector<cv::Mat> frames;
+    std::vector<ncvslideio::Mat> frames;
     frames.reserve(testNumFrames);
     {
-        cv::Mat frame;
-        cv::VideoCapture cap;
+        ncvslideio::Mat frame;
+        ncvslideio::VideoCapture cap;
         if (!cap.open(findDataFile(filePath)))
             throw SkipTestException("Video file can not be opened");
         for (std::size_t i = 0; i < testNumFrames && cap.read(frame); i++)
@@ -207,28 +207,28 @@ PERF_TEST_P_(BackgroundSubtractorPerfTest, TestPerformance)
     GAPI_Assert(testNumFrames == frames.size() && "Can't read required number of frames");
 
     // G-API graph declaration
-    cv::GMat in;
-    cv::GMat out = cv::gapi::BackgroundSubtractor(in, bsp);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    auto cc = c.compile(cv::descr_of(frames[0]), std::move(compileArgs));
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = ncvslideio::gapi::BackgroundSubtractor(in, bsp);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    auto cc = c.compile(ncvslideio::descr_of(frames[0]), std::move(compileArgs));
 
-    cv::Mat gapiForeground;
+    ncvslideio::Mat gapiForeground;
     TEST_CYCLE()
     {
         cc.prepareForNewStream();
         for (size_t i = 0; i < testNumFrames; i++)
         {
-            cc(cv::gin(frames[i]), cv::gout(gapiForeground));
+            cc(ncvslideio::gin(frames[i]), ncvslideio::gout(gapiForeground));
         }
     }
 
     // OpenCV Background Subtractor declaration
-    cv::Ptr<cv::BackgroundSubtractor> pOCVBackSub;
+    ncvslideio::Ptr<ncvslideio::BackgroundSubtractor> pOCVBackSub;
     if (opType == gvideo::TYPE_BS_MOG2)
-        pOCVBackSub = cv::createBackgroundSubtractorMOG2(histLength, thr, detectShadows);
+        pOCVBackSub = ncvslideio::createBackgroundSubtractorMOG2(histLength, thr, detectShadows);
     else if (opType == gvideo::TYPE_BS_KNN)
-        pOCVBackSub = cv::createBackgroundSubtractorKNN(histLength, thr, detectShadows);
-    cv::Mat ocvForeground;
+        pOCVBackSub = ncvslideio::createBackgroundSubtractorKNN(histLength, thr, detectShadows);
+    ncvslideio::Mat ocvForeground;
     for (size_t i = 0; i < testNumFrames; i++)
     {
         pOCVBackSub->apply(frames[i], ocvForeground, learningRate);
@@ -243,9 +243,9 @@ PERF_TEST_P_(BackgroundSubtractorPerfTest, TestPerformance)
 inline void generateInputKalman(const int mDim, const MatType2& type,
                                 const size_t testNumMeasurements, const bool receiveRandMeas,
                                 std::vector<bool>&    haveMeasurements,
-                                std::vector<cv::Mat>& measurements)
+                                std::vector<ncvslideio::Mat>& measurements)
 {
-    cv::RNG& rng = cv::theRNG();
+    ncvslideio::RNG& rng = ncvslideio::theRNG();
     measurements.clear();
     haveMeasurements = std::vector<bool>(testNumMeasurements, true);
     for (size_t i = 0; i < testNumMeasurements; i++)
@@ -256,10 +256,10 @@ inline void generateInputKalman(const int mDim, const MatType2& type,
                                                 // at this iteration or not
         } // if not - testing the slowest case in which we have measurements at every iteration
 
-        cv::Mat measurement = cv::Mat::zeros(mDim, 1, type);
+        ncvslideio::Mat measurement = ncvslideio::Mat::zeros(mDim, 1, type);
         if (haveMeasurements[i])
         {
-            cv::randu(measurement, cv::Scalar::all(-1), cv::Scalar::all(1));
+            ncvslideio::randu(measurement, ncvslideio::Scalar::all(-1), ncvslideio::Scalar::all(1));
         }
         measurements.push_back(measurement.clone());
     }
@@ -268,16 +268,16 @@ inline void generateInputKalman(const int mDim, const MatType2& type,
 inline void generateInputKalman(const int mDim, const int cDim, const MatType2& type,
                                 const size_t testNumMeasurements, const bool receiveRandMeas,
                                 std::vector<bool>&    haveMeasurements,
-                                std::vector<cv::Mat>& measurements,
-                                std::vector<cv::Mat>& ctrls)
+                                std::vector<ncvslideio::Mat>& measurements,
+                                std::vector<ncvslideio::Mat>& ctrls)
 {
     generateInputKalman(mDim, type, testNumMeasurements, receiveRandMeas,
                         haveMeasurements, measurements);
     ctrls.clear();
-    cv::Mat ctrl(cDim, 1, type);
+    ncvslideio::Mat ctrl(cDim, 1, type);
     for (size_t i = 0; i < testNumMeasurements; i++)
     {
-        cv::randu(ctrl, cv::Scalar::all(-1), cv::Scalar::all(1));
+        ncvslideio::randu(ctrl, ncvslideio::Scalar::all(-1), ncvslideio::Scalar::all(1));
         ctrls.push_back(ctrl.clone());
     }
 }
@@ -288,44 +288,44 @@ PERF_TEST_P_(KalmanFilterControlPerfTest, TestPerformance)
     int dDim = -1, mDim = -1;
     size_t testNumMeasurements = 0;
     bool receiveRandMeas = true;
-    cv::GCompileArgs compileArgs;
+    ncvslideio::GCompileArgs compileArgs;
     std::tie(type, dDim, mDim, testNumMeasurements, receiveRandMeas, compileArgs) = GetParam();
 
     const int cDim = 2;
-    cv::gapi::KalmanParams kp;
+    ncvslideio::gapi::KalmanParams kp;
     initKalmanParams(type, dDim, mDim, cDim, kp);
 
     // Generating input
     std::vector<bool> haveMeasurements;
-    std::vector<cv::Mat> measurements, ctrls;
+    std::vector<ncvslideio::Mat> measurements, ctrls;
     generateInputKalman(mDim, cDim, type, testNumMeasurements, receiveRandMeas,
                         haveMeasurements, measurements, ctrls);
 
     // G-API graph declaration
-    cv::GMat m, ctrl;
-    cv::GOpaque<bool> have_m;
-    cv::GMat out = cv::gapi::KalmanFilter(m, have_m, ctrl, kp);
-    cv::GComputation c(cv::GIn(m, have_m, ctrl), cv::GOut(out));
+    ncvslideio::GMat m, ctrl;
+    ncvslideio::GOpaque<bool> have_m;
+    ncvslideio::GMat out = ncvslideio::gapi::KalmanFilter(m, have_m, ctrl, kp);
+    ncvslideio::GComputation c(ncvslideio::GIn(m, have_m, ctrl), ncvslideio::GOut(out));
     auto cc = c.compile(
-        cv::descr_of(cv::gin(cv::Mat(mDim, 1, type), true, cv::Mat(cDim, 1, type))),
+        ncvslideio::descr_of(ncvslideio::gin(ncvslideio::Mat(mDim, 1, type), true, ncvslideio::Mat(cDim, 1, type))),
         std::move(compileArgs));
 
-    cv::Mat gapiKState(dDim, 1, type);
+    ncvslideio::Mat gapiKState(dDim, 1, type);
     TEST_CYCLE()
     {
         cc.prepareForNewStream();
         for (size_t i = 0; i < testNumMeasurements; i++)
         {
             bool hvMeas = haveMeasurements[i];
-            cc(cv::gin(measurements[i], hvMeas, ctrls[i]), cv::gout(gapiKState));
+            cc(ncvslideio::gin(measurements[i], hvMeas, ctrls[i]), ncvslideio::gout(gapiKState));
         }
     }
 
     // OpenCV reference KalmanFilter initialization
-    cv::KalmanFilter ocvKalman(dDim, mDim, cDim, type);
+    ncvslideio::KalmanFilter ocvKalman(dDim, mDim, cDim, type);
     initKalmanFilter(kp, true, ocvKalman);
 
-    cv::Mat ocvKState(dDim, 1, type);
+    ncvslideio::Mat ocvKState(dDim, 1, type);
     for (size_t i = 0; i < testNumMeasurements; i++)
     {
         ocvKState = ocvKalman.predict(ctrls[i]);
@@ -343,43 +343,43 @@ PERF_TEST_P_(KalmanFilterNoControlPerfTest, TestPerformance)
     int dDim = -1, mDim = -1;
     size_t testNumMeasurements = 0;
     bool receiveRandMeas = true;
-    cv::GCompileArgs compileArgs;
+    ncvslideio::GCompileArgs compileArgs;
     std::tie(type, dDim, mDim, testNumMeasurements, receiveRandMeas, compileArgs) = GetParam();
 
     const int cDim = 0;
-    cv::gapi::KalmanParams kp;
+    ncvslideio::gapi::KalmanParams kp;
     initKalmanParams(type, dDim, mDim, cDim, kp);
 
     // Generating input
     std::vector<bool> haveMeasurements;
-    std::vector<cv::Mat> measurements;
+    std::vector<ncvslideio::Mat> measurements;
     generateInputKalman(mDim, type, testNumMeasurements, receiveRandMeas,
                         haveMeasurements, measurements);
 
     // G-API graph declaration
-    cv::GMat m;
-    cv::GOpaque<bool> have_m;
-    cv::GMat out = cv::gapi::KalmanFilter(m, have_m, kp);
-    cv::GComputation c(cv::GIn(m, have_m), cv::GOut(out));
-    auto cc = c.compile(cv::descr_of(cv::gin(cv::Mat(mDim, 1, type), true)),
+    ncvslideio::GMat m;
+    ncvslideio::GOpaque<bool> have_m;
+    ncvslideio::GMat out = ncvslideio::gapi::KalmanFilter(m, have_m, kp);
+    ncvslideio::GComputation c(ncvslideio::GIn(m, have_m), ncvslideio::GOut(out));
+    auto cc = c.compile(ncvslideio::descr_of(ncvslideio::gin(ncvslideio::Mat(mDim, 1, type), true)),
                         std::move(compileArgs));
 
-    cv::Mat gapiKState(dDim, 1, type);
+    ncvslideio::Mat gapiKState(dDim, 1, type);
     TEST_CYCLE()
     {
         cc.prepareForNewStream();
         for (size_t i = 0; i < testNumMeasurements; i++)
         {
             bool hvMeas = haveMeasurements[i];
-            cc(cv::gin(measurements[i], hvMeas), cv::gout(gapiKState));
+            cc(ncvslideio::gin(measurements[i], hvMeas), ncvslideio::gout(gapiKState));
         }
     }
 
     // OpenCV reference KalmanFilter declaration
-    cv::KalmanFilter ocvKalman(dDim, mDim, cDim, type);
+    ncvslideio::KalmanFilter ocvKalman(dDim, mDim, cDim, type);
     initKalmanFilter(kp, false, ocvKalman);
 
-    cv::Mat ocvKState(dDim, 1, type);
+    ncvslideio::Mat ocvKState(dDim, 1, type);
     for (size_t i = 0; i < testNumMeasurements; i++)
     {
         ocvKState = ocvKalman.predict();

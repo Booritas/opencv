@@ -24,7 +24,7 @@
         #include <CL/cl_d3d11.h>
     #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -43,9 +43,9 @@ public:
     //        due to reference counting
     mfxHDLPair getHandle() const;
     // The default implementation does nothing
-    cv::util::any blobParams() const override;
-    void serialize(cv::gapi::s11n::IOStream&) override;
-    void deserialize(cv::gapi::s11n::IIStream&) override;
+    ncvslideio::util::any blobParams() const override;
+    void serialize(ncvslideio::gapi::s11n::IOStream&) override;
+    void deserialize(ncvslideio::gapi::s11n::IIStream&) override;
 
     static DXGI_FORMAT get_dx11_color_format(uint32_t mfx_fourcc);
 private:
@@ -54,7 +54,7 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #undef NOMINMAX
 #endif // HAVE_D3D11
 #endif // HAVE_DIRECTX

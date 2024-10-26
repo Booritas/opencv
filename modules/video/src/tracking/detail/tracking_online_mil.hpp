@@ -7,7 +7,7 @@
 
 #include <limits>
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -62,7 +62,7 @@ public:
     ClfOnlineStump();
     ClfOnlineStump(int ind);
     void init();
-    void update(const Mat& posx, const Mat& negx, const cv::Mat_<float>& posw = cv::Mat_<float>(), const cv::Mat_<float>& negw = cv::Mat_<float>());
+    void update(const Mat& posx, const Mat& negx, const ncvslideio::Mat_<float>& posw = ncvslideio::Mat_<float>(), const ncvslideio::Mat_<float>& negw = ncvslideio::Mat_<float>());
     bool classify(const Mat& x, int i);
     float classifyF(const Mat& x, int i);
     std::vector<float> classifySetF(const Mat& x);
@@ -74,6 +74,6 @@ private:
 
 //! @}
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking
 
 #endif

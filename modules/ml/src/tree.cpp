@@ -45,7 +45,7 @@
 
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace ml {
 
 using std::vector;
@@ -404,7 +404,7 @@ int DTreesImpl::addNodeAndTrySplit( int parent, const vector<int>& sidx )
     {
         node.defaultDir = calcDir( node.split, sidx, sleft, sright );
         if( params.useSurrogates )
-            CV_Error( cv::Error::StsNotImplemented, "surrogate splits are not implemented yet");
+            CV_Error( ncvslideio::Error::StsNotImplemented, "surrogate splits are not implemented yet");
 
         int left = addNodeAndTrySplit( nidx, sleft );
         int right = addNodeAndTrySplit( nidx, sright );
@@ -472,7 +472,7 @@ void DTreesImpl::calcValue( int nidx, const vector<int>& _sidx )
     int i, j, k, n = (int)_sidx.size(), cv_n = params.getCVFolds();
     int m = (int)classLabels.size();
 
-    cv::AutoBuffer<double> buf(std::max(m, 3)*(cv_n+1));
+    ncvslideio::AutoBuffer<double> buf(std::max(m, 3)*(cv_n+1));
 
     if( cv_n > 0 )
     {
@@ -647,7 +647,7 @@ DTreesImpl::WSplit DTreesImpl::findSplitOrdClass( int vi, const vector<int>& _si
     int n = (int)_sidx.size();
     int m = (int)classLabels.size();
 
-    cv::AutoBuffer<uchar> buf(n*(sizeof(float) + sizeof(int)) + m*2*sizeof(double));
+    ncvslideio::AutoBuffer<uchar> buf(n*(sizeof(float) + sizeof(int)) + m*2*sizeof(double));
     const int* sidx = &_sidx[0];
     const int* responses = &w->cat_responses[0];
     const double* weights = &w->sample_weights[0];
@@ -721,7 +721,7 @@ void DTreesImpl::clusterCategories( const double* vectors, int n, int m, double*
 {
     int iters = 0, max_iters = 100;
     int i, j, idx;
-    cv::AutoBuffer<double> buf(n + k);
+    ncvslideio::AutoBuffer<double> buf(n + k);
     double *v_weights = buf.data(), *c_weights = buf.data() + n;
     bool modified = true;
     RNG r((uint64)-1);
@@ -1201,7 +1201,7 @@ int DTreesImpl::pruneCV( int root )
 {
     vector<double> ab;
 
-    // 1. build tree sequence for each cv fold, calculate error_{Tj,beta_k}.
+    // 1. build tree sequence for each ncvslideio fold, calculate error_{Tj,beta_k}.
     // 2. choose the best tree index (if need, apply 1SE rule).
     // 3. store the best index and cut the branches.
 
@@ -1445,7 +1445,7 @@ float DTreesImpl::predictTrees( const Range& range, const Mat& sample, int flags
 
                         int ival = cvRound(val);
                         if( ival != val )
-                            CV_Error( cv::Error::StsBadArg,
+                            CV_Error( ncvslideio::Error::StsBadArg,
                                      "one of input categorical variable is not an integer" );
 
                         CV_Assert(cmap != NULL);

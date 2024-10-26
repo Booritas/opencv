@@ -246,10 +246,10 @@ def refine_dnn_module(root: NamespaceNode) -> None:
                 "params",
                 DictTypeNode(
                     "LayerParams", PrimitiveTypeNode.str_(),
-                    create_type_node("cv::dnn::DictValue")
+                    create_type_node("ncvslideio::dnn::DictValue")
                 )
             ),
-            FunctionNode.Arg("blobs", create_type_node("vector<cv::Mat>"))
+            FunctionNode.Arg("blobs", create_type_node("vector<ncvslideio::Mat>"))
         ]
     )
     layer_proto.add_function(
@@ -265,9 +265,9 @@ def refine_dnn_module(root: NamespaceNode) -> None:
     layer_proto.add_function(
         "forward",
         arguments=[
-            FunctionNode.Arg("inputs", create_type_node("vector<cv::Mat>"))
+            FunctionNode.Arg("inputs", create_type_node("vector<ncvslideio::Mat>"))
         ],
-        return_type=FunctionNode.RetType(create_type_node("vector<cv::Mat>"))
+        return_type=FunctionNode.RetType(create_type_node("vector<ncvslideio::Mat>"))
     )
 
     """
@@ -323,9 +323,9 @@ def _find_argument_index(arguments: Sequence[FunctionNode.Arg],
 
 
 NODES_TO_REFINE = {
-    SymbolName(("cv", ), (), "resize"): make_optional_arg("dsize"),
-    SymbolName(("cv", ), (), "calcHist"): make_optional_arg("mask"),
-    SymbolName(("cv", ), (), "floodFill"): make_optional_arg("mask"),
+    SymbolName(("ncvslideio", ), (), "resize"): make_optional_arg("dsize"),
+    SymbolName(("ncvslideio", ), (), "calcHist"): make_optional_arg("mask"),
+    SymbolName(("ncvslideio", ), (), "floodFill"): make_optional_arg("mask"),
 }
 
 ERROR_CLASS_PROPERTIES = (

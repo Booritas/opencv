@@ -1,8 +1,8 @@
 #include <opencv2/ml/ml.hpp>
 
 using namespace std;
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 int main()
 {

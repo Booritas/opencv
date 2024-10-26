@@ -77,19 +77,19 @@ Camera models
 There are currently 2 camera models implemented in stitching pipeline.
 
 - _Homography model_ expecting perspective transformations between images
-  implemented in @ref cv::detail::BestOf2NearestMatcher cv::detail::HomographyBasedEstimator
-  cv::detail::BundleAdjusterReproj cv::detail::BundleAdjusterRay
+  implemented in @ref ncvslideio::detail::BestOf2NearestMatcher ncvslideio::detail::HomographyBasedEstimator
+  ncvslideio::detail::BundleAdjusterReproj ncvslideio::detail::BundleAdjusterRay
 - _Affine model_ expecting affine transformation with 6 DOF or 4 DOF implemented in
-  @ref cv::detail::AffineBestOf2NearestMatcher cv::detail::AffineBasedEstimator
-  cv::detail::BundleAdjusterAffine cv::detail::BundleAdjusterAffinePartial cv::AffineWarper
+  @ref ncvslideio::detail::AffineBestOf2NearestMatcher ncvslideio::detail::AffineBasedEstimator
+  ncvslideio::detail::BundleAdjusterAffine ncvslideio::detail::BundleAdjusterAffinePartial ncvslideio::AffineWarper
 
 Homography model is useful for creating photo panoramas captured by camera,
 while affine-based model can be used to stitch scans and object captured by
-specialized devices. Use @ref cv::Stitcher::create to get preconfigured pipeline for one
+specialized devices. Use @ref ncvslideio::Stitcher::create to get preconfigured pipeline for one
 of those models.
 
 @note
-Certain detailed settings of @ref cv::Stitcher might not make sense. Especially
+Certain detailed settings of @ref ncvslideio::Stitcher might not make sense. Especially
 you should not mix classes implementing affine model and classes implementing
 Homography model, as they work with different transformations.
 
@@ -104,7 +104,7 @@ Homography model, as they work with different transformations.
 @}
   */
 
-namespace cv {
+namespace ncvslideio {
 
 //! @addtogroup stitching
 //! @{
@@ -214,8 +214,8 @@ public:
     void setFeaturesMatcher(Ptr<detail::FeaturesMatcher> features_matcher)
         { features_matcher_ = features_matcher; }
 
-    const cv::UMat& matchingMask() const { return matching_mask_; }
-    void setMatchingMask(const cv::UMat &mask)
+    const ncvslideio::UMat& matchingMask() const { return matching_mask_; }
+    void setMatchingMask(const ncvslideio::UMat &mask)
     {
         CV_Assert(mask.type() == CV_8U && mask.cols == mask.rows);
         matching_mask_ = mask.clone();
@@ -323,7 +323,7 @@ private:
     InterpolationFlags interp_flags_;
     Ptr<Feature2D> features_finder_;
     Ptr<detail::FeaturesMatcher> features_matcher_;
-    cv::UMat matching_mask_;
+    ncvslideio::UMat matching_mask_;
     Ptr<detail::BundleAdjusterBase> bundle_adjuster_;
     Ptr<detail::Estimator> estimator_;
     bool do_wave_correct_;
@@ -333,12 +333,12 @@ private:
     Ptr<detail::SeamFinder> seam_finder_;
     Ptr<detail::Blender> blender_;
 
-    std::vector<cv::UMat> imgs_;
-    std::vector<cv::UMat> masks_;
-    std::vector<cv::Size> full_img_sizes_;
+    std::vector<ncvslideio::UMat> imgs_;
+    std::vector<ncvslideio::UMat> masks_;
+    std::vector<ncvslideio::Size> full_img_sizes_;
     std::vector<detail::ImageFeatures> features_;
     std::vector<detail::MatchesInfo> pairwise_matches_;
-    std::vector<cv::UMat> seam_est_imgs_;
+    std::vector<ncvslideio::UMat> seam_est_imgs_;
     std::vector<int> indices_;
     std::vector<detail::CameraParams> cameras_;
     UMat result_mask_;
@@ -360,6 +360,6 @@ CV_DEPRECATED Ptr<Stitcher> createStitcherScans(bool try_use_gpu = false);
 
 //! @} stitching
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_STITCHER_HPP

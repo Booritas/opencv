@@ -15,7 +15,7 @@
 #include "conv_winograd_f63.simd.hpp"
 #include "layers/cpu_kernels/conv_winograd_f63.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #if CV_NEON || CV_SIMD128 || CV_TRY_AVX2
 enum { VEC_ALIGN = 32, DFT_TYPE = CV_32F }; // Memory alignment.
@@ -820,4 +820,4 @@ int runWinograd63(InputArray _input, InputArray _fusedAddMat, OutputArray _outpu
 }
 #endif
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

@@ -12,7 +12,7 @@
 #include "opencv_lapack.h"
 #endif
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class PnPMinimalSolver6PtsImpl : public PnPMinimalSolver6Pts {
 private:
     Mat points_mat;

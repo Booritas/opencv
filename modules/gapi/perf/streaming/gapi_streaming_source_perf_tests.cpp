@@ -45,7 +45,7 @@ class VideoCapSourcePerf_Test : public TestPerfParams<source_t> {};
 
 PERF_TEST_P_(OneVPLSourcePerf_Test, TestPerformance)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     const auto params = GetParam();
     source_t src = findDataFile(get<0>(params));
@@ -64,9 +64,9 @@ PERF_TEST_P_(OneVPLSourcePerf_Test, TestPerformance)
         cfg_params.push_back(CfgParam::create_acceleration_mode(mode.c_str()));
     }
 
-    auto source_ptr = cv::gapi::wip::make_onevpl_src(src, cfg_params);
+    auto source_ptr = ncvslideio::gapi::wip::make_onevpl_src(src, cfg_params);
 
-    cv::gapi::wip::Data out;
+    ncvslideio::gapi::wip::Data out;
     TEST_CYCLE()
     {
         source_ptr->pull(out);
@@ -77,7 +77,7 @@ PERF_TEST_P_(OneVPLSourcePerf_Test, TestPerformance)
 
 PERF_TEST_P_(VideoCapSourcePerf_Test, TestPerformance)
 {
-    using namespace cv::gapi::wip;
+    using namespace ncvslideio::gapi::wip;
 
     source_t src = findDataFile(GetParam());
     auto source_ptr = make_src<GCaptureSource>(src);
@@ -109,14 +109,14 @@ INSTANTIATE_TEST_CASE_P(Streaming, VideoCapSourcePerf_Test,
                                files[1],
                                files[2]));
 
-using pp_out_param_t = cv::GFrameDesc;
+using pp_out_param_t = ncvslideio::GFrameDesc;
 using source_description_preproc_t = decltype(std::tuple_cat(std::declval<source_description_t>(),
                                                              std::declval<std::tuple<pp_out_param_t>>()));
 class OneVPLSourcePerf_PP_Test : public TestPerfParams<source_description_preproc_t> {};
 
 PERF_TEST_P_(OneVPLSourcePerf_PP_Test, TestPerformance)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     const auto params = GetParam();
     source_t src = findDataFile(get<0>(params));
@@ -143,9 +143,9 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Test, TestPerformance)
     cfg_params.push_back(CfgParam::create_vpp_out_crop_w(static_cast<uint16_t>(res.size.width)));
     cfg_params.push_back(CfgParam::create_vpp_out_crop_h(static_cast<uint16_t>(res.size.height)));
 
-    auto source_ptr = cv::gapi::wip::make_onevpl_src(src, cfg_params);
+    auto source_ptr = ncvslideio::gapi::wip::make_onevpl_src(src, cfg_params);
 
-    cv::gapi::wip::Data out;
+    ncvslideio::gapi::wip::Data out;
     TEST_CYCLE()
     {
         source_ptr->pull(out);
@@ -153,10 +153,10 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Test, TestPerformance)
 
     SANITY_CHECK_NOTHING();
 }
-static pp_out_param_t full_hd = pp_out_param_t {cv::MediaFormat::NV12,
+static pp_out_param_t full_hd = pp_out_param_t {ncvslideio::MediaFormat::NV12,
                                                 {1920, 1080}};
 
-static pp_out_param_t cif = pp_out_param_t {cv::MediaFormat::NV12,
+static pp_out_param_t cif = pp_out_param_t {ncvslideio::MediaFormat::NV12,
                                             {352, 288}};
 
 
@@ -186,8 +186,8 @@ class OneVPLSourcePerf_PP_Engine_Test : public TestPerfParams<source_description
 
 PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Test, TestPerformance)
 {
-    using namespace cv::gapi::wip;
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     const auto params = GetParam();
     source_t src = findDataFile(get<0>(params));
@@ -208,7 +208,7 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Test, TestPerformance)
     }
 
     auto device_selector = std::make_shared<CfgParamDeviceSelector>(cfg_params);
-    auto source_ptr = cv::gapi::wip::make_onevpl_src(src, cfg_params, device_selector);
+    auto source_ptr = ncvslideio::gapi::wip::make_onevpl_src(src, cfg_params, device_selector);
 
     // create VPP preproc engine
     std::unique_ptr<VPLAccelerationPolicy> policy;
@@ -222,13 +222,13 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Test, TestPerformance)
         ASSERT_TRUE(false && "Unsupported acceleration policy type");
     }
     VPPPreprocEngine preproc_engine(std::move(policy));
-    cv::gapi::wip::Data out;
-    cv::util::optional<cv::Rect> empty_roi;
+    ncvslideio::gapi::wip::Data out;
+    ncvslideio::util::optional<ncvslideio::Rect> empty_roi;
     TEST_CYCLE()
     {
         source_ptr->pull(out);
-        cv::MediaFrame frame = cv::util::get<cv::MediaFrame>(out);
-        cv::util::optional<pp_params> param = preproc_engine.is_applicable(frame);
+        ncvslideio::MediaFrame frame = ncvslideio::util::get<ncvslideio::MediaFrame>(out);
+        ncvslideio::util::optional<pp_params> param = preproc_engine.is_applicable(frame);
         pp_session sess = preproc_engine.initialize_preproc(param.value(),
                                                             required_frame_param);
         (void)preproc_engine.run_sync(sess, frame, empty_roi);
@@ -263,8 +263,8 @@ class OneVPLSourcePerf_PP_Engine_Bypass_Test : public TestPerfParams<source_desc
 
 PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Bypass_Test, TestPerformance)
 {
-    using namespace cv::gapi::wip;
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     const auto params = GetParam();
     source_t src = findDataFile(get<0>(params));
@@ -285,7 +285,7 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Bypass_Test, TestPerformance)
     }
 
     auto device_selector = std::make_shared<CfgParamDeviceSelector>(cfg_params);
-    auto source_ptr = cv::gapi::wip::make_onevpl_src(src, cfg_params, device_selector);
+    auto source_ptr = ncvslideio::gapi::wip::make_onevpl_src(src, cfg_params, device_selector);
 
     // create VPP preproc engine
     std::unique_ptr<VPLAccelerationPolicy> policy;
@@ -299,13 +299,13 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Bypass_Test, TestPerformance)
         ASSERT_TRUE(false && "Unsupported acceleration policy type");
     }
     VPPPreprocEngine preproc_engine(std::move(policy));
-    cv::gapi::wip::Data out;
-    cv::util::optional<cv::Rect> empty_roi;
+    ncvslideio::gapi::wip::Data out;
+    ncvslideio::util::optional<ncvslideio::Rect> empty_roi;
     TEST_CYCLE()
     {
         source_ptr->pull(out);
-        cv::MediaFrame frame = cv::util::get<cv::MediaFrame>(out);
-        cv::util::optional<pp_params> param = preproc_engine.is_applicable(frame);
+        ncvslideio::MediaFrame frame = ncvslideio::util::get<ncvslideio::MediaFrame>(out);
+        ncvslideio::util::optional<pp_params> param = preproc_engine.is_applicable(frame);
         pp_session sess = preproc_engine.initialize_preproc(param.value(),
                                                             required_frame_param);
         (void)preproc_engine.run_sync(sess, frame, empty_roi);
@@ -314,9 +314,9 @@ PERF_TEST_P_(OneVPLSourcePerf_PP_Engine_Bypass_Test, TestPerformance)
     SANITY_CHECK_NOTHING();
 }
 
-static pp_out_param_t res_672x384 = pp_out_param_t {cv::MediaFormat::NV12,
+static pp_out_param_t res_672x384 = pp_out_param_t {ncvslideio::MediaFormat::NV12,
                                                     {672, 384}};
-static pp_out_param_t res_336x256 = pp_out_param_t {cv::MediaFormat::NV12,
+static pp_out_param_t res_336x256 = pp_out_param_t {ncvslideio::MediaFormat::NV12,
                                                     {336, 256}};
 
 #ifdef __WIN32__

@@ -52,9 +52,9 @@
 #include "opencv2/cudev.hpp"
 #include "opencv2/core/cuda/utility.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
-using namespace cv::cudev;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
+using namespace ncvslideio::cudev;
 
 device::ThrustAllocator::~ThrustAllocator()
 {

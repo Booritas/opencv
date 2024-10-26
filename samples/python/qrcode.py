@@ -43,19 +43,19 @@ class QrSample:
 
     def drawFPS(self, result, fps):
         message = '{:.2f} FPS({:s})'.format(fps, self.getQRModeString())
-        cv.putText(result, message, (20, 20), 1,
-                   cv.FONT_HERSHEY_DUPLEX, (0, 0, 255))
+        ncvslideio.putText(result, message, (20, 20), 1,
+                   ncvslideio.FONT_HERSHEY_DUPLEX, (0, 0, 255))
 
     def drawQRCodeContours(self, image, cnt):
         if cnt.size != 0:
             rows, cols, _ = image.shape
             show_radius = 2.813 * ((rows / cols) if rows > cols else (cols / rows))
             contour_radius = show_radius * 0.4
-            cv.drawContours(image, [cnt], 0, (0, 255, 0), int(round(contour_radius)))
+            ncvslideio.drawContours(image, [cnt], 0, (0, 255, 0), int(round(contour_radius)))
             tpl = cnt.reshape((-1, 2))
             for x in tuple(tpl.tolist()):
                 color = (255, 0, 0)
-                cv.circle(image, tuple(x), int(round(contour_radius)), color, -1)
+                ncvslideio.circle(image, tuple(x), int(round(contour_radius)), color, -1)
 
     def drawQRCodeResults(self, result, points, decode_info, fps):
         n = len(points)
@@ -99,7 +99,7 @@ class QrSample:
         return points, dec_info
 
     def DetectQRFrmImage(self, inputfile):
-        inputimg = cv.imread(inputfile, cv.IMREAD_COLOR)
+        inputimg = ncvslideio.imread(inputfile, ncvslideio.IMREAD_COLOR)
         if inputimg is None:
             print('ERROR: Can not read image: {}'.format(inputfile))
             return
@@ -107,12 +107,12 @@ class QrSample:
             self.getQRModeString(), inputimg.shape[1], inputimg.shape[0]))
 
         if self.arucoBased:
-            qrCode = cv.QRCodeDetectorAruco()
+            qrCode = ncvslideio.QRCodeDetectorAruco()
         else:
-            qrCode = cv.QRCodeDetector()
+            qrCode = ncvslideio.QRCodeDetector()
 
         count = 10
-        timer = cv.TickMeter()
+        timer = ncvslideio.TickMeter()
         for _ in range(count):
             timer.start()
             points, decode_info = self.runQR(qrCode, inputimg)
@@ -121,25 +121,25 @@ class QrSample:
         print('FPS: {}'.format(fps))
         result = inputimg
         self.drawQRCodeResults(result, points, decode_info, fps)
-        cv.imshow("QR", result)
-        cv.waitKey(1)
+        ncvslideio.imshow("QR", result)
+        ncvslideio.waitKey(1)
         if self.out != '':
             outfile = self.fname + self.fext
             print("Saving Result: {}".format(outfile))
-            cv.imwrite(outfile, result)
+            ncvslideio.imwrite(outfile, result)
 
         print("Press any key to exit ...")
-        cv.waitKey(0)
+        ncvslideio.waitKey(0)
         print("Exit")
 
     def processQRCodeDetection(self, qrcode, frame):
         if len(frame.shape) == 2:
-            result = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            result = ncvslideio.cvtColor(frame, ncvslideio.COLOR_GRAY2BGR)
         else:
             result = frame
         print('Run {:s} on video frame [{:d}x{:d}]'.format(
             self.getQRModeString(), frame.shape[1], frame.shape[0]))
-        timer = cv.TickMeter()
+        timer = ncvslideio.TickMeter()
         timer.start()
         points, decode_info = self.runQR(qrcode, frame)
         timer.stop()
@@ -149,7 +149,7 @@ class QrSample:
         return fps, result, points
 
     def DetectQRFrmCamera(self):
-        cap = cv.VideoCapture(0)
+        cap = ncvslideio.VideoCapture(0)
         if not cap.isOpened():
             print("Cannot open the camera")
             return
@@ -159,9 +159,9 @@ class QrSample:
         print("Press 'ESC' to exit")
 
         if self.arucoBased:
-            qrcode = cv.QRCodeDetectorAruco()
+            qrcode = ncvslideio.QRCodeDetectorAruco()
         else:
-            qrcode = cv.QRCodeDetector()
+            qrcode = ncvslideio.QRCodeDetector()
 
         while True:
             ret, frame = cap.read()
@@ -174,11 +174,11 @@ class QrSample:
                 fps, result, corners = self.processQRCodeDetection(qrcode, frame)
                 print('FPS: {:.2f}'.format(fps))
                 forcesave |= self.saveDetections and (len(corners) != 0)
-            except cv.error as e:
+            except ncvslideio.error as e:
                 print("Error exception: ", e)
                 forcesave = True
-            cv.imshow("QR code", result)
-            code = cv.waitKey(1)
+            ncvslideio.imshow("QR code", result)
+            code = ncvslideio.waitKey(1)
             if code < 0 and (not forcesave):
                 continue
             if code == ord(' ') or forcesave:
@@ -186,7 +186,7 @@ class QrSample:
                 self.fsaveid += 1
                 fname_in = self.fname + fsuffix + "_input.png"
                 print("Saving QR code detection result: '{}' ...".format(fname_in))
-                cv.imwrite(fname_in, frame)
+                ncvslideio.imwrite(fname_in, frame)
                 print("Saved")
             if code == ord('m'):
                 self.multi = not self.multi
@@ -210,7 +210,7 @@ def main():
     parser.add_argument(
         '-i',
         '--input',
-        help="input image path (for example, 'opencv_extra/testdata/cv/qrcode/multiple/*_qrcodes.png)",
+        help="input image path (for example, 'opencv_extra/testdata/ncvslideio/qrcode/multiple/*_qrcodes.png)",
         default="",
         metavar="")
     parser.add_argument(
@@ -260,4 +260,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

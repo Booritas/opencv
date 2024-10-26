@@ -44,7 +44,7 @@
 
 namespace opencv_test { namespace {
 
-inline void verify_size(const std::string &nm, const cv::Mat &img)
+inline void verify_size(const std::string &nm, const ncvslideio::Mat &img)
 {
     EXPECT_NO_THROW(imshow(nm, img));
     EXPECT_EQ(-1, waitKey(200));
@@ -76,7 +76,7 @@ TEST(Highgui_GUI, regression)
 #endif
 {
     const std::string window_name("opencv_highgui_test_window");
-    const cv::Size image_size(800, 600);
+    const ncvslideio::Size image_size(800, 600);
 
     EXPECT_NO_THROW(destroyAllWindows());
     ASSERT_NO_THROW(namedWindow(window_name));
@@ -115,15 +115,15 @@ TEST(Highgui_GUI, regression)
             int b_g = image_size.width / 3, g_r = b_g * 2;
             if (cn > 1)
             {
-                bgr.colRange(0, b_g).setTo(cv::Scalar(max_val, min_val, min_val));
-                bgr.colRange(b_g, g_r).setTo(cv::Scalar(min_val, max_val, min_val));
-                bgr.colRange(g_r, image_size.width).setTo(cv::Scalar(min_val, min_val, max_val));
+                bgr.colRange(0, b_g).setTo(ncvslideio::Scalar(max_val, min_val, min_val));
+                bgr.colRange(b_g, g_r).setTo(ncvslideio::Scalar(min_val, max_val, min_val));
+                bgr.colRange(g_r, image_size.width).setTo(ncvslideio::Scalar(min_val, min_val, max_val));
             }
             else
             {
-                bgr.colRange(0, b_g).setTo(cv::Scalar::all(min_val));
-                bgr.colRange(b_g, g_r).setTo(cv::Scalar::all((min_val + max_val) / 2));
-                bgr.colRange(g_r, image_size.width).setTo(cv::Scalar::all(max_val));
+                bgr.colRange(0, b_g).setTo(ncvslideio::Scalar::all(min_val));
+                bgr.colRange(b_g, g_r).setTo(ncvslideio::Scalar::all((min_val + max_val) / 2));
+                bgr.colRange(g_r, image_size.width).setTo(ncvslideio::Scalar::all(max_val));
             }
             verify_size(window_name, bgr);
         }
@@ -229,7 +229,7 @@ TEST(Highgui_GUI, small_width_image)
 #endif
 {
     const std::string window_name("trackbar_test_window");
-    cv::Mat src(1,1,CV_8UC3,cv::Scalar(0));
+    ncvslideio::Mat src(1,1,CV_8UC3,ncvslideio::Scalar(0));
     EXPECT_NO_THROW(destroyAllWindows());
     ASSERT_NO_THROW(namedWindow(window_name));
     ASSERT_NO_THROW(imshow(window_name, src));

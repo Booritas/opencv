@@ -11,13 +11,13 @@
 
 #include "opencv2/core/utils/plugin_loader.private.hpp"
 
-namespace cv { namespace impl {
+namespace ncvslideio { namespace impl {
 
-using namespace cv::parallel;
+using namespace ncvslideio::parallel;
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT && defined(PARALLEL_ENABLE_PLUGINS)
 
-using namespace cv::plugin::impl;  // plugin_loader.hpp
+using namespace ncvslideio::plugin::impl;  // plugin_loader.hpp
 
 class PluginParallelBackend CV_FINAL: public std::enable_shared_from_this<PluginParallelBackend>
 {
@@ -59,7 +59,7 @@ protected:
         if (api_header.opencv_version_major != CV_VERSION_MAJOR)
         {
             CV_LOG_ERROR(NULL, "core(parallel): wrong OpenCV major version used by plugin '" << api_header.api_description << "': " <<
-                cv::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
+                ncvslideio::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
             return false;
         }
         if (!checkMinorOpenCVVersion)
@@ -69,11 +69,11 @@ protected:
         else if (api_header.opencv_version_minor != CV_VERSION_MINOR)
         {
             CV_LOG_ERROR(NULL, "core(parallel): wrong OpenCV minor version used by plugin '" << api_header.api_description << "': " <<
-                cv::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
+                ncvslideio::format("%d.%d, OpenCV version is '" CV_VERSION "'", api_header.opencv_version_major, api_header.opencv_version_minor))
             return false;
         }
         CV_LOG_DEBUG(NULL, "core(parallel): initialized '" << api_header.api_description << "': built with "
-            << cv::format("OpenCV %d.%d (ABI/API = %d/%d)",
+            << ncvslideio::format("OpenCV %d.%d (ABI/API = %d/%d)",
                  api_header.opencv_version_major, api_header.opencv_version_minor,
                  api_header.min_api_version, api_header.api_version)
             << ", current OpenCV version is '" CV_VERSION "' (ABI/API = " << abi_version << "/" << api_version << ")"
@@ -87,7 +87,7 @@ protected:
         if (api_header.api_version != api_version)
         {
             CV_LOG_INFO(NULL, "core(parallel): NOTE: plugin is supported, but there is API version mismath: "
-                << cv::format("plugin API level (%d) != OpenCV API level (%d)", api_header.api_version, api_version));
+                << ncvslideio::format("plugin API level (%d) != OpenCV API level (%d)", api_header.api_version, api_version));
             if (api_header.api_version < api_version)
             {
                 CV_LOG_INFO(NULL, "core(parallel): NOTE: some functionality may be unavailable due to lack of support by plugin implementation");
@@ -97,17 +97,17 @@ protected:
     }
 
 public:
-    std::shared_ptr<cv::plugin::impl::DynamicLib> lib_;
+    std::shared_ptr<ncvslideio::plugin::impl::DynamicLib> lib_;
     const OpenCV_Core_Parallel_Plugin_API* plugin_api_;
 
-    PluginParallelBackend(const std::shared_ptr<cv::plugin::impl::DynamicLib>& lib)
+    PluginParallelBackend(const std::shared_ptr<ncvslideio::plugin::impl::DynamicLib>& lib)
         : lib_(lib)
         , plugin_api_(NULL)
     {
         initPluginAPI();
     }
 
-    std::shared_ptr<cv::parallel::ParallelForAPI> create() const
+    std::shared_ptr<ncvslideio::parallel::ParallelForAPI> create() const
     {
         CV_Assert(plugin_api_);
 
@@ -119,10 +119,10 @@ public:
             {
                 CV_Assert(instancePtr);
                 // TODO C++20 "aliasing constructor"
-                return std::shared_ptr<cv::parallel::ParallelForAPI>(instancePtr, [](cv::parallel::ParallelForAPI*){});  // empty deleter
+                return std::shared_ptr<ncvslideio::parallel::ParallelForAPI>(instancePtr, [](ncvslideio::parallel::ParallelForAPI*){});  // empty deleter
             }
         }
-        return std::shared_ptr<cv::parallel::ParallelForAPI>();
+        return std::shared_ptr<ncvslideio::parallel::ParallelForAPI>();
     }
 };
 
@@ -141,7 +141,7 @@ public:
         // nothing, plugins are loaded on demand
     }
 
-    std::shared_ptr<cv::parallel::ParallelForAPI> create() const CV_OVERRIDE
+    std::shared_ptr<ncvslideio::parallel::ParallelForAPI> create() const CV_OVERRIDE
     {
         if (!initialized)
         {
@@ -149,7 +149,7 @@ public:
         }
         if (backend)
             return backend->create();
-        return std::shared_ptr<cv::parallel::ParallelForAPI>();
+        return std::shared_ptr<ncvslideio::parallel::ParallelForAPI>();
     }
 protected:
     void initBackend()
@@ -172,8 +172,8 @@ protected:
 static
 std::vector<FileSystemPath_t> getPluginCandidates(const std::string& baseName)
 {
-    using namespace cv::utils;
-    using namespace cv::utils::fs;
+    using namespace ncvslideio::utils;
+    using namespace ncvslideio::utils::fs;
     const std::string baseName_l = toLowerCase(baseName);
     const std::string baseName_u = toUpperCase(baseName);
     const FileSystemPath_t baseName_l_fs = toFileSystemPath(baseName_l);
@@ -222,7 +222,7 @@ std::vector<FileSystemPath_t> getPluginCandidates(const std::string& baseName)
         if (path.empty())
             continue;
         std::vector<std::string> candidates;
-        cv::glob(utils::fs::join(path, plugin_expr), candidates);
+        ncvslideio::glob(utils::fs::join(path, plugin_expr), candidates);
         // Prefer candisates with higher versions
         // TODO: implemented accurate versions-based comparator
         std::sort(candidates.begin(), candidates.end(), std::greater<std::string>());
@@ -238,7 +238,7 @@ void PluginParallelBackendFactory::loadPlugin()
 {
     for (const FileSystemPath_t& plugin : getPluginCandidates(baseName_))
     {
-        auto lib = std::make_shared<cv::plugin::impl::DynamicLib>(plugin);
+        auto lib = std::make_shared<ncvslideio::plugin::impl::DynamicLib>(plugin);
         if (!lib->isLoaded())
         {
             continue;

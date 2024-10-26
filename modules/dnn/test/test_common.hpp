@@ -74,17 +74,17 @@
 #endif
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
-void PrintTo(const cv::dnn::Backend& v, std::ostream* os);
-void PrintTo(const cv::dnn::Target& v, std::ostream* os);
+void PrintTo(const ncvslideio::dnn::Backend& v, std::ostream* os);
+void PrintTo(const ncvslideio::dnn::Target& v, std::ostream* os);
 using opencv_test::tuple;
 using opencv_test::get;
-void PrintTo(const tuple<cv::dnn::Backend, cv::dnn::Target> v, std::ostream* os);
+void PrintTo(const tuple<ncvslideio::dnn::Backend, ncvslideio::dnn::Target> v, std::ostream* os);
 
 CV__DNN_INLINE_NS_END
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn
 
 
 
@@ -92,7 +92,7 @@ namespace opencv_test {
 
 void initDNNTests();
 
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 
 static inline const std::string &getOpenCVExtraDir()
 {
@@ -100,18 +100,18 @@ static inline const std::string &getOpenCVExtraDir()
 }
 
 void normAssert(
-        cv::InputArray ref, cv::InputArray test, const char *comment = "",
+        ncvslideio::InputArray ref, ncvslideio::InputArray test, const char *comment = "",
         double l1 = 0.00001, double lInf = 0.0001);
 
-std::vector<cv::Rect2d> matToBoxes(const cv::Mat& m);
+std::vector<ncvslideio::Rect2d> matToBoxes(const ncvslideio::Mat& m);
 
 void normAssertDetections(
         const std::vector<int>& refClassIds,
         const std::vector<float>& refScores,
-        const std::vector<cv::Rect2d>& refBoxes,
+        const std::vector<ncvslideio::Rect2d>& refBoxes,
         const std::vector<int>& testClassIds,
         const std::vector<float>& testScores,
-        const std::vector<cv::Rect2d>& testBoxes,
+        const std::vector<ncvslideio::Rect2d>& testBoxes,
         const char *comment = "", double confThreshold = 0.0,
         double scores_diff = 1e-5, double boxes_iou_diff = 1e-4);
 
@@ -119,7 +119,7 @@ void normAssertDetections(
 // where N is a number of detections and an every detection is represented by
 // a vector [batchId, classId, confidence, left, top, right, bottom].
 void normAssertDetections(
-        cv::Mat ref, cv::Mat out, const char *comment = "",
+        ncvslideio::Mat ref, ncvslideio::Mat out, const char *comment = "",
         double confThreshold = 0.0, double scores_diff = 1e-5,
         double boxes_iou_diff = 1e-4);
 

@@ -9,7 +9,7 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/flann.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using std::cout;
 using std::endl;
 
@@ -43,7 +43,7 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
-    const cv::String img_path = parser.get<String>("image");
+    const ncvslideio::String img_path = parser.get<String>("image");
     Mat img = imread( samples::findFile( img_path ), IMREAD_GRAYSCALE );
     if (img.empty() )
     {
@@ -51,14 +51,14 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
-    const cv::String db_path = parser.get<String>("dataset");
+    const ncvslideio::String db_path = parser.get<String>("dataset");
     if (!utils::fs::isDirectory(db_path))
     {
         cout << "Dataset folder "<< db_path.c_str() <<" doesn't exist!" << endl;
         return -1;
     }
 
-    const cv::String load_db_path = parser.get<String>("load");
+    const ncvslideio::String load_db_path = parser.get<String>("load");
     if ((load_db_path != String()) && (!utils::fs::exists(load_db_path)))
     {
         cout << "File " << load_db_path.c_str()
@@ -66,7 +66,7 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
-    const cv::String save_db_path = parser.get<String>("save");
+    const ncvslideio::String save_db_path = parser.get<String>("save");
 
     //-- Step 1: Detect the keypoints using a detector, compute the descriptors
     //   in the folder containing the images of the dataset
@@ -87,9 +87,9 @@ int main( int argc, char* argv[] )
     std::vector<int> db_indice_2_image_lut;           //match descriptor indice to its image
 
     db_images_indice_range.push_back(0);
-    std::vector<cv::String> files;
-    utils::fs::glob(db_path, cv::String(), files);
-    for (std::vector<cv::String>::iterator itr = files.begin(); itr != files.end(); ++itr)
+    std::vector<ncvslideio::String> files;
+    utils::fs::glob(db_path, ncvslideio::String(), files);
+    for (std::vector<ncvslideio::String>::iterator itr = files.begin(); itr != files.end(); ++itr)
     {
         Mat tmp_img = imread( *itr, IMREAD_GRAYSCALE );
         if (!tmp_img.empty())
@@ -119,21 +119,21 @@ int main( int argc, char* argv[] )
 
     //-- Step 2: build the structure storing the descriptors
 #if defined(_SIFT_)
-    cv::Ptr<flann::GenericIndex<cvflann::L2<float> > > index;
+    ncvslideio::Ptr<flann::GenericIndex<cvflann::L2<float> > > index;
     if (load_db_path != String())
-        index = cv::makePtr<flann::GenericIndex<cvflann::L2<float> > >(db_descriptors,
+        index = ncvslideio::makePtr<flann::GenericIndex<cvflann::L2<float> > >(db_descriptors,
                                                              cvflann::SavedIndexParams(load_db_path));
     else
-        index = cv::makePtr<flann::GenericIndex<cvflann::L2<float> > >(db_descriptors,
+        index = ncvslideio::makePtr<flann::GenericIndex<cvflann::L2<float> > >(db_descriptors,
                                                              cvflann::KDTreeIndexParams(4));
 
 #elif defined(_ORB_)
-    cv::Ptr<flann::GenericIndex<cvflann::Hamming<unsigned char> > > index;
+    ncvslideio::Ptr<flann::GenericIndex<cvflann::Hamming<unsigned char> > > index;
     if (load_db_path != String())
-        index  = cv::makePtr<flann::GenericIndex<cvflann::Hamming<unsigned char> > >
+        index  = ncvslideio::makePtr<flann::GenericIndex<cvflann::Hamming<unsigned char> > >
                 (db_descriptors, cvflann::SavedIndexParams(load_db_path));
     else
-        index  = cv::makePtr<flann::GenericIndex<cvflann::Hamming<unsigned char> > >
+        index  = ncvslideio::makePtr<flann::GenericIndex<cvflann::Hamming<unsigned char> > >
                 (db_descriptors, cvflann::LshIndexParams());
 #else
     cout<< "Descriptor not listed. Set the proper FLANN distance for this descriptor" <<endl;

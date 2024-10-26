@@ -15,7 +15,7 @@
 #ifdef HAVE_ONEVPL
 #include "streaming/onevpl/onevpl_export.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -95,6 +95,6 @@ using surface_weak_ptr_t = std::weak_ptr<Surface>;
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_SURFACE_HPP

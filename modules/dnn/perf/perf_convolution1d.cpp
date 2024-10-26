@@ -47,7 +47,7 @@ static inline void PrintTo(const Conv1DParamID& v, std::ostream* os)
     CV_Assert((int)v >= 0); CV_Assert((int)v < Conv1DParamID::CONV_LAST);
     const Conv1DParam_t& p = testConvolution1DConfigs[(int)v];
 
-    *os << "GFLOPS=" << cv::format("%.3f", p.declared_flops * 1e-9)
+    *os << "GFLOPS=" << ncvslideio::format("%.3f", p.declared_flops * 1e-9)
         << ", K=[" << p.kernel << "]"
         << ", IN={" << p.shapeIn.dims[0] << ", " << p.shapeIn.dims[1] << ", " << p.shapeIn.dims[2] << "}"
         << ", OCN=" << p.outCN;

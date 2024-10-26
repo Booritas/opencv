@@ -15,7 +15,7 @@
 #include "executor/gthreadedexecutor.hpp"
 #include "compiler/passes/passes.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace magazine {
 namespace {
@@ -25,19 +25,19 @@ void bindInArgExec(Mag& mag, const RcDesc &rc, const GRunArg &arg) {
         bindInArg(mag, rc, arg);
         return;
     }
-    auto& mag_rmat = mag.template slot<cv::RMat>()[rc.id];
+    auto& mag_rmat = mag.template slot<ncvslideio::RMat>()[rc.id];
     switch (arg.index()) {
     case GRunArg::index_of<Mat>() :
         mag_rmat = make_rmat<RMatOnMat>(util::get<Mat>(arg));
         break;
-    case GRunArg::index_of<cv::RMat>() :
-        mag_rmat = util::get<cv::RMat>(arg);
+    case GRunArg::index_of<ncvslideio::RMat>() :
+        mag_rmat = util::get<ncvslideio::RMat>(arg);
         break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
     // FIXME: has to take extra care about meta here for this particuluar
     // case, just because this function exists at all
-    mag.meta<cv::RMat>()[rc.id] = arg.meta;
+    mag.meta<ncvslideio::RMat>()[rc.id] = arg.meta;
 }
 
 void bindOutArgExec(Mag& mag, const RcDesc &rc, const GRunArgP &arg) {
@@ -45,21 +45,21 @@ void bindOutArgExec(Mag& mag, const RcDesc &rc, const GRunArgP &arg) {
         bindOutArg(mag, rc, arg);
         return;
     }
-    auto& mag_rmat = mag.template slot<cv::RMat>()[rc.id];
+    auto& mag_rmat = mag.template slot<ncvslideio::RMat>()[rc.id];
     switch (arg.index()) {
     case GRunArgP::index_of<Mat*>() :
         mag_rmat = make_rmat<RMatOnMat>(*util::get<Mat*>(arg)); break;
-    case GRunArgP::index_of<cv::RMat*>() :
-        mag_rmat = *util::get<cv::RMat*>(arg); break;
+    case GRunArgP::index_of<ncvslideio::RMat*>() :
+        mag_rmat = *util::get<ncvslideio::RMat*>(arg); break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
 }
 
-cv::GRunArgP getObjPtrExec(Mag& mag, const RcDesc &rc) {
+ncvslideio::GRunArgP getObjPtrExec(Mag& mag, const RcDesc &rc) {
     if (rc.shape != GShape::GMAT) {
         return getObjPtr(mag, rc);
     }
-    return GRunArgP(&mag.slot<cv::RMat>()[rc.id]);
+    return GRunArgP(&mag.slot<ncvslideio::RMat>()[rc.id]);
 }
 
 void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg) {
@@ -69,7 +69,7 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg) {
     }
 
     switch (g_arg.index()) {
-    case GRunArgP::index_of<cv::Mat*>() : {
+    case GRunArgP::index_of<ncvslideio::Mat*>() : {
         // If there is a copy intrinsic at the end of the graph
         // we need to actually copy the data to the user buffer
         // since output runarg was optimized to simply point
@@ -79,8 +79,8 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg) {
         // a real copy (add a pass to StreamingBackend?)
         // NB: In case RMat adapter not equal to "RMatOnMat" need to
         // copy data back to the host as well.
-        auto& out_mat = *util::get<cv::Mat*>(g_arg);
-        const auto& rmat = mag.template slot<cv::RMat>().at(rc.id);
+        auto& out_mat = *util::get<ncvslideio::Mat*>(g_arg);
+        const auto& rmat = mag.template slot<ncvslideio::RMat>().at(rc.id);
         auto* adapter = rmat.get<RMatOnMat>();
         if ((adapter != nullptr && out_mat.data != adapter->data()) ||
             (adapter == nullptr)) {
@@ -89,22 +89,22 @@ void writeBackExec(const Mag& mag, const RcDesc &rc, GRunArgP &g_arg) {
         }
         break;
     }
-    case GRunArgP::index_of<cv::RMat*>() : /* do nothing */ break;
+    case GRunArgP::index_of<ncvslideio::RMat*>() : /* do nothing */ break;
     default: util::throw_error(std::logic_error("content type of the runtime argument does not match to resource description ?"));
     }
 }
 
-void assignMetaStubExec(Mag& mag, const RcDesc &rc, const cv::GRunArg::Meta &meta) {
+void assignMetaStubExec(Mag& mag, const RcDesc &rc, const ncvslideio::GRunArg::Meta &meta) {
     switch (rc.shape) {
-    case GShape::GARRAY:  mag.meta<cv::detail::VectorRef>()[rc.id] = meta; break;
-    case GShape::GOPAQUE: mag.meta<cv::detail::OpaqueRef>()[rc.id] = meta; break;
-    case GShape::GSCALAR: mag.meta<cv::Scalar>()[rc.id]            = meta; break;
-    case GShape::GFRAME:  mag.meta<cv::MediaFrame>()[rc.id]        = meta; break;
+    case GShape::GARRAY:  mag.meta<ncvslideio::detail::VectorRef>()[rc.id] = meta; break;
+    case GShape::GOPAQUE: mag.meta<ncvslideio::detail::OpaqueRef>()[rc.id] = meta; break;
+    case GShape::GSCALAR: mag.meta<ncvslideio::Scalar>()[rc.id]            = meta; break;
+    case GShape::GFRAME:  mag.meta<ncvslideio::MediaFrame>()[rc.id]        = meta; break;
     case GShape::GMAT:
-        mag.meta<cv::Mat>() [rc.id] = meta;
-        mag.meta<cv::RMat>()[rc.id] = meta;
+        mag.meta<ncvslideio::Mat>() [rc.id] = meta;
+        mag.meta<ncvslideio::RMat>()[rc.id] = meta;
 #if !defined(GAPI_STANDALONE)
-        mag.meta<cv::UMat>()[rc.id] = meta;
+        mag.meta<ncvslideio::UMat>()[rc.id] = meta;
 #endif
         break;
     default: util::throw_error(std::logic_error("Unsupported GShape type")); break;
@@ -112,58 +112,58 @@ void assignMetaStubExec(Mag& mag, const RcDesc &rc, const cv::GRunArg::Meta &met
 }
 
 } // anonymous namespace
-}}} // namespace cv::gimpl::magazine
+}}} // namespace ncvslideio::gimpl::magazine
 
-cv::gimpl::StreamMsg cv::gimpl::GThreadedExecutor::Input::get() {
+ncvslideio::gimpl::StreamMsg ncvslideio::gimpl::GThreadedExecutor::Input::get() {
     std::lock_guard<std::mutex> lock{m_state.m};
-    cv::GRunArgs res;
+    ncvslideio::GRunArgs res;
     for (const auto &rc : desc()) { res.emplace_back(magazine::getArg(m_state.mag, rc)); }
-    return cv::gimpl::StreamMsg{std::move(res)};
+    return ncvslideio::gimpl::StreamMsg{std::move(res)};
 }
 
-cv::gimpl::GThreadedExecutor::Input::Input(cv::gimpl::GraphState &state,
+ncvslideio::gimpl::GThreadedExecutor::Input::Input(ncvslideio::gimpl::GraphState &state,
                                            const std::vector<RcDesc> &rcs)
     : m_state(state) {
     set(rcs);
 };
 
-cv::GRunArgP cv::gimpl::GThreadedExecutor::Output::get(int idx) {
+ncvslideio::GRunArgP ncvslideio::gimpl::GThreadedExecutor::Output::get(int idx) {
     std::lock_guard<std::mutex> lock{m_state.m};
     auto r = magazine::getObjPtrExec(m_state.mag, desc()[idx]);
     // Remember the output port for this output object
-    m_out_idx[cv::gimpl::proto::ptr(r)] = idx;
+    m_out_idx[ncvslideio::gimpl::proto::ptr(r)] = idx;
     return r;
 }
 
-void cv::gimpl::GThreadedExecutor::Output::post(cv::GRunArgP&&, const std::exception_ptr& e) {
+void ncvslideio::gimpl::GThreadedExecutor::Output::post(ncvslideio::GRunArgP&&, const std::exception_ptr& e) {
     if (e) {
         m_eptr = e;
     }
 }
 
-void cv::gimpl::GThreadedExecutor::Output::post(Exception&& ex) {
+void ncvslideio::gimpl::GThreadedExecutor::Output::post(Exception&& ex) {
     m_eptr = std::move(ex.eptr);
 }
 
-void cv::gimpl::GThreadedExecutor::Output::meta(const GRunArgP &out, const GRunArg::Meta &m) {
-    const auto idx = m_out_idx.at(cv::gimpl::proto::ptr(out));
+void ncvslideio::gimpl::GThreadedExecutor::Output::meta(const GRunArgP &out, const GRunArg::Meta &m) {
+    const auto idx = m_out_idx.at(ncvslideio::gimpl::proto::ptr(out));
     std::lock_guard<std::mutex> lock{m_state.m};
     magazine::assignMetaStubExec(m_state.mag, desc()[idx], m);
 }
 
-cv::gimpl::GThreadedExecutor::Output::Output(cv::gimpl::GraphState &state,
+ncvslideio::gimpl::GThreadedExecutor::Output::Output(ncvslideio::gimpl::GraphState &state,
                                              const std::vector<RcDesc> &rcs)
     : m_state(state) {
     set(rcs);
 }
 
-void cv::gimpl::GThreadedExecutor::Output::verify() {
+void ncvslideio::gimpl::GThreadedExecutor::Output::verify() {
     if (m_eptr) {
         std::rethrow_exception(m_eptr);
     }
 }
 
-void cv::gimpl::GThreadedExecutor::initResource(const ade::NodeHandle &nh, const ade::NodeHandle &orig_nh) {
+void ncvslideio::gimpl::GThreadedExecutor::initResource(const ade::NodeHandle &nh, const ade::NodeHandle &orig_nh) {
     const Data &d = m_gm.metadata(orig_nh).get<Data>();
 
     if (   d.storage != Data::Storage::INTERNAL
@@ -181,11 +181,11 @@ void cv::gimpl::GThreadedExecutor::initResource(const ade::NodeHandle &nh, const
             magazine::bindInArgExec(m_state.mag, rc, m_gm.metadata(orig_nh).get<ConstValue>().arg);
         } else {
             // Let island allocate it's outputs if it can,
-            // allocate cv::Mat and wrap it with RMat otherwise
+            // allocate ncvslideio::Mat and wrap it with RMat otherwise
             GAPI_Assert(!nh->inNodes().empty());
-            const auto desc = util::get<cv::GMatDesc>(d.meta);
+            const auto desc = util::get<ncvslideio::GMatDesc>(d.meta);
             auto& exec = m_gim.metadata(nh->inNodes().front()).get<IslandExec>().object;
-            auto& rmat = m_state.mag.slot<cv::RMat>()[d.rc];
+            auto& rmat = m_state.mag.slot<ncvslideio::RMat>()[d.rc];
             if (exec->allocatesOutputs()) {
                 rmat = exec->allocate(desc);
             } else {
@@ -221,32 +221,32 @@ void cv::gimpl::GThreadedExecutor::initResource(const ade::NodeHandle &nh, const
     }
 }
 
-cv::gimpl::IslandActor::IslandActor(const std::vector<RcDesc>          &in_objects,
+ncvslideio::gimpl::IslandActor::IslandActor(const std::vector<RcDesc>          &in_objects,
                                     const std::vector<RcDesc>          &out_objects,
                                     std::shared_ptr<GIslandExecutable> isl_exec,
-                                    cv::gimpl::GraphState              &state)
+                                    ncvslideio::gimpl::GraphState              &state)
     : m_isl_exec(isl_exec),
       m_inputs(state, in_objects),
       m_outputs(state, out_objects) {
 }
 
-void cv::gimpl::IslandActor::run() {
+void ncvslideio::gimpl::IslandActor::run() {
     m_isl_exec->run(m_inputs, m_outputs);
 }
 
-void cv::gimpl::IslandActor::verify() {
+void ncvslideio::gimpl::IslandActor::verify() {
     m_outputs.verify();
 };
 
-class cv::gimpl::Task {
+class ncvslideio::gimpl::Task {
     friend class TaskManager;
 public:
     using Ptr = std::shared_ptr<Task>;
     Task(TaskManager::F&& f, std::vector<Task::Ptr> &&producers);
 
     struct ExecutionState {
-        cv::gapi::own::ThreadPool& tp;
-        cv::gapi::own::Latch& latch;
+        ncvslideio::gapi::own::ThreadPool& tp;
+        ncvslideio::gapi::own::Latch& latch;
     };
 
     void run(ExecutionState& state);
@@ -260,7 +260,7 @@ private:
     std::vector<Task*>       m_consumers;
 };
 
-cv::gimpl::Task::Task(TaskManager::F         &&f,
+ncvslideio::gimpl::Task::Task(TaskManager::F         &&f,
                       std::vector<Task::Ptr> &&producers)
     : m_f(std::move(f)),
       m_num_producers(static_cast<uint32_t>(producers.size())) {
@@ -269,7 +269,7 @@ cv::gimpl::Task::Task(TaskManager::F         &&f,
     }
 }
 
-void cv::gimpl::Task::run(ExecutionState& state) {
+void ncvslideio::gimpl::Task::run(ExecutionState& state) {
     // Execute the task
     m_f();
     // Notify every consumer about completion one of its dependencies
@@ -291,11 +291,11 @@ void cv::gimpl::Task::run(ExecutionState& state) {
     }
 }
 
-std::shared_ptr<cv::gimpl::Task>
-cv::gimpl::TaskManager::createTask(cv::gimpl::TaskManager::F &&f,
-                                   std::vector<std::shared_ptr<cv::gimpl::Task>> &&producers) {
+std::shared_ptr<ncvslideio::gimpl::Task>
+ncvslideio::gimpl::TaskManager::createTask(ncvslideio::gimpl::TaskManager::F &&f,
+                                   std::vector<std::shared_ptr<ncvslideio::gimpl::Task>> &&producers) {
     const bool is_initial = producers.empty();
-    auto task = std::make_shared<cv::gimpl::Task>(std::move(f),
+    auto task = std::make_shared<ncvslideio::gimpl::Task>(std::move(f),
                                                   std::move(producers));
     m_all_tasks.emplace_back(task);
     if (is_initial) {
@@ -304,7 +304,7 @@ cv::gimpl::TaskManager::createTask(cv::gimpl::TaskManager::F &&f,
     return task;
 }
 
-void cv::gimpl::TaskManager::scheduleAndWait(cv::gapi::own::ThreadPool& tp) {
+void ncvslideio::gimpl::TaskManager::scheduleAndWait(ncvslideio::gapi::own::ThreadPool& tp) {
     // Reset the number of ready dependencies for all tasks
     for (auto& task : m_all_tasks) { task->reset(); }
 
@@ -315,7 +315,7 @@ void cv::gimpl::TaskManager::scheduleAndWait(cv::gapi::own::ThreadPool& tp) {
 
     // Initialize the latch, schedule initial tasks
     // and wait until all lasts tasks are done
-    cv::gapi::own::Latch latch(kNumLastsTasks);
+    ncvslideio::gapi::own::Latch latch(kNumLastsTasks);
     Task::ExecutionState state{tp, latch};
     for (auto task : m_initial_tasks) {
         state.tp.schedule([&state, task](){ task->run(state); });
@@ -323,7 +323,7 @@ void cv::gimpl::TaskManager::scheduleAndWait(cv::gapi::own::ThreadPool& tp) {
     latch.wait();
 }
 
-cv::gimpl::GThreadedExecutor::GThreadedExecutor(const uint32_t num_threads,
+ncvslideio::gimpl::GThreadedExecutor::GThreadedExecutor(const uint32_t num_threads,
                                                 std::unique_ptr<ade::Graph> &&g_model)
     : GAbstractExecutor(std::move(g_model)),
       m_thread_pool(num_threads) {
@@ -397,7 +397,7 @@ cv::gimpl::GThreadedExecutor::GThreadedExecutor(const uint32_t num_threads,
     prepareForNewStream();
 }
 
-void cv::gimpl::GThreadedExecutor::run(cv::gimpl::GRuntimeArgs &&args) {
+void ncvslideio::gimpl::GThreadedExecutor::run(ncvslideio::gimpl::GRuntimeArgs &&args) {
     const auto proto = m_gm.metadata().get<Protocol>();
 
     // Basic check if input/output arguments are correct
@@ -421,20 +421,20 @@ void cv::gimpl::GThreadedExecutor::run(cv::gimpl::GRuntimeArgs &&args) {
         auto& nh = proto.out_nhs.at(index);
         const Data &d = m_gm.metadata(nh).get<Data>();
         if (d.shape == GShape::GMAT) {
-            using cv::util::get;
-            const auto desc = get<cv::GMatDesc>(d.meta);
+            using ncvslideio::util::get;
+            const auto desc = get<ncvslideio::GMatDesc>(d.meta);
 
             auto check_rmat = [&desc, &args, &index]() {
-                auto& out_mat = *get<cv::RMat*>(args.outObjs.at(index));
+                auto& out_mat = *get<ncvslideio::RMat*>(args.outObjs.at(index));
                 GAPI_Assert(desc.canDescribe(out_mat));
             };
 
 #if !defined(GAPI_STANDALONE)
             // Building as part of OpenCV - follow OpenCV behavior In
-            // the case of cv::Mat if output buffer is not enough to
+            // the case of ncvslideio::Mat if output buffer is not enough to
             // hold the result, reallocate it
-            if (cv::util::holds_alternative<cv::Mat*>(args.outObjs.at(index))) {
-                auto& out_mat = *get<cv::Mat*>(args.outObjs.at(index));
+            if (ncvslideio::util::holds_alternative<ncvslideio::Mat*>(args.outObjs.at(index))) {
+                auto& out_mat = *get<ncvslideio::Mat*>(args.outObjs.at(index));
                 createMat(desc, out_mat);
             }
             // In the case of RMat check to fit required meta
@@ -444,8 +444,8 @@ void cv::gimpl::GThreadedExecutor::run(cv::gimpl::GRuntimeArgs &&args) {
 #else
             // Building standalone - output buffer should always exist,
             // and _exact_ match our inferred metadata
-            if (cv::util::holds_alternative<cv::Mat*>(args.outObjs.at(index))) {
-                auto& out_mat = *get<cv::Mat*>(args.outObjs.at(index));
+            if (ncvslideio::util::holds_alternative<ncvslideio::Mat*>(args.outObjs.at(index))) {
+                auto& out_mat = *get<ncvslideio::Mat*>(args.outObjs.at(index));
                 GAPI_Assert(out_mat.data != nullptr &&
                         desc.canDescribe(out_mat));
             }
@@ -482,7 +482,7 @@ void cv::gimpl::GThreadedExecutor::run(cv::gimpl::GRuntimeArgs &&args) {
     }
 }
 
-bool cv::gimpl::GThreadedExecutor::canReshape() const {
+bool ncvslideio::gimpl::GThreadedExecutor::canReshape() const {
     for (auto actor : m_actors) {
         if (actor->exec()->canReshape()) {
             return false;
@@ -491,7 +491,7 @@ bool cv::gimpl::GThreadedExecutor::canReshape() const {
     return true;
 }
 
-void cv::gimpl::GThreadedExecutor::reshape(const GMetaArgs& inMetas, const GCompileArgs& args) {
+void ncvslideio::gimpl::GThreadedExecutor::reshape(const GMetaArgs& inMetas, const GCompileArgs& args) {
     GAPI_Assert(canReshape());
     auto& g = *m_orig_graph.get();
     ade::passes::PassContext ctx{g};
@@ -508,7 +508,7 @@ void cv::gimpl::GThreadedExecutor::reshape(const GMetaArgs& inMetas, const GComp
     }
 }
 
-void cv::gimpl::GThreadedExecutor::prepareForNewStream() {
+void ncvslideio::gimpl::GThreadedExecutor::prepareForNewStream() {
     for (auto actor : m_actors) {
         actor->exec()->handleNewStream();
     }

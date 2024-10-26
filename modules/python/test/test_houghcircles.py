@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 '''
-This example illustrates how to use cv.HoughCircles() function.
+This example illustrates how to use ncvslideio.HoughCircles() function.
 '''
 
 # Python 2/3 compatibility
@@ -27,10 +27,10 @@ def circleApproximation(circle):
 
 def convContoursIntersectiponRate(c1, c2):
 
-    s1 = cv.contourArea(c1)
-    s2 = cv.contourArea(c2)
+    s1 = ncvslideio.contourArea(c1)
+    s2 = ncvslideio.contourArea(c2)
 
-    s, _ = cv.intersectConvexConvex(c1, c2)
+    s, _ = ncvslideio.intersectConvexConvex(c1, c2)
 
     return 2*s/(s1+s2)
 
@@ -41,10 +41,10 @@ class houghcircles_test(NewOpenCVTests):
         fn = "samples/data/board.jpg"
 
         src = self.get_sample(fn, 1)
-        img = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-        img = cv.medianBlur(img, 5)
+        img = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
+        img = ncvslideio.medianBlur(img, 5)
 
-        circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT, 1, 10, np.array([]), 100, 30, 1, 30)[0]
+        circles = ncvslideio.HoughCircles(img, ncvslideio.HOUGH_GRADIENT, 1, 10, np.array([]), 100, 30, 1, 30)[0]
 
         testCircles = [[38, 181, 17.6],
         [99.7, 166, 13.12],
@@ -85,10 +85,10 @@ class houghcircles_test(NewOpenCVTests):
         fn = "samples/data/board.jpg"
 
         src = self.get_sample(fn, 1)
-        img = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-        img = cv.medianBlur(img, 5)
+        img = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
+        img = ncvslideio.medianBlur(img, 5)
 
-        circles = cv.HoughCircles(img, cv.HOUGH_GRADIENT_ALT, 1, 10, np.array([]), 300, 0.9, 1, 30)
+        circles = ncvslideio.HoughCircles(img, ncvslideio.HOUGH_GRADIENT_ALT, 1, 10, np.array([]), 300, 0.9, 1, 30)
 
         self.assertEqual(circles.shape, (1, 18, 3))
 

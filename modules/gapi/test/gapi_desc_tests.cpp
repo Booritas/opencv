@@ -14,20 +14,20 @@ namespace opencv_test
 
 namespace
 {
-    G_TYPED_KERNEL(KTest, <cv::GScalar(cv::GScalar)>, "org.opencv.test.scalar_kernel") {
-        static cv::GScalarDesc outMeta(cv::GScalarDesc in) { return in; }
+    G_TYPED_KERNEL(KTest, <ncvslideio::GScalar(ncvslideio::GScalar)>, "org.opencv.test.scalar_kernel") {
+        static ncvslideio::GScalarDesc outMeta(ncvslideio::GScalarDesc in) { return in; }
     };
     GAPI_OCV_KERNEL(GOCVScalarTest, KTest)
     {
-        static void run(const cv::Scalar &in, cv::Scalar &out) { out = in+cv::Scalar(1); }
+        static void run(const ncvslideio::Scalar &in, ncvslideio::Scalar &out) { out = in+ncvslideio::Scalar(1); }
     };
 }
 
 TEST(GAPI_MetaDesc, MatDescOneCh)
 {
-    cv::Mat mat(240, 320, CV_8U);
+    ncvslideio::Mat mat(240, 320, CV_8U);
 
-    const auto desc = cv::descr_of(mat);
+    const auto desc = ncvslideio::descr_of(mat);
 
     EXPECT_EQ(CV_8U, desc.depth);
     EXPECT_EQ(1,     desc.chan);
@@ -38,9 +38,9 @@ TEST(GAPI_MetaDesc, MatDescOneCh)
 
 TEST(GAPI_MetaDesc, MatDescThreeCh)
 {
-    cv::Mat mat(480, 640, CV_8UC3);
+    ncvslideio::Mat mat(480, 640, CV_8UC3);
 
-    const auto desc = cv::descr_of(mat);
+    const auto desc = ncvslideio::descr_of(mat);
 
     EXPECT_EQ(CV_8U,   desc.depth);
     EXPECT_EQ(3,       desc.chan);
@@ -52,8 +52,8 @@ TEST(GAPI_MetaDesc, MatDescThreeCh)
 TEST(GAPI_MetaDesc, MatDescND)
 {
     std::vector<int> dims = {1,3,299,299};
-    cv::Mat m(dims, CV_32F);
-    const auto desc = cv::descr_of(m);
+    ncvslideio::Mat m(dims, CV_32F);
+    const auto desc = ncvslideio::descr_of(m);
     EXPECT_EQ(CV_32F, desc.depth);
     EXPECT_EQ(-1,     desc.chan);
     EXPECT_EQ(1,      desc.dims[0]);
@@ -65,16 +65,16 @@ TEST(GAPI_MetaDesc, MatDescND)
 
 TEST(GAPI_MetaDesc, VecMatDesc)
 {
-    std::vector<cv::Mat> vec1 = {
-    cv::Mat(240, 320, CV_8U)};
+    std::vector<ncvslideio::Mat> vec1 = {
+    ncvslideio::Mat(240, 320, CV_8U)};
 
-    const auto desc1 = cv::descrs_of(vec1);
+    const auto desc1 = ncvslideio::descrs_of(vec1);
     EXPECT_EQ((GMatDesc{CV_8U, 1, {320, 240}}), get<GMatDesc>(desc1[0]));
 
-    std::vector<cv::UMat> vec2 = {
-    cv::UMat(480, 640, CV_8UC3)};
+    std::vector<ncvslideio::UMat> vec2 = {
+    ncvslideio::UMat(480, 640, CV_8UC3)};
 
-    const auto desc2 = cv::descrs_of(vec2);
+    const auto desc2 = ncvslideio::descrs_of(vec2);
     EXPECT_EQ((GMatDesc{CV_8U, 3, {640, 480}}), get<GMatDesc>(desc2[0]));
 }
 
@@ -82,12 +82,12 @@ TEST(GAPI_MetaDesc, CanDescribe)
 {
     constexpr int w = 15;
     constexpr int h = 7;
-    cv::Mat m0(h, w, CV_8UC3);
-    cv::GMatDesc md0{CV_8U,3,{w,h},false};
+    ncvslideio::Mat m0(h, w, CV_8UC3);
+    ncvslideio::GMatDesc md0{CV_8U,3,{w,h},false};
 
-    cv::Mat m1(h*3, w, CV_8UC1);
-    cv::GMatDesc md10{CV_8U,3,{w,h},true};
-    cv::GMatDesc md11{CV_8U,1,{w,h*3},false};
+    ncvslideio::Mat m1(h*3, w, CV_8UC1);
+    ncvslideio::GMatDesc md10{CV_8U,3,{w,h},true};
+    ncvslideio::GMatDesc md11{CV_8U,1,{w,h*3},false};
 
     EXPECT_TRUE (md0 .canDescribe(m0));
     EXPECT_FALSE(md0 .canDescribe(m1));
@@ -97,9 +97,9 @@ TEST(GAPI_MetaDesc, CanDescribe)
 
 TEST(GAPI_MetaDesc, OwnMatDescOneCh)
 {
-    cv::gapi::own::Mat mat(240, 320, CV_8U, nullptr);
+    ncvslideio::gapi::own::Mat mat(240, 320, CV_8U, nullptr);
 
-    const auto desc = cv::gapi::own::descr_of(mat);
+    const auto desc = ncvslideio::gapi::own::descr_of(mat);
 
     EXPECT_EQ(CV_8U, desc.depth);
     EXPECT_EQ(1,     desc.chan);
@@ -110,9 +110,9 @@ TEST(GAPI_MetaDesc, OwnMatDescOneCh)
 
 TEST(GAPI_MetaDesc, OwnMatDescThreeCh)
 {
-    cv::gapi::own::Mat mat(480, 640, CV_8UC3, nullptr);
+    ncvslideio::gapi::own::Mat mat(480, 640, CV_8UC3, nullptr);
 
-    const auto desc = cv::gapi::own::descr_of(mat);
+    const auto desc = ncvslideio::gapi::own::descr_of(mat);
 
     EXPECT_EQ(CV_8U,   desc.depth);
     EXPECT_EQ(3,       desc.chan);
@@ -124,9 +124,9 @@ TEST(GAPI_MetaDesc, OwnMatDescThreeCh)
 TEST(GAPI_MetaDesc, OwnMatDescND)
 {
     std::vector<int> dims = {1,3,224,224};
-    cv::gapi::own::Mat m(dims, CV_32F, nullptr);
+    ncvslideio::gapi::own::Mat m(dims, CV_32F, nullptr);
 
-    const auto desc = cv::gapi::own::descr_of(m);
+    const auto desc = ncvslideio::gapi::own::descr_of(m);
 
     EXPECT_EQ(CV_32F, desc.depth);
     EXPECT_EQ(-1,     desc.chan);
@@ -139,11 +139,11 @@ TEST(GAPI_MetaDesc, OwnMatDescND)
 
 TEST(GAPI_MetaDesc, VecOwnMatDesc)
 {
-    std::vector<cv::gapi::own::Mat> vec = {
-    cv::gapi::own::Mat(240, 320, CV_8U, nullptr),
-    cv::gapi::own::Mat(480, 640, CV_8UC3, nullptr)};
+    std::vector<ncvslideio::gapi::own::Mat> vec = {
+    ncvslideio::gapi::own::Mat(240, 320, CV_8U, nullptr),
+    ncvslideio::gapi::own::Mat(480, 640, CV_8UC3, nullptr)};
 
-    const auto desc = cv::gapi::own::descrs_of(vec);
+    const auto desc = ncvslideio::gapi::own::descrs_of(vec);
 
     EXPECT_EQ((GMatDesc{CV_8U, 1, {320, 240}}), get<GMatDesc>(desc[0]));
     EXPECT_EQ((GMatDesc{CV_8U, 3, {640, 480}}), get<GMatDesc>(desc[1]));
@@ -151,9 +151,9 @@ TEST(GAPI_MetaDesc, VecOwnMatDesc)
 
 TEST(GAPI_MetaDesc, AdlVecOwnMatDesc)
 {
-    std::vector<cv::gapi::own::Mat> vec = {
-    cv::gapi::own::Mat(240, 320, CV_8U, nullptr),
-    cv::gapi::own::Mat(480, 640, CV_8UC3, nullptr)};
+    std::vector<ncvslideio::gapi::own::Mat> vec = {
+    ncvslideio::gapi::own::Mat(240, 320, CV_8U, nullptr),
+    ncvslideio::gapi::own::Mat(480, 640, CV_8UC3, nullptr)};
 
     const auto desc = descrs_of(vec);
 
@@ -163,59 +163,59 @@ TEST(GAPI_MetaDesc, AdlVecOwnMatDesc)
 
 TEST(GAPI_MetaDesc, Compare_Equal_MatDesc)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U, 1, {64, 64}};
-    const auto desc2 = cv::GMatDesc{CV_8U, 1, {64, 64}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U, 1, {64, 64}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U, 1, {64, 64}};
 
     EXPECT_TRUE(desc1 == desc2);
 }
 
 TEST(GAPI_MetaDesc, Compare_Not_Equal_MatDesc)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U,  1, {64, 64}};
-    const auto desc2 = cv::GMatDesc{CV_32F, 1, {64, 64}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,  1, {64, 64}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F, 1, {64, 64}};
 
     EXPECT_TRUE(desc1 != desc2);
 }
 
 TEST(GAPI_MetaDesc, Compare_Equal_MatDesc_ND)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U, {1,3,224,224}};
-    const auto desc2 = cv::GMatDesc{CV_8U, {1,3,224,224}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U, {1,3,224,224}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U, {1,3,224,224}};
 
     EXPECT_TRUE(desc1 == desc2);
 }
 
 TEST(GAPI_MetaDesc, Compare_Not_Equal_MatDesc_ND_1)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U,  {1,1000}};
-    const auto desc2 = cv::GMatDesc{CV_32F, {1,1000}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,  {1,1000}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F, {1,1000}};
 
     EXPECT_TRUE(desc1 != desc2);
 }
 
 TEST(GAPI_MetaDesc, Compare_Not_Equal_MatDesc_ND_2)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U, {1,1000}};
-    const auto desc2 = cv::GMatDesc{CV_8U, {1,1400}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U, {1,1000}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U, {1,1400}};
 
     EXPECT_TRUE(desc1 != desc2);
 }
 
 TEST(GAPI_MetaDesc, Compare_Not_Equal_MatDesc_ND_3)
 {
-    const auto desc1 = cv::GMatDesc{CV_8U, {1,1000}};
-    const auto desc2 = cv::GMatDesc{CV_8U, 1, {32,32}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U, {1,1000}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U, 1, {32,32}};
 
     EXPECT_TRUE(desc1 != desc2);
 }
 
 TEST(GAPI_MetaDesc, Compile_MatchMetaNumber_1)
 {
-    cv::GMat in;
-    cv::GComputation cc(in, in+in);
+    ncvslideio::GMat in;
+    ncvslideio::GComputation cc(in, in+in);
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
-    const auto desc2 = cv::GMatDesc{CV_32F,1,{128,128}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F,1,{128,128}};
 
     EXPECT_NO_THROW(cc.compile(desc1));
     EXPECT_NO_THROW(cc.compile(desc2));
@@ -229,13 +229,13 @@ TEST(GAPI_MetaDesc, Compile_MatchMetaNumber_1)
 
 TEST(GAPI_MetaDesc, Compile_MatchMetaNumber_2)
 {
-    cv::GMat a, b;
-    cv::GComputation cc(cv::GIn(a, b), cv::GOut(a+b));
+    ncvslideio::GMat a, b;
+    ncvslideio::GComputation cc(ncvslideio::GIn(a, b), ncvslideio::GOut(a+b));
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
     EXPECT_NO_THROW(cc.compile(desc1, desc1));
 
-    const auto desc2 = cv::GMatDesc{CV_32F,1,{128,128}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F,1,{128,128}};
     EXPECT_NO_THROW(cc.compile(desc2, desc2));
 
     // FIXME: custom exception type?
@@ -246,37 +246,37 @@ TEST(GAPI_MetaDesc, Compile_MatchMetaNumber_2)
 
 TEST(GAPI_MetaDesc, Compile_MatchMetaType_Mat)
 {
-    cv::GMat in;
-    cv::GComputation cc(in, in+in);
+    ncvslideio::GMat in;
+    ncvslideio::GComputation cc(in, in+in);
 
-    EXPECT_NO_THROW(cc.compile(cv::GMatDesc{CV_8U,1,{64,64}}));
+    EXPECT_NO_THROW(cc.compile(ncvslideio::GMatDesc{CV_8U,1,{64,64}}));
 
     // FIXME: custom exception type?
-    EXPECT_THROW(cc.compile(cv::empty_scalar_desc()), std::logic_error);
+    EXPECT_THROW(cc.compile(ncvslideio::empty_scalar_desc()), std::logic_error);
 }
 
 TEST(GAPI_MetaDesc, Compile_MatchMetaType_Scalar)
 {
-    cv::GScalar in;
-    cv::GComputation cc(cv::GIn(in), cv::GOut(KTest::on(in)));
+    ncvslideio::GScalar in;
+    ncvslideio::GComputation cc(ncvslideio::GIn(in), ncvslideio::GOut(KTest::on(in)));
 
-    const auto desc1 = cv::descr_of(cv::Scalar(128));
-    const auto desc2 = cv::GMatDesc{CV_8U,1,{64,64}};
-    const auto pkg   = cv::gapi::kernels<GOCVScalarTest>();
-    EXPECT_NO_THROW(cc.compile(desc1, cv::compile_args(pkg)));
+    const auto desc1 = ncvslideio::descr_of(ncvslideio::Scalar(128));
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
+    const auto pkg   = ncvslideio::gapi::kernels<GOCVScalarTest>();
+    EXPECT_NO_THROW(cc.compile(desc1, ncvslideio::compile_args(pkg)));
 
     // FIXME: custom exception type?
-    EXPECT_THROW(cc.compile(desc2, cv::compile_args(pkg)), std::logic_error);
+    EXPECT_THROW(cc.compile(desc2, ncvslideio::compile_args(pkg)), std::logic_error);
 }
 
 TEST(GAPI_MetaDesc, Compile_MatchMetaType_Mixed)
 {
-    cv::GMat a;
-    cv::GScalar v;
-    cv::GComputation cc(cv::GIn(a, v), cv::GOut(cv::gapi::addC(a, v)));
+    ncvslideio::GMat a;
+    ncvslideio::GScalar v;
+    ncvslideio::GComputation cc(ncvslideio::GIn(a, v), ncvslideio::GOut(ncvslideio::gapi::addC(a, v)));
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
-    const auto desc2 = cv::descr_of(cv::Scalar(4));
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc2 = ncvslideio::descr_of(ncvslideio::Scalar(4));
 
     EXPECT_NO_THROW(cc.compile(desc1, desc2));
 
@@ -290,13 +290,13 @@ TEST(GAPI_MetaDesc, Compile_MatchMetaType_Mixed)
 
 TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaNumber_1)
 {
-    cv::GComputationT<cv::GMat(cv::GMat)> cc([](cv::GMat in)
+    ncvslideio::GComputationT<ncvslideio::GMat(ncvslideio::GMat)> cc([](ncvslideio::GMat in)
     {
         return in+in;
     });
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
-    const auto desc2 = cv::GMatDesc{CV_32F,1,{128,128}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F,1,{128,128}};
 
     EXPECT_NO_THROW(cc.compile(desc1));
     EXPECT_NO_THROW(cc.compile(desc2));
@@ -304,60 +304,60 @@ TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaNumber_1)
 
 TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaNumber_2)
 {
-    cv::GComputationT<cv::GMat(cv::GMat,cv::GMat)> cc([](cv::GMat a, cv::GMat b)
+    ncvslideio::GComputationT<ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GMat)> cc([](ncvslideio::GMat a, ncvslideio::GMat b)
     {
         return a + b;
     });
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
     EXPECT_NO_THROW(cc.compile(desc1, desc1));
 
-    const auto desc2 = cv::GMatDesc{CV_32F,1,{128,128}};
+    const auto desc2 = ncvslideio::GMatDesc{CV_32F,1,{128,128}};
     EXPECT_NO_THROW(cc.compile(desc2, desc2));
 }
 
 TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaType_Mat)
 {
-    cv::GComputationT<cv::GMat(cv::GMat)> cc([](cv::GMat in)
+    ncvslideio::GComputationT<ncvslideio::GMat(ncvslideio::GMat)> cc([](ncvslideio::GMat in)
     {
         return in+in;
     });
 
-    EXPECT_NO_THROW(cc.compile(cv::GMatDesc{CV_8U,1,{64,64}}));
+    EXPECT_NO_THROW(cc.compile(ncvslideio::GMatDesc{CV_8U,1,{64,64}}));
 }
 
 TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaType_Scalar)
 {
-    cv::GComputationT<cv::GScalar(cv::GScalar)> cc([](cv::GScalar in)
+    ncvslideio::GComputationT<ncvslideio::GScalar(ncvslideio::GScalar)> cc([](ncvslideio::GScalar in)
     {
         return KTest::on(in);
     });
 
-    const auto desc1 = cv::descr_of(cv::Scalar(128));
-    const auto pkg = cv::gapi::kernels<GOCVScalarTest>();
-    //     EXPECT_NO_THROW(cc.compile(desc1, cv::compile_args(pkg)));
-    cc.compile(desc1, cv::compile_args(pkg));
+    const auto desc1 = ncvslideio::descr_of(ncvslideio::Scalar(128));
+    const auto pkg = ncvslideio::gapi::kernels<GOCVScalarTest>();
+    //     EXPECT_NO_THROW(cc.compile(desc1, ncvslideio::compile_args(pkg)));
+    cc.compile(desc1, ncvslideio::compile_args(pkg));
 }
 
 TEST(GAPI_MetaDesc, Typed_Compile_MatchMetaType_Mixed)
 {
-    cv::GComputationT<cv::GMat(cv::GMat,cv::GScalar)> cc([](cv::GMat a, cv::GScalar v)
+    ncvslideio::GComputationT<ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GScalar)> cc([](ncvslideio::GMat a, ncvslideio::GScalar v)
     {
-        return cv::gapi::addC(a, v);
+        return ncvslideio::gapi::addC(a, v);
     });
 
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{64,64}};
-    const auto desc2 = cv::descr_of(cv::Scalar(4));
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{64,64}};
+    const auto desc2 = ncvslideio::descr_of(ncvslideio::Scalar(4));
 
     EXPECT_NO_THROW(cc.compile(desc1, desc2));
 }
 
 TEST(GAPI_MetaDesc, Compare_Planar)
 {
-    const auto desc0 = cv::GMatDesc{CV_8U,3,{32,32},false};
-    const auto desc1 = cv::GMatDesc{CV_8U,3,{32,32},false};
-    const auto desc2 = cv::GMatDesc{CV_8U,3,{32,32},true};
-    const auto desc3 = cv::GMatDesc{CV_8U,3,{64,64},true};
+    const auto desc0 = ncvslideio::GMatDesc{CV_8U,3,{32,32},false};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,3,{32,32},false};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U,3,{32,32},true};
+    const auto desc3 = ncvslideio::GMatDesc{CV_8U,3,{64,64},true};
 
     EXPECT_TRUE(desc0 == desc1);
     EXPECT_TRUE(desc1 != desc2);
@@ -369,8 +369,8 @@ TEST(GAPI_MetaDesc, Sanity_asPlanar)
 {
     constexpr int w = 32;
     constexpr int h = 16;
-    const auto desc1 = cv::GMatDesc{CV_8U,3,{w,h},false};
-    const auto desc2 = cv::GMatDesc{CV_8U,3,{w,h},true};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,3,{w,h},false};
+    const auto desc2 = ncvslideio::GMatDesc{CV_8U,3,{w,h},true};
 
     EXPECT_NO_THROW(desc1.asPlanar());
     EXPECT_NO_THROW(desc2.asInterleaved());
@@ -382,8 +382,8 @@ TEST(GAPI_MetaDesc, Compare_asPlanar)
 {
     constexpr int w = 32;
     constexpr int h = 64;
-    const auto desc0 = cv::GMatDesc{CV_8U,3,{w,h},false};
-    const auto desc1 = cv::GMatDesc{CV_8U,3,{w,h},true};
+    const auto desc0 = ncvslideio::GMatDesc{CV_8U,3,{w,h},false};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,3,{w,h},true};
 
     EXPECT_TRUE(desc0.asPlanar()      == desc1);
     EXPECT_TRUE(desc1.asInterleaved() == desc0);
@@ -393,8 +393,8 @@ TEST(GAPI_MetaDesc, Compare_asPlanarTransform)
 {
     constexpr int w = 64;
     constexpr int h = 32;
-    const auto desc0 = cv::GMatDesc{CV_8U,3,{w,h},true};
-    const auto desc1 = cv::GMatDesc{CV_8U,1,{w,h*3},false};
+    const auto desc0 = ncvslideio::GMatDesc{CV_8U,3,{w,h},true};
+    const auto desc1 = ncvslideio::GMatDesc{CV_8U,1,{w,h*3},false};
 
     EXPECT_ANY_THROW(desc0.asPlanar(3));
     EXPECT_NO_THROW(desc1.asPlanar(3));

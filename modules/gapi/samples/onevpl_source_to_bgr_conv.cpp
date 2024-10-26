@@ -25,12 +25,12 @@ const std::string keys =
 namespace {
 namespace cfg {
 // FIXME: Move OneVPL arguments parser to a single place
-typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line);
+typename ncvslideio::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line);
 } // namespace cfg
 } // anonymous namespace
 
 int main(int argc, char *argv[]) {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -42,36 +42,36 @@ int main(int argc, char *argv[]) {
     const auto accel_mode = cmd.get<std::string>("accel_mode");
 
     // Create VPL config
-    std::vector<cv::gapi::wip::onevpl::CfgParam> source_cfgs;
+    std::vector<ncvslideio::gapi::wip::onevpl::CfgParam> source_cfgs;
     source_cfgs.push_back(cfg::create_from_string(accel_mode));
 
     // Create VPL-based source
-    std::shared_ptr<cv::gapi::wip::onevpl::IDeviceSelector> default_device_selector =
-                                                cv::gapi::wip::onevpl::getDefaultDeviceSelector(source_cfgs);
+    std::shared_ptr<ncvslideio::gapi::wip::onevpl::IDeviceSelector> default_device_selector =
+                                                ncvslideio::gapi::wip::onevpl::getDefaultDeviceSelector(source_cfgs);
 
-    cv::gapi::wip::IStreamSource::Ptr source = cv::gapi::wip::make_onevpl_src(input, source_cfgs,
+    ncvslideio::gapi::wip::IStreamSource::Ptr source = ncvslideio::gapi::wip::make_onevpl_src(input, source_cfgs,
                                                                               default_device_selector);
 
     // Build the graph
-    cv::GFrame in; // input frame from VPL source
-    auto bgr_gmat = cv::gapi::streaming::BGR(in); // conversion from VPL source frame to BGR UMat
-    auto out = cv::gapi::blur(bgr_gmat, cv::Size(4,4)); // ocl kernel of blur operation
+    ncvslideio::GFrame in; // input frame from VPL source
+    auto bgr_gmat = ncvslideio::gapi::streaming::BGR(in); // conversion from VPL source frame to BGR UMat
+    auto out = ncvslideio::gapi::blur(bgr_gmat, ncvslideio::Size(4,4)); // ocl kernel of blur operation
 
-    cv::GStreamingCompiled pipeline = cv::GComputation(cv::GIn(in), cv::GOut(out))
-        .compileStreaming(cv::compile_args(cv::gapi::core::ocl::kernels()));
+    ncvslideio::GStreamingCompiled pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out))
+        .compileStreaming(ncvslideio::compile_args(ncvslideio::gapi::core::ocl::kernels()));
     pipeline.setSource(std::move(source));
 
     // The execution part
     size_t frames = 0u;
-    cv::TickMeter tm;
-    cv::Mat outMat;
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat outMat;
 
     pipeline.start();
     tm.start();
 
-    while (pipeline.pull(cv::gout(outMat))) {
-        cv::imshow("OutVideo", outMat);
-        cv::waitKey(1);
+    while (pipeline.pull(ncvslideio::gout(outMat))) {
+        ncvslideio::imshow("OutVideo", outMat);
+        ncvslideio::waitKey(1);
         ++frames;
     }
     tm.stop();
@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
 
 namespace {
 namespace cfg {
-typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line) {
-    using namespace cv::gapi::wip;
+typename ncvslideio::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line) {
+    using namespace ncvslideio::gapi::wip;
 
     if (line.empty()) {
         throw std::runtime_error("Cannot parse CfgParam from emply line");
@@ -98,7 +98,7 @@ typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &l
     std::string name = line.substr(0, name_endline_pos);
     std::string value = line.substr(name_endline_pos + 1);
 
-    return cv::gapi::wip::onevpl::CfgParam::create(name, value,
+    return ncvslideio::gapi::wip::onevpl::CfgParam::create(name, value,
                                                    /* vpp params strongly optional */
                                                    name.find("vpp.") == std::string::npos);
 }

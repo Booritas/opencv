@@ -56,7 +56,7 @@
 #include "tiff.h"
 #include "tiffio.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 // to extend cvtColor() to support CV_8S, CV_16S, CV_32S and CV_64F.
@@ -80,9 +80,9 @@ static void cv_tiffCloseHandle(void* handle)
 
 static void cv_tiffErrorHandler(const char* module, const char* fmt, va_list ap)
 {
-    if (cv::utils::logging::getLogLevel() < cv::utils::logging::LOG_LEVEL_DEBUG)
+    if (ncvslideio::utils::logging::getLogLevel() < ncvslideio::utils::logging::LOG_LEVEL_DEBUG)
         return;
-    // TODO cv::vformat() with va_list parameter
+    // TODO ncvslideio::vformat() with va_list parameter
     fprintf(stderr, "OpenCV TIFF: ");
     if (module != NULL)
         fprintf(stderr, "%s: ", module);
@@ -316,7 +316,7 @@ bool TiffDecoder::readHeader()
                     result = true;
                 }
                 else
-                    CV_Error(cv::Error::StsError, "bitsperpixel value is 4 should be palette.");
+                    CV_Error(ncvslideio::Error::StsError, "bitsperpixel value is 4 should be palette.");
                 break;
             case 8:
             {
@@ -356,7 +356,7 @@ bool TiffDecoder::readHeader()
                 result = true;
                 break;
             default:
-                CV_Error(cv::Error::StsError, "Invalid bitsperpixel value read from TIFF header! Must be 1, 8, 10, 12, 14, 16, 32 or 64.");
+                CV_Error(ncvslideio::Error::StsError, "Invalid bitsperpixel value read from TIFF header! Must be 1, 8, 10, 12, 14, 16, 32 or 64.");
             }
         }
     }
@@ -1215,7 +1215,7 @@ bool TiffEncoder::writeLibTiff( const std::vector<Mat>& img_vec, const std::vect
     {
         return false;
     }
-    cv::Ptr<void> tif_cleanup(tif, cv_tiffCloseHandle);
+    ncvslideio::Ptr<void> tif_cleanup(tif, cv_tiffCloseHandle);
 
     //Settings that matter to all images
     int compression = COMPRESSION_LZW;
@@ -1460,7 +1460,7 @@ static void extend_cvtColor( InputArray _src, OutputArray _dst, int code )
 
     Mat src = _src.getMat();
 
-    // cv::mixChannels requires the output arrays to be pre-allocated before calling the function.
+    // ncvslideio::mixChannels requires the output arrays to be pre-allocated before calling the function.
     _dst.create( _src.size(), stype );
     Mat dst = _dst.getMat();
 
@@ -1478,7 +1478,7 @@ static void extend_cvtColor( InputArray _src, OutputArray _dst, int code )
         fromTo.push_back(3); fromTo.push_back(3);
     }
 
-    cv::mixChannels( src, dst, fromTo );
+    ncvslideio::mixChannels( src, dst, fromTo );
 }
 
 } // namespace

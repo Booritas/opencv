@@ -30,11 +30,11 @@ const std::vector<std::string>& getKnownIntrinsics()
 {
     // FIXME: This may be not the right design choice, but so far it works
     static const std::vector<std::string> known_intrinsics = {
-        cv::gapi::streaming::detail::GDesync::id()
+        ncvslideio::gapi::streaming::detail::GDesync::id()
     };
     return known_intrinsics;
 }
-bool cv::gimpl::is_intrinsic(const std::string &s) {
+bool ncvslideio::gimpl::is_intrinsic(const std::string &s) {
     // FIXME: This search might be better in time once we start using string
     const std::vector<std::string>& known_intrinsics = getKnownIntrinsics();
     return std::find(known_intrinsics.begin(),
@@ -46,8 +46,8 @@ namespace
 {
     struct ImplInfo
     {
-        cv::GKernelImpl impl;
-        cv::GArgs       in_args;
+        ncvslideio::GKernelImpl impl;
+        ncvslideio::GArgs       in_args;
     };
 
     // Generally the algorithm is following
@@ -60,15 +60,15 @@ namespace
 
     void expand(ade::Graph& g, ade::NodeHandle nh, const ImplInfo& impl_info)
     {
-        cv::gimpl::GModel::Graph gr(g);
-        auto compound_impl = cv::util::any_cast<cv::detail::GCompoundKernel>(impl_info.impl.opaque);
+        ncvslideio::gimpl::GModel::Graph gr(g);
+        auto compound_impl = ncvslideio::util::any_cast<ncvslideio::detail::GCompoundKernel>(impl_info.impl.opaque);
 
         // GCompoundContext instantiates its own objects
         // in accordance with the RcDescs from in_args
-        cv::detail::GCompoundContext context(impl_info.in_args);
+        ncvslideio::detail::GCompoundContext context(impl_info.in_args);
         compound_impl.apply(context);
 
-        cv::GProtoArgs ins, outs;
+        ncvslideio::GProtoArgs ins, outs;
         ins.reserve(context.m_args.size());
         outs.reserve(context.m_results.size());
 
@@ -76,15 +76,15 @@ namespace
         // Such inputs are not used when building a graph
         for (const auto& arg : context.m_args)
         {
-            if (cv::gimpl::proto::is_dynamic(arg))
+            if (ncvslideio::gimpl::proto::is_dynamic(arg))
             {
-                ins.emplace_back(cv::gimpl::proto::rewrap(arg));
+                ins.emplace_back(ncvslideio::gimpl::proto::rewrap(arg));
             }
         }
 
-        ade::util::transform(context.m_results, std::back_inserter(outs), &cv::gimpl::proto::rewrap);
+        ade::util::transform(context.m_results, std::back_inserter(outs), &ncvslideio::gimpl::proto::rewrap);
 
-        cv::gimpl::GModelBuilder builder(g);
+        ncvslideio::gimpl::GModelBuilder builder(g);
 
         // Build the subgraph graph which will need to replace the compound node
         const auto& proto_slots = builder.put(ins, outs);
@@ -92,8 +92,8 @@ namespace
         const auto& in_nhs  = std::get<2>(proto_slots);
         const auto& out_nhs = std::get<3>(proto_slots);
 
-        auto sorted_in_nhs  = cv::gimpl::GModel::orderedInputs(gr, nh);
-        auto sorted_out_nhs = cv::gimpl::GModel::orderedOutputs(gr, nh);
+        auto sorted_in_nhs  = ncvslideio::gimpl::GModel::orderedInputs(gr, nh);
+        auto sorted_out_nhs = ncvslideio::gimpl::GModel::orderedOutputs(gr, nh);
 
         // Reconnect expanded kernels from graph data objects
         // to subgraph data objects, then drop that graph data objects
@@ -102,7 +102,7 @@ namespace
             const auto& subgr_in_nh = std::get<0>(it);
             const auto& comp_in_nh  = std::get<1>(it);
 
-            cv::gimpl::GModel::redirectReaders(gr, subgr_in_nh, comp_in_nh);
+            ncvslideio::gimpl::GModel::redirectReaders(gr, subgr_in_nh, comp_in_nh);
             gr.erase(subgr_in_nh);
         }
 
@@ -113,7 +113,7 @@ namespace
             const auto& subgr_out_nh = std::get<0>(it);
             const auto& comp_out_nh  = std::get<1>(it);
 
-            cv::gimpl::GModel::redirectWriter(gr, subgr_out_nh, comp_out_nh);
+            ncvslideio::gimpl::GModel::redirectWriter(gr, subgr_out_nh, comp_out_nh);
             gr.erase(subgr_out_nh);
         }
     }
@@ -121,7 +121,7 @@ namespace
 
 // This pass, given the network package, associates every infer[list] node
 // with particular inference backend and its parameters.
-void cv::gimpl::passes::bindNetParams(ade::passes::PassContext &ctx,
+void ncvslideio::gimpl::passes::bindNetParams(ade::passes::PassContext &ctx,
                                       const gapi::GNetPackage  &pkg)
 {
     GModel::Graph gr(ctx.graph);
@@ -137,7 +137,7 @@ void cv::gimpl::passes::bindNetParams(ade::passes::PassContext &ctx,
 
             // FIXME: What if there's more than one???
             const auto it = ade::util::find_if(pkg.networks,
-                                               [&](const cv::gapi::GNetParam &p) {
+                                               [&](const ncvslideio::gapi::GNetParam &p) {
                                                    return p.tag == op.k.tag;
                                                });
             if (it == std::end(pkg.networks))
@@ -156,10 +156,10 @@ void cv::gimpl::passes::bindNetParams(ade::passes::PassContext &ctx,
 // operations.  Those can be implemented by backends as regular
 // kernels, but if not, they are handled by the framework itself in
 // its optimization/execution passes.
-void cv::gimpl::passes::resolveKernels(ade::passes::PassContext   &ctx,
+void ncvslideio::gimpl::passes::resolveKernels(ade::passes::PassContext   &ctx,
                                        const GKernelPackage &kernels)
 {
-    std::unordered_set<cv::gapi::GBackend> active_backends;
+    std::unordered_set<ncvslideio::gapi::GBackend> active_backends;
 
     GModel::Graph gr(ctx.graph);
     for (const auto &nh : gr.nodes())
@@ -185,14 +185,14 @@ void cv::gimpl::passes::resolveKernels(ade::passes::PassContext   &ctx,
             // of the same kernel to be presented in the kernel
             // package (as it was designed originally).
 
-            cv::GKernelImpl selected_impl;
+            ncvslideio::GKernelImpl selected_impl;
 
-            if (op.backend == cv::gapi::GBackend()) {
+            if (op.backend == ncvslideio::gapi::GBackend()) {
                 std::tie(op.backend, selected_impl) = kernels.lookup(op.k.name);
             } else {
                 // FIXME: This needs to be reworked properly
                 // Lookup for implementation from the pre-assinged backend
-                cv::gapi::GBackend dummy;
+                ncvslideio::gapi::GBackend dummy;
                 std::tie(dummy, selected_impl) = op.backend.priv()
                     .auxiliaryKernels().lookup(op.k.name);
                 // FIXME: Warning here!
@@ -210,7 +210,7 @@ void cv::gimpl::passes::resolveKernels(ade::passes::PassContext   &ctx,
                 // Trick: in this case, the op.k.outMeta is by default
                 // missing. Take it from the resolved kernel
                 GAPI_Assert(op.k.outMeta == nullptr);
-                const_cast<cv::GKernel::M&>(op.k.outMeta) = selected_impl.outMeta;
+                const_cast<ncvslideio::GKernel::M&>(op.k.outMeta) = selected_impl.outMeta;
             } else {
                 // Sanity check: the metadata function must be present
                 GAPI_Assert(op.k.outMeta != nullptr);
@@ -220,7 +220,7 @@ void cv::gimpl::passes::resolveKernels(ade::passes::PassContext   &ctx,
     gr.metadata().set(ActiveBackends{active_backends});
 }
 
-void cv::gimpl::passes::expandKernels(ade::passes::PassContext &ctx, const GKernelPackage &kernels)
+void ncvslideio::gimpl::passes::expandKernels(ade::passes::PassContext &ctx, const GKernelPackage &kernels)
 {
     GModel::Graph gr(ctx.graph);
 
@@ -242,11 +242,11 @@ void cv::gimpl::passes::expandKernels(ade::passes::PassContext &ctx, const GKern
                     continue;
                 }
 
-                cv::gapi::GBackend selected_backend;
-                cv::GKernelImpl    selected_impl;
+                ncvslideio::gapi::GBackend selected_backend;
+                ncvslideio::GKernelImpl    selected_impl;
                 std::tie(selected_backend, selected_impl) = kernels.lookup(op.k.name);
 
-                if (selected_backend == cv::gapi::compound::backend())
+                if (selected_backend == ncvslideio::gapi::compound::backend())
                 {
                     has_compound_kernel = true;
                     expand(ctx.graph, nh, ImplInfo{selected_impl, op.args});

@@ -6,7 +6,7 @@
 #error "Need to pre-define forward width"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -188,4 +188,4 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} // cv::
+} // ncvslideio::

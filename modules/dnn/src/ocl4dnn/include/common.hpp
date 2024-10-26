@@ -50,9 +50,9 @@
 #define OCL_CHECK(condition) \
     do { \
         cl_int error = (condition); \
-        CHECK_EQ(error, CL_SUCCESS) << " " << cv::ocl::getOpenCLErrorString(error); \
+        CHECK_EQ(error, CL_SUCCESS) << " " << ncvslideio::ocl::getOpenCLErrorString(error); \
     } while (0)
 
-bool clOptionSupport(cv::String option);
+bool clOptionSupport(ncvslideio::String option);
 
 #endif

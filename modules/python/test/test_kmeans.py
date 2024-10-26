@@ -58,8 +58,8 @@ class kmeans_test(NewOpenCVTests):
 
         points, _, clusterSizes = make_gaussians(cluster_n, img_size)
 
-        term_crit = (cv.TERM_CRITERIA_EPS, 30, 0.1)
-        _ret, labels, centers = cv.kmeans(points, cluster_n, None, term_crit, 10, 0)
+        term_crit = (ncvslideio.TERM_CRITERIA_EPS, 30, 0.1)
+        _ret, labels, centers = ncvslideio.kmeans(points, cluster_n, None, term_crit, 10, 0)
 
         self.assertEqual(len(centers), cluster_n)
 

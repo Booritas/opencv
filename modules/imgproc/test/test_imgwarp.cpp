@@ -51,7 +51,7 @@ public:
     CV_ImgWarpBaseTest( bool warp_matrix );
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
     void get_minmax_bounds( int i, int j, int type, Scalar& low, Scalar& high );
@@ -78,7 +78,7 @@ CV_ImgWarpBaseTest::CV_ImgWarpBaseTest( bool warp_matrix )
 }
 
 
-int CV_ImgWarpBaseTest::read_params( const cv::FileStorage& fs )
+int CV_ImgWarpBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -190,8 +190,8 @@ int CV_ImgWarpBaseTest::prepare_test_case( int test_case_idx )
         default:
             CV_Assert(0);
         }*/
-        cv::Mat src(1, cols*cn, CV_32F, &buffer[0]);
-        cv::Mat dst(1, cols*cn, depth, ptr);
+        ncvslideio::Mat src(1, cols*cn, CV_32F, &buffer[0]);
+        ncvslideio::Mat dst(1, cols*cn, depth, ptr);
         src.convertTo(dst, dst.type());
     }
 
@@ -559,9 +559,9 @@ int CV_WarpAffineTest::prepare_test_case( int test_case_idx )
     scale = ((double)dst.rows/src.rows + (double)dst.cols/src.cols)*0.5;
     getRotationMatrix2D(center, angle, scale).convertTo(mat, mat.depth());
     rng.fill( tmp, RNG::NORMAL, Scalar::all(1.), Scalar::all(0.01) );
-    cv::max(tmp, 0.9, tmp);
-    cv::min(tmp, 1.1, tmp);
-    cv::multiply(tmp, mat, mat, 1.);
+    ncvslideio::max(tmp, 0.9, tmp);
+    ncvslideio::min(tmp, 1.1, tmp);
+    ncvslideio::multiply(tmp, mat, mat, 1.);
 
     return code;
 }
@@ -583,8 +583,8 @@ void CV_WarpAffineTest::prepare_to_validation( int /*test_case_idx*/ )
     Mat b = srcAb.col(2);
     Mat invA = dstAb.colRange(0, 2);
     Mat invAb = dstAb.col(2);
-    cv::invert(A, invA, CV_SVD);
-    cv::gemm(invA, b, -1, Mat(), 0, invAb);
+    ncvslideio::invert(A, invA, CV_SVD);
+    ncvslideio::gemm(invA, b, -1, Mat(), 0, invAb);
 
     for( int y = 0; y < dst.rows; y++ )
         for( int x = 0; x < dst.cols; x++ )
@@ -683,7 +683,7 @@ int CV_WarpPerspectiveTest::prepare_test_case( int test_case_idx )
         d[i].y += bufer[i*4+3]*dst.rows/2;
     }
 
-    cv::getPerspectiveTransform( s, d ).convertTo( mat, mat.depth() );
+    ncvslideio::getPerspectiveTransform( s, d ).convertTo( mat, mat.depth() );
     return code;
 }
 
@@ -700,7 +700,7 @@ void CV_WarpPerspectiveTest::prepare_to_validation( int /*test_case_idx*/ )
     //cvInvert( &tM, &M, CV_LU );
     // [R|t] -> [R^-1 | -(R^-1)*t]
     test_mat[INPUT][1].convertTo( srcM, CV_64F );
-    cv::invert(srcM, dstM, CV_SVD);
+    ncvslideio::invert(srcM, dstM, CV_SVD);
 
     for( int y = 0; y < dst.rows; y++ )
     {
@@ -770,7 +770,7 @@ void CV_RemapTest::fill_array( int test_case_idx, int i, int j, Mat& arr )
 
 void CV_RemapTest::run_func()
 {
-    cv::remap(test_mat[INPUT][0], test_mat[INPUT_OUTPUT][0],
+    ncvslideio::remap(test_mat[INPUT][0], test_mat[INPUT_OUTPUT][0],
               test_mat[INPUT][1], test_mat[INPUT][2], interpolation );
 }
 
@@ -927,8 +927,8 @@ void CV_GetRectSubPixTest::fill_array( int test_case_idx, int i, int j, Mat& arr
 
 void CV_GetRectSubPixTest::run_func()
 {
-    cv::Mat _out = test_mat[INPUT_OUTPUT][0];
-    cv::getRectSubPix(test_mat[INPUT][0], _out.size(), center, _out, _out.type());
+    ncvslideio::Mat _out = test_mat[INPUT_OUTPUT][0];
+    ncvslideio::getRectSubPix(test_mat[INPUT][0], _out.size(), center, _out, _out.type());
 }
 
 
@@ -1133,7 +1133,7 @@ static void check_resize_area(const Mat& expected, const Mat& actual, double tol
             }
     }
 
-    ASSERT_EQ(0, cvtest::norm(one_channel_diff, cv::NORM_INF));
+    ASSERT_EQ(0, cvtest::norm(one_channel_diff, ncvslideio::NORM_INF));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1168,7 +1168,7 @@ TEST(Imgproc_fitLine_vector_3d, regression)
 
     std::vector<float> line;
 
-    cv::fitLine(points_vector, line, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(points_vector, line, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line.size(), (size_t)6);
 
@@ -1188,47 +1188,47 @@ TEST(Imgproc_fitLine_vector_2d, regression)
 
     std::vector<float> line;
 
-    cv::fitLine(points_vector, line, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(points_vector, line, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line.size(), (size_t)4);
 }
 
 TEST(Imgproc_fitLine_Mat_2dC2, regression)
 {
-    cv::Mat mat1 = Mat::zeros(3, 1, CV_32SC2);
+    ncvslideio::Mat mat1 = Mat::zeros(3, 1, CV_32SC2);
     std::vector<float> line1;
 
-    cv::fitLine(mat1, line1, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(mat1, line1, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line1.size(), (size_t)4);
 }
 
 TEST(Imgproc_fitLine_Mat_2dC1, regression)
 {
-    cv::Matx<int, 3, 2> mat2;
+    ncvslideio::Matx<int, 3, 2> mat2;
     std::vector<float> line2;
 
-    cv::fitLine(mat2, line2, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(mat2, line2, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line2.size(), (size_t)4);
 }
 
 TEST(Imgproc_fitLine_Mat_3dC3, regression)
 {
-    cv::Mat mat1 = Mat::zeros(2, 1, CV_32SC3);
+    ncvslideio::Mat mat1 = Mat::zeros(2, 1, CV_32SC3);
     std::vector<float> line1;
 
-    cv::fitLine(mat1, line1, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(mat1, line1, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line1.size(), (size_t)6);
 }
 
 TEST(Imgproc_fitLine_Mat_3dC1, regression)
 {
-    cv::Mat mat2 = Mat::zeros(2, 3, CV_32SC1);
+    ncvslideio::Mat mat2 = Mat::zeros(2, 3, CV_32SC1);
     std::vector<float> line2;
 
-    cv::fitLine(mat2, line2, CV_DIST_L2, 0 ,0 ,0);
+    ncvslideio::fitLine(mat2, line2, CV_DIST_L2, 0 ,0 ,0);
 
     ASSERT_EQ(line2.size(), (size_t)6);
 }
@@ -1261,11 +1261,11 @@ TEST(Imgproc_resize_area, regression)
         161, 163,  70, 107, 182
     };
 
-    cv::Mat src(16, 16, CV_16UC1, input_data);
-    cv::Mat expected(5, 5, CV_16UC1, expected_data);
-    cv::Mat actual(expected.size(), expected.type());
+    ncvslideio::Mat src(16, 16, CV_16UC1, input_data);
+    ncvslideio::Mat expected(5, 5, CV_16UC1, expected_data);
+    ncvslideio::Mat actual(expected.size(), expected.type());
 
-    cv::resize(src, actual, cv::Size(), 0.3, 0.3, INTER_AREA);
+    ncvslideio::resize(src, actual, ncvslideio::Size(), 0.3, 0.3, INTER_AREA);
 
     check_resize_area<ushort>(expected, actual, 1.0);
 }
@@ -1280,11 +1280,11 @@ TEST(Imgproc_resize_area, regression_half_round)
     for(int i = 0; i < 16 * 16; ++i)
         expected_data[i] = (uchar)(254 + i / (16 * 8));
 
-    cv::Mat src(32, 32, CV_8UC1, input_data);
-    cv::Mat expected(16, 16, CV_8UC1, expected_data);
-    cv::Mat actual(expected.size(), expected.type());
+    ncvslideio::Mat src(32, 32, CV_8UC1, input_data);
+    ncvslideio::Mat expected(16, 16, CV_8UC1, expected_data);
+    ncvslideio::Mat actual(expected.size(), expected.type());
 
-    cv::resize(src, actual, cv::Size(), 0.5, 0.5, INTER_AREA);
+    ncvslideio::resize(src, actual, ncvslideio::Size(), 0.5, 0.5, INTER_AREA);
 
     check_resize_area<uchar>(expected, actual, 0.5);
 }
@@ -1299,11 +1299,11 @@ TEST(Imgproc_resize_area, regression_quarter_round)
     for(int i = 0; i < 8 * 8; ++i)
         expected_data[i] = 254;
 
-    cv::Mat src(32, 32, CV_8UC1, input_data);
-    cv::Mat expected(8, 8, CV_8UC1, expected_data);
-    cv::Mat actual(expected.size(), expected.type());
+    ncvslideio::Mat src(32, 32, CV_8UC1, input_data);
+    ncvslideio::Mat expected(8, 8, CV_8UC1, expected_data);
+    ncvslideio::Mat actual(expected.size(), expected.type());
 
-    cv::resize(src, actual, cv::Size(), 0.25, 0.25, INTER_AREA);
+    ncvslideio::resize(src, actual, ncvslideio::Size(), 0.25, 0.25, INTER_AREA);
 
     check_resize_area<uchar>(expected, actual, 0.5);
 }
@@ -1319,51 +1319,51 @@ TEST_P(Imgproc_RemapRelative, validity)
     bool useFixedPoint = get<4>(GetParam());
 
     const int nChannels = CV_MAT_CN(srcType);
-    const cv::Size size(127, 61);
-    cv::Mat data64FC1(1, size.area()*nChannels, CV_64FC1);
+    const ncvslideio::Size size(127, 61);
+    ncvslideio::Mat data64FC1(1, size.area()*nChannels, CV_64FC1);
     data64FC1.forEach<double>([&](double& pixel, const int* position) {pixel = static_cast<double>(position[1]);});
 
-    cv::Mat src;
+    ncvslideio::Mat src;
     data64FC1.reshape(nChannels, size.height).convertTo(src, srcType);
 
-    cv::Mat mapRelativeX32F(size, CV_32FC1);
-    mapRelativeX32F.setTo(cv::Scalar::all(-0.33));
+    ncvslideio::Mat mapRelativeX32F(size, CV_32FC1);
+    mapRelativeX32F.setTo(ncvslideio::Scalar::all(-0.33));
 
-    cv::Mat mapRelativeY32F(size, CV_32FC1);
-    mapRelativeY32F.setTo(cv::Scalar::all(-0.33));
+    ncvslideio::Mat mapRelativeY32F(size, CV_32FC1);
+    mapRelativeY32F.setTo(ncvslideio::Scalar::all(-0.33));
 
-    cv::Mat mapAbsoluteX32F = mapRelativeX32F.clone();
+    ncvslideio::Mat mapAbsoluteX32F = mapRelativeX32F.clone();
     mapAbsoluteX32F.forEach<float>([&](float& pixel, const int* position) {
         pixel += static_cast<float>(position[1]);
         });
 
-    cv::Mat mapAbsoluteY32F = mapRelativeY32F.clone();
+    ncvslideio::Mat mapAbsoluteY32F = mapRelativeY32F.clone();
     mapAbsoluteY32F.forEach<float>([&](float& pixel, const int* position) {
         pixel += static_cast<float>(position[0]);
         });
 
-    cv::Mat mapAbsoluteX16S;
-    cv::Mat mapAbsoluteY16S;
-    cv::Mat mapRelativeX16S;
-    cv::Mat mapRelativeY16S;
+    ncvslideio::Mat mapAbsoluteX16S;
+    ncvslideio::Mat mapAbsoluteY16S;
+    ncvslideio::Mat mapRelativeX16S;
+    ncvslideio::Mat mapRelativeY16S;
     if (useFixedPoint)
     {
-        const bool nninterpolation = (interpolation == cv::INTER_NEAREST) || (interpolation == cv::INTER_NEAREST_EXACT);
-        cv::convertMaps(mapAbsoluteX32F, mapAbsoluteY32F, mapAbsoluteX16S, mapAbsoluteY16S, CV_16SC2, nninterpolation);
-        cv::convertMaps(mapRelativeX32F, mapRelativeY32F, mapRelativeX16S, mapRelativeY16S, CV_16SC2, nninterpolation);
+        const bool nninterpolation = (interpolation == ncvslideio::INTER_NEAREST) || (interpolation == ncvslideio::INTER_NEAREST_EXACT);
+        ncvslideio::convertMaps(mapAbsoluteX32F, mapAbsoluteY32F, mapAbsoluteX16S, mapAbsoluteY16S, CV_16SC2, nninterpolation);
+        ncvslideio::convertMaps(mapRelativeX32F, mapRelativeY32F, mapRelativeX16S, mapRelativeY16S, CV_16SC2, nninterpolation);
     }
 
-    cv::Mat dstAbsolute;
-    cv::Mat dstRelative;
+    ncvslideio::Mat dstAbsolute;
+    ncvslideio::Mat dstRelative;
     if (useFixedPoint)
     {
-        cv::remap(src, dstAbsolute, mapAbsoluteX16S, mapAbsoluteY16S, interpolation, borderType);
-        cv::remap(src, dstRelative, mapRelativeX16S, mapRelativeY16S, interpolation | WARP_RELATIVE_MAP, borderType);
+        ncvslideio::remap(src, dstAbsolute, mapAbsoluteX16S, mapAbsoluteY16S, interpolation, borderType);
+        ncvslideio::remap(src, dstRelative, mapRelativeX16S, mapRelativeY16S, interpolation | WARP_RELATIVE_MAP, borderType);
     }
     else
     {
-        cv::remap(src, dstAbsolute, mapAbsoluteX32F, mapAbsoluteY32F, interpolation, borderType);
-        cv::remap(src, dstRelative, mapRelativeX32F, mapRelativeY32F, interpolation | WARP_RELATIVE_MAP, borderType);
+        ncvslideio::remap(src, dstAbsolute, mapAbsoluteX32F, mapAbsoluteY32F, interpolation, borderType);
+        ncvslideio::remap(src, dstRelative, mapRelativeX32F, mapRelativeY32F, interpolation | WARP_RELATIVE_MAP, borderType);
     }
 
     EXPECT_EQ(cvtest::norm(dstAbsolute, dstRelative, NORM_INF), 0);
@@ -1393,7 +1393,7 @@ struct IntCast
 {
     T operator() (WT val) const
     {
-        return cv::saturate_cast<T>(val >> 2);
+        return ncvslideio::saturate_cast<T>(val >> 2);
     }
 };
 
@@ -1402,12 +1402,12 @@ struct FltCast
 {
     T operator() (WT val) const
     {
-        return cv::saturate_cast<T>(val * 0.25);
+        return ncvslideio::saturate_cast<T>(val * 0.25);
     }
 };
 
 template <typename T, typename WT, int one, typename CastOp>
-void resizeArea(const cv::Mat & src, cv::Mat & dst)
+void resizeArea(const ncvslideio::Mat & src, ncvslideio::Mat & dst)
 {
     int cn = src.channels();
     CastOp castOp;
@@ -1441,7 +1441,7 @@ TEST(Resize, Area_half)
                     CV_16SC1, CV_16SC3, CV_16SC4,
                     CV_32FC1, CV_32FC4 };
 
-    cv::RNG rng(17);
+    ncvslideio::RNG rng(17);
 
     for (int i = 0, _size = sizeof(types) / sizeof(types[0]); i < _size; ++i)
     {
@@ -1451,10 +1451,10 @@ TEST(Resize, Area_half)
         SCOPED_TRACE(depth);
         SCOPED_TRACE(cn);
 
-        cv::Mat src(size, size, type), dst_actual(size >> 1, size >> 1, type),
+        ncvslideio::Mat src(size, size, type), dst_actual(size >> 1, size >> 1, type),
             dst_reference(size >> 1, size >> 1, type);
 
-        rng.fill(src, cv::RNG::UNIFORM, -1000, 1000, true);
+        rng.fill(src, ncvslideio::RNG::UNIFORM, -1000, 1000, true);
 
         if (depth == CV_8U)
             resizeArea<uchar, ushort, 2, IntCast<uchar, ushort> >(src, dst_reference);
@@ -1467,9 +1467,9 @@ TEST(Resize, Area_half)
         else
             CV_Assert(0);
 
-        cv::resize(src, dst_actual, dst_actual.size(), 0, 0, cv::INTER_AREA);
+        ncvslideio::resize(src, dst_actual, dst_actual.size(), 0, 0, ncvslideio::INTER_AREA);
 
-        ASSERT_GE(eps, cvtest::norm(dst_reference, dst_actual, cv::NORM_INF));
+        ASSERT_GE(eps, cvtest::norm(dst_reference, dst_actual, ncvslideio::NORM_INF));
     }
 }
 
@@ -1480,7 +1480,7 @@ TEST(Resize, lanczos4_regression_16192)
     Mat src(src_size, CV_8UC3, Scalar::all(128));
     Mat dst(dst_size, CV_8UC3, Scalar::all(255));
 
-    cv::resize(src, dst, dst_size, 0, 0, INTER_LANCZOS4);
+    ncvslideio::resize(src, dst, dst_size, 0, 0, INTER_LANCZOS4);
 
     Mat expected(dst_size, CV_8UC3, Scalar::all(128));
     EXPECT_EQ(cvtest::norm(dst, expected, NORM_INF), 0) << dst(Rect(0,0,8,8));
@@ -1493,11 +1493,11 @@ TEST(Resize, nearest_regression_15075)
     Size src_size(12, 12);
     Size dst_size(11, 11);
 
-    cv::Mat src = cv::Mat::zeros(src_size, CV_8UC(C)), dst;
+    ncvslideio::Mat src = ncvslideio::Mat::zeros(src_size, CV_8UC(C)), dst;
     for (int j = 0; j < C; j++)
         src.col(i1).row(j1).data[j] = 1;
 
-    cv::resize(src, dst, dst_size, 0, 0, INTER_NEAREST);
+    ncvslideio::resize(src, dst, dst_size, 0, 0, INTER_NEAREST);
     EXPECT_EQ(C, cvtest::norm(dst, NORM_L1)) << src.size;
 }
 
@@ -1550,8 +1550,8 @@ TEST(Imgproc_Warp, regression_19566)  // valgrind should detect problem if any
         getRotationMatrix2D(Point2f(imgSize.width / 2.0f, imgSize.height / 2.0f), 45.0, 1.0),
         imgSize,
         INTER_LINEAR,
-        cv::BORDER_CONSTANT,
-        cv::Scalar(0.0, 0.0, 0.0, 255.0)
+        ncvslideio::BORDER_CONSTANT,
+        ncvslideio::Scalar(0.0, 0.0, 0.0, 255.0)
     );
 }
 
@@ -1599,9 +1599,9 @@ TEST(Imgproc_linearPolar, identity)
 {
     const int N = 33;
     Mat in(N, N, CV_8UC3, Scalar(255, 0, 0));
-    in(cv::Rect(N/3, N/3, N/3, N/3)).setTo(Scalar::all(255));
-    cv::blur(in, in, Size(5, 5));
-    cv::blur(in, in, Size(5, 5));
+    in(ncvslideio::Rect(N/3, N/3, N/3, N/3)).setTo(Scalar::all(255));
+    ncvslideio::blur(in, in, Size(5, 5));
+    ncvslideio::blur(in, in, Size(5, 5));
 
     Mat src = in.clone();
     Mat dst;
@@ -1612,11 +1612,11 @@ TEST(Imgproc_linearPolar, identity)
     {
         linearPolar(src, dst,
             Point2f((N-1) * 0.5f, (N-1) * 0.5f), N * 0.5f,
-            cv::WARP_FILL_OUTLIERS | CV_INTER_LINEAR | cv::WARP_INVERSE_MAP);
+            ncvslideio::WARP_FILL_OUTLIERS | CV_INTER_LINEAR | ncvslideio::WARP_INVERSE_MAP);
 
         linearPolar(dst, src,
             Point2f((N-1) * 0.5f, (N-1) * 0.5f), N * 0.5f,
-            cv::WARP_FILL_OUTLIERS | CV_INTER_LINEAR);
+            ncvslideio::WARP_FILL_OUTLIERS | CV_INTER_LINEAR);
 
         double psnr = cvtest::PSNR(in(roi), src(roi));
         EXPECT_LE(25, psnr) << "iteration=" << i;
@@ -1630,7 +1630,7 @@ TEST(Imgproc_linearPolar, identity)
     dst.copyTo(all(Rect(N+1,N+1,N,N)));
     imwrite("linearPolar.png", all);
     imshow("input", in); imshow("result", dst); imshow("restore", src); imshow("all", all);
-    cv::waitKey();
+    ncvslideio::waitKey();
 #endif
 }
 
@@ -1639,9 +1639,9 @@ TEST(Imgproc_logPolar, identity)
 {
     const int N = 33;
     Mat in(N, N, CV_8UC3, Scalar(255, 0, 0));
-    in(cv::Rect(N/3, N/3, N/3, N/3)).setTo(Scalar::all(255));
-    cv::blur(in, in, Size(5, 5));
-    cv::blur(in, in, Size(5, 5));
+    in(ncvslideio::Rect(N/3, N/3, N/3, N/3)).setTo(Scalar::all(255));
+    ncvslideio::blur(in, in, Size(5, 5));
+    ncvslideio::blur(in, in, Size(5, 5));
 
     Mat src = in.clone();
     Mat dst;
@@ -1653,11 +1653,11 @@ TEST(Imgproc_logPolar, identity)
     {
         logPolar(src, dst,
             Point2f((N-1) * 0.5f, (N-1) * 0.5f), M,
-            cv::WARP_FILL_OUTLIERS | CV_INTER_LINEAR | cv::WARP_INVERSE_MAP);
+            ncvslideio::WARP_FILL_OUTLIERS | CV_INTER_LINEAR | ncvslideio::WARP_INVERSE_MAP);
 
         logPolar(dst, src,
             Point2f((N-1) * 0.5f, (N-1) * 0.5f), M,
-            cv::WARP_FILL_OUTLIERS | CV_INTER_LINEAR);
+            ncvslideio::WARP_FILL_OUTLIERS | CV_INTER_LINEAR);
 
         double psnr = cvtest::PSNR(in(roi), src(roi));
         EXPECT_LE(25, psnr) << "iteration=" << i;
@@ -1671,7 +1671,7 @@ TEST(Imgproc_logPolar, identity)
     dst.copyTo(all(Rect(N+1,N+1,N,N)));
     imwrite("logPolar.png", all);
     imshow("input", in); imshow("result", dst); imshow("restore", src); imshow("all", all);
-    cv::waitKey();
+    ncvslideio::waitKey();
 #endif
 }
 
@@ -1679,9 +1679,9 @@ TEST(Imgproc_warpPolar, identity)
 {
     const int N = 33;
     Mat in(N, N, CV_8UC3, Scalar(255, 0, 0));
-    in(cv::Rect(N / 3, N / 3, N / 3, N / 3)).setTo(Scalar::all(255));
-    cv::blur(in, in, Size(5, 5));
-    cv::blur(in, in, Size(5, 5));
+    in(ncvslideio::Rect(N / 3, N / 3, N / 3, N / 3)).setTo(Scalar::all(255));
+    ncvslideio::blur(in, in, Size(5, 5));
+    ncvslideio::blur(in, in, Size(5, 5));
 
     Mat src = in.clone();
     Mat dst;
@@ -1689,24 +1689,24 @@ TEST(Imgproc_warpPolar, identity)
     Rect roi = Rect(0, 0, in.cols - ((N + 19) / 20), in.rows);
     Point2f center = Point2f((N - 1) * 0.5f, (N - 1) * 0.5f);
     double radius = N * 0.5;
-    int flags = cv::WARP_FILL_OUTLIERS | CV_INTER_LINEAR;
+    int flags = ncvslideio::WARP_FILL_OUTLIERS | CV_INTER_LINEAR;
     // test linearPolar
     for (int ki = 1; ki <= 5; ki++)
     {
-        warpPolar(src, dst, src.size(), center, radius, flags + WARP_POLAR_LINEAR + cv::WARP_INVERSE_MAP);
+        warpPolar(src, dst, src.size(), center, radius, flags + WARP_POLAR_LINEAR + ncvslideio::WARP_INVERSE_MAP);
         warpPolar(dst, src, src.size(), center, radius, flags + WARP_POLAR_LINEAR);
 
-        double psnr = cv::PSNR(in(roi), src(roi));
+        double psnr = ncvslideio::PSNR(in(roi), src(roi));
         EXPECT_LE(25, psnr) << "iteration=" << ki;
     }
     // test logPolar
     src = in.clone();
     for (int ki = 1; ki <= 5; ki++)
     {
-        warpPolar(src, dst, src.size(),center, radius, flags + WARP_POLAR_LOG + cv::WARP_INVERSE_MAP );
+        warpPolar(src, dst, src.size(),center, radius, flags + WARP_POLAR_LOG + ncvslideio::WARP_INVERSE_MAP );
         warpPolar(dst, src, src.size(),center, radius, flags + WARP_POLAR_LOG);
 
-        double psnr = cv::PSNR(in(roi), src(roi));
+        double psnr = ncvslideio::PSNR(in(roi), src(roi));
         EXPECT_LE(25, psnr) << "iteration=" << ki;
     }
 
@@ -1718,18 +1718,18 @@ TEST(Imgproc_warpPolar, identity)
     dst.copyTo(all(Rect(N+1,N+1,N,N)));
     imwrite("linearPolar.png", all);
     imshow("input", in); imshow("result", dst); imshow("restore", src); imshow("all", all);
-    cv::waitKey();
+    ncvslideio::waitKey();
 #endif
 }
 
 TEST(Imgproc_Remap, issue_23562)
 {
-    cv::RNG rng(17);
+    ncvslideio::RNG rng(17);
     Mat_<float> mapx({3, 3}, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Mat_<float> mapy({3, 3}, {0, 0, 0, 1, 1, 1, 2, 2, 2});
     for (int cn = 1; cn <= 4; ++cn) {
         Mat src(3, 3, CV_32FC(cn));
-        rng.fill(src, cv::RNG::UNIFORM, -1, 1);
+        rng.fill(src, ncvslideio::RNG::UNIFORM, -1, 1);
         Mat dst = Mat::zeros(3, 3, CV_32FC(cn));
         Mat ref = src.clone();
 
@@ -1740,7 +1740,7 @@ TEST(Imgproc_Remap, issue_23562)
     mapx = Mat1f({3, 3}, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     mapy = Mat1f({3, 3}, {0, 0, 0, 1, 1, 1, 2, 2, 1.5});
     for (int cn = 1; cn <= 4; ++cn) {
-        Mat src = cv::Mat(3, 3, CV_32FC(cn));
+        Mat src = ncvslideio::Mat(3, 3, CV_32FC(cn));
         Mat dst = 10 * Mat::ones(3, 3, CV_32FC(cn));
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 3; ++x) {

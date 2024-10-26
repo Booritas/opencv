@@ -8,12 +8,12 @@
 #include "gstreamer_buffer_utils.hpp"
 
 #ifdef HAVE_GSTREAMER
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
 
-GStreamerMediaAdapter::GStreamerMediaAdapter(const cv::GFrameDesc& frameDesc,
+GStreamerMediaAdapter::GStreamerMediaAdapter(const ncvslideio::GFrameDesc& frameDesc,
                                              GstVideoInfo* videoInfo,
                                              GstBuffer* buffer) :
     m_frameDesc(frameDesc),
@@ -29,12 +29,12 @@ GStreamerMediaAdapter::GStreamerMediaAdapter(const cv::GFrameDesc& frameDesc,
     GstVideoMeta* videoMeta = gst_buffer_get_video_meta(m_buffer);
     if (videoMeta != nullptr) {
         switch (m_frameDesc.fmt) {
-            case cv::MediaFormat::NV12: {
+            case ncvslideio::MediaFormat::NV12: {
                 m_strides = { videoMeta->stride[0], videoMeta->stride[1] };
                 m_offsets = { videoMeta->offset[0], videoMeta->offset[1] };
                 break;
             }
-            case cv::MediaFormat::GRAY: {
+            case ncvslideio::MediaFormat::GRAY: {
                 m_strides = { videoMeta->stride[0]};
                 m_offsets = { videoMeta->offset[0]};
                 break;
@@ -46,14 +46,14 @@ GStreamerMediaAdapter::GStreamerMediaAdapter(const cv::GFrameDesc& frameDesc,
         }
     } else {
         switch (m_frameDesc.fmt) {
-            case cv::MediaFormat::NV12: {
+            case ncvslideio::MediaFormat::NV12: {
                 m_strides = { GST_VIDEO_INFO_PLANE_STRIDE(m_videoInfo.get(), 0),
                               GST_VIDEO_INFO_PLANE_STRIDE(m_videoInfo.get(), 1) };
                 m_offsets = { GST_VIDEO_INFO_PLANE_OFFSET(m_videoInfo.get(), 0),
                               GST_VIDEO_INFO_PLANE_OFFSET(m_videoInfo.get(), 1) };
                 break;
             }
-            case cv::MediaFormat::GRAY: {
+            case ncvslideio::MediaFormat::GRAY: {
                 m_strides = { GST_VIDEO_INFO_PLANE_STRIDE(m_videoInfo.get(), 0)};
                 m_offsets = { GST_VIDEO_INFO_PLANE_OFFSET(m_videoInfo.get(), 0)};
                 break;
@@ -74,19 +74,19 @@ GStreamerMediaAdapter::~GStreamerMediaAdapter() {
     }
 }
 
-cv::GFrameDesc GStreamerMediaAdapter::meta() const {
+ncvslideio::GFrameDesc GStreamerMediaAdapter::meta() const {
     return m_frameDesc;
 }
 
-cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access) {
-    GAPI_Assert(access == cv::MediaFrame::Access::R ||
-                access == cv::MediaFrame::Access::W);
+ncvslideio::MediaFrame::View GStreamerMediaAdapter::access(ncvslideio::MediaFrame::Access access) {
+    GAPI_Assert(access == ncvslideio::MediaFrame::Access::R ||
+                access == ncvslideio::MediaFrame::Access::W);
     static std::atomic<size_t> thread_counters { };
     ++thread_counters;
 
     // NOTE: Framework guarantees that there should be no parallel accesses to the frame
     //       memory if is accessing for write.
-    if (access == cv::MediaFrame::Access::W && !m_mappedForWrite.load(std::memory_order_acquire)) {
+    if (access == ncvslideio::MediaFrame::Access::W && !m_mappedForWrite.load(std::memory_order_acquire)) {
         GAPI_Assert(thread_counters > 1 &&
                     "Multiple access to view during mapping for write detected!");
         gst_video_frame_unmap(&m_videoFrame);
@@ -105,7 +105,7 @@ cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access
                         GST_VIDEO_INFO_FORMAT(m_videoInfo.get()) == GST_VIDEO_FORMAT_GRAY8);
 
             // TODO: Use RAII for map/unmap
-            if (access == cv::MediaFrame::Access::W) {
+            if (access == ncvslideio::MediaFrame::Access::W) {
                 gstreamer_utils::mapBufferToFrame(*m_buffer, *m_videoInfo, m_videoFrame,
                                                   GST_MAP_WRITE);
                 m_mappedForWrite.store(true, std::memory_order_release);
@@ -116,7 +116,7 @@ cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access
 
             GAPI_Assert(GST_VIDEO_FRAME_PLANE_STRIDE(&m_videoFrame, 0) == m_strides[0]);
             GAPI_Assert(GST_VIDEO_FRAME_PLANE_OFFSET(&m_videoFrame, 0) == m_offsets[0]);
-            if (m_frameDesc.fmt == cv::MediaFormat::NV12) {
+            if (m_frameDesc.fmt == ncvslideio::MediaFormat::NV12) {
                 GAPI_Assert(GST_VIDEO_FRAME_PLANE_STRIDE(&m_videoFrame, 1) == m_strides[1]);
                 GAPI_Assert(GST_VIDEO_FRAME_PLANE_OFFSET(&m_videoFrame, 1) == m_offsets[1]);
             }
@@ -125,11 +125,11 @@ cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access
         }
     }
 
-    cv::MediaFrame::View::Ptrs ps;
-    cv::MediaFrame::View::Strides ss;
+    ncvslideio::MediaFrame::View::Ptrs ps;
+    ncvslideio::MediaFrame::View::Strides ss;
 
     switch (m_frameDesc.fmt) {
-        case cv::MediaFormat::NV12: {
+        case ncvslideio::MediaFormat::NV12: {
             ps = {
                 static_cast<uint8_t*>(GST_VIDEO_FRAME_PLANE_DATA(&m_videoFrame, 0)) + m_offsets[0], // Y-plane
                 static_cast<uint8_t*>(GST_VIDEO_FRAME_PLANE_DATA(&m_videoFrame, 0)) + m_offsets[1], // UV-plane
@@ -144,7 +144,7 @@ cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access
             };
             break;
         }
-        case cv::MediaFormat::GRAY: {
+        case ncvslideio::MediaFormat::GRAY: {
             ps = {
                 static_cast<uint8_t*>(GST_VIDEO_FRAME_PLANE_DATA(&m_videoFrame, 0)) + m_offsets[0], // Y-plane
                 nullptr,
@@ -167,15 +167,15 @@ cv::MediaFrame::View GStreamerMediaAdapter::access(cv::MediaFrame::Access access
 
 
     --thread_counters;
-    return cv::MediaFrame::View(std::move(ps), std::move(ss));
+    return ncvslideio::MediaFrame::View(std::move(ps), std::move(ss));
 }
 
-cv::util::any GStreamerMediaAdapter::blobParams() const {
+ncvslideio::util::any GStreamerMediaAdapter::blobParams() const {
     GAPI_Error("No implementation for GStreamerMediaAdapter::blobParams()");
 }
 
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER

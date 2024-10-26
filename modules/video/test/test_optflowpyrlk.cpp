@@ -69,10 +69,10 @@ void CV_OptFlowPyrLKTest::run( int )
     int     merr_i = 0, merr_nan = 0;
     char    filename[1000];
 
-    cv::Point2f *v = 0, *v2 = 0;
-    cv::Mat _u, _v, _v2;
+    ncvslideio::Point2f *v = 0, *v2 = 0;
+    ncvslideio::Mat _u, _v, _v2;
 
-    cv::Mat  imgI, imgJ;
+    ncvslideio::Mat  imgI, imgJ;
 
     int  n = 0, i = 0;
 
@@ -116,7 +116,7 @@ void CV_OptFlowPyrLKTest::run( int )
 
     /* read first image */
     snprintf( filename, sizeof(filename), "%soptflow/%s", ts->get_data_path().c_str(), "rock_1.bmp" );
-    imgI = cv::imread( filename, cv::IMREAD_UNCHANGED );
+    imgI = ncvslideio::imread( filename, ncvslideio::IMREAD_UNCHANGED );
 
     if( imgI.empty() )
     {
@@ -127,7 +127,7 @@ void CV_OptFlowPyrLKTest::run( int )
 
     /* read second image */
     snprintf( filename, sizeof(filename), "%soptflow/%s", ts->get_data_path().c_str(), "rock_2.bmp" );
-    imgJ = cv::imread( filename, cv::IMREAD_UNCHANGED );
+    imgJ = ncvslideio::imread( filename, ncvslideio::IMREAD_UNCHANGED );
 
     if( imgJ.empty() )
     {
@@ -140,11 +140,11 @@ void CV_OptFlowPyrLKTest::run( int )
     std::vector<uchar> status(n, (uchar)0);
 
     /* calculate flow */
-    calcOpticalFlowPyrLK(imgI, imgJ, _u, _v2, status, cv::noArray(), Size( 41, 41 ), 4,
+    calcOpticalFlowPyrLK(imgI, imgJ, _u, _v2, status, ncvslideio::noArray(), Size( 41, 41 ), 4,
                          TermCriteria( TermCriteria::MAX_ITER + TermCriteria::EPS, 30, 0.01f ), 0 );
 
-    v = (cv::Point2f*)_v.ptr();
-    v2 = (cv::Point2f*)_v2.ptr();
+    v = (ncvslideio::Point2f*)_v.ptr();
+    v2 = (ncvslideio::Point2f*)_v2.ptr();
 
     /* compare results */
     for( i = 0; i < n; i++ )
@@ -220,33 +220,33 @@ TEST(Video_OpticalFlowPyrLK, accuracy) { CV_OptFlowPyrLKTest test; test.safe_run
 TEST(Video_OpticalFlowPyrLK, submat)
 {
     // see bug #2075
-    std::string path = cvtest::TS::ptr()->get_data_path() + "../cv/shared/lena.png";
+    std::string path = cvtest::TS::ptr()->get_data_path() + "../ncvslideio/shared/lena.png";
 
-    cv::Mat lenaImg = cv::imread(path);
+    ncvslideio::Mat lenaImg = ncvslideio::imread(path);
     ASSERT_FALSE(lenaImg.empty());
 
-    cv::Mat wholeImage;
-    cv::resize(lenaImg, wholeImage, cv::Size(1024, 1024), 0, 0, cv::INTER_LINEAR_EXACT);
+    ncvslideio::Mat wholeImage;
+    ncvslideio::resize(lenaImg, wholeImage, ncvslideio::Size(1024, 1024), 0, 0, ncvslideio::INTER_LINEAR_EXACT);
 
-    cv::Mat img1 = wholeImage(cv::Rect(0, 0, 640, 360)).clone();
-    cv::Mat img2 = wholeImage(cv::Rect(40, 60, 640, 360));
+    ncvslideio::Mat img1 = wholeImage(ncvslideio::Rect(0, 0, 640, 360)).clone();
+    ncvslideio::Mat img2 = wholeImage(ncvslideio::Rect(40, 60, 640, 360));
 
     std::vector<uchar> status;
     std::vector<float> error;
-    std::vector<cv::Point2f> prev;
-    std::vector<cv::Point2f> next;
+    std::vector<ncvslideio::Point2f> prev;
+    std::vector<ncvslideio::Point2f> next;
 
-    cv::RNG rng(123123);
+    ncvslideio::RNG rng(123123);
 
     for(int i = 0; i < 50; ++i)
     {
         int x = rng.uniform(0, 640);
         int y = rng.uniform(0, 360);
 
-        prev.push_back(cv::Point2f((float)x, (float)y));
+        prev.push_back(ncvslideio::Point2f((float)x, (float)y));
     }
 
-    ASSERT_NO_THROW(cv::calcOpticalFlowPyrLK(img1, img2, prev, next, status, error));
+    ASSERT_NO_THROW(ncvslideio::calcOpticalFlowPyrLK(img1, img2, prev, next, status, error));
 }
 
 }} // namespace

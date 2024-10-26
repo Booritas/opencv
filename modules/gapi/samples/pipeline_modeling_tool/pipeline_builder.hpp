@@ -3,10 +3,10 @@
 
 #include <map>
 
-#include <opencv2/gapi/infer.hpp> // cv::gapi::GNetPackage
-#include <opencv2/gapi/streaming/cap.hpp> // cv::gapi::wip::IStreamSource
-#include <opencv2/gapi/infer/ie.hpp> // cv::gapi::ie::Params
-#include <opencv2/gapi/gcommon.hpp> // cv::gapi::GCompileArgs
+#include <opencv2/gapi/infer.hpp> // ncvslideio::gapi::GNetPackage
+#include <opencv2/gapi/streaming/cap.hpp> // ncvslideio::gapi::wip::IStreamSource
+#include <opencv2/gapi/infer/ie.hpp> // ncvslideio::gapi::ie::Params
+#include <opencv2/gapi/gcommon.hpp> // ncvslideio::gapi::GCompileArgs
 #include <opencv2/gapi/cpu/gcpukernel.hpp> // GAPI_OCV_KERNEL
 #include <opencv2/gapi/gkernel.hpp> // G_API_OP
 
@@ -29,20 +29,20 @@ struct CallParams {
 };
 
 struct CallNode {
-    using F = std::function<void(const cv::GProtoArgs&, cv::GProtoArgs&)>;
+    using F = std::function<void(const ncvslideio::GProtoArgs&, ncvslideio::GProtoArgs&)>;
 
     CallParams params;
     F          run;
 };
 
 struct DataNode {
-    cv::optional<cv::GProtoArg> arg;
+    ncvslideio::optional<ncvslideio::GProtoArg> arg;
 };
 
 struct Node {
     using Ptr  = std::shared_ptr<Node>;
     using WPtr = std::weak_ptr<Node>;
-    using Kind = cv::util::variant<CallNode, DataNode>;
+    using Kind = ncvslideio::util::variant<CallNode, DataNode>;
 
     std::vector<Node::WPtr> in_nodes;
     std::vector<Node::Ptr>  out_nodes;
@@ -51,49 +51,49 @@ struct Node {
 
 struct SubGraphCall {
     G_API_OP(GSubGraph,
-             <cv::GMat(cv::GMat, cv::GComputation, cv::GCompileArgs, size_t)>,
+             <ncvslideio::GMat(ncvslideio::GMat, ncvslideio::GComputation, ncvslideio::GCompileArgs, size_t)>,
              "custom.subgraph") {
-        static cv::GMatDesc outMeta(const cv::GMatDesc& in,
-                                    cv::GComputation    comp,
-                                    cv::GCompileArgs    compile_args,
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc& in,
+                                    ncvslideio::GComputation    comp,
+                                    ncvslideio::GCompileArgs    compile_args,
                                     const size_t        call_every_nth) {
             GAPI_Assert(call_every_nth > 0);
             auto out_metas =
                 comp.compile(in, std::move(compile_args)).outMetas();
             GAPI_Assert(out_metas.size() == 1u);
-            GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(out_metas[0]));
-            return cv::util::get<cv::GMatDesc>(out_metas[0]);
+            GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(out_metas[0]));
+            return ncvslideio::util::get<ncvslideio::GMatDesc>(out_metas[0]);
         }
 
     };
 
     struct SubGraphState {
-        cv::Mat       last_result;
-        cv::GCompiled cc;
+        ncvslideio::Mat       last_result;
+        ncvslideio::GCompiled cc;
         int           call_counter = 0;
     };
 
     GAPI_OCV_KERNEL_ST(SubGraphImpl, GSubGraph, SubGraphState) {
-            static void setup(const cv::GMatDesc&             in,
-                              cv::GComputation                comp,
-                              cv::GCompileArgs                compile_args,
+            static void setup(const ncvslideio::GMatDesc&             in,
+                              ncvslideio::GComputation                comp,
+                              ncvslideio::GCompileArgs                compile_args,
                               const size_t                    /*call_every_nth*/,
                               std::shared_ptr<SubGraphState>& state,
-                              const cv::GCompileArgs&         /*args*/) {
+                              const ncvslideio::GCompileArgs&         /*args*/) {
                 state.reset(new SubGraphState{});
                 state->cc = comp.compile(in, std::move(compile_args));
                 auto out_desc =
-                    cv::util::get<cv::GMatDesc>(state->cc.outMetas()[0]);
+                    ncvslideio::util::get<ncvslideio::GMatDesc>(state->cc.outMetas()[0]);
                 utils::createNDMat(state->last_result,
                                    out_desc.dims,
                                    out_desc.depth);
             }
 
-            static void run(const cv::Mat&   in,
-                            cv::GComputation /*comp*/,
-                            cv::GCompileArgs /*compile_args*/,
+            static void run(const ncvslideio::Mat&   in,
+                            ncvslideio::GComputation /*comp*/,
+                            ncvslideio::GCompileArgs /*compile_args*/,
                             const size_t     call_every_nth,
-                            cv::Mat&         out,
+                            ncvslideio::Mat&         out,
                             SubGraphState&   state) {
                 // NB: Make a call on the first iteration and skip the furthers.
                 if (state.call_counter == 0) {
@@ -104,63 +104,63 @@ struct SubGraphCall {
             }
     };
 
-    void operator()(const cv::GProtoArgs& inputs, cv::GProtoArgs& outputs);
+    void operator()(const ncvslideio::GProtoArgs& inputs, ncvslideio::GProtoArgs& outputs);
 
     size_t numInputs()  const { return 1; }
     size_t numOutputs() const { return 1; }
 
-    cv::GComputation comp;
-    cv::GCompileArgs compile_args;
+    ncvslideio::GComputation comp;
+    ncvslideio::GCompileArgs compile_args;
     size_t           call_every_nth;
 };
 
-void SubGraphCall::operator()(const cv::GProtoArgs& inputs,
-                                    cv::GProtoArgs& outputs) {
+void SubGraphCall::operator()(const ncvslideio::GProtoArgs& inputs,
+                                    ncvslideio::GProtoArgs& outputs) {
     GAPI_Assert(inputs.size() == 1u);
-    GAPI_Assert(cv::util::holds_alternative<cv::GMat>(inputs[0]));
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMat>(inputs[0]));
     GAPI_Assert(outputs.empty());
-    auto in = cv::util::get<cv::GMat>(inputs[0]);
+    auto in = ncvslideio::util::get<ncvslideio::GMat>(inputs[0]);
     outputs.emplace_back(GSubGraph::on(in, comp, compile_args, call_every_nth));
 }
 
 struct DummyCall {
     G_API_OP(GDummy,
-             <cv::GMat(cv::GMat, double, OutputDescr)>,
+             <ncvslideio::GMat(ncvslideio::GMat, double, OutputDescr)>,
              "custom.dummy") {
-        static cv::GMatDesc outMeta(const cv::GMatDesc& /* in */,
+        static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc& /* in */,
                                     double              /* time */,
                                     const OutputDescr& output) {
             if (output.dims.size() == 2) {
-                return cv::GMatDesc(output.precision,
+                return ncvslideio::GMatDesc(output.precision,
                                     1,
                                     // NB: Dims[H, W] -> Size(W, H)
-                                    cv::Size(output.dims[1], output.dims[0]));
+                                    ncvslideio::Size(output.dims[1], output.dims[0]));
             }
-            return cv::GMatDesc(output.precision, output.dims);
+            return ncvslideio::GMatDesc(output.precision, output.dims);
         }
     };
 
     struct DummyState {
-        cv::Mat mat;
+        ncvslideio::Mat mat;
     };
 
     // NB: Generate random mat once and then
     // copy to dst buffer on every iteration.
     GAPI_OCV_KERNEL_ST(GCPUDummy, GDummy, DummyState) {
-            static void setup(const cv::GMatDesc&          /*in*/,
+            static void setup(const ncvslideio::GMatDesc&          /*in*/,
                               double                       /*time*/,
                               const OutputDescr&           output,
                               std::shared_ptr<DummyState>& state,
-                              const cv::GCompileArgs&      /*args*/) {
+                              const ncvslideio::GCompileArgs&      /*args*/) {
             state.reset(new DummyState{});
             utils::createNDMat(state->mat, output.dims, output.precision);
             utils::generateRandom(state->mat);
         }
 
-        static void run(const cv::Mat&     /*in_mat*/,
+        static void run(const ncvslideio::Mat&     /*in_mat*/,
                         double             time,
                         const OutputDescr& /*output*/,
-                        cv::Mat&           out_mat,
+                        ncvslideio::Mat&           out_mat,
                         DummyState&        state) {
             using namespace std::chrono;
             auto start_ts = utils::timestamp<utils::double_ms_t>();
@@ -170,7 +170,7 @@ struct DummyCall {
         }
     };
 
-    void operator()(const cv::GProtoArgs& inputs, cv::GProtoArgs& outputs);
+    void operator()(const ncvslideio::GProtoArgs& inputs, ncvslideio::GProtoArgs& outputs);
 
     size_t numInputs()  const { return 1; }
     size_t numOutputs() const { return 1; }
@@ -179,17 +179,17 @@ struct DummyCall {
     OutputDescr output;
 };
 
-void DummyCall::operator()(const cv::GProtoArgs& inputs,
-                                 cv::GProtoArgs& outputs) {
+void DummyCall::operator()(const ncvslideio::GProtoArgs& inputs,
+                                 ncvslideio::GProtoArgs& outputs) {
     GAPI_Assert(inputs.size() == 1u);
-    GAPI_Assert(cv::util::holds_alternative<cv::GMat>(inputs[0]));
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMat>(inputs[0]));
     GAPI_Assert(outputs.empty());
-    auto in = cv::util::get<cv::GMat>(inputs[0]);
+    auto in = ncvslideio::util::get<ncvslideio::GMat>(inputs[0]);
     outputs.emplace_back(GDummy::on(in, time, output));
 }
 
 struct InferCall {
-    void operator()(const cv::GProtoArgs& inputs, cv::GProtoArgs& outputs);
+    void operator()(const ncvslideio::GProtoArgs& inputs, ncvslideio::GProtoArgs& outputs);
     size_t numInputs()  const { return input_layers.size();  }
     size_t numOutputs() const { return output_layers.size(); }
 
@@ -198,38 +198,38 @@ struct InferCall {
     std::vector<std::string>  output_layers;
 };
 
-void InferCall::operator()(const cv::GProtoArgs& inputs,
-                                 cv::GProtoArgs& outputs) {
+void InferCall::operator()(const ncvslideio::GProtoArgs& inputs,
+                                 ncvslideio::GProtoArgs& outputs) {
     GAPI_Assert(inputs.size() == input_layers.size());
     GAPI_Assert(outputs.empty());
 
-    cv::GInferInputs g_inputs;
+    ncvslideio::GInferInputs g_inputs;
     // TODO: Add an opportunity not specify input/output layers in case
     // there is only single layer.
     for (size_t i = 0; i < inputs.size(); ++i) {
         // TODO: Support GFrame as well.
-        GAPI_Assert(cv::util::holds_alternative<cv::GMat>(inputs[i]));
-        auto in = cv::util::get<cv::GMat>(inputs[i]);
+        GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMat>(inputs[i]));
+        auto in = ncvslideio::util::get<ncvslideio::GMat>(inputs[i]);
         g_inputs[input_layers[i]] = in;
     }
-    auto g_outputs = cv::gapi::infer<cv::gapi::Generic>(tag, g_inputs);
+    auto g_outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(tag, g_inputs);
     for (size_t i = 0; i < output_layers.size(); ++i) {
         outputs.emplace_back(g_outputs.at(output_layers[i]));
     }
 }
 
 struct SourceCall {
-    void operator()(const cv::GProtoArgs& inputs, cv::GProtoArgs& outputs);
+    void operator()(const ncvslideio::GProtoArgs& inputs, ncvslideio::GProtoArgs& outputs);
     size_t numInputs()  const { return 0; }
     size_t numOutputs() const { return 1; }
 };
 
-void SourceCall::operator()(const cv::GProtoArgs& inputs,
-                                  cv::GProtoArgs& outputs) {
+void SourceCall::operator()(const ncvslideio::GProtoArgs& inputs,
+                                  ncvslideio::GProtoArgs& outputs) {
     GAPI_Assert(inputs.empty());
     GAPI_Assert(outputs.empty());
     // NB: Since NV12 isn't exposed source always produce GMat.
-    outputs.emplace_back(cv::GMat());
+    outputs.emplace_back(ncvslideio::GMat());
 }
 
 struct LoadPath {
@@ -241,7 +241,7 @@ struct ImportPath {
     std::string blob;
 };
 
-using ModelPath = cv::util::variant<ImportPath, LoadPath>;
+using ModelPath = ncvslideio::util::variant<ImportPath, LoadPath>;
 
 struct DummyParams {
     double      time;
@@ -255,8 +255,8 @@ struct InferParams {
     std::vector<std::string> input_layers;
     std::vector<std::string> output_layers;
     std::map<std::string, std::string> config;
-    cv::gapi::ie::InferMode mode;
-    cv::util::optional<int> out_precision;
+    ncvslideio::gapi::ie::InferMode mode;
+    ncvslideio::util::optional<int> out_precision;
 };
 
 class ElapsedTimeCriterion : public StopCriterion {
@@ -357,9 +357,9 @@ private:
         M<std::string, Node::Ptr>    calls_map;
         std::vector<Node::Ptr>       all_calls;
 
-        cv::gapi::GNetPackage        networks;
-        cv::gapi::GKernelPackage     kernels;
-        cv::GCompileArgs             compile_args;
+        ncvslideio::gapi::GNetPackage        networks;
+        ncvslideio::gapi::GKernelPackage     kernels;
+        ncvslideio::GCompileArgs             compile_args;
         std::shared_ptr<DummySource> src;
         PLMode                       mode = PLMode::STREAMING;
         std::string                  name;
@@ -406,17 +406,17 @@ void PipelineBuilder::addCall(const CallParams& call_params,
 void PipelineBuilder::addInfer(const CallParams&  call_params,
                                const InferParams& infer_params) {
     // NB: No default ctor for Params.
-    std::unique_ptr<cv::gapi::ie::Params<cv::gapi::Generic>> pp;
-    if (cv::util::holds_alternative<LoadPath>(infer_params.path)) {
-       auto load_path = cv::util::get<LoadPath>(infer_params.path);
-       pp.reset(new cv::gapi::ie::Params<cv::gapi::Generic>(call_params.name,
+    std::unique_ptr<ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic>> pp;
+    if (ncvslideio::util::holds_alternative<LoadPath>(infer_params.path)) {
+       auto load_path = ncvslideio::util::get<LoadPath>(infer_params.path);
+       pp.reset(new ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic>(call_params.name,
                                                             load_path.xml,
                                                             load_path.bin,
                                                             infer_params.device));
     } else {
-        GAPI_Assert(cv::util::holds_alternative<ImportPath>(infer_params.path));
-        auto import_path = cv::util::get<ImportPath>(infer_params.path);
-        pp.reset(new cv::gapi::ie::Params<cv::gapi::Generic>(call_params.name,
+        GAPI_Assert(ncvslideio::util::holds_alternative<ImportPath>(infer_params.path));
+        auto import_path = ncvslideio::util::get<ImportPath>(infer_params.path);
+        pp.reset(new ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic>(call_params.name,
                                                              import_path.blob,
                                                              infer_params.device));
     }
@@ -426,7 +426,7 @@ void PipelineBuilder::addInfer(const CallParams&  call_params,
     if (infer_params.out_precision) {
         pp->cfgOutputPrecision(infer_params.out_precision.value());
     }
-    m_state->networks += cv::gapi::networks(*pp);
+    m_state->networks += ncvslideio::gapi::networks(*pp);
 
     addCall(call_params,
             InferCall{call_params.name,
@@ -479,11 +479,11 @@ void PipelineBuilder::setMode(PLMode mode) {
 }
 
 void PipelineBuilder::setDumpFilePath(const std::string& dump) {
-    m_state->compile_args.emplace_back(cv::graph_dump_path{dump});
+    m_state->compile_args.emplace_back(ncvslideio::graph_dump_path{dump});
 }
 
 void PipelineBuilder::setQueueCapacity(const size_t qc) {
-    m_state->compile_args.emplace_back(cv::gapi::streaming::queue_capacity{qc});
+    m_state->compile_args.emplace_back(ncvslideio::gapi::streaming::queue_capacity{qc});
 }
 
 void PipelineBuilder::setName(const std::string& name) {
@@ -517,16 +517,16 @@ static bool visit(Node::Ptr node,
     return false;
 }
 
-static cv::optional<std::vector<Node::Ptr>>
+static ncvslideio::optional<std::vector<Node::Ptr>>
 toposort(const std::vector<Node::Ptr> nodes) {
     std::vector<Node::Ptr> sorted;
     std::unordered_map<Node::Ptr, int> visited;
     for (auto n : nodes) {
         if (visit(n, sorted, visited)) {
-            return cv::optional<std::vector<Node::Ptr>>{};
+            return ncvslideio::optional<std::vector<Node::Ptr>>{};
         }
     }
-    return cv::util::make_optional(sorted);
+    return ncvslideio::util::make_optional(sorted);
 }
 
 Pipeline::Ptr PipelineBuilder::construct() {
@@ -552,15 +552,15 @@ Pipeline::Ptr PipelineBuilder::construct() {
     // so collect all outputs to graph_inputs vector.
     // 7. Assign proto outputs to output data nodes,
     // so the next calls can use them as inputs.
-    cv::GProtoArgs graph_inputs;
-    cv::GProtoArgs graph_outputs;
+    ncvslideio::GProtoArgs graph_inputs;
+    ncvslideio::GProtoArgs graph_outputs;
     // 0. Verify that every call input node exists (connected).
     for (auto call_node : m_state->all_calls) {
         for (size_t i = 0; i < call_node->in_nodes.size(); ++i) {
             const auto& in_data_node = call_node->in_nodes[i];
             // NB: in_data_node == nullptr.
             if (in_data_node.expired()) {
-                const auto& call = cv::util::get<CallNode>(call_node->kind);
+                const auto& call = ncvslideio::util::get<CallNode>(call_node->kind);
                 throw std::logic_error(
                         "Node: " + call.params.name + " in Pipeline: " + m_state->name +
                         " has dangling input by in port: " + std::to_string(i));
@@ -577,7 +577,7 @@ Pipeline::Ptr PipelineBuilder::construct() {
     // (1). Fillter call nodes.
     std::vector<Node::Ptr> sorted_calls;
     for (auto n : sorted) {
-        if (cv::util::holds_alternative<CallNode>(n->kind)) {
+        if (ncvslideio::util::holds_alternative<CallNode>(n->kind)) {
             sorted_calls.push_back(n);
         }
     }
@@ -588,12 +588,12 @@ Pipeline::Ptr PipelineBuilder::construct() {
 
     // (2). Go through every call node.
     for (auto call_node : sorted_calls) {
-        auto& call = cv::util::get<CallNode>(call_node->kind);
-        cv::GProtoArgs outputs;
-        cv::GProtoArgs inputs;
+        auto& call = ncvslideio::util::get<CallNode>(call_node->kind);
+        ncvslideio::GProtoArgs outputs;
+        ncvslideio::GProtoArgs inputs;
         for (size_t i = 0; i < call_node->in_nodes.size(); ++i) {
             auto in_node = call_node->in_nodes.at(i);
-            auto in_data = cv::util::get<DataNode>(in_node.lock()->kind);
+            auto in_data = ncvslideio::util::get<DataNode>(in_node.lock()->kind);
             if (!in_data.arg.has_value()) {
                 throw std::logic_error("data hasn't been provided");
             }
@@ -619,12 +619,12 @@ Pipeline::Ptr PipelineBuilder::construct() {
             // FIXME: Should be generalized.
             // Now every subgraph contains only single node
             // which has single input/output.
-            GAPI_Assert(cv::util::holds_alternative<cv::GMat>(inputs[0]));
-            cv::GProtoArgs subgr_inputs{cv::GProtoArg{cv::GMat()}};
-            cv::GProtoArgs subgr_outputs;
+            GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMat>(inputs[0]));
+            ncvslideio::GProtoArgs subgr_inputs{ncvslideio::GProtoArg{ncvslideio::GMat()}};
+            ncvslideio::GProtoArgs subgr_outputs;
             call.run(subgr_inputs, subgr_outputs);
-            auto comp = cv::GComputation(cv::GProtoInputArgs{subgr_inputs},
-                                         cv::GProtoOutputArgs{subgr_outputs});
+            auto comp = ncvslideio::GComputation(ncvslideio::GProtoInputArgs{subgr_inputs},
+                                         ncvslideio::GProtoOutputArgs{subgr_outputs});
             call = CallNode{CallParams{call.params.name, 1u/*call_every_nth*/},
                             SubGraphCall{std::move(comp),
                                          m_state->compile_args,
@@ -644,8 +644,8 @@ Pipeline::Ptr PipelineBuilder::construct() {
         GAPI_Assert(outputs.size() == call_node->out_nodes.size());
         for (size_t i = 0; i < outputs.size(); ++i) {
             auto out_node = call_node->out_nodes[i];
-            auto& out_data = cv::util::get<DataNode>(out_node->kind);
-            out_data.arg = cv::util::make_optional(outputs[i]);
+            auto& out_data = ncvslideio::util::get<DataNode>(out_node->kind);
+            out_data.arg = ncvslideio::util::make_optional(outputs[i]);
             if (out_node->out_nodes.empty()) {
                 graph_outputs.push_back(out_data.arg.value());
             }
@@ -654,19 +654,19 @@ Pipeline::Ptr PipelineBuilder::construct() {
 
     GAPI_Assert(m_state->stop_criterion);
     GAPI_Assert(graph_inputs.size() == 1);
-    GAPI_Assert(cv::util::holds_alternative<cv::GMat>(graph_inputs[0]));
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMat>(graph_inputs[0]));
     // FIXME: Handle GFrame when NV12 comes.
-    const auto& graph_input = cv::util::get<cv::GMat>(graph_inputs[0]);
+    const auto& graph_input = ncvslideio::util::get<ncvslideio::GMat>(graph_inputs[0]);
     graph_outputs.emplace_back(
-            cv::gapi::streaming::timestamp(graph_input).strip());
+            ncvslideio::gapi::streaming::timestamp(graph_input).strip());
     graph_outputs.emplace_back(
-            cv::gapi::streaming::seq_id(graph_input).strip());
+            ncvslideio::gapi::streaming::seq_id(graph_input).strip());
 
     if (m_state->mode == PLMode::STREAMING) {
         return std::make_shared<StreamingPipeline>(std::move(m_state->name),
-                                                   cv::GComputation(
-                                                       cv::GProtoInputArgs{graph_inputs},
-                                                       cv::GProtoOutputArgs{graph_outputs}),
+                                                   ncvslideio::GComputation(
+                                                       ncvslideio::GProtoInputArgs{graph_inputs},
+                                                       ncvslideio::GProtoOutputArgs{graph_outputs}),
                                                    std::move(m_state->src),
                                                    std::move(m_state->stop_criterion),
                                                    std::move(m_state->compile_args),
@@ -674,9 +674,9 @@ Pipeline::Ptr PipelineBuilder::construct() {
     }
     GAPI_Assert(m_state->mode == PLMode::REGULAR);
     return std::make_shared<RegularPipeline>(std::move(m_state->name),
-                                             cv::GComputation(
-                                                 cv::GProtoInputArgs{graph_inputs},
-                                                 cv::GProtoOutputArgs{graph_outputs}),
+                                             ncvslideio::GComputation(
+                                                 ncvslideio::GProtoInputArgs{graph_inputs},
+                                                 ncvslideio::GProtoOutputArgs{graph_outputs}),
                                              std::move(m_state->src),
                                              std::move(m_state->stop_criterion),
                                              std::move(m_state->compile_args),

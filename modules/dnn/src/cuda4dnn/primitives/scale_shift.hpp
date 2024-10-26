@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     struct ScaleShiftConfiguration {
         enum class OpMode {
@@ -37,7 +37,7 @@ namespace cv { namespace dnn { namespace cuda4dnn {
     public:
         using wrapper_type = GetCUDABackendWrapperType<T>;
 
-        ScaleShiftOp(csl::Stream stream_, const ScaleShiftConfiguration& config, const cv::Mat& weights, const cv::Mat& bias)
+        ScaleShiftOp(csl::Stream stream_, const ScaleShiftConfiguration& config, const ncvslideio::Mat& weights, const ncvslideio::Mat& bias)
             : stream(std::move(stream_)), axis{ config.axis }
         {
             scaleMode = config.scaleMode;
@@ -62,13 +62,13 @@ namespace cv { namespace dnn { namespace cuda4dnn {
             if (scaleMode == ScaleShiftConfiguration::OpMode::UNTRAINABLE &&
                 shiftMode == ScaleShiftConfiguration::OpMode::UNTRAINABLE)
             {
-                CV_Error(cv::Error::StsNotImplemented, "scale and shift both in untrainable mode is not supported");
+                CV_Error(ncvslideio::Error::StsNotImplemented, "scale and shift both in untrainable mode is not supported");
             }
         }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(outputs.size() == 1);
@@ -156,6 +156,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         ScaleShiftConfiguration::OpMode scaleMode, shiftMode;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_SCALE_SHIFT_HPP */

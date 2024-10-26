@@ -162,20 +162,20 @@
 #include <opencv2/core/utils/fp_control_utils.hpp>
 #include <opencv2/core/utils/fp_control.private.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 
-namespace cv {
+namespace ncvslideio {
 
 ParallelLoopBody::~ParallelLoopBody() {}
 
-using namespace cv::parallel;
+using namespace ncvslideio::parallel;
 
 namespace {
 
 #ifdef ENABLE_INSTRUMENTATION
-    static void SyncNodes(cv::instr::InstrNode *pNode)
+    static void SyncNodes(ncvslideio::instr::InstrNode *pNode)
     {
-        std::vector<cv::instr::NodeDataTls*> data;
+        std::vector<ncvslideio::instr::NodeDataTls*> data;
         pNode->m_payload.m_tls.gather(data);
 
         uint64 ticksMax = 0;
@@ -201,7 +201,7 @@ namespace {
     class ParallelLoopBodyWrapperContext
     {
     public:
-        ParallelLoopBodyWrapperContext(const cv::ParallelLoopBody& _body, const cv::Range& _r, double _nstripes) :
+        ParallelLoopBodyWrapperContext(const ncvslideio::ParallelLoopBody& _body, const ncvslideio::Range& _r, double _nstripes) :
             is_rng_used(false), hasException(false)
         {
 
@@ -211,7 +211,7 @@ namespace {
             nstripes = cvRound(_nstripes <= 0 ? len : MIN(MAX(_nstripes, 1.), len));
 
             // propagate main thread state
-            rng = cv::theRNG();
+            rng = ncvslideio::theRNG();
 #if OPENCV_SUPPORTS_FP_DENORMALS_HINT && OPENCV_IMPL_FP_HINTS
             details::saveFPDenormalsState(fp_denormals_base_state);
 #endif
@@ -222,7 +222,7 @@ namespace {
 #endif
 
 #ifdef ENABLE_INSTRUMENTATION
-            pThreadRoot = cv::instr::getInstrumentTLSStruct().pCurrentNode;
+            pThreadRoot = ncvslideio::instr::getInstrumentTLSStruct().pCurrentNode;
 #endif
         }
         void finalize()
@@ -235,11 +235,11 @@ namespace {
             {
                 // Some parallel backends execute nested jobs in the main thread,
                 // so we need to restore initial RNG state here.
-                cv::theRNG() = rng;
+                ncvslideio::theRNG() = rng;
                 // We can't properly update RNG state based on RNG usage in worker threads,
                 // so lets just change main thread RNG state to the next value.
                 // Note: this behaviour is not equal to single-threaded mode.
-                cv::theRNG().next();
+                ncvslideio::theRNG().next();
             }
 #ifdef OPENCV_TRACE
             if (traceRootRegion)
@@ -257,35 +257,35 @@ namespace {
         }
         ~ParallelLoopBodyWrapperContext() {}
 
-        const cv::ParallelLoopBody* body;
-        cv::Range wholeRange;
+        const ncvslideio::ParallelLoopBody* body;
+        ncvslideio::Range wholeRange;
         int nstripes;
-        cv::RNG rng;
+        ncvslideio::RNG rng;
         mutable bool is_rng_used;
 #ifdef OPENCV_TRACE
         CV_TRACE_NS::details::Region* traceRootRegion;
         CV_TRACE_NS::details::TraceManagerThreadLocal* traceRootContext;
 #endif
 #ifdef ENABLE_INSTRUMENTATION
-        cv::instr::InstrNode *pThreadRoot;
+        ncvslideio::instr::InstrNode *pThreadRoot;
 #endif
         bool hasException;
 #if CV__EXCEPTION_PTR
         std::exception_ptr pException;
 #else
-        cv::String exception_message;
+        ncvslideio::String exception_message;
 #endif
 #if CV__EXCEPTION_PTR
         void recordException()
 #else
-        void recordException(const cv::String& msg)
+        void recordException(const ncvslideio::String& msg)
 #endif
         {
 #ifndef CV_THREAD_SANITIZER
             if (!hasException)
 #endif
             {
-                cv::AutoLock lock(cv::getInitializationMutex());
+                ncvslideio::AutoLock lock(ncvslideio::getInitializationMutex());
                 if (!hasException)
                 {
                     hasException = true;
@@ -307,7 +307,7 @@ namespace {
         ParallelLoopBodyWrapperContext& operator=(const ParallelLoopBodyWrapperContext&); // disabled
     };
 
-    class ParallelLoopBodyWrapper : public cv::ParallelLoopBody
+    class ParallelLoopBodyWrapper : public ncvslideio::ParallelLoopBody
     {
     public:
         ParallelLoopBodyWrapper(ParallelLoopBodyWrapperContext& ctx_) :
@@ -317,7 +317,7 @@ namespace {
         ~ParallelLoopBodyWrapper()
         {
         }
-        void operator()(const cv::Range& sr) const CV_OVERRIDE
+        void operator()(const ncvslideio::Range& sr) const CV_OVERRIDE
         {
 #ifdef OPENCV_TRACE
             // TODO CV_TRACE_NS::details::setCurrentRegion(rootRegion);
@@ -330,20 +330,20 @@ namespace {
 
 #ifdef ENABLE_INSTRUMENTATION
             {
-                cv::instr::InstrTLSStruct *pInstrTLS = &cv::instr::getInstrumentTLSStruct();
+                ncvslideio::instr::InstrTLSStruct *pInstrTLS = &ncvslideio::instr::getInstrumentTLSStruct();
                 pInstrTLS->pCurrentNode = ctx.pThreadRoot; // Initialize TLS node for thread
             }
             CV_INSTRUMENT_REGION();
 #endif
 
             // propagate main thread state
-            cv::theRNG() = ctx.rng;
+            ncvslideio::theRNG() = ctx.rng;
 #if OPENCV_SUPPORTS_FP_DENORMALS_HINT && OPENCV_IMPL_FP_HINTS
             FPDenormalsIgnoreHintScope fp_denormals_scope(ctx.fp_denormals_base_state);
 #endif
 
-            cv::Range r;
-            cv::Range wholeRange = ctx.wholeRange;
+            ncvslideio::Range r;
+            ncvslideio::Range wholeRange = ctx.wholeRange;
             int nstripes = ctx.nstripes;
             r.start = (int)(wholeRange.start +
                             ((uint64)sr.start*(wholeRange.end - wholeRange.start) + nstripes/2)/nstripes);
@@ -365,7 +365,7 @@ namespace {
                 ctx.recordException();
             }
 #else
-            catch (const cv::Exception& e)
+            catch (const ncvslideio::Exception& e)
             {
                 ctx.recordException(e.what());
             }
@@ -379,10 +379,10 @@ namespace {
             }
 #endif
 
-            if (!ctx.is_rng_used && !(cv::theRNG() == ctx.rng))
+            if (!ctx.is_rng_used && !(ncvslideio::theRNG() == ctx.rng))
                 ctx.is_rng_used = true;
         }
-        cv::Range stripeRange() const { return cv::Range(0, ctx.nstripes); }
+        ncvslideio::Range stripeRange() const { return ncvslideio::Range(0, ctx.nstripes); }
 
     protected:
         ParallelLoopBodyWrapperContext& ctx;
@@ -398,12 +398,12 @@ namespace {
 
         void operator ()(const tbb::blocked_range<int>& range) const
         {
-            this->ParallelLoopBodyWrapper::operator()(cv::Range(range.begin(), range.end()));
+            this->ParallelLoopBodyWrapper::operator()(ncvslideio::Range(range.begin(), range.end()));
         }
 
         void operator ()() const  // run parallel job
         {
-            cv::Range range = this->stripeRange();
+            ncvslideio::Range range = this->stripeRange();
             tbb::parallel_for(tbb::blocked_range<int>(range.start, range.end), *this);
         }
     };
@@ -417,13 +417,13 @@ namespace {
 
         void operator ()() const  // run parallel job
         {
-            cv::Range stripeRange = this->stripeRange();
+            ncvslideio::Range stripeRange = this->stripeRange();
             hpx::parallel::for_loop(
                     hpx::parallel::execution::par,
                     stripeRange.start, stripeRange.end,
                     [&](const int &i) { ;
                         this->ParallelLoopBodyWrapper::operator()(
-                                cv::Range(i, i + 1));
+                                ncvslideio::Range(i, i + 1));
                     });
         }
     };
@@ -434,7 +434,7 @@ namespace {
     static void block_function(void* context, size_t index)
     {
         ProxyLoopBody* ptr_body = static_cast<ProxyLoopBody*>(context);
-        (*ptr_body)(cv::Range((int)index, (int)index + 1));
+        (*ptr_body)(ncvslideio::Range((int)index, (int)index + 1));
     }
 #elif defined WINRT || defined HAVE_CONCURRENCY
     class ProxyLoopBody : public ParallelLoopBodyWrapper
@@ -446,7 +446,7 @@ namespace {
 
         void operator ()(int i) const
         {
-            this->ParallelLoopBodyWrapper::operator()(cv::Range(i, i + 1));
+            this->ParallelLoopBodyWrapper::operator()(ncvslideio::Range(i, i + 1));
         }
     };
 #else
@@ -502,9 +502,9 @@ static SchedPtr pplScheduler;
 
 /* ================================   parallel_for_  ================================ */
 
-static void parallel_for_impl(const cv::Range& range, const cv::ParallelLoopBody& body, double nstripes); // forward declaration
+static void parallel_for_impl(const ncvslideio::Range& range, const ncvslideio::ParallelLoopBody& body, double nstripes); // forward declaration
 
-void parallel_for_(const cv::Range& range, const cv::ParallelLoopBody& body, double nstripes)
+void parallel_for_(const ncvslideio::Range& range, const ncvslideio::ParallelLoopBody& body, double nstripes)
 {
 #ifdef OPENCV_TRACE
     CV__TRACE_OPENCV_FUNCTION_NAME_("parallel_for", 0);
@@ -545,18 +545,18 @@ static
 void parallel_for_cb(int start, int end, void* data)
 {
     CV_DbgAssert(data);
-    const cv::ParallelLoopBody& body = *(const cv::ParallelLoopBody*)data;
+    const ncvslideio::ParallelLoopBody& body = *(const ncvslideio::ParallelLoopBody*)data;
     body(Range(start, end));
 }
 
-static void parallel_for_impl(const cv::Range& range, const cv::ParallelLoopBody& body, double nstripes)
+static void parallel_for_impl(const ncvslideio::Range& range, const ncvslideio::ParallelLoopBody& body, double nstripes)
 {
-    using namespace cv::parallel;
+    using namespace ncvslideio::parallel;
     if ((numThreads < 0 || numThreads > 1) && range.end - range.start > 1)
     {
         ParallelLoopBodyWrapperContext ctx(body, range, nstripes);
         ProxyLoopBody pbody(ctx);
-        cv::Range stripeRange = pbody.stripeRange();
+        ncvslideio::Range stripeRange = pbody.stripeRange();
         if( stripeRange.end - stripeRange.start == 1 )
         {
             body(range);
@@ -668,7 +668,7 @@ int getNumThreads(void)
 
 #elif defined HAVE_GCD
 
-    return cv::getNumberOfCPUs(); // the GCD thread pool limit
+    return ncvslideio::getNumberOfCPUs(); // the GCD thread pool limit
 
 #elif defined WINRT
 
@@ -698,7 +698,7 @@ unsigned defaultNumberOfThreads()
     // than 2 threads by default not to overheat the devices
     const unsigned int default_number_of_threads = 2;
 #else
-    const unsigned int default_number_of_threads = (unsigned int)std::max(1, cv::getNumberOfCPUs());
+    const unsigned int default_number_of_threads = (unsigned int)std::max(1, ncvslideio::getNumberOfCPUs());
 #endif
 
     unsigned result = default_number_of_threads;
@@ -1053,19 +1053,19 @@ const char* currentParallelFramework()
 #endif
 }
 
-}  // namespace cv::
+}  // namespace ncvslideio::
 
 CV_IMPL void cvSetNumThreads(int nt)
 {
-    cv::setNumThreads(nt);
+    ncvslideio::setNumThreads(nt);
 }
 
 CV_IMPL int cvGetNumThreads()
 {
-    return cv::getNumThreads();
+    return ncvslideio::getNumThreads();
 }
 
 CV_IMPL int cvGetThreadNum()
 {
-    return cv::getThreadNum();
+    return ncvslideio::getThreadNum();
 }

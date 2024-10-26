@@ -18,8 +18,8 @@
 #include <iostream>
 #include <vector>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 const char *keys =
     "{ help     h  | | Print help message. }"
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     {
         net = readNet(modelTxt, modelBin);
     }
-    catch (cv::Exception &ee)
+    catch (ncvslideio::Exception &ee)
     {
         std::cerr << "Exception: " << ee.what() << std::endl;
         std::cout << "Can't load the network by using the flowing files:" << std::endl;
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
         Mat element = getStructuringElement(MORPH_RECT, Size(3, 3), Point(-1,-1));
         dilate(image, image, element, Point(-1,-1), 1);
         // Find connected component
-        int nccomps = cv::connectedComponentsWithStats(image, labels, stats, centroids);
+        int nccomps = ncvslideio::connectedComponentsWithStats(image, labels, stats, centroids);
 
         for (int i = 1; i < nccomps; i++)
         {

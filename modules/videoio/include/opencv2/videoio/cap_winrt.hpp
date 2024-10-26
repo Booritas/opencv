@@ -30,7 +30,7 @@
 #include <agile.h>
 #include "opencv2/core/cvdef.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup videoio_winrt
@@ -55,7 +55,7 @@ CV_EXPORTS void winrt_startMessageLoop(void callback(Args...), Args... args);
 @note
     Starts (1) frame-grabbing loop and (2) message loop
     1. Function passed as an argument must implement common OCV reading frames
-       pattern (see cv::VideoCapture documentation) AND call cv::winrt_imgshow().
+       pattern (see ncvslideio::VideoCapture documentation) AND call ncvslideio::winrt_imgshow().
     2. Message processing loop required to overcome WinRT container and type
        conversion restrictions. OCV provides default implementation
        Here is how the class can be used:
@@ -84,8 +84,8 @@ CV_EXPORTS void winrt_startMessageLoop(void callback(Args...), Args... args);
     {
         InitializeComponent();
 
-        cv::winrt_setFrameContainer(cvImage);
-        cv::winrt_startMessageLoop(cvMain);
+        ncvslideio::winrt_setFrameContainer(cvImage);
+        ncvslideio::winrt_startMessageLoop(cvMain);
     }
 @endcode
 */
@@ -107,7 +107,7 @@ CV_EXPORTS void winrt_startMessageLoop(void callback(void));
     void Application::MainPage::OnVisibilityChanged(Platform::Object ^sender,
         Windows::UI::Core::VisibilityChangedEventArgs ^e)
     {
-        cv::winrt_onVisibilityChanged(e->Visible);
+        ncvslideio::winrt_onVisibilityChanged(e->Visible);
     }
 @endcode
 */

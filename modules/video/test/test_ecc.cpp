@@ -121,7 +121,7 @@ bool CV_ECC_Test_Translation::testTranslation(int from)
     Mat testImg;
     resize(img, testImg, Size(216, 216), 0, 0, INTER_LINEAR_EXACT);
 
-    cv::RNG rng = ts->get_rng();
+    ncvslideio::RNG rng = ts->get_rng();
 
     int progress=0;
 
@@ -196,7 +196,7 @@ bool CV_ECC_Test_Euclidean::testEuclidean(int from)
     Mat testImg;
     resize(img, testImg, Size(216, 216), 0, 0, INTER_LINEAR_EXACT);
 
-    cv::RNG rng = ts->get_rng();
+    ncvslideio::RNG rng = ts->get_rng();
 
     int progress = 0;
     for (int k=from; k<ntests; k++){
@@ -270,7 +270,7 @@ bool CV_ECC_Test_Affine::testAffine(int from)
     Mat testImg;
     resize(img, testImg, Size(216, 216), 0, 0, INTER_LINEAR_EXACT);
 
-    cv::RNG rng = ts->get_rng();
+    ncvslideio::RNG rng = ts->get_rng();
 
     int progress = 0;
     for (int k=from; k<ntests; k++){
@@ -346,7 +346,7 @@ bool CV_ECC_Test_Homography::testHomography(int from)
     Mat testImg;
     resize(img, testImg, Size(216, 216), 0, 0, INTER_LINEAR_EXACT);
 
-    cv::RNG rng = ts->get_rng();
+    ncvslideio::RNG rng = ts->get_rng();
 
     int progress = 0;
     for (int k=from; k<ntests; k++){
@@ -421,7 +421,7 @@ bool CV_ECC_Test_Mask::testMask(int from)
     Mat_<float> testImg;
     scaledImage.convertTo(testImg, testImg.type());
 
-    cv::RNG rng = ts->get_rng();
+    ncvslideio::RNG rng = ts->get_rng();
 
     int progress=0;
 

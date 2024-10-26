@@ -5,10 +5,10 @@
 class CvCascadeImageReader
 {
 public:
-    bool create( const std::string _posFilename, const std::string _negFilename, cv::Size _winSize );
+    bool create( const std::string _posFilename, const std::string _negFilename, ncvslideio::Size _winSize );
     void restart() { posReader.restart(); }
-    bool getNeg(cv::Mat &_img) { return negReader.get( _img ); }
-    bool getPos(cv::Mat &_img) { return posReader.get( _img ); }
+    bool getNeg(ncvslideio::Mat &_img) { return negReader.get( _img ); }
+    bool getPos(ncvslideio::Mat &_img) { return posReader.get( _img ); }
 
 private:
     class PosReader
@@ -17,7 +17,7 @@ private:
         PosReader();
         virtual ~PosReader();
         bool create( const std::string _filename );
-        bool get( cv::Mat &_img );
+        bool get( ncvslideio::Mat &_img );
         void restart();
 
         short* vec;
@@ -32,18 +32,18 @@ private:
     {
     public:
         NegReader();
-        bool create( const std::string _filename, cv::Size _winSize );
-        bool get( cv::Mat& _img );
+        bool create( const std::string _filename, ncvslideio::Size _winSize );
+        bool get( ncvslideio::Mat& _img );
         bool nextImg();
 
-        cv::Mat     src, img;
+        ncvslideio::Mat     src, img;
         std::vector<std::string> imgFilenames;
-        cv::Point   offset, point;
+        ncvslideio::Point   offset, point;
         float   scale;
         float   scaleFactor;
         float   stepFactor;
         size_t  last, round;
-        cv::Size    winSize;
+        ncvslideio::Size    winSize;
     } negReader;
 };
 

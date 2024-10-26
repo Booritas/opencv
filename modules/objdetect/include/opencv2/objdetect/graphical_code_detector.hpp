@@ -6,7 +6,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 //! @addtogroup objdetect_common
 //! @{

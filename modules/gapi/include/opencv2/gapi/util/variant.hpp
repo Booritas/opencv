@@ -17,7 +17,7 @@
 #include <opencv2/gapi/util/type_traits.hpp>
 
 // A poor man's `variant` implementation, incompletely modeled against C++17 spec.
-namespace cv
+namespace ncvslideio
 {
 namespace util
 {
@@ -71,8 +71,8 @@ namespace util
     class variant
     {
         // FIXME: Replace with std::aligned_union after gcc4.8 support is dropped
-        static constexpr const std::size_t S = cv::detail::max_of_t<sizeof(Ts)...>::value;
-        static constexpr const std::size_t A = cv::detail::max_of_t<alignof(Ts)...>::value;
+        static constexpr const std::size_t S = ncvslideio::detail::max_of_t<sizeof(Ts)...>::value;
+        static constexpr const std::size_t A = ncvslideio::detail::max_of_t<alignof(Ts)...>::value;
         using Memory = typename std::aligned_storage<S, A>::type[1];
 
         template<typename T> struct cctr_h {
@@ -662,6 +662,6 @@ namespace detail
                                     return_t{});
     }
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_UTIL_VARIANT_HPP

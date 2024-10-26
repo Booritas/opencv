@@ -19,34 +19,34 @@ def main(argv):
 
     filename = argv[0] if len(argv) > 0 else 'lena.jpg'
 
-    I = cv.imread(cv.samples.findFile(filename), cv.IMREAD_GRAYSCALE)
+    I = ncvslideio.imread(ncvslideio.samples.findFile(filename), ncvslideio.IMREAD_GRAYSCALE)
     if I is None:
         print('Error opening image')
         return -1
     ## [expand]
     rows, cols = I.shape
-    m = cv.getOptimalDFTSize( rows )
-    n = cv.getOptimalDFTSize( cols )
-    padded = cv.copyMakeBorder(I, 0, m - rows, 0, n - cols, cv.BORDER_CONSTANT, value=[0, 0, 0])
+    m = ncvslideio.getOptimalDFTSize( rows )
+    n = ncvslideio.getOptimalDFTSize( cols )
+    padded = ncvslideio.copyMakeBorder(I, 0, m - rows, 0, n - cols, ncvslideio.BORDER_CONSTANT, value=[0, 0, 0])
     ## [expand]
     ## [complex_and_real]
     planes = [np.float32(padded), np.zeros(padded.shape, np.float32)]
-    complexI = cv.merge(planes)         # Add to the expanded another plane with zeros
+    complexI = ncvslideio.merge(planes)         # Add to the expanded another plane with zeros
     ## [complex_and_real]
     ## [dft]
-    cv.dft(complexI, complexI)         # this way the result may fit in the source matrix
+    ncvslideio.dft(complexI, complexI)         # this way the result may fit in the source matrix
     ## [dft]
     # compute the magnitude and switch to logarithmic scale
     # = > log(1 + sqrt(Re(DFT(I)) ^ 2 + Im(DFT(I)) ^ 2))
     ## [magnitude]
-    cv.split(complexI, planes)                   # planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
-    cv.magnitude(planes[0], planes[1], planes[0])# planes[0] = magnitude
+    ncvslideio.split(complexI, planes)                   # planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    ncvslideio.magnitude(planes[0], planes[1], planes[0])# planes[0] = magnitude
     magI = planes[0]
     ## [magnitude]
     ## [log]
     matOfOnes = np.ones(magI.shape, dtype=magI.dtype)
-    cv.add(matOfOnes, magI, magI) #  switch to logarithmic scale
-    cv.log(magI, magI)
+    ncvslideio.add(matOfOnes, magI, magI) #  switch to logarithmic scale
+    ncvslideio.log(magI, magI)
     ## [log]
     ## [crop_rearrange]
     magI_rows, magI_cols = magI.shape
@@ -69,12 +69,12 @@ def main(argv):
     magI[0:cx, cy:cy + cy] = tmp
     ## [crop_rearrange]
     ## [normalize]
-    cv.normalize(magI, magI, 0, 1, cv.NORM_MINMAX) # Transform the matrix with float values into a
+    ncvslideio.normalize(magI, magI, 0, 1, ncvslideio.NORM_MINMAX) # Transform the matrix with float values into a
     ## viewable image form(float between values 0 and 1).
     ## [normalize]
-    cv.imshow("Input Image"       , I   )    # Show the result
-    cv.imshow("spectrum magnitude", magI)
-    cv.waitKey()
+    ncvslideio.imshow("Input Image"       , I   )    # Show the result
+    ncvslideio.imshow("spectrum magnitude", magI)
+    ncvslideio.waitKey()
 
 if __name__ == "__main__":
     main(sys.argv[1:])

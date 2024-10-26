@@ -92,7 +92,7 @@ TEST(Features2D_ORB, _1996)
 
 TEST(Features2D_ORB, crash_5031)
 {
-    cv::Mat image = cv::Mat::zeros(cv::Size(1920, 1080), CV_8UC3);
+    ncvslideio::Mat image = ncvslideio::Mat::zeros(ncvslideio::Size(1920, 1080), CV_8UC3);
 
     int nfeatures = 8000;
     float orbScaleFactor = 1.2f;
@@ -100,16 +100,16 @@ TEST(Features2D_ORB, crash_5031)
     int edgeThreshold = 4;
     int firstLevel = 0;
     int WTA_K = 2;
-    ORB::ScoreType scoreType = cv::ORB::HARRIS_SCORE;
+    ORB::ScoreType scoreType = ncvslideio::ORB::HARRIS_SCORE;
     int patchSize = 47;
     int fastThreshold = 20;
 
-    Ptr<ORB> orb = cv::ORB::create(nfeatures, orbScaleFactor, nlevels, edgeThreshold, firstLevel, WTA_K, scoreType, patchSize, fastThreshold);
+    Ptr<ORB> orb = ncvslideio::ORB::create(nfeatures, orbScaleFactor, nlevels, edgeThreshold, firstLevel, WTA_K, scoreType, patchSize, fastThreshold);
 
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
+    std::vector<ncvslideio::KeyPoint> keypoints;
+    ncvslideio::Mat descriptors;
 
-    cv::KeyPoint kp;
+    ncvslideio::KeyPoint kp;
     kp.pt.x = 443;
     kp.pt.y = 5;
     kp.size = 47;
@@ -157,9 +157,9 @@ BIGDATA_TEST(Features2D_ORB, regression_opencv_python_537)  // memory usage: ~3 
     const int border = 23, num_lines = 23;
     for (int i = 0; i < num_lines; i++)
     {
-        cv::Point2i point1(border + i * 100, border + i * 100);
-        cv::Point2i point2(width - border - i * 100, height - border * i * 100);
-        cv::line(img, point1, point2, 255, 1, LINE_AA);
+        ncvslideio::Point2i point1(border + i * 100, border + i * 100);
+        ncvslideio::Point2i point2(width - border - i * 100, height - border * i * 100);
+        ncvslideio::line(img, point1, point2, 255, 1, LINE_AA);
     }
 
     Ptr<ORB> orbPtr = ORB::create(31);

@@ -29,7 +29,7 @@ namespace opencv_test
     };
 } // namespace opencv_test
 
-namespace cv
+namespace ncvslideio
 {
     namespace detail
     {
@@ -49,7 +49,7 @@ namespace cv
             }
         };
     } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 namespace opencv_test
 {
@@ -57,38 +57,38 @@ namespace opencv_test
 //----------------------------------------------- Simple tests ------------------------------------------------
 namespace
 {
-    G_TYPED_KERNEL(GCountCalls, <cv::GOpaque<int>(GMat)>, "org.opencv.test.count_calls")
+    G_TYPED_KERNEL(GCountCalls, <ncvslideio::GOpaque<int>(GMat)>, "org.opencv.test.count_calls")
     {
         static GOpaqueDesc outMeta(GMatDesc /* in */) { return empty_gopaque_desc(); }
     };
 
     GAPI_OCV_KERNEL_ST(GOCVCountCalls, GCountCalls, int)
     {
-        static void setup(const cv::GMatDesc &/* in */, std::shared_ptr<int> &state)
+        static void setup(const ncvslideio::GMatDesc &/* in */, std::shared_ptr<int> &state)
         {
             state.reset(new int{  });
         }
 
-        static void run(const cv::Mat &/* in */, int &out, int& state)
+        static void run(const ncvslideio::Mat &/* in */, int &out, int& state)
         {
             out = ++state;
         }
     };
 
-    G_TYPED_KERNEL(GIsStateUpToDate, <cv::GOpaque<bool>(GMat)>,
+    G_TYPED_KERNEL(GIsStateUpToDate, <ncvslideio::GOpaque<bool>(GMat)>,
                    "org.opencv.test.is_state_up-to-date")
     {
         static GOpaqueDesc outMeta(GMatDesc /* in */) { return empty_gopaque_desc(); }
     };
 
-    GAPI_OCV_KERNEL_ST(GOCVIsStateUpToDate, GIsStateUpToDate, cv::Size)
+    GAPI_OCV_KERNEL_ST(GOCVIsStateUpToDate, GIsStateUpToDate, ncvslideio::Size)
     {
-        static void setup(const cv::GMatDesc &in, std::shared_ptr<cv::Size> &state)
+        static void setup(const ncvslideio::GMatDesc &in, std::shared_ptr<ncvslideio::Size> &state)
         {
-            state.reset(new cv::Size(in.size));
+            state.reset(new ncvslideio::Size(in.size));
         }
 
-        static void run(const cv::Mat &in , bool &out, cv::Size& state)
+        static void run(const ncvslideio::Mat &in , bool &out, ncvslideio::Size& state)
         {
             out = in.size() == state;
         }
@@ -102,14 +102,14 @@ namespace
 
     GAPI_OCV_KERNEL_ST(GOCVStInvalidResize, GStInvalidResize, int)
     {
-        static void setup(const cv::GMatDesc, cv::Size, double, double, int,
+        static void setup(const ncvslideio::GMatDesc, ncvslideio::Size, double, double, int,
                           std::shared_ptr<int> &/* state */)
         {  }
 
-        static void run(const cv::Mat& in, cv::Size sz, double fx, double fy, int interp,
-                        cv::Mat &out, int& /* state */)
+        static void run(const ncvslideio::Mat& in, ncvslideio::Size sz, double fx, double fy, int interp,
+                        ncvslideio::Mat &out, int& /* state */)
         {
-            cv::resize(in, out, sz, fx, fy, interp);
+            ncvslideio::resize(in, out, sz, fx, fy, interp);
         }
     };
 
@@ -118,13 +118,13 @@ namespace
          static GMatDesc outMeta(GMatDesc in) { return in.withType(CV_8U, 1); }
     };
 #ifdef HAVE_OPENCV_VIDEO
-    GAPI_OCV_KERNEL_ST(GOCVBackSub, GBackSub, cv::BackgroundSubtractor)
+    GAPI_OCV_KERNEL_ST(GOCVBackSub, GBackSub, ncvslideio::BackgroundSubtractor)
     {
-        static void setup(const cv::GMatDesc &/* desc */,
+        static void setup(const ncvslideio::GMatDesc &/* desc */,
                           std::shared_ptr<BackgroundSubtractor> &state,
-                          const cv::GCompileArgs &compileArgs)
+                          const ncvslideio::GCompileArgs &compileArgs)
         {
-            auto sbParams = cv::gapi::getCompileArg<BackSubStateParams>(compileArgs)
+            auto sbParams = ncvslideio::gapi::getCompileArg<BackSubStateParams>(compileArgs)
                                 .value_or(BackSubStateParams { });
 
             if (sbParams.method == "knn")
@@ -135,14 +135,14 @@ namespace
             GAPI_Assert(state);
         }
 
-        static void run(const cv::Mat& in, cv::Mat &out, BackgroundSubtractor& state)
+        static void run(const ncvslideio::Mat& in, ncvslideio::Mat &out, BackgroundSubtractor& state)
         {
             state.apply(in, out, -1);
         }
     };
 #endif
 
-    G_TYPED_KERNEL(GCountStateSetups, <cv::GOpaque<bool>(GMat)>,
+    G_TYPED_KERNEL(GCountStateSetups, <ncvslideio::GOpaque<bool>(GMat)>,
                    "org.opencv.test.count_state_setups")
     {
         static GOpaqueDesc outMeta(GMatDesc /* in */) { return empty_gopaque_desc(); }
@@ -150,17 +150,17 @@ namespace
 
     GAPI_OCV_KERNEL_ST(GOCVCountStateSetups, GCountStateSetups, int)
     {
-        static void setup(const cv::GMatDesc &, std::shared_ptr<int> &,
-                          const cv::GCompileArgs &compileArgs)
+        static void setup(const ncvslideio::GMatDesc &, std::shared_ptr<int> &,
+                          const ncvslideio::GCompileArgs &compileArgs)
         {
-            auto params = cv::gapi::getCompileArg<CountStateSetupsParams>(compileArgs)
+            auto params = ncvslideio::gapi::getCompileArg<CountStateSetupsParams>(compileArgs)
                 .value_or(CountStateSetupsParams { });
             if (params.pSetupsCount != nullptr) {
                 (*params.pSetupsCount)++;
             }
         }
 
-        static void run(const cv::Mat & , bool &out, int &)
+        static void run(const ncvslideio::Mat & , bool &out, int &)
         {
             out = true;
         }
@@ -169,13 +169,13 @@ namespace
 
 TEST(StatefulKernel, StateInitOnceInRegularMode)
 {
-    cv::GMat in;
-    cv::GOpaque<bool> out = GCountStateSetups::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> out = GCountStateSetups::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     // Input mat:
-    cv::Mat inputData(1080, 1920, CV_8UC1);
-    cv::randu(inputData, cv::Scalar::all(1), cv::Scalar::all(128));
+    ncvslideio::Mat inputData(1080, 1920, CV_8UC1);
+    ncvslideio::randu(inputData, ncvslideio::Scalar::all(1), ncvslideio::Scalar::all(128));
 
     // variable to update when state is initialized in the kernel
     CountStateSetupsParams params;
@@ -184,8 +184,8 @@ TEST(StatefulKernel, StateInitOnceInRegularMode)
     // Testing for 100 frames
     bool result { };
     for (int i = 0; i < 100; ++i) {
-        c.apply(cv::gin(inputData), cv::gout(result),
-                cv::compile_args(cv::gapi::kernels<GOCVCountStateSetups>(), params));
+        c.apply(ncvslideio::gin(inputData), ncvslideio::gout(result),
+                ncvslideio::compile_args(ncvslideio::gapi::kernels<GOCVCountStateSetups>(), params));
         EXPECT_TRUE(result);
         EXPECT_TRUE(params.pSetupsCount != nullptr);
         EXPECT_EQ(1, *params.pSetupsCount);
@@ -196,13 +196,13 @@ struct StateInitOnce : public ::testing::TestWithParam<bool>{};
 TEST_P(StateInitOnce, StreamingCompiledWithMeta)
 {
     bool compileWithMeta = GetParam();
-    cv::GMat in;
-    cv::GOpaque<bool> out = GCountStateSetups::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> out = GCountStateSetups::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     // Input mat:
-    cv::Mat inputData(1080, 1920, CV_8UC1);
-    cv::randu(inputData, cv::Scalar::all(1), cv::Scalar::all(128));
+    ncvslideio::Mat inputData(1080, 1920, CV_8UC1);
+    ncvslideio::randu(inputData, ncvslideio::Scalar::all(1), ncvslideio::Scalar::all(128));
 
     // variable to update when state is initialized in the kernel
     CountStateSetupsParams params;
@@ -210,14 +210,14 @@ TEST_P(StateInitOnce, StreamingCompiledWithMeta)
 
     // Compilation & testing
     auto ccomp = (compileWithMeta)
-        ? c.compileStreaming(cv::descr_of(inputData),
-              cv::compile_args(cv::gapi::kernels<GOCVCountStateSetups>(),
+        ? c.compileStreaming(ncvslideio::descr_of(inputData),
+              ncvslideio::compile_args(ncvslideio::gapi::kernels<GOCVCountStateSetups>(),
                                params))
         : c.compileStreaming(
-              cv::compile_args(cv::gapi::kernels<GOCVCountStateSetups>(),
+              ncvslideio::compile_args(ncvslideio::gapi::kernels<GOCVCountStateSetups>(),
                                params));
 
-    ccomp.setSource(cv::gin(inputData));
+    ccomp.setSource(ncvslideio::gin(inputData));
 
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
@@ -225,7 +225,7 @@ TEST_P(StateInitOnce, StreamingCompiledWithMeta)
     int counter { };
     bool result;
     // Process mat 100 times
-    while (ccomp.pull(cv::gout(result)) && (counter++ < 100)) {
+    while (ccomp.pull(ncvslideio::gout(result)) && (counter++ < 100)) {
         EXPECT_TRUE(params.pSetupsCount != nullptr);
         EXPECT_EQ(1, *params.pSetupsCount);
     }
@@ -240,23 +240,23 @@ TEST(StatefulKernel, StateIsMutableInRuntime)
 {
     constexpr int expectedCallsCount = 10;
 
-    cv::Mat dummyIn { 1, 1, CV_8UC1 };
+    ncvslideio::Mat dummyIn { 1, 1, CV_8UC1 };
     int actualCallsCount = 0;
 
     // Declaration of G-API expression
     GMat in;
     GOpaque<int> out = GCountCalls::on(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    const auto pkg = cv::gapi::kernels<GOCVCountCalls>();
+    const auto pkg = ncvslideio::gapi::kernels<GOCVCountCalls>();
 
     // Compilation of G-API expression
-    auto callsCounter = comp.compile(cv::descr_of(dummyIn), cv::compile_args(pkg));
+    auto callsCounter = comp.compile(ncvslideio::descr_of(dummyIn), ncvslideio::compile_args(pkg));
 
     // Simulating video stream: call GCompiled multiple times
     for (int i = 0; i < expectedCallsCount; i++)
     {
-        callsCounter(cv::gin(dummyIn), cv::gout(actualCallsCount));
+        callsCounter(ncvslideio::gin(dummyIn), ncvslideio::gout(actualCallsCount));
         EXPECT_EQ(i + 1, actualCallsCount);
     }
 
@@ -265,32 +265,32 @@ TEST(StatefulKernel, StateIsMutableInRuntime)
 
     // User asks G-API to prepare for a new stream
     callsCounter.prepareForNewStream();
-    callsCounter(cv::gin(dummyIn), cv::gout(actualCallsCount));
+    callsCounter(ncvslideio::gin(dummyIn), ncvslideio::gout(actualCallsCount));
     EXPECT_EQ(1, actualCallsCount);
 
 }
 
 TEST(StateIsResetOnNewStream, RegularMode)
 {
-    cv::GMat in;
-    cv::GOpaque<bool> out = GCountStateSetups::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> out = GCountStateSetups::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     // Input mat:
-    cv::Mat inputData(1080, 1920, CV_8UC1);
-    cv::randu(inputData, cv::Scalar::all(1), cv::Scalar::all(128));
+    ncvslideio::Mat inputData(1080, 1920, CV_8UC1);
+    ncvslideio::randu(inputData, ncvslideio::Scalar::all(1), ncvslideio::Scalar::all(128));
 
     // variable to update when state is initialized in the kernel
     CountStateSetupsParams params;
     params.pSetupsCount.reset(new int(0));
 
-    auto setupsCounter = c.compile(cv::descr_of(inputData),
-                                   cv::compile_args(cv::gapi::kernels<GOCVCountStateSetups>(),
+    auto setupsCounter = c.compile(ncvslideio::descr_of(inputData),
+                                   ncvslideio::compile_args(ncvslideio::gapi::kernels<GOCVCountStateSetups>(),
                                                     params));
 
     bool result { };
     for (int i = 0; i < 2; ++i) {
-        setupsCounter(cv::gin(inputData), cv::gout(result));
+        setupsCounter(ncvslideio::gin(inputData), ncvslideio::gout(result));
         EXPECT_TRUE(params.pSetupsCount != nullptr);
         EXPECT_EQ(1, *params.pSetupsCount);
     }
@@ -300,7 +300,7 @@ TEST(StateIsResetOnNewStream, RegularMode)
     setupsCounter.prepareForNewStream();
 
     for (int i = 0; i < 2; ++i) {
-        setupsCounter(cv::gin(inputData), cv::gout(result));
+        setupsCounter(ncvslideio::gin(inputData), ncvslideio::gout(result));
         EXPECT_TRUE(params.pSetupsCount != nullptr);
         EXPECT_EQ(2, *params.pSetupsCount);
     }
@@ -308,18 +308,18 @@ TEST(StateIsResetOnNewStream, RegularMode)
 
 TEST(StateIsResetOnNewStream, StreamingMode)
 {
-    cv::GMat in;
-    cv::GOpaque<bool> out = GIsStateUpToDate::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> out = GIsStateUpToDate::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    const auto pkg = cv::gapi::kernels<GOCVIsStateUpToDate>();
+    const auto pkg = ncvslideio::gapi::kernels<GOCVIsStateUpToDate>();
 
     // Compilation & testing
-    auto ccomp = c.compileStreaming(cv::compile_args(pkg));
+    auto ccomp = c.compileStreaming(ncvslideio::compile_args(pkg));
 
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        ccomp.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        ccomp.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
@@ -328,21 +328,21 @@ TEST(StateIsResetOnNewStream, StreamingMode)
 
     // Process the full video
     bool isStateUpToDate = false;
-    while (ccomp.pull(cv::gout(isStateUpToDate))) {
+    while (ccomp.pull(ncvslideio::gout(isStateUpToDate))) {
         EXPECT_TRUE(isStateUpToDate);
     }
     EXPECT_FALSE(ccomp.running());
 
-    path = findDataFile("cv/video/1920x1080.avi");
+    path = findDataFile("ncvslideio/video/1920x1080.avi");
     try {
-        ccomp.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        ccomp.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     ccomp.start();
     EXPECT_TRUE(ccomp.running());
 
-    while (ccomp.pull(cv::gout(isStateUpToDate))) {
+    while (ccomp.pull(ncvslideio::gout(isStateUpToDate))) {
         EXPECT_TRUE(isStateUpToDate);
     }
     EXPECT_FALSE(ccomp.running());
@@ -350,29 +350,29 @@ TEST(StateIsResetOnNewStream, StreamingMode)
 
 TEST(StatefulKernel, InvalidReallocatingKernel)
 {
-    cv::GMat in, out;
-    cv::Mat in_mat(500, 500, CV_8UC1), out_mat;
-    out = GStInvalidResize::on(in, cv::Size(300, 300), 0.0, 0.0, cv::INTER_LINEAR);
+    ncvslideio::GMat in, out;
+    ncvslideio::Mat in_mat(500, 500, CV_8UC1), out_mat;
+    out = GStInvalidResize::on(in, ncvslideio::Size(300, 300), 0.0, 0.0, ncvslideio::INTER_LINEAR);
 
-    const auto pkg = cv::gapi::kernels<GOCVStInvalidResize>();
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    const auto pkg = ncvslideio::gapi::kernels<GOCVStInvalidResize>();
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    EXPECT_THROW(comp.apply(in_mat, out_mat, cv::compile_args(pkg)), std::logic_error);
+    EXPECT_THROW(comp.apply(in_mat, out_mat, ncvslideio::compile_args(pkg)), std::logic_error);
 }
 
 #ifdef HAVE_OPENCV_VIDEO
 namespace
 {
-    void compareBackSubResults(const cv::Mat &actual, const cv::Mat &expected,
+    void compareBackSubResults(const ncvslideio::Mat &actual, const ncvslideio::Mat &expected,
                                const int diffPercent)
     {
         GAPI_Assert(actual.size() == expected.size());
         int allowedNumDiffPixels = actual.size().area() * diffPercent / 100;
 
-        cv::Mat diff;
-        cv::absdiff(actual, expected, diff);
+        ncvslideio::Mat diff;
+        ncvslideio::absdiff(actual, expected, diff);
 
-        cv::Mat hist(256, 1, CV_32FC1, cv::Scalar(0));
+        ncvslideio::Mat hist(256, 1, CV_32FC1, ncvslideio::Scalar(0));
         const float range[] { 0, 256 };
         const float *histRange { range };
         calcHist(&diff, 1, 0, Mat(), hist, 1, &hist.rows, &histRange, true, false);
@@ -389,23 +389,23 @@ namespace
 
 TEST(StatefulKernel, StateIsInitViaCompArgs)
 {
-    cv::Mat frame(1080, 1920, CV_8UC3),
+    ncvslideio::Mat frame(1080, 1920, CV_8UC3),
             gapiForeground,
             ocvForeground;
 
-    cv::randu(frame, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
+    ncvslideio::randu(frame, ncvslideio::Scalar(0, 0, 0), ncvslideio::Scalar(255, 255, 255));
 
     // G-API code
-    cv::GMat in;
-    cv::GMat out = GBackSub::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = GBackSub::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    const auto pkg = cv::gapi::kernels<GOCVBackSub>();
+    const auto pkg = ncvslideio::gapi::kernels<GOCVBackSub>();
 
-    auto gapiBackSub = c.compile(cv::descr_of(frame),
-                                 cv::compile_args(pkg, BackSubStateParams { "knn" }));
+    auto gapiBackSub = c.compile(ncvslideio::descr_of(frame),
+                                 ncvslideio::compile_args(pkg, BackSubStateParams { "knn" }));
 
-    gapiBackSub(cv::gin(frame), cv::gout(gapiForeground));
+    gapiBackSub(ncvslideio::gin(frame), ncvslideio::gout(gapiForeground));
 
     // OpenCV code
     auto pOcvBackSub = createBackgroundSubtractorKNN();
@@ -417,7 +417,7 @@ TEST(StatefulKernel, StateIsInitViaCompArgs)
 
     // Additionally, test the case where state is reset
     gapiBackSub.prepareForNewStream();
-    gapiBackSub(cv::gin(frame), cv::gout(gapiForeground));
+    gapiBackSub(ncvslideio::gin(frame), ncvslideio::gout(gapiForeground));
     pOcvBackSub->apply(frame, ocvForeground);
     compareBackSubResults(gapiForeground, ocvForeground, 1);
 }
@@ -426,9 +426,9 @@ TEST(StatefulKernel, StateIsInitViaCompArgs)
 #ifdef HAVE_OPENCV_VIDEO
 namespace
 {
-    void testBackSubInStreaming(cv::GStreamingCompiled gapiBackSub, const int diffPercent)
+    void testBackSubInStreaming(ncvslideio::GStreamingCompiled gapiBackSub, const int diffPercent)
     {
-        cv::Mat frame,
+        ncvslideio::Mat frame,
                 gapiForeground,
                 ocvForeground;
 
@@ -440,7 +440,7 @@ namespace
 
         // Comparison of G-API and OpenCV substractors
         std::size_t frames = 0u;
-        while (gapiBackSub.pull(cv::gout(frame, gapiForeground))) {
+        while (gapiBackSub.pull(ncvslideio::gout(frame, gapiForeground))) {
             pOCVBackSub->apply(frame, ocvForeground, -1);
 
             compareBackSubResults(gapiForeground, ocvForeground, diffPercent);
@@ -462,30 +462,30 @@ TEST(StatefulKernel, StateIsInitViaCompArgsInStreaming)
     applyTestTag(CV_TEST_TAG_VERYLONG);
 
     // G-API graph declaration
-    cv::GMat in;
-    cv::GMat out = GBackSub::on(in);
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = GBackSub::on(in);
     // Preserving 'in' in output to have possibility to compare with OpenCV reference
-    cv::GComputation c(cv::GIn(in), cv::GOut(cv::gapi::copy(in), out));
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(ncvslideio::gapi::copy(in), out));
 
     // G-API compilation of graph for streaming mode
-    const auto pkg = cv::gapi::kernels<GOCVBackSub>();
+    const auto pkg = ncvslideio::gapi::kernels<GOCVBackSub>();
     auto gapiBackSub = c.compileStreaming(
-                           cv::compile_args(pkg, BackSubStateParams { "knn" }));
+                           ncvslideio::compile_args(pkg, BackSubStateParams { "knn" }));
 
     // Testing G-API Background Substractor in streaming mode
-    auto path = findDataFile("cv/video/768x576.avi");
+    auto path = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        gapiBackSub.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        gapiBackSub.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
     // Allowing 1% difference of all pixels between G-API and reference OpenCV results
     testBackSubInStreaming(gapiBackSub, 1);
 
-    path = findDataFile("cv/video/1920x1080.avi");
+    path = findDataFile("ncvslideio/video/1920x1080.avi");
     try {
         // Additionally, test the case when the new stream happens
-        gapiBackSub.setSource(gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path));
+        gapiBackSub.setSource(gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path));
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
@@ -495,10 +495,10 @@ TEST(StatefulKernel, StateIsInitViaCompArgsInStreaming)
 
 TEST(StatefulKernel, StateIsChangedViaCompArgsOnReshape)
 {
-    cv::GMat in;
-    cv::GComputation comp(in, GBackSub::on(in));
+    ncvslideio::GMat in;
+    ncvslideio::GComputation comp(in, GBackSub::on(in));
 
-    const auto pkg = cv::gapi::kernels<GOCVBackSub>();
+    const auto pkg = ncvslideio::gapi::kernels<GOCVBackSub>();
 
     // OpenCV reference substractor
     auto pOCVBackSubKNN = createBackgroundSubtractorKNN();
@@ -506,20 +506,20 @@ TEST(StatefulKernel, StateIsChangedViaCompArgsOnReshape)
 
     const auto run = [&](const std::string& videoPath, const std::string& method) {
         auto path = findDataFile(videoPath);
-        cv::gapi::wip::IStreamSource::Ptr source;
+        ncvslideio::gapi::wip::IStreamSource::Ptr source;
         try {
-            source = gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(path);
+            source = gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(path);
         } catch(...) {
             throw SkipTestException("Video file can not be opened");
         }
-        cv::Mat inMat, gapiForeground, ocvForeground;
+        ncvslideio::Mat inMat, gapiForeground, ocvForeground;
 
         for (int i = 0; i < 10; i++) {
-            cv::gapi::wip::Data inData;
+            ncvslideio::gapi::wip::Data inData;
             source->pull(inData);
-            inMat = cv::util::get<cv::Mat>(inData);
+            inMat = ncvslideio::util::get<ncvslideio::Mat>(inData);
             comp.apply(inMat, gapiForeground,
-                       cv::compile_args(pkg, BackSubStateParams{method}));
+                       ncvslideio::compile_args(pkg, BackSubStateParams{method}));
 
             if (method == "knn") {
                 pOCVBackSubKNN->apply(inMat, ocvForeground, -1);
@@ -534,27 +534,27 @@ TEST(StatefulKernel, StateIsChangedViaCompArgsOnReshape)
         }
     };
 
-    run("cv/video/768x576.avi", "knn");
-    run("cv/video/1920x1080.avi", "mog2");
+    run("ncvslideio/video/768x576.avi", "knn");
+    run("ncvslideio/video/1920x1080.avi", "mog2");
 }
 
 TEST(StatefulKernel, StateIsResetOnceOnReshapeInStreaming)
 {
-    cv::GMat in;
-    cv::GOpaque<bool> out = GCountStateSetups::on(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> out = GCountStateSetups::on(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
     // variable to update when state is initialized in the kernel
     CountStateSetupsParams params;
     params.pSetupsCount.reset(new int(0));
 
     auto ccomp = c.compileStreaming(
-        cv::compile_args(cv::gapi::kernels<GOCVCountStateSetups>(), params));
+        ncvslideio::compile_args(ncvslideio::gapi::kernels<GOCVCountStateSetups>(), params));
 
     auto run = [&ccomp, &params](const std::string& videoPath, int expectedSetupsCount) {
         auto path = findDataFile(videoPath);
         try {
-            ccomp.setSource<cv::gapi::wip::GCaptureSource>(path);
+            ccomp.setSource<ncvslideio::gapi::wip::GCaptureSource>(path);
         } catch(...) {
             throw SkipTestException("Video file can not be opened");
         }
@@ -562,7 +562,7 @@ TEST(StatefulKernel, StateIsResetOnceOnReshapeInStreaming)
 
         int frames = 0;
         bool result = false;
-        while (ccomp.pull(cv::gout(result)) && (frames++ < 10)) {
+        while (ccomp.pull(ncvslideio::gout(result)) && (frames++ < 10)) {
             EXPECT_TRUE(result);
             EXPECT_TRUE(params.pSetupsCount != nullptr);
             EXPECT_EQ(expectedSetupsCount, *params.pSetupsCount);
@@ -570,37 +570,37 @@ TEST(StatefulKernel, StateIsResetOnceOnReshapeInStreaming)
         ccomp.stop();
     };
 
-    run("cv/video/768x576.avi", 1);
+    run("ncvslideio/video/768x576.avi", 1);
     // FIXME: it should be 2, not 3 for expectedSetupsCount here.
     // With current implemention both GCPUExecutable reshape() and
     // handleNewStream() call setupKernelStates()
-    run("cv/video/1920x1080.avi", 3);
+    run("ncvslideio/video/1920x1080.avi", 3);
 }
 #endif
 
 TEST(StatefulKernel, StateIsAutoResetOnReshape)
 {
-    cv::GMat in;
-    cv::GOpaque<bool> up_to_date = GIsStateUpToDate::on(in);
-    cv::GOpaque<int>  calls_count = GCountCalls::on(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(up_to_date, calls_count));
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<bool> up_to_date = GIsStateUpToDate::on(in);
+    ncvslideio::GOpaque<int>  calls_count = GCountCalls::on(in);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(up_to_date, calls_count));
 
-    auto run = [&comp](const cv::Mat& in_mat) {
-        const auto pkg = cv::gapi::kernels<GOCVIsStateUpToDate, GOCVCountCalls>();
+    auto run = [&comp](const ncvslideio::Mat& in_mat) {
+        const auto pkg = ncvslideio::gapi::kernels<GOCVIsStateUpToDate, GOCVCountCalls>();
         bool stateIsUpToDate = false;
         int callsCount = 0;
         for (int i = 0; i < 3; i++) {
-            comp.apply(cv::gin(in_mat), cv::gout(stateIsUpToDate, callsCount),
-                       cv::compile_args(pkg));
+            comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(stateIsUpToDate, callsCount),
+                       ncvslideio::compile_args(pkg));
             EXPECT_TRUE(stateIsUpToDate);
             EXPECT_EQ(i+1, callsCount);
         }
     };
 
-    cv::Mat in_mat1(32, 32, CV_8UC1);
+    ncvslideio::Mat in_mat1(32, 32, CV_8UC1);
     run(in_mat1);
 
-    cv::Mat in_mat2(16, 16, CV_8UC1);
+    ncvslideio::Mat in_mat2(16, 16, CV_8UC1);
     run(in_mat2);
 }
 
@@ -616,20 +616,20 @@ struct SetupStateTypedTest : public ::testing::Test
     using StateT = typename std::tuple_element<0, Tuple>::type;
     using SetupT = typename std::tuple_element<1, Tuple>::type;
 
-    G_TYPED_KERNEL(GReturnState, <cv::GOpaque<StateT>(GMat)>, "org.opencv.test.return_state")
+    G_TYPED_KERNEL(GReturnState, <ncvslideio::GOpaque<StateT>(GMat)>, "org.opencv.test.return_state")
     {
         static GOpaqueDesc outMeta(GMatDesc /* in */) { return empty_gopaque_desc(); }
     };
 
     GAPI_OCV_KERNEL_ST(GOCVReturnState, GReturnState, StateT)
     {
-        static void setup(const cv::GMatDesc &/* in */, std::shared_ptr<StateT> &state)
+        static void setup(const ncvslideio::GMatDesc &/* in */, std::shared_ptr<StateT> &state)
         {
-            // Don't use input cv::GMatDesc intentionally
+            // Don't use input ncvslideio::GMatDesc intentionally
             state.reset(new StateT(SetupT::value()));
         }
 
-        static void run(const cv::Mat &/* in */, StateT &out, StateT& state)
+        static void run(const ncvslideio::Mat &/* in */, StateT &out, StateT& state)
         {
             out = state;
         }
@@ -645,15 +645,15 @@ TYPED_TEST_P(SetupStateTypedTest, ReturnInitializedState)
     using StateType = typename TestFixture::StateT;
     using SetupType = typename TestFixture::SetupT;
 
-    cv::Mat dummyIn { 1, 1, CV_8UC1 };
+    ncvslideio::Mat dummyIn { 1, 1, CV_8UC1 };
     StateType retState { };
 
     GMat in;
     auto out = TestFixture::GReturnState::on(in);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
 
-    const auto pkg = cv::gapi::kernels<typename TestFixture::GOCVReturnState>();
-    comp.apply(cv::gin(dummyIn), cv::gout(retState), cv::compile_args(pkg));
+    const auto pkg = ncvslideio::gapi::kernels<typename TestFixture::GOCVReturnState>();
+    comp.apply(ncvslideio::gin(dummyIn), ncvslideio::gout(retState), ncvslideio::compile_args(pkg));
 
     EXPECT_EQ(SetupType::value(), retState);
 }

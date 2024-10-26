@@ -161,7 +161,7 @@ void CV_ImageWarpBaseTest::generate_test_data()
         for (y = 0; y < ssize.height; y += cell_size)
             for (x = 0; x < ssize.width; x += cell_size)
                 rectangle(src, Point(x, y), Point(x + std::min<int>(cell_size, ssize.width - x), y +
-                        std::min<int>(cell_size, ssize.height - y)), Scalar::all((x + y) % 2 ? 255: 0), cv::FILLED);
+                        std::min<int>(cell_size, ssize.height - y)), Scalar::all((x + y) % 2 ? 255: 0), ncvslideio::FILLED);
     }
     else
     {
@@ -173,7 +173,7 @@ void CV_ImageWarpBaseTest::generate_test_data()
     }
 
     // generating an interpolation type
-    interpolation = rng.uniform(0, cv::INTER_LANCZOS4 + 1);
+    interpolation = rng.uniform(0, ncvslideio::INTER_LANCZOS4 + 1);
 
     // generating the dst matrix structure
     double scale_x, scale_y;
@@ -286,10 +286,10 @@ void CV_ImageWarpBaseTest::validate_results() const
 
 #ifdef SHOW_IMAGE
                 const std::string w1("OpenCV impl (run func)"), w2("Reference func"), w3("Src image"), w4("Diff");
-                namedWindow(w1, cv::WINDOW_KEEPRATIO);
-                namedWindow(w2, cv::WINDOW_KEEPRATIO);
-                namedWindow(w3, cv::WINDOW_KEEPRATIO);
-                namedWindow(w4, cv::WINDOW_KEEPRATIO);
+                namedWindow(w1, ncvslideio::WINDOW_KEEPRATIO);
+                namedWindow(w2, ncvslideio::WINDOW_KEEPRATIO);
+                namedWindow(w3, ncvslideio::WINDOW_KEEPRATIO);
+                namedWindow(w4, ncvslideio::WINDOW_KEEPRATIO);
 
                 Mat diff;
                 absdiff(reference_dst, _dst, diff);
@@ -438,7 +438,7 @@ void CV_Resize_Test::generate_test_data()
         for (y = 0; y < ssize.height; y += cell_size)
             for (x = 0; x < ssize.width; x += cell_size)
                 rectangle(src, Point(x, y), Point(x + std::min<int>(cell_size, ssize.width - x), y +
-                        std::min<int>(cell_size, ssize.height - y)), Scalar::all((x + y) % 2 ? 255: 0), cv::FILLED);
+                        std::min<int>(cell_size, ssize.height - y)), Scalar::all((x + y) % 2 ? 255: 0), ncvslideio::FILLED);
     }
     else
     {
@@ -450,7 +450,7 @@ void CV_Resize_Test::generate_test_data()
     }
 
     // generating an interpolation type
-    interpolation = rng.uniform(0, cv::INTER_MAX - 1);
+    interpolation = rng.uniform(0, ncvslideio::INTER_MAX - 1);
 
     // generating the dst matrix structure
     if (interpolation == INTER_AREA)
@@ -500,7 +500,7 @@ void CV_Resize_Test::generate_test_data()
 
 void CV_Resize_Test::run_func()
 {
-    cv::resize(src, dst, dst.size(), 0, 0, interpolation);
+    ncvslideio::resize(src, dst, dst.size(), 0, 0, interpolation);
 }
 
 void CV_Resize_Test::run_reference_func()
@@ -670,9 +670,9 @@ void CV_Resize_Test::resize_generic()
     for (int dy = 0; dy < tmp.rows; ++dy)
         resize_1d(src, tmp, dy, dims[0]);
 
-    cv::Mat tmp_t(tmp.cols, tmp.rows, tmp.type());
+    ncvslideio::Mat tmp_t(tmp.cols, tmp.rows, tmp.type());
     cvtest::transpose(tmp, tmp_t);
-    cv::Mat reference_dst_t(reference_dst.cols, reference_dst.rows, reference_dst.type());
+    ncvslideio::Mat reference_dst_t(reference_dst.cols, reference_dst.rows, reference_dst.type());
     cvtest::transpose(reference_dst, reference_dst_t);
 
     for (int dy = 0; dy < tmp_t.rows; ++dy)
@@ -1078,12 +1078,12 @@ void CV_WarpAffine_Test::generate_test_data()
 
     // warp_matrix is inverse
     if (rng.uniform(0., 1.) > 0)
-        interpolation |= cv::WARP_INVERSE_MAP;
+        interpolation |= ncvslideio::WARP_INVERSE_MAP;
 }
 
 void CV_WarpAffine_Test::run_func()
 {
-    cv::warpAffine(src, dst, M, dst.size(), interpolation, borderType, borderValue);
+    ncvslideio::warpAffine(src, dst, M, dst.size(), interpolation, borderType, borderValue);
 }
 
 float CV_WarpAffine_Test::get_success_error_level(int _interpolation, int _depth) const
@@ -1119,7 +1119,7 @@ void CV_WarpAffine_Test::warpAffine(const Mat& _src, Mat& _dst)
     else
         mapy = Mat();
 
-    if (!(interpolation & cv::WARP_INVERSE_MAP))
+    if (!(interpolation & ncvslideio::WARP_INVERSE_MAP))
         invertAffineTransform(tM.clone(), tM);
 
     const int AB_BITS = MAX(10, (int)INTER_BITS);
@@ -1148,7 +1148,7 @@ void CV_WarpAffine_Test::warpAffine(const Mat& _src, Mat& _dst)
     }
 
     CV_Assert(mapx.type() == CV_16SC2 && ((inter == INTER_NEAREST && mapy.empty()) || mapy.type() == CV_16SC1));
-    cv::remap(_src, _dst, mapx, mapy, inter, borderType, borderValue);
+    ncvslideio::remap(_src, _dst, mapx, mapy, inter, borderType, borderValue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1205,7 +1205,7 @@ void CV_WarpPerspective_Test::generate_test_data()
 
 void CV_WarpPerspective_Test::run_func()
 {
-    cv::warpPerspective(src, dst, M, dst.size(), interpolation, borderType, borderValue);
+    ncvslideio::warpPerspective(src, dst, M, dst.size(), interpolation, borderType, borderValue);
 }
 
 float CV_WarpPerspective_Test::get_success_error_level(int _interpolation, int _depth) const
@@ -1235,7 +1235,7 @@ void CV_WarpPerspective_Test::warpPerspective(const Mat& _src, Mat& _dst)
         M = tmp;
     }
 
-    if (!(interpolation & cv::WARP_INVERSE_MAP))
+    if (!(interpolation & ncvslideio::WARP_INVERSE_MAP))
     {
         Mat tmp;
         invert(M, tmp);
@@ -1281,7 +1281,7 @@ void CV_WarpPerspective_Test::warpPerspective(const Mat& _src, Mat& _dst)
     }
 
     CV_Assert(mapx.type() == CV_16SC2 && ((inter == INTER_NEAREST && mapy.empty()) || mapy.type() == CV_16SC1));
-    cv::remap(_src, _dst, mapx, mapy, inter, borderType, borderValue);
+    ncvslideio::remap(_src, _dst, mapx, mapy, inter, borderType, borderValue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1314,10 +1314,10 @@ protected:
 
 TEST_P(Imgproc_Resize, BigSize)
 {
-    cv::Mat src(46342, 46342, CV_8UC3, cv::Scalar::all(10)), dst;
+    ncvslideio::Mat src(46342, 46342, CV_8UC3, ncvslideio::Scalar::all(10)), dst;
     ASSERT_FALSE(src.empty());
 
-    ASSERT_NO_THROW(cv::resize(src, dst, cv::Size(), 0.5, 0.5, inter));
+    ASSERT_NO_THROW(ncvslideio::resize(src, dst, ncvslideio::Size(), 0.5, 0.5, inter));
 }
 
 INSTANTIATE_TEST_CASE_P(Imgproc, Imgproc_Resize, Interpolation::all());

@@ -53,7 +53,7 @@
 #include "median_blur.simd.hpp"
 #include "median_blur.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 #ifdef HAVE_OPENCL
 
@@ -76,8 +76,8 @@ static bool ocl_medianFilter(InputArray _src, OutputArray _dst, int m)
                         imgSize.height % 4 == 0 &&
                         (ocl::Device::getDefault().isIntel());
 
-    cv::String kname = format( useOptimized ? "medianFilter%d_u" : "medianFilter%d", m) ;
-    cv::String kdefs = useOptimized ?
+    ncvslideio::String kname = format( useOptimized ? "medianFilter%d_u" : "medianFilter%d", m) ;
+    ncvslideio::String kdefs = useOptimized ?
                          format("-D T=%s -D T1=%s -D T4=%s%d -D cn=%d -D USE_4OPT", ocl::typeToStr(type),
                          ocl::typeToStr(depth), ocl::typeToStr(depth), cn*4, cn)
                          :

@@ -157,7 +157,7 @@ static inline double getMaxDistance(map<int, vector<Point2f> > &golds, const vec
         if (gold_corners != golds.end()) {
             double distance = 0.;
             for (int c = 0; c < 4; c++)
-                distance = std::max(distance, cv::norm(gold_corners->second[c] - corners[i][c]));
+                distance = std::max(distance, ncvslideio::norm(gold_corners->second[c] - corners[i][c]));
             mapDist[id] = distance;
         }
     }
@@ -171,7 +171,7 @@ PERF_TEST_P(EstimateAruco, ArucoFirst, ESTIMATE_PARAMS) {
     aruco::DetectorParameters detectorParams;
     detectorParams.minDistanceToBorder = 1;
     detectorParams.markerBorderBits = 1;
-    detectorParams.cornerRefinementMethod = (int)cv::aruco::CORNER_REFINE_SUBPIX;
+    detectorParams.cornerRefinementMethod = (int)ncvslideio::aruco::CORNER_REFINE_SUBPIX;
 
     const int markerSize = 100;
     const int numMarkersInRow = 9;
@@ -203,7 +203,7 @@ PERF_TEST_P(EstimateAruco, ArucoSecond, ESTIMATE_PARAMS) {
     aruco::DetectorParameters detectorParams;
     detectorParams.minDistanceToBorder = 1;
     detectorParams.markerBorderBits = 1;
-    detectorParams.cornerRefinementMethod = (int)cv::aruco::CORNER_REFINE_SUBPIX;
+    detectorParams.cornerRefinementMethod = (int)ncvslideio::aruco::CORNER_REFINE_SUBPIX;
 
     //USE_ARUCO3
     detectorParams.useAruco3Detection = get<0>(testParams);
@@ -255,7 +255,7 @@ PERF_TEST_P(EstimateLargeAruco, ArucoFHD, ESTIMATE_FHD_PARAMS) {
     aruco::DetectorParameters detectorParams;
     detectorParams.minDistanceToBorder = 1;
     detectorParams.markerBorderBits = 1;
-    detectorParams.cornerRefinementMethod = (int)cv::aruco::CORNER_REFINE_SUBPIX;
+    detectorParams.cornerRefinementMethod = (int)ncvslideio::aruco::CORNER_REFINE_SUBPIX;
 
     //USE_ARUCO3
     detectorParams.useAruco3Detection = get<0>(testParams).useAruco3Detection;

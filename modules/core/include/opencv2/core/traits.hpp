@@ -46,7 +46,7 @@
 
 #include "opencv2/core/cvdef.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 //#define OPENCV_TRAITS_ENABLE_DEPRECATED
@@ -276,7 +276,7 @@ public:
          };
 };
 
-/** @brief A helper class for cv::DataType
+/** @brief A helper class for ncvslideio::DataType
 
 The class is specialized for each fundamental numerical data type supported by OpenCV. It provides
 DataDepth<T>::value constant.

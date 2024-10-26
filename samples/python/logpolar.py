@@ -23,23 +23,23 @@ def main():
     except IndexError:
         fn = 'fruits.jpg'
 
-    img = cv.imread(cv.samples.findFile(fn))
+    img = ncvslideio.imread(ncvslideio.samples.findFile(fn))
     if img is None:
         print('Failed to load image file:', fn)
         sys.exit(1)
 
-    img2 = cv.logPolar(img, (img.shape[0]/2, img.shape[1]/2), 40, cv.WARP_FILL_OUTLIERS)
-    img3 = cv.linearPolar(img, (img.shape[0]/2, img.shape[1]/2), 40, cv.WARP_FILL_OUTLIERS)
+    img2 = ncvslideio.logPolar(img, (img.shape[0]/2, img.shape[1]/2), 40, ncvslideio.WARP_FILL_OUTLIERS)
+    img3 = ncvslideio.linearPolar(img, (img.shape[0]/2, img.shape[1]/2), 40, ncvslideio.WARP_FILL_OUTLIERS)
 
-    cv.imshow('before', img)
-    cv.imshow('logpolar', img2)
-    cv.imshow('linearpolar', img3)
+    ncvslideio.imshow('before', img)
+    ncvslideio.imshow('logpolar', img2)
+    ncvslideio.imshow('linearpolar', img3)
 
-    cv.waitKey(0)
+    ncvslideio.waitKey(0)
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

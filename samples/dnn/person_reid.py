@@ -18,20 +18,20 @@ import os.path
 import numpy as np
 import cv2 as cv
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT,
-    cv.dnn.DNN_BACKEND_INFERENCE_ENGINE,
-    cv.dnn.DNN_BACKEND_OPENCV,
-    cv.dnn.DNN_BACKEND_VKCOM,
-    cv.dnn.DNN_BACKEND_CUDA)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT,
+    ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE,
+    ncvslideio.dnn.DNN_BACKEND_OPENCV,
+    ncvslideio.dnn.DNN_BACKEND_VKCOM,
+    ncvslideio.dnn.DNN_BACKEND_CUDA)
 
-targets = (cv.dnn.DNN_TARGET_CPU,
-    cv.dnn.DNN_TARGET_OPENCL,
-    cv.dnn.DNN_TARGET_OPENCL_FP16,
-    cv.dnn.DNN_TARGET_MYRIAD,
-    cv.dnn.DNN_TARGET_HDDL,
-    cv.dnn.DNN_TARGET_VULKAN,
-    cv.dnn.DNN_TARGET_CUDA,
-    cv.dnn.DNN_TARGET_CUDA_FP16)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU,
+    ncvslideio.dnn.DNN_TARGET_OPENCL,
+    ncvslideio.dnn.DNN_TARGET_OPENCL_FP16,
+    ncvslideio.dnn.DNN_TARGET_MYRIAD,
+    ncvslideio.dnn.DNN_TARGET_HDDL,
+    ncvslideio.dnn.DNN_TARGET_VULKAN,
+    ncvslideio.dnn.DNN_TARGET_CUDA,
+    ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
@@ -45,16 +45,16 @@ def preprocess(images, height, width):
     """
     img_list = []
     for image in images:
-        image = cv.resize(image, (width, height))
+        image = ncvslideio.resize(image, (width, height))
         img_list.append(image[:, :, ::-1])
 
     images = np.array(img_list)
     images = (images / 255.0 - MEAN) / STD
 
-    input = cv.dnn.blobFromImages(images.astype(np.float32), ddepth = cv.CV_32F)
+    input = ncvslideio.dnn.blobFromImages(images.astype(np.float32), ddepth = ncvslideio.CV_32F)
     return input
 
-def extract_feature(img_dir, model_path, batch_size = 32, resize_h = 384, resize_w = 128, backend=cv.dnn.DNN_BACKEND_OPENCV, target=cv.dnn.DNN_TARGET_CPU):
+def extract_feature(img_dir, model_path, batch_size = 32, resize_h = 384, resize_w = 128, backend=ncvslideio.dnn.DNN_BACKEND_OPENCV, target=ncvslideio.dnn.DNN_TARGET_CPU):
     """
     Extract features from images in a target directory
     :param img_dir: the input image directory
@@ -84,7 +84,7 @@ def extract_feature(img_dir, model_path, batch_size = 32, resize_h = 384, resize
     feats = np.concatenate(feat_list, axis = 0)
     return feats, path_list
 
-def run_net(inputs, model_path, backend=cv.dnn.DNN_BACKEND_OPENCV, target=cv.dnn.DNN_TARGET_CPU):
+def run_net(inputs, model_path, backend=ncvslideio.dnn.DNN_BACKEND_OPENCV, target=ncvslideio.dnn.DNN_TARGET_CPU):
     """
     Forword propagation for a batch of images.
     :param inputs: input batch of images
@@ -92,7 +92,7 @@ def run_net(inputs, model_path, backend=cv.dnn.DNN_BACKEND_OPENCV, target=cv.dnn
     :param backend: name of computation backend
     :param target: name of computation target
     """
-    net = cv.dnn.readNet(model_path)
+    net = ncvslideio.dnn.readNet(model_path)
     net.setPreferableBackend(backend)
     net.setPreferableTarget(target)
     net.setInput(inputs)
@@ -107,7 +107,7 @@ def read_data(path_list):
     """
     img_list = []
     for img_path in path_list:
-        img = cv.imread(img_path)
+        img = ncvslideio.imread(img_path)
         if img is None:
             continue
         img_list.append(img)
@@ -156,27 +156,27 @@ def drawRankList(query_name, gallery_list, output_size = (128, 384)):
     """
     def addBorder(im, color):
         bordersize = 5
-        border = cv.copyMakeBorder(
+        border = ncvslideio.copyMakeBorder(
             im,
             top = bordersize,
             bottom = bordersize,
             left = bordersize,
             right = bordersize,
-            borderType = cv.BORDER_CONSTANT,
+            borderType = ncvslideio.BORDER_CONSTANT,
             value = color
         )
         return border
-    query_img = cv.imread(query_name)
-    query_img = cv.resize(query_img, output_size)
+    query_img = ncvslideio.imread(query_name)
+    query_img = ncvslideio.resize(query_img, output_size)
     query_img = addBorder(query_img, [0, 0, 0])
-    cv.putText(query_img, 'Query', (10, 30), cv.FONT_HERSHEY_COMPLEX, 1., (0,255,0), 2)
+    ncvslideio.putText(query_img, 'Query', (10, 30), ncvslideio.FONT_HERSHEY_COMPLEX, 1., (0,255,0), 2)
 
     gallery_img_list = []
     for i, gallery_name in enumerate(gallery_list):
-        gallery_img = cv.imread(gallery_name)
-        gallery_img = cv.resize(gallery_img, output_size)
+        gallery_img = ncvslideio.imread(gallery_name)
+        gallery_img = ncvslideio.resize(gallery_img, output_size)
         gallery_img = addBorder(gallery_img, [255, 255, 255])
-        cv.putText(gallery_img, 'G%02d'%i, (10, 30), cv.FONT_HERSHEY_COMPLEX, 1., (0,255,0), 2)
+        ncvslideio.putText(gallery_img, 'G%02d'%i, (10, 30), ncvslideio.FONT_HERSHEY_COMPLEX, 1., (0,255,0), 2)
         gallery_img_list.append(gallery_img)
     ret = np.concatenate([query_img] + gallery_img_list, axis = 1)
     return ret
@@ -197,7 +197,7 @@ def visualization(topk_idx, query_names, gallery_names, output_dir = 'vis'):
         topk_names = [gallery_names[j] for j in idx]
         vis_img = drawRankList(query_name, topk_names)
         output_path = os.path.join(output_dir, '%03d_%s'%(i, os.path.basename(query_name)))
-        cv.imwrite(output_path, vis_img)
+        ncvslideio.imwrite(output_path, vis_img)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Use this script to run human parsing using JPPNet',
@@ -210,14 +210,14 @@ if __name__ == '__main__':
     parser.add_argument('--visualization_dir', default='vis', help='Path for the visualization results')
     parser.add_argument('--topk', default=10, help='Number of images visualized in the rank list')
     parser.add_argument('--batchsize', default=32, help='The batch size of each inference')
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                         help="Choose one of computation backends: "
                              "%d: automatically (by default), "
                              "%d: Intel's Deep Learning Inference Engine (https://software.intel.com/openvino-toolkit), "
                              "%d: OpenCV implementation, "
                              "%d: VKCOM, "
                              "%d: CUDA backend"% backends)
-    parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                         help='Choose one of target computation devices: '
                              '%d: CPU target (by default), '
                              '%d: OpenCL, '

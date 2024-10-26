@@ -23,7 +23,7 @@
 #  pragma GCC diagnostic ignored "-Wstrict-overflow"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -211,6 +211,6 @@ RUN_MEDBLUR3X3_IMPL( float)
 
 } // namespace fluid
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // !defined(GAPI_STANDALONE)

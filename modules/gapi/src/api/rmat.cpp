@@ -6,24 +6,24 @@
 
 #include <opencv2/gapi/rmat.hpp>
 
-using View = cv::RMat::View;
+using View = ncvslideio::RMat::View;
 
 namespace {
-cv::GMatDesc checkDesc(const cv::GMatDesc& desc) {
+ncvslideio::GMatDesc checkDesc(const ncvslideio::GMatDesc& desc) {
     if (!desc.dims.empty() && desc.chan != -1) {
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
             std::logic_error("Multidimesional RMat::Views with chan different from -1 are not supported!"));
     }
     return desc;
 }
 
-int typeFromDesc(const cv::GMatDesc& desc) {
+int typeFromDesc(const ncvslideio::GMatDesc& desc) {
     // In multidimensional case GMatDesc::chan is -1,
     // change it to 1 when calling CV_MAKE_TYPE
     return CV_MAKE_TYPE(desc.depth, desc.chan == -1 ? 1 : desc.chan);
 }
 
-static View::stepsT defaultSteps(const cv::GMatDesc& desc) {
+static View::stepsT defaultSteps(const ncvslideio::GMatDesc& desc) {
     const auto& dims = desc.dims.empty()
                        ? std::vector<int>{desc.size.height, desc.size.width}
                        : desc.dims;
@@ -37,7 +37,7 @@ static View::stepsT defaultSteps(const cv::GMatDesc& desc) {
 }
 } // anonymous namespace
 
-View::View(const cv::GMatDesc& desc, uchar* data, size_t step, DestroyCallback&& cb)
+View::View(const ncvslideio::GMatDesc& desc, uchar* data, size_t step, DestroyCallback&& cb)
     : m_desc(checkDesc(desc))
     , m_data(data)
     , m_steps([this, step](){
@@ -51,7 +51,7 @@ View::View(const cv::GMatDesc& desc, uchar* data, size_t step, DestroyCallback&&
     , m_cb(std::move(cb)) {
 }
 
-View::View(const cv::GMatDesc& desc, uchar* data, const stepsT &steps, DestroyCallback&& cb)
+View::View(const ncvslideio::GMatDesc& desc, uchar* data, const stepsT &steps, DestroyCallback&& cb)
     : m_desc(checkDesc(desc))
     , m_data(data)
     , m_steps(steps == stepsT{} ? defaultSteps(m_desc): steps)

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** argv)
@@ -25,7 +25,7 @@ int smoothType = GAUSSIAN;
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{ c | 0 | }{ p | | }");
+    ncvslideio::CommandLineParser parser(argc, argv, "{ c | 0 | }{ p | | }");
     help(argv);
 
     VideoCapture cap;

@@ -21,28 +21,28 @@
 #include "compiler/gmodel.hpp"
 #include "compiler/gislandmodel.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace gimpl
 {
     class GBackend;
     class GIslandExecutable;
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 // GAPI_EXPORTS is here to make tests build on Windows
-class GAPI_EXPORTS cv::gapi::GBackend::Priv
+class GAPI_EXPORTS ncvslideio::gapi::GBackend::Priv
 {
 public:
-    using EPtr = std::unique_ptr<cv::gimpl::GIslandExecutable>;
+    using EPtr = std::unique_ptr<ncvslideio::gimpl::GIslandExecutable>;
 
     virtual void unpackKernel(ade::Graph            &graph,
                               const ade::NodeHandle &op_node,
                               const GKernelImpl     &impl);
 
     // FIXME: since backends are not passed to ADE anymore,
-    // there's no need in having both cv::gimpl::GBackend
-    // and cv::gapi::GBackend - these two things can be unified
+    // there's no need in having both ncvslideio::gimpl::GBackend
+    // and ncvslideio::gapi::GBackend - these two things can be unified
     // NOTE - nodes are guaranteed to be topologically sorted.
 
     // NB: This method is deprecated
@@ -54,8 +54,8 @@ public:
     virtual EPtr compile(const ade::Graph   &graph,
                          const GCompileArgs &args,
                          const std::vector<ade::NodeHandle> &nodes,
-                         const std::vector<cv::gimpl::Data>& ins_data,
-                         const std::vector<cv::gimpl::Data>& outs_data) const;
+                         const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                         const std::vector<ncvslideio::gimpl::Data>& outs_data) const;
 
     // Ask backend to provide general backend-specific compiler passes
     virtual void addBackendPasses(ade::ExecutionEngineSetupContext &);
@@ -66,7 +66,7 @@ public:
     // they are called when meta information becomes available.
     virtual void addMetaSensitiveBackendPasses(ade::ExecutionEngineSetupContext &);
 
-    virtual cv::GKernelPackage auxiliaryKernels() const;
+    virtual ncvslideio::GKernelPackage auxiliaryKernels() const;
 
     // Ask backend if it has a custom control over island fusion process
     // This method is quite redundant but there's nothing better fits
@@ -79,7 +79,7 @@ public:
     // via a data slot. By default, [existing] backends allow to merge everything.
     // FIXME: Refactor to a single entity?
     // FIXME: Strip down the type details form graph? (make it ade::Graph?)
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &g,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &g,
                              const ade::NodeHandle &a_nh,
                              const ade::NodeHandle &slot_nh,
                              const ade::NodeHandle &b_nh) const;
@@ -90,7 +90,7 @@ public:
     // If the backend doesn't support this data type, a Data node won't
     // be fused into the Islands's body -- will be marked as an in-graph
     // input connection for this Island.
-    virtual bool supportsConst(cv::GShape shape) const;
+    virtual bool supportsConst(ncvslideio::GShape shape) const;
 
     virtual ~Priv() = default;
 };

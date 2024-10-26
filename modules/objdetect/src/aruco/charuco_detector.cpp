@@ -9,7 +9,7 @@
 #include "opencv2/objdetect/charuco_detector.hpp"
 #include "aruco_utils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 using namespace std;

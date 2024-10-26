@@ -36,7 +36,7 @@
 #endif
 
 
-namespace cv {
+namespace ncvslideio {
 namespace highgui_backend {
 
 std::shared_ptr<UIBackend> createUIBackendFramebuffer()
@@ -47,16 +47,16 @@ std::shared_ptr<UIBackend> createUIBackendFramebuffer()
 static std::string& getFBMode()
 {
     static std::string fbModeOpenCV =
-    cv::utils::getConfigurationParameterString("OPENCV_HIGHGUI_FB_MODE", "FB");
+    ncvslideio::utils::getConfigurationParameterString("OPENCV_HIGHGUI_FB_MODE", "FB");
     return fbModeOpenCV;
 }
 
 static std::string& getFBFileName()
 {
     static std::string fbFileNameFB =
-    cv::utils::getConfigurationParameterString("FRAMEBUFFER", "/dev/fb0");
+    ncvslideio::utils::getConfigurationParameterString("FRAMEBUFFER", "/dev/fb0");
     static std::string fbFileNameOpenCV =
-    cv::utils::getConfigurationParameterString("OPENCV_HIGHGUI_FB_DEVICE", "");
+    ncvslideio::utils::getConfigurationParameterString("OPENCV_HIGHGUI_FB_DEVICE", "");
 
     if (!fbFileNameOpenCV.empty()) return fbFileNameOpenCV;
     return fbFileNameFB;
@@ -81,7 +81,7 @@ void FramebufferWindow::imshow(InputArray image)
     currentImg = image.getMat().clone();
 
     CV_LOG_INFO(NULL, "UI: InputArray image: "
-    << cv::typeToString(image.type()) << " size " << image.size());
+    << ncvslideio::typeToString(image.type()) << " size " << image.size());
 
     if (currentImg.empty())
     {
@@ -102,13 +102,13 @@ void FramebufferWindow::imshow(InputArray image)
                         tmp = img;
                         break;
                     case CV_8S:
-                        cv::convertScaleAbs(img, tmp, 1, 127);
+                        ncvslideio::convertScaleAbs(img, tmp, 1, 127);
                         break;
                     case CV_16S:
-                        cv::convertScaleAbs(img, tmp, 1/255., 127);
+                        ncvslideio::convertScaleAbs(img, tmp, 1/255., 127);
                         break;
                     case CV_16U:
-                        cv::convertScaleAbs(img, tmp, 1/255.);
+                        ncvslideio::convertScaleAbs(img, tmp, 1/255.);
                         break;
                     case CV_32F:
                     case CV_64F: // assuming image has values in range [0, 1)
@@ -129,7 +129,7 @@ void FramebufferWindow::imshow(InputArray image)
             }
             break;
         default:
-            CV_Error(cv::Error::StsBadArg, "Bad image: wrong number of channels");
+            CV_Error(ncvslideio::Error::StsBadArg, "Bad image: wrong number of channels");
     }
     {
         Mat bgra(img.rows, img.cols, CV_8UC4);
@@ -140,7 +140,7 @@ void FramebufferWindow::imshow(InputArray image)
     int newWidth = windowRect.width;
     int newHeight = windowRect.height;
     int cntChannel = img.channels();
-    cv::Size imgSize = currentImg.size();
+    ncvslideio::Size imgSize = currentImg.size();
 
     if (flags & WINDOW_AUTOSIZE)
     {
@@ -171,12 +171,12 @@ void FramebufferWindow::imshow(InputArray image)
     if ((newWidth != img.cols) && (newHeight != img.rows))
     {
         Mat imResize;
-        cv::resize(img, imResize, cv::Size(newWidth, newHeight), INTER_LINEAR);
+        ncvslideio::resize(img, imResize, ncvslideio::Size(newWidth, newHeight), INTER_LINEAR);
         img = imResize;
     }
 
     CV_LOG_INFO(NULL, "UI: Formated image: "
-    << cv::typeToString(img.type()) << " size " << img.size());
+    << ncvslideio::typeToString(img.type()) << " size " << img.size());
 
     if (backend.getMode() == FB_MODE_EMU)
     {
@@ -644,7 +644,7 @@ FramebufferBackend::~FramebufferBackend()
         for (int y = fbYOffset; y < backgroundBuff.rows + fbYOffset; y++)
         {
             std::memcpy(getFBPointer() + y * fbLineLength + fbXOffset * cntChannel,
-            backgroundBuff.ptr<cv::Vec4b>(y - fbYOffset),
+            backgroundBuff.ptr<ncvslideio::Vec4b>(y - fbYOffset),
             backgroundBuff.cols * cntChannel);
         }
 
@@ -795,4 +795,4 @@ const std::string FramebufferBackend::getName() const
     return "FB";
 }
 
-}} // cv::highgui_backend::
+}} // ncvslideio::highgui_backend::

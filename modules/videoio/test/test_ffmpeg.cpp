@@ -165,7 +165,7 @@ TEST_P(videoio_container, read)
     const string codec = get<4>(GetParam());
     const string pixelFormat = get<5>(GetParam());
     const string fileName = path + "." + ext;
-    const string fileNameOut = tempfile(cv::format("test_container_stream.%s", ext_raw.c_str()).c_str());
+    const string fileNameOut = tempfile(ncvslideio::format("test_container_stream.%s", ext_raw.c_str()).c_str());
 
     // Write encoded video read using VideoContainer to tmp file
     size_t totalBytes = 0;
@@ -310,7 +310,7 @@ TEST_P(videoio_encapsulate, write)
     const string ext = get<1>(GetParam());
     const int idrPeriod = get<2>(GetParam());
     const int nFrames = get<3>(GetParam());
-    const string fileNameOut = tempfile(cv::format("test_encapsulated_stream.%s", ext.c_str()).c_str());
+    const string fileNameOut = tempfile(ncvslideio::format("test_encapsulated_stream.%s", ext.c_str()).c_str());
     const bool setPts = get<4>(GetParam());
     const bool tsWorking = get<5>(GetParam());
 
@@ -411,9 +411,9 @@ const videoio_encapsulate_params_t videoio_encapsulate_params[] =
     videoio_encapsulate_params_t("video/sample_322x242_15frames.yuv420p.mpeg2video.mp4", "mpg", 12, 13, false, true),
     videoio_encapsulate_params_t("video/sample_322x242_15frames.yuv420p.mjpeg.mp4", "mp4", 0, 5, false, true),
     videoio_encapsulate_params_t("video/sample_322x242_15frames.yuv420p.libx264.mp4", "ts", 15, 15, true, true),
-    videoio_encapsulate_params_t("../cv/tracking/faceocc2/data/faceocc2.webm", "webm", 128, 129, false, true),
-    videoio_encapsulate_params_t("../cv/video/1920x1080.avi", "mp4", 12, 13, false, true),
-    videoio_encapsulate_params_t("../cv/video/768x576.avi", "avi", 15, 16, false, true),
+    videoio_encapsulate_params_t("../ncvslideio/tracking/faceocc2/data/faceocc2.webm", "webm", 128, 129, false, true),
+    videoio_encapsulate_params_t("../ncvslideio/video/1920x1080.avi", "mp4", 12, 13, false, true),
+    videoio_encapsulate_params_t("../ncvslideio/video/768x576.avi", "avi", 15, 16, false, true),
     // Not supported by with FFmpeg:
     //videoio_encapsulate_params_t("video/sample_322x242_15frames.yuv420p.libx265.mp4", "mp4", 15, 15, true, true),
     //videoio_encapsulate_params_t("video/sample_322x242_15frames.yuv420p.libvpx-vp9.mp4", "mp4", 15, 15, false, true),
@@ -429,7 +429,7 @@ TEST(videoio_encapsulate_set_idr, write)
 
     const string fileName = findDataFile("video/big_buck_bunny.mp4");
     const string ext = "mp4";
-    const string fileNameOut = tempfile(cv::format("test_encapsulated_stream_set_idr.%s", ext.c_str()).c_str());
+    const string fileNameOut = tempfile(ncvslideio::format("test_encapsulated_stream_set_idr.%s", ext.c_str()).c_str());
 
     // Use VideoWriter to encapsulate encoded video read with VideoReader
     {
@@ -715,7 +715,7 @@ TEST_P(ffmpeg_get_fourcc, check_short_codecs)
 
 const ffmpeg_get_fourcc_param_t ffmpeg_get_fourcc_param[] =
 {
-    ffmpeg_get_fourcc_param_t("../cv/tracking/faceocc2/data/faceocc2.webm", "VP80"),
+    ffmpeg_get_fourcc_param_t("../ncvslideio/tracking/faceocc2/data/faceocc2.webm", "VP80"),
     ffmpeg_get_fourcc_param_t("video/big_buck_bunny.h265", "hevc"),
     ffmpeg_get_fourcc_param_t("video/big_buck_bunny.h264", "h264"),
     ffmpeg_get_fourcc_param_t("video/sample_322x242_15frames.yuv420p.libvpx-vp9.mp4", "VP90"),

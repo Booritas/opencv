@@ -57,10 +57,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/region.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -98,7 +98,7 @@ public:
         CV_Assert(anchors >= 1);
         CV_Assert(useLogistic || useSoftmax);
         if (params.get<bool>("softmax_tree", false))
-            CV_Error(cv::Error::StsNotImplemented, "Yolo9000 is not implemented");
+            CV_Error(ncvslideio::Error::StsNotImplemented, "Yolo9000 is not implemented");
     }
 
     bool getMemoryShapes(const std::vector<MatShape> &inputs,
@@ -656,4 +656,4 @@ Ptr<RegionLayer> RegionLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

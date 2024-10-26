@@ -9,39 +9,39 @@
 #include <opencv2/gapi/gopaque.hpp>
 #include "api/gorigin.hpp"
 
-// cv::detail::GOpaqueU public implementation ///////////////////////////////////
-cv::detail::GOpaqueU::GOpaqueU()
-    : m_priv(new GOrigin(GShape::GOPAQUE, cv::GNode::Param()))
+// ncvslideio::detail::GOpaqueU public implementation ///////////////////////////////////
+ncvslideio::detail::GOpaqueU::GOpaqueU()
+    : m_priv(new GOrigin(GShape::GOPAQUE, ncvslideio::GNode::Param()))
 {
 }
 
-cv::detail::GOpaqueU::GOpaqueU(const GNode &n, std::size_t out)
+ncvslideio::detail::GOpaqueU::GOpaqueU(const GNode &n, std::size_t out)
     : m_priv(new GOrigin(GShape::GOPAQUE, n, out))
 {
 }
 
-cv::GOrigin& cv::detail::GOpaqueU::priv()
+ncvslideio::GOrigin& ncvslideio::detail::GOpaqueU::priv()
 {
     return *m_priv;
 }
 
-const cv::GOrigin& cv::detail::GOpaqueU::priv() const
+const ncvslideio::GOrigin& ncvslideio::detail::GOpaqueU::priv() const
 {
     return *m_priv;
 }
 
-void cv::detail::GOpaqueU::setConstructFcn(ConstructOpaque &&co)
+void ncvslideio::detail::GOpaqueU::setConstructFcn(ConstructOpaque &&co)
 {
     m_priv->ctor = std::move(co);
 }
 
-void cv::detail::GOpaqueU::setKind(cv::detail::OpaqueKind kind)
+void ncvslideio::detail::GOpaqueU::setKind(ncvslideio::detail::OpaqueKind kind)
 {
     m_priv->kind = kind;
 }
 
-namespace cv {
-std::ostream& operator<<(std::ostream& os, const cv::GOpaqueDesc &)
+namespace ncvslideio {
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GOpaqueDesc &)
 {
     // FIXME: add type information here
     os << "(Opaque)";

@@ -22,13 +22,13 @@
 
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 #ifdef HAVE_ONEVPL
-cv::util::optional<pp_params> VPPPreprocDispatcher::is_applicable(const cv::MediaFrame& in_frame) {
-    cv::util::optional<pp_params> param;
+ncvslideio::util::optional<pp_params> VPPPreprocDispatcher::is_applicable(const ncvslideio::MediaFrame& in_frame) {
+    ncvslideio::util::optional<pp_params> param;
     GAPI_LOG_DEBUG(nullptr, "workers: " << workers.size());
     bool worker_found = false;
     for (const auto &w : workers) {
@@ -50,7 +50,7 @@ cv::util::optional<pp_params> VPPPreprocDispatcher::is_applicable(const cv::Medi
             }
         }
     }
-    return worker_found ? param : cv::util::optional<pp_params>{};
+    return worker_found ? param : ncvslideio::util::optional<pp_params>{};
 }
 
 pp_session VPPPreprocDispatcher::initialize_preproc(const pp_params& initial_frame_param,
@@ -69,9 +69,9 @@ pp_session VPPPreprocDispatcher::initialize_preproc(const pp_params& initial_fra
     GAPI_Error("Cannot initialize VPP preproc in dispatcher, no suitable worker");
 }
 
-cv::MediaFrame VPPPreprocDispatcher::run_sync(const pp_session &session_handle,
-                                              const cv::MediaFrame& in_frame,
-                                              const cv::util::optional<cv::Rect> &opt_roi) {
+ncvslideio::MediaFrame VPPPreprocDispatcher::run_sync(const pp_session &session_handle,
+                                              const ncvslideio::MediaFrame& in_frame,
+                                              const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi) {
     const auto &vpp_sess = session_handle.get<vpp_pp_session>();
     GAPI_LOG_DEBUG(nullptr, "workers: " << workers.size());
     for (auto &w : workers) {
@@ -84,8 +84,8 @@ cv::MediaFrame VPPPreprocDispatcher::run_sync(const pp_session &session_handle,
 }
 
 #else // HAVE_ONEVPL
-cv::util::optional<pp_params> VPPPreprocDispatcher::is_applicable(const cv::MediaFrame&) {
-    return cv::util::optional<pp_params>{};
+ncvslideio::util::optional<pp_params> VPPPreprocDispatcher::is_applicable(const ncvslideio::MediaFrame&) {
+    return ncvslideio::util::optional<pp_params>{};
 }
 
 pp_session VPPPreprocDispatcher::initialize_preproc(const pp_params&,
@@ -93,13 +93,13 @@ pp_session VPPPreprocDispatcher::initialize_preproc(const pp_params&,
     GAPI_Error("Unsupported: G-API compiled without `WITH_GAPI_ONEVPL=ON`");
 }
 
-cv::MediaFrame VPPPreprocDispatcher::run_sync(const pp_session &,
-                                              const cv::MediaFrame&,
-                                              const cv::util::optional<cv::Rect> &) {
+ncvslideio::MediaFrame VPPPreprocDispatcher::run_sync(const pp_session &,
+                                              const ncvslideio::MediaFrame&,
+                                              const ncvslideio::util::optional<ncvslideio::Rect> &) {
     GAPI_Error("Unsupported: G-API compiled without `WITH_GAPI_ONEVPL=ON`");
 }
 #endif // HAVE_ONEVPL
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

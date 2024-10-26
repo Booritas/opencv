@@ -70,7 +70,7 @@ public:
      */
     void start()
     {
-        startTime = cv::getTickCount();
+        startTime = ncvslideio::getTickCount();
     }
 
     /**
@@ -78,8 +78,8 @@ public:
      */
     void stop()
     {
-        int64 stopTime = cv::getTickCount();
-        value += ( (double)stopTime - startTime) / cv::getTickFrequency();
+        int64 stopTime = ncvslideio::getTickCount();
+        value += ( (double)stopTime - startTime) / ncvslideio::getTickFrequency();
     }
 
     /**

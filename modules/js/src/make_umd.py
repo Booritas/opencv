@@ -83,7 +83,7 @@ def make_umd(opencvjs, cvjs):
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
     define(function () {
-      return (root.cv = factory());
+      return (root.ncvslideio = factory());
     });
   } else if (typeof module === 'object' && module.exports) {
     // Node. Does not work with strict CommonJS, but
@@ -92,19 +92,19 @@ def make_umd(opencvjs, cvjs):
     module.exports = factory();
   } else if (typeof window === 'object') {
     // Browser globals
-    root.cv = factory();
+    root.ncvslideio = factory();
   } else if (typeof importScripts === 'function') {
     // Web worker
-    root.cv = factory();
+    root.ncvslideio = factory();
   } else {
     // Other shells, e.g. d8
-    root.cv = factory();
+    root.ncvslideio = factory();
   }
 }(this, function () {
   %s
   if (typeof Module === 'undefined')
     Module = {};
-  return cv(Module);
+  return ncvslideio(Module);
 }));
         """ % (content)).lstrip().encode('utf-8'))
 

@@ -407,18 +407,18 @@ def predict(features, net, decoder):
     return prediction[0]
 
 def readAudioFile(file, audioStream):
-    cap = cv.VideoCapture(file)
+    cap = ncvslideio.VideoCapture(file)
     samplingRate = 16000
-    params = np.asarray([cv.CAP_PROP_AUDIO_STREAM, audioStream,
-              cv.CAP_PROP_VIDEO_STREAM, -1,
-              cv.CAP_PROP_AUDIO_DATA_DEPTH, cv.CV_32F,
-              cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND, samplingRate
+    params = np.asarray([ncvslideio.CAP_PROP_AUDIO_STREAM, audioStream,
+              ncvslideio.CAP_PROP_VIDEO_STREAM, -1,
+              ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH, ncvslideio.CV_32F,
+              ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND, samplingRate
               ])
-    cap.open(file, cv.CAP_ANY, params)
+    cap.open(file, ncvslideio.CAP_ANY, params)
     if cap.isOpened() is False:
         print("Error : Can't read audio file:", file, "with audioStream = ", audioStream)
         return
-    audioBaseIndex = int (cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
+    audioBaseIndex = int (cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
     inputAudio = []
     while(1):
         if (cap.grab()):
@@ -432,21 +432,21 @@ def readAudioFile(file, audioStream):
     return inputAudio, samplingRate
 
 def readAudioMicrophone(microTime):
-    cap = cv.VideoCapture()
+    cap = ncvslideio.VideoCapture()
     samplingRate = 16000
-    params = np.asarray([cv.CAP_PROP_AUDIO_STREAM, 0,
-              cv.CAP_PROP_VIDEO_STREAM, -1,
-              cv.CAP_PROP_AUDIO_DATA_DEPTH, cv.CV_32F,
-              cv.CAP_PROP_AUDIO_SAMPLES_PER_SECOND, samplingRate
+    params = np.asarray([ncvslideio.CAP_PROP_AUDIO_STREAM, 0,
+              ncvslideio.CAP_PROP_VIDEO_STREAM, -1,
+              ncvslideio.CAP_PROP_AUDIO_DATA_DEPTH, ncvslideio.CV_32F,
+              ncvslideio.CAP_PROP_AUDIO_SAMPLES_PER_SECOND, samplingRate
               ])
-    cap.open(0, cv.CAP_ANY, params)
+    cap.open(0, ncvslideio.CAP_ANY, params)
     if cap.isOpened() is False:
         print("Error: Can't open microphone")
         print("Error: problems with audio reading, check input arguments")
         return
-    audioBaseIndex = int(cap.get(cv.CAP_PROP_AUDIO_BASE_INDEX))
-    cvTickFreq = cv.getTickFrequency()
-    sysTimeCurr = cv.getTickCount()
+    audioBaseIndex = int(cap.get(ncvslideio.CAP_PROP_AUDIO_BASE_INDEX))
+    cvTickFreq = ncvslideio.getTickFrequency()
+    sysTimeCurr = ncvslideio.getTickCount()
     sysTimePrev = sysTimeCurr
     inputAudio = []
     while ((sysTimeCurr - sysTimePrev) / cvTickFreq < microTime):
@@ -455,7 +455,7 @@ def readAudioMicrophone(microTime):
             frame = cap.retrieve(frame, audioBaseIndex)
             for i in range(len(frame[1][0])):
                 inputAudio.append(frame[1][0][i])
-            sysTimeCurr = cv.getTickCount()
+            sysTimeCurr = ncvslideio.getTickCount()
         else:
             print("Error: Grab error")
             break
@@ -466,9 +466,9 @@ def readAudioMicrophone(microTime):
 if __name__ == '__main__':
 
     # Computation backends supported by layers
-    backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV)
+    backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV)
     # Target Devices for computation
-    targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16)
+    targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16)
 
     parser = argparse.ArgumentParser(description='This script runs Jasper Speech recognition model',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -479,12 +479,12 @@ if __name__ == '__main__':
     parser.add_argument('--show_spectrogram', action='store_true', help='Whether to show a spectrogram of the input audio.')
     parser.add_argument('--model', type=str, default='jasper.onnx', help='Path to the onnx file of Jasper. default="jasper.onnx"')
     parser.add_argument('--output', type=str, help='Path to file where recognized audio transcript must be saved. Leave this to print on console.')
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                         help='Select a computation backend: '
                         "%d: automatically (by default) "
                         "%d: OpenVINO Inference Engine "
                         "%d: OpenCV Implementation " % backends)
-    parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                         help='Select a target device: '
                         "%d: CPU target (by default) "
                         "%d: OpenCL "
@@ -534,16 +534,16 @@ if __name__ == '__main__':
         features[i] = feature_extractor.calculate_features(x=X, seq_len=seq_len)
 
     # Load Network
-    net = cv.dnn.readNetFromONNX(args.model)
+    net = ncvslideio.dnn.readNetFromONNX(args.model)
     net.setPreferableBackend(args.backend)
     net.setPreferableTarget(args.target)
 
     # Show spectogram if required
     if args.show_spectrogram and not args.input_audio.endswith('.txt'):
-        img = cv.normalize(src=features[0][0], dst=None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
-        img = cv.applyColorMap(img, cv.COLORMAP_JET)
-        cv.imshow('spectogram', img)
-        cv.waitKey(0)
+        img = ncvslideio.normalize(src=features[0][0], dst=None, alpha=0, beta=255, norm_type=ncvslideio.NORM_MINMAX, dtype=ncvslideio.CV_8U)
+        img = ncvslideio.applyColorMap(img, ncvslideio.COLORMAP_JET)
+        ncvslideio.imshow('spectogram', img)
+        ncvslideio.waitKey(0)
 
     # Initialize decoder
     decoder = Decoder()
@@ -564,4 +564,4 @@ if __name__ == '__main__':
         print("Transcript was written to {}".format(args.output))
     else:
         print(prediction)
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

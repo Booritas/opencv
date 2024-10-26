@@ -49,7 +49,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching_exposure
@@ -240,6 +240,6 @@ public:
 //! @}
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_EXPOSURE_COMPENSATE_HPP

@@ -43,7 +43,7 @@ std::string weights_path(const std::string& model_path) {
     CV_Assert(sz > EXT_LEN);
 
     const auto ext = model_path.substr(sz - EXT_LEN);
-    CV_Assert(cv::toLowerCase(ext) == ".xml");
+    CV_Assert(ncvslideio::toLowerCase(ext) == ".xml");
     return model_path.substr(0u, sz - EXT_LEN) + ".bin";
 }
 //////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ struct BBox {
     int x2;
     int y2;
 
-    cv::Rect getRect() const { return cv::Rect(x1,
+    ncvslideio::Rect getRect() const { return ncvslideio::Rect(x1,
                                                y1,
                                                x2 - x1,
                                                y2 - y1); }
@@ -156,8 +156,8 @@ struct Face {
 
 const float P_NET_WINDOW_SIZE = 12.0f;
 
-std::vector<Face> buildFaces(const cv::Mat& scores,
-                             const cv::Mat& regressions,
+std::vector<Face> buildFaces(const ncvslideio::Mat& scores,
+                             const ncvslideio::Mat& regressions,
                              const float scaleFactor,
                              const float threshold) {
 
@@ -205,71 +205,71 @@ std::vector<Face> buildFaces(const cv::Mat& scores,
 }
 
 // Define networks for this sample
-using GMat2 = std::tuple<cv::GMat, cv::GMat>;
-using GMat3 = std::tuple<cv::GMat, cv::GMat, cv::GMat>;
-using GMats = cv::GArray<cv::GMat>;
-using GRects = cv::GArray<cv::Rect>;
-using GSize = cv::GOpaque<cv::Size>;
+using GMat2 = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+using GMat3 = std::tuple<ncvslideio::GMat, ncvslideio::GMat, ncvslideio::GMat>;
+using GMats = ncvslideio::GArray<ncvslideio::GMat>;
+using GRects = ncvslideio::GArray<ncvslideio::Rect>;
+using GSize = ncvslideio::GOpaque<ncvslideio::Size>;
 
 G_API_NET(MTCNNRefinement,
-          <GMat2(cv::GMat)>,
+          <GMat2(ncvslideio::GMat)>,
           "sample.custom.mtcnn_refinement");
 
 G_API_NET(MTCNNOutput,
-          <GMat3(cv::GMat)>,
+          <GMat3(ncvslideio::GMat)>,
           "sample.custom.mtcnn_output");
 
-using GFaces = cv::GArray<Face>;
+using GFaces = ncvslideio::GArray<Face>;
 G_API_OP(BuildFaces,
-         <GFaces(cv::GMat, cv::GMat, float, float)>,
+         <GFaces(ncvslideio::GMat, ncvslideio::GMat, float, float)>,
          "sample.custom.mtcnn.build_faces") {
-         static cv::GArrayDesc outMeta(const cv::GMatDesc&,
-                                       const cv::GMatDesc&,
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc&,
+                                       const ncvslideio::GMatDesc&,
                                        const float,
                                        const float) {
-              return cv::empty_array_desc();
+              return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(RunNMS,
          <GFaces(GFaces, float, bool)>,
          "sample.custom.mtcnn.run_nms") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&,
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&,
                                        const float, const bool) {
-             return cv::empty_array_desc();
+             return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(AccumulatePyramidOutputs,
          <GFaces(GFaces, GFaces)>,
          "sample.custom.mtcnn.accumulate_pyramid_outputs") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&) {
-             return cv::empty_array_desc();
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&) {
+             return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(ApplyRegression,
          <GFaces(GFaces, bool)>,
          "sample.custom.mtcnn.apply_regression") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&, const bool) {
-             return cv::empty_array_desc();
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&, const bool) {
+             return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(BBoxesToSquares,
          <GFaces(GFaces)>,
          "sample.custom.mtcnn.bboxes_to_squares") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&) {
-              return cv::empty_array_desc();
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&) {
+              return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(R_O_NetPreProcGetROIs,
          <GRects(GFaces, GSize)>,
          "sample.custom.mtcnn.bboxes_r_o_net_preproc_get_rois") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&, const cv::GOpaqueDesc&) {
-              return cv::empty_array_desc();
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&, const ncvslideio::GOpaqueDesc&) {
+              return ncvslideio::empty_array_desc();
     }
 };
 
@@ -277,38 +277,38 @@ G_API_OP(R_O_NetPreProcGetROIs,
 G_API_OP(RNetPostProc,
          <GFaces(GFaces, GMats, GMats, float)>,
          "sample.custom.mtcnn.rnet_postproc") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&,
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&,
                                        const float) {
-             return cv::empty_array_desc();
+             return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(ONetPostProc,
          <GFaces(GFaces, GMats, GMats, GMats, float)>,
          "sample.custom.mtcnn.onet_postproc") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&,
-                                       const cv::GArrayDesc&,
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&,
+                                       const ncvslideio::GArrayDesc&,
                                        const float) {
-             return cv::empty_array_desc();
+             return ncvslideio::empty_array_desc();
     }
 };
 
 G_API_OP(SwapFaces,
          <GFaces(GFaces)>,
          "sample.custom.mtcnn.swap_faces") {
-         static cv::GArrayDesc outMeta(const cv::GArrayDesc&) {
-              return cv::empty_array_desc();
+         static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc&) {
+              return ncvslideio::empty_array_desc();
     }
 };
 
 //Custom kernels implementation
 GAPI_OCV_KERNEL(OCVBuildFaces, BuildFaces) {
-    static void run(const cv::Mat & in_scores,
-                    const cv::Mat & in_regresssions,
+    static void run(const ncvslideio::Mat & in_scores,
+                    const ncvslideio::Mat & in_regresssions,
                     const float scaleFactor,
                     const float threshold,
                     std::vector<Face> &out_faces) {
@@ -358,14 +358,14 @@ GAPI_OCV_KERNEL(OCVBBoxesToSquares, BBoxesToSquares) {
 
 GAPI_OCV_KERNEL(OCVR_O_NetPreProcGetROIs, R_O_NetPreProcGetROIs) {
     static void run(const std::vector<Face> &in_faces,
-                    const cv::Size & in_image_size,
-                    std::vector<cv::Rect> &outs) {
+                    const ncvslideio::Size & in_image_size,
+                    std::vector<ncvslideio::Rect> &outs) {
         outs.clear();
         for (const auto& face : in_faces) {
-            cv::Rect tmp_rect = face.bbox.getRect();
+            ncvslideio::Rect tmp_rect = face.bbox.getRect();
             //Compare to transposed sizes width<->height
-            tmp_rect &= cv::Rect(tmp_rect.x, tmp_rect.y, in_image_size.height - tmp_rect.x, in_image_size.width - tmp_rect.y) &
-                        cv::Rect(0, 0, in_image_size.height, in_image_size.width);
+            tmp_rect &= ncvslideio::Rect(tmp_rect.x, tmp_rect.y, in_image_size.height - tmp_rect.x, in_image_size.width - tmp_rect.y) &
+                        ncvslideio::Rect(0, 0, in_image_size.height, in_image_size.width);
             outs.push_back(tmp_rect);
         }
     }
@@ -374,8 +374,8 @@ GAPI_OCV_KERNEL(OCVR_O_NetPreProcGetROIs, R_O_NetPreProcGetROIs) {
 
 GAPI_OCV_KERNEL(OCVRNetPostProc, RNetPostProc) {
     static void run(const std::vector<Face> &in_faces,
-                    const std::vector<cv::Mat> &in_scores,
-                    const std::vector<cv::Mat> &in_regresssions,
+                    const std::vector<ncvslideio::Mat> &in_scores,
+                    const std::vector<ncvslideio::Mat> &in_regresssions,
                     const float threshold,
                     std::vector<Face> &out_faces) {
         out_faces.clear();
@@ -394,9 +394,9 @@ GAPI_OCV_KERNEL(OCVRNetPostProc, RNetPostProc) {
 
 GAPI_OCV_KERNEL(OCVONetPostProc, ONetPostProc) {
     static void run(const std::vector<Face> &in_faces,
-                    const std::vector<cv::Mat> &in_scores,
-                    const std::vector<cv::Mat> &in_regresssions,
-                    const std::vector<cv::Mat> &in_landmarks,
+                    const std::vector<ncvslideio::Mat> &in_scores,
+                    const std::vector<ncvslideio::Mat> &in_regresssions,
+                    const std::vector<ncvslideio::Mat> &in_landmarks,
                     const float threshold,
                     std::vector<Face> &out_faces) {
         out_faces.clear();
@@ -448,22 +448,22 @@ GAPI_OCV_KERNEL(OCVSwapFaces, SwapFaces) {
 
 namespace vis {
 namespace {
-void bbox(const cv::Mat& m, const cv::Rect& rc) {
-    cv::rectangle(m, rc, cv::Scalar{ 0,255,0 }, 2, cv::LINE_8, 0);
+void bbox(const ncvslideio::Mat& m, const ncvslideio::Rect& rc) {
+    ncvslideio::rectangle(m, rc, ncvslideio::Scalar{ 0,255,0 }, 2, ncvslideio::LINE_8, 0);
 };
 
-using rectPoints = std::pair<cv::Rect, std::vector<cv::Point>>;
+using rectPoints = std::pair<ncvslideio::Rect, std::vector<ncvslideio::Point>>;
 
-static cv::Mat drawRectsAndPoints(const cv::Mat& img,
+static ncvslideio::Mat drawRectsAndPoints(const ncvslideio::Mat& img,
     const std::vector<rectPoints> data) {
-    cv::Mat outImg;
+    ncvslideio::Mat outImg;
     img.copyTo(outImg);
 
     for (const auto& el : data) {
         vis::bbox(outImg, el.first);
         auto pts = el.second;
         for (size_t i = 0; i < pts.size(); ++i) {
-            cv::circle(outImg, pts[i], 3, cv::Scalar(0, 255, 255), 1);
+            ncvslideio::circle(outImg, pts[i], 3, ncvslideio::Scalar(0, 255, 255), 1);
         }
     }
     return outImg;
@@ -474,20 +474,20 @@ static cv::Mat drawRectsAndPoints(const cv::Mat& img,
 
 //Infer helper function
 namespace {
-static inline std::tuple<cv::GMat, cv::GMat> run_mtcnn_p(cv::GMat &in, const std::string &id) {
-    cv::GInferInputs inputs;
+static inline std::tuple<ncvslideio::GMat, ncvslideio::GMat> run_mtcnn_p(ncvslideio::GMat &in, const std::string &id) {
+    ncvslideio::GInferInputs inputs;
     inputs["data"] = in;
-    auto outputs = cv::gapi::infer<cv::gapi::Generic>(id, inputs);
+    auto outputs = ncvslideio::gapi::infer<ncvslideio::gapi::Generic>(id, inputs);
     auto regressions = outputs.at("conv4-2");
     auto scores = outputs.at("prob1");
     return std::make_tuple(regressions, scores);
 }
 
-static inline std::string get_pnet_level_name(const cv::Size &in_size) {
+static inline std::string get_pnet_level_name(const ncvslideio::Size &in_size) {
     return "MTCNNProposal_" + std::to_string(in_size.width) + "x" + std::to_string(in_size.height);
 }
 
-int calculate_scales(const cv::Size &input_size, std::vector<double> &out_scales, std::vector<cv::Size> &out_sizes ) {
+int calculate_scales(const ncvslideio::Size &input_size, std::vector<double> &out_scales, std::vector<ncvslideio::Size> &out_sizes ) {
     //calculate multi - scale and limit the maximum side to 1000
     //pr_scale: limit the maximum side to 1000, < 1.0
     double pr_scale = 1.0;
@@ -513,7 +513,7 @@ int calculate_scales(const cv::Size &input_size, std::vector<double> &out_scales
     while (minl >= 12)
     {
         const double current_scale = pr_scale * std::pow(factor, factor_count);
-        cv::Size current_size(static_cast<int>(static_cast<double>(input_size.width) * current_scale),
+        ncvslideio::Size current_size(static_cast<int>(static_cast<double>(input_size.width) * current_scale),
                               static_cast<int>(static_cast<double>(input_size.height) * current_scale));
         out_scales.push_back(current_scale);
         out_sizes.push_back(current_size);
@@ -523,7 +523,7 @@ int calculate_scales(const cv::Size &input_size, std::vector<double> &out_scales
     return factor_count;
 }
 
-int calculate_half_scales(const cv::Size &input_size, std::vector<double>& out_scales, std::vector<cv::Size>& out_sizes) {
+int calculate_half_scales(const ncvslideio::Size &input_size, std::vector<double>& out_scales, std::vector<ncvslideio::Size>& out_sizes) {
     double pr_scale = 0.5;
     const double h = static_cast<double>(input_size.height);
     const double w = static_cast<double>(input_size.width);
@@ -536,7 +536,7 @@ int calculate_half_scales(const cv::Size &input_size, std::vector<double>& out_s
     while (minl >= 12.0*2.0)
     {
         const double current_scale = pr_scale;
-        cv::Size current_size(static_cast<int>(static_cast<double>(input_size.width) * current_scale),
+        ncvslideio::Size current_size(static_cast<int>(static_cast<double>(input_size.width) * current_scale),
                               static_cast<int>(static_cast<double>(input_size.height) * current_scale));
         out_scales.push_back(current_scale);
         out_sizes.push_back(current_size);
@@ -552,7 +552,7 @@ const int MAX_PYRAMID_LEVELS = 13;
 } // anonymous namespace
 
 int main(int argc, char* argv[]) {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -571,15 +571,15 @@ int main(int argc, char* argv[]) {
     const auto use_half_scale = cmd.get<bool>("half_scale");
     const auto streaming_queue_capacity = cmd.get<unsigned int>("queue_capacity");
 
-    std::vector<cv::Size> level_size;
+    std::vector<ncvslideio::Size> level_size;
     std::vector<double> scales;
     //MTCNN input size
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     cap.open(input_file_name);
     if (!cap.isOpened())
         CV_Assert(false);
-    auto in_rsz = cv::Size{ static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH)),
-                            static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT)) };
+    auto in_rsz = ncvslideio::Size{ static_cast<int>(cap.get(ncvslideio::CAP_PROP_FRAME_WIDTH)),
+                            static_cast<int>(cap.get(ncvslideio::CAP_PROP_FRAME_HEIGHT)) };
     //Calculate scales, number of pyramid levels and sizes for PNet pyramid
     auto pyramid_levels = use_half_scale ? calculate_half_scales(in_rsz, scales, level_size) :
                                            calculate_scales(in_rsz, scales, level_size);
@@ -587,91 +587,91 @@ int main(int argc, char* argv[]) {
 
     //Proposal part of MTCNN graph
     //Preprocessing BGR2RGB + transpose (NCWH is expected instead of NCHW)
-    cv::GMat in_original;
-    cv::GMat in_originalRGB = cv::gapi::BGR2RGB(in_original);
-    cv::GMat in_transposedRGB = cv::gapi::transpose(in_originalRGB);
-    cv::GOpaque<cv::Size> in_sz = cv::gapi::streaming::size(in_original);
-    cv::GMat regressions[MAX_PYRAMID_LEVELS];
-    cv::GMat scores[MAX_PYRAMID_LEVELS];
-    cv::GArray<custom::Face> nms_p_faces[MAX_PYRAMID_LEVELS];
-    cv::GArray<custom::Face> total_faces[MAX_PYRAMID_LEVELS];
+    ncvslideio::GMat in_original;
+    ncvslideio::GMat in_originalRGB = ncvslideio::gapi::BGR2RGB(in_original);
+    ncvslideio::GMat in_transposedRGB = ncvslideio::gapi::transpose(in_originalRGB);
+    ncvslideio::GOpaque<ncvslideio::Size> in_sz = ncvslideio::gapi::streaming::size(in_original);
+    ncvslideio::GMat regressions[MAX_PYRAMID_LEVELS];
+    ncvslideio::GMat scores[MAX_PYRAMID_LEVELS];
+    ncvslideio::GArray<custom::Face> nms_p_faces[MAX_PYRAMID_LEVELS];
+    ncvslideio::GArray<custom::Face> total_faces[MAX_PYRAMID_LEVELS];
 
     //The very first PNet pyramid layer to init total_faces[0]
     std::tie(regressions[0], scores[0]) = run_mtcnn_p(in_transposedRGB, get_pnet_level_name(level_size[0]));
-    cv::GArray<custom::Face> faces0 = custom::BuildFaces::on(scores[0], regressions[0], static_cast<float>(scales[0]), conf_thresh_p);
-    cv::GArray<custom::Face> final_p_faces_for_bb2squares = custom::ApplyRegression::on(faces0, true);
-    cv::GArray<custom::Face> final_faces_pnet0 = custom::BBoxesToSquares::on(final_p_faces_for_bb2squares);
+    ncvslideio::GArray<custom::Face> faces0 = custom::BuildFaces::on(scores[0], regressions[0], static_cast<float>(scales[0]), conf_thresh_p);
+    ncvslideio::GArray<custom::Face> final_p_faces_for_bb2squares = custom::ApplyRegression::on(faces0, true);
+    ncvslideio::GArray<custom::Face> final_faces_pnet0 = custom::BBoxesToSquares::on(final_p_faces_for_bb2squares);
     total_faces[0] = custom::RunNMS::on(final_faces_pnet0, 0.5f, false);
     //The rest PNet pyramid layers to accumulate all layers result in total_faces[PYRAMID_LEVELS - 1]]
     for (int i = 1; i < pyramid_levels; ++i)
     {
         std::tie(regressions[i], scores[i]) = run_mtcnn_p(in_transposedRGB, get_pnet_level_name(level_size[i]));
-        cv::GArray<custom::Face> faces = custom::BuildFaces::on(scores[i], regressions[i], static_cast<float>(scales[i]), conf_thresh_p);
-        cv::GArray<custom::Face> final_p_faces_for_bb2squares_i = custom::ApplyRegression::on(faces, true);
-        cv::GArray<custom::Face> final_faces_pnet_i = custom::BBoxesToSquares::on(final_p_faces_for_bb2squares_i);
+        ncvslideio::GArray<custom::Face> faces = custom::BuildFaces::on(scores[i], regressions[i], static_cast<float>(scales[i]), conf_thresh_p);
+        ncvslideio::GArray<custom::Face> final_p_faces_for_bb2squares_i = custom::ApplyRegression::on(faces, true);
+        ncvslideio::GArray<custom::Face> final_faces_pnet_i = custom::BBoxesToSquares::on(final_p_faces_for_bb2squares_i);
         nms_p_faces[i] = custom::RunNMS::on(final_faces_pnet_i, 0.5f, false);
         total_faces[i] = custom::AccumulatePyramidOutputs::on(total_faces[i - 1], nms_p_faces[i]);
     }
 
     //Proposal post-processing
-    cv::GArray<custom::Face> final_faces_pnet = custom::RunNMS::on(total_faces[pyramid_levels - 1], 0.7f, true);
+    ncvslideio::GArray<custom::Face> final_faces_pnet = custom::RunNMS::on(total_faces[pyramid_levels - 1], 0.7f, true);
 
     //Refinement part of MTCNN graph
-    cv::GArray<cv::Rect> faces_roi_pnet = custom::R_O_NetPreProcGetROIs::on(final_faces_pnet, in_sz);
-    cv::GArray<cv::GMat> regressionsRNet, scoresRNet;
-    std::tie(regressionsRNet, scoresRNet) = cv::gapi::infer<custom::MTCNNRefinement>(faces_roi_pnet, in_transposedRGB);
+    ncvslideio::GArray<ncvslideio::Rect> faces_roi_pnet = custom::R_O_NetPreProcGetROIs::on(final_faces_pnet, in_sz);
+    ncvslideio::GArray<ncvslideio::GMat> regressionsRNet, scoresRNet;
+    std::tie(regressionsRNet, scoresRNet) = ncvslideio::gapi::infer<custom::MTCNNRefinement>(faces_roi_pnet, in_transposedRGB);
 
     //Refinement post-processing
-    cv::GArray<custom::Face> rnet_post_proc_faces = custom::RNetPostProc::on(final_faces_pnet, scoresRNet, regressionsRNet, conf_thresh_r);
-    cv::GArray<custom::Face> nms07_r_faces_total = custom::RunNMS::on(rnet_post_proc_faces, 0.7f, false);
-    cv::GArray<custom::Face> final_r_faces_for_bb2squares = custom::ApplyRegression::on(nms07_r_faces_total, true);
-    cv::GArray<custom::Face> final_faces_rnet = custom::BBoxesToSquares::on(final_r_faces_for_bb2squares);
+    ncvslideio::GArray<custom::Face> rnet_post_proc_faces = custom::RNetPostProc::on(final_faces_pnet, scoresRNet, regressionsRNet, conf_thresh_r);
+    ncvslideio::GArray<custom::Face> nms07_r_faces_total = custom::RunNMS::on(rnet_post_proc_faces, 0.7f, false);
+    ncvslideio::GArray<custom::Face> final_r_faces_for_bb2squares = custom::ApplyRegression::on(nms07_r_faces_total, true);
+    ncvslideio::GArray<custom::Face> final_faces_rnet = custom::BBoxesToSquares::on(final_r_faces_for_bb2squares);
 
     //Output part of MTCNN graph
-    cv::GArray<cv::Rect> faces_roi_rnet = custom::R_O_NetPreProcGetROIs::on(final_faces_rnet, in_sz);
-    cv::GArray<cv::GMat> regressionsONet, scoresONet, landmarksONet;
-    std::tie(regressionsONet, landmarksONet, scoresONet) = cv::gapi::infer<custom::MTCNNOutput>(faces_roi_rnet, in_transposedRGB);
+    ncvslideio::GArray<ncvslideio::Rect> faces_roi_rnet = custom::R_O_NetPreProcGetROIs::on(final_faces_rnet, in_sz);
+    ncvslideio::GArray<ncvslideio::GMat> regressionsONet, scoresONet, landmarksONet;
+    std::tie(regressionsONet, landmarksONet, scoresONet) = ncvslideio::gapi::infer<custom::MTCNNOutput>(faces_roi_rnet, in_transposedRGB);
 
     //Output post-processing
-    cv::GArray<custom::Face> onet_post_proc_faces = custom::ONetPostProc::on(final_faces_rnet, scoresONet, regressionsONet, landmarksONet, conf_thresh_o);
-    cv::GArray<custom::Face> final_o_faces_for_nms07 = custom::ApplyRegression::on(onet_post_proc_faces, true);
-    cv::GArray<custom::Face> nms07_o_faces_total = custom::RunNMS::on(final_o_faces_for_nms07, 0.7f, true);
-    cv::GArray<custom::Face> final_faces_onet = custom::SwapFaces::on(nms07_o_faces_total);
+    ncvslideio::GArray<custom::Face> onet_post_proc_faces = custom::ONetPostProc::on(final_faces_rnet, scoresONet, regressionsONet, landmarksONet, conf_thresh_o);
+    ncvslideio::GArray<custom::Face> final_o_faces_for_nms07 = custom::ApplyRegression::on(onet_post_proc_faces, true);
+    ncvslideio::GArray<custom::Face> nms07_o_faces_total = custom::RunNMS::on(final_o_faces_for_nms07, 0.7f, true);
+    ncvslideio::GArray<custom::Face> final_faces_onet = custom::SwapFaces::on(nms07_o_faces_total);
 
-    cv::GComputation graph_mtcnn(cv::GIn(in_original), cv::GOut(cv::gapi::copy(in_original), final_faces_onet));
+    ncvslideio::GComputation graph_mtcnn(ncvslideio::GIn(in_original), ncvslideio::GOut(ncvslideio::gapi::copy(in_original), final_faces_onet));
 
     // MTCNN Refinement detection network
-    auto mtcnnr_net = cv::gapi::ie::Params<custom::MTCNNRefinement>{
+    auto mtcnnr_net = ncvslideio::gapi::ie::Params<custom::MTCNNRefinement>{
         model_path_r,                // path to topology IR
         weights_path(model_path_r),  // path to weights
         target_dev_r,                // device specifier
     }.cfgOutputLayers({ "conv5-2", "prob1" }).cfgInputLayers({ "data" });
 
     // MTCNN Output detection network
-    auto mtcnno_net = cv::gapi::ie::Params<custom::MTCNNOutput>{
+    auto mtcnno_net = ncvslideio::gapi::ie::Params<custom::MTCNNOutput>{
         model_path_o,                // path to topology IR
         weights_path(model_path_o),  // path to weights
         target_dev_o,                // device specifier
     }.cfgOutputLayers({ "conv6-2", "conv6-3", "prob1" }).cfgInputLayers({ "data" });
 
-    auto networks_mtcnn = cv::gapi::networks(mtcnnr_net, mtcnno_net);
+    auto networks_mtcnn = ncvslideio::gapi::networks(mtcnnr_net, mtcnno_net);
 
     // MTCNN Proposal detection network
     for (int i = 0; i < pyramid_levels; ++i)
     {
         std::string net_id = get_pnet_level_name(level_size[i]);
         std::vector<size_t> reshape_dims = { 1, 3, (size_t)level_size[i].width, (size_t)level_size[i].height };
-        cv::gapi::ie::Params<cv::gapi::Generic> mtcnnp_net{
+        ncvslideio::gapi::ie::Params<ncvslideio::gapi::Generic> mtcnnp_net{
                     net_id,                      // tag
                     model_path_p,                // path to topology IR
                     weights_path(model_path_p),  // path to weights
                     target_dev_p,                // device specifier
         };
         mtcnnp_net.cfgInputReshape({ {"data", reshape_dims} });
-        networks_mtcnn += cv::gapi::networks(mtcnnp_net);
+        networks_mtcnn += ncvslideio::gapi::networks(mtcnnp_net);
     }
 
-    auto kernels_mtcnn = cv::gapi::kernels< custom::OCVBuildFaces
+    auto kernels_mtcnn = ncvslideio::gapi::kernels< custom::OCVBuildFaces
                                           , custom::OCVRunNMS
                                           , custom::OCVAccumulatePyramidOutputs
                                           , custom::OCVApplyRegression
@@ -681,36 +681,36 @@ int main(int argc, char* argv[]) {
                                           , custom::OCVONetPostProc
                                           , custom::OCVSwapFaces
     >();
-    auto mtcnn_args = cv::compile_args(networks_mtcnn, kernels_mtcnn);
+    auto mtcnn_args = ncvslideio::compile_args(networks_mtcnn, kernels_mtcnn);
     if (streaming_queue_capacity != 0)
-        mtcnn_args += cv::compile_args(cv::gapi::streaming::queue_capacity{ streaming_queue_capacity });
+        mtcnn_args += ncvslideio::compile_args(ncvslideio::gapi::streaming::queue_capacity{ streaming_queue_capacity });
     auto pipeline_mtcnn = graph_mtcnn.compileStreaming(std::move(mtcnn_args));
 
     std::cout << "Reading " << input_file_name << std::endl;
     // Input stream
-    auto in_src = cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input_file_name);
+    auto in_src = ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input_file_name);
 
     // Set the pipeline source & start the pipeline
-    pipeline_mtcnn.setSource(cv::gin(in_src));
+    pipeline_mtcnn.setSource(ncvslideio::gin(in_src));
     pipeline_mtcnn.start();
 
     // Declare the output data & run the processing loop
-    cv::TickMeter tm;
-    cv::Mat image;
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat image;
     std::vector<custom::Face> out_faces;
 
     tm.start();
     int frames = 0;
-    while (pipeline_mtcnn.pull(cv::gout(image, out_faces))) {
+    while (pipeline_mtcnn.pull(ncvslideio::gout(image, out_faces))) {
         frames++;
         std::cout << "Final Faces Size " << out_faces.size() << std::endl;
         std::vector<vis::rectPoints> data;
         // show the image with faces in it
         for (const auto& out_face : out_faces) {
-            std::vector<cv::Point> pts;
+            std::vector<ncvslideio::Point> pts;
             for (size_t p = 0; p < NUM_PTS; ++p) {
                 pts.push_back(
-                    cv::Point(static_cast<int>(out_face.ptsCoords[2 * p]), static_cast<int>(out_face.ptsCoords[2 * p + 1])));
+                    ncvslideio::Point(static_cast<int>(out_face.ptsCoords[2 * p]), static_cast<int>(out_face.ptsCoords[2 * p + 1])));
             }
             auto rect = out_face.bbox.getRect();
             auto d = std::make_pair(rect, pts);
@@ -720,9 +720,9 @@ int main(int argc, char* argv[]) {
         auto resultImg = vis::drawRectsAndPoints(image, data);
         tm.stop();
         const auto fps_str = std::to_string(frames / tm.getTimeSec()) + " FPS";
-        cv::putText(resultImg, fps_str, { 0,32 }, cv::FONT_HERSHEY_SIMPLEX, 1.0, { 0,255,0 }, 2);
-        cv::imshow("Out", resultImg);
-        cv::waitKey(1);
+        ncvslideio::putText(resultImg, fps_str, { 0,32 }, ncvslideio::FONT_HERSHEY_SIMPLEX, 1.0, { 0,255,0 }, 2);
+        ncvslideio::imshow("Out", resultImg);
+        ncvslideio::waitKey(1);
         out_faces.clear();
         tm.start();
     }

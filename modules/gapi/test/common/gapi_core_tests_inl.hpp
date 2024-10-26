@@ -19,29 +19,29 @@ namespace opencv_test
 TEST_P(MathOpTest, MatricesAccuracyTest)
 {
     // G-API code & corresponding OpenCV code ////////////////////////////////
-    cv::GMat in1, in2, out;
+    ncvslideio::GMat in1, in2, out;
     if( testWithScalar )
     {
-        cv::GScalar sc1;
+        ncvslideio::GScalar sc1;
         switch(opType)
         {
         case (ADD):
         {
-            out = cv::gapi::addC(in1, sc1, dtype);
-            cv::add(in_mat1, sc, out_mat_ocv, cv::noArray(), dtype);
+            out = ncvslideio::gapi::addC(in1, sc1, dtype);
+            ncvslideio::add(in_mat1, sc, out_mat_ocv, ncvslideio::noArray(), dtype);
             break;
         }
         case (SUB):
         {
             if( doReverseOp )
             {
-                out = cv::gapi::subRC(sc1, in1, dtype);
-                cv::subtract(sc, in_mat1, out_mat_ocv, cv::noArray(), dtype);
+                out = ncvslideio::gapi::subRC(sc1, in1, dtype);
+                ncvslideio::subtract(sc, in_mat1, out_mat_ocv, ncvslideio::noArray(), dtype);
             }
             else
             {
-                out = cv::gapi::subC(in1, sc1, dtype);
-                cv::subtract(in_mat1, sc, out_mat_ocv, cv::noArray(), dtype);
+                out = ncvslideio::gapi::subC(in1, sc1, dtype);
+                ncvslideio::subtract(in_mat1, sc, out_mat_ocv, ncvslideio::noArray(), dtype);
             }
             break;
         }
@@ -50,23 +50,23 @@ TEST_P(MathOpTest, MatricesAccuracyTest)
             if( doReverseOp )
             {
                 in_mat1.setTo(1, in_mat1 == 0);  // avoiding zeros in divide input data
-                out = cv::gapi::divRC(sc1, in1, scale, dtype);
-                cv::divide(sc, in_mat1, out_mat_ocv, scale, dtype);
+                out = ncvslideio::gapi::divRC(sc1, in1, scale, dtype);
+                ncvslideio::divide(sc, in_mat1, out_mat_ocv, scale, dtype);
                 break;
             }
             else
             {
                 sc += Scalar(sc[0] == 0, sc[1] == 0, sc[2] == 0, sc[3] == 0);  // avoiding zeros in divide input data
-                out = cv::gapi::divC(in1, sc1, scale, dtype);
-                cv::divide(in_mat1, sc, out_mat_ocv, scale, dtype);
+                out = ncvslideio::gapi::divC(in1, sc1, scale, dtype);
+                ncvslideio::divide(in_mat1, sc, out_mat_ocv, scale, dtype);
                 break;
             }
         }
         case (MUL):
         {
             // FIXME: add `scale` parameter to mulC
-            out = cv::gapi::mulC(in1, sc1, /* scale, */ dtype);
-            cv::multiply(in_mat1, sc, out_mat_ocv, 1., dtype);
+            out = ncvslideio::gapi::mulC(in1, sc1, /* scale, */ dtype);
+            ncvslideio::multiply(in_mat1, sc, out_mat_ocv, 1., dtype);
             break;
         }
         default:
@@ -74,7 +74,7 @@ TEST_P(MathOpTest, MatricesAccuracyTest)
             FAIL() << "no such math operation type for scalar and matrix!";
         }
         }
-        cv::GComputation c(GIn(in1, sc1), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, sc1), GOut(out));
         c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
     }
     else
@@ -83,34 +83,34 @@ TEST_P(MathOpTest, MatricesAccuracyTest)
         {
         case (ADD):
         {
-            out = cv::gapi::add(in1, in2, dtype);
-            cv::add(in_mat1, in_mat2, out_mat_ocv, cv::noArray(), dtype);
+            out = ncvslideio::gapi::add(in1, in2, dtype);
+            ncvslideio::add(in_mat1, in_mat2, out_mat_ocv, ncvslideio::noArray(), dtype);
             break;
         }
         case (SUB):
         {
-            out = cv::gapi::sub(in1, in2, dtype);
-            cv::subtract(in_mat1, in_mat2, out_mat_ocv, cv::noArray(), dtype);
+            out = ncvslideio::gapi::sub(in1, in2, dtype);
+            ncvslideio::subtract(in_mat1, in_mat2, out_mat_ocv, ncvslideio::noArray(), dtype);
             break;
         }
         case (DIV):
         {
             in_mat2.setTo(1, in_mat2 == 0);  // avoiding zeros in divide input data
-            out = cv::gapi::div(in1, in2, scale, dtype);
-            cv::divide(in_mat1, in_mat2, out_mat_ocv, scale, dtype);
+            out = ncvslideio::gapi::div(in1, in2, scale, dtype);
+            ncvslideio::divide(in_mat1, in_mat2, out_mat_ocv, scale, dtype);
             break;
         }
         case (MUL):
         {
-            out = cv::gapi::mul(in1, in2, scale, dtype);
-            cv::multiply(in_mat1, in_mat2, out_mat_ocv, scale, dtype);
+            out = ncvslideio::gapi::mul(in1, in2, scale, dtype);
+            ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv, scale, dtype);
             break;
         }
         default:
         {
             FAIL() << "no such math operation type for matrix and matrix!";
         }}
-        cv::GComputation c(GIn(in1, in2), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
         c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
     }
 
@@ -144,17 +144,17 @@ TEST_P(MathOpTest, MatricesAccuracyTest)
 
 TEST_P(MulDoubleTest, AccuracyTest)
 {
-    auto& rng = cv::theRNG();
+    auto& rng = ncvslideio::theRNG();
     double d = rng.uniform(0.0, 10.0);
 
     // G-API code ////////////////////////////////////////////////////////////
-    cv::GMat in1, out;
-    out = cv::gapi::mulC(in1, d, dtype);
-    cv::GComputation c(in1, out);
+    ncvslideio::GMat in1, out;
+    out = ncvslideio::gapi::mulC(in1, d, dtype);
+    ncvslideio::GComputation c(in1, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code ///////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, d, out_mat_ocv, 1, dtype);
+    ncvslideio::multiply(in_mat1, d, out_mat_ocv, 1, dtype);
 
     // Comparison ////////////////////////////////////////////////////////////
 #if 1
@@ -178,18 +178,18 @@ TEST_P(MulDoubleTest, AccuracyTest)
 
 TEST_P(DivTest, DISABLED_DivByZeroTest)  // https://github.com/opencv/opencv/pull/12826
 {
-    in_mat2 = cv::Mat(sz, type);
-    in_mat2.setTo(cv::Scalar::all(0));
+    in_mat2 = ncvslideio::Mat(sz, type);
+    in_mat2.setTo(ncvslideio::Scalar::all(0));
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::div(in1, in2, 1.0, dtype);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::div(in1, in2, 1.0, dtype);
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::divide(in_mat1, in_mat2, out_mat_ocv, 1.0, dtype);
+        ncvslideio::divide(in_mat1, in_mat2, out_mat_ocv, 1.0, dtype);
     }
 
     // Comparison //////////////////////////////////////////////////////////////
@@ -201,43 +201,43 @@ TEST_P(DivTest, DISABLED_DivByZeroTest)  // https://github.com/opencv/opencv/pul
 
 TEST_P(DivCTest, DISABLED_DivByZeroTest)  // https://github.com/opencv/opencv/pull/12826
 {
-    sc = cv::Scalar::all(0);
+    sc = ncvslideio::Scalar::all(0);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1;
-    cv::GScalar sc1;
-    auto out = cv::gapi::divC(in1, sc1, dtype);
-    cv::GComputation c(GIn(in1, sc1), GOut(out));
+    ncvslideio::GMat in1;
+    ncvslideio::GScalar sc1;
+    auto out = ncvslideio::gapi::divC(in1, sc1, dtype);
+    ncvslideio::GComputation c(GIn(in1, sc1), GOut(out));
 
     c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::divide(in_mat1, sc, out_mat_ocv, dtype);
+        ncvslideio::divide(in_mat1, sc, out_mat_ocv, dtype);
     }
 
     // Comparison //////////////////////////////////////////////////////////////
     {
         EXPECT_EQ(0, cvtest::norm(out_mat_ocv, out_mat_gapi, NORM_INF));
-        cv::Mat zeros = cv::Mat::zeros(sz, type);
+        ncvslideio::Mat zeros = ncvslideio::Mat::zeros(sz, type);
         EXPECT_EQ(0, cvtest::norm(out_mat_gapi, zeros, NORM_INF));
     }
 }
 
 TEST_P(MeanTest, AccuracyTest)
 {
-    cv::Scalar out_norm;
-    cv::Scalar out_norm_ocv;
+    ncvslideio::Scalar out_norm;
+    ncvslideio::Scalar out_norm_ocv;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::mean(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::mean(in);
 
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(in_mat1), cv::gout(out_norm), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_norm), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        out_norm_ocv = cv::mean(in_mat1);
+        out_norm_ocv = ncvslideio::mean(in_mat1);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -247,19 +247,19 @@ TEST_P(MeanTest, AccuracyTest)
 
 TEST_P(MaskTest, AccuracyTest)
 {
-    in_mat2 = cv::Mat(sz, CV_8UC1);
-    cv::randu(in_mat2, cv::Scalar::all(0), cv::Scalar::all(255));
+    in_mat2 = ncvslideio::Mat(sz, CV_8UC1);
+    ncvslideio::randu(in_mat2, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
     in_mat2 = in_mat2 > 128;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in, m;
-    auto out = cv::gapi::mask(in, m);
+    ncvslideio::GMat in, m;
+    auto out = ncvslideio::gapi::mask(in, m);
 
-    cv::GComputation c(cv::GIn(in, m), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in, m), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        out_mat_ocv = cv::Mat::zeros(in_mat1.size(), in_mat1.type());
+        out_mat_ocv = ncvslideio::Mat::zeros(in_mat1.size(), in_mat1.type());
         in_mat1.copyTo(out_mat_ocv, in_mat2);
     }
     // Comparison //////////////////////////////////////////////////////////////
@@ -270,23 +270,23 @@ TEST_P(MaskTest, AccuracyTest)
 
 TEST_P(Polar2CartTest, AccuracyTest)
 {
-    cv::Mat out_mat2;
-    cv::Mat out_mat_ocv2;
+    ncvslideio::Mat out_mat2;
+    ncvslideio::Mat out_mat_ocv2;
     if (dtype != -1)
     {
-        out_mat2 = cv::Mat(sz, dtype);
-        out_mat_ocv2 = cv::Mat(sz, dtype);
+        out_mat2 = ncvslideio::Mat(sz, dtype);
+        out_mat_ocv2 = ncvslideio::Mat(sz, dtype);
     }
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out1, out2;
-    std::tie(out1, out2) = cv::gapi::polarToCart(in1, in2);
+    ncvslideio::GMat in1, in2, out1, out2;
+    std::tie(out1, out2) = ncvslideio::gapi::polarToCart(in1, in2);
 
-    cv::GComputation c(GIn(in1, in2), GOut(out1, out2));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out1, out2));
     c.apply(gin(in_mat1,in_mat2), gout(out_mat_gapi, out_mat2), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::polarToCart(in_mat1, in_mat2, out_mat_ocv, out_mat_ocv2);
+        ncvslideio::polarToCart(in_mat1, in_mat2, out_mat_ocv, out_mat_ocv2);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -300,15 +300,15 @@ TEST_P(Polar2CartTest, AccuracyTest)
         // of this test - which a specific test instantiation could setup.
         //
         // Note that test instantiation for the OpenCV back-end could even let
-        // the threshold equal to zero, as CV back-end calls the same kernel.
+        // the threshold equal to zero, as ncvslideio back-end calls the same kernel.
         //
         // TODO: Make threshold a configurable parameter of this test (ADE-221)
 
         ASSERT_EQ(sz, out_mat_gapi.size());
 
-        cv::Mat &outx = out_mat_gapi,
+        ncvslideio::Mat &outx = out_mat_gapi,
                 &outy = out_mat2;
-        cv::Mat &refx = out_mat_ocv,
+        ncvslideio::Mat &refx = out_mat_ocv,
                 &refy = out_mat_ocv2;
 
         EXPECT_LE(cvtest::norm(refx, outx, NORM_L1 | NORM_RELATIVE), 1e-6);
@@ -318,18 +318,18 @@ TEST_P(Polar2CartTest, AccuracyTest)
 
 TEST_P(Cart2PolarTest, AccuracyTest)
 {
-    cv::Mat out_mat2(sz, dtype);
-    cv::Mat out_mat_ocv2(sz, dtype);
+    ncvslideio::Mat out_mat2(sz, dtype);
+    ncvslideio::Mat out_mat_ocv2(sz, dtype);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out1, out2;
-    std::tie(out1, out2) = cv::gapi::cartToPolar(in1, in2);
+    ncvslideio::GMat in1, in2, out1, out2;
+    std::tie(out1, out2) = ncvslideio::gapi::cartToPolar(in1, in2);
 
-    cv::GComputation c(GIn(in1, in2), GOut(out1, out2));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out1, out2));
     c.apply(gin(in_mat1,in_mat2), gout(out_mat_gapi, out_mat2));
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::cartToPolar(in_mat1, in_mat2, out_mat_ocv, out_mat_ocv2);
+        ncvslideio::cartToPolar(in_mat1, in_mat2, out_mat_ocv, out_mat_ocv2);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -343,15 +343,15 @@ TEST_P(Cart2PolarTest, AccuracyTest)
         // of this test - which a specific test instantiation could setup.
         //
         // Note that test instantiation for the OpenCV back-end could even let
-        // the threshold equal to zero, as CV back-end calls the same kernel.
+        // the threshold equal to zero, as ncvslideio back-end calls the same kernel.
         //
         // TODO: Make threshold a configurable parameter of this test (ADE-221)
 
         ASSERT_EQ(sz, out_mat_gapi.size());
 
-        cv::Mat &outm = out_mat_gapi,
+        ncvslideio::Mat &outm = out_mat_gapi,
                 &outa = out_mat2;
-        cv::Mat &refm = out_mat_ocv,
+        ncvslideio::Mat &refm = out_mat_ocv,
                 &refa = out_mat_ocv2;
 
         // FIXME: Angle result looks inaccurate at OpenCV
@@ -364,43 +364,43 @@ TEST_P(Cart2PolarTest, AccuracyTest)
 TEST_P(CmpTest, AccuracyTest)
 {
     // G-API code & corresponding OpenCV code ////////////////////////////////
-    cv::GMat in1, out;
+    ncvslideio::GMat in1, out;
     if( testWithScalar )
     {
-        cv::GScalar in2;
+        ncvslideio::GScalar in2;
         switch(opType)
         {
-        case CMP_EQ: out = cv::gapi::cmpEQ(in1, in2); break;
-        case CMP_GT: out = cv::gapi::cmpGT(in1, in2); break;
-        case CMP_GE: out = cv::gapi::cmpGE(in1, in2); break;
-        case CMP_LT: out = cv::gapi::cmpLT(in1, in2); break;
-        case CMP_LE: out = cv::gapi::cmpLE(in1, in2); break;
-        case CMP_NE: out = cv::gapi::cmpNE(in1, in2); break;
+        case CMP_EQ: out = ncvslideio::gapi::cmpEQ(in1, in2); break;
+        case CMP_GT: out = ncvslideio::gapi::cmpGT(in1, in2); break;
+        case CMP_GE: out = ncvslideio::gapi::cmpGE(in1, in2); break;
+        case CMP_LT: out = ncvslideio::gapi::cmpLT(in1, in2); break;
+        case CMP_LE: out = ncvslideio::gapi::cmpLE(in1, in2); break;
+        case CMP_NE: out = ncvslideio::gapi::cmpNE(in1, in2); break;
         default: FAIL() << "no such compare operation type for matrix and scalar!";
         }
 
-        cv::compare(in_mat1, sc, out_mat_ocv, opType);
+        ncvslideio::compare(in_mat1, sc, out_mat_ocv, opType);
 
-        cv::GComputation c(GIn(in1, in2), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
         c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
     }
     else
     {
-        cv::GMat in2;
+        ncvslideio::GMat in2;
         switch(opType)
         {
-        case CMP_EQ: out = cv::gapi::cmpEQ(in1, in2); break;
-        case CMP_GT: out = cv::gapi::cmpGT(in1, in2); break;
-        case CMP_GE: out = cv::gapi::cmpGE(in1, in2); break;
-        case CMP_LT: out = cv::gapi::cmpLT(in1, in2); break;
-        case CMP_LE: out = cv::gapi::cmpLE(in1, in2); break;
-        case CMP_NE: out = cv::gapi::cmpNE(in1, in2); break;
+        case CMP_EQ: out = ncvslideio::gapi::cmpEQ(in1, in2); break;
+        case CMP_GT: out = ncvslideio::gapi::cmpGT(in1, in2); break;
+        case CMP_GE: out = ncvslideio::gapi::cmpGE(in1, in2); break;
+        case CMP_LT: out = ncvslideio::gapi::cmpLT(in1, in2); break;
+        case CMP_LE: out = ncvslideio::gapi::cmpLE(in1, in2); break;
+        case CMP_NE: out = ncvslideio::gapi::cmpNE(in1, in2); break;
         default: FAIL() << "no such compare operation type for two matrices!";
         }
 
-        cv::compare(in_mat1, in_mat2, out_mat_ocv, opType);
+        ncvslideio::compare(in_mat1, in_mat2, out_mat_ocv, opType);
 
-        cv::GComputation c(GIn(in1, in2), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
         c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
     }
 
@@ -414,28 +414,28 @@ TEST_P(CmpTest, AccuracyTest)
 TEST_P(BitwiseTest, AccuracyTest)
 {
     // G-API code & corresponding OpenCV code ////////////////////////////////
-    cv::GMat in1, in2, out;
+    ncvslideio::GMat in1, in2, out;
     if( testWithScalar )
     {
-        cv::GScalar sc1;
+        ncvslideio::GScalar sc1;
         switch(opType)
         {
             case AND:
-                out = cv::gapi::bitwise_and(in1, sc1);
-                cv::bitwise_and(in_mat1, sc, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_and(in1, sc1);
+                ncvslideio::bitwise_and(in_mat1, sc, out_mat_ocv);
                 break;
             case OR:
-                out = cv::gapi::bitwise_or(in1, sc1);
-                cv::bitwise_or(in_mat1, sc, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_or(in1, sc1);
+                ncvslideio::bitwise_or(in_mat1, sc, out_mat_ocv);
                 break;
             case XOR:
-                out = cv::gapi::bitwise_xor(in1, sc1);
-                cv::bitwise_xor(in_mat1, sc, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_xor(in1, sc1);
+                ncvslideio::bitwise_xor(in_mat1, sc, out_mat_ocv);
                 break;
             default:
                 FAIL() << "no such bitwise operation type!";
         }
-        cv::GComputation c(GIn(in1, sc1), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, sc1), GOut(out));
         c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
     }
     else
@@ -443,21 +443,21 @@ TEST_P(BitwiseTest, AccuracyTest)
         switch(opType)
         {
             case AND:
-                out = cv::gapi::bitwise_and(in1, in2);
-                cv::bitwise_and(in_mat1, in_mat2, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_and(in1, in2);
+                ncvslideio::bitwise_and(in_mat1, in_mat2, out_mat_ocv);
                 break;
             case OR:
-                out = cv::gapi::bitwise_or(in1, in2);
-                cv::bitwise_or(in_mat1, in_mat2, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_or(in1, in2);
+                ncvslideio::bitwise_or(in_mat1, in_mat2, out_mat_ocv);
                 break;
             case XOR:
-                out = cv::gapi::bitwise_xor(in1, in2);
-                cv::bitwise_xor(in_mat1, in_mat2, out_mat_ocv);
+                out = ncvslideio::gapi::bitwise_xor(in1, in2);
+                ncvslideio::bitwise_xor(in_mat1, in_mat2, out_mat_ocv);
                 break;
             default:
                 FAIL() << "no such bitwise operation type!";
         }
-        cv::GComputation c(GIn(in1, in2), GOut(out));
+        ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
         c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
     }
 
@@ -472,15 +472,15 @@ TEST_P(BitwiseTest, AccuracyTest)
 TEST_P(NotTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::bitwise_not(in);
-    cv::GComputation c(in, out);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::bitwise_not(in);
+    ncvslideio::GComputation c(in, out);
 
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::bitwise_not(in_mat1, out_mat_ocv);
+        ncvslideio::bitwise_not(in_mat1, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -491,13 +491,13 @@ TEST_P(NotTest, AccuracyTest)
 
 TEST_P(SelectTest, AccuracyTest)
 {
-    cv::Mat in_mask(sz, CV_8UC1);
-    cv::randu(in_mask, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::Mat in_mask(sz, CV_8UC1);
+    ncvslideio::randu(in_mask, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, in3;
-    auto out = cv::gapi::select(in1, in2, in3);
-    cv::GComputation c(GIn(in1, in2, in3), GOut(out));
+    ncvslideio::GMat in1, in2, in3;
+    auto out = ncvslideio::gapi::select(in1, in2, in3);
+    ncvslideio::GComputation c(GIn(in1, in2, in3), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2, in_mask), gout(out_mat_gapi), getCompileArgs());
 
@@ -516,15 +516,15 @@ TEST_P(SelectTest, AccuracyTest)
 TEST_P(MinTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::min(in1, in2);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::min(in1, in2);
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::min(in_mat1, in_mat2, out_mat_ocv);
+        ncvslideio::min(in_mat1, in_mat2, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -536,15 +536,15 @@ TEST_P(MinTest, AccuracyTest)
 TEST_P(MaxTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::max(in1, in2);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::max(in1, in2);
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::max(in_mat1, in_mat2, out_mat_ocv);
+        ncvslideio::max(in_mat1, in_mat2, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -556,15 +556,15 @@ TEST_P(MaxTest, AccuracyTest)
 TEST_P(AbsDiffTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::absDiff(in1, in2);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::absDiff(in1, in2);
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::absdiff(in_mat1, in_mat2, out_mat_ocv);
+        ncvslideio::absdiff(in_mat1, in_mat2, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -576,16 +576,16 @@ TEST_P(AbsDiffTest, AccuracyTest)
 TEST_P(AbsDiffCTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1;
-    cv::GScalar sc1;
-    auto out = cv::gapi::absDiffC(in1, sc1);
-    cv::GComputation c(cv::GIn(in1, sc1), cv::GOut(out));
+    ncvslideio::GMat in1;
+    ncvslideio::GScalar sc1;
+    auto out = ncvslideio::gapi::absDiffC(in1, sc1);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, sc1), ncvslideio::GOut(out));
 
     c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::absdiff(in_mat1, sc, out_mat_ocv);
+        ncvslideio::absdiff(in_mat1, sc, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -596,18 +596,18 @@ TEST_P(AbsDiffCTest, AccuracyTest)
 
 TEST_P(SumTest, AccuracyTest)
 {
-    cv::Scalar out_sum;
-    cv::Scalar out_sum_ocv;
+    ncvslideio::Scalar out_sum;
+    ncvslideio::Scalar out_sum_ocv;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::sum(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::sum(in);
 
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(in_mat1), cv::gout(out_sum), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_sum), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        out_sum_ocv = cv::sum(in_mat1);
+        out_sum_ocv = ncvslideio::sum(in_mat1);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -623,14 +623,14 @@ TEST_P(CountNonZeroTest, AccuracyTest)
     int out_cnz_ocv = -2;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::countNonZero(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::countNonZero(in);
 
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(in_mat1), cv::gout(out_cnz_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_cnz_gapi), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        out_cnz_ocv = cv::countNonZero(in_mat1);
+        out_cnz_ocv = ncvslideio::countNonZero(in_mat1);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -641,21 +641,21 @@ TEST_P(CountNonZeroTest, AccuracyTest)
 
 TEST_P(AddWeightedTest, AccuracyTest)
 {
-    auto& rng = cv::theRNG();
+    auto& rng = ncvslideio::theRNG();
     double alpha = rng.uniform(0.0, 1.0);
     double beta = rng.uniform(0.0, 1.0);
     double gamma = rng.uniform(0.0, 1.0);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::addWeighted(in1, alpha, in2, beta, gamma, dtype);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::addWeighted(in1, alpha, in2, beta, gamma, dtype);
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::addWeighted(in_mat1, alpha, in_mat2, beta, gamma, out_mat_ocv, dtype);
+        ncvslideio::addWeighted(in_mat1, alpha, in_mat2, beta, gamma, out_mat_ocv, dtype);
     }
     // Comparison //////////////////////////////////////////////////////////////
     EXPECT_TRUE(cmpF(out_mat_gapi, out_mat_ocv));
@@ -664,21 +664,21 @@ TEST_P(AddWeightedTest, AccuracyTest)
 
 TEST_P(NormTest, AccuracyTest)
 {
-    cv::Scalar out_norm;
-    cv::Scalar out_norm_ocv;
+    ncvslideio::Scalar out_norm;
+    ncvslideio::Scalar out_norm_ocv;
 
     // G-API code & corresponding OpenCV code ////////////////////////////////
-    cv::GMat in1;
-    cv::GScalar out;
+    ncvslideio::GMat in1;
+    ncvslideio::GScalar out;
     switch(opType)
     {
-        case NORM_L1: out = cv::gapi::normL1(in1); break;
-        case NORM_L2: out = cv::gapi::normL2(in1); break;
-        case NORM_INF: out = cv::gapi::normInf(in1); break;
+        case NORM_L1: out = ncvslideio::gapi::normL1(in1); break;
+        case NORM_L2: out = ncvslideio::gapi::normL2(in1); break;
+        case NORM_INF: out = ncvslideio::gapi::normInf(in1); break;
         default: FAIL() << "no such norm operation type!";
     }
-    out_norm_ocv = cv::norm(in_mat1, opType);
-    cv::GComputation c(GIn(in1), GOut(out));
+    out_norm_ocv = ncvslideio::norm(in_mat1, opType);
+    ncvslideio::GComputation c(GIn(in1), GOut(out));
     c.apply(gin(in_mat1), gout(out_norm), getCompileArgs());
 
     // Comparison //////////////////////////////////////////////////////////////
@@ -690,27 +690,27 @@ TEST_P(NormTest, AccuracyTest)
 TEST_P(IntegralTest, AccuracyTest)
 {
     int type_out = (type == CV_8U) ? CV_32SC1 : CV_64FC1;
-    in_mat1 = cv::Mat(sz, type);
+    in_mat1 = ncvslideio::Mat(sz, type);
 
-    cv::randu(in_mat1, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::randu(in_mat1, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
 
-    cv::Size sz_out = cv::Size(sz.width + 1, sz.height + 1);
-    cv::Mat out_mat1(sz_out, type_out);
-    cv::Mat out_mat_ocv1(sz_out, type_out);
+    ncvslideio::Size sz_out = ncvslideio::Size(sz.width + 1, sz.height + 1);
+    ncvslideio::Mat out_mat1(sz_out, type_out);
+    ncvslideio::Mat out_mat_ocv1(sz_out, type_out);
 
-    cv::Mat out_mat2(sz_out, CV_64FC1);
-    cv::Mat out_mat_ocv2(sz_out, CV_64FC1);
+    ncvslideio::Mat out_mat2(sz_out, CV_64FC1);
+    ncvslideio::Mat out_mat_ocv2(sz_out, CV_64FC1);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, out1, out2;
-    std::tie(out1, out2)  = cv::gapi::integral(in1, type_out, CV_64FC1);
-    cv::GComputation c(cv::GIn(in1), cv::GOut(out1, out2));
+    ncvslideio::GMat in1, out1, out2;
+    std::tie(out1, out2)  = ncvslideio::gapi::integral(in1, type_out, CV_64FC1);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1), ncvslideio::GOut(out1, out2));
 
-    c.apply(cv::gin(in_mat1), cv::gout(out_mat1, out_mat2), getCompileArgs());
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat1, out_mat2), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::integral(in_mat1, out_mat_ocv1, out_mat_ocv2);
+        ncvslideio::integral(in_mat1, out_mat_ocv1, out_mat_ocv2);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -721,45 +721,45 @@ TEST_P(IntegralTest, AccuracyTest)
 
 TEST_P(ThresholdTest, AccuracyTestBinary)
 {
-    cv::Scalar thr = initScalarRandU(50);
-    cv::Scalar out_scalar;
+    ncvslideio::Scalar thr = initScalarRandU(50);
+    ncvslideio::Scalar out_scalar;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, out;
-    cv::GScalar th1, mv1;
-    out = cv::gapi::threshold(in1, th1, mv1, tt);
-    cv::GComputation c(GIn(in1, th1, mv1), GOut(out));
+    ncvslideio::GMat in1, out;
+    ncvslideio::GScalar th1, mv1;
+    out = ncvslideio::gapi::threshold(in1, th1, mv1, tt);
+    ncvslideio::GComputation c(GIn(in1, th1, mv1), GOut(out));
 
     c.apply(gin(in_mat1, thr, maxval), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::threshold(in_mat1, out_mat_ocv, thr.val[0], maxval.val[0], tt);
+        ncvslideio::threshold(in_mat1, out_mat_ocv, thr.val[0], maxval.val[0], tt);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
         ASSERT_EQ(sz, out_mat_gapi.size());
-        EXPECT_EQ(0, cv::norm(out_mat_ocv, out_mat_gapi, NORM_L1));
+        EXPECT_EQ(0, ncvslideio::norm(out_mat_ocv, out_mat_gapi, NORM_L1));
     }
 }
 
 TEST_P(ThresholdOTTest, AccuracyTestOtsu)
 {
-    cv::Scalar maxval = initScalarRandU(50) + cv::Scalar(50, 50, 50, 50);
-    cv::Scalar out_gapi_scalar;
+    ncvslideio::Scalar maxval = initScalarRandU(50) + ncvslideio::Scalar(50, 50, 50, 50);
+    ncvslideio::Scalar out_gapi_scalar;
     double ocv_res;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, out;
-    cv::GScalar mv1, scout;
-    std::tie<cv::GMat, cv::GScalar>(out, scout) = cv::gapi::threshold(in1, mv1, tt);
-    cv::GComputation c(cv::GIn(in1, mv1), cv::GOut(out, scout));
+    ncvslideio::GMat in1, out;
+    ncvslideio::GScalar mv1, scout;
+    std::tie<ncvslideio::GMat, ncvslideio::GScalar>(out, scout) = ncvslideio::gapi::threshold(in1, mv1, tt);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, mv1), ncvslideio::GOut(out, scout));
 
     c.apply(gin(in_mat1, maxval), gout(out_mat_gapi, out_gapi_scalar), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        ocv_res = cv::threshold(in_mat1, out_mat_ocv, maxval.val[0], maxval.val[0], tt);
+        ocv_res = ncvslideio::threshold(in_mat1, out_mat_ocv, maxval.val[0], maxval.val[0], tt);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -771,20 +771,20 @@ TEST_P(ThresholdOTTest, AccuracyTestOtsu)
 
 TEST_P(InRangeTest, AccuracyTest)
 {
-    cv::Scalar thrLow = initScalarRandU(100);
-    cv::Scalar thrUp = initScalarRandU(100) + cv::Scalar(100, 100, 100, 100);
+    ncvslideio::Scalar thrLow = initScalarRandU(100);
+    ncvslideio::Scalar thrUp = initScalarRandU(100) + ncvslideio::Scalar(100, 100, 100, 100);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1;
-    cv::GScalar th1, mv1;
-    auto out = cv::gapi::inRange(in1, th1, mv1);
-    cv::GComputation c(GIn(in1, th1, mv1), GOut(out));
+    ncvslideio::GMat in1;
+    ncvslideio::GScalar th1, mv1;
+    auto out = ncvslideio::gapi::inRange(in1, th1, mv1);
+    ncvslideio::GComputation c(GIn(in1, th1, mv1), GOut(out));
 
     c.apply(gin(in_mat1, thrLow, thrUp), gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::inRange(in_mat1, thrLow, thrUp, out_mat_ocv);
+        ncvslideio::inRange(in_mat1, thrLow, thrUp, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -795,20 +795,20 @@ TEST_P(InRangeTest, AccuracyTest)
 
 TEST_P(Split3Test, AccuracyTest)
 {
-    cv::Mat out_mat2 = cv::Mat(sz, dtype);
-    cv::Mat out_mat3 = cv::Mat(sz, dtype);
-    cv::Mat out_mat_ocv2 = cv::Mat(sz, dtype);
-    cv::Mat out_mat_ocv3 = cv::Mat(sz, dtype);
+    ncvslideio::Mat out_mat2 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat3 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat_ocv2 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat_ocv3 = ncvslideio::Mat(sz, dtype);
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, out1, out2, out3;
-    std::tie(out1, out2, out3)  = cv::gapi::split3(in1);
-    cv::GComputation c(cv::GIn(in1), cv::GOut(out1, out2, out3));
+    ncvslideio::GMat in1, out1, out2, out3;
+    std::tie(out1, out2, out3)  = ncvslideio::gapi::split3(in1);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1), ncvslideio::GOut(out1, out2, out3));
 
-    c.apply(cv::gin(in_mat1), cv::gout(out_mat_gapi, out_mat2, out_mat3), getCompileArgs());
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat_gapi, out_mat2, out_mat3), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        std::vector<cv::Mat> out_mats_ocv = {out_mat_ocv, out_mat_ocv2, out_mat_ocv3};
-        cv::split(in_mat1, out_mats_ocv);
+        std::vector<ncvslideio::Mat> out_mats_ocv = {out_mat_ocv, out_mat_ocv2, out_mat_ocv3};
+        ncvslideio::split(in_mat1, out_mats_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -820,23 +820,23 @@ TEST_P(Split3Test, AccuracyTest)
 
 TEST_P(Split4Test, AccuracyTest)
 {
-    cv::Mat out_mat2 = cv::Mat(sz, dtype);
-    cv::Mat out_mat3 = cv::Mat(sz, dtype);
-    cv::Mat out_mat4 = cv::Mat(sz, dtype);
-    cv::Mat out_mat_ocv2 = cv::Mat(sz, dtype);
-    cv::Mat out_mat_ocv3 = cv::Mat(sz, dtype);
-    cv::Mat out_mat_ocv4 = cv::Mat(sz, dtype);
+    ncvslideio::Mat out_mat2 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat3 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat4 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat_ocv2 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat_ocv3 = ncvslideio::Mat(sz, dtype);
+    ncvslideio::Mat out_mat_ocv4 = ncvslideio::Mat(sz, dtype);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, out1, out2, out3, out4;
-    std::tie(out1, out2, out3, out4)  = cv::gapi::split4(in1);
-    cv::GComputation c(cv::GIn(in1), cv::GOut(out1, out2, out3, out4));
+    ncvslideio::GMat in1, out1, out2, out3, out4;
+    std::tie(out1, out2, out3, out4)  = ncvslideio::gapi::split4(in1);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1), ncvslideio::GOut(out1, out2, out3, out4));
 
-    c.apply(cv::gin(in_mat1), cv::gout(out_mat_gapi, out_mat2, out_mat3, out_mat4), getCompileArgs());
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat_gapi, out_mat2, out_mat3, out_mat4), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        std::vector<cv::Mat> out_mats_ocv = {out_mat_ocv, out_mat_ocv2, out_mat_ocv3, out_mat_ocv4};
-        cv::split(in_mat1, out_mats_ocv);
+        std::vector<ncvslideio::Mat> out_mats_ocv = {out_mat_ocv, out_mat_ocv2, out_mat_ocv3, out_mat_ocv4};
+        ncvslideio::split(in_mat1, out_mats_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -849,22 +849,22 @@ TEST_P(Split4Test, AccuracyTest)
 
 TEST_P(Merge3Test, AccuracyTest)
 {
-    cv::Mat in_mat3(sz, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    ncvslideio::Mat in_mat3(sz, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat3, mean, stddev);
+    ncvslideio::randn(in_mat3, mean, stddev);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, in3;
-    auto out = cv::gapi::merge3(in1, in2, in3);
+    ncvslideio::GMat in1, in2, in3;
+    auto out = ncvslideio::gapi::merge3(in1, in2, in3);
 
-    cv::GComputation c(cv::GIn(in1, in2, in3), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2, in_mat3), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2, in_mat3), ncvslideio::gout(out_mat_gapi), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        std::vector<cv::Mat> in_mats_ocv = {in_mat1, in_mat2, in_mat3};
-        cv::merge(in_mats_ocv, out_mat_ocv);
+        std::vector<ncvslideio::Mat> in_mats_ocv = {in_mat1, in_mat2, in_mat3};
+        ncvslideio::merge(in_mats_ocv, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -874,24 +874,24 @@ TEST_P(Merge3Test, AccuracyTest)
 
 TEST_P(Merge4Test, AccuracyTest)
 {
-    cv::Mat in_mat3(sz, type);
-    cv::Mat in_mat4(sz, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    ncvslideio::Mat in_mat3(sz, type);
+    ncvslideio::Mat in_mat4(sz, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat3, mean, stddev);
-    cv::randn(in_mat4, mean, stddev);
+    ncvslideio::randn(in_mat3, mean, stddev);
+    ncvslideio::randn(in_mat4, mean, stddev);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, in3, in4;
-    auto out = cv::gapi::merge4(in1, in2, in3, in4);
+    ncvslideio::GMat in1, in2, in3, in4;
+    auto out = ncvslideio::gapi::merge4(in1, in2, in3, in4);
 
-    cv::GComputation c(cv::GIn(in1, in2, in3, in4), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2, in_mat3, in_mat4), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2, in3, in4), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2, in_mat3, in_mat4), ncvslideio::gout(out_mat_gapi), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        std::vector<cv::Mat> in_mats_ocv = {in_mat1, in_mat2, in_mat3, in_mat4};
-        cv::merge(in_mats_ocv, out_mat_ocv);
+        std::vector<ncvslideio::Mat> in_mats_ocv = {in_mat1, in_mat2, in_mat3, in_mat4};
+        ncvslideio::merge(in_mats_ocv, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -901,21 +901,21 @@ TEST_P(Merge4Test, AccuracyTest)
 
 TEST_P(RemapTest, AccuracyTest)
 {
-    cv::Mat in_map1(sz, CV_16SC2);
-    cv::Mat in_map2 = cv::Mat();
-    cv::randu(in_map1, cv::Scalar::all(0), cv::Scalar::all(255));
-    cv::Scalar bv = cv::Scalar();
+    ncvslideio::Mat in_map1(sz, CV_16SC2);
+    ncvslideio::Mat in_map2 = ncvslideio::Mat();
+    ncvslideio::randu(in_map1, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    ncvslideio::Scalar bv = ncvslideio::Scalar();
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1;
-    auto out = cv::gapi::remap(in1, in_map1, in_map2, cv::INTER_NEAREST,  cv::BORDER_REPLICATE, bv);
-    cv::GComputation c(in1, out);
+    ncvslideio::GMat in1;
+    auto out = ncvslideio::gapi::remap(in1, in_map1, in_map2, ncvslideio::INTER_NEAREST,  ncvslideio::BORDER_REPLICATE, bv);
+    ncvslideio::GComputation c(in1, out);
 
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::remap(in_mat1, out_mat_ocv, in_map1, in_map2, cv::INTER_NEAREST, cv::BORDER_REPLICATE, bv);
+        ncvslideio::remap(in_mat1, out_mat_ocv, in_map1, in_map2, ncvslideio::INTER_NEAREST, ncvslideio::BORDER_REPLICATE, bv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -927,14 +927,14 @@ TEST_P(RemapTest, AccuracyTest)
 TEST_P(FlipTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::flip(in, flipCode);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::flip(in, flipCode);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::flip(in_mat1, out_mat_ocv, flipCode);
+        ncvslideio::flip(in_mat1, out_mat_ocv, flipCode);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -945,22 +945,22 @@ TEST_P(FlipTest, AccuracyTest)
 
 TEST_P(CropTest, AccuracyTest)
 {
-    cv::Size sz_out = cv::Size(rect_to.width, rect_to.height);
+    ncvslideio::Size sz_out = ncvslideio::Size(rect_to.width, rect_to.height);
     if (dtype != -1)
     {
-        out_mat_gapi = cv::Mat(sz_out, dtype);
-        out_mat_ocv = cv::Mat(sz_out, dtype);
+        out_mat_gapi = ncvslideio::Mat(sz_out, dtype);
+        out_mat_ocv = ncvslideio::Mat(sz_out, dtype);
     }
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::crop(in, rect_to);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::crop(in, rect_to);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::Mat(in_mat1, rect_to).copyTo(out_mat_ocv);
+        ncvslideio::Mat(in_mat1, rect_to).copyTo(out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -971,22 +971,22 @@ TEST_P(CropTest, AccuracyTest)
 
 TEST_P(CopyTest, AccuracyTest)
 {
-    cv::Size sz_out = sz;
+    ncvslideio::Size sz_out = sz;
     if (dtype != -1)
     {
-        out_mat_gapi = cv::Mat(sz_out, dtype);
-        out_mat_ocv = cv::Mat(sz_out, dtype);
+        out_mat_gapi = ncvslideio::Mat(sz_out, dtype);
+        out_mat_ocv = ncvslideio::Mat(sz_out, dtype);
     }
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::copy(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::copy(in);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::Mat(in_mat1).copyTo(out_mat_ocv);
+        ncvslideio::Mat(in_mat1).copyTo(out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -997,32 +997,32 @@ TEST_P(CopyTest, AccuracyTest)
 
 TEST_P(ConcatHorTest, AccuracyTest)
 {
-    cv::Size sz_out = sz;
+    ncvslideio::Size sz_out = sz;
 
     int wpart = sz_out.width / 4;
-    cv::Size sz_in1 = cv::Size(wpart, sz_out.height);
-    cv::Size sz_in2 = cv::Size(sz_out.width - wpart, sz_out.height);
+    ncvslideio::Size sz_in1 = ncvslideio::Size(wpart, sz_out.height);
+    ncvslideio::Size sz_in2 = ncvslideio::Size(sz_out.width - wpart, sz_out.height);
 
-    in_mat1 = cv::Mat(sz_in1, type );
-    in_mat2 = cv::Mat(sz_in2, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    in_mat1 = ncvslideio::Mat(sz_in1, type );
+    in_mat2 = ncvslideio::Mat(sz_in2, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat1, mean, stddev);
-    cv::randn(in_mat2, mean, stddev);
+    ncvslideio::randn(in_mat1, mean, stddev);
+    ncvslideio::randn(in_mat2, mean, stddev);
 
-    cv::Mat out_mat(sz_out, type);
-    out_mat_ocv = cv::Mat(sz_out, type);
+    ncvslideio::Mat out_mat(sz_out, type);
+    out_mat_ocv = ncvslideio::Mat(sz_out, type);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::concatHor(in1, in2);
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::concatHor(in1, in2);
 
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
     c.apply(gin(in_mat1, in_mat2), gout(out_mat), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::hconcat(in_mat1, in_mat2, out_mat_ocv);
+        ncvslideio::hconcat(in_mat1, in_mat2, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1032,32 +1032,32 @@ TEST_P(ConcatHorTest, AccuracyTest)
 
 TEST_P(ConcatVertTest, AccuracyTest)
 {
-    cv::Size sz_out = sz;
+    ncvslideio::Size sz_out = sz;
 
     int hpart = sz_out.height * 2/3;
-    cv::Size sz_in1 = cv::Size(sz_out.width, hpart);
-    cv::Size sz_in2 = cv::Size(sz_out.width, sz_out.height - hpart);
+    ncvslideio::Size sz_in1 = ncvslideio::Size(sz_out.width, hpart);
+    ncvslideio::Size sz_in2 = ncvslideio::Size(sz_out.width, sz_out.height - hpart);
 
-    in_mat1 = cv::Mat(sz_in1, type);
-    in_mat2 = cv::Mat(sz_in2, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    in_mat1 = ncvslideio::Mat(sz_in1, type);
+    in_mat2 = ncvslideio::Mat(sz_in2, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat1, mean, stddev);
-    cv::randn(in_mat2, mean, stddev);
+    ncvslideio::randn(in_mat1, mean, stddev);
+    ncvslideio::randn(in_mat2, mean, stddev);
 
-    cv::Mat out_mat(sz_out, type);
-    out_mat_ocv = cv::Mat(sz_out, type);
+    ncvslideio::Mat out_mat(sz_out, type);
+    out_mat_ocv = ncvslideio::Mat(sz_out, type);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2;
-    auto out = cv::gapi::concatVert(in1, in2);
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::concatVert(in1, in2);
 
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
     c.apply(gin(in_mat1, in_mat2), gout(out_mat), getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::vconcat(in_mat1, in_mat2, out_mat_ocv );
+        ncvslideio::vconcat(in_mat1, in_mat2, out_mat_ocv );
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1067,39 +1067,39 @@ TEST_P(ConcatVertTest, AccuracyTest)
 
 TEST_P(ConcatVertVecTest, AccuracyTest)
 {
-    cv::Size sz_out = sz;
+    ncvslideio::Size sz_out = sz;
 
     int hpart1 = sz_out.height * 2/5;
     int hpart2 = sz_out.height / 5;
-    cv::Size sz_in1 = cv::Size(sz_out.width, hpart1);
-    cv::Size sz_in2 = cv::Size(sz_out.width, hpart2);
-    cv::Size sz_in3 = cv::Size(sz_out.width, sz_out.height - hpart1 - hpart2);
+    ncvslideio::Size sz_in1 = ncvslideio::Size(sz_out.width, hpart1);
+    ncvslideio::Size sz_in2 = ncvslideio::Size(sz_out.width, hpart2);
+    ncvslideio::Size sz_in3 = ncvslideio::Size(sz_out.width, sz_out.height - hpart1 - hpart2);
 
-    in_mat1 = cv::Mat(sz_in1, type);
-    in_mat2 = cv::Mat(sz_in2, type);
-    cv::Mat in_mat3(sz_in3, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    in_mat1 = ncvslideio::Mat(sz_in1, type);
+    in_mat2 = ncvslideio::Mat(sz_in2, type);
+    ncvslideio::Mat in_mat3(sz_in3, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat1, mean, stddev);
-    cv::randn(in_mat2, mean, stddev);
-    cv::randn(in_mat3, mean, stddev);
+    ncvslideio::randn(in_mat1, mean, stddev);
+    ncvslideio::randn(in_mat2, mean, stddev);
+    ncvslideio::randn(in_mat3, mean, stddev);
 
-    cv::Mat out_mat(sz_out, type);
-    out_mat_ocv = cv::Mat(sz_out, type);
+    ncvslideio::Mat out_mat(sz_out, type);
+    out_mat_ocv = ncvslideio::Mat(sz_out, type);
 
     // G-API code //////////////////////////////////////////////////////////////
-    std::vector <cv::GMat> mats(3);
-    auto out = cv::gapi::concatVert(mats);
+    std::vector <ncvslideio::GMat> mats(3);
+    auto out = ncvslideio::gapi::concatVert(mats);
 
-    std::vector <cv::Mat> cvmats = {in_mat1, in_mat2, in_mat3};
+    std::vector <ncvslideio::Mat> cvmats = {in_mat1, in_mat2, in_mat3};
 
-    cv::GComputation c({mats[0], mats[1], mats[2]}, {out});
+    ncvslideio::GComputation c({mats[0], mats[1], mats[2]}, {out});
     c.apply(gin(in_mat1, in_mat2, in_mat3), gout(out_mat), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::vconcat(cvmats, out_mat_ocv );
+        ncvslideio::vconcat(cvmats, out_mat_ocv );
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1109,39 +1109,39 @@ TEST_P(ConcatVertVecTest, AccuracyTest)
 
 TEST_P(ConcatHorVecTest, AccuracyTest)
 {
-    cv::Size sz_out = sz;
+    ncvslideio::Size sz_out = sz;
 
     int wpart1 = sz_out.width / 3;
     int wpart2 = sz_out.width / 4;
-    cv::Size sz_in1 = cv::Size(wpart1, sz_out.height);
-    cv::Size sz_in2 = cv::Size(wpart2, sz_out.height);
-    cv::Size sz_in3 = cv::Size(sz_out.width - wpart1 - wpart2, sz_out.height);
+    ncvslideio::Size sz_in1 = ncvslideio::Size(wpart1, sz_out.height);
+    ncvslideio::Size sz_in2 = ncvslideio::Size(wpart2, sz_out.height);
+    ncvslideio::Size sz_in3 = ncvslideio::Size(sz_out.width - wpart1 - wpart2, sz_out.height);
 
-    in_mat1 = cv::Mat(sz_in1, type);
-    in_mat2 = cv::Mat(sz_in2, type);
-    cv::Mat in_mat3 (sz_in3, type);
-    cv::Scalar mean = cv::Scalar::all(127);
-    cv::Scalar stddev = cv::Scalar::all(40.f);
+    in_mat1 = ncvslideio::Mat(sz_in1, type);
+    in_mat2 = ncvslideio::Mat(sz_in2, type);
+    ncvslideio::Mat in_mat3 (sz_in3, type);
+    ncvslideio::Scalar mean = ncvslideio::Scalar::all(127);
+    ncvslideio::Scalar stddev = ncvslideio::Scalar::all(40.f);
 
-    cv::randn(in_mat1, mean, stddev);
-    cv::randn(in_mat2, mean, stddev);
-    cv::randn(in_mat3, mean, stddev);
+    ncvslideio::randn(in_mat1, mean, stddev);
+    ncvslideio::randn(in_mat2, mean, stddev);
+    ncvslideio::randn(in_mat3, mean, stddev);
 
-    cv::Mat out_mat(sz_out, type);
-    out_mat_ocv = cv::Mat(sz_out, type);
+    ncvslideio::Mat out_mat(sz_out, type);
+    out_mat_ocv = ncvslideio::Mat(sz_out, type);
 
     // G-API code //////////////////////////////////////////////////////////////
-    std::vector <cv::GMat> mats(3);
-    auto out = cv::gapi::concatHor(mats);
+    std::vector <ncvslideio::GMat> mats(3);
+    auto out = ncvslideio::gapi::concatHor(mats);
 
-    std::vector <cv::Mat> cvmats = {in_mat1, in_mat2, in_mat3};
+    std::vector <ncvslideio::Mat> cvmats = {in_mat1, in_mat2, in_mat3};
 
-    cv::GComputation c({mats[0], mats[1], mats[2]}, {out});
+    ncvslideio::GComputation c({mats[0], mats[1], mats[2]}, {out});
     c.apply(gin(in_mat1, in_mat2, in_mat3), gout(out_mat), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::hconcat(cvmats, out_mat_ocv );
+        ncvslideio::hconcat(cvmats, out_mat_ocv );
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1156,19 +1156,19 @@ TEST_P(LUTTest, AccuracyTest)
     int type_out = CV_MAKETYPE(CV_MAT_DEPTH(type_lut), CV_MAT_CN(type_mat));
 
     initMatrixRandU(type_mat, sz, type_out);
-    cv::Size sz_lut = cv::Size(1, 256);
-    cv::Mat in_lut(sz_lut, type_lut);
-    cv::randu(in_lut, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::Size sz_lut = ncvslideio::Size(1, 256);
+    ncvslideio::Mat in_lut(sz_lut, type_lut);
+    ncvslideio::randu(in_lut, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::LUT(in, in_lut);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::LUT(in, in_lut);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::LUT(in_mat1, in_lut, out_mat_ocv);
+        ncvslideio::LUT(in_mat1, in_lut, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1185,10 +1185,10 @@ TEST_P(ConvertToTest, AccuracyTest)
     initMatrixRandU(type_mat, sz, type_out);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::convertTo(in, depth_to, alpha, beta);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::convertTo(in, depth_to, alpha, beta);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
@@ -1204,14 +1204,14 @@ TEST_P(ConvertToTest, AccuracyTest)
 TEST_P(PhaseTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in_x, in_y;
-    auto out = cv::gapi::phase(in_x, in_y, angle_in_degrees);
+    ncvslideio::GMat in_x, in_y;
+    auto out = ncvslideio::gapi::phase(in_x, in_y, angle_in_degrees);
 
-    cv::GComputation c(in_x, in_y, out);
+    ncvslideio::GComputation c(in_x, in_y, out);
     c.apply(in_mat1, in_mat2, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::phase(in_mat1, in_mat2, out_mat_ocv, angle_in_degrees);
+    ncvslideio::phase(in_mat1, in_mat2, out_mat_ocv, angle_in_degrees);
 
     // Comparison //////////////////////////////////////////////////////////////
     // FIXME: use a comparison functor instead (after enabling OpenCL)
@@ -1227,14 +1227,14 @@ TEST_P(PhaseTest, AccuracyTest)
 TEST_P(SqrtTest, AccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::sqrt(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::sqrt(in);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::sqrt(in_mat1, out_mat_ocv);
+    ncvslideio::sqrt(in_mat1, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // FIXME: use a comparison functor instead (after enabling OpenCL)
@@ -1245,21 +1245,21 @@ TEST_P(SqrtTest, AccuracyTest)
 
 TEST_P(WarpPerspectiveTest, AccuracyTest)
 {
-    cv::Point center{in_mat1.size() / 2};
-    cv::Mat xy = cv::getRotationMatrix2D(center, angle, scale);
-    cv::Matx13d z (0, 0, 1);
-    cv::Mat transform_mat;
-    cv::vconcat(xy, z, transform_mat);
+    ncvslideio::Point center{in_mat1.size() / 2};
+    ncvslideio::Mat xy = ncvslideio::getRotationMatrix2D(center, angle, scale);
+    ncvslideio::Matx13d z (0, 0, 1);
+    ncvslideio::Mat transform_mat;
+    ncvslideio::vconcat(xy, z, transform_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::warpPerspective(in, transform_mat, in_mat1.size(), flags, border_mode, border_value);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::warpPerspective(in, transform_mat, in_mat1.size(), flags, border_mode, border_value);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::warpPerspective(in_mat1, out_mat_ocv, cv::Mat(transform_mat), in_mat1.size(), flags, border_mode, border_value);
+    ncvslideio::warpPerspective(in_mat1, out_mat_ocv, ncvslideio::Mat(transform_mat), in_mat1.size(), flags, border_mode, border_value);
 
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1269,18 +1269,18 @@ TEST_P(WarpPerspectiveTest, AccuracyTest)
 
 TEST_P(WarpAffineTest, AccuracyTest)
 {
-    cv::Point center{in_mat1.size() / 2};
-    cv::Mat warp_mat = cv::getRotationMatrix2D(center, angle, scale);
+    ncvslideio::Point center{in_mat1.size() / 2};
+    ncvslideio::Mat warp_mat = ncvslideio::getRotationMatrix2D(center, angle, scale);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::warpAffine(in, warp_mat, in_mat1.size(), flags, border_mode, border_value);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::warpAffine(in, warp_mat, in_mat1.size(), flags, border_mode, border_value);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::warpAffine(in_mat1, out_mat_ocv, warp_mat, in_mat1.size(), flags, border_mode, border_value);
+    ncvslideio::warpAffine(in_mat1, out_mat_ocv, warp_mat, in_mat1.size(), flags, border_mode, border_value);
 
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1293,15 +1293,15 @@ TEST_P(NormalizeTest, Test)
     initMatrixRandN(type, sz, CV_MAKETYPE(ddepth, CV_MAT_CN(type)));
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::normalize(in, a, b, norm_type, ddepth);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::normalize(in, a, b, norm_type, ddepth);
 
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(in_mat1), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::normalize(in_mat1, out_mat_ocv, a, b, norm_type, ddepth);
+        ncvslideio::normalize(in_mat1, out_mat_ocv, a, b, norm_type, ddepth);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1318,7 +1318,7 @@ TEST_P(KMeansNDTest, AccuracyTest)
 TEST_P(KMeans2DTest, AccuracyTest)
 {
     const int amount = sz.height;
-    std::vector<cv::Point2f> in_vector{};
+    std::vector<ncvslideio::Point2f> in_vector{};
     initPointsVectorRandU(amount, in_vector);
     kmeansTestBody(in_vector, sz, type, K, flags, getCompileArgs());
 }
@@ -1326,7 +1326,7 @@ TEST_P(KMeans2DTest, AccuracyTest)
 TEST_P(KMeans3DTest, AccuracyTest)
 {
     const int amount = sz.height;
-    std::vector<cv::Point3f> in_vector{};
+    std::vector<ncvslideio::Point3f> in_vector{};
     initPointsVectorRandU(amount, in_vector);
     kmeansTestBody(in_vector, sz, type, K, flags, getCompileArgs());
 }
@@ -1334,14 +1334,14 @@ TEST_P(KMeans3DTest, AccuracyTest)
 TEST_P(TransposeTest, Test)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    auto out = cv::gapi::transpose(in);
+    ncvslideio::GMat in;
+    auto out = ncvslideio::gapi::transpose(in);
 
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
     // OpenCV code /////////////////////////////////////////////////////////////
     {
-        cv::transpose(in_mat1, out_mat_ocv);
+        ncvslideio::transpose(in_mat1, out_mat_ocv);
     }
     // Comparison //////////////////////////////////////////////////////////////
     {
@@ -1353,16 +1353,16 @@ TEST_P(TransposeTest, Test)
 TEST_P(BackendOutputAllocationTest, EmptyOutput)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
 
     EXPECT_TRUE(out_mat_gapi.empty());
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
     EXPECT_FALSE(out_mat_gapi.empty());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: output is allocated to the needed size
@@ -1372,17 +1372,17 @@ TEST_P(BackendOutputAllocationTest, EmptyOutput)
 
 TEST_P(BackendOutputAllocationTest, CorrectlyPreallocatedOutput)
 {
-    out_mat_gapi = cv::Mat(sz, type);
+    out_mat_gapi = ncvslideio::Mat(sz, type);
     auto out_mat_gapi_ref = out_mat_gapi;  // shallow copy to ensure previous data is not deleted
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::add(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::add(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::add(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::add(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: output is not reallocated
@@ -1395,19 +1395,19 @@ TEST_P(BackendOutputAllocationTest, CorrectlyPreallocatedOutput)
 TEST_P(BackendOutputAllocationTest, IncorrectOutputMeta)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::add(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::add(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
 
     const auto run_and_compare = [&c, this] ()
     {
         auto out_mat_gapi_ref = out_mat_gapi; // shallow copy to ensure previous data is not deleted
 
         // G-API code //////////////////////////////////////////////////////////////
-        c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+        c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
         // OpenCV code /////////////////////////////////////////////////////////////
-        cv::add(in_mat1, in_mat2, out_mat_ocv, cv::noArray());
+        ncvslideio::add(in_mat1, in_mat2, out_mat_ocv, ncvslideio::noArray());
 
         // Comparison //////////////////////////////////////////////////////////////
         // Expected: size is changed, type is changed, output is reallocated
@@ -1420,26 +1420,26 @@ TEST_P(BackendOutputAllocationTest, IncorrectOutputMeta)
 
     const auto chan = CV_MAT_CN(type);
 
-    out_mat_gapi = cv::Mat(sz, CV_MAKE_TYPE(CV_64F, chan));
+    out_mat_gapi = ncvslideio::Mat(sz, CV_MAKE_TYPE(CV_64F, chan));
     run_and_compare();
 
-    out_mat_gapi = cv::Mat(sz, CV_MAKE_TYPE(CV_MAT_DEPTH(type), chan + 1));
+    out_mat_gapi = ncvslideio::Mat(sz, CV_MAKE_TYPE(CV_MAT_DEPTH(type), chan + 1));
     run_and_compare();
 }
 
 TEST_P(BackendOutputAllocationTest, SmallerPreallocatedSize)
 {
-    out_mat_gapi = cv::Mat(sz / 2, type);
+    out_mat_gapi = ncvslideio::Mat(sz / 2, type);
     auto out_mat_gapi_ref = out_mat_gapi; // shallow copy to ensure previous data is not deleted
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: size is changed, output is reallocated due to original size < curr size
@@ -1451,21 +1451,21 @@ TEST_P(BackendOutputAllocationTest, SmallerPreallocatedSize)
 
 TEST_P(BackendOutputAllocationTest, SmallerPreallocatedSizeWithSubmatrix)
 {
-    out_mat_gapi = cv::Mat(sz / 2, type);
+    out_mat_gapi = ncvslideio::Mat(sz / 2, type);
 
-    cv::Mat out_mat_gapi_submat = out_mat_gapi(cv::Rect({10, 0}, sz / 5));
+    ncvslideio::Mat out_mat_gapi_submat = out_mat_gapi(ncvslideio::Rect({10, 0}, sz / 5));
     EXPECT_EQ(out_mat_gapi.data, out_mat_gapi_submat.datastart);
 
     auto out_mat_gapi_submat_ref = out_mat_gapi_submat; // shallow copy to ensure previous data is not deleted
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi_submat), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi_submat), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: submatrix is reallocated and is "detached", original matrix is unchanged
@@ -1479,17 +1479,17 @@ TEST_P(BackendOutputAllocationTest, SmallerPreallocatedSizeWithSubmatrix)
 
 TEST_P(BackendOutputAllocationTest, LargerPreallocatedSize)
 {
-    out_mat_gapi = cv::Mat(sz * 2, type);
+    out_mat_gapi = ncvslideio::Mat(sz * 2, type);
     auto out_mat_gapi_ref = out_mat_gapi; // shallow copy to ensure previous data is not deleted
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: size is changed, output is reallocated
@@ -1502,22 +1502,22 @@ TEST_P(BackendOutputAllocationTest, LargerPreallocatedSize)
 TEST_P(BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest,
     LargerPreallocatedSizeWithCorrectSubmatrix)
 {
-    out_mat_gapi = cv::Mat(sz * 2, type);
+    out_mat_gapi = ncvslideio::Mat(sz * 2, type);
     auto out_mat_gapi_ref = out_mat_gapi; // shallow copy to ensure previous data is not deleted
 
-    cv::Mat out_mat_gapi_submat = out_mat_gapi(cv::Rect({5, 8}, sz));
+    ncvslideio::Mat out_mat_gapi_submat = out_mat_gapi(ncvslideio::Rect({5, 8}, sz));
     EXPECT_EQ(out_mat_gapi.data, out_mat_gapi_submat.datastart);
 
     auto out_mat_gapi_submat_ref = out_mat_gapi_submat;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi_submat), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi_submat), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: submatrix is not reallocated, original matrix is not reallocated
@@ -1532,22 +1532,22 @@ TEST_P(BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest,
 
 TEST_P(BackendOutputAllocationTest, LargerPreallocatedSizeWithSmallSubmatrix)
 {
-    out_mat_gapi = cv::Mat(sz * 2, type);
+    out_mat_gapi = ncvslideio::Mat(sz * 2, type);
     auto out_mat_gapi_ref = out_mat_gapi; // shallow copy to ensure previous data is not deleted
 
-    cv::Mat out_mat_gapi_submat = out_mat_gapi(cv::Rect({5, 8}, sz / 2));
+    ncvslideio::Mat out_mat_gapi_submat = out_mat_gapi(ncvslideio::Rect({5, 8}, sz / 2));
     EXPECT_EQ(out_mat_gapi.data, out_mat_gapi_submat.datastart);
 
     auto out_mat_gapi_submat_ref = out_mat_gapi_submat;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::mul(in1, in2);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
-    c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi_submat), getCompileArgs());
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::mul(in1, in2);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi_submat), getCompileArgs());
 
     // OpenCV code /////////////////////////////////////////////////////////////
-    cv::multiply(in_mat1, in_mat2, out_mat_ocv);
+    ncvslideio::multiply(in_mat1, in_mat2, out_mat_ocv);
 
     // Comparison //////////////////////////////////////////////////////////////
     // Expected: submatrix is reallocated and is "detached", original matrix is unchanged
@@ -1562,23 +1562,23 @@ TEST_P(BackendOutputAllocationTest, LargerPreallocatedSizeWithSmallSubmatrix)
 
 TEST_P(ReInitOutTest, TestWithAdd)
 {
-    in_mat1 = cv::Mat(sz, type);
-    in_mat2 = cv::Mat(sz, type);
-    cv::randu(in_mat1, cv::Scalar::all(0), cv::Scalar::all(100));
-    cv::randu(in_mat2, cv::Scalar::all(0), cv::Scalar::all(100));
+    in_mat1 = ncvslideio::Mat(sz, type);
+    in_mat2 = ncvslideio::Mat(sz, type);
+    ncvslideio::randu(in_mat1, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
+    ncvslideio::randu(in_mat2, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(100));
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in1, in2, out;
-    out = cv::gapi::add(in1, in2, dtype);
-    cv::GComputation c(cv::GIn(in1, in2), cv::GOut(out));
+    ncvslideio::GMat in1, in2, out;
+    out = ncvslideio::gapi::add(in1, in2, dtype);
+    ncvslideio::GComputation c(ncvslideio::GIn(in1, in2), ncvslideio::GOut(out));
 
     const auto run_and_compare = [&c, this] ()
     {
         // G-API code //////////////////////////////////////////////////////////////
-        c.apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi), getCompileArgs());
+        c.apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi), getCompileArgs());
 
         // OpenCV code /////////////////////////////////////////////////////////////
-        cv::add(in_mat1, in_mat2, out_mat_ocv, cv::noArray());
+        ncvslideio::add(in_mat1, in_mat2, out_mat_ocv, ncvslideio::noArray());
 
         // Comparison //////////////////////////////////////////////////////////////
         EXPECT_EQ(0, cvtest::norm(out_mat_gapi, out_mat_ocv, NORM_INF));
@@ -1595,16 +1595,16 @@ TEST_P(ReInitOutTest, TestWithAdd)
 
 TEST_P(ParseSSDBLTest, ParseTest)
 {
-    cv::Mat in_mat = generateSSDoutput(sz);
-    std::vector<cv::Rect> boxes_gapi, boxes_ref;
+    ncvslideio::Mat in_mat = generateSSDoutput(sz);
+    std::vector<ncvslideio::Rect> boxes_gapi, boxes_ref;
     std::vector<int> labels_gapi, labels_ref;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    cv::GOpaque<cv::Size> op_sz;
-    auto out = cv::gapi::parseSSD(in, op_sz, confidence_threshold, filter_label);
-    cv::GComputation c(cv::GIn(in, op_sz), cv::GOut(std::get<0>(out), std::get<1>(out)));
-    c.apply(cv::gin(in_mat, sz), cv::gout(boxes_gapi, labels_gapi), getCompileArgs());
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Size> op_sz;
+    auto out = ncvslideio::gapi::parseSSD(in, op_sz, confidence_threshold, filter_label);
+    ncvslideio::GComputation c(ncvslideio::GIn(in, op_sz), ncvslideio::GOut(std::get<0>(out), std::get<1>(out)));
+    c.apply(ncvslideio::gin(in_mat, sz), ncvslideio::gout(boxes_gapi, labels_gapi), getCompileArgs());
 
     // Reference code //////////////////////////////////////////////////////////
     parseSSDBLref(in_mat, sz, confidence_threshold, filter_label, boxes_ref, labels_ref);
@@ -1616,16 +1616,16 @@ TEST_P(ParseSSDBLTest, ParseTest)
 
 TEST_P(ParseSSDTest, ParseTest)
 {
-    cv::Mat in_mat = generateSSDoutput(sz);
-    std::vector<cv::Rect> boxes_gapi, boxes_ref;
+    ncvslideio::Mat in_mat = generateSSDoutput(sz);
+    std::vector<ncvslideio::Rect> boxes_gapi, boxes_ref;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    cv::GOpaque<cv::Size> op_sz;
-    auto out = cv::gapi::parseSSD(in, op_sz, confidence_threshold,
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Size> op_sz;
+    auto out = ncvslideio::gapi::parseSSD(in, op_sz, confidence_threshold,
                                   alignment_to_square, filter_out_of_bounds);
-    cv::GComputation c(cv::GIn(in, op_sz), cv::GOut(out));
-    c.apply(cv::gin(in_mat, sz), cv::gout(boxes_gapi), getCompileArgs());
+    ncvslideio::GComputation c(ncvslideio::GIn(in, op_sz), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat, sz), ncvslideio::gout(boxes_gapi), getCompileArgs());
 
     // Reference code //////////////////////////////////////////////////////////
     parseSSDref(in_mat, sz, confidence_threshold, alignment_to_square,
@@ -1637,17 +1637,17 @@ TEST_P(ParseSSDTest, ParseTest)
 
 TEST_P(ParseYoloTest, ParseTest)
 {
-    cv::Mat in_mat = generateYoloOutput(num_classes, dims_config);
-    auto anchors = cv::gapi::nn::parsers::GParseYolo::defaultAnchors();
-    std::vector<cv::Rect> boxes_gapi, boxes_ref;
+    ncvslideio::Mat in_mat = generateYoloOutput(num_classes, dims_config);
+    auto anchors = ncvslideio::gapi::nn::parsers::GParseYolo::defaultAnchors();
+    std::vector<ncvslideio::Rect> boxes_gapi, boxes_ref;
     std::vector<int> labels_gapi, labels_ref;
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
-    cv::GOpaque<cv::Size> op_sz;
-    auto out = cv::gapi::parseYolo(in, op_sz, confidence_threshold, nms_threshold, anchors);
-    cv::GComputation c(cv::GIn(in, op_sz), cv::GOut(std::get<0>(out), std::get<1>(out)));
-    c.apply(cv::gin(in_mat, sz), cv::gout(boxes_gapi, labels_gapi), getCompileArgs());
+    ncvslideio::GMat in;
+    ncvslideio::GOpaque<ncvslideio::Size> op_sz;
+    auto out = ncvslideio::gapi::parseYolo(in, op_sz, confidence_threshold, nms_threshold, anchors);
+    ncvslideio::GComputation c(ncvslideio::GIn(in, op_sz), ncvslideio::GOut(std::get<0>(out), std::get<1>(out)));
+    c.apply(ncvslideio::gin(in_mat, sz), ncvslideio::gout(boxes_gapi, labels_gapi), getCompileArgs());
 
     // Reference code //////////////////////////////////////////////////////////
     parseYoloRef(in_mat, sz, confidence_threshold, nms_threshold, num_classes, anchors, boxes_ref, labels_ref);
@@ -1659,91 +1659,91 @@ TEST_P(ParseYoloTest, ParseTest)
 
 TEST_P(SizeTest, ParseTest)
 {
-    cv::GMat in;
-    cv::Size out_sz;
+    ncvslideio::GMat in;
+    ncvslideio::Size out_sz;
 
-    auto out = cv::gapi::streaming::size(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(in_mat1), cv::gout(out_sz), getCompileArgs());
+    auto out = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_sz), getCompileArgs());
 
     EXPECT_EQ(sz, out_sz);
 }
 
 TEST_P(SizeRTest, ParseTest)
 {
-    cv::Rect rect(cv::Point(0,0), sz);
-    cv::Size out_sz;
+    ncvslideio::Rect rect(ncvslideio::Point(0,0), sz);
+    ncvslideio::Size out_sz;
 
-    cv::GOpaque<cv::Rect> op_rect;
-    auto out = cv::gapi::streaming::size(op_rect);
-    cv::GComputation c(cv::GIn(op_rect), cv::GOut(out));
-    c.apply(cv::gin(rect), cv::gout(out_sz), getCompileArgs());
+    ncvslideio::GOpaque<ncvslideio::Rect> op_rect;
+    auto out = ncvslideio::gapi::streaming::size(op_rect);
+    ncvslideio::GComputation c(ncvslideio::GIn(op_rect), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(rect), ncvslideio::gout(out_sz), getCompileArgs());
 
     EXPECT_EQ(sz, out_sz);
 }
 
 namespace {
-    class TestMediaBGR final : public cv::MediaFrame::IAdapter {
-        cv::Mat m_mat;
+    class TestMediaBGR final : public ncvslideio::MediaFrame::IAdapter {
+        ncvslideio::Mat m_mat;
 
     public:
-        explicit TestMediaBGR(cv::Mat m)
+        explicit TestMediaBGR(ncvslideio::Mat m)
             : m_mat(m) {
         }
-        cv::GFrameDesc meta() const override {
-            return cv::GFrameDesc{ cv::MediaFormat::BGR, cv::Size(m_mat.cols, m_mat.rows) };
+        ncvslideio::GFrameDesc meta() const override {
+            return ncvslideio::GFrameDesc{ ncvslideio::MediaFormat::BGR, ncvslideio::Size(m_mat.cols, m_mat.rows) };
         }
-        cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-            cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-            cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-            return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+            ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+            ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+            return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
         }
     };
 }
 
 namespace {
-    class TestMediaGray final : public cv::MediaFrame::IAdapter {
-        cv::Mat m_mat;
+    class TestMediaGray final : public ncvslideio::MediaFrame::IAdapter {
+        ncvslideio::Mat m_mat;
 
     public:
-        explicit TestMediaGray(cv::Mat m)
+        explicit TestMediaGray(ncvslideio::Mat m)
             : m_mat(m) {
         }
-        cv::GFrameDesc meta() const override {
-            return cv::GFrameDesc{ cv::MediaFormat::GRAY, cv::Size(m_mat.cols, m_mat.rows) };
+        ncvslideio::GFrameDesc meta() const override {
+            return ncvslideio::GFrameDesc{ ncvslideio::MediaFormat::GRAY, ncvslideio::Size(m_mat.cols, m_mat.rows) };
         }
-        cv::MediaFrame::View access(cv::MediaFrame::Access) override {
-            cv::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
-            cv::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
-            return cv::MediaFrame::View(std::move(pp), std::move(ss));
+        ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access) override {
+            ncvslideio::MediaFrame::View::Ptrs pp = { m_mat.ptr(), nullptr, nullptr, nullptr };
+            ncvslideio::MediaFrame::View::Strides ss = { m_mat.step, 0u, 0u, 0u };
+            return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss));
         }
     };
 }
 
 TEST_P(SizeMFTest, ParseTest)
 {
-    cv::Size out_sz;
-    cv::Mat bgr = cv::Mat::eye(sz.height, sz.width, CV_8UC3);
-    cv::MediaFrame frame = cv::MediaFrame::Create<TestMediaBGR>(bgr);
+    ncvslideio::Size out_sz;
+    ncvslideio::Mat bgr = ncvslideio::Mat::eye(sz.height, sz.width, CV_8UC3);
+    ncvslideio::MediaFrame frame = ncvslideio::MediaFrame::Create<TestMediaBGR>(bgr);
 
-    cv::GFrame in;
-    auto out = cv::gapi::streaming::size(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(frame), cv::gout(out_sz), getCompileArgs());
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(frame), ncvslideio::gout(out_sz), getCompileArgs());
 
     EXPECT_EQ(sz, out_sz);
 }
 
 TEST_P(SizeMFTest, ParseGrayTest)
 {
-    cv::Size out_sz;
-    cv::Mat gray = cv::Mat::eye(sz.height, sz.width, CV_8UC1);
-    cv::MediaFrame frame = cv::MediaFrame::Create<TestMediaGray>(gray);
+    ncvslideio::Size out_sz;
+    ncvslideio::Mat gray = ncvslideio::Mat::eye(sz.height, sz.width, CV_8UC1);
+    ncvslideio::MediaFrame frame = ncvslideio::MediaFrame::Create<TestMediaGray>(gray);
 
-    cv::GFrame in;
-    auto out = cv::gapi::streaming::size(in);
-    cv::GComputation c(cv::GIn(in), cv::GOut(out));
-    c.apply(cv::gin(frame), cv::gout(out_sz), getCompileArgs());
+    ncvslideio::GFrame in;
+    auto out = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GComputation c(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    c.apply(ncvslideio::gin(frame), ncvslideio::gout(out_sz), getCompileArgs());
 
     EXPECT_EQ(sz, out_sz);
 }

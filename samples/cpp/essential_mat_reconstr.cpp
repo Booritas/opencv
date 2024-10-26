@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace cv;
+using namespace ncvslideio;
 static double getError2EpipLines (const Mat &F, const Mat &pts1, const Mat &pts2, const Mat &mask) {
     Mat points1, points2;
     vconcat(pts1, Mat::ones(1, pts1.cols, pts1.type()), points1);

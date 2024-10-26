@@ -15,13 +15,13 @@ struct OpenCLState
 {
     OpenCLState(bool useOpenCL)
     {
-        isOpenCL_enabled = cv::ocl::useOpenCL();
-        cv::ocl::setUseOpenCL(useOpenCL);
+        isOpenCL_enabled = ncvslideio::ocl::useOpenCL();
+        ncvslideio::ocl::setUseOpenCL(useOpenCL);
     }
 
     ~OpenCLState()
     {
-        cv::ocl::setUseOpenCL(isOpenCL_enabled);
+        ncvslideio::ocl::setUseOpenCL(isOpenCL_enabled);
     }
 
 private:
@@ -35,7 +35,7 @@ OCL_PERF_TEST_P(UMatTest, CustomPtr, Combine(Values(sz1080p, sz2160p), Bool(), :
     OpenCLState s(get<1>(GetParam()));
 
     int type = CV_8UC1;
-    cv::Size size = get<0>(GetParam());
+    ncvslideio::Size size = get<0>(GetParam());
     size_t align_base = 4096;
     const int align_offset = get<2>(GetParam());
 
@@ -46,11 +46,11 @@ OCL_PERF_TEST_P(UMatTest, CustomPtr, Combine(Values(sz1080p, sz2160p), Bool(), :
     OCL_TEST_CYCLE()
     {
         Mat m = Mat(size, type, pData, step);
-        m.setTo(cv::Scalar::all(2));
+        m.setTo(ncvslideio::Scalar::all(2));
 
         UMat u = m.getUMat(ACCESS_RW);
-        cv::add(u, cv::Scalar::all(2), u);
-        cv::add(u, cv::Scalar::all(3), u);
+        ncvslideio::add(u, ncvslideio::Scalar::all(2), u);
+        ncvslideio::add(u, ncvslideio::Scalar::all(3), u);
 
         Mat d = u.getMat(ACCESS_READ);
         ASSERT_EQ(7, d.at<char>(0, 0));

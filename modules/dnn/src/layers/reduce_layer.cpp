@@ -6,7 +6,7 @@
 #include <opencv2/dnn/shape_utils.hpp>
 
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ReduceLayerImpl CV_FINAL : public ReduceLayer
 {
@@ -493,7 +493,7 @@ public:
             case CV_8U: opDispatch<uint8_t>(std::forward<Args>(args)...); break;
             case CV_32S: opDispatch<int32_t>(std::forward<Args>(args)...); break;
             case CV_32F: opDispatch<float>(std::forward<Args>(args)...); break;
-            default: CV_Error(cv::Error::BadDepth, "DNN/Reduce: Unsupported type.");
+            default: CV_Error(ncvslideio::Error::BadDepth, "DNN/Reduce: Unsupported type.");
         }
     }
 
@@ -522,4 +522,4 @@ Ptr<ReduceLayer> ReduceLayer::create(const LayerParams& params)
     return Ptr<ReduceLayer>(new ReduceLayerImpl(params));
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

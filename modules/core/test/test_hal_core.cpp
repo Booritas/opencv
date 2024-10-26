@@ -130,7 +130,7 @@ typedef testing::TestWithParam<int> HAL;
 TEST_P(HAL, mat_decomp)
 {
     int hcase = GetParam();
-    SCOPED_TRACE(cv::format("hcase=%d", hcase));
+    SCOPED_TRACE(ncvslideio::format("hcase=%d", hcase));
     {
         int depth = hcase % 2 == 0 ? CV_32F : CV_64F;
         int size = (hcase / 2) % 4;

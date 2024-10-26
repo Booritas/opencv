@@ -9,23 +9,23 @@
 #ifndef OPENCV_NNPARSERS_OCV_HPP
 #define OPENCV_NNPARSERS_OCV_HPP
 
-namespace cv
+namespace ncvslideio
 {
-void ParseSSD(const cv::Mat&  in_ssd_result,
-              const cv::Size& in_size,
+void ParseSSD(const ncvslideio::Mat&  in_ssd_result,
+              const ncvslideio::Size& in_size,
               const float     confidence_threshold,
               const int       filter_label,
               const bool      alignment_to_square,
               const bool      filter_out_of_bounds,
-              std::vector<cv::Rect>& out_boxes,
+              std::vector<ncvslideio::Rect>& out_boxes,
               std::vector<int>&      out_labels);
 
-void parseYolo(const cv::Mat&  in_yolo_result,
-               const cv::Size& in_size,
+void parseYolo(const ncvslideio::Mat&  in_yolo_result,
+               const ncvslideio::Size& in_size,
                const float     confidence_threshold,
                const float     nms_threshold,
                const std::vector<float>& anchors,
-               std::vector<cv::Rect>& out_boxes,
+               std::vector<ncvslideio::Rect>& out_boxes,
                std::vector<int>&      out_labels);
 }
 #endif // OPENCV_NNPARSERS_OCV_HPP

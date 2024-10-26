@@ -8,7 +8,7 @@ import cv2 as cv
 def main(argv):
     # [variables]
     # Declare the variables we are going to use
-    ddepth = cv.CV_16S
+    ddepth = ncvslideio.CV_16S
     kernel_size = 3
     window_name = "Laplace Demo"
     # [variables]
@@ -16,7 +16,7 @@ def main(argv):
     # [load]
     imageName = argv[0] if len(argv) > 0 else 'lena.jpg'
 
-    src = cv.imread(cv.samples.findFile(imageName), cv.IMREAD_COLOR) # Load an image
+    src = ncvslideio.imread(ncvslideio.samples.findFile(imageName), ncvslideio.IMREAD_COLOR) # Load an image
 
     # Check if image is loaded fine
     if src is None:
@@ -27,30 +27,30 @@ def main(argv):
 
     # [reduce_noise]
     # Remove noise by blurring with a Gaussian filter
-    src = cv.GaussianBlur(src, (3, 3), 0)
+    src = ncvslideio.GaussianBlur(src, (3, 3), 0)
     # [reduce_noise]
 
     # [convert_to_gray]
     # Convert the image to grayscale
-    src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+    src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
     # [convert_to_gray]
 
     # Create Window
-    cv.namedWindow(window_name, cv.WINDOW_AUTOSIZE)
+    ncvslideio.namedWindow(window_name, ncvslideio.WINDOW_AUTOSIZE)
 
     # [laplacian]
     # Apply Laplace function
-    dst = cv.Laplacian(src_gray, ddepth, ksize=kernel_size)
+    dst = ncvslideio.Laplacian(src_gray, ddepth, ksize=kernel_size)
     # [laplacian]
 
     # [convert]
     # converting back to uint8
-    abs_dst = cv.convertScaleAbs(dst)
+    abs_dst = ncvslideio.convertScaleAbs(dst)
     # [convert]
 
     # [display]
-    cv.imshow(window_name, abs_dst)
-    cv.waitKey(0)
+    ncvslideio.imshow(window_name, abs_dst)
+    ncvslideio.waitKey(0)
     # [display]
 
     return 0

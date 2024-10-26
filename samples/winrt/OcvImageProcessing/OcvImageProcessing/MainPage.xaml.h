@@ -32,20 +32,20 @@ namespace OcvImageProcessing
         static const int SEPIA    = 5;
 
         void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
-        cv::Mat ApplyGrayFilter(const cv::Mat& image);
-        cv::Mat ApplyCannyFilter(const cv::Mat& image);
-        cv::Mat ApplyBlurFilter(const cv::Mat& image);
-        cv::Mat ApplyFindFeaturesFilter(const cv::Mat& image);
-        cv::Mat ApplySepiaFilter(const cv::Mat& image);
+        ncvslideio::Mat ApplyGrayFilter(const ncvslideio::Mat& image);
+        ncvslideio::Mat ApplyCannyFilter(const ncvslideio::Mat& image);
+        ncvslideio::Mat ApplyBlurFilter(const ncvslideio::Mat& image);
+        ncvslideio::Mat ApplyFindFeaturesFilter(const ncvslideio::Mat& image);
+        ncvslideio::Mat ApplySepiaFilter(const ncvslideio::Mat& image);
 
-        void UpdateImage(const cv::Mat& image);
+        void UpdateImage(const ncvslideio::Mat& image);
         std::string CreateTempFile(const std::string &suffix);
-        bool SaveImage(cv::Mat image);
+        bool SaveImage(ncvslideio::Mat image);
 
         std::string StrToWStr(const std::wstring &wstr);
-        cv::String ConvertPath(Platform::String^ path);
+        ncvslideio::String ConvertPath(Platform::String^ path);
 
-        cv::Mat Lena;
+        ncvslideio::Mat Lena;
         unsigned int frameWidth, frameHeight;
     };
 }

@@ -14,15 +14,15 @@ TEST(DISABLED_videoio_micro, basic)
     Mat frame;
 
     std::vector<int> params { CAP_PROP_AUDIO_STREAM, 0, CAP_PROP_VIDEO_STREAM, -1 };
-    VideoCapture cap(0, cv::CAP_MSMF, params);
+    VideoCapture cap(0, ncvslideio::CAP_MSMF, params);
     ASSERT_TRUE(cap.isOpened());
 
-    int samplesPerSecond = (int)cap.get(cv::CAP_PROP_AUDIO_SAMPLES_PER_SECOND);
-    const int audio_base_index = (int)cap.get(cv::CAP_PROP_AUDIO_BASE_INDEX);
+    int samplesPerSecond = (int)cap.get(ncvslideio::CAP_PROP_AUDIO_SAMPLES_PER_SECOND);
+    const int audio_base_index = (int)cap.get(ncvslideio::CAP_PROP_AUDIO_BASE_INDEX);
 
-    const double cvTickFreq = cv::getTickFrequency();
-    int64 sysTimePrev = cv::getTickCount();
-    int64 sysTimeCurr = cv::getTickCount();
+    const double cvTickFreq = ncvslideio::getTickFrequency();
+    int64 sysTimePrev = ncvslideio::getTickCount();
+    int64 sysTimeCurr = ncvslideio::getTickCount();
 
     cout << "Audio would be captured for the next 10 seconds" << endl;
     while ((sysTimeCurr-sysTimePrev)/cvTickFreq < 10)
@@ -30,11 +30,11 @@ TEST(DISABLED_videoio_micro, basic)
         if (cap.grab())
         {
             ASSERT_TRUE(cap.retrieve(frame, audio_base_index));
-            sysTimeCurr = cv::getTickCount();
+            sysTimeCurr = ncvslideio::getTickCount();
         }
     }
     validSize = samplesPerSecond*(int)((sysTimeCurr-sysTimePrev)/cvTickFreq);
-    cursize = (int)cap.get(cv::CAP_PROP_AUDIO_POS);
+    cursize = (int)cap.get(ncvslideio::CAP_PROP_AUDIO_POS);
     ASSERT_LT(validSize - cursize, cursize*0.05);
 }
 

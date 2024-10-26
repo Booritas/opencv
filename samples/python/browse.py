@@ -28,9 +28,9 @@ import sys
 
 def main():
     if len(sys.argv) > 1:
-        fn = cv.samples.findFile(sys.argv[1])
+        fn = ncvslideio.samples.findFile(sys.argv[1])
         print('loading %s ...' % fn)
-        img = cv.imread(fn)
+        img = ncvslideio.imread(fn)
         if img is None:
             print('Failed to load fn:', fn)
             sys.exit(1)
@@ -41,27 +41,27 @@ def main():
         img = np.zeros((sz, sz), np.uint8)
         track = np.cumsum(np.random.rand(500000, 2)-0.5, axis=0)
         track = np.int32(track*10 + (sz/2, sz/2))
-        cv.polylines(img, [track], 0, 255, 1, cv.LINE_AA)
+        ncvslideio.polylines(img, [track], 0, 255, 1, ncvslideio.LINE_AA)
 
 
     small = img
     for _i in xrange(3):
-        small = cv.pyrDown(small)
+        small = ncvslideio.pyrDown(small)
 
     def onmouse(event, x, y, flags, param):
         h, _w = img.shape[:2]
         h1, _w1 = small.shape[:2]
         x, y = 1.0*x*h/h1, 1.0*y*h/h1
-        zoom = cv.getRectSubPix(img, (800, 600), (x+0.5, y+0.5))
-        cv.imshow('zoom', zoom)
+        zoom = ncvslideio.getRectSubPix(img, (800, 600), (x+0.5, y+0.5))
+        ncvslideio.imshow('zoom', zoom)
 
-    cv.imshow('preview', small)
-    cv.setMouseCallback('preview', onmouse)
-    cv.waitKey()
+    ncvslideio.imshow('preview', small)
+    ncvslideio.setMouseCallback('preview', onmouse)
+    ncvslideio.waitKey()
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

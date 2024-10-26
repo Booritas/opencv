@@ -26,7 +26,7 @@ OCL_PERF_TEST_P(UpdateMotionHistoryFixture, UpdateMotionHistory, OCL_TEST_SIZES)
     randu(silhouette, -5, 5);
     declare.in(mhi, WARMUP_RNG);
 
-    OCL_TEST_CYCLE() cv::updateMotionHistory(silhouette, mhi, 1, 0.5);
+    OCL_TEST_CYCLE() ncvslideio::updateMotionHistory(silhouette, mhi, 1, 0.5);
 
     SANITY_CHECK(mhi);
 }

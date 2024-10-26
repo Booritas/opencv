@@ -50,7 +50,7 @@
 
 #include <opencv2/dnn/dict.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 namespace accessor {
@@ -166,7 +166,7 @@ CV__DNN_INLINE_NS_BEGIN
     };
 
     /**
-     * @brief Derivatives of this class wraps cv::Mat for different backends and targets.
+     * @brief Derivatives of this class wraps ncvslideio::Mat for different backends and targets.
      */
     class BackendWrapper
     {
@@ -174,17 +174,17 @@ CV__DNN_INLINE_NS_BEGIN
         BackendWrapper(int backendId, int targetId);
 
         /**
-         * @brief Wrap cv::Mat for specific backend and target.
+         * @brief Wrap ncvslideio::Mat for specific backend and target.
          * @param[in] targetId Target identifier.
-         * @param[in] m cv::Mat for wrapping.
+         * @param[in] m ncvslideio::Mat for wrapping.
          *
          * Make CPU->GPU data transfer if it's require for the target.
          */
-        BackendWrapper(int targetId, const cv::Mat& m);
+        BackendWrapper(int targetId, const ncvslideio::Mat& m);
 
         /**
-         * @brief Make wrapper for reused cv::Mat.
-         * @param[in] base Wrapper of cv::Mat that will be reused.
+         * @brief Make wrapper for reused ncvslideio::Mat.
+         * @param[in] base Wrapper of ncvslideio::Mat that will be reused.
          * @param[in] shape Specific shape.
          *
          * Initialize wrapper from another one. It'll wrap the same host CPU
@@ -391,7 +391,7 @@ CV__DNN_INLINE_NS_BEGIN
          * @see BackendNode
          *
          * Actual for graph-based backends. If layer attached successfully,
-         * returns non-empty cv::Ptr to node of the same backend.
+         * returns non-empty ncvslideio::Ptr to node of the same backend.
          * Fuse only over the last function.
          */
         virtual Ptr<BackendNode> tryAttach(const Ptr<BackendNode>& node);
@@ -1275,14 +1275,14 @@ CV__DNN_INLINE_NS_BEGIN
     CV_EXPORTS_W void blobFromImagesWithParams(InputArrayOfArrays images, OutputArray blob, const Image2BlobParams& param = Image2BlobParams());
 
     /** @brief Parse a 4D blob and output the images it contains as 2D arrays through a simpler data structure
-     *  (std::vector<cv::Mat>).
+     *  (std::vector<ncvslideio::Mat>).
      *  @param[in] blob_ 4 dimensional array (images, channels, height, width) in floating point precision (CV_32F) from
      *  which you would like to extract the images.
      *  @param[out] images_ array of 2D Mat containing the images extracted from the blob in floating point precision
      *  (CV_32F). They are non normalized neither mean added. The number of returned images equals the first dimension
      *  of the blob (batch size). Every image has a number of channels equals to the second dimension of the blob (depth).
      */
-    CV_EXPORTS_W void imagesFromBlob(const cv::Mat& blob_, OutputArrayOfArrays images_);
+    CV_EXPORTS_W void imagesFromBlob(const ncvslideio::Mat& blob_, OutputArrayOfArrays images_);
 
     /** @brief Convert all weights of Caffe network to half precision floating point.
      * @param src Path to origin model from Caffe framework contains single
@@ -1753,7 +1753,7 @@ public:
     /**
      * @brief Given the @p input frame, create input blob, run net and return recognition result
      * @param[in] frame The input image
-     * @param[in] roiRects List of text detection regions of interest (cv::Rect, CV_32SC4). ROIs is be cropped as the network inputs
+     * @param[in] roiRects List of text detection regions of interest (ncvslideio::Rect, CV_32SC4). ROIs is be cropped as the network inputs
      * @param[out] results A set of text recognition results.
      */
     CV_WRAP
@@ -1781,7 +1781,7 @@ public:
      * - top-right
      * - bottom-right
      *
-     * Use cv::getPerspectiveTransform function to retrieve image region without perspective transformations.
+     * Use ncvslideio::getPerspectiveTransform function to retrieve image region without perspective transformations.
      *
      * @note If DL model doesn't support that kind of output then result may be derived from detectTextRectangles() output.
      *
@@ -1818,7 +1818,7 @@ public:
     CV_WRAP
     void detectTextRectangles(
             InputArray frame,
-            CV_OUT std::vector<cv::RotatedRect>& detections,
+            CV_OUT std::vector<ncvslideio::RotatedRect>& detections,
             CV_OUT std::vector<float>& confidences
     ) const;
 
@@ -1826,7 +1826,7 @@ public:
     CV_WRAP
     void detectTextRectangles(
             InputArray frame,
-            CV_OUT std::vector<cv::RotatedRect>& detections
+            CV_OUT std::vector<ncvslideio::RotatedRect>& detections
     ) const;
 };
 

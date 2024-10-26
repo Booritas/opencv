@@ -55,7 +55,7 @@
 #include <string>
 
 
-namespace cv{
+namespace ncvslideio{
 
 
 /**
@@ -409,7 +409,7 @@ bool GdalDecoder::readData( Mat& img ){
             color = 3;
             break;
         default:
-            CV_Error(cv::Error::StsError, "Invalid/unsupported mode");
+            CV_Error(ncvslideio::Error::StsError, "Invalid/unsupported mode");
         }
 
         // make sure the image band has the same dimensions as the image
@@ -567,6 +567,6 @@ bool GdalDecoder::checkSignature( const String& signature )const{
     return false;
 }
 
-} /// End of cv Namespace
+} /// End of ncvslideio Namespace
 
 #endif /**< End  of HAVE_GDAL Definition */

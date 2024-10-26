@@ -11,9 +11,9 @@
 #include <opencv2/gapi/gkernel.hpp>     // GKernelPackage
 #include <opencv2/gapi/own/exports.hpp> // GAPI_EXPORTS
 
-namespace cv { namespace gapi { namespace core { namespace plaidml {
+namespace ncvslideio { namespace gapi { namespace core { namespace plaidml {
 
-GAPI_EXPORTS cv::GKernelPackage kernels();
+GAPI_EXPORTS ncvslideio::GKernelPackage kernels();
 
 }}}}
 

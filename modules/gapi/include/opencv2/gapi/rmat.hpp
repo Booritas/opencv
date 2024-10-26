@@ -11,16 +11,16 @@
 #include <opencv2/gapi/own/exports.hpp>
 
 // Forward declaration
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace s11n {
 struct IOStream;
 struct IIStream;
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
-namespace cv {
+namespace ncvslideio {
 
 // "Remote Mat", a general class which provides an abstraction layer over the data
 // storage and placement (host, remote device etc) and allows to access this data.
@@ -31,14 +31,14 @@ namespace cv {
 // * Backend which is aware of the remote device:
 //   - Implements own AdapterT class which is derived from RMat::IAdapter
 //   - Wraps device memory into RMat via make_rmat utility function:
-//         cv::RMat rmat = cv::make_rmat<AdapterT>(args);
+//         ncvslideio::RMat rmat = ncvslideio::make_rmat<AdapterT>(args);
 //
 // * End user:
 //   - Writes the code which works with RMats without any knowledge of the remote device:
-//     void func(const cv::RMat& in_rmat, cv::RMat& out_rmat) {
+//     void func(const ncvslideio::RMat& in_rmat, ncvslideio::RMat& out_rmat) {
 //         // Fetch input data from the device, get mapped memory for output
-//         cv::RMat::View  in_view =  in_rmat.access(Access::R);
-//         cv::RMat::View out_view = out_rmat.access(Access::W);
+//         ncvslideio::RMat::View  in_view =  in_rmat.access(Access::R);
+//         ncvslideio::RMat::View out_view = out_rmat.access(Access::W);
 //         performCalculations(in_view, out_view);
 //         // data from out_view is transferred to the device when out_view is destroyed
 //     }
@@ -69,7 +69,7 @@ public:
         View& operator=(View&& v);
         ~View() { if (m_cb) m_cb(); }
 
-        cv::Size size() const { return m_desc.size; }
+        ncvslideio::Size size() const { return m_desc.size; }
         const std::vector<int>& dims() const { return m_desc.dims; }
         int cols() const { return m_desc.size.width; }
         int rows() const { return m_desc.size.height; }
@@ -111,11 +111,11 @@ public:
         // the view when accessed for writing, to ensure that the data from the view
         // is transferred to the device when the view is destroyed
         virtual View access(Access) = 0;
-        virtual void serialize(cv::gapi::s11n::IOStream&) {
+        virtual void serialize(ncvslideio::gapi::s11n::IOStream&) {
             GAPI_Error("Generic serialize method of RMat::IAdapter does nothing by default. "
                                  "Please, implement it in derived class to properly serialize the object.");
         }
-        virtual void deserialize(cv::gapi::s11n::IIStream&) {
+        virtual void deserialize(ncvslideio::gapi::s11n::IIStream&) {
             GAPI_Error("Generic deserialize method of RMat::IAdapter does nothing by default. "
                                  "Please, implement it in derived class to properly deserialize the object.");
         }
@@ -143,7 +143,7 @@ public:
         return dynamic_cast<T*>(m_adapter.get());
     }
 
-    void serialize(cv::gapi::s11n::IOStream& os) const {
+    void serialize(ncvslideio::gapi::s11n::IOStream& os) const {
         m_adapter->serialize(os);
     }
 
@@ -155,6 +155,6 @@ template<typename T, typename... Ts>
 RMat make_rmat(Ts&&... args) { return { std::make_shared<T>(std::forward<Ts>(args)...) }; }
 /** @} */
 
-} //namespace cv
+} //namespace ncvslideio
 
 #endif /* OPENCV_GAPI_RMAT_HPP */

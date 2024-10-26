@@ -22,9 +22,9 @@ namespace opencv_test
 {
 namespace
 {
-using cv::gapi::wip::onevpl::SharedLock;
+using ncvslideio::gapi::wip::onevpl::SharedLock;
 
-struct TestBarrier : public cv::gapi::wip::onevpl::elastic_barrier<TestBarrier> {
+struct TestBarrier : public ncvslideio::gapi::wip::onevpl::elastic_barrier<TestBarrier> {
     void on_first_in_impl(size_t visitor_id) {
 
         static std::atomic<int> thread_counter{};

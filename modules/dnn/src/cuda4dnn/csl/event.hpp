@@ -12,7 +12,7 @@
 
 #include <cuda_runtime_api.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     /** @brief sharable CUDA event
      *
@@ -98,6 +98,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
         return temp;
     }
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_EVENT_HPP */

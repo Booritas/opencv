@@ -227,7 +227,7 @@ class CppHeaderParser(object):
         if add_star:
             arg_type += "*"
 
-        arg_type = self.batch_replace(arg_type, [("std::", ""), ("cv::", ""), ("::", "_")])
+        arg_type = self.batch_replace(arg_type, [("std::", ""), ("ncvslideio::", ""), ("::", "_")])
 
         return arg_type, arg_name, modlist, argno
 
@@ -328,7 +328,7 @@ class CppHeaderParser(object):
             fname += " ()"
             apos = fdecl.find("(", apos+1)
 
-        fname = "cv." + fname.replace("::", ".")
+        fname = "ncvslideio." + fname.replace("::", ".")
         decl = [fname, rettype, [], [], None, docstring]
 
         # inline constructor implementation
@@ -543,11 +543,11 @@ class CppHeaderParser(object):
         funcname = self.get_dotted_name(funcname)
 
         # see https://github.com/opencv/opencv/issues/24057
-        is_arithm_op_func = funcname in {"cv.add",
-                                         "cv.subtract",
-                                         "cv.absdiff",
-                                         "cv.multiply",
-                                         "cv.divide"}
+        is_arithm_op_func = funcname in {"ncvslideio.add",
+                                         "ncvslideio.subtract",
+                                         "ncvslideio.absdiff",
+                                         "ncvslideio.multiply",
+                                         "ncvslideio.divide"}
 
         if not self.wrap_mode:
             decl = self.parse_func_decl_no_wrap(decl_str, static_method, docstring)
@@ -654,18 +654,18 @@ class CppHeaderParser(object):
         """
         adds the dot-separated container class/namespace names to the bare function/class name, e.g. when we have
 
-        namespace cv {
+        namespace ncvslideio {
         class A {
         public:
             f(int);
         };
         }
 
-        the function will convert "A" to "cv.A" and "f" to "cv.A.f".
+        the function will convert "A" to "ncvslideio.A" and "f" to "ncvslideio.A.f".
         """
         if not self.block_stack:
             return name
-        if name.startswith("cv."):
+        if name.startswith("ncvslideio."):
             return name
         qualified_name = (("." in name) or ("::" in name))
         n = ""
@@ -682,7 +682,7 @@ class CppHeaderParser(object):
                 n += block_name + "."
         n += name.replace("::", ".")
         if n.endswith(".Algorithm"):
-            n = "cv.Algorithm"
+            n = "ncvslideio.Algorithm"
         return n
 
     def parse_stmt(self, stmt, end_token, mat="Mat", docstring=""):
@@ -1009,8 +1009,8 @@ class CppHeaderParser(object):
                         else:
                             decls.append(decl)
 
-                            if self._generate_gpumat_decls and ("cv.cuda" in decl[0] or decl[0] in [
-                                "cv.imshow", # https://github.com/opencv/opencv/issues/18553
+                            if self._generate_gpumat_decls and ("ncvslideio.cuda" in decl[0] or decl[0] in [
+                                "ncvslideio.imshow", # https://github.com/opencv/opencv/issues/18553
                             ]):
                                 # If function takes as one of arguments Mat or vector<Mat> - we want to create the
                                 # same declaration working with GpuMat

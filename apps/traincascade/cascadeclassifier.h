@@ -70,8 +70,8 @@ public:
 
     CvCascadeParams();
     CvCascadeParams( int _stageType, int _featureType );
-    void write( cv::FileStorage &fs ) const;
-    bool read( const cv::FileNode &node );
+    void write( ncvslideio::FileStorage &fs ) const;
+    bool read( const ncvslideio::FileNode &node );
 
     void printDefaults() const;
     void printAttrs() const;
@@ -79,7 +79,7 @@ public:
 
     int stageType;
     int featureType;
-    cv::Size winSize;
+    ncvslideio::Size winSize;
 };
 
 class CvCascadeClassifier
@@ -103,20 +103,20 @@ private:
     bool updateTrainingSet( double minimumAcceptanceRatio, double& acceptanceRatio );
     int fillPassedSamples( int first, int count, bool isPositive, double requiredAcceptanceRatio, int64& consumed );
 
-    void writeParams( cv::FileStorage &fs ) const;
-    void writeStages( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
-    void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
-    bool readParams( const cv::FileNode &node );
-    bool readStages( const cv::FileNode &node );
+    void writeParams( ncvslideio::FileStorage &fs ) const;
+    void writeStages( ncvslideio::FileStorage &fs, const ncvslideio::Mat& featureMap ) const;
+    void writeFeatures( ncvslideio::FileStorage &fs, const ncvslideio::Mat& featureMap ) const;
+    bool readParams( const ncvslideio::FileNode &node );
+    bool readStages( const ncvslideio::FileNode &node );
 
-    void getUsedFeaturesIdxMap( cv::Mat& featureMap );
+    void getUsedFeaturesIdxMap( ncvslideio::Mat& featureMap );
 
     CvCascadeParams cascadeParams;
-    cv::Ptr<CvFeatureParams> featureParams;
-    cv::Ptr<CvCascadeBoostParams> stageParams;
+    ncvslideio::Ptr<CvFeatureParams> featureParams;
+    ncvslideio::Ptr<CvCascadeBoostParams> stageParams;
 
-    cv::Ptr<CvFeatureEvaluator> featureEvaluator;
-    std::vector< cv::Ptr<CvCascadeBoost> > stageClassifiers;
+    ncvslideio::Ptr<CvFeatureEvaluator> featureEvaluator;
+    std::vector< ncvslideio::Ptr<CvCascadeBoost> > stageClassifiers;
     CvCascadeImageReader imgReader;
     int numStages, curNumSamples;
     int numPos, numNeg;

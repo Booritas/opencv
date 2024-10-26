@@ -168,10 +168,10 @@ public:
 TEST_P(ConvexityDefects_regression_5908, simple)
 {
     std::vector<int> hull;
-    cv::convexHull(contour, hull, clockwise, false);
+    ncvslideio::convexHull(contour, hull, clockwise, false);
 
     std::vector<Vec4i> result;
-    cv::convexityDefects(contour, hull, result);
+    ncvslideio::convexityDefects(contour, hull, result);
 
     EXPECT_EQ(4, (int)result.size());
 }
@@ -243,7 +243,7 @@ TEST(Imgproc_ConvexityDefects, ordering_4539)
 
     // first, check the original contour as-is, without intermediate fillPoly/drawContours.
     convexHull(contour_, hull_ind, false, false);
-    EXPECT_THROW( convexityDefects(contour_, hull_ind, defects), cv::Exception );
+    EXPECT_THROW( convexityDefects(contour_, hull_ind, defects), ncvslideio::Exception );
 
     int scale = 20;
     contour_ *= (double)scale;
@@ -259,7 +259,7 @@ TEST(Imgproc_ConvexityDefects, ordering_4539)
     // the original contour contains self-intersections,
     // therefore convexHull does not return a monotonous sequence of points
     // and therefore convexityDefects throws an exception
-    EXPECT_THROW( convexityDefects(contours[0], hull_ind, defects), cv::Exception );
+    EXPECT_THROW( convexityDefects(contours[0], hull_ind, defects), ncvslideio::Exception );
 
 #if 1
     // one way to eliminate the contour self-intersection in this particular case is to apply dilate(),
@@ -440,7 +440,7 @@ TEST(Imgproc_minAreaRect, reproducer_18157)
 
     Mat contour(N, 1, CV_32FC2, (void*)pts_);
 
-    RotatedRect rr = cv::minAreaRect(contour);
+    RotatedRect rr = ncvslideio::minAreaRect(contour);
 
     EXPECT_TRUE(checkMinAreaRect(rr, contour)) << rr.center << " " << rr.size << " " << rr.angle;
 }
@@ -458,7 +458,7 @@ TEST(Imgproc_minAreaRect, reproducer_19769_lightweight)
     };
     Mat contour(N, 1, CV_32FC2, (void*)pts_);
 
-    RotatedRect rr = cv::minAreaRect(contour);
+    RotatedRect rr = ncvslideio::minAreaRect(contour);
 
     EXPECT_TRUE(checkMinAreaRect(rr, contour)) << rr.center << " " << rr.size << " " << rr.angle;
 }
@@ -513,7 +513,7 @@ TEST(Imgproc_minAreaRect, reproducer_19769)
     };
     Mat contour(N, 1, CV_32FC2, (void*)pts_);
 
-    RotatedRect rr = cv::minAreaRect(contour);
+    RotatedRect rr = ncvslideio::minAreaRect(contour);
 
     EXPECT_TRUE(checkMinAreaRect(rr, contour)) << rr.center << " " << rr.size << " " << rr.angle;
 }
@@ -522,7 +522,7 @@ TEST(Imgproc_minEnclosingTriangle, regression_17585)
 {
     const int N = 3;
     float pts_[N][2] = { {0, 0}, {0, 1}, {1, 1} };
-    cv::Mat points(N, 2, CV_32FC1, static_cast<void*>(pts_));
+    ncvslideio::Mat points(N, 2, CV_32FC1, static_cast<void*>(pts_));
     vector<Point2f> triangle;
 
     EXPECT_NO_THROW(minEnclosingTriangle(points, triangle));
@@ -543,8 +543,8 @@ TEST(Imgproc_minEnclosingTriangle, regression_mat_with_diff_channels)
 {
     const int N = 3;
     float pts_[N][2] = { {0, 0}, {0, 1}, {1, 1} };
-    cv::Mat points1xN(1, N, CV_32FC2, static_cast<void*>(pts_));
-    cv::Mat pointsNx1(N, 1, CV_32FC2, static_cast<void*>(pts_));
+    ncvslideio::Mat points1xN(1, N, CV_32FC2, static_cast<void*>(pts_));
+    ncvslideio::Mat pointsNx1(N, 1, CV_32FC2, static_cast<void*>(pts_));
     vector<Point2f> triangle;
 
     EXPECT_NO_THROW(minEnclosingTriangle(points1xN, triangle));
@@ -564,7 +564,7 @@ TEST_P(fitLine_Modes, accuracy)
 
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         Mat v0(1, 1, data_type), v1(1, 1, data_type); // pt = v0 + v1 * t
         Mat v1n;
@@ -591,7 +591,7 @@ TEST_P(fitLine_Modes, accuracy)
         }
 
         Mat line_;
-        cv::fitLine(points, line_, dist_type, 0, 0.1, 0.01);
+        ncvslideio::fitLine(points, line_, dist_type, 0, 0.1, 0.01);
         Mat line = line_.reshape(points.channels(), 1);
 
         // check result type and size
@@ -604,8 +604,8 @@ TEST_P(fitLine_Modes, accuracy)
 
         // put result pt0 to the original equation (pt = v0 + v1 * t) and find "t"
         Mat diff = line.col(1) - v0;
-        cv::divide(diff, v1, diff);
-        cv::divide(diff, diff.at<float>(0, 0), diff);
+        ncvslideio::divide(diff, v1, diff);
+        ncvslideio::divide(diff, diff.at<float>(0, 0), diff);
         const Mat unit(1, 1, res_type, Scalar::all(1));
         EXPECT_NEAR(cvtest::norm(diff, unit, NORM_L1), 0, 0.01);
     }
@@ -653,7 +653,7 @@ TEST_P(fitEllipse_Modes, accuracy)
 
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         Mat f0(sz, CV_32FC1), f1(sz, CV_32FC1), f2(sz, CV_32FC1);
         cvtest::randUni(rng, f0, Scalar::all(-100), Scalar::all(100));
@@ -693,7 +693,7 @@ TEST_P(fitEllipse_Modes, accuracy)
             }
         }
 
-        RotatedRect res = cv::fitEllipse(points);
+        RotatedRect res = ncvslideio::fitEllipse(points);
 
         if (data_type == CV_32SC2)
         {
@@ -743,7 +743,7 @@ TEST(fitEllipse, small)
     c[0].push_back(Point(8, 2)*scale+ofs);
     c[0].push_back(Point(6, 0)*scale+ofs);
 
-    RotatedRect e = cv::fitEllipse(c[0]);
+    RotatedRect e = ncvslideio::fitEllipse(c[0]);
 
     EXPECT_NEAR(e.center.x, 4, 1.f);
     EXPECT_NEAR(e.center.y, 4, 1.f);
@@ -784,16 +784,16 @@ TEST_P(convexHull_Modes, accuracy)
 
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const int NUM = cvtest::randomInt(5, 100);
         Mat points(NUM, 1, data_type, Scalar::all(0));
         cvtest::randUni(rng, points, Scalar(-10), Scalar::all(10));
 
         Mat hull, c_hull, indexes;
-        cv::convexHull(points, hull, false, true); // default parameters
-        cv::convexHull(points, c_hull, true, true); // counter-clockwise
-        cv::convexHull(points, indexes, false, false); // point indexes
+        ncvslideio::convexHull(points, hull, false, true); // default parameters
+        ncvslideio::convexHull(points, c_hull, true, true); // counter-clockwise
+        ncvslideio::convexHull(points, indexes, false, false); // point indexes
 
         ASSERT_EQ(hull.size().width, 1);
         ASSERT_GE(hull.size().height, 3);
@@ -807,7 +807,7 @@ TEST_P(convexHull_Modes, accuracy)
         const int sz = (int)hull.total();
         for (int i = 0; i < sz; ++i)
         {
-            SCOPED_TRACE(cv::format("vertex %d", i));
+            SCOPED_TRACE(ncvslideio::format("vertex %d", i));
 
             Mat prev = (i == 0) ? hull.row(sz - 1) : hull.row(i - 1);
             Mat cur = hull.row(i);
@@ -819,7 +819,7 @@ TEST_P(convexHull_Modes, accuracy)
             // 3. all points are inside polygon - on the left side of "cur - next" edge
             for (int j = 0; j < points.rows; ++j)
             {
-                SCOPED_TRACE(cv::format("point %d", j));
+                SCOPED_TRACE(ncvslideio::format("point %d", j));
                 EXPECT_LE(getSide(cur, next, points.row(j)), 0);
             }
             // check counter-clockwise hull
@@ -848,13 +848,13 @@ TEST_P(minAreaRect_Modes, accuracy)
     RNG & rng = TS::ptr()->get_rng();
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const int NUM = cvtest::randomInt(5, 100);
         Mat points(NUM, 1, data_type, Scalar::all(0));
         cvtest::randUni(rng, points, Scalar(-10), Scalar::all(10));
 
-        const RotatedRect res = cv::minAreaRect(points);
+        const RotatedRect res = ncvslideio::minAreaRect(points);
         Point2f box_pts[4] {};
         res.points(box_pts);
 
@@ -868,7 +868,7 @@ TEST_P(minAreaRect_Modes, accuracy)
             Mat next(1, 1, CV_32FC2, box_pts + j);
             for (int k = 0; k < points.rows; ++k)
             {
-                SCOPED_TRACE(cv::format("point %d", j));
+                SCOPED_TRACE(ncvslideio::format("point %d", j));
                 Mat one_point;
                 points.row(k).convertTo(one_point, CV_32FC2);
                 const double side = getSide(cur, next, one_point);
@@ -936,14 +936,14 @@ TEST_P(minEnclosingTriangle_Modes, accuracy)
     RNG & rng = TS::ptr()->get_rng();
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const int NUM = cvtest::randomInt(5, 100);
         Mat points(NUM, 1, data_type, Scalar::all(0));
         cvtest::randUni(rng, points, Scalar::all(-100), Scalar::all(100));
 
         Mat triangle;
-        const double area = cv::minEnclosingTriangle(points, triangle);
+        const double area = ncvslideio::minEnclosingTriangle(points, triangle);
 
         ASSERT_GT(area, 0.0001);
         ASSERT_EQ(triangle.type(), CV_32FC2);
@@ -951,7 +951,7 @@ TEST_P(minEnclosingTriangle_Modes, accuracy)
         ASSERT_EQ(triangle.size(), Size(3, 1));
 
         Mat hull;
-        cv::convexHull(points, hull);
+        ncvslideio::convexHull(points, hull);
         hull.convertTo(hull, CV_32FC2);
 
         // check that all points are enclosed by triangle sides
@@ -959,13 +959,13 @@ TEST_P(minEnclosingTriangle_Modes, accuracy)
         bool hasEdgeOnHull = false;
         for (int i = 0; i < 3; ++i)
         {
-            SCOPED_TRACE(cv::format("edge %d", i));
+            SCOPED_TRACE(ncvslideio::format("edge %d", i));
             const int j = (i == 2) ? 0 : i + 1;
             Mat cur = triangle.col(i);
             Mat next = triangle.col(j);
             for (int k = 0; k < points.rows; ++k)
             {
-                SCOPED_TRACE(cv::format("point %d", k));
+                SCOPED_TRACE(ncvslideio::format("point %d", k));
                 Mat pt;
                 points.row(k).convertTo(pt, CV_32FC2);
                 const double side = getSide(cur, next, pt);
@@ -1007,7 +1007,7 @@ TEST_P(minEnclosingCircle_Modes, accuracy)
     RNG & rng = TS::ptr()->get_rng();
     for (int ITER = 0; ITER < 20; ++ITER)
     {
-        SCOPED_TRACE(cv::format("iteration %d", ITER));
+        SCOPED_TRACE(ncvslideio::format("iteration %d", ITER));
 
         const int NUM = cvtest::randomInt(5, 100);
         Mat points(NUM, 1, data_type, Scalar::all(0)), fpoints;
@@ -1016,13 +1016,13 @@ TEST_P(minEnclosingCircle_Modes, accuracy)
 
         Point2f center {};
         float radius = 0.f;
-        cv::minEnclosingCircle(points, center, radius);
+        ncvslideio::minEnclosingCircle(points, center, radius);
 
         vector<int> boundPts; // indexes
         for (int i = 0; i < NUM; ++i)
         {
             Point2f pt = fpoints.at<Point2f>(i);
-            const double dist = cv::norm(pt - center);
+            const double dist = ncvslideio::norm(pt - center);
             EXPECT_LE(dist, radius);
             if (abs(dist - radius) < 0.01)
                 boundPts.push_back(i);
@@ -1034,7 +1034,7 @@ TEST_P(minEnclosingCircle_Modes, accuracy)
         if (boundPts.size() == 2llu)
         {
             const Point2f diff = fpoints.at<Point2f>(boundPts[0]) - fpoints.at<Point2f>(boundPts[1]);
-            EXPECT_NEAR(cv::norm(diff), 2 * radius, 0.001);
+            EXPECT_NEAR(ncvslideio::norm(diff), 2 * radius, 0.001);
         }
     }
 }
@@ -1064,8 +1064,8 @@ TEST(minEnclosingCircle, three_points)
     // Find the minimum area enclosing circle
     Point2f calcCenter;
     float calcRadius;
-    cv::minEnclosingCircle(pts, calcCenter, calcRadius);
-    const float delta = (float)cv::norm(calcCenter - center) + abs(calcRadius - radius);
+    ncvslideio::minEnclosingCircle(pts, calcCenter, calcRadius);
+    const float delta = (float)ncvslideio::norm(calcCenter - center) + abs(calcRadius - radius);
     EXPECT_LE(delta, 1.f);
 }
 

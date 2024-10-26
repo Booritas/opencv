@@ -5,7 +5,7 @@
 #ifndef OPENCV_RENDER_OCV_HPP
 #define OPENCV_RENDER_OCV_HPP
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -15,12 +15,12 @@ namespace draw
 {
 
 // FIXME only for tests
-void GAPI_EXPORTS drawPrimitivesOCVYUV(cv::Mat& yuv, const Prims& prims, std::shared_ptr<cv::gapi::wip::draw::FTTextRender>& mc);
-void GAPI_EXPORTS drawPrimitivesOCVBGR(cv::Mat& bgr, const Prims& prims, std::shared_ptr<cv::gapi::wip::draw::FTTextRender>& mc);
+void GAPI_EXPORTS drawPrimitivesOCVYUV(ncvslideio::Mat& yuv, const Prims& prims, std::shared_ptr<ncvslideio::gapi::wip::draw::FTTextRender>& mc);
+void GAPI_EXPORTS drawPrimitivesOCVBGR(ncvslideio::Mat& bgr, const Prims& prims, std::shared_ptr<ncvslideio::gapi::wip::draw::FTTextRender>& mc);
 
 } // namespace draw
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_RENDER_OCV_HPP

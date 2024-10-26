@@ -11,16 +11,16 @@
 
 #include <unordered_set>
 
-cv::gapi::GNetPackage::GNetPackage(std::initializer_list<GNetParam> ii)
+ncvslideio::gapi::GNetPackage::GNetPackage(std::initializer_list<GNetParam> ii)
     : networks(ii) {
 }
 
-cv::gapi::GNetPackage::GNetPackage(std::vector<GNetParam> nets)
+ncvslideio::gapi::GNetPackage::GNetPackage(std::vector<GNetParam> nets)
     : networks(nets) {
 }
 
-std::vector<cv::gapi::GBackend> cv::gapi::GNetPackage::backends() const {
-    std::unordered_set<cv::gapi::GBackend> unique_set;
+std::vector<ncvslideio::gapi::GBackend> ncvslideio::gapi::GNetPackage::backends() const {
+    std::unordered_set<ncvslideio::gapi::GBackend> unique_set;
     for (const auto &nn : networks) unique_set.insert(nn.backend);
-    return std::vector<cv::gapi::GBackend>(unique_set.begin(), unique_set.end());
+    return std::vector<ncvslideio::gapi::GBackend>(unique_set.begin(), unique_set.end());
 }

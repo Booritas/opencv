@@ -13,7 +13,7 @@
 #include "opencv2/gapi/fluid/gfluidbuffer.hpp"
 #include "opencv2/gapi/own/exports.hpp" // GAPI_EXPORTS
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -50,13 +50,13 @@ public:
 };
 
 template<>
-class BorderHandlerT<cv::BORDER_CONSTANT> : public BorderHandler
+class BorderHandlerT<ncvslideio::BORDER_CONSTANT> : public BorderHandler
 {
-    cv::Scalar m_border_value;
-    cv::Mat m_const_border;
+    ncvslideio::Scalar m_border_value;
+    ncvslideio::Mat m_const_border;
 
 public:
-    BorderHandlerT(int border_size, cv::Scalar border_value);
+    BorderHandlerT(int border_size, ncvslideio::Scalar border_value);
     virtual const uint8_t* inLineB(int log_idx, const BufferStorageWithBorder &data, int desc_height) const override;
     virtual void fillCompileTimeBorder(BufferStorageWithBorder &) override;
     virtual std::size_t size() const override;
@@ -65,7 +65,7 @@ public:
 class BufferStorage
 {
 protected:
-    cv::Mat m_data;
+    ncvslideio::Mat m_data;
 
 public:
     void updateInCache(View::Cache& cache, int start_log_idx, int nLines) const;
@@ -80,8 +80,8 @@ public:
 
     inline bool empty() const { return m_data.empty(); }
 
-    inline const cv::Mat& data() const { return m_data; }
-    inline       cv::Mat& data()       { return m_data; }
+    inline const ncvslideio::Mat& data() const { return m_data; }
+    inline       ncvslideio::Mat& data()       { return m_data; }
 
     inline int rows() const { return m_data.rows; }
     inline int cols() const { return m_data.cols; }
@@ -101,23 +101,23 @@ public:
 class BufferStorageWithoutBorder final : public BufferStorage
 {
     bool m_is_virtual = true;
-    cv::Rect m_roi;
+    ncvslideio::Rect m_roi;
 
 public:
     virtual void copyTo(BufferStorageWithBorder &dst, int startLine, int nLines) const override;
 
     inline virtual const uint8_t* ptr(int idx) const override
     {
-        GAPI_DbgAssert((m_is_virtual && m_roi == cv::Rect{}) || (!m_is_virtual && m_roi != cv::Rect{}));
+        GAPI_DbgAssert((m_is_virtual && m_roi == ncvslideio::Rect{}) || (!m_is_virtual && m_roi != ncvslideio::Rect{}));
         return m_data.ptr(physIdx(idx), 0);
     }
     inline virtual uint8_t* ptr(int idx) override
     {
-        GAPI_DbgAssert((m_is_virtual && m_roi == cv::Rect{}) || (!m_is_virtual && m_roi != cv::Rect{}));
+        GAPI_DbgAssert((m_is_virtual && m_roi == ncvslideio::Rect{}) || (!m_is_virtual && m_roi != ncvslideio::Rect{}));
         return m_data.ptr(physIdx(idx), 0);
     }
 
-    inline void attach(const cv::Mat& _data, cv::Rect _roi)
+    inline void attach(const ncvslideio::Mat& _data, ncvslideio::Rect _roi)
     {
         m_data = _data(_roi);
         m_roi = _roi;
@@ -234,7 +234,7 @@ class GAPI_EXPORTS Buffer::Priv
 
     int m_writer_lpi       =  1;
 
-    cv::GMatDesc m_desc    = cv::GMatDesc{-1,-1,{-1,-1}};
+    ncvslideio::GMatDesc m_desc    = ncvslideio::GMatDesc{-1,-1,{-1,-1}};
     bool m_is_input        = false;
 
     int m_write_caret      = -1;
@@ -246,24 +246,24 @@ class GAPI_EXPORTS Buffer::Priv
     // Coordinate starting from which this buffer is assumed
     // to be read (with border not being taken into account)
     int m_readStart = 0;
-    cv::Rect m_roi;
+    ncvslideio::Rect m_roi;
 
     friend void debugBufferPriv(const Buffer& p, std::ostream &os);
 
 public:
     Priv() = default;
-    Priv(int read_start, cv::Rect roi);
+    Priv(int read_start, ncvslideio::Rect roi);
 
     inline const BufferStorage& storage() const { return *m_storage.get(); }
 
     // API used by actors/backend
-    void init(const cv::GMatDesc &desc,
+    void init(const ncvslideio::GMatDesc &desc,
               int writer_lpi,
               int readStart,
-              cv::Rect roi);
+              ncvslideio::Rect roi);
 
     void allocate(BorderOpt border, int border_size, int line_consumption, int skew);
-    void bindTo(const cv::Mat &data, bool is_input);
+    void bindTo(const ncvslideio::Mat &data, bool is_input);
 
     inline void addView(const View* view) { m_views.emplace_back(view); }
 
@@ -291,8 +291,8 @@ public:
     inline const Buffer::Cache& cache() const { return m_cache; }
 };
 
-} // namespace cv::gapi::fluid
-} // namespace cv::gapi
-} // namespace cv
+} // namespace ncvslideio::gapi::fluid
+} // namespace ncvslideio::gapi
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_FLUID_BUFFER_PRIV_HPP

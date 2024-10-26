@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main( int argc, const char** argv )
 {
@@ -52,7 +52,7 @@ int main( int argc, const char** argv )
         return -1;
     }
 
-    int method = parser.get<int>("cm"); // default 3 (cv::TM_CCORR_NORMED)
+    int method = parser.get<int>("cm"); // default 3 (ncvslideio::TM_CCORR_NORMED)
     matchTemplate(img, tmpl, res, method, mask);
 
     double minVal, maxVal;

@@ -12,78 +12,78 @@
 #include "api/gnode_priv.hpp"
 
 // GNode private implementation
-cv::GNode::Priv::Priv()
+ncvslideio::GNode::Priv::Priv()
     : m_shape(NodeShape::EMPTY)
 {
 }
 
-cv::GNode::Priv::Priv(GCall c)
+ncvslideio::GNode::Priv::Priv(GCall c)
     : m_shape(NodeShape::CALL), m_spec(c)
 {
 }
 
-cv::GNode::Priv::Priv(ParamTag)
+ncvslideio::GNode::Priv::Priv(ParamTag)
     : m_shape(NodeShape::PARAM)
 {
 }
 
-cv::GNode::Priv::Priv(ConstTag)
+ncvslideio::GNode::Priv::Priv(ConstTag)
     : m_shape(NodeShape::CONST_BOUNDED)
 {
 }
 
 // GNode public implementation
-cv::GNode::GNode()
+ncvslideio::GNode::GNode()
     : m_priv(new Priv())
 {
 }
 
-cv::GNode::GNode(const GCall &c)
+ncvslideio::GNode::GNode(const GCall &c)
     : m_priv(new Priv(c))
 {
 }
 
-cv::GNode::GNode(ParamTag)
+ncvslideio::GNode::GNode(ParamTag)
     : m_priv(new Priv(Priv::ParamTag()))
 {
 }
 
-cv::GNode::GNode(ConstTag)
+ncvslideio::GNode::GNode(ConstTag)
     : m_priv(new Priv(Priv::ConstTag()))
 {
 }
 
-cv::GNode cv::GNode::Call(const GCall &c)
+ncvslideio::GNode ncvslideio::GNode::Call(const GCall &c)
 {
     return GNode(c);
 }
 
-cv::GNode cv::GNode::Param()
+ncvslideio::GNode ncvslideio::GNode::Param()
 {
     return GNode(ParamTag());
 }
 
-cv::GNode cv::GNode::Const()
+ncvslideio::GNode ncvslideio::GNode::Const()
 {
     return GNode(ConstTag());
 }
 
-cv::GNode::Priv& cv::GNode::priv()
+ncvslideio::GNode::Priv& ncvslideio::GNode::priv()
 {
     return *m_priv;
 }
 
-const cv::GNode::Priv& cv::GNode::priv() const
+const ncvslideio::GNode::Priv& ncvslideio::GNode::priv() const
 {
     return *m_priv;
 }
 
-const cv::GNode::NodeShape& cv::GNode::shape() const
+const ncvslideio::GNode::NodeShape& ncvslideio::GNode::shape() const
 {
     return m_priv->m_shape;
 }
 
-const cv::GCall& cv::GNode::call()  const
+const ncvslideio::GCall& ncvslideio::GNode::call()  const
 {
     return util::get<GCall>(m_priv->m_spec);
 }

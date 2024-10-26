@@ -9,7 +9,7 @@
 #include "../csl/span.hpp"
 #include "../csl/tensor.hpp"
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void decode_bboxes(const csl::Stream& stream, csl::Span<T> output, csl::View<T> locations, csl::View<T> priors,
@@ -37,6 +37,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
         csl::TensorView<int> kept_indices, csl::TensorView<int> kept_count,
         csl::TensorView<T> decoded_bboxes, csl::TensorView<T> scores, bool share_location, csl::DevicePtr<int> num_detections);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_DETECTION_OUTPUT_HPP */

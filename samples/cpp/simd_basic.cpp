@@ -1,7 +1,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/core/simd_intrinsics.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int /*argc*/, char** /*argv*/)
 {

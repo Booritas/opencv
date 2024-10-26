@@ -144,8 +144,8 @@ public:
     CV_WRAP virtual void save( const char* filename, const char* name=0 ) const;
     CV_WRAP virtual void load( const char* filename, const char* name=0 );
 
-    virtual void write( cv::FileStorage& storage, const char* name ) const;
-    virtual void read( const cv::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& storage, const char* name ) const;
+    virtual void read( const ncvslideio::FileNode& node );
 
 protected:
     const char* default_model_name;
@@ -203,15 +203,15 @@ public:
     virtual float predict( const CvMat* samples, CV_OUT CvMat* results=0, CV_OUT CvMat* results_prob=0 ) const;
     CV_WRAP virtual void clear();
 
-    CV_WRAP CvNormalBayesClassifier( const cv::Mat& trainData, const cv::Mat& responses,
-                            const cv::Mat& varIdx=cv::Mat(), const cv::Mat& sampleIdx=cv::Mat() );
-    CV_WRAP virtual bool train( const cv::Mat& trainData, const cv::Mat& responses,
-                       const cv::Mat& varIdx = cv::Mat(), const cv::Mat& sampleIdx=cv::Mat(),
+    CV_WRAP CvNormalBayesClassifier( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+                            const ncvslideio::Mat& varIdx=ncvslideio::Mat(), const ncvslideio::Mat& sampleIdx=ncvslideio::Mat() );
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+                       const ncvslideio::Mat& varIdx = ncvslideio::Mat(), const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(),
                        bool update=false );
-    CV_WRAP virtual float predict( const cv::Mat& samples, CV_OUT cv::Mat* results=0, CV_OUT cv::Mat* results_prob=0 ) const;
+    CV_WRAP virtual float predict( const ncvslideio::Mat& samples, CV_OUT ncvslideio::Mat* results=0, CV_OUT ncvslideio::Mat* results_prob=0 ) const;
 
-    virtual void write( cv::FileStorage& storage, const char* name ) const;
-    virtual void read( const cv::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& storage, const char* name ) const;
+    virtual void read( const ncvslideio::FileNode& node );
 
 protected:
     int     var_count, var_all;
@@ -249,18 +249,18 @@ public:
     virtual float find_nearest( const CvMat* samples, int k, CV_OUT CvMat* results=0,
         const float** neighbors=0, CV_OUT CvMat* neighborResponses=0, CV_OUT CvMat* dist=0 ) const;
 
-    CV_WRAP CvKNearest( const cv::Mat& trainData, const cv::Mat& responses,
-               const cv::Mat& sampleIdx=cv::Mat(), bool isRegression=false, int max_k=32 );
+    CV_WRAP CvKNearest( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+               const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), bool isRegression=false, int max_k=32 );
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, const cv::Mat& responses,
-                       const cv::Mat& sampleIdx=cv::Mat(), bool isRegression=false,
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), bool isRegression=false,
                        int maxK=32, bool updateBase=false );
 
-    virtual float find_nearest( const cv::Mat& samples, int k, cv::Mat* results=0,
-                                const float** neighbors=0, cv::Mat* neighborResponses=0,
-                                cv::Mat* dist=0 ) const;
-    CV_WRAP virtual float find_nearest( const cv::Mat& samples, int k, CV_OUT cv::Mat& results,
-                                        CV_OUT cv::Mat& neighborResponses, CV_OUT cv::Mat& dists) const;
+    virtual float find_nearest( const ncvslideio::Mat& samples, int k, ncvslideio::Mat* results=0,
+                                const float** neighbors=0, ncvslideio::Mat* neighborResponses=0,
+                                ncvslideio::Mat* dist=0 ) const;
+    CV_WRAP virtual float find_nearest( const ncvslideio::Mat& samples, int k, CV_OUT ncvslideio::Mat& results,
+                                        CV_OUT ncvslideio::Mat& neighborResponses, CV_OUT ncvslideio::Mat& dists) const;
 
     virtual void clear();
     int get_max_k() const;
@@ -491,16 +491,16 @@ public:
     virtual float predict( const CvMat* sample, bool returnDFVal=false ) const;
     virtual float predict( const CvMat* samples, CV_OUT CvMat* results, bool returnDFVal=false ) const;
 
-    CV_WRAP CvSVM( const cv::Mat& trainData, const cv::Mat& responses,
-          const cv::Mat& varIdx=cv::Mat(), const cv::Mat& sampleIdx=cv::Mat(),
+    CV_WRAP CvSVM( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+          const ncvslideio::Mat& varIdx=ncvslideio::Mat(), const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(),
           CvSVMParams params=CvSVMParams() );
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, const cv::Mat& responses,
-                       const cv::Mat& varIdx=cv::Mat(), const cv::Mat& sampleIdx=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+                       const ncvslideio::Mat& varIdx=ncvslideio::Mat(), const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(),
                        CvSVMParams params=CvSVMParams() );
 
-    CV_WRAP virtual bool train_auto( const cv::Mat& trainData, const cv::Mat& responses,
-                            const cv::Mat& varIdx, const cv::Mat& sampleIdx, CvSVMParams params,
+    CV_WRAP virtual bool train_auto( const ncvslideio::Mat& trainData, const ncvslideio::Mat& responses,
+                            const ncvslideio::Mat& varIdx, const ncvslideio::Mat& sampleIdx, CvSVMParams params,
                             int k_fold = 10,
                             CvParamGrid Cgrid      = CvSVM::get_default_grid(CvSVM::C),
                             CvParamGrid gammaGrid  = CvSVM::get_default_grid(CvSVM::GAMMA),
@@ -509,8 +509,8 @@ public:
                             CvParamGrid coeffGrid  = CvSVM::get_default_grid(CvSVM::COEF),
                             CvParamGrid degreeGrid = CvSVM::get_default_grid(CvSVM::DEGREE),
                             bool balanced=false);
-    CV_WRAP virtual float predict( const cv::Mat& sample, bool returnDFVal=false ) const;
-    CV_WRAP_AS(predict_all) virtual void predict( cv::InputArray samples, cv::OutputArray results ) const;
+    CV_WRAP virtual float predict( const ncvslideio::Mat& sample, bool returnDFVal=false ) const;
+    CV_WRAP_AS(predict_all) virtual void predict( ncvslideio::InputArray samples, ncvslideio::OutputArray results ) const;
 
     CV_WRAP virtual int get_support_vector_count() const;
     virtual const float* get_support_vector(int i) const;
@@ -521,8 +521,8 @@ public:
 
     static CvParamGrid get_default_grid( int param_id );
 
-    virtual void write( cv::FileStorage& storage, const char* name ) const;
-    virtual void read( const cv::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& storage, const char* name ) const;
+    virtual void read( const ncvslideio::FileNode& node );
     CV_WRAP int get_var_count() const { return var_idx ? var_idx->cols : var_all; }
 
 protected:
@@ -538,8 +538,8 @@ protected:
 
     virtual float predict( const float* row_sample, int row_len, bool returnDFVal=false ) const;
 
-    virtual void write_params( cv::FileStorage& fs ) const;
-    virtual void read_params( const cv::FileNode& node );
+    virtual void write_params( ncvslideio::FileStorage& fs ) const;
+    virtual void read_params( const ncvslideio::FileNode& node );
 
     void optimize_linear_svm();
 
@@ -673,8 +673,8 @@ struct CvDTreeTrainData
 
     virtual CvDTreeNode* subsample_data( const CvMat* _subsample_idx );
 
-    virtual void write_params( cv::FileStorage& fs ) const;
-    virtual void read_params( const cv::FileNode& node );
+    virtual void write_params( ncvslideio::FileStorage& fs ) const;
+    virtual void read_params( const ncvslideio::FileNode& node );
 
     // release all the data
     virtual void clear();
@@ -753,13 +753,13 @@ struct CvDTreeTrainData
     CvSet* cv_heap;
     CvSet* nv_heap;
 
-    cv::RNG* rng;
+    ncvslideio::RNG* rng;
 };
 
 class CvDTree;
 class CvForestTree;
 
-namespace cv
+namespace ncvslideio
 {
     struct DTreeBestSplitFinder;
     struct ForestTreeBestSplitFinder;
@@ -787,32 +787,32 @@ public:
     virtual CvDTreeNode* predict( const CvMat* sample, const CvMat* missingDataMask=0,
                                   bool preprocessedInput=false ) const;
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, int tflag,
-                       const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-                       const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-                       const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, int tflag,
+                       const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+                       const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                        CvDTreeParams params=CvDTreeParams() );
 
-    CV_WRAP virtual CvDTreeNode* predict( const cv::Mat& sample, const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual CvDTreeNode* predict( const ncvslideio::Mat& sample, const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                                   bool preprocessedInput=false ) const;
-    CV_WRAP virtual cv::Mat getVarImportance();
+    CV_WRAP virtual ncvslideio::Mat getVarImportance();
 
     virtual const CvMat* get_var_importance();
     CV_WRAP virtual void clear();
 
-    virtual void read( const cv::FileNode& node );
-    virtual void write( cv::FileStorage& fs, const char* name ) const;
+    virtual void read( const ncvslideio::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& fs, const char* name ) const;
 
     // special read & write methods for trees in the tree ensembles
-    virtual void read( const cv::FileNode& node, CvDTreeTrainData* data );
-    virtual void write( cv::FileStorage& fs ) const;
+    virtual void read( const ncvslideio::FileNode& node, CvDTreeTrainData* data );
+    virtual void write( ncvslideio::FileStorage& fs ) const;
 
     const CvDTreeNode* get_root() const;
     int get_pruned_tree_idx() const;
     CvDTreeTrainData* get_data();
 
 protected:
-    friend struct cv::DTreeBestSplitFinder;
+    friend struct ncvslideio::DTreeBestSplitFinder;
 
     virtual bool do_train( const CvMat* _subsample_idx );
 
@@ -842,18 +842,18 @@ protected:
     virtual void free_prune_data(bool cut_tree);
     virtual void free_tree();
 
-    virtual void write_node( cv::FileStorage& fs, CvDTreeNode* node ) const;
-    virtual void write_split( cv::FileStorage& fs, CvDTreeSplit* split ) const;
-    virtual CvDTreeNode* read_node( const cv::FileNode& node, CvDTreeNode* parent );
-    virtual CvDTreeSplit* read_split( const cv::FileNode& node );
-    virtual void write_tree_nodes( cv::FileStorage& fs ) const;
-    virtual void read_tree_nodes( const cv::FileNode& node );
+    virtual void write_node( ncvslideio::FileStorage& fs, CvDTreeNode* node ) const;
+    virtual void write_split( ncvslideio::FileStorage& fs, CvDTreeSplit* split ) const;
+    virtual CvDTreeNode* read_node( const ncvslideio::FileNode& node, CvDTreeNode* parent );
+    virtual CvDTreeSplit* read_split( const ncvslideio::FileNode& node );
+    virtual void write_tree_nodes( ncvslideio::FileStorage& fs ) const;
+    virtual void read_tree_nodes( const ncvslideio::FileNode& node );
 
     CvDTreeNode* root;
     CvMat* var_importance;
     CvDTreeTrainData* data;
     CvMat train_data_hdr, responses_hdr;
-    cv::Mat train_data_mat, responses_mat;
+    ncvslideio::Mat train_data_mat, responses_mat;
 
 public:
     int pruned_tree_idx;
@@ -875,7 +875,7 @@ public:
     virtual bool train( CvDTreeTrainData* trainData, const CvMat* _subsample_idx, CvRTrees* forest );
 
     virtual int get_var_count() const {return data ? data->var_count : 0;}
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node, CvRTrees* forest, CvDTreeTrainData* _data );
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node, CvRTrees* forest, CvDTreeTrainData* _data );
 
     /* dummy methods to avoid warnings: BEGIN */
     virtual bool train( const CvMat* trainData, int tflag,
@@ -885,13 +885,13 @@ public:
                         CvDTreeParams params=CvDTreeParams() );
 
     virtual bool train( CvDTreeTrainData* trainData, const CvMat* _subsample_idx );
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node );
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node,
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node,
                        CvDTreeTrainData* data );
     /* dummy methods to avoid warnings: END */
 
 protected:
-    friend struct cv::ForestTreeBestSplitFinder;
+    friend struct ncvslideio::ForestTreeBestSplitFinder;
 
     virtual CvDTreeSplit* find_best_split( CvDTreeNode* n );
     CvRTrees* forest;
@@ -929,14 +929,14 @@ public:
     virtual float predict( const CvMat* sample, const CvMat* missing = 0 ) const;
     virtual float predict_prob( const CvMat* sample, const CvMat* missing = 0 ) const;
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, int tflag,
-                       const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-                       const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-                       const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, int tflag,
+                       const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+                       const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                        CvRTParams params=CvRTParams() );
-    CV_WRAP virtual float predict( const cv::Mat& sample, const cv::Mat& missing = cv::Mat() ) const;
-    CV_WRAP virtual float predict_prob( const cv::Mat& sample, const cv::Mat& missing = cv::Mat() ) const;
-    CV_WRAP virtual cv::Mat getVarImportance();
+    CV_WRAP virtual float predict( const ncvslideio::Mat& sample, const ncvslideio::Mat& missing = ncvslideio::Mat() ) const;
+    CV_WRAP virtual float predict_prob( const ncvslideio::Mat& sample, const ncvslideio::Mat& missing = ncvslideio::Mat() ) const;
+    CV_WRAP virtual ncvslideio::Mat getVarImportance();
 
     CV_WRAP virtual void clear();
 
@@ -948,8 +948,8 @@ public:
 
     virtual float get_train_error();
 
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node );
-    virtual void write( cv::FileStorage& fs, const char* name ) const;
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& fs, const char* name ) const;
 
     CvMat* get_active_var_mask();
     CvRNG* get_rng();
@@ -958,7 +958,7 @@ public:
     CvForestTree* get_tree(int i) const;
 
 protected:
-    virtual cv::String getName() const;
+    virtual ncvslideio::String getName() const;
 
     virtual bool grow_forest( const CvTermCriteria term_crit );
 
@@ -966,14 +966,14 @@ protected:
     CvForestTree** trees;
     CvDTreeTrainData* data;
     CvMat train_data_hdr, responses_hdr;
-    cv::Mat train_data_mat, responses_mat;
+    ncvslideio::Mat train_data_mat, responses_mat;
     int ntrees;
     int nclasses;
     double oob_error;
     CvMat* var_importance;
     int nsamples;
 
-    cv::RNG* rng;
+    ncvslideio::RNG* rng;
     CvMat* active_var_mask;
 };
 
@@ -1025,14 +1025,14 @@ public:
                         const CvMat* sampleIdx=0, const CvMat* varType=0,
                         const CvMat* missingDataMask=0,
                         CvRTParams params=CvRTParams());
-    CV_WRAP virtual bool train( const cv::Mat& trainData, int tflag,
-                       const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-                       const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-                       const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, int tflag,
+                       const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+                       const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                        CvRTParams params=CvRTParams());
     virtual bool train( CvMLData* data, CvRTParams params=CvRTParams() );
 protected:
-    virtual cv::String getName() const;
+    virtual ncvslideio::String getName() const;
     virtual bool grow_forest( const CvTermCriteria term_crit );
 };
 
@@ -1066,7 +1066,7 @@ public:
                         const CvMat* subsample_idx, CvBoost* ensemble );
 
     virtual void scale( double s );
-    virtual void read( const cv::FileNode& node,
+    virtual void read( const ncvslideio::FileNode& node,
                        CvBoost* ensemble, CvDTreeTrainData* _data );
     virtual void clear();
 
@@ -1078,8 +1078,8 @@ public:
                         CvDTreeParams params=CvDTreeParams() );
     virtual bool train( CvDTreeTrainData* trainData, const CvMat* _subsample_idx );
 
-    virtual void read( cv::FileNode& node );
-    virtual void read( cv::FileNode& node, CvDTreeTrainData* data );
+    virtual void read( ncvslideio::FileNode& node );
+    virtual void read( ncvslideio::FileNode& node, CvDTreeTrainData* data );
     /* dummy methods to avoid warnings: END */
 
 protected:
@@ -1135,21 +1135,21 @@ public:
                            CvMat* weak_responses=0, CvSlice slice=CV_WHOLE_SEQ,
                            bool raw_mode=false, bool return_sum=false ) const;
 
-    CV_WRAP CvBoost( const cv::Mat& trainData, int tflag,
-            const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-            const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-            const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP CvBoost( const ncvslideio::Mat& trainData, int tflag,
+            const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+            const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+            const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
             CvBoostParams params=CvBoostParams() );
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, int tflag,
-                       const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-                       const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-                       const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, int tflag,
+                       const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+                       const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                        CvBoostParams params=CvBoostParams(),
                        bool update=false );
 
-    CV_WRAP virtual float predict( const cv::Mat& sample, const cv::Mat& missing=cv::Mat(),
-                                   const cv::Range& slice=cv::Range::all(), bool rawMode=false,
+    CV_WRAP virtual float predict( const ncvslideio::Mat& sample, const ncvslideio::Mat& missing=ncvslideio::Mat(),
+                                   const ncvslideio::Range& slice=ncvslideio::Range::all(), bool rawMode=false,
                                    bool returnSum=false ) const;
 
     virtual float calc_error( CvMLData* _data, int type , std::vector<float> *resp = 0 ); // type in {CV_TRAIN_ERROR, CV_TEST_ERROR}
@@ -1158,8 +1158,8 @@ public:
 
     CV_WRAP virtual void clear();
 
-    virtual void write( cv::FileStorage& storage, const char* name ) const;
-    virtual void read( cv::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& storage, const char* name ) const;
+    virtual void read( ncvslideio::FileNode& node );
     virtual const CvMat* get_active_vars(bool absolute_idx=true);
 
     CvSeq* get_weak_predictors();
@@ -1175,14 +1175,14 @@ protected:
     virtual bool set_params( const CvBoostParams& params );
     virtual void update_weights( CvBoostTree* tree );
     virtual void trim_weights();
-    virtual void write_params( cv::FileStorage & fs ) const;
-    virtual void read_params( cv::FileNode& node );
+    virtual void write_params( ncvslideio::FileStorage & fs ) const;
+    virtual void read_params( ncvslideio::FileNode& node );
 
     virtual void initialize_weights(double (&p)[2]);
 
     CvDTreeTrainData* data;
     CvMat train_data_hdr, responses_hdr;
-    cv::Mat train_data_mat, responses_mat;
+    ncvslideio::Mat train_data_mat, responses_mat;
     CvBoostParams params;
     CvSeq* weak;
 
@@ -1546,7 +1546,7 @@ public:
     // Write parameters of the gtb model and data. Write learned model.
     //
     // API
-    // virtual void write( cv::FileStorage& fs, const char* name ) const;
+    // virtual void write( ncvslideio::FileStorage& fs, const char* name ) const;
     //
     // INPUT
     // fs     - file storage to read parameters from.
@@ -1554,7 +1554,7 @@ public:
     // OUTPUT
     // RESULT
     */
-    virtual void write( cv::FileStorage& fs, const char* name ) const;
+    virtual void write( ncvslideio::FileStorage& fs, const char* name ) const;
 
 
     /*
@@ -1562,7 +1562,7 @@ public:
     // Read parameters of the gtb model and data. Read learned model.
     //
     // API
-    // virtual void read( cv::FileStorage& fs, cv::FileNode& node );
+    // virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
     //
     // INPUT
     // fs     - file storage to read parameters from.
@@ -1570,25 +1570,25 @@ public:
     // OUTPUT
     // RESULT
     */
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node );
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
 
 
     // new-style C++ interface
-    CV_WRAP CvGBTrees( const cv::Mat& trainData, int tflag,
-              const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-              const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-              const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP CvGBTrees( const ncvslideio::Mat& trainData, int tflag,
+              const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+              const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+              const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
               CvGBTreesParams params=CvGBTreesParams() );
 
-    CV_WRAP virtual bool train( const cv::Mat& trainData, int tflag,
-                       const cv::Mat& responses, const cv::Mat& varIdx=cv::Mat(),
-                       const cv::Mat& sampleIdx=cv::Mat(), const cv::Mat& varType=cv::Mat(),
-                       const cv::Mat& missingDataMask=cv::Mat(),
+    CV_WRAP virtual bool train( const ncvslideio::Mat& trainData, int tflag,
+                       const ncvslideio::Mat& responses, const ncvslideio::Mat& varIdx=ncvslideio::Mat(),
+                       const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(), const ncvslideio::Mat& varType=ncvslideio::Mat(),
+                       const ncvslideio::Mat& missingDataMask=ncvslideio::Mat(),
                        CvGBTreesParams params=CvGBTreesParams(),
                        bool update=false );
 
-    CV_WRAP virtual float predict( const cv::Mat& sample, const cv::Mat& missing=cv::Mat(),
-                           const cv::Range& slice = cv::Range::all(),
+    CV_WRAP virtual float predict( const ncvslideio::Mat& sample, const ncvslideio::Mat& missing=ncvslideio::Mat(),
+                           const ncvslideio::Range& slice = ncvslideio::Range::all(),
                            int k=-1 ) const;
 
 protected:
@@ -1721,14 +1721,14 @@ protected:
     // Write parameters of the gtb model.
     //
     // API
-    // virtual void write_params( cv::FileStorage& fs ) const;
+    // virtual void write_params( ncvslideio::FileStorage& fs ) const;
     //
     // INPUT
     // fs           - file storage to write parameters to.
     // OUTPUT
     // RESULT
     */
-    virtual void write_params( cv::FileStorage& fs ) const;
+    virtual void write_params( ncvslideio::FileStorage& fs ) const;
 
 
     /*
@@ -1736,7 +1736,7 @@ protected:
     // Read parameters of the gtb model and data.
     //
     // API
-    // virtual void read_params( const cv::FileStorage& fs );
+    // virtual void read_params( const ncvslideio::FileStorage& fs );
     //
     // INPUT
     // fs           - file storage to read parameters from.
@@ -1748,7 +1748,7 @@ protected:
     // class_labels - output class labels map.
     // RESULT
     */
-    virtual void read_params( cv::FileStorage& fs, cv::FileNode& fnode );
+    virtual void read_params( ncvslideio::FileStorage& fs, ncvslideio::FileNode& fnode );
     int get_len(const CvMat* mat) const;
 
 
@@ -1765,7 +1765,7 @@ protected:
     CvMat* missing;
     CvMat* class_labels;
 
-    cv::RNG* rng;
+    ncvslideio::RNG* rng;
 
     int class_count;
     float delta;
@@ -1821,20 +1821,20 @@ public:
                        int flags=0 );
     virtual float predict( const CvMat* inputs, CV_OUT CvMat* outputs ) const;
 
-    CV_WRAP CvANN_MLP( const cv::Mat& layerSizes,
+    CV_WRAP CvANN_MLP( const ncvslideio::Mat& layerSizes,
               int activateFunc=CvANN_MLP::SIGMOID_SYM,
               double fparam1=0, double fparam2=0 );
 
-    CV_WRAP virtual void create( const cv::Mat& layerSizes,
+    CV_WRAP virtual void create( const ncvslideio::Mat& layerSizes,
                         int activateFunc=CvANN_MLP::SIGMOID_SYM,
                         double fparam1=0, double fparam2=0 );
 
-    CV_WRAP virtual int train( const cv::Mat& inputs, const cv::Mat& outputs,
-                      const cv::Mat& sampleWeights, const cv::Mat& sampleIdx=cv::Mat(),
+    CV_WRAP virtual int train( const ncvslideio::Mat& inputs, const ncvslideio::Mat& outputs,
+                      const ncvslideio::Mat& sampleWeights, const ncvslideio::Mat& sampleIdx=ncvslideio::Mat(),
                       CvANN_MLP_TrainParams params = CvANN_MLP_TrainParams(),
                       int flags=0 );
 
-    CV_WRAP virtual float predict( const cv::Mat& inputs, CV_OUT cv::Mat& outputs ) const;
+    CV_WRAP virtual float predict( const ncvslideio::Mat& inputs, CV_OUT ncvslideio::Mat& outputs ) const;
 
     CV_WRAP virtual void clear();
 
@@ -1844,8 +1844,8 @@ public:
     // available training flags
     enum { UPDATE_WEIGHTS = 1, NO_INPUT_SCALE = 2, NO_OUTPUT_SCALE = 4 };
 
-    virtual void read( cv::FileStorage& fs, cv::FileNode& node );
-    virtual void write( cv::FileStorage& storage, const char* name ) const;
+    virtual void read( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
+    virtual void write( ncvslideio::FileStorage& storage, const char* name ) const;
 
     int get_layer_count() { return layer_sizes ? layer_sizes->cols : 0; }
     const CvMat* get_layer_sizes() { return layer_sizes; }
@@ -1878,8 +1878,8 @@ protected:
     virtual void calc_input_scale( const CvVectors* vecs, int flags );
     virtual void calc_output_scale( const CvVectors* vecs, int flags );
 
-    virtual void write_params( cv::FileStorage& fs ) const;
-    virtual void read_params( cv::FileStorage& fs, cv::FileNode& node );
+    virtual void write_params( ncvslideio::FileStorage& fs ) const;
+    virtual void read_params( ncvslideio::FileStorage& fs, ncvslideio::FileNode& node );
 
     CvMat* layer_sizes;
     CvMat* wbuf;
@@ -1890,7 +1890,7 @@ protected:
     int activ_func;
     int max_count, max_buf_sz;
     CvANN_MLP_TrainParams params;
-    cv::RNG* rng;
+    ncvslideio::RNG* rng;
 };
 
 /****************************************************************************************\
@@ -1964,7 +1964,7 @@ public:
     void set_miss_ch( char ch );
     char get_miss_ch() const;
 
-    const std::map<cv::String, int>& get_class_labels_map() const;
+    const std::map<ncvslideio::String, int>& get_class_labels_map() const;
 
 protected:
     virtual void clear();
@@ -1993,17 +1993,17 @@ protected:
     bool mix;
 
     int total_class_count;
-    std::map<cv::String, int> class_map;
+    std::map<ncvslideio::String, int> class_map;
 
     CvMat* train_sample_idx;
     CvMat* test_sample_idx;
     int* sample_idx; // data of train_sample_idx and test_sample_idx
 
-    cv::RNG* rng;
+    ncvslideio::RNG* rng;
 };
 
 
-namespace cv
+namespace ncvslideio
 {
 
 typedef CvStatModel StatModel;

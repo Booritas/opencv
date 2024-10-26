@@ -11,7 +11,7 @@ TEST(Imgcodecs_Png, write_big)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
     const string filename = root + "readwrite/read.png";
-    const string dst_file = cv::tempfile(".png");
+    const string dst_file = ncvslideio::tempfile(".png");
     Mat img;
     ASSERT_NO_THROW(img = imread(filename));
     ASSERT_FALSE(img.empty());
@@ -38,7 +38,7 @@ TEST(Imgcodecs_Png, encode)
 TEST(Imgcodecs_Png, regression_ImreadVSCvtColor)
 {
     const string root = cvtest::TS::ptr()->get_data_path();
-    const string imgName = root + "../cv/shared/lena.png";
+    const string imgName = root + "../ncvslideio/shared/lena.png";
     Mat original_image = imread(imgName);
     Mat gray_by_codec = imread(imgName, IMREAD_GRAYSCALE);
     Mat gray_by_cvt;

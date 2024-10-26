@@ -20,7 +20,7 @@ from common import clock, draw_str
 
 def detect(img, cascade):
     rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30),
-                                     flags=cv.CASCADE_SCALE_IMAGE)
+                                     flags=ncvslideio.CASCADE_SCALE_IMAGE)
     if len(rects) == 0:
         return []
     rects[:,2:] += rects[:,:2]
@@ -28,7 +28,7 @@ def detect(img, cascade):
 
 def draw_rects(img, rects, color):
     for x1, y1, x2, y2 in rects:
-        cv.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        ncvslideio.rectangle(img, (x1, y1), (x2, y2), color, 2)
 
 def main():
     import sys, getopt
@@ -42,15 +42,15 @@ def main():
     cascade_fn = args.get('--cascade', "haarcascades/haarcascade_frontalface_alt.xml")
     nested_fn  = args.get('--nested-cascade', "haarcascades/haarcascade_eye.xml")
 
-    cascade = cv.CascadeClassifier(cv.samples.findFile(cascade_fn))
-    nested = cv.CascadeClassifier(cv.samples.findFile(nested_fn))
+    cascade = ncvslideio.CascadeClassifier(ncvslideio.samples.findFile(cascade_fn))
+    nested = ncvslideio.CascadeClassifier(ncvslideio.samples.findFile(nested_fn))
 
-    cam = create_capture(video_src, fallback='synth:bg={}:noise=0.05'.format(cv.samples.findFile('lena.jpg')))
+    cam = create_capture(video_src, fallback='synth:bg={}:noise=0.05'.format(ncvslideio.samples.findFile('lena.jpg')))
 
     while True:
         _ret, img = cam.read()
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        gray = cv.equalizeHist(gray)
+        gray = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
+        gray = ncvslideio.equalizeHist(gray)
 
         t = clock()
         rects = detect(gray, cascade)
@@ -65,9 +65,9 @@ def main():
         dt = clock() - t
 
         draw_str(vis, (20, 20), 'time: %.1f ms' % (dt*1000))
-        cv.imshow('facedetect', vis)
+        ncvslideio.imshow('facedetect', vis)
 
-        if cv.waitKey(5) == 27:
+        if ncvslideio.waitKey(5) == 27:
             break
 
     print('Done')
@@ -76,4 +76,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

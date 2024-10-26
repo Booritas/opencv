@@ -60,18 +60,18 @@
 
 #ifdef HAVE_OPENCL
 #include "opencl_kernels_dnn.hpp"
-using namespace cv::dnn::ocl4dnn;
+using namespace ncvslideio::dnn::ocl4dnn;
 #endif
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/convolution.hpp"
 #include "../cuda4dnn/primitives/transpose_convolution.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 #include "cpu_kernels/convolution.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -621,7 +621,7 @@ public:
             {
                 double wi = w.at<float>(i);
                 weightsMultipliers[i] *= wi;
-                cv::multiply(originWeights.row(i), weightsMultipliers[i], weightsMat.row(i));
+                ncvslideio::multiply(originWeights.row(i), weightsMultipliers[i], weightsMat.row(i));
                 biasvec[i] *= wi;
             }
         }
@@ -789,7 +789,7 @@ public:
         op->update_input_desc_x(*x_desc);
         // set inputs : weight
         const Mat& w_mat = blobs[0];
-        auto op_const_weight = std::make_shared<CannConstOp>(w_mat.data, w_mat.type(), shape(w_mat), cv::format("%s_w", name.c_str()));
+        auto op_const_weight = std::make_shared<CannConstOp>(w_mat.data, w_mat.type(), shape(w_mat), ncvslideio::format("%s_w", name.c_str()));
         op->set_input_filter(*(op_const_weight->getOp()));
         op->update_input_desc_filter(*(op_const_weight->getTensorDesc()));
         // set inputs : bias
@@ -799,7 +799,7 @@ public:
             Mat b_mat({out_channel}, CV_32F, &biasvec[0]);
 
             std::vector<int> bias_shape{out_channel};
-            auto op_const_bias = std::make_shared<CannConstOp>(b_mat.data, b_mat.type(), bias_shape, cv::format("%s_b", name.c_str()));
+            auto op_const_bias = std::make_shared<CannConstOp>(b_mat.data, b_mat.type(), bias_shape, ncvslideio::format("%s_b", name.c_str()));
             op->set_input_bias(*(op_const_bias->getOp()));
             op->update_input_desc_bias(*(op_const_bias->getTensorDesc()));
         }
@@ -1423,7 +1423,7 @@ public:
 
                 weightsMat.row(i).convertTo(weightsQuantized.row(i), CV_8S, 1.f/weightsScale);
                 float biasScale = inputScale * weightsScale;
-                biasQuantized.at<int>(i) = cvRound(biasvec[i]/biasScale) - inputZp*(cv::sum(weightsQuantized.row(i))[0]);
+                biasQuantized.at<int>(i) = cvRound(biasvec[i]/biasScale) - inputZp*(ncvslideio::sum(weightsQuantized.row(i))[0]);
                 outputMultiplier.at<float>(i) = biasScale / outputScale;
             }
         }
@@ -1436,7 +1436,7 @@ public:
 
             for (int i = 0; i < numOutput; i++)
             {
-                biasQuantized.at<int>(i) = cvRound(biasvec[i]/biasScale) - inputZp*(cv::sum(weightsQuantized.row(i))[0]);
+                biasQuantized.at<int>(i) = cvRound(biasvec[i]/biasScale) - inputZp*(ncvslideio::sum(weightsQuantized.row(i))[0]);
                 outputMultiplier.at<float>(i) = biasScale / outputScale;
             }
         }
@@ -1609,7 +1609,7 @@ public:
             {
                 double wi = w.at<float>(i);
                 weightsMultipliers[i] *= wi;
-                cv::multiply(weightsMat.row(i), weightsMultipliers[i], weightsMat.row(i));
+                ncvslideio::multiply(weightsMat.row(i), weightsMultipliers[i], weightsMat.row(i));
                 biasesMat.at<float>(i) *= wi;
             }
             weightsMat = weightsMat.reshape(1, weightsMat.total() / blobs[0].size[0]);
@@ -1617,7 +1617,7 @@ public:
 
         if (!b.empty())
         {
-            cv::add(biasesMat, b.reshape(1, numOutput), biasesMat);
+            ncvslideio::add(biasesMat, b.reshape(1, numOutput), biasesMat);
         }
     }
 
@@ -1780,7 +1780,7 @@ public:
         bool useLASX;
     };
 
-    class Col2ImInvoker : public cv::ParallelLoopBody
+    class Col2ImInvoker : public ncvslideio::ParallelLoopBody
     {
     public:
         const float* data_col;
@@ -2223,7 +2223,7 @@ public:
         op->update_input_desc_x(*desc_x);
         // set inputs : weight
         const Mat& mat_w = blobs[0];
-        auto op_const_w = std::make_shared<CannConstOp>(mat_w.data, mat_w.type(), shape(mat_w), cv::format("%s_w", name.c_str()));
+        auto op_const_w = std::make_shared<CannConstOp>(mat_w.data, mat_w.type(), shape(mat_w), ncvslideio::format("%s_w", name.c_str()));
         op->set_input_filter(*(op_const_w->getOp()));
         op->update_input_desc_filter(*(op_const_w->getTensorDesc()));
         // set inputs : bias
@@ -2233,7 +2233,7 @@ public:
             const Mat& mat_b = blobs[1];
 
             std::vector<int> shape_b{out_channel};
-            auto op_const_b = std::make_shared<CannConstOp>(mat_b.data, mat_b.type(), shape_b, cv::format("%s_b", name.c_str()));
+            auto op_const_b = std::make_shared<CannConstOp>(mat_b.data, mat_b.type(), shape_b, ncvslideio::format("%s_b", name.c_str()));
             op->set_input_bias(*(op_const_b->getOp()));
             op->update_input_desc_bias(*(op_const_b->getTensorDesc()));
         }

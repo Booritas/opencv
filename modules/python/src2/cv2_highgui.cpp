@@ -6,7 +6,7 @@
 #include "opencv2/highgui.hpp"
 #include <map>
 
-using namespace cv;
+using namespace ncvslideio;
 
 //======================================================================================================================
 

@@ -121,7 +121,7 @@ PARAM_TEST_CASE(CalcBackProject, MatDepth, int, bool)
             for (int i = 0 ; i < N; ++i)
                 hist_size[i] = randomInt(10, 50);
 
-            cv::calcHist(images_roi, channels, noArray(), tmpHist, hist_size, ranges);
+            ncvslideio::calcHist(images_roi, channels, noArray(), tmpHist, hist_size, ranges);
             ASSERT_EQ(CV_32FC1, tmpHist.type());
         }
 
@@ -178,7 +178,7 @@ PARAM_TEST_CASE(CalcBackProject, MatDepth, int, bool)
         OCL_OFF(calcBackProject(&frame1, 1, 0, hist1, dst1, &ranges1, 1, true));
         OCL_ON(calcBackProject(uims, chs, uhist1, udst1, urngs, 1.0));
 
-        if (cv::ocl::useOpenCL() && cv::ocl::Device::getDefault().isAMD())
+        if (ncvslideio::ocl::useOpenCL() && ncvslideio::ocl::Device::getDefault().isAMD())
         {
             Size dstSize = dst1.size();
             int nDiffs = (int)(0.03f*dstSize.height*dstSize.width);
@@ -201,8 +201,8 @@ OCL_TEST_P(CalcBackProject, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::calcBackProject(images_roi, channels, hist_roi, dst_roi, ranges, scale));
-        OCL_ON(cv::calcBackProject(uimages_roi, channels, uhist_roi, udst_roi, ranges, scale));
+        OCL_OFF(ncvslideio::calcBackProject(images_roi, channels, hist_roi, dst_roi, ranges, scale));
+        OCL_ON(ncvslideio::calcBackProject(uimages_roi, channels, uhist_roi, udst_roi, ranges, scale));
 
         Size dstSize = dst_roi.size();
         int nDiffs = std::max((int)(0.07f*dstSize.area()), 1);
@@ -259,8 +259,8 @@ OCL_TEST_P(CalcHist, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::calcHist(std::vector<Mat>(1, src_roi), channels, noArray(), hist_roi, histSize, ranges, false));
-        OCL_ON(cv::calcHist(std::vector<UMat>(1, usrc_roi), channels, noArray(), uhist_roi, histSize, ranges, false));
+        OCL_OFF(ncvslideio::calcHist(std::vector<Mat>(1, src_roi), channels, noArray(), hist_roi, histSize, ranges, false));
+        OCL_ON(ncvslideio::calcHist(std::vector<UMat>(1, usrc_roi), channels, noArray(), uhist_roi, histSize, ranges, false));
 
         OCL_EXPECT_MATS_NEAR(hist, 0.0);
     }

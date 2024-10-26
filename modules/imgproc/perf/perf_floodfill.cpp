@@ -13,7 +13,7 @@ typedef tuple<string, Point, int, int, int, int> Size_Source_Fl_t;
 typedef perf::TestBaseWithParam<Size_Source_Fl_t> Size_Source_Fl;
 
 PERF_TEST_P(Size_Source_Fl, floodFill1, Combine(
-    testing::Values("cv/shared/fruits.png", "cv/optflow/RubberWhale1.png"), //images
+    testing::Values("ncvslideio/shared/fruits.png", "ncvslideio/optflow/RubberWhale1.png"), //images
             testing::Values(Point(120, 82), Point(200, 140)), //seed points
             testing::Values(4,8), //connectivity
             testing::Values((int)IMREAD_COLOR, (int)IMREAD_GRAYSCALE), //color image, or not
@@ -59,7 +59,7 @@ PERF_TEST_P(Size_Source_Fl, floodFill1, Combine(
     {
         image0.convertTo(source, imdepth);
         startTimer();
-        cv::floodFill(source, pseed, newval, &outputRect, loVal, upVal, flags);
+        ncvslideio::floodFill(source, pseed, newval, &outputRect, loVal, upVal, flags);
         stopTimer();
     }
     EXPECT_EQ(image0.cols, source.cols);

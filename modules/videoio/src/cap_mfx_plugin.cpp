@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace cv {
+namespace ncvslideio {
 
 static
 CvResult CV_API_CALL cv_capture_open(const char* filename, int, CV_OUT CvPluginCapture* handle)
@@ -256,7 +256,7 @@ static const OpenCV_VideoIO_Plugin_API_preview plugin_api =
 const OpenCV_VideoIO_Plugin_API_preview* opencv_videoio_plugin_init_v0(int requested_abi_version, int requested_api_version, void* /*reserved=NULL*/) CV_NOEXCEPT
 {
     if (requested_abi_version == ABI_VERSION && requested_api_version <= API_VERSION)
-        return &cv::plugin_api;
+        return &ncvslideio::plugin_api;
     return NULL;
 }
 

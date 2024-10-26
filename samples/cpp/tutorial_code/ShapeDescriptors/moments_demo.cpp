@@ -10,7 +10,7 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 Mat src_gray;

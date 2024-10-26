@@ -16,16 +16,16 @@
 #include <opencv2/gapi/util/any.hpp>
 
 // Forward declaration
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace s11n {
 struct IOStream;
 struct IIStream;
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
-namespace cv {
+namespace ncvslideio {
 
 /** \addtogroup gapi_data_structures
  * @{
@@ -35,24 +35,24 @@ namespace cv {
  */
 
 /**
- * @brief cv::MediaFrame class represents an image/media frame
+ * @brief ncvslideio::MediaFrame class represents an image/media frame
  * obtained from an external source.
  *
- * cv::MediaFrame represents image data as specified in
- * cv::MediaFormat. cv::MediaFrame is designed to be a thin wrapper over some
+ * ncvslideio::MediaFrame represents image data as specified in
+ * ncvslideio::MediaFormat. ncvslideio::MediaFrame is designed to be a thin wrapper over some
  * external memory of buffer; the class itself provides an uniform
- * interface over such types of memory. cv::MediaFrame wraps data from
+ * interface over such types of memory. ncvslideio::MediaFrame wraps data from
  * a camera driver or from a media codec and provides an abstraction
  * layer over this memory to G-API. MediaFrame defines a compact interface
  * to access and manage the underlying data; the implementation is
  * fully defined by the associated Adapter (which is usually
  * user-defined).
  *
- * @sa cv::RMat
+ * @sa ncvslideio::RMat
  */
 class GAPI_EXPORTS MediaFrame {
 public:
-    /// This enum defines different types of cv::MediaFrame provided
+    /// This enum defines different types of ncvslideio::MediaFrame provided
     /// access to the underlying data. Note that different flags can't
     /// be combined in this version.
     enum class Access {
@@ -86,7 +86,7 @@ public:
      * @param args list of arguments to construct an adapter of type
      * `T`.
      */
-    template<class T, class... Args> static cv::MediaFrame Create(Args&&... args);
+    template<class T, class... Args> static ncvslideio::MediaFrame Create(Args&&... args);
 
     /**
      * @brief Obtain access to the underlying data with the given
@@ -106,14 +106,14 @@ public:
     /**
      * @brief Returns a media frame descriptor -- the information
      * about the media format, dimensions, etc.
-     * @return a cv::GFrameDesc
+     * @return a ncvslideio::GFrameDesc
      */
-    cv::GFrameDesc desc() const;
+    ncvslideio::GFrameDesc desc() const;
 
     // FIXME: design a better solution
     // Should be used only if the actual adapter provides implementation
     /// @private -- exclude from the OpenCV documentation for now.
-    cv::util::any blobParams() const;
+    ncvslideio::util::any blobParams() const;
 
     /**
      * @brief Casts and returns the associated MediaFrame adapter to
@@ -130,7 +130,7 @@ public:
      */
     template<typename T> T* get() const {
         static_assert(std::is_base_of<IAdapter, T>::value,
-                      "T is not derived from cv::MediaFrame::IAdapter!");
+                      "T is not derived from ncvslideio::MediaFrame::IAdapter!");
         auto* adapter = getAdapter();
         GAPI_Assert(adapter != nullptr);
         return dynamic_cast<T*>(adapter);
@@ -144,7 +144,7 @@ public:
      *
      * @param os Bytestream to store serialized MediaFrame data in.
      */
-    void serialize(cv::gapi::s11n::IOStream& os) const;
+    void serialize(ncvslideio::gapi::s11n::IOStream& os) const;
 
 private:
     struct Priv;
@@ -153,9 +153,9 @@ private:
 };
 
 template<class T, class... Args>
-inline cv::MediaFrame cv::MediaFrame::Create(Args&&... args) {
+inline ncvslideio::MediaFrame ncvslideio::MediaFrame::Create(Args&&... args) {
     std::unique_ptr<T> ptr(new T(std::forward<Args>(args)...));
-    return cv::MediaFrame(std::move(ptr));
+    return ncvslideio::MediaFrame(std::move(ptr));
 }
 
 /**
@@ -164,7 +164,7 @@ inline cv::MediaFrame cv::MediaFrame::Create(Args&&... args) {
  * This object contains the necessary information to access the pixel
  * data of the associated MediaFrame: arrays of pointers and strides
  * (distance between every plane row, in bytes) for every image
- * plane, as defined in cv::MediaFormat.
+ * plane, as defined in ncvslideio::MediaFormat.
  * There may be up to four image planes in MediaFrame.
  *
  * Depending on the MediaFrame::Access flag passed in
@@ -228,7 +228,7 @@ private:
  *
  * Implement this interface to wrap media data in the MediaFrame. It
  * makes sense to implement this class if there is a custom
- * cv::gapi::wip::IStreamSource defined -- in this case, a stream
+ * ncvslideio::gapi::wip::IStreamSource defined -- in this case, a stream
  * source can produce MediaFrame objects with this adapter and the
  * media data may be passed to graph without any copy. For example, a
  * GStreamer-based stream source can implement an adapter over
@@ -237,22 +237,22 @@ private:
 class GAPI_EXPORTS MediaFrame::IAdapter {
 public:
     virtual ~IAdapter() = 0;
-    virtual cv::GFrameDesc meta() const = 0;
+    virtual ncvslideio::GFrameDesc meta() const = 0;
     virtual MediaFrame::View access(MediaFrame::Access) = 0;
     // FIXME: design a better solution
     // The default implementation does nothing
-    virtual cv::util::any blobParams() const;
-    virtual void serialize(cv::gapi::s11n::IOStream&) {
+    virtual ncvslideio::util::any blobParams() const;
+    virtual void serialize(ncvslideio::gapi::s11n::IOStream&) {
         GAPI_Error("Generic serialize method of MediaFrame::IAdapter does nothing by default. "
                              "Please, implement it in derived class to properly serialize the object.");
     }
-    virtual void deserialize(cv::gapi::s11n::IIStream&) {
+    virtual void deserialize(ncvslideio::gapi::s11n::IIStream&) {
         GAPI_Error("Generic deserialize method of MediaFrame::IAdapter does nothing by default. "
                              "Please, implement it in derived class to properly deserialize the object.");
     }
 };
 /** @} */
 
-} //namespace cv
+} //namespace ncvslideio
 
 #endif // OPENCV_GAPI_MEDIA_HPP

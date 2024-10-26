@@ -7,7 +7,7 @@
 #define OPENCV_BARCODE_UTILS_HPP
 
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 enum BinaryType

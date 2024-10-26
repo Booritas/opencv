@@ -44,7 +44,7 @@ int main(void)
   // generated value.  Sort by the randomly generated value while maintaining index association.
   //! [sort]
   {
-    cv::cuda::GpuMat d_data(1, 100, CV_32SC2);
+    ncvslideio::cuda::GpuMat d_data(1, 100, CV_32SC2);
     // Thrust compatible begin and end iterators to channel 1 of this matrix
     auto keyBegin = GpuMatBeginItr<int>(d_data, 1);
     auto keyEnd = GpuMatEndItr<int>(d_data, 1);
@@ -58,28 +58,28 @@ int main(void)
     // Sort the key channel and index channel such that the keys and indecies stay together
     thrust::sort_by_key(keyBegin, keyEnd, idxBegin);
 
-    cv::Mat h_idx(d_data);
+    ncvslideio::Mat h_idx(d_data);
   }
   //! [sort]
 
   // Randomly fill a row matrix with 100 elements between -1 and 1
   //! [random]
   {
-    cv::cuda::GpuMat d_value(1, 100, CV_32F);
+    ncvslideio::cuda::GpuMat d_value(1, 100, CV_32F);
     auto valueBegin = GpuMatBeginItr<float>(d_value);
     auto valueEnd = GpuMatEndItr<float>(d_value);
     thrust::transform(thrust::make_counting_iterator(0), thrust::make_counting_iterator(d_value.cols), valueBegin, prg(-1, 1));
 
-    cv::Mat h_value(d_value);
+    ncvslideio::Mat h_value(d_value);
   }
   //! [random]
 
   // OpenCV has count non zero, but what if you want to count a specific value?
   //! [count_value]
   {
-    cv::cuda::GpuMat d_value(1, 100, CV_32S);
-    d_value.setTo(cv::Scalar(0));
-    d_value.colRange(10, 50).setTo(cv::Scalar(15));
+    ncvslideio::cuda::GpuMat d_value(1, 100, CV_32S);
+    d_value.setTo(ncvslideio::Scalar(0));
+    d_value.colRange(10, 50).setTo(ncvslideio::Scalar(15));
     auto count = thrust::count(GpuMatBeginItr<int>(d_value), GpuMatEndItr<int>(d_value), 15);
     std::cout << count << std::endl;
   }
@@ -88,21 +88,21 @@ int main(void)
   // Randomly fill an array then copy only values greater than 0.  Perform these tasks on a stream.
   //! [copy_greater]
   {
-    cv::cuda::GpuMat d_value(1, 100, CV_32F);
+    ncvslideio::cuda::GpuMat d_value(1, 100, CV_32F);
     auto valueBegin = GpuMatBeginItr<float>(d_value);
     auto valueEnd = GpuMatEndItr<float>(d_value);
-    cv::cuda::Stream stream;
+    ncvslideio::cuda::Stream stream;
     //! [random_gen_stream]
     // Same as the random generation code from before except now the transformation is being performed on a stream
-    thrust::transform(thrust::system::cuda::par.on(cv::cuda::StreamAccessor::getStream(stream)), thrust::make_counting_iterator(0), thrust::make_counting_iterator(d_value.cols), valueBegin, prg(-1, 1));
+    thrust::transform(thrust::system::cuda::par.on(ncvslideio::cuda::StreamAccessor::getStream(stream)), thrust::make_counting_iterator(0), thrust::make_counting_iterator(d_value.cols), valueBegin, prg(-1, 1));
     //! [random_gen_stream]
     // Count the number of values we are going to copy
-    int count = thrust::count_if(thrust::system::cuda::par.on(cv::cuda::StreamAccessor::getStream(stream)), valueBegin, valueEnd, pred_greater<float>(0.0));
+    int count = thrust::count_if(thrust::system::cuda::par.on(ncvslideio::cuda::StreamAccessor::getStream(stream)), valueBegin, valueEnd, pred_greater<float>(0.0));
     // Allocate a destination for copied values
-    cv::cuda::GpuMat d_valueGreater(1, count, CV_32F);
+    ncvslideio::cuda::GpuMat d_valueGreater(1, count, CV_32F);
     // Copy values that satisfy the predicate.
-    thrust::copy_if(thrust::system::cuda::par.on(cv::cuda::StreamAccessor::getStream(stream)), valueBegin, valueEnd, GpuMatBeginItr<float>(d_valueGreater), pred_greater<float>(0.0));
-    cv::Mat h_greater(d_valueGreater);
+    thrust::copy_if(thrust::system::cuda::par.on(ncvslideio::cuda::StreamAccessor::getStream(stream)), valueBegin, valueEnd, GpuMatBeginItr<float>(d_valueGreater), pred_greater<float>(0.0));
+    ncvslideio::Mat h_greater(d_valueGreater);
   }
   //! [copy_greater]
 

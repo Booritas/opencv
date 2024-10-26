@@ -47,12 +47,12 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/recurrent_cells.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 #include "layers_common.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -82,8 +82,8 @@ static void tanh(const Mat &src, Mat &dst)
 
 static void sigmoid(const Mat &src, Mat &dst)
 {
-    cv::exp(-src, dst);
-    cv::pow(1 + dst, -1, dst);
+    ncvslideio::exp(-src, dst);
+    ncvslideio::pow(1 + dst, -1, dst);
 }
 
 typedef void (*ActivationFunction)(const Mat &src, Mat &dst);
@@ -101,7 +101,7 @@ static ActivationFunction get_activation_function(const String& activation) {
     else
     {
         CV_Error(Error::StsNotImplemented,
-                 cv::format("Activation function [%s] for layer LSTM  is not supported", activation.c_str()));
+                 ncvslideio::format("Activation function [%s] for layer LSTM  is not supported", activation.c_str()));
     }
 }
 
@@ -403,15 +403,15 @@ public:
 
         if (layout == BATCH_SEQ_HID){
             //swap axis 0 and 1 input x
-            cv::Mat tmp;
+            ncvslideio::Mat tmp;
             // Since python input is 4 dimentional and C++ input 3 dimentinal
             // we need to proccess each differently
             if (input[0].dims == 4){
                 // here !!!
                 CV_Assert(input[0].size[3] == 1);
-                cv::transposeND(input[0], {1, 0, 2, 3}, tmp); //back to seq_len, batch_size, hidden_size format
+                ncvslideio::transposeND(input[0], {1, 0, 2, 3}, tmp); //back to seq_len, batch_size, hidden_size format
             }else{
-                cv::transposeND(input[0], {1, 0, 2}, tmp); //back to seq_len, batch_size, hidden_size format
+                ncvslideio::transposeND(input[0], {1, 0, 2}, tmp); //back to seq_len, batch_size, hidden_size format
             }
             input[0] = tmp;
         }
@@ -634,8 +634,8 @@ public:
         }
         // transpose to match batch first output
         if (layout == BATCH_SEQ_HID){
-            cv::Mat tmp;
-            cv::transposeND(output[0], {1, 0, 2}, tmp);
+            ncvslideio::Mat tmp;
+            ncvslideio::transposeND(output[0], {1, 0, 2}, tmp);
             output[0] = tmp;
         }
         if (needYcTransform && produceCellOutput)
@@ -655,20 +655,20 @@ public:
         cOut = cOut.reshape(1, sizeof(shp)/sizeof(shp[0]), shp);
 
         // permute to {0, 2, 1, 3};
-        cv::Mat newCellState;
+        ncvslideio::Mat newCellState;
         // transpose to match batch first output
         if (layout == BATCH_SEQ_HID){
-            cv::transposeND(cOut, {2, 0, 1, 3}, newCellState);
+            ncvslideio::transposeND(cOut, {2, 0, 1, 3}, newCellState);
         }
         else{
-            cv::transposeND(cOut, {0, 2, 1, 3}, newCellState);
+            ncvslideio::transposeND(cOut, {0, 2, 1, 3}, newCellState);
         }
         cOut = newCellState;
 
         if (numDirs == 1)
         {
             // Slice: Yh = Y[-1, :, :, :]
-            Range ranges[] = {cv::Range(cOut.size[0] - 1, cOut.size[0]), cv::Range::all(), cv::Range::all(), cv::Range::all()};
+            Range ranges[] = {ncvslideio::Range(cOut.size[0] - 1, cOut.size[0]), ncvslideio::Range::all(), ncvslideio::Range::all(), ncvslideio::Range::all()};
             cOut = cOut(ranges);
             // Reshape: 1x1xBxH -> 1xBxH
             int shp[] = {1, numSamples, numHidden};
@@ -677,11 +677,11 @@ public:
         else
         {
             // Slice: SxDxBxH -> last sequence, first direction
-            Range ranges1[] = {cv::Range(cOut.size[0] - 1, cOut.size[0]), cv::Range(0, 1), cv::Range::all(), cv::Range::all()};
+            Range ranges1[] = {ncvslideio::Range(cOut.size[0] - 1, cOut.size[0]), ncvslideio::Range(0, 1), ncvslideio::Range::all(), ncvslideio::Range::all()};
             Mat part1 = cOut(ranges1);
 
             // Slice: SxDxBxH -> first sequence, last direction
-            Range ranges2[] = {cv::Range(0, 1), cv::Range(cOut.size[1] - 1, cOut.size[1]), cv::Range::all(), cv::Range::all()};
+            Range ranges2[] = {ncvslideio::Range(0, 1), ncvslideio::Range(cOut.size[1] - 1, cOut.size[1]), ncvslideio::Range::all(), ncvslideio::Range::all()};
             Mat part2 = cOut(ranges2);
 
             int shp[] = {1, part1.size[2] * part1.size[3]};

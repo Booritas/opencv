@@ -16,7 +16,7 @@
 
 #include "net_impl.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #ifdef HAVE_WEBNN
 
@@ -153,7 +153,7 @@ void Net::Impl::initWebnnBackend(const std::vector<LayerPin>& blobsToKeep_)
 
             if (!fused) {
                 std::vector<std::string> inputNames;
-                std::vector<cv::Mat> inputs;
+                std::vector<ncvslideio::Mat> inputs;
 
                 auto curr_pos = inpLd.consumers.begin();
                 auto compare = [&ld] (const LayerPin& lp) { return lp.lid == ld.id; };
@@ -366,7 +366,7 @@ void WebnnNet::init(Target targetId)
     isInit = true;
 }
 
-std::vector<ml::Operand> WebnnNet::setInputs(const std::vector<cv::Mat>& inputs,
+std::vector<ml::Operand> WebnnNet::setInputs(const std::vector<ncvslideio::Mat>& inputs,
                                              const std::vector<std::string>& names) {
     CV_Assert_N(inputs.size() == names.size());
     std::vector<ml::Operand> current_inp;
@@ -409,7 +409,7 @@ void WebnnNet::reset()
     isInit = false;
 }
 
-void WebnnNet::addBlobs(const std::vector<cv::Ptr<BackendWrapper> >& ptrs)
+void WebnnNet::addBlobs(const std::vector<ncvslideio::Ptr<BackendWrapper> >& ptrs)
 {
     auto wrappers = webnnWrappers(ptrs);
     for (const auto& wrapper : wrappers)
@@ -461,7 +461,7 @@ WebnnBackendNode::WebnnBackendNode(ml::Operand& _operand)
     : BackendNode(DNN_BACKEND_WEBNN), operand(_operand) {}
 
 // WebnnBackendWrapper
-WebnnBackendWrapper::WebnnBackendWrapper(int targetId, cv::Mat& m)
+WebnnBackendWrapper::WebnnBackendWrapper(int targetId, ncvslideio::Mat& m)
     : BackendWrapper(DNN_BACKEND_WEBNN, targetId)
 {
     size = m.total() * m.elemSize();

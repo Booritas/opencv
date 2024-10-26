@@ -57,7 +57,7 @@ using namespace perf;
 //////////////////////////////////////////////////////////////////////
 // nonLocalMeans
 
-DEF_PARAM_TEST(Sz_Depth_Cn_WinSz_BlockSz, cv::Size, MatDepth, MatCn, int, int);
+DEF_PARAM_TEST(Sz_Depth_Cn_WinSz_BlockSz, ncvslideio::Size, MatDepth, MatCn, int, int);
 
 PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_NonLocalMeans,
             Combine(CUDA_DENOISING_IMAGE_SIZES,
@@ -68,26 +68,26 @@ PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_NonLocalMeans,
 {
     declare.time(600.0);
 
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int channels = GET_PARAM(2);
     const int search_widow_size = GET_PARAM(3);
     const int block_size = GET_PARAM(4);
 
     const float h = 10;
-    const int borderMode = cv::BORDER_REFLECT101;
+    const int borderMode = ncvslideio::BORDER_REFLECT101;
 
     const int type = CV_MAKE_TYPE(depth, channels);
 
-    cv::Mat src(size, type);
+    ncvslideio::Mat src(size, type);
     declare.in(src, WARMUP_RNG);
 
     if (PERF_RUN_CUDA())
     {
-        const cv::cuda::GpuMat d_src(src);
-        cv::cuda::GpuMat dst;
+        const ncvslideio::cuda::GpuMat d_src(src);
+        ncvslideio::cuda::GpuMat dst;
 
-        TEST_CYCLE() cv::cuda::nonLocalMeans(d_src, dst, h, search_widow_size, block_size, borderMode);
+        TEST_CYCLE() ncvslideio::cuda::nonLocalMeans(d_src, dst, h, search_widow_size, block_size, borderMode);
 
         CUDA_SANITY_CHECK(dst);
     }
@@ -101,7 +101,7 @@ PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_NonLocalMeans,
 //////////////////////////////////////////////////////////////////////
 // fastNonLocalMeans
 
-DEF_PARAM_TEST(Sz_Depth_Cn_WinSz_BlockSz, cv::Size, MatDepth, MatCn, int, int);
+DEF_PARAM_TEST(Sz_Depth_Cn_WinSz_BlockSz, ncvslideio::Size, MatDepth, MatCn, int, int);
 
 PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_FastNonLocalMeans,
             Combine(CUDA_DENOISING_IMAGE_SIZES,
@@ -112,7 +112,7 @@ PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_FastNonLocalMeans,
 {
     declare.time(60.0);
 
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int search_widow_size = GET_PARAM(2);
     const int block_size = GET_PARAM(3);
@@ -120,23 +120,23 @@ PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_FastNonLocalMeans,
     const float h = 10;
     const int type = CV_MAKE_TYPE(depth, 1);
 
-    cv::Mat src(size, type);
+    ncvslideio::Mat src(size, type);
     declare.in(src, WARMUP_RNG);
 
     if (PERF_RUN_CUDA())
     {
-        const cv::cuda::GpuMat d_src(src);
-        cv::cuda::GpuMat dst;
+        const ncvslideio::cuda::GpuMat d_src(src);
+        ncvslideio::cuda::GpuMat dst;
 
-        TEST_CYCLE() cv::cuda::fastNlMeansDenoising(d_src, dst, h, search_widow_size, block_size);
+        TEST_CYCLE() ncvslideio::cuda::fastNlMeansDenoising(d_src, dst, h, search_widow_size, block_size);
 
         CUDA_SANITY_CHECK(dst);
     }
     else
     {
-        cv::Mat dst;
+        ncvslideio::Mat dst;
 
-        TEST_CYCLE() cv::fastNlMeansDenoising(src, dst, h, block_size, search_widow_size);
+        TEST_CYCLE() ncvslideio::fastNlMeansDenoising(src, dst, h, block_size, search_widow_size);
 
         CPU_SANITY_CHECK(dst);
     }
@@ -145,7 +145,7 @@ PERF_TEST_P(Sz_Depth_Cn_WinSz_BlockSz, CUDA_FastNonLocalMeans,
 //////////////////////////////////////////////////////////////////////
 // fastNonLocalMeans (colored)
 
-DEF_PARAM_TEST(Sz_Depth_WinSz_BlockSz, cv::Size, MatDepth, int, int);
+DEF_PARAM_TEST(Sz_Depth_WinSz_BlockSz, ncvslideio::Size, MatDepth, int, int);
 
 PERF_TEST_P(Sz_Depth_WinSz_BlockSz, CUDA_FastNonLocalMeansColored,
             Combine(CUDA_DENOISING_IMAGE_SIZES,
@@ -155,7 +155,7 @@ PERF_TEST_P(Sz_Depth_WinSz_BlockSz, CUDA_FastNonLocalMeansColored,
 {
     declare.time(60.0);
 
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int search_widow_size = GET_PARAM(2);
     const int block_size = GET_PARAM(3);
@@ -163,23 +163,23 @@ PERF_TEST_P(Sz_Depth_WinSz_BlockSz, CUDA_FastNonLocalMeansColored,
     const float h = 10;
     const int type = CV_MAKE_TYPE(depth, 3);
 
-    cv::Mat src(size, type);
+    ncvslideio::Mat src(size, type);
     declare.in(src, WARMUP_RNG);
 
     if (PERF_RUN_CUDA())
     {
-        const cv::cuda::GpuMat d_src(src);
-        cv::cuda::GpuMat dst;
+        const ncvslideio::cuda::GpuMat d_src(src);
+        ncvslideio::cuda::GpuMat dst;
 
-        TEST_CYCLE() cv::cuda::fastNlMeansDenoisingColored(d_src, dst, h, h, search_widow_size, block_size);
+        TEST_CYCLE() ncvslideio::cuda::fastNlMeansDenoisingColored(d_src, dst, h, h, search_widow_size, block_size);
 
         CUDA_SANITY_CHECK(dst);
     }
     else
     {
-        cv::Mat dst;
+        ncvslideio::Mat dst;
 
-        TEST_CYCLE() cv::fastNlMeansDenoisingColored(src, dst, h, h, block_size, search_widow_size);
+        TEST_CYCLE() ncvslideio::fastNlMeansDenoisingColored(src, dst, h, h, block_size, search_widow_size);
 
         CPU_SANITY_CHECK(dst);
     }

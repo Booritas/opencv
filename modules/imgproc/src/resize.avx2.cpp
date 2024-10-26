@@ -50,7 +50,7 @@
 #include "precomp.hpp"
 #include "resize.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace opt_AVX2
 {

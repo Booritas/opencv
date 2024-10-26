@@ -20,7 +20,7 @@ using std::array;
 using std::shared_ptr;
 using std::dynamic_pointer_cast;
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 //==================================================================================================
@@ -434,4 +434,4 @@ BarcodeDetector& BarcodeDetector::setGradientThreshold(double thresh)
 }
 
 }// namespace barcode
-} // namespace cv
+} // namespace ncvslideio

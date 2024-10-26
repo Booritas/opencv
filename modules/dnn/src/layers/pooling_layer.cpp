@@ -65,7 +65,7 @@ using std::min;
 
 #ifdef HAVE_OPENCL
 #include "opencl_kernels_dnn.hpp"
-using namespace cv::dnn::ocl4dnn;
+using namespace ncvslideio::dnn::ocl4dnn;
 #endif
 
 #ifdef HAVE_HALIDE
@@ -80,12 +80,12 @@ typedef int HALIDE_DIFF_T;
 #include "../cuda4dnn/primitives/pooling.hpp"
 #include "../cuda4dnn/primitives/roi_pooling.hpp"
 #include "../cuda4dnn/primitives/max_unpooling.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 #include <opencv2/core/utils/logger.hpp>
 
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -1254,7 +1254,7 @@ public:
         const HALIDE_DIFF_T strideWidth = (HALIDE_DIFF_T)strides[1];
         if ((inW - kernelWidth) % strideWidth || (inH - kernelHeight) % strideHeight)
         {
-            CV_Error(cv::Error::StsNotImplemented,
+            CV_Error(ncvslideio::Error::StsNotImplemented,
                      "Halide backend for average pooling with partial "
                      "kernels is not implemented");
         }

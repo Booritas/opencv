@@ -46,7 +46,7 @@
 #include "../include/ocl4dnn.hpp"
 #include "opencl_kernels_dnn.hpp"
 
-namespace cv { namespace dnn { namespace ocl4dnn {
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
 template<typename Dtype>
 OCL4DNNPool<Dtype>::OCL4DNNPool(OCL4DNNPoolConfig config)
 {
@@ -137,7 +137,7 @@ bool OCL4DNNPool<Dtype>::Forward(const UMat& bottom,
                 ocl::KernelArg::PtrWriteOnly(top)
             );
             if (computeMaxIdx)
-                oclk_max_pool_forward.set(8, ocl::KernelArg::PtrWriteOnly(top_mask));  // TODO remove magic number. Extend cv::ocl::Kernel API
+                oclk_max_pool_forward.set(8, ocl::KernelArg::PtrWriteOnly(top_mask));  // TODO remove magic number. Extend ncvslideio::ocl::Kernel API
 
             ret = oclk_max_pool_forward.run(1, global, local, false);
         }
@@ -221,4 +221,4 @@ bool OCL4DNNPool<Dtype>::Forward(const UMat& bottom,
 
 template class OCL4DNNPool<float>;
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn

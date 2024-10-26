@@ -16,7 +16,7 @@
 // Gil Levi and Tal Hassner, "LATCH: Learned Arrangements of Three Patch Codes", arXiv preprint arXiv:1501.03719, 15 Jan. 2015
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const float inlier_threshold = 2.5f; // Distance threshold to identify inliers
 const float nn_match_ratio = 0.8f;   // Nearest neighbor matching ratio
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     vector<KeyPoint> kpts1, kpts2;
     Mat desc1, desc2;
 
-    Ptr<cv::ORB> orb_detector = cv::ORB::create(10000);
+    Ptr<ncvslideio::ORB> orb_detector = ncvslideio::ORB::create(10000);
 
     Ptr<xfeatures2d::LATCH> latch = xfeatures2d::LATCH::create();
 

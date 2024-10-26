@@ -21,7 +21,7 @@
 #include <opencv2/gapi/render/render_types.hpp>
 #include <opencv2/gapi/s11n/base.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 class GMat; // FIXME: forward declaration for GOpaqueTraits
 
@@ -49,14 +49,14 @@ namespace detail
         CV_FLOAT,      // float user G-API data
         CV_UINT64,     // uint64_t user G-API data
         CV_STRING,     // std::string user G-API data
-        CV_POINT,      // cv::Point user G-API data
-        CV_POINT2F,    // cv::Point2f user G-API data
-        CV_POINT3F,    // cv::Point3f user G-API data
-        CV_SIZE,       // cv::Size user G-API data
-        CV_RECT,       // cv::Rect user G-API data
-        CV_SCALAR,     // cv::Scalar user G-API data
-        CV_MAT,        // cv::Mat user G-API data
-        CV_DRAW_PRIM,  // cv::gapi::wip::draw::Prim user G-API data
+        CV_POINT,      // ncvslideio::Point user G-API data
+        CV_POINT2F,    // ncvslideio::Point2f user G-API data
+        CV_POINT3F,    // ncvslideio::Point3f user G-API data
+        CV_SIZE,       // ncvslideio::Size user G-API data
+        CV_RECT,       // ncvslideio::Rect user G-API data
+        CV_SCALAR,     // ncvslideio::Scalar user G-API data
+        CV_MAT,        // ncvslideio::Mat user G-API data
+        CV_DRAW_PRIM,  // ncvslideio::gapi::wip::draw::Prim user G-API data
     };
 
     // Type traits helper which simplifies the extraction of kind from type
@@ -69,21 +69,21 @@ namespace detail
     template<> struct GOpaqueTraits<uint64_t>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_UINT64; };
     template<> struct GOpaqueTraits<bool>        { static constexpr const OpaqueKind kind = OpaqueKind::CV_BOOL; };
     template<> struct GOpaqueTraits<std::string> { static constexpr const OpaqueKind kind = OpaqueKind::CV_STRING; };
-    template<> struct GOpaqueTraits<cv::Size>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_SIZE; };
-    template<> struct GOpaqueTraits<cv::Scalar>  { static constexpr const OpaqueKind kind = OpaqueKind::CV_SCALAR; };
-    template<> struct GOpaqueTraits<cv::Point>   { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT; };
-    template<> struct GOpaqueTraits<cv::Point2f> { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT2F; };
-    template<> struct GOpaqueTraits<cv::Point3f> { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT3F; };
-    template<> struct GOpaqueTraits<cv::Mat>     { static constexpr const OpaqueKind kind = OpaqueKind::CV_MAT; };
-    template<> struct GOpaqueTraits<cv::Rect>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_RECT; };
-    template<> struct GOpaqueTraits<cv::GMat>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_MAT; };
-    template<> struct GOpaqueTraits<cv::gapi::wip::draw::Prim>
+    template<> struct GOpaqueTraits<ncvslideio::Size>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_SIZE; };
+    template<> struct GOpaqueTraits<ncvslideio::Scalar>  { static constexpr const OpaqueKind kind = OpaqueKind::CV_SCALAR; };
+    template<> struct GOpaqueTraits<ncvslideio::Point>   { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT; };
+    template<> struct GOpaqueTraits<ncvslideio::Point2f> { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT2F; };
+    template<> struct GOpaqueTraits<ncvslideio::Point3f> { static constexpr const OpaqueKind kind = OpaqueKind::CV_POINT3F; };
+    template<> struct GOpaqueTraits<ncvslideio::Mat>     { static constexpr const OpaqueKind kind = OpaqueKind::CV_MAT; };
+    template<> struct GOpaqueTraits<ncvslideio::Rect>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_RECT; };
+    template<> struct GOpaqueTraits<ncvslideio::GMat>    { static constexpr const OpaqueKind kind = OpaqueKind::CV_MAT; };
+    template<> struct GOpaqueTraits<ncvslideio::gapi::wip::draw::Prim>
                                                  { static constexpr const OpaqueKind kind = OpaqueKind::CV_DRAW_PRIM; };
-    using GOpaqueTraitsArrayTypes = std::tuple<int, double, float, uint64_t, bool, std::string, cv::Size, cv::Scalar, cv::Point, cv::Point2f,
-                                               cv::Point3f, cv::Mat, cv::Rect, cv::gapi::wip::draw::Prim>;
-    // GOpaque is not supporting cv::Mat and cv::Scalar since there are GScalar and GMat types
-    using GOpaqueTraitsOpaqueTypes = std::tuple<int, double, float, uint64_t, bool, std::string, cv::Size, cv::Point, cv::Point2f, cv::Point3f,
-                                                cv::Rect, cv::gapi::wip::draw::Prim>;
+    using GOpaqueTraitsArrayTypes = std::tuple<int, double, float, uint64_t, bool, std::string, ncvslideio::Size, ncvslideio::Scalar, ncvslideio::Point, ncvslideio::Point2f,
+                                               ncvslideio::Point3f, ncvslideio::Mat, ncvslideio::Rect, ncvslideio::gapi::wip::draw::Prim>;
+    // GOpaque is not supporting ncvslideio::Mat and ncvslideio::Scalar since there are GScalar and GMat types
+    using GOpaqueTraitsOpaqueTypes = std::tuple<int, double, float, uint64_t, bool, std::string, ncvslideio::Size, ncvslideio::Point, ncvslideio::Point2f, ncvslideio::Point3f,
+                                                ncvslideio::Rect, ncvslideio::gapi::wip::draw::Prim>;
 } // namespace detail
 
 // This definition is here because it is reused by both public(?) and internal
@@ -127,11 +127,11 @@ namespace detail {
  * compilation process
  *
  * G-API comes with a number of graph compilation options which can be
- * passed to cv::GComputation::apply() or
- * cv::GComputation::compile(). Known compilation options are listed
+ * passed to ncvslideio::GComputation::apply() or
+ * ncvslideio::GComputation::compile(). Known compilation options are listed
  * in this page, while extra backends may introduce their own
  * compilation options (G-API transparently accepts _everything_ which
- * can be passed to cv::compile_args(), it depends on underlying
+ * can be passed to ncvslideio::compile_args(), it depends on underlying
  * backends if an option would be interpreted or not).
  *
  * For example, if an example computation is executed like this:
@@ -147,13 +147,13 @@ namespace detail {
 /**
  * @brief Represents an arbitrary compilation argument.
  *
- * Any value can be wrapped into cv::GCompileArg, but only known ones
+ * Any value can be wrapped into ncvslideio::GCompileArg, but only known ones
  * (to G-API or its backends) can be interpreted correctly.
  *
  * Normally objects of this class shouldn't be created manually, use
- * cv::compile_args() function which automatically wraps everything
+ * ncvslideio::compile_args() function which automatically wraps everything
  * passed in (a variadic template parameter pack) into a vector of
- * cv::GCompileArg objects.
+ * ncvslideio::GCompileArg objects.
  */
 struct GCompileArg
 {
@@ -167,8 +167,8 @@ public:
     template<typename T, typename std::enable_if<!detail::is_compile_arg<T>::value, int>::type = 0>
     explicit GCompileArg(T &&t)
         : tag(detail::CompileArgTag<typename std::decay<T>::type>::tag())
-        , serializeF(cv::gapi::s11n::detail::has_S11N_spec<T>::value ?
-                     &cv::gapi::s11n::detail::wrap_serialize<T>::serialize :
+        , serializeF(ncvslideio::gapi::s11n::detail::has_S11N_spec<T>::value ?
+                     &ncvslideio::gapi::s11n::detail::wrap_serialize<T>::serialize :
                      nullptr)
         , arg(t)
     {
@@ -184,7 +184,7 @@ public:
         return util::any_cast<T>(arg);
     }
 
-    void serialize(cv::gapi::s11n::IOStream& os) const
+    void serialize(ncvslideio::gapi::s11n::IOStream& os) const
     {
         if (serializeF)
         {
@@ -193,14 +193,14 @@ public:
     }
 
 private:
-    std::function<void(cv::gapi::s11n::IOStream&, const GCompileArg&)> serializeF;
+    std::function<void(ncvslideio::gapi::s11n::IOStream&, const GCompileArg&)> serializeF;
     util::any arg;
 };
 
 using GCompileArgs = std::vector<GCompileArg>;
 
-inline cv::GCompileArgs& operator += (      cv::GCompileArgs &lhs,
-                                      const cv::GCompileArgs &rhs)
+inline ncvslideio::GCompileArgs& operator += (      ncvslideio::GCompileArgs &lhs,
+                                      const ncvslideio::GCompileArgs &rhs)
 {
     lhs.reserve(lhs.size() + rhs.size());
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
@@ -209,7 +209,7 @@ inline cv::GCompileArgs& operator += (      cv::GCompileArgs &lhs,
 
 /**
  * @brief Wraps a list of arguments (a parameter pack) into a vector of
- *        compilation arguments (cv::GCompileArg).
+ *        compilation arguments (ncvslideio::GCompileArg).
  */
 template<typename... Ts> GCompileArgs compile_args(Ts&&... args)
 {
@@ -220,19 +220,19 @@ namespace gapi
 {
 /**
  * @brief Retrieves particular compilation argument by its type from
- *        cv::GCompileArgs
+ *        ncvslideio::GCompileArgs
  */
 template<typename T>
-inline cv::util::optional<T> getCompileArg(const cv::GCompileArgs &args)
+inline ncvslideio::util::optional<T> getCompileArg(const ncvslideio::GCompileArgs &args)
 {
     for (auto &compile_arg : args)
     {
-        if (compile_arg.tag == cv::detail::CompileArgTag<T>::tag())
+        if (compile_arg.tag == ncvslideio::detail::CompileArgTag<T>::tag())
         {
-            return cv::util::optional<T>(compile_arg.get<T>());
+            return ncvslideio::util::optional<T>(compile_arg.get<T>());
         }
     }
-    return cv::util::optional<T>();
+    return ncvslideio::util::optional<T>();
 }
 
 namespace s11n {
@@ -265,8 +265,8 @@ struct graph_dump_path
 };
 
 /**
- * @brief Ask G-API to use threaded executor when cv::GComputation
- * is compiled via cv::GComputation::compile method.
+ * @brief Ask G-API to use threaded executor when ncvslideio::GComputation
+ * is compiled via ncvslideio::GComputation::compile method.
  *
  * Specifies a number of threads that should be used by executor.
  */
@@ -280,25 +280,25 @@ struct GAPI_EXPORTS use_threaded_executor
 
 namespace detail
 {
-    template<> struct CompileArgTag<cv::graph_dump_path>
+    template<> struct CompileArgTag<ncvslideio::graph_dump_path>
     {
         static const char* tag() { return "gapi.graph_dump_path"; }
     };
 
-    template<> struct CompileArgTag<cv::use_threaded_executor>
+    template<> struct CompileArgTag<ncvslideio::use_threaded_executor>
     {
         static const char* tag() { return "gapi.threaded_executor"; }
     };
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
 // std::hash overload for GShape
 namespace std
 {
-template<> struct hash<cv::GShape>
+template<> struct hash<ncvslideio::GShape>
 {
-    size_t operator() (cv::GShape sh) const
+    size_t operator() (ncvslideio::GShape sh) const
     {
         return std::hash<int>()(static_cast<int>(sh));
     }

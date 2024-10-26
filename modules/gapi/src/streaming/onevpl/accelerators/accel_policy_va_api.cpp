@@ -19,7 +19,7 @@
 #include "streaming/onevpl/utils.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -92,7 +92,7 @@ size_t VPLVAAPIAccelerationPolicy::get_surface_count(pool_key_t key) const {
     return cpu_dispatcher->get_surface_count(key);
 }
 
-cv::MediaFrame::AdapterPtr VPLVAAPIAccelerationPolicy::create_frame_adapter(pool_key_t key,
+ncvslideio::MediaFrame::AdapterPtr VPLVAAPIAccelerationPolicy::create_frame_adapter(pool_key_t key,
                                                                           const FrameConstructorArgs &params) {
     return cpu_dispatcher->create_frame_adapter(key, params);
 }
@@ -126,7 +126,7 @@ size_t VPLVAAPIAccelerationPolicy::get_surface_count(pool_key_t) const {
     GAPI_Error("VPLVAAPIAccelerationPolicy unavailable in current configuration");
 }
 
-cv::MediaFrame::AdapterPtr VPLVAAPIAccelerationPolicy::create_frame_adapter(pool_key_t,
+ncvslideio::MediaFrame::AdapterPtr VPLVAAPIAccelerationPolicy::create_frame_adapter(pool_key_t,
                                                                           const FrameConstructorArgs &) {
     GAPI_Error("VPLVAAPIAccelerationPolicy unavailable in current configuration");
 }
@@ -134,5 +134,5 @@ cv::MediaFrame::AdapterPtr VPLVAAPIAccelerationPolicy::create_frame_adapter(pool
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

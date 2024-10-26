@@ -48,7 +48,7 @@
 #include <iostream>
 #include "mathfuncs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 typedef void (*MathFunc)(const void* src, void* dst, int len);
@@ -610,7 +610,7 @@ void polarToCart( InputArray src1, InputArray src2,
     const Mat* arrays[] = {&Mag, &Angle, &X, &Y, 0};
     uchar* ptrs[4] = {};
     NAryMatIterator it(arrays, ptrs);
-    cv::AutoBuffer<float> _buf;
+    ncvslideio::AutoBuffer<float> _buf;
     float* buf[2] = {0, 0};
     int j, k, total = (int)(it.size*cn), blockSize = std::min(total, ((BLOCK_SIZE+cn-1)/cn)*cn);
     size_t esz1 = Angle.elemSize1();
@@ -1406,7 +1406,7 @@ void sqrt(InputArray a, OutputArray b)
 {
     CV_INSTRUMENT_REGION();
 
-    cv::pow(a, 0.5, b);
+    ncvslideio::pow(a, 0.5, b);
 }
 
 /************************** CheckArray for NaN's, Inf's *********************************/
@@ -1448,7 +1448,7 @@ template<> struct mat_type_assotiations<CV_32S>
 };
 
 template<int depth>
-static bool checkIntegerRange(cv::Mat src, Point& bad_pt, int minVal, int maxVal)
+static bool checkIntegerRange(ncvslideio::Mat src, Point& bad_pt, int minVal, int maxVal)
 {
     typedef mat_type_assotiations<depth> type_ass;
 
@@ -1458,10 +1458,10 @@ static bool checkIntegerRange(cv::Mat src, Point& bad_pt, int minVal, int maxVal
     }
     else if (minVal > type_ass::max_allowable || maxVal < type_ass::min_allowable || maxVal < minVal)
     {
-        bad_pt = cv::Point(0,0);
+        bad_pt = ncvslideio::Point(0,0);
         return false;
     }
-    cv::Mat as_one_channel = src.reshape(1,0);
+    ncvslideio::Mat as_one_channel = src.reshape(1,0);
 
     for (int j = 0; j < as_one_channel.rows; ++j)
         for (int i = 0; i < as_one_channel.cols; ++i)
@@ -1478,7 +1478,7 @@ static bool checkIntegerRange(cv::Mat src, Point& bad_pt, int minVal, int maxVal
     return true;
 }
 
-typedef bool (*check_range_function)(cv::Mat src, Point& bad_pt, int minVal, int maxVal);
+typedef bool (*check_range_function)(ncvslideio::Mat src, Point& bad_pt, int minVal, int maxVal);
 
 check_range_function check_range_functions[] =
 {
@@ -1595,9 +1595,9 @@ bool checkRange(InputArray _src, bool quiet, Point* pt, double minVal, double ma
             *pt = badPt;
         if( !quiet )
         {
-            cv::String value_str;
-            value_str << src(cv::Range(badPt.y, badPt.y + 1), cv::Range(badPt.x, badPt.x + 1));
-            CV_Error_( cv::Error::StsOutOfRange,
+            ncvslideio::String value_str;
+            value_str << src(ncvslideio::Range(badPt.y, badPt.y + 1), ncvslideio::Range(badPt.x, badPt.x + 1));
+            CV_Error_( ncvslideio::Error::StsOutOfRange,
             ("the value at (%d, %d)=%s is out of range [%f, %f)", badPt.x, badPt.y, value_str.c_str(), minVal, maxVal));
         }
         return false;
@@ -1685,79 +1685,79 @@ void patchNaNs( InputOutputArray _a, double _val )
 
 #ifndef OPENCV_EXCLUDE_C_API
 
-CV_IMPL float cvCbrt(float value) { return cv::cubeRoot(value); }
-CV_IMPL float cvFastArctan(float y, float x) { return cv::fastAtan2(y, x); }
+CV_IMPL float cvCbrt(float value) { return ncvslideio::cubeRoot(value); }
+CV_IMPL float cvFastArctan(float y, float x) { return ncvslideio::fastAtan2(y, x); }
 
 CV_IMPL void
 cvCartToPolar( const CvArr* xarr, const CvArr* yarr,
                CvArr* magarr, CvArr* anglearr,
                int angle_in_degrees )
 {
-    cv::Mat X = cv::cvarrToMat(xarr), Y = cv::cvarrToMat(yarr), Mag, Angle;
+    ncvslideio::Mat X = ncvslideio::cvarrToMat(xarr), Y = ncvslideio::cvarrToMat(yarr), Mag, Angle;
     if( magarr )
     {
-        Mag = cv::cvarrToMat(magarr);
+        Mag = ncvslideio::cvarrToMat(magarr);
         CV_Assert( Mag.size() == X.size() && Mag.type() == X.type() );
     }
     if( anglearr )
     {
-        Angle = cv::cvarrToMat(anglearr);
+        Angle = ncvslideio::cvarrToMat(anglearr);
         CV_Assert( Angle.size() == X.size() && Angle.type() == X.type() );
     }
     if( magarr )
     {
         if( anglearr )
-            cv::cartToPolar( X, Y, Mag, Angle, angle_in_degrees != 0 );
+            ncvslideio::cartToPolar( X, Y, Mag, Angle, angle_in_degrees != 0 );
         else
-            cv::magnitude( X, Y, Mag );
+            ncvslideio::magnitude( X, Y, Mag );
     }
     else
-        cv::phase( X, Y, Angle, angle_in_degrees != 0 );
+        ncvslideio::phase( X, Y, Angle, angle_in_degrees != 0 );
 }
 
 CV_IMPL void
 cvPolarToCart( const CvArr* magarr, const CvArr* anglearr,
                CvArr* xarr, CvArr* yarr, int angle_in_degrees )
 {
-    cv::Mat X, Y, Angle = cv::cvarrToMat(anglearr), Mag;
+    ncvslideio::Mat X, Y, Angle = ncvslideio::cvarrToMat(anglearr), Mag;
     if( magarr )
     {
-        Mag = cv::cvarrToMat(magarr);
+        Mag = ncvslideio::cvarrToMat(magarr);
         CV_Assert( Mag.size() == Angle.size() && Mag.type() == Angle.type() );
     }
     if( xarr )
     {
-        X = cv::cvarrToMat(xarr);
+        X = ncvslideio::cvarrToMat(xarr);
         CV_Assert( X.size() == Angle.size() && X.type() == Angle.type() );
     }
     if( yarr )
     {
-        Y = cv::cvarrToMat(yarr);
+        Y = ncvslideio::cvarrToMat(yarr);
         CV_Assert( Y.size() == Angle.size() && Y.type() == Angle.type() );
     }
 
-    cv::polarToCart( Mag, Angle, X, Y, angle_in_degrees != 0 );
+    ncvslideio::polarToCart( Mag, Angle, X, Y, angle_in_degrees != 0 );
 }
 
 CV_IMPL void cvExp( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.type() == dst.type() && src.size == dst.size );
-    cv::exp( src, dst );
+    ncvslideio::exp( src, dst );
 }
 
 CV_IMPL void cvLog( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.type() == dst.type() && src.size == dst.size );
-    cv::log( src, dst );
+    ncvslideio::log( src, dst );
 }
 
 CV_IMPL void cvPow( const CvArr* srcarr, CvArr* dstarr, double power )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.type() == dst.type() && src.size == dst.size );
-    cv::pow( src, power, dst );
+    ncvslideio::pow( src, power, dst );
 }
 
 CV_IMPL int cvCheckArr( const CvArr* arr, int flags,
@@ -1765,7 +1765,7 @@ CV_IMPL int cvCheckArr( const CvArr* arr, int flags,
 {
     if( (flags & CV_CHECK_RANGE) == 0 )
         minVal = -DBL_MAX, maxVal = DBL_MAX;
-    return cv::checkRange(cv::cvarrToMat(arr), (flags & CV_CHECK_QUIET) != 0, 0, minVal, maxVal );
+    return ncvslideio::checkRange(ncvslideio::cvarrToMat(arr), (flags & CV_CHECK_QUIET) != 0, 0, minVal, maxVal );
 }
 
 #endif  // OPENCV_EXCLUDE_C_API
@@ -1794,7 +1794,7 @@ CV_IMPL int cvCheckArr( const CvArr* arr, int flags,
   -----------------------------------------------------------------------
 */
 
-int cv::solveCubic( InputArray _coeffs, OutputArray _roots )
+int ncvslideio::solveCubic( InputArray _coeffs, OutputArray _roots )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1941,7 +1941,7 @@ int cv::solveCubic( InputArray _coeffs, OutputArray _roots )
 
 /* finds complex roots of a polynomial using Durand-Kerner method:
    http://en.wikipedia.org/wiki/Durand%E2%80%93Kerner_method */
-double cv::solvePoly( InputArray _coeffs0, OutputArray _roots0, int maxIters )
+double ncvslideio::solvePoly( InputArray _coeffs0, OutputArray _roots0, int maxIters )
 {
     CV_INSTRUMENT_REGION();
 
@@ -2042,7 +2042,7 @@ double cv::solvePoly( InputArray _coeffs0, OutputArray _roots0, int maxIters )
                 }
             }
             roots[i] = p - num;
-            maxDiff = std::max(maxDiff, cv::abs(num));
+            maxDiff = std::max(maxDiff, ncvslideio::abs(num));
         }
         if( maxDiff <= 0 )
             break;
@@ -2069,8 +2069,8 @@ double cv::solvePoly( InputArray _coeffs0, OutputArray _roots0, int maxIters )
 CV_IMPL int
 cvSolveCubic( const CvMat* coeffs, CvMat* roots )
 {
-    cv::Mat _coeffs = cv::cvarrToMat(coeffs), _roots = cv::cvarrToMat(roots), _roots0 = _roots;
-    int nroots = cv::solveCubic(_coeffs, _roots);
+    ncvslideio::Mat _coeffs = ncvslideio::cvarrToMat(coeffs), _roots = ncvslideio::cvarrToMat(roots), _roots0 = _roots;
+    int nroots = ncvslideio::solveCubic(_coeffs, _roots);
     CV_Assert( _roots.data == _roots0.data ); // check that the array of roots was not reallocated
     return nroots;
 }
@@ -2078,10 +2078,10 @@ cvSolveCubic( const CvMat* coeffs, CvMat* roots )
 
 void cvSolvePoly(const CvMat* a, CvMat *r, int maxiter, int)
 {
-    cv::Mat _a = cv::cvarrToMat(a);
-    cv::Mat _r = cv::cvarrToMat(r);
-    cv::Mat _r0 = _r;
-    cv::solvePoly(_a, _r, maxiter);
+    ncvslideio::Mat _a = ncvslideio::cvarrToMat(a);
+    ncvslideio::Mat _r = ncvslideio::cvarrToMat(r);
+    ncvslideio::Mat _r0 = _r;
+    ncvslideio::solvePoly(_a, _r, maxiter);
     CV_Assert( _r.data == _r0.data ); // check that the array of roots was not reallocated
 }
 
@@ -2089,7 +2089,7 @@ void cvSolvePoly(const CvMat* a, CvMat *r, int maxiter, int)
 
 
 // Common constants for dispatched code
-namespace cv { namespace details {
+namespace ncvslideio { namespace details {
 
 #define EXPTAB_SCALE 6
 #define EXPTAB_MASK  ((1 << EXPTAB_SCALE) - 1)

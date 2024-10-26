@@ -20,7 +20,7 @@ namespace opencv_test {
 
 TEST_P(TestGAPIStereo, DisparityDepthTest)
 {
-    using format = cv::gapi::StereoOutputFormat;
+    using format = ncvslideio::gapi::StereoOutputFormat;
     switch(oF) {
         case format::DEPTH_FLOAT16: dtype = CV_16FC1; break;
         case format::DEPTH_FLOAT32: dtype = CV_32FC1; break;
@@ -30,20 +30,20 @@ TEST_P(TestGAPIStereo, DisparityDepthTest)
     initOutMats(sz, dtype);
 
     // G-API
-    cv::GMat inL, inR;
-    cv::GMat out = cv::gapi::stereo(inL, inR, oF);
+    ncvslideio::GMat inL, inR;
+    ncvslideio::GMat out = ncvslideio::gapi::stereo(inL, inR, oF);
 
-    cv::GComputation(cv::GIn(inL, inR), cv::GOut(out))
-        .apply(cv::gin(in_mat1, in_mat2), cv::gout(out_mat_gapi),
-        cv::compile_args(cv::gapi::calib3d::cpu::kernels(),
-                         cv::gapi::calib3d::cpu::StereoInitParam {
+    ncvslideio::GComputation(ncvslideio::GIn(inL, inR), ncvslideio::GOut(out))
+        .apply(ncvslideio::gin(in_mat1, in_mat2), ncvslideio::gout(out_mat_gapi),
+        ncvslideio::compile_args(ncvslideio::gapi::calib3d::cpu::kernels(),
+                         ncvslideio::gapi::calib3d::cpu::StereoInitParam {
                              numDisparities,
                              blockSize,
                              baseline,
                              focus}));
 
     // OpenCV
-    cv::StereoBM::create(numDisparities, blockSize)->compute(in_mat1,
+    ncvslideio::StereoBM::create(numDisparities, blockSize)->compute(in_mat1,
                                                              in_mat2,
                                                              out_mat_ocv);
 

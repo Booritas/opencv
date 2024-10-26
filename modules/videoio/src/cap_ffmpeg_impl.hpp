@@ -45,7 +45,7 @@
 #include "opencv2/core/utils/logger.hpp"
 #include "cap_interface.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #if !(defined(_WIN32) || defined(WINCE))
 # include <pthread.h>
@@ -450,7 +450,7 @@ static int _opencv_ffmpeg_interrupt_callback(void *ptr)
     metadata->timeout = timeout > metadata->timeout_after_ms;
     if (metadata->timeout)
     {
-        CV_LOG_WARNING(NULL, cv::format("Stream timeout triggered after %lf ms", timeout));
+        CV_LOG_WARNING(NULL, ncvslideio::format("Stream timeout triggered after %lf ms", timeout));
         return -1;
     }
 
@@ -533,8 +533,8 @@ struct CvCapture_FFMPEG
     bool setProperty(int, double);
     bool grabFrame();
     bool retrieveFrame(int flag, unsigned char** data, int* step, int* width, int* height, int* cn, int* depth);
-    bool retrieveHWFrame(cv::OutputArray output);
-    void rotateFrame(cv::Mat &mat) const;
+    bool retrieveHWFrame(ncvslideio::OutputArray output);
+    void rotateFrame(ncvslideio::Mat &mat) const;
 
     void init();
 
@@ -647,7 +647,7 @@ void CvCapture_FFMPEG::init()
     memset(&packet_filtered, 0, sizeof(packet_filtered));
     av_init_packet(&packet_filtered);
     bsfc = NULL;
-    va_type = cv::VIDEO_ACCELERATION_NONE;  // TODO OpenCV 5.0: change to _ANY?
+    va_type = ncvslideio::VIDEO_ACCELERATION_NONE;  // TODO OpenCV 5.0: change to _ANY?
     hw_device = -1;
     use_opencl = 0;
     extraDataIdx = 1;
@@ -742,7 +742,7 @@ void CvCapture_FFMPEG::close()
 #endif
 
 #if defined(__OPENCV_BUILD) || defined(BUILD_PLUGIN)
-typedef cv::Mutex ImplMutex;
+typedef ncvslideio::Mutex ImplMutex;
 #else
 class ImplMutex
 {
@@ -921,7 +921,7 @@ class InternalFFMpegRegister
 public:
     static void init(const bool threadSafe)
     {
-        std::unique_lock<cv::Mutex> lock(_mutex, std::defer_lock);
+        std::unique_lock<ncvslideio::Mutex> lock(_mutex, std::defer_lock);
         if(!threadSafe)
             lock.lock();
         static InternalFFMpegRegister instance;
@@ -977,7 +977,7 @@ inline void fill_codec_context(AVCodecContext * enc, AVDictionary * dict)
 {
     if (!enc->thread_count)
     {
-        int nCpus = cv::getNumberOfCPUs();
+        int nCpus = ncvslideio::getNumberOfCPUs();
         int requestedThreads = std::min(nCpus, 16);  // [OPENCV:FFMPEG:24] Application has requested XX threads. Using a thread count greater than 16 is not recommended.
         char* threads_option = getenv("OPENCV_FFMPEG_THREADS");
         if (threads_option != NULL)
@@ -1026,7 +1026,7 @@ bool CvCapture_FFMPEG::open(const char* _filename, const VideoCaptureParameters&
     const bool threadSafe = isThreadSafe();
     InternalFFMpegRegister::init(threadSafe);
 
-    std::unique_lock<cv::Mutex> lock(_mutex, std::defer_lock);
+    std::unique_lock<ncvslideio::Mutex> lock(_mutex, std::defer_lock);
     if(!threadSafe)
         lock.lock();
 
@@ -1406,7 +1406,7 @@ bool CvCapture_FFMPEG::processRawPacket()
             const AVBitStreamFilter * bsf = av_bsf_get_by_name(filterName);
             if (!bsf)
             {
-                CV_WARN(cv::format("Bitstream filter is not available: %s", filterName).c_str());
+                CV_WARN(ncvslideio::format("Bitstream filter is not available: %s", filterName).c_str());
                 return false;
             }
             int err = av_bsf_alloc(bsf, &bsfc);
@@ -1426,7 +1426,7 @@ bool CvCapture_FFMPEG::processRawPacket()
             bsfc = av_bitstream_filter_init(filterName);
             if (!bsfc)
             {
-                CV_WARN(cv::format("Bitstream filter is not available: %s", filterName).c_str());
+                CV_WARN(ncvslideio::format("Bitstream filter is not available: %s", filterName).c_str());
                 return false;
             }
 #endif
@@ -1476,8 +1476,8 @@ bool CvCapture_FFMPEG::grabFrame()
     }
     bool valid = false;
 
-    static const size_t max_read_attempts = cv::utils::getConfigurationParameterSizeT("OPENCV_FFMPEG_READ_ATTEMPTS", 4096);
-    static const size_t max_decode_attempts = cv::utils::getConfigurationParameterSizeT("OPENCV_FFMPEG_DECODE_ATTEMPTS", 64);
+    static const size_t max_read_attempts = ncvslideio::utils::getConfigurationParameterSizeT("OPENCV_FFMPEG_READ_ATTEMPTS", 4096);
+    static const size_t max_decode_attempts = ncvslideio::utils::getConfigurationParameterSizeT("OPENCV_FFMPEG_DECODE_ATTEMPTS", 64);
     size_t cur_read_attempts = 0;
     size_t cur_decode_attempts = 0;
 
@@ -1741,7 +1741,7 @@ bool CvCapture_FFMPEG::retrieveFrame(int flag, unsigned char** data, int* step, 
     return true;
 }
 
-bool CvCapture_FFMPEG::retrieveHWFrame(cv::OutputArray output)
+bool CvCapture_FFMPEG::retrieveHWFrame(ncvslideio::OutputArray output)
 {
 #if USE_AV_HW_CODECS
     // check that we have HW frame in GPU memory
@@ -2080,7 +2080,7 @@ struct CvVideoWriter_FFMPEG
                double fps, int width, int height, const VideoWriterParameters& params );
     void close();
     bool writeFrame( const unsigned char* data, int step, int width, int height, int cn, int origin );
-    bool writeHWFrame(cv::InputArray input);
+    bool writeHWFrame(ncvslideio::InputArray input);
     double getProperty(int propId) const;
     bool setProperty(int, double);
 
@@ -2595,7 +2595,7 @@ bool CvVideoWriter_FFMPEG::writeFrame( const unsigned char* data, int step, int 
     return ret;
 }
 
-bool CvVideoWriter_FFMPEG::writeHWFrame(cv::InputArray input) {
+bool CvVideoWriter_FFMPEG::writeHWFrame(ncvslideio::InputArray input) {
 #if USE_AV_HW_CODECS
     if (!video_st || !context || !context->hw_frames_ctx || !context->hw_device_ctx)
         return false;
@@ -2791,7 +2791,7 @@ bool CvVideoWriter_FFMPEG::open( const char * filename, int fourcc,
     const bool threadSafe = isThreadSafe();
     InternalFFMpegRegister::init(threadSafe);
 
-    std::unique_lock<cv::Mutex> lock(_mutex, std::defer_lock);
+    std::unique_lock<ncvslideio::Mutex> lock(_mutex, std::defer_lock);
     if (!threadSafe)
         lock.lock();
 

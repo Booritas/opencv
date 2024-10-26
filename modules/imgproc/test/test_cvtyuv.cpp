@@ -796,7 +796,7 @@ TEST_P(Imgproc_ColorYUV, accuracy)
                 referenceRGB2YUV422<RGB2YUV422_Converter>  (src, gold, cvt.rgbReader_, cvt.yuvWriter_);
         }
 
-        cv::cvtColor(src, dst, code, -1);
+        ncvslideio::cvtColor(src, dst, code, -1);
 
         EXPECT_EQ(0, countOfDifferencies(gold, dst));
     }
@@ -850,7 +850,7 @@ TEST_P(Imgproc_ColorYUV, roi_accuracy)
                 referenceRGB2YUV422<RGB2YUV422_Converter>  (src, gold, cvt.rgbReader_, cvt.yuvWriter_);
         }
 
-        cv::cvtColor(src, dst, code, -1);
+        ncvslideio::cvtColor(src, dst, code, -1);
 
         EXPECT_EQ(0, countOfDifferencies(gold_full, dst_full));
     }
@@ -881,7 +881,7 @@ TEST(cvtColorUYVY, size_issue_21035)
 {
     Mat input = Mat::zeros(1, 1, CV_8UC2);
     Mat output;
-    EXPECT_THROW(cv::cvtColor(input, output, cv::COLOR_YUV2BGR_UYVY), cv::Exception);
+    EXPECT_THROW(ncvslideio::cvtColor(input, output, ncvslideio::COLOR_YUV2BGR_UYVY), ncvslideio::Exception);
 }
 
 } // namespace

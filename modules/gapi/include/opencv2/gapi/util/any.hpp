@@ -20,7 +20,7 @@
 #  pragma warning(disable: 4521)
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace internal
@@ -180,7 +180,7 @@ namespace util
    }
 
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 #if defined(_MSC_VER)
    // Enable "multiple copy constructors specified" back

@@ -12,7 +12,7 @@ PyTypeObject* pyopencv_Mat_TypePtr = nullptr;
 
 //======================================================================================================================
 
-using namespace cv;
+using namespace ncvslideio;
 
 template <typename T>
 static std::string pycv_dumpArray(const T* arr, int n)
@@ -32,7 +32,7 @@ static inline std::string getArrayTypeName(PyArrayObject* arr)
     if (!dtype_str)
     {
         // Fallback to typenum value
-        return cv::format("%d", PyArray_TYPE(arr));
+        return ncvslideio::format("%d", PyArray_TYPE(arr));
     }
     std::string type_name;
     if (!getUnicodeString(dtype_str, type_name))
@@ -40,7 +40,7 @@ static inline std::string getArrayTypeName(PyArrayObject* arr)
         // Failed to get string from bytes object - clear set TypeError and
         // fallback to typenum value
         PyErr_Clear();
-        return cv::format("%d", PyArray_TYPE(arr));
+        return ncvslideio::format("%d", PyArray_TYPE(arr));
     }
     return type_name;
 }
@@ -65,8 +65,8 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
         double v[] = {static_cast<double>(PyInt_AsLong((PyObject*)o)), 0., 0., 0.};
         if ( info.arithm_op_src )
         {
-            // Normally cv.XXX(x) means cv.XXX( (x, 0., 0., 0.) );
-            // However  cv.add(mat,x) means cv::add(mat, (x,x,x,x) ).
+            // Normally ncvslideio.XXX(x) means ncvslideio.XXX( (x, 0., 0., 0.) );
+            // However  ncvslideio.add(mat,x) means ncvslideio::add(mat, (x,x,x,x) ).
             v[1] = v[0];
             v[2] = v[0];
             v[3] = v[0];
@@ -80,8 +80,8 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
 
        if ( info.arithm_op_src )
         {
-            // Normally cv.XXX(x) means cv.XXX( (x, 0., 0., 0.) );
-            // However  cv.add(mat,x) means cv::add(mat, (x,x,x,x) ).
+            // Normally ncvslideio.XXX(x) means ncvslideio.XXX( (x, 0., 0., 0.) );
+            // However  ncvslideio.add(mat,x) means ncvslideio::add(mat, (x,x,x,x) ).
             v[1] = v[0];
             v[2] = v[0];
             v[3] = v[0];
@@ -180,7 +180,7 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
         PyObject* pyobj_wrap_channels = PyObject_GetAttrString(o, "wrap_channels");
         if (pyobj_wrap_channels)
         {
-            if (!pyopencv_to_safe(pyobj_wrap_channels, wrapChannels, ArgInfo("cv.Mat.wrap_channels", 0)))
+            if (!pyopencv_to_safe(pyobj_wrap_channels, wrapChannels, ArgInfo("ncvslideio.Mat.wrap_channels", 0)))
             {
                 // TODO extra message
                 Py_DECREF(pyobj_wrap_channels);
@@ -224,7 +224,7 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
     {
         if (info.outputarg)
         {
-            failmsg("Layout of the output array %s is incompatible with cv::Mat", info.name);
+            failmsg("Layout of the output array %s is incompatible with ncvslideio::Mat", info.name);
             return false;
         }
 
@@ -294,7 +294,7 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
     }
 
 #if 1
-    CV_LOG_DEBUG(NULL, "Construct Mat: ndims=" << ndims << " size=" << pycv_dumpArray(size, ndims) << "  step=" << pycv_dumpArray(step, ndims) << "  type=" << cv::typeToString(type));
+    CV_LOG_DEBUG(NULL, "Construct Mat: ndims=" << ndims << " size=" << pycv_dumpArray(size, ndims) << "  step=" << pycv_dumpArray(step, ndims) << "  type=" << ncvslideio::typeToString(type));
 #endif
 
     m = Mat(ndims, size, type, PyArray_DATA(oarr), step);
@@ -311,11 +311,11 @@ bool pyopencv_to(PyObject* o, Mat& m, const ArgInfo& info)
 }
 
 template<>
-PyObject* pyopencv_from(const cv::Mat& m)
+PyObject* pyopencv_from(const ncvslideio::Mat& m)
 {
     if( !m.data )
         Py_RETURN_NONE;
-    cv::Mat temp, *p = (cv::Mat*)&m;
+    ncvslideio::Mat temp, *p = (ncvslideio::Mat*)&m;
     if(!p->u || p->allocator != &GetNumpyAllocator())
     {
         temp.allocator = &GetNumpyAllocator();
@@ -559,7 +559,7 @@ bool pyopencv_to(PyObject* obj, uchar& value, const ArgInfo& info)
     if(!obj || obj == Py_None)
         return true;
     int ivalue = (int)PyInt_AsLong(obj);
-    value = cv::saturate_cast<uchar>(ivalue);
+    value = ncvslideio::saturate_cast<uchar>(ivalue);
     return ivalue != -1 || !PyErr_Occurred();
 }
 
@@ -838,7 +838,7 @@ static inline bool convertToRotatedRect(PyObject* obj, RotatedRect& dst)
         struct pyopencv_RotatedRect_t
         {
             PyObject_HEAD
-            cv::RotatedRect v;
+            ncvslideio::RotatedRect v;
         };
         dst = reinterpret_cast<pyopencv_RotatedRect_t*>(obj)->v;
 

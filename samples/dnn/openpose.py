@@ -67,19 +67,19 @@ inWidth = args.width
 inHeight = args.height
 inScale = args.scale
 
-net = cv.dnn.readNet(cv.samples.findFile(args.proto), cv.samples.findFile(args.model))
+net = ncvslideio.dnn.readNet(ncvslideio.samples.findFile(args.proto), ncvslideio.samples.findFile(args.model))
 
-cap = cv.VideoCapture(args.input if args.input else 0)
+cap = ncvslideio.VideoCapture(args.input if args.input else 0)
 
-while cv.waitKey(1) < 0:
+while ncvslideio.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
-        cv.waitKey()
+        ncvslideio.waitKey()
         break
 
     frameWidth = frame.shape[1]
     frameHeight = frame.shape[0]
-    inp = cv.dnn.blobFromImage(frame, inScale, (inWidth, inHeight),
+    inp = ncvslideio.dnn.blobFromImage(frame, inScale, (inWidth, inHeight),
                               (0, 0, 0), swapRB=False, crop=False)
     net.setInput(inp)
     out = net.forward()
@@ -94,7 +94,7 @@ while cv.waitKey(1) < 0:
         # Originally, we try to find all the local maximums. To simplify a sample
         # we just find a global one. However only a single pose at the same time
         # could be detected this way.
-        _, conf, _, point = cv.minMaxLoc(heatMap)
+        _, conf, _, point = ncvslideio.minMaxLoc(heatMap)
         x = (frameWidth * point[0]) / out.shape[3]
         y = (frameHeight * point[1]) / out.shape[2]
 
@@ -111,12 +111,12 @@ while cv.waitKey(1) < 0:
         idTo = BODY_PARTS[partTo]
 
         if points[idFrom] and points[idTo]:
-            cv.line(frame, points[idFrom], points[idTo], (0, 255, 0), 3)
-            cv.ellipse(frame, points[idFrom], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
-            cv.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), cv.FILLED)
+            ncvslideio.line(frame, points[idFrom], points[idTo], (0, 255, 0), 3)
+            ncvslideio.ellipse(frame, points[idFrom], (3, 3), 0, 0, 360, (0, 0, 255), ncvslideio.FILLED)
+            ncvslideio.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), ncvslideio.FILLED)
 
     t, _ = net.getPerfProfile()
-    freq = cv.getTickFrequency() / 1000
-    cv.putText(frame, '%.2fms' % (t / freq), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    freq = ncvslideio.getTickFrequency() / 1000
+    ncvslideio.putText(frame, '%.2fms' % (t / freq), (10, 20), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-    cv.imshow('OpenPose using OpenCV', frame)
+    ncvslideio.imshow('OpenPose using OpenCV', frame)

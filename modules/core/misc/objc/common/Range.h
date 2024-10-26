@@ -26,7 +26,7 @@ CV_EXPORTS @interface Range : NSObject
 @property int start;
 @property int end;
 #ifdef __cplusplus
-@property(readonly) cv::Range& nativeRef;
+@property(readonly) ncvslideio::Range& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -36,7 +36,7 @@ CV_EXPORTS @interface Range : NSObject
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Range&)range;
++ (instancetype)fromNative:(ncvslideio::Range&)range;
 #endif
 
 #pragma mark - Methods

@@ -194,7 +194,7 @@ TEST(Objdetect_QRCode_Multi, generate_test_data)
         std::vector<Point> corners;
         QRCodeDetector qrcode;
         EXPECT_TRUE(qrcode.detectMulti(src, corners));
-        std::vector<cv::String> decoded_info;
+        std::vector<ncvslideio::String> decoded_info;
         std::vector<Mat> straight_barcode;
         EXPECT_TRUE(qrcode.decodeMulti(src, corners, decoded_info, straight_barcode));
 
@@ -353,7 +353,7 @@ TEST_P(Objdetect_QRCode_Multi, regression)
         qrcode = QRCodeDetectorAruco();
     }
     std::vector<Point> corners;
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
     std::vector<Mat> straight_barcode;
     EXPECT_TRUE(qrcode.detectAndDecodeMulti(src, decoded_info, corners, straight_barcode));
     ASSERT_FALSE(corners.empty());
@@ -379,7 +379,7 @@ TEST(Objdetect_QRCode_decodeMulti, decode_regression_16491)
     std::vector<Point> vec_corners;
     int array_size = 8;
     vec_corners.assign(corners_, corners_ + array_size);
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
     std::vector<Mat> straight_barcode;
     QRCodeDetector vec_qrcode;
     EXPECT_NO_THROW(vec_qrcode.decodeMulti(zero_image, vec_corners, decoded_info, straight_barcode));
@@ -427,7 +427,7 @@ TEST_P(Objdetect_QRCode_detectAndDecodeMulti, check_output_parameters_type_19363
         qrcode = QRCodeDetectorAruco();
     }
     std::vector<Point> corners;
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
 #if 0  // FIXIT: OutputArray::create() type check
     std::vector<Mat2b> straight_barcode_nchannels;
     EXPECT_ANY_THROW(qrcode->detectAndDecodeMulti(src, decoded_info, corners, straight_barcode_nchannels));
@@ -455,7 +455,7 @@ TEST(Objdetect_QRCode_detect, detect_regression_20882)
     QRCodeDetector qrcode;
     std::vector<Point> corners;
     Mat straight_barcode;
-    cv::String decoded_info;
+    ncvslideio::String decoded_info;
     EXPECT_TRUE(qrcode.detect(src, corners));
     EXPECT_TRUE(!corners.empty());
     EXPECT_NO_THROW(qrcode.decode(src, corners, straight_barcode));
@@ -485,7 +485,7 @@ TEST(Objdetect_QRCode_detect, detect_regression_21287)
     QRCodeDetector qrcode;
     std::vector<Point> corners;
     Mat straight_barcode;
-    cv::String decoded_info;
+    ncvslideio::String decoded_info;
     EXPECT_TRUE(qrcode.detect(src, corners));
     EXPECT_TRUE(!corners.empty());
     EXPECT_NO_THROW(qrcode.decode(src, corners, straight_barcode));
@@ -510,7 +510,7 @@ TEST(Objdetect_QRCode_detect_flipped, regression_23249)
         QRCodeDetector qrcode;
         std::vector<Point> corners;
         Mat straight_barcode;
-        cv::String decoded_info;
+        ncvslideio::String decoded_info;
         EXPECT_TRUE(qrcode.detect(src, corners));
         EXPECT_TRUE(!corners.empty());
         std::string decoded_msg;
@@ -524,15 +524,15 @@ TEST(Objdetect_QRCode_detect_flipped, regression_23249)
 // @author Kumataro, https://github.com/Kumataro
 TEST(Objdetect_QRCode_decode, decode_regression_21929)
 {
-    const cv::String expect_msg = "OpenCV";
+    const ncvslideio::String expect_msg = "OpenCV";
     Mat qrImg;
     QRCodeEncoder::Params params;
     params.version = 8; // 49x49
-    Ptr<QRCodeEncoder> qrcode_enc = cv::QRCodeEncoder::create(params);;
+    Ptr<QRCodeEncoder> qrcode_enc = ncvslideio::QRCodeEncoder::create(params);;
     qrcode_enc->encode(expect_msg, qrImg);
 
     Mat src;
-    cv::resize(qrImg, src, Size(200,200), 1.0, 1.0, INTER_NEAREST);
+    ncvslideio::resize(qrImg, src, Size(200,200), 1.0, 1.0, INTER_NEAREST);
 
     QRCodeDetector qrcode;
     std::vector<Point> corners;
@@ -540,7 +540,7 @@ TEST(Objdetect_QRCode_decode, decode_regression_21929)
 
     EXPECT_TRUE(qrcode.detect(src, corners));
     EXPECT_TRUE(!corners.empty());
-    cv::String decoded_msg;
+    ncvslideio::String decoded_msg;
     EXPECT_NO_THROW(decoded_msg = qrcode.decode(src, corners, straight_barcode));
     ASSERT_FALSE(straight_barcode.empty()) << "Can't decode qrimage.";
     EXPECT_EQ(expect_msg, decoded_msg);
@@ -548,15 +548,15 @@ TEST(Objdetect_QRCode_decode, decode_regression_21929)
 
 TEST(Objdetect_QRCode_decode, decode_regression_version_25)
 {
-    const cv::String expect_msg = "OpenCV";
+    const ncvslideio::String expect_msg = "OpenCV";
     Mat qrImg;
     QRCodeEncoder::Params params;
     params.version = 25; // 117x117
-    Ptr<QRCodeEncoder> qrcode_enc = cv::QRCodeEncoder::create(params);;
+    Ptr<QRCodeEncoder> qrcode_enc = ncvslideio::QRCodeEncoder::create(params);;
     qrcode_enc->encode(expect_msg, qrImg);
 
     Mat src;
-    cv::resize(qrImg, src, qrImg.size()*3, 1.0, 1.0, INTER_NEAREST);
+    ncvslideio::resize(qrImg, src, qrImg.size()*3, 1.0, 1.0, INTER_NEAREST);
 
     QRCodeDetector qrcode;
     std::vector<Point> corners;
@@ -565,7 +565,7 @@ TEST(Objdetect_QRCode_decode, decode_regression_version_25)
     EXPECT_TRUE(qrcode.detect(src, corners));
     EXPECT_TRUE(!corners.empty());
 
-    cv::String decoded_msg;
+    ncvslideio::String decoded_msg;
     EXPECT_NO_THROW(decoded_msg = qrcode.decode(src, corners, straight_barcode));
     ASSERT_FALSE(straight_barcode.empty()) << "Can't decode qrimage.";
     EXPECT_EQ(expect_msg, decoded_msg);
@@ -584,7 +584,7 @@ TEST_P(Objdetect_QRCode_detectAndDecodeMulti, decode_9_qrcodes_version7)
         qrcode = QRCodeDetectorAruco();
     }
     std::vector<Point> corners;
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
 
     std::vector<Mat1b> straight_barcode;
     qrcode.detectAndDecodeMulti(src, decoded_info, corners, straight_barcode);
@@ -626,7 +626,7 @@ TEST_P(Objdetect_QRCode_detectAndDecodeMulti, detect_regression_24679)
     if (method == "aruco_based") {
         qrcode = QRCodeDetectorAruco();
     }
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
     ASSERT_TRUE(qrcode.detectAndDecodeMulti(img, decoded_info));
     EXPECT_EQ(decoded_info.size(), 4U);
 }
@@ -643,7 +643,7 @@ TEST_P(Objdetect_QRCode_detectAndDecodeMulti, detect_regression_24011)
     if (method == "aruco_based") {
         qrcode = QRCodeDetectorAruco();
     }
-    std::vector<cv::String> decoded_info;
+    std::vector<ncvslideio::String> decoded_info;
     ASSERT_TRUE(qrcode.detectAndDecodeMulti(img, decoded_info));
     EXPECT_EQ(decoded_info.size(), 2U);
 }

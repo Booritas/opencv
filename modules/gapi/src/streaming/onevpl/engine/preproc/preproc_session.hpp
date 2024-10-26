@@ -16,7 +16,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -42,8 +42,8 @@ private:
         mfxSyncPoint sync_handle;
         mfxFrameSurface1* decoded_surface_ptr;
         Surface::info_t decoded_frame_info;
-        cv::MediaFrame decoded_frame_copy;
-        cv::util::optional<cv::Rect> roi;
+        ncvslideio::MediaFrame decoded_frame_copy;
+        ncvslideio::util::optional<ncvslideio::Rect> roi;
     };
 
     struct outgoing_task {
@@ -58,7 +58,7 @@ private:
         void release_frame();
     private:
         Surface::info_t original_frame_info;
-        cv::MediaFrame original_frame;
+        ncvslideio::MediaFrame original_frame;
     };
 
     std::queue<incoming_task> sync_in_queue;
@@ -68,6 +68,6 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONVPL_PREPROC_SESSION_HPP

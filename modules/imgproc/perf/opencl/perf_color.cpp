@@ -104,7 +104,7 @@ OCL_PERF_TEST_P(CvtColorFixture, CvtColor, testing::Combine(
     UMat src(srcSize, CV_8UC(scn)), dst(srcSize, CV_8UC(scn));
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::cvtColor(src, dst, code, dcn);
+    OCL_TEST_CYCLE() ncvslideio::cvtColor(src, dst, code, dcn);
 
     SANITY_CHECK(dst, 1);
 }

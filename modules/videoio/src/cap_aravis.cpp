@@ -46,7 +46,7 @@
 #include "precomp.hpp"
 #include "cap_interface.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifdef HAVE_ARAVIS_API
 
@@ -91,7 +91,7 @@ using namespace cv;
 #define MODE_Y16    CV_FOURCC_MACRO('Y','1','6',' ')
 #define MODE_GRBG   CV_FOURCC_MACRO('G','R','B','G')
 
-#define CLIP(a,b,c) (cv::max(cv::min((a),(c)),(b)))
+#define CLIP(a,b,c) (ncvslideio::max(ncvslideio::min((a),(c)),(b)))
 
 /********************* Capturing video from camera via Aravis *********************/
 
@@ -112,7 +112,7 @@ public:
     bool retrieveFrame(int, OutputArray) CV_OVERRIDE;
     int getCaptureDomain() CV_OVERRIDE
     {
-        return cv::CAP_ARAVIS;
+        return ncvslideio::CAP_ARAVIS;
     }
     bool isOpened() const CV_OVERRIDE { return stream != NULL; }
 
@@ -354,7 +354,7 @@ void CvCaptureCAM_Aravis::autoExposureControl(const Mat & image)
     // - to decrease brightness, first decrease gain then time
 
     // calc mean value for luminance or green channel
-    double brightness = cv::mean(image)[image.channels() > 1 ? 1 : 0];
+    double brightness = ncvslideio::mean(image)[image.channels() > 1 ? 1 : 0];
     if(brightness < 1) brightness = 1;
 
     // mid point - 100 % means no change
@@ -480,7 +480,7 @@ double CvCaptureCAM_Aravis::getProperty( int property_id ) const
             }
             break;
 
-        case cv::CAP_PROP_ARAVIS_AUTOTRIGGER:
+        case ncvslideio::CAP_PROP_ARAVIS_AUTOTRIGGER:
         {
             return allowAutoTrigger ? 1. : 0.;
         }
@@ -569,7 +569,7 @@ bool CvCaptureCAM_Aravis::setProperty( int property_id, double value )
             }
             break;
 
-        case cv::CAP_PROP_ARAVIS_AUTOTRIGGER:
+        case ncvslideio::CAP_PROP_ARAVIS_AUTOTRIGGER:
             {
                 allowAutoTrigger = (bool) value;
             }
@@ -603,7 +603,7 @@ bool CvCaptureCAM_Aravis::startCapture()
     return false;
 }
 
-cv::Ptr<cv::IVideoCapture> cv::create_Aravis_capture( int index )
+ncvslideio::Ptr<ncvslideio::IVideoCapture> ncvslideio::create_Aravis_capture( int index )
 {
     Ptr<CvCaptureCAM_Aravis> capture = makePtr<CvCaptureCAM_Aravis>();
     if(capture->open(index)) {

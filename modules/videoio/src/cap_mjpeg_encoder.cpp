@@ -51,7 +51,7 @@
 #define WITH_NEON
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 static const unsigned bit_mask[] =
@@ -95,7 +95,7 @@ static bool createEncodeHuffmanTable( const int* src, unsigned* table, int max_s
 
     if( size > max_size )
     {
-        CV_Error(cv::Error::StsOutOfRange, "too big maximum Huffman code size");
+        CV_Error(ncvslideio::Error::StsOutOfRange, "too big maximum Huffman code size");
     }
 
     memset( table, 0, size*sizeof(table[0]));
@@ -408,7 +408,7 @@ public:
     }
     ~MotionJpegWriter() { close(); }
 
-    virtual int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_OPENCV_MJPEG; }
+    virtual int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_OPENCV_MJPEG; }
 
     void close()
     {
@@ -487,7 +487,7 @@ public:
             colorspace = COLORSPACE_YUV444P;
         }
         else
-            CV_Error(cv::Error::StsBadArg, "Invalid combination of specified video colorspace and the input image colorspace");
+            CV_Error(ncvslideio::Error::StsBadArg, "Invalid combination of specified video colorspace and the input image colorspace");
 
         if( !rawstream ) {
             int avi_index = container.getAVIIndex(0, dc);
@@ -1200,7 +1200,7 @@ public:
         m_buffer_list.allocate_buffers(stripes_count, (height*width*2)/stripes_count);
     }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         const int CAT_TAB_SIZE = 4096;
 
@@ -1349,9 +1349,9 @@ public:
         }
     }
 
-    cv::Range getRange()
+    ncvslideio::Range getRange()
     {
-        return cv::Range(0, stripes_count);
+        return ncvslideio::Range(0, stripes_count);
     }
 
     double getNStripes()
@@ -1511,7 +1511,7 @@ void MotionJpegWriter::writeFrameData( const uchar* data, int step, int colorspa
 
     MjpegEncoder parallel_encoder(height, width, step, data, input_channels, channels, colorspace, huff_dc_tab, huff_ac_tab, fdct_qtab, cat_table, buffers_list, nstripes);
 
-    cv::parallel_for_(parallel_encoder.getRange(), parallel_encoder, parallel_encoder.getNStripes());
+    ncvslideio::parallel_for_(parallel_encoder.getRange(), parallel_encoder, parallel_encoder.getNStripes());
 
     //std::vector<unsigned>& v = parallel_encoder.m_buffer_list.get_data();
     unsigned* v = buffers_list.get_data();
@@ -1524,8 +1524,8 @@ void MotionJpegWriter::writeFrameData( const uchar* data, int step, int colorspa
     container.jflushStream(v[last_data_elem], 32 - buffers_list.get_last_bit_len());
     container.jputStreamShort( 0xFFD9 ); // EOI marker
     /*printf("total dct = %.1fms, total cvt = %.1fms\n",
-     total_dct*1000./cv::getTickFrequency(),
-     total_cvt*1000./cv::getTickFrequency());*/
+     total_dct*1000./ncvslideio::getTickFrequency(),
+     total_cvt*1000./ncvslideio::getTickFrequency());*/
 
     size_t pos = container.getStreamPos();
     size_t pos1 = (pos + 3) & ~3;

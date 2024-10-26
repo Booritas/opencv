@@ -20,7 +20,7 @@
 
 // misc functions that not exposed to public interface
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -263,6 +263,6 @@ inline long align(size_t v, int n)
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif

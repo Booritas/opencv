@@ -14,7 +14,7 @@ const std::string keys =
     "{ output  | output.png   | Path to the output file }";
 
 int main(int argc, char *argv[]) {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     if (cmd.has("help")) {
         cmd.printMessage();
         return 0;
@@ -28,31 +28,31 @@ int main(int argc, char *argv[]) {
     std::vector<int> v = { 1,  2,  1,
                            0,  0,  0,
                           -1, -2, -1};
-    cv::Mat hk(3, 3, CV_32SC1, h.data());
-    cv::Mat vk(3, 3, CV_32SC1, v.data());
+    ncvslideio::Mat hk(3, 3, CV_32SC1, h.data());
+    ncvslideio::Mat vk(3, 3, CV_32SC1, v.data());
 
     // Heterogeneous pipeline:
     // OAK camera -> Sobel -> streaming accessor (CPU)
-    cv::GFrame in;
-    cv::GFrame sobel = cv::gapi::oak::sobelXY(in, hk, vk);
+    ncvslideio::GFrame in;
+    ncvslideio::GFrame sobel = ncvslideio::gapi::oak::sobelXY(in, hk, vk);
     // Default camera and then sobel work only with nv12 format
-    cv::GMat out = cv::gapi::streaming::Y(sobel);
+    ncvslideio::GMat out = ncvslideio::gapi::streaming::Y(sobel);
 
-    auto args = cv::compile_args(cv::gapi::oak::ColorCameraParams{},
-                                 cv::gapi::oak::kernels());
+    auto args = ncvslideio::compile_args(ncvslideio::gapi::oak::ColorCameraParams{},
+                                 ncvslideio::gapi::oak::kernels());
 
-    auto pipeline = cv::GComputation(cv::GIn(in), cv::GOut(out)).compileStreaming(std::move(args));
+    auto pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out)).compileStreaming(std::move(args));
 
     // Graph execution /////////////////////////////////////////////////////////
-    cv::Mat out_mat(1920, 1080, CV_8UC1);
+    ncvslideio::Mat out_mat(1920, 1080, CV_8UC1);
 
-    pipeline.setSource(cv::gapi::wip::make_src<cv::gapi::oak::ColorCamera>());
+    pipeline.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::oak::ColorCamera>());
     pipeline.start();
 
     // pull 1 frame
-    pipeline.pull(cv::gout(out_mat));
+    pipeline.pull(ncvslideio::gout(out_mat));
 
-    cv::imwrite(output_name, out_mat);
+    ncvslideio::imwrite(output_name, out_mat);
 
     std::cout << "Pipeline finished: " << output_name << " file has been written." << std::endl;
 }

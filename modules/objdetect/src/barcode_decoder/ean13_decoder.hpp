@@ -8,7 +8,7 @@
 
 #include "upcean_decoder.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 //extern struct EncodePair;
 using std::string;
@@ -27,5 +27,5 @@ protected:
     Result decode(const vector<uchar> &data) const override;
 };
 }
-} // namespace cv
+} // namespace ncvslideio
 #endif // OPENCV_BARCODE_EAN13_DECODER_HPP

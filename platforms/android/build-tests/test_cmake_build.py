@@ -27,7 +27,7 @@ CPP_TEMPLATE = '''\
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-using namespace cv;
+using namespace ncvslideio;
 const char* message = "Hello Android!";
 int main(int argc, char* argv[])
 {

@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <sstream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void print_help(char** argv)
 {
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
     Ptr<StereoBM> bm = StereoBM::create(16,9);
     Ptr<StereoSGBM> sgbm = StereoSGBM::create(0,16,3);
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{@arg1||}{@arg2||}{help h||}{algorithm||}{max-disparity|0|}{blocksize|0|}{no-display||}{color||}{scale|1|}{i||}{e||}{o||}{p||}");
     if(parser.has("help"))
     {
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
 
     Mat disp8_3c;
     if (color_display)
-        cv::applyColorMap(disp8, disp8_3c, COLORMAP_TURBO);
+        ncvslideio::applyColorMap(disp8, disp8_3c, COLORMAP_TURBO);
 
     if(!disparity_filename.empty())
         imwrite(disparity_filename, color_display ? disp8_3c : disp8);
@@ -307,11 +307,11 @@ int main(int argc, char** argv)
         oss << "  max-disparity:" << numberOfDisparities;
         std::string disp_name = oss.str();
 
-        namedWindow("left", cv::WINDOW_NORMAL);
+        namedWindow("left", ncvslideio::WINDOW_NORMAL);
         imshow("left", img1);
-        namedWindow("right", cv::WINDOW_NORMAL);
+        namedWindow("right", ncvslideio::WINDOW_NORMAL);
         imshow("right", img2);
-        namedWindow(disp_name, cv::WINDOW_AUTOSIZE);
+        namedWindow(disp_name, ncvslideio::WINDOW_AUTOSIZE);
         imshow(disp_name, color_display ? disp8_3c : disp8);
 
         printf("press ESC key or CTRL+C to close...");

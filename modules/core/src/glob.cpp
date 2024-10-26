@@ -81,14 +81,14 @@ namespace
         DIR* dir = new DIR;
         dir->ent.d_name = 0;
 #if defined(WINRT) || defined(_WIN32_WCE)
-        cv::String full_path = cv::String(path) + "\\*";
+        ncvslideio::String full_path = ncvslideio::String(path) + "\\*";
         wchar_t wfull_path[MAX_PATH];
         size_t copied = mbstowcs(wfull_path, full_path.c_str(), MAX_PATH);
         CV_Assert((copied != MAX_PATH) && (copied != (size_t)-1));
         dir->handle = ::FindFirstFileExW(wfull_path, FindExInfoStandard,
                         &dir->data, FindExSearchNameMatch, NULL, 0);
 #else
-        dir->handle = ::FindFirstFileExA((cv::String(path) + "\\*").c_str(),
+        dir->handle = ::FindFirstFileExA((ncvslideio::String(path) + "\\*").c_str(),
             FindExInfoStandard, &dir->data, FindExSearchNameMatch, NULL, 0);
 #endif
         if(dir->handle == INVALID_HANDLE_VALUE)
@@ -142,7 +142,7 @@ const char dir_separators[] = "/";
 
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
-static bool isDir(const cv::String& path, DIR* dir)
+static bool isDir(const ncvslideio::String& path, DIR* dir)
 {
 #if defined _WIN32 || defined _WIN32_WCE
     DWORD attributes;
@@ -175,7 +175,7 @@ static bool isDir(const cv::String& path, DIR* dir)
 }
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-bool cv::utils::fs::isDirectory(const cv::String& path)
+bool ncvslideio::utils::fs::isDirectory(const ncvslideio::String& path)
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
     CV_INSTRUMENT_REGION();
@@ -235,8 +235,8 @@ static bool wildcmp(const char *string, const char *wild)
     return *wild == 0;
 }
 
-static void glob_rec(const cv::String& directory, const cv::String& wildchart, std::vector<cv::String>& result,
-        bool recursive, bool includeDirectories, const cv::String& pathPrefix)
+static void glob_rec(const ncvslideio::String& directory, const ncvslideio::String& wildchart, std::vector<ncvslideio::String>& result,
+        bool recursive, bool includeDirectories, const ncvslideio::String& pathPrefix)
 {
     DIR *dir;
 
@@ -252,8 +252,8 @@ static void glob_rec(const cv::String& directory, const cv::String& wildchart, s
                 if((name[0] == 0) || (name[0] == '.' && name[1] == 0) || (name[0] == '.' && name[1] == '.' && name[2] == 0))
                     continue;
 
-                cv::String path = cv::utils::fs::join(directory, name);
-                cv::String entry = cv::utils::fs::join(pathPrefix, name);
+                ncvslideio::String path = ncvslideio::utils::fs::join(directory, name);
+                ncvslideio::String entry = ncvslideio::utils::fs::join(pathPrefix, name);
 
                 if (isDir(path, dir))
                 {
@@ -276,12 +276,12 @@ static void glob_rec(const cv::String& directory, const cv::String& wildchart, s
     }
     else
     {
-        CV_Error_(cv::Error::StsObjectNotFound, ("could not open directory: %s", directory.c_str()));
+        CV_Error_(ncvslideio::Error::StsObjectNotFound, ("could not open directory: %s", directory.c_str()));
     }
 }
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-void cv::glob(String pattern, std::vector<String>& result, bool recursive)
+void ncvslideio::glob(String pattern, std::vector<String>& result, bool recursive)
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
     CV_INSTRUMENT_REGION();
@@ -325,8 +325,8 @@ void cv::glob(String pattern, std::vector<String>& result, bool recursive)
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 }
 
-void cv::utils::fs::glob(const cv::String& directory, const cv::String& pattern,
-        std::vector<cv::String>& result,
+void ncvslideio::utils::fs::glob(const ncvslideio::String& directory, const ncvslideio::String& pattern,
+        std::vector<ncvslideio::String>& result,
         bool recursive, bool includeDirectories)
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
@@ -342,12 +342,12 @@ void cv::utils::fs::glob(const cv::String& directory, const cv::String& pattern,
 #endif // OPENCV_HAVE_FILESYSTEM_SUPPORT
 }
 
-void cv::utils::fs::glob_relative(const cv::String& directory, const cv::String& pattern,
-        std::vector<cv::String>& result,
+void ncvslideio::utils::fs::glob_relative(const ncvslideio::String& directory, const ncvslideio::String& pattern,
+        std::vector<ncvslideio::String>& result,
         bool recursive, bool includeDirectories)
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
-    glob_rec(directory, pattern, result, recursive, includeDirectories, cv::String());
+    glob_rec(directory, pattern, result, recursive, includeDirectories, ncvslideio::String());
     std::sort(result.begin(), result.end());
 #else // OPENCV_HAVE_FILESYSTEM_SUPPORT
     CV_UNUSED(directory);

@@ -23,18 +23,18 @@
 #pragma warning(disable: 4702)
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace s11n {
 
 struct GSerialized {
-    std::vector<cv::gimpl::Op> m_ops;
-    std::vector<cv::gimpl::Data> m_datas;
-    cv::gimpl::DataObjectCounter m_counter;
-    cv::gimpl::Protocol m_proto;
+    std::vector<ncvslideio::gimpl::Op> m_ops;
+    std::vector<ncvslideio::gimpl::Data> m_datas;
+    ncvslideio::gimpl::DataObjectCounter m_counter;
+    ncvslideio::gimpl::Protocol m_proto;
 
     using data_tag_t = uint64_t;
-    std::map<data_tag_t, cv::gimpl::ConstValue> m_const_datas;
+    std::map<data_tag_t, ncvslideio::gimpl::ConstValue> m_const_datas;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,91 +44,91 @@ struct GSerialized {
 
 // G-API types /////////////////////////////////////////////////////////////////
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GCompileArg& arg);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GCompileArg& arg);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, cv::util::monostate  );
-GAPI_EXPORTS IIStream& operator>> (IIStream& is, cv::util::monostate &);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, ncvslideio::util::monostate  );
+GAPI_EXPORTS IIStream& operator>> (IIStream& is, ncvslideio::util::monostate &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, cv::GShape  shape);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is, cv::GShape &shape);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, ncvslideio::GShape  shape);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is, ncvslideio::GShape &shape);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, cv::detail::ArgKind  k);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is, cv::detail::ArgKind &k);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, ncvslideio::detail::ArgKind  k);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is, ncvslideio::detail::ArgKind &k);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, cv::detail::OpaqueKind  k);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is, cv::detail::OpaqueKind &k);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, ncvslideio::detail::OpaqueKind  k);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is, ncvslideio::detail::OpaqueKind &k);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, cv::gimpl::Data::Storage  s);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is, cv::gimpl::Data::Storage &s);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, ncvslideio::gimpl::Data::Storage  s);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is, ncvslideio::gimpl::Data::Storage &s);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::DataObjectCounter &c);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gimpl::DataObjectCounter &c);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::DataObjectCounter &c);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::DataObjectCounter &c);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::Protocol &p);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gimpl::Protocol &p);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Protocol &p);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::Protocol &p);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GArg &arg);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GArg &arg);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GArg &arg);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GArg &arg);
 
 //Forward declaration
-//IOStream& operator<< (IOStream& os, const cv::GRunArg &arg);
-//IIStream& operator>> (IIStream& is, cv::GRunArg &arg);
+//IOStream& operator<< (IOStream& os, const ncvslideio::GRunArg &arg);
+//IIStream& operator>> (IIStream& is, ncvslideio::GRunArg &arg);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GKernel &k);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GKernel &k);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GKernel &k);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GKernel &k);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GMatDesc &d);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GMatDesc &d);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GMatDesc &d);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GMatDesc &d);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GScalarDesc &);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GScalarDesc &);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GScalarDesc &);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GScalarDesc &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GOpaqueDesc &);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GOpaqueDesc &);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GOpaqueDesc &);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GOpaqueDesc &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GArrayDesc &);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GArrayDesc &);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GArrayDesc &);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GArrayDesc &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::GFrameDesc &);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::GFrameDesc &);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::GFrameDesc &);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::GFrameDesc &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::RcDesc &rc);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gimpl::RcDesc &rc);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::RcDesc &rc);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::RcDesc &rc);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::Op &op);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gimpl::Op &op);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Op &op);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::Op &op);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::Data &op);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gimpl::Data &op);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::Data &op);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gimpl::Data &op);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gimpl::ConstValue &cd);
-GAPI_EXPORTS IIStream& operator>> (IIStream& os, cv::gimpl::ConstValue &cd);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gimpl::ConstValue &cd);
+GAPI_EXPORTS IIStream& operator>> (IIStream& os, ncvslideio::gimpl::ConstValue &cd);
 
 // Render types ////////////////////////////////////////////////////////////////
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Text &t);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Text &t);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Text &t);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Text &t);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream&, const cv::gapi::wip::draw::FText &);
-GAPI_EXPORTS IIStream& operator>> (IIStream&,       cv::gapi::wip::draw::FText &);
+GAPI_EXPORTS IOStream& operator<< (IOStream&, const ncvslideio::gapi::wip::draw::FText &);
+GAPI_EXPORTS IIStream& operator>> (IIStream&,       ncvslideio::gapi::wip::draw::FText &);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Circle &c);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Circle &c);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Circle &c);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Circle &c);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Rect &r);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Rect &r);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Rect &r);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Rect &r);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Image &i);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Image &i);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Image &i);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Image &i);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Mosaic &m);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Mosaic &m);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Mosaic &m);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Mosaic &m);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Poly &p);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Poly &p);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Poly &p);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Poly &p);
 
-GAPI_EXPORTS IOStream& operator<< (IOStream& os, const cv::gapi::wip::draw::Line &l);
-GAPI_EXPORTS IIStream& operator>> (IIStream& is,       cv::gapi::wip::draw::Line &l);
+GAPI_EXPORTS IOStream& operator<< (IOStream& os, const ncvslideio::gapi::wip::draw::Line &l);
+GAPI_EXPORTS IIStream& operator>> (IIStream& is,       ncvslideio::gapi::wip::draw::Line &l);
 
 // The top-level serialization routine.
 // Note it is just a single function which takes a GModel and a list of nodes
@@ -142,7 +142,7 @@ GAPI_EXPORTS void serialize( IOStream& os
 // and writes the data to the stream (recursively)
 GAPI_EXPORTS void serialize( IOStream& os
                            , const ade::Graph &g
-                           , const cv::gimpl::Protocol &p
+                           , const ncvslideio::gimpl::Protocol &p
                            , const std::vector<ade::NodeHandle> &nodes);
 
 // The top-level deserialization routineS.
@@ -160,7 +160,7 @@ GAPI_EXPORTS void serialize( IOStream& os
 // and have side effects.
 //
 // Summarizing, the `deserialize()` happens *once per GComputation* immediately
-// during the cv::gapi::deserialize<GComputation>(), and `reconstruct()` happens
+// during the ncvslideio::gapi::deserialize<GComputation>(), and `reconstruct()` happens
 // on every compilation process issued for this GComputation.
 GAPI_EXPORTS GSerialized deserialize(IIStream& is);
 GAPI_EXPORTS void reconstruct(const GSerialized &s, ade::Graph &g);
@@ -221,9 +221,9 @@ namespace detail {
 GAPI_EXPORTS std::unique_ptr<IIStream> getInStream(const std::vector<char> &p);
 } // namespace detail
 
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GCompileArgs &ca);
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GMetaArgs &ma);
-GAPI_EXPORTS void serialize(IOStream& os, const cv::GRunArgs &ra);
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GCompileArgs &ca);
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GMetaArgs &ma);
+GAPI_EXPORTS void serialize(IOStream& os, const ncvslideio::GRunArgs &ra);
 GAPI_EXPORTS void serialize(IOStream& os, const std::vector<std::string> &vs);
 GAPI_EXPORTS GMetaArgs meta_args_deserialize(IIStream& is);
 GAPI_EXPORTS GRunArgs run_args_deserialize(IIStream& is);
@@ -231,7 +231,7 @@ GAPI_EXPORTS std::vector<std::string> vector_of_strings_deserialize(IIStream& is
 
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #if defined _MSC_VER
 #pragma warning(pop)

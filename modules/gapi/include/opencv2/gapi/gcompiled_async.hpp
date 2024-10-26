@@ -14,7 +14,7 @@
 #include <opencv2/gapi/garg.hpp>
 #include <opencv2/gapi/own/exports.hpp>
 
-namespace cv {
+namespace ncvslideio {
     //fwd declaration
     class GCompiled;
 
@@ -27,7 +27,7 @@ namespace wip {
     If exception is occurred during execution of apply it is transferred to the callback (via function parameter) or passed to future (and will be thrown on call to std::future::get)
 
     N.B. :
-    Input arguments are copied on call to async function (actually on call to cv::gin) and thus do not have to outlive the actual completion of asynchronous activity.
+    Input arguments are copied on call to async function (actually on call to ncvslideio::gin) and thus do not have to outlive the actual completion of asynchronous activity.
     While output arguments are "captured" by reference(pointer) and therefore _must_ outlive the asynchronous activity
     (i.e. live at least until callback is called or future is unblocked)
 
@@ -68,6 +68,6 @@ namespace wip {
     GAPI_EXPORTS std::future<void>   async(GCompiled& gcmpld, GRunArgs &&ins, GRunArgsP &&outs, GAsyncContext& ctx);
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GCOMPILED_ASYNC_HPP

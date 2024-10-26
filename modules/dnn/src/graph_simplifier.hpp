@@ -12,7 +12,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ImportNodeWrapper
 {
@@ -97,6 +97,6 @@ private:
 void simplifySubgraphs(const Ptr<ImportGraphWrapper>& net,
                        const std::vector<Ptr<Subgraph> >& patterns);
 
-}}  // namespace dnn, namespace cv
+}}  // namespace dnn, namespace ncvslideio
 
 #endif  // __OPENCV_DNN_GRAPH_SIMPLIFIER_HPP__

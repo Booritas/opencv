@@ -44,18 +44,18 @@ std::string weights_path(const std::string &model_path) {
 
 namespace custom {
 namespace {
-using GMat3  = std::tuple<cv::GMat,cv::GMat,cv::GMat>;
-using GMats  = cv::GArray<cv::GMat>;
-using GRects = cv::GArray<cv::Rect>;
-using GSize  = cv::GOpaque<cv::Size>;
-G_API_NET(Faces,     <cv::GMat(cv::GMat)>, "face-detector"   );
-G_API_NET(Landmarks, <cv::GMat(cv::GMat)>, "facial-landmarks");
-G_API_NET(HeadPose,  <   GMat3(cv::GMat)>, "head-pose");
-G_API_NET(Gaze,      <cv::GMat(cv::GMat,cv::GMat,cv::GMat)>, "gaze-vector");
+using GMat3  = std::tuple<ncvslideio::GMat,ncvslideio::GMat,ncvslideio::GMat>;
+using GMats  = ncvslideio::GArray<ncvslideio::GMat>;
+using GRects = ncvslideio::GArray<ncvslideio::Rect>;
+using GSize  = ncvslideio::GOpaque<ncvslideio::Size>;
+G_API_NET(Faces,     <ncvslideio::GMat(ncvslideio::GMat)>, "face-detector"   );
+G_API_NET(Landmarks, <ncvslideio::GMat(ncvslideio::GMat)>, "facial-landmarks");
+G_API_NET(HeadPose,  <   GMat3(ncvslideio::GMat)>, "head-pose");
+G_API_NET(Gaze,      <ncvslideio::GMat(ncvslideio::GMat,ncvslideio::GMat,ncvslideio::GMat)>, "gaze-vector");
 
-G_API_OP(Size, <GSize(cv::GMat)>, "custom.gapi.size") {
-    static cv::GOpaqueDesc outMeta(const cv::GMatDesc &) {
-        return cv::empty_gopaque_desc();
+G_API_OP(Size, <GSize(ncvslideio::GMat)>, "custom.gapi.size") {
+    static ncvslideio::GOpaqueDesc outMeta(const ncvslideio::GMatDesc &) {
+        return ncvslideio::empty_gopaque_desc();
     }
 };
 
@@ -63,11 +63,11 @@ G_API_OP(Size, <GSize(cv::GMat)>, "custom.gapi.size") {
 G_API_OP(ParseEyes,
          <std::tuple<GRects, GRects>(GMats, GRects, GSize)>,
          "custom.gaze_estimation.parseEyes") {
-    static std::tuple<cv::GArrayDesc, cv::GArrayDesc>
-        outMeta(  const cv::GArrayDesc &
-                , const cv::GArrayDesc &
-                , const cv::GOpaqueDesc &) {
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc());
+    static std::tuple<ncvslideio::GArrayDesc, ncvslideio::GArrayDesc>
+        outMeta(  const ncvslideio::GArrayDesc &
+                , const ncvslideio::GArrayDesc &
+                , const ncvslideio::GOpaqueDesc &) {
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
@@ -75,16 +75,16 @@ G_API_OP(ParseEyes,
 G_API_OP(ProcessPoses,
          <GMats(GMats, GMats, GMats)>,
          "custom.gaze_estimation.processPoses") {
-    static cv::GArrayDesc outMeta(  const cv::GArrayDesc &
-                                  , const cv::GArrayDesc &
-                                  , const cv::GArrayDesc &) {
-        return cv::empty_array_desc();
+    static ncvslideio::GArrayDesc outMeta(  const ncvslideio::GArrayDesc &
+                                  , const ncvslideio::GArrayDesc &
+                                  , const ncvslideio::GArrayDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
-void gazeVectorToGazeAngles(const cv::Point3f& gazeVector,
-                                  cv::Point2f& gazeAngles) {
-    auto r = cv::norm(gazeVector);
+void gazeVectorToGazeAngles(const ncvslideio::Point3f& gazeVector,
+                                  ncvslideio::Point2f& gazeAngles) {
+    auto r = ncvslideio::norm(gazeVector);
 
     double v0 = static_cast<double>(gazeVector.x);
     double v1 = static_cast<double>(gazeVector.y);
@@ -95,26 +95,26 @@ void gazeVectorToGazeAngles(const cv::Point3f& gazeVector,
 }
 
 GAPI_OCV_KERNEL(OCVSize, Size) {
-    static void run(const cv::Mat &in, cv::Size &out) {
+    static void run(const ncvslideio::Mat &in, ncvslideio::Size &out) {
         out = in.size();
     }
 };
 
-cv::Rect eyeBox(const cv::Rect &face_rc,
+ncvslideio::Rect eyeBox(const ncvslideio::Rect &face_rc,
                 float p1_x, float p1_y, float p2_x, float p2_y,
                 float scale = 1.8f) {
     const auto &up = face_rc.size();
-    const cv::Point p1 = {
+    const ncvslideio::Point p1 = {
         static_cast<int>(p1_x*up.width),
         static_cast<int>(p1_y*up.height)
     };
-    const cv::Point p2 = {
+    const ncvslideio::Point p2 = {
         static_cast<int>(p2_x*up.width),
         static_cast<int>(p2_y*up.height)
     };
-    cv::Rect result;
+    ncvslideio::Rect result;
 
-    const auto size     = static_cast<float>(cv::norm(p1 - p2));
+    const auto size     = static_cast<float>(ncvslideio::norm(p1 - p2));
     const auto midpoint = (p1 + p2) / 2;
 
     result.width = static_cast<int>(scale * size);
@@ -126,13 +126,13 @@ cv::Rect eyeBox(const cv::Rect &face_rc,
 }
 
 GAPI_OCV_KERNEL(OCVParseEyes, ParseEyes) {
-    static void run(const std::vector<cv::Mat> &in_landmarks_per_face,
-                    const std::vector<cv::Rect> &in_face_rcs,
-                    const cv::Size &frame_size,
-                    std::vector<cv::Rect> &out_left_eyes,
-                    std::vector<cv::Rect> &out_right_eyes) {
+    static void run(const std::vector<ncvslideio::Mat> &in_landmarks_per_face,
+                    const std::vector<ncvslideio::Rect> &in_face_rcs,
+                    const ncvslideio::Size &frame_size,
+                    std::vector<ncvslideio::Rect> &out_left_eyes,
+                    std::vector<ncvslideio::Rect> &out_right_eyes) {
         const size_t numFaces = in_landmarks_per_face.size();
-        const cv::Rect surface(cv::Point(0,0), frame_size);
+        const ncvslideio::Rect surface(ncvslideio::Point(0,0), frame_size);
         GAPI_Assert(numFaces == in_face_rcs.size());
         out_left_eyes.clear();
         out_right_eyes.clear();
@@ -152,15 +152,15 @@ GAPI_OCV_KERNEL(OCVParseEyes, ParseEyes) {
 };
 
 GAPI_OCV_KERNEL(OCVProcessPoses, ProcessPoses) {
-    static void run(const std::vector<cv::Mat> &in_ys,
-                    const std::vector<cv::Mat> &in_ps,
-                    const std::vector<cv::Mat> &in_rs,
-                    std::vector<cv::Mat> &out_poses) {
+    static void run(const std::vector<ncvslideio::Mat> &in_ys,
+                    const std::vector<ncvslideio::Mat> &in_ps,
+                    const std::vector<ncvslideio::Mat> &in_rs,
+                    std::vector<ncvslideio::Mat> &out_poses) {
         const std::size_t sz = in_ys.size();
         GAPI_Assert(sz == in_ps.size() && sz == in_rs.size());
         out_poses.clear();
         for (std::size_t idx = 0u; idx < sz; idx++) {
-            cv::Mat pose(1, 3, CV_32FC1);
+            ncvslideio::Mat pose(1, 3, CV_32FC1);
             float *ptr = pose.ptr<float>();
             ptr[0] = in_ys[idx].ptr<float>()[0];
             ptr[1] = in_ps[idx].ptr<float>()[0];
@@ -174,13 +174,13 @@ GAPI_OCV_KERNEL(OCVProcessPoses, ProcessPoses) {
 
 namespace vis {
 namespace {
-cv::Point2f midp(const cv::Rect &rc) {
+ncvslideio::Point2f midp(const ncvslideio::Rect &rc) {
     return (rc.tl() + rc.br()) / 2;
 };
-void bbox(cv::Mat &m, const cv::Rect &rc) {
-    cv::rectangle(m, rc, cv::Scalar{0,255,0}, 2, cv::LINE_8, 0);
+void bbox(ncvslideio::Mat &m, const ncvslideio::Rect &rc) {
+    ncvslideio::rectangle(m, rc, ncvslideio::Scalar{0,255,0}, 2, ncvslideio::LINE_8, 0);
 };
-void pose(cv::Mat &m, const cv::Mat &p, const cv::Rect &face_rc) {
+void pose(ncvslideio::Mat &m, const ncvslideio::Mat &p, const ncvslideio::Rect &face_rc) {
     const auto *posePtr = p.ptr<float>();
     const auto yaw   = static_cast<double>(posePtr[0]);
     const auto pitch = static_cast<double>(posePtr[1]);
@@ -198,80 +198,80 @@ void pose(cv::Mat &m, const cv::Mat &p, const cv::Rect &face_rc) {
     const auto xCenter = face_rc.x + face_rc.width  / 2;
     const auto yCenter = face_rc.y + face_rc.height / 2;
 
-    const auto center = cv::Point{xCenter, yCenter};
-    const auto axisln = cv::Point2d{axisLength, axisLength};
-    const auto ctr    = cv::Matx<double,2,2>(cosR*cosY, sinY*sinP*sinR, 0.f,  cosP*sinR);
-    const auto ctt    = cv::Matx<double,2,2>(cosR*sinY*sinP, cosY*sinR, 0.f, -cosP*cosR);
-    const auto ctf    = cv::Matx<double,2,2>(sinY*cosP, 0.f, 0.f, sinP);
+    const auto center = ncvslideio::Point{xCenter, yCenter};
+    const auto axisln = ncvslideio::Point2d{axisLength, axisLength};
+    const auto ctr    = ncvslideio::Matx<double,2,2>(cosR*cosY, sinY*sinP*sinR, 0.f,  cosP*sinR);
+    const auto ctt    = ncvslideio::Matx<double,2,2>(cosR*sinY*sinP, cosY*sinR, 0.f, -cosP*cosR);
+    const auto ctf    = ncvslideio::Matx<double,2,2>(sinY*cosP, 0.f, 0.f, sinP);
 
     // center to right
-    cv::line(m, center, center + static_cast<cv::Point>(ctr*axisln), cv::Scalar(0, 0, 255), 2);
+    ncvslideio::line(m, center, center + static_cast<ncvslideio::Point>(ctr*axisln), ncvslideio::Scalar(0, 0, 255), 2);
     // center to top
-    cv::line(m, center, center + static_cast<cv::Point>(ctt*axisln), cv::Scalar(0, 255, 0), 2);
+    ncvslideio::line(m, center, center + static_cast<ncvslideio::Point>(ctt*axisln), ncvslideio::Scalar(0, 255, 0), 2);
     // center to forward
-    cv::line(m, center, center + static_cast<cv::Point>(ctf*axisln), cv::Scalar(255, 0, 255), 2);
+    ncvslideio::line(m, center, center + static_cast<ncvslideio::Point>(ctf*axisln), ncvslideio::Scalar(255, 0, 255), 2);
 }
-void vvec(cv::Mat &m, const cv::Mat &v, const cv::Rect &face_rc,
-          const cv::Rect &left_rc, const cv::Rect &right_rc) {
+void vvec(ncvslideio::Mat &m, const ncvslideio::Mat &v, const ncvslideio::Rect &face_rc,
+          const ncvslideio::Rect &left_rc, const ncvslideio::Rect &right_rc) {
     const auto scale =  0.002 * face_rc.width;
 
-    cv::Point3f gazeVector;
+    ncvslideio::Point3f gazeVector;
     const auto *gazePtr = v.ptr<float>();
     gazeVector.x = gazePtr[0];
     gazeVector.y = gazePtr[1];
     gazeVector.z = gazePtr[2];
-    gazeVector = gazeVector / cv::norm(gazeVector);
+    gazeVector = gazeVector / ncvslideio::norm(gazeVector);
 
     const double arrowLength = 0.4 * face_rc.width;
     const auto left_mid = midp(left_rc);
     const auto right_mid = midp(right_rc);
 
-    cv::Point2f gazeArrow;
+    ncvslideio::Point2f gazeArrow;
     gazeArrow.x =  gazeVector.x;
     gazeArrow.y = -gazeVector.y;
     gazeArrow  *= arrowLength;
 
-    cv::arrowedLine(m, left_mid,  left_mid  + gazeArrow, cv::Scalar(255, 0, 0), 2);
-    cv::arrowedLine(m, right_mid, right_mid + gazeArrow, cv::Scalar(255, 0, 0), 2);
+    ncvslideio::arrowedLine(m, left_mid,  left_mid  + gazeArrow, ncvslideio::Scalar(255, 0, 0), 2);
+    ncvslideio::arrowedLine(m, right_mid, right_mid + gazeArrow, ncvslideio::Scalar(255, 0, 0), 2);
 
-    cv::Point2f gazeAngles;
+    ncvslideio::Point2f gazeAngles;
     custom::gazeVectorToGazeAngles(gazeVector, gazeAngles);
 
-    cv::putText(m,
-                cv::format("gaze angles: (h=%0.0f, v=%0.0f)",
+    ncvslideio::putText(m,
+                ncvslideio::format("gaze angles: (h=%0.0f, v=%0.0f)",
                            static_cast<double>(std::round(gazeAngles.x)),
                            static_cast<double>(std::round(gazeAngles.y))),
-                cv::Point(static_cast<int>(face_rc.tl().x),
+                ncvslideio::Point(static_cast<int>(face_rc.tl().x),
                           static_cast<int>(face_rc.br().y + 12. * face_rc.width / 100.)),
-                cv::FONT_HERSHEY_PLAIN, scale * 2, cv::Scalar::all(255), 1);
+                ncvslideio::FONT_HERSHEY_PLAIN, scale * 2, ncvslideio::Scalar::all(255), 1);
 };
 } // anonymous namespace
 } // namespace vis
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
         return 0;
     }
-    cv::GMat in;
-    cv::GMat faces = cv::gapi::infer<custom::Faces>(in);
-    cv::GOpaque<cv::Size> sz = cv::gapi::streaming::size(in);
-    cv::GArray<cv::Rect> faces_rc = cv::gapi::parseSSD(faces, sz, 0.5f, true, true);
-    cv::GArray<cv::GMat> angles_y, angles_p, angles_r;
-    std::tie(angles_y, angles_p, angles_r) = cv::gapi::infer<custom::HeadPose>(faces_rc, in);
-    cv::GArray<cv::GMat> heads_pos = custom::ProcessPoses::on(angles_y, angles_p, angles_r);
-    cv::GArray<cv::GMat> landmarks = cv::gapi::infer<custom::Landmarks>(faces_rc, in);
-    cv::GArray<cv::Rect> left_eyes, right_eyes;
+    ncvslideio::GMat in;
+    ncvslideio::GMat faces = ncvslideio::gapi::infer<custom::Faces>(in);
+    ncvslideio::GOpaque<ncvslideio::Size> sz = ncvslideio::gapi::streaming::size(in);
+    ncvslideio::GArray<ncvslideio::Rect> faces_rc = ncvslideio::gapi::parseSSD(faces, sz, 0.5f, true, true);
+    ncvslideio::GArray<ncvslideio::GMat> angles_y, angles_p, angles_r;
+    std::tie(angles_y, angles_p, angles_r) = ncvslideio::gapi::infer<custom::HeadPose>(faces_rc, in);
+    ncvslideio::GArray<ncvslideio::GMat> heads_pos = custom::ProcessPoses::on(angles_y, angles_p, angles_r);
+    ncvslideio::GArray<ncvslideio::GMat> landmarks = ncvslideio::gapi::infer<custom::Landmarks>(faces_rc, in);
+    ncvslideio::GArray<ncvslideio::Rect> left_eyes, right_eyes;
     std::tie(left_eyes, right_eyes) = custom::ParseEyes::on(landmarks, faces_rc, sz);
-    cv::GArray<cv::GMat> gaze_vectors = cv::gapi::infer2<custom::Gaze>( in
+    ncvslideio::GArray<ncvslideio::GMat> gaze_vectors = ncvslideio::gapi::infer2<custom::Gaze>( in
                                                                       , left_eyes
                                                                       , right_eyes
                                                                       , heads_pos);
-    cv::GComputation graph(cv::GIn(in),
-                           cv::GOut( cv::gapi::copy(in)
+    ncvslideio::GComputation graph(ncvslideio::GIn(in),
+                           ncvslideio::GOut( ncvslideio::gapi::copy(in)
                                    , faces_rc
                                    , left_eyes
                                    , right_eyes
@@ -284,45 +284,45 @@ int main(int argc, char *argv[])
     const auto lmrk_model_path = cmd.get<std::string>("landm");
     const auto gaze_model_path = cmd.get<std::string>("gazem");
 
-    auto face_net = cv::gapi::ie::Params<custom::Faces> {
+    auto face_net = ncvslideio::gapi::ie::Params<custom::Faces> {
         face_model_path,                // path to topology IR
         weights_path(face_model_path),  // path to weights
         cmd.get<std::string>("faced"),  /// device specifier
     };
-    auto head_net = cv::gapi::ie::Params<custom::HeadPose> {
+    auto head_net = ncvslideio::gapi::ie::Params<custom::HeadPose> {
         head_model_path,                // path to topology IR
         weights_path(head_model_path),  // path to weights
         cmd.get<std::string>("headd"),  // device specifier
     }.cfgOutputLayers({"angle_y_fc", "angle_p_fc", "angle_r_fc"});
-    auto landmarks_net = cv::gapi::ie::Params<custom::Landmarks> {
+    auto landmarks_net = ncvslideio::gapi::ie::Params<custom::Landmarks> {
         lmrk_model_path,                // path to topology IR
         weights_path(lmrk_model_path),  // path to weights
         cmd.get<std::string>("landd"),  // device specifier
     };
-    auto gaze_net = cv::gapi::ie::Params<custom::Gaze> {
+    auto gaze_net = ncvslideio::gapi::ie::Params<custom::Gaze> {
         gaze_model_path,                // path to topology IR
         weights_path(gaze_model_path),  // path to weights
         cmd.get<std::string>("gazed"),  // device specifier
     }.cfgInputLayers({"left_eye_image", "right_eye_image", "head_pose_angles"});
 
-    auto kernels = cv::gapi::kernels< custom::OCVSize
+    auto kernels = ncvslideio::gapi::kernels< custom::OCVSize
                                     , custom::OCVParseEyes
                                     , custom::OCVProcessPoses>();
-    auto networks = cv::gapi::networks(face_net, head_net, landmarks_net, gaze_net);
-    auto pipeline = graph.compileStreaming(cv::compile_args(networks, kernels));
+    auto networks = ncvslideio::gapi::networks(face_net, head_net, landmarks_net, gaze_net);
+    auto pipeline = graph.compileStreaming(ncvslideio::compile_args(networks, kernels));
 
-    cv::TickMeter tm;
-    cv::Mat image;
-    std::vector<cv::Rect> out_faces, out_right_eyes, out_left_eyes;
-    std::vector<cv::Mat> out_poses;
-    std::vector<cv::Mat> out_gazes;
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat image;
+    std::vector<ncvslideio::Rect> out_faces, out_right_eyes, out_left_eyes;
+    std::vector<ncvslideio::Mat> out_poses;
+    std::vector<ncvslideio::Mat> out_gazes;
     std::size_t frames = 0u;
     std::cout << "Reading " << input_file_name << std::endl;
 
-    pipeline.setSource(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input_file_name));
+    pipeline.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input_file_name));
     pipeline.start();
     tm.start();
-    while (pipeline.pull(cv::gout( image
+    while (pipeline.pull(ncvslideio::gout( image
                                  , out_faces
                                  , out_left_eyes
                                  , out_right_eyes
@@ -339,9 +339,9 @@ int main(int argc, char *argv[])
         }
         tm.stop();
         const auto fps_str = std::to_string(frames / tm.getTimeSec()) + " FPS";
-        cv::putText(image, fps_str, {0,32}, cv::FONT_HERSHEY_SIMPLEX, 1.0, {0,255,0}, 2);
-        cv::imshow("Out", image);
-        cv::waitKey(1);
+        ncvslideio::putText(image, fps_str, {0,32}, ncvslideio::FONT_HERSHEY_SIMPLEX, 1.0, {0,255,0}, 2);
+        ncvslideio::imshow("Out", image);
+        ncvslideio::waitKey(1);
         tm.start();
     }
     tm.stop();

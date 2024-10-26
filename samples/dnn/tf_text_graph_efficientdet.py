@@ -215,7 +215,7 @@ def createGraph(modelPath, outputPath, min_level, aspect_ratios, num_scales,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run this script to get a text graph of '
                                                  'SSD model from TensorFlow Object Detection API. '
-                                                 'Then pass it with .pb file to cv::dnn::readNetFromTensorflow function.')
+                                                 'Then pass it with .pb file to ncvslideio::dnn::readNetFromTensorflow function.')
     parser.add_argument('--input', required=True, help='Path to frozen TensorFlow graph.')
     parser.add_argument('--output', required=True, help='Path to output text graph.')
     parser.add_argument('--min_level', default=3, type=int, help='Parameter from training config')

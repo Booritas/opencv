@@ -15,7 +15,7 @@
 #include <queue>
 #include <limits>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 extern bool DNN_DIAGNOSTICS_RUN;
@@ -1865,10 +1865,10 @@ Mat getMatFromTensor(const opencv_onnx::TensorProto& tensor_proto)
         return blob;
     }
     if (tensor_proto.dims_size() == 0)
-        blob.dims = 1;  // To force 1-dimensional cv::Mat for scalars.
+        blob.dims = 1;  // To force 1-dimensional ncvslideio::Mat for scalars.
     return blob;
 }
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 #endif  // HAVE_PROTOBUF

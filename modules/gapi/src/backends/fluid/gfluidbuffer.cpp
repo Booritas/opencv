@@ -15,7 +15,7 @@
 
 #include "backends/fluid/gfluidutils.hpp" // saturate
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 bool operator == (const fluid::Border& b1, const fluid::Border& b2)
@@ -61,7 +61,7 @@ void fillBorderReflectRow(uint8_t* row, int length, int chan, int borderSize)
 }
 
 template<typename T>
-void fillConstBorderRow(uint8_t* row, int length, int chan, int borderSize, cv::Scalar borderValue)
+void fillConstBorderRow(uint8_t* row, int length, int chan, int borderSize, ncvslideio::Scalar borderValue)
 {
     GAPI_DbgAssert(chan > 0 && chan <= 4);
 
@@ -78,9 +78,9 @@ void fillConstBorderRow(uint8_t* row, int length, int chan, int borderSize, cv::
 }
 
 // Fills const border pixels in the whole mat
-void fillBorderConstant(int borderSize, cv::Scalar borderValue, cv::Mat& mat)
+void fillBorderConstant(int borderSize, ncvslideio::Scalar borderValue, ncvslideio::Mat& mat)
 {
-    // cv::Scalar can contain maximum 4 chan
+    // ncvslideio::Scalar can contain maximum 4 chan
     GAPI_Assert(mat.channels() > 0 && mat.channels() <= 4);
 
     auto getFillBorderRowFunc = [&](int type) {
@@ -113,7 +113,7 @@ fluid::BorderHandlerT<BorderType>::BorderHandlerT(int border_size, int data_type
     : BorderHandler(border_size)
 {
     auto getFillBorderRowFunc = [&](int border, int depth) {
-        if (border == cv::BORDER_REPLICATE)
+        if (border == ncvslideio::BORDER_REPLICATE)
         {
             switch(depth)
             {
@@ -124,7 +124,7 @@ fluid::BorderHandlerT<BorderType>::BorderHandlerT(int border_size, int data_type
             default: GAPI_Assert(!"Unsupported data type"); return &fillBorderReplicateRow<uint8_t>;
             }
         }
-        else if (border == cv::BORDER_REFLECT_101)
+        else if (border == ncvslideio::BORDER_REFLECT_101)
         {
             switch(depth)
             {
@@ -148,12 +148,12 @@ fluid::BorderHandlerT<BorderType>::BorderHandlerT(int border_size, int data_type
 namespace {
 template <int BorderType> int getBorderIdx(int log_idx, int desc_height);
 
-template<> int getBorderIdx<cv::BORDER_REPLICATE>(int log_idx, int desc_height)
+template<> int getBorderIdx<ncvslideio::BORDER_REPLICATE>(int log_idx, int desc_height)
 {
     return log_idx < 0 ? 0 : desc_height - 1;
 }
 
-template<> int getBorderIdx<cv::BORDER_REFLECT_101>(int log_idx, int desc_height)
+template<> int getBorderIdx<ncvslideio::BORDER_REFLECT_101>(int log_idx, int desc_height)
 {
     return log_idx < 0 ? -log_idx : 2*(desc_height - 1) - log_idx;
 }
@@ -166,21 +166,21 @@ const uint8_t* fluid::BorderHandlerT<BorderType>::inLineB(int log_idx, const Buf
     return data.ptr(idx);
 }
 
-fluid::BorderHandlerT<cv::BORDER_CONSTANT>::BorderHandlerT(int border_size, cv::Scalar border_value)
+fluid::BorderHandlerT<ncvslideio::BORDER_CONSTANT>::BorderHandlerT(int border_size, ncvslideio::Scalar border_value)
     : BorderHandler(border_size), m_border_value(border_value)
 { /* nothing */ }
 
-const uint8_t* fluid::BorderHandlerT<cv::BORDER_CONSTANT>::inLineB(int /*log_idx*/, const BufferStorageWithBorder& /*data*/, int /*desc_height*/) const
+const uint8_t* fluid::BorderHandlerT<ncvslideio::BORDER_CONSTANT>::inLineB(int /*log_idx*/, const BufferStorageWithBorder& /*data*/, int /*desc_height*/) const
 {
     return m_const_border.ptr(0, m_border_size);
 }
 
-void fluid::BorderHandlerT<cv::BORDER_CONSTANT>::fillCompileTimeBorder(BufferStorageWithBorder& data)
+void fluid::BorderHandlerT<ncvslideio::BORDER_CONSTANT>::fillCompileTimeBorder(BufferStorageWithBorder& data)
 {
     m_const_border.create(1, data.cols(), data.data().type());
     m_const_border = m_border_value;
 
-    cv::gapi::fillBorderConstant(m_border_size, m_border_value, data.data());
+    ncvslideio::gapi::fillBorderConstant(m_border_size, m_border_value, data.data());
 }
 
 template <int BorderType>
@@ -197,7 +197,7 @@ void fluid::BorderHandlerT<BorderType>::updateBorderPixels(BufferStorageWithBord
     }
 }
 
-std::size_t fluid::BorderHandlerT<cv::BORDER_CONSTANT>::size() const
+std::size_t fluid::BorderHandlerT<ncvslideio::BORDER_CONSTANT>::size() const
 {
     return m_const_border.total() * m_const_border.elemSize();
 }
@@ -224,12 +224,12 @@ void fluid::BufferStorageWithBorder::init(int dtype, int border_size, Border bor
 {
     switch(border.type)
     {
-    case cv::BORDER_CONSTANT:
-        m_borderHandler.reset(new BorderHandlerT<cv::BORDER_CONSTANT>(border_size, border.value)); break;
-    case cv::BORDER_REPLICATE:
-        m_borderHandler.reset(new BorderHandlerT<cv::BORDER_REPLICATE>(border_size, dtype)); break;
-    case cv::BORDER_REFLECT_101:
-        m_borderHandler.reset(new BorderHandlerT<cv::BORDER_REFLECT_101>(border_size, dtype)); break;
+    case ncvslideio::BORDER_CONSTANT:
+        m_borderHandler.reset(new BorderHandlerT<ncvslideio::BORDER_CONSTANT>(border_size, border.value)); break;
+    case ncvslideio::BORDER_REPLICATE:
+        m_borderHandler.reset(new BorderHandlerT<ncvslideio::BORDER_REPLICATE>(border_size, dtype)); break;
+    case ncvslideio::BORDER_REFLECT_101:
+        m_borderHandler.reset(new BorderHandlerT<ncvslideio::BORDER_REFLECT_101>(border_size, dtype)); break;
     default:
         GAPI_Error("InternalError");
     }
@@ -264,10 +264,10 @@ const uint8_t* fluid::BufferStorageWithBorder::inLineB(int log_idx, int desc_hei
     }
 }
 
-static void copyWithoutBorder(const cv::Mat& src, int src_border_size, cv::Mat& dst, int dst_border_size, int startSrcLine, int startDstLine, int lpi)
+static void copyWithoutBorder(const ncvslideio::Mat& src, int src_border_size, ncvslideio::Mat& dst, int dst_border_size, int startSrcLine, int startDstLine, int lpi)
 {
-    auto subSrc = src(cv::Rect{src_border_size, startSrcLine, src.cols - 2*src_border_size, lpi});
-    auto subDst = dst(cv::Rect{dst_border_size, startDstLine, dst.cols - 2*dst_border_size, lpi});
+    auto subSrc = src(ncvslideio::Rect{src_border_size, startSrcLine, src.cols - 2*src_border_size, lpi});
+    auto subDst = dst(ncvslideio::Rect{dst_border_size, startDstLine, dst.cols - 2*dst_border_size, lpi});
 
     subSrc.copyTo(subDst);
 }
@@ -360,8 +360,8 @@ std::unique_ptr<fluid::BufferStorage> createStorage(int capacity, int desc_width
 #endif
 }
 
-std::unique_ptr<BufferStorage> createStorage(const cv::Mat& data, cv::Rect roi);
-std::unique_ptr<BufferStorage> createStorage(const cv::Mat& data, cv::Rect roi)
+std::unique_ptr<BufferStorage> createStorage(const ncvslideio::Mat& data, ncvslideio::Rect roi);
+std::unique_ptr<BufferStorage> createStorage(const ncvslideio::Mat& data, ncvslideio::Rect roi)
 {
     std::unique_ptr<BufferStorageWithoutBorder> storage(new BufferStorageWithoutBorder);
     storage->attach(data, roi);
@@ -499,20 +499,20 @@ void fluid::View::Priv::initCache(int lineConsumption)
 
 // Fluid Buffer implementation /////////////////////////////////////////////////
 
-fluid::Buffer::Priv::Priv(int read_start, cv::Rect roi)
+fluid::Buffer::Priv::Priv(int read_start, ncvslideio::Rect roi)
     : m_readStart(read_start)
     , m_roi(roi)
 {}
 
-void fluid::Buffer::Priv::init(const cv::GMatDesc &desc,
+void fluid::Buffer::Priv::init(const ncvslideio::GMatDesc &desc,
                                int writer_lpi,
                                int readStartPos,
-                               cv::Rect roi)
+                               ncvslideio::Rect roi)
 {
     m_writer_lpi = writer_lpi;
     m_desc       = desc;
     m_readStart  = readStartPos;
-    m_roi        = roi == cv::Rect{} ? cv::Rect{ 0, 0, desc.size.width, desc.size.height }
+    m_roi        = roi == ncvslideio::Rect{} ? ncvslideio::Rect{ 0, 0, desc.size.width, desc.size.height }
                                       : roi;
     m_cache.m_linePtrs.resize(writer_lpi);
     m_cache.m_desc = desc;
@@ -545,10 +545,10 @@ void fluid::Buffer::Priv::allocate(BorderOpt border,
     m_storage->updateOutCache(m_cache, m_write_caret, m_writer_lpi);
 }
 
-void fluid::Buffer::Priv::bindTo(const cv::Mat &data, bool is_input)
+void fluid::Buffer::Priv::bindTo(const ncvslideio::Mat &data, bool is_input)
 {
     // FIXME: move all these fields into a separate structure
-    GAPI_Assert(m_desc == cv::descr_of(data));
+    GAPI_Assert(m_desc == ncvslideio::descr_of(data));
 
     // Currently m_writer_lpi is obtained from metadata which is shared between islands
     // and this assert can trigger for slot which connects two fluid islands.
@@ -641,18 +641,18 @@ fluid::Buffer::Buffer()
 {
 }
 
-fluid::Buffer::Buffer(const cv::GMatDesc &desc)
+fluid::Buffer::Buffer(const ncvslideio::GMatDesc &desc)
     : m_priv(new Priv())
     , m_cache(&m_priv->cache())
 {
     int lineConsumption = 1;
     int border = 0, skew = 0, wlpi = 1, readStart = 0;
-    cv::Rect roi = {0, 0, desc.size.width, desc.size.height};
+    ncvslideio::Rect roi = {0, 0, desc.size.width, desc.size.height};
     m_priv->init(desc, wlpi, readStart, roi);
     m_priv->allocate({}, border, lineConsumption, skew);
 }
 
-fluid::Buffer::Buffer(const cv::GMatDesc &desc,
+fluid::Buffer::Buffer(const ncvslideio::GMatDesc &desc,
                       int max_line_consumption,
                       int border_size,
                       int skew,
@@ -662,18 +662,18 @@ fluid::Buffer::Buffer(const cv::GMatDesc &desc,
     , m_cache(&m_priv->cache())
 {
     int readStart = 0;
-    cv::Rect roi = {0, 0, desc.size.width, desc.size.height};
+    ncvslideio::Rect roi = {0, 0, desc.size.width, desc.size.height};
     m_priv->init(desc, wlpi, readStart, roi);
     m_priv->allocate(border, border_size, max_line_consumption, skew);
 }
 
-fluid::Buffer::Buffer(const cv::Mat &data, bool is_input)
+fluid::Buffer::Buffer(const ncvslideio::Mat &data, bool is_input)
     : m_priv(new Priv())
     , m_cache(&m_priv->cache())
 {
     int wlpi = 1, readStart = 0;
-    cv::Rect roi{0, 0, data.cols, data.rows};
-    m_priv->init(cv::descr_of(data), wlpi, readStart, roi);
+    ncvslideio::Rect roi{0, 0, data.cols, data.rows};
+    m_priv->init(ncvslideio::descr_of(data), wlpi, readStart, roi);
     m_priv->bindTo(data, is_input);
 }
 
@@ -714,7 +714,7 @@ void fluid::Buffer::addView(const View* v)
 
 void fluid::debugBufferPriv(const fluid::Buffer& buffer, std::ostream &os)
 {
-    // FIXME Use cv::gapi::own Size and Rect with operator<<, when merged ADE-285
+    // FIXME Use ncvslideio::gapi::own Size and Rect with operator<<, when merged ADE-285
     const auto& p = buffer.priv();
     os << "Fluid buffer " << std::hex << &buffer << std::dec
        << " " << p.m_desc.size.width << " x " << p.m_desc.size.height << "]"
@@ -748,5 +748,5 @@ int fluid::Buffer::y() const
     return m_priv->y();
 }
 
-} // namespace cv::gapi
-} // namespace cv
+} // namespace ncvslideio::gapi
+} // namespace ncvslideio

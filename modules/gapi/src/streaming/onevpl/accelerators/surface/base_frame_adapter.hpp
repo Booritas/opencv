@@ -14,18 +14,18 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
-class BaseFrameAdapter : public cv::MediaFrame::IAdapter {
+class BaseFrameAdapter : public ncvslideio::MediaFrame::IAdapter {
 public:
     using SessionHandle = mfxSession;
 
     const std::shared_ptr<Surface>& get_surface() const;
     SessionHandle get_session_handle() const;
 
-    cv::GFrameDesc meta() const override;
+    ncvslideio::GFrameDesc meta() const override;
     AccelType accel_type() const;
 protected:
     BaseFrameAdapter(std::shared_ptr<Surface> assoc_surface, SessionHandle assoc_handle,
@@ -41,7 +41,7 @@ protected:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_SURFACE_BASE_FRAME_ADAPTER_HPP

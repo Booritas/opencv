@@ -69,7 +69,7 @@
 #include "opencv2/core/cvdef.h"
 #include "opencv2/core.hpp"
 
-namespace cv
+namespace ncvslideio
 {
     namespace cuda
     {

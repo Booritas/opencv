@@ -106,7 +106,7 @@ inline __m512d _v512_insert(const __m512d& a, const __m256d& b)
 
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -3096,6 +3096,6 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} // cv::
+} // ncvslideio::
 
 #endif // OPENCV_HAL_INTRIN_AVX_HPP

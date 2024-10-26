@@ -13,24 +13,24 @@ parser.add_argument('--height', default=-1, type=int, help='Resize input to spec
 parser.add_argument('--median_filter', default=0, type=int, help='Kernel size of postprocessing blurring.')
 args = parser.parse_args()
 
-net = cv.dnn.readNet(cv.samples.findFile(args.model))
-net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
+net = ncvslideio.dnn.readNet(ncvslideio.samples.findFile(args.model))
+net.setPreferableBackend(ncvslideio.dnn.DNN_BACKEND_OPENCV)
 
 if args.input:
-    cap = cv.VideoCapture(args.input)
+    cap = ncvslideio.VideoCapture(args.input)
 else:
-    cap = cv.VideoCapture(0)
+    cap = ncvslideio.VideoCapture(0)
 
-cv.namedWindow('Styled image', cv.WINDOW_NORMAL)
-while cv.waitKey(1) < 0:
+cv.namedWindow('Styled image', ncvslideio.WINDOW_NORMAL)
+while ncvslideio.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
-        cv.waitKey()
+        ncvslideio.waitKey()
         break
 
     inWidth = args.width if args.width != -1 else frame.shape[1]
     inHeight = args.height if args.height != -1 else frame.shape[0]
-    inp = cv.dnn.blobFromImage(frame, 1.0, (inWidth, inHeight),
+    inp = ncvslideio.dnn.blobFromImage(frame, 1.0, (inWidth, inHeight),
                                swapRB=True, crop=False)
 
     net.setInput(inp)
@@ -40,13 +40,13 @@ while cv.waitKey(1) < 0:
     out = out.transpose(1, 2, 0)
 
     t, _ = net.getPerfProfile()
-    freq = cv.getTickFrequency() / 1000
+    freq = ncvslideio.getTickFrequency() / 1000
     print(t / freq, 'ms')
 
     if args.median_filter:
-        out = cv.medianBlur(out, args.median_filter)
+        out = ncvslideio.medianBlur(out, args.median_filter)
 
     out = np.clip(out, 0, 255)
     out = out.astype(np.uint8)
 
-    cv.imshow('Styled image', out)
+    ncvslideio.imshow('Styled image', out)

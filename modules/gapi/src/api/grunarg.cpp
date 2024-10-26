@@ -7,65 +7,65 @@
 #include "precomp.hpp"
 #include <opencv2/gapi/garg.hpp>
 
-cv::GRunArg::GRunArg() {
+ncvslideio::GRunArg::GRunArg() {
 }
 
-cv::GRunArg::GRunArg(const cv::GRunArg &arg)
-    : cv::GRunArgBase(static_cast<const cv::GRunArgBase&>(arg))
+ncvslideio::GRunArg::GRunArg(const ncvslideio::GRunArg &arg)
+    : ncvslideio::GRunArgBase(static_cast<const ncvslideio::GRunArgBase&>(arg))
     , meta(arg.meta) {
 }
 
-cv::GRunArg::GRunArg(cv::GRunArg &&arg)
-    : cv::GRunArgBase(std::move(static_cast<const cv::GRunArgBase&>(arg)))
+ncvslideio::GRunArg::GRunArg(ncvslideio::GRunArg &&arg)
+    : ncvslideio::GRunArgBase(std::move(static_cast<const ncvslideio::GRunArgBase&>(arg)))
     , meta(std::move(arg.meta)) {
 }
 
-cv::GRunArg& cv::GRunArg::operator= (const cv::GRunArg &arg) {
-    cv::GRunArgBase::operator=(static_cast<const cv::GRunArgBase&>(arg));
+ncvslideio::GRunArg& ncvslideio::GRunArg::operator= (const ncvslideio::GRunArg &arg) {
+    ncvslideio::GRunArgBase::operator=(static_cast<const ncvslideio::GRunArgBase&>(arg));
     meta = arg.meta;
     return *this;
 }
 
-cv::GRunArg& cv::GRunArg::operator= (cv::GRunArg &&arg) {
-    cv::GRunArgBase::operator=(std::move(static_cast<const cv::GRunArgBase&>(arg)));
+ncvslideio::GRunArg& ncvslideio::GRunArg::operator= (ncvslideio::GRunArg &&arg) {
+    ncvslideio::GRunArgBase::operator=(std::move(static_cast<const ncvslideio::GRunArgBase&>(arg)));
     meta = std::move(arg.meta);
     return *this;
 }
 
-// NB: Construct GRunArgsP based on passed info and store the memory in passed cv::GRunArgs.
+// NB: Construct GRunArgsP based on passed info and store the memory in passed ncvslideio::GRunArgs.
 // Needed for python bridge, because in case python user doesn't pass output arguments to apply.
-void cv::detail::constructGraphOutputs(const cv::GTypesInfo &out_info,
-                                       cv::GRunArgs         &args,
-                                       cv::GRunArgsP        &outs)
+void ncvslideio::detail::constructGraphOutputs(const ncvslideio::GTypesInfo &out_info,
+                                       ncvslideio::GRunArgs         &args,
+                                       ncvslideio::GRunArgsP        &outs)
 {
     for (auto&& info : out_info)
     {
         switch (info.shape)
         {
-            case cv::GShape::GMAT:
+            case ncvslideio::GShape::GMAT:
             {
-                args.emplace_back(cv::Mat{});
-                outs.emplace_back(&cv::util::get<cv::Mat>(args.back()));
+                args.emplace_back(ncvslideio::Mat{});
+                outs.emplace_back(&ncvslideio::util::get<ncvslideio::Mat>(args.back()));
                 break;
             }
-            case cv::GShape::GSCALAR:
+            case ncvslideio::GShape::GSCALAR:
             {
-                args.emplace_back(cv::Scalar{});
-                outs.emplace_back(&cv::util::get<cv::Scalar>(args.back()));
+                args.emplace_back(ncvslideio::Scalar{});
+                outs.emplace_back(&ncvslideio::util::get<ncvslideio::Scalar>(args.back()));
                 break;
             }
-            case cv::GShape::GARRAY:
+            case ncvslideio::GShape::GARRAY:
             {
-                cv::detail::VectorRef ref;
-                util::get<cv::detail::ConstructVec>(info.ctor)(ref);
+                ncvslideio::detail::VectorRef ref;
+                util::get<ncvslideio::detail::ConstructVec>(info.ctor)(ref);
                 args.emplace_back(ref);
-                outs.emplace_back(cv::util::get<cv::detail::VectorRef>(args.back()));
+                outs.emplace_back(ncvslideio::util::get<ncvslideio::detail::VectorRef>(args.back()));
                 break;
             }
-            case cv::GShape::GOPAQUE:
+            case ncvslideio::GShape::GOPAQUE:
             {
-                cv::detail::OpaqueRef ref;
-                util::get<cv::detail::ConstructOpaque>(info.ctor)(ref);
+                ncvslideio::detail::OpaqueRef ref;
+                util::get<ncvslideio::detail::ConstructOpaque>(info.ctor)(ref);
                 args.emplace_back(ref);
                 outs.emplace_back(ref);
                 break;

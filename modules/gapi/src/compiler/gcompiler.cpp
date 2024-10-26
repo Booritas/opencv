@@ -37,7 +37,7 @@
 #include "executor/gstreamingexecutor.hpp"
 #include "backends/common/gbackend.hpp"
 #include "backends/common/gmetabackend.hpp"
-#include "backends/streaming/gstreamingbackend.hpp" // cv::gimpl::streaming::kernels()
+#include "backends/streaming/gstreamingbackend.hpp" // ncvslideio::gimpl::streaming::kernels()
 
 // <FIXME:>
 #if !defined(GAPI_STANDALONE)
@@ -54,67 +54,67 @@
 
 namespace
 {
-    cv::GKernelPackage getKernelPackage(cv::GCompileArgs &args)
+    ncvslideio::GKernelPackage getKernelPackage(ncvslideio::GCompileArgs &args)
     {
-        auto withAuxKernels = [](const cv::GKernelPackage& pkg) {
-            cv::GKernelPackage aux_pkg;
+        auto withAuxKernels = [](const ncvslideio::GKernelPackage& pkg) {
+            ncvslideio::GKernelPackage aux_pkg;
             for (const auto &b : pkg.backends()) {
-                aux_pkg = cv::gapi::combine(aux_pkg, b.priv().auxiliaryKernels());
+                aux_pkg = ncvslideio::gapi::combine(aux_pkg, b.priv().auxiliaryKernels());
             }
             // Always include built-in meta<> and copy implementation
-            return cv::gapi::combine(pkg,
+            return ncvslideio::gapi::combine(pkg,
                                      aux_pkg,
-                                     cv::gimpl::meta::kernels(),
-                                     cv::gimpl::streaming::kernels());
+                                     ncvslideio::gimpl::meta::kernels(),
+                                     ncvslideio::gimpl::streaming::kernels());
         };
 
-        auto has_use_only = cv::gapi::getCompileArg<cv::gapi::use_only>(args);
+        auto has_use_only = ncvslideio::gapi::getCompileArg<ncvslideio::gapi::use_only>(args);
         if (has_use_only)
             return withAuxKernels(has_use_only.value().pkg);
 
         static auto ocv_pkg =
 #if !defined(GAPI_STANDALONE)
-            cv::gapi::combine(cv::gapi::core::cpu::kernels(),
-                              cv::gapi::imgproc::cpu::kernels(),
-                              cv::gapi::video::cpu::kernels(),
-                              cv::gapi::render::ocv::kernels(),
-                              cv::gapi::streaming::kernels());
+            ncvslideio::gapi::combine(ncvslideio::gapi::core::cpu::kernels(),
+                              ncvslideio::gapi::imgproc::cpu::kernels(),
+                              ncvslideio::gapi::video::cpu::kernels(),
+                              ncvslideio::gapi::render::ocv::kernels(),
+                              ncvslideio::gapi::streaming::kernels());
 #else
-            cv::GKernelPackage();
+            ncvslideio::GKernelPackage();
 #endif // !defined(GAPI_STANDALONE)
 
-        auto user_pkg = cv::gapi::getCompileArg<cv::GKernelPackage>(args);
-        auto user_pkg_with_aux = withAuxKernels(user_pkg.value_or(cv::GKernelPackage{}));
-        return cv::gapi::combine(ocv_pkg, user_pkg_with_aux);
+        auto user_pkg = ncvslideio::gapi::getCompileArg<ncvslideio::GKernelPackage>(args);
+        auto user_pkg_with_aux = withAuxKernels(user_pkg.value_or(ncvslideio::GKernelPackage{}));
+        return ncvslideio::gapi::combine(ocv_pkg, user_pkg_with_aux);
     }
 
-    cv::gapi::GNetPackage getNetworkPackage(cv::GCompileArgs &args)
+    ncvslideio::gapi::GNetPackage getNetworkPackage(ncvslideio::GCompileArgs &args)
     {
-        return cv::gapi::getCompileArg<cv::gapi::GNetPackage>(args)
-            .value_or(cv::gapi::GNetPackage{});
+        return ncvslideio::gapi::getCompileArg<ncvslideio::gapi::GNetPackage>(args)
+            .value_or(ncvslideio::gapi::GNetPackage{});
     }
 
-    cv::util::optional<std::string> getGraphDumpDirectory(cv::GCompileArgs& args)
+    ncvslideio::util::optional<std::string> getGraphDumpDirectory(ncvslideio::GCompileArgs& args)
     {
-        auto dump_info = cv::gapi::getCompileArg<cv::graph_dump_path>(args);
+        auto dump_info = ncvslideio::gapi::getCompileArg<ncvslideio::graph_dump_path>(args);
         if (!dump_info.has_value())
         {
             const char* path = std::getenv("GRAPH_DUMP_PATH");
             return path
-                ? cv::util::make_optional(std::string(path))
-                : cv::util::optional<std::string>();
+                ? ncvslideio::util::make_optional(std::string(path))
+                : ncvslideio::util::optional<std::string>();
         }
         else
         {
-            return cv::util::make_optional(dump_info.value().m_dump_path);
+            return ncvslideio::util::make_optional(dump_info.value().m_dump_path);
         }
     }
 
     template<typename C>
-    cv::GKernelPackage auxKernelsFrom(const C& c) {
-        cv::GKernelPackage result;
+    ncvslideio::GKernelPackage auxKernelsFrom(const C& c) {
+        ncvslideio::GKernelPackage result;
         for (const auto &b : c) {
-            result = cv::gapi::combine(result, b.priv().auxiliaryKernels());
+            result = ncvslideio::gapi::combine(result, b.priv().auxiliaryKernels());
         }
         return result;
     }
@@ -122,7 +122,7 @@ namespace
     using adeGraphs = std::vector<std::unique_ptr<ade::Graph>>;
 
     // Creates ADE graphs (patterns and substitutes) from pkg's transformations
-    void makeTransformationGraphs(const cv::GKernelPackage& pkg,
+    void makeTransformationGraphs(const ncvslideio::GKernelPackage& pkg,
                                   adeGraphs& patterns,
                                   adeGraphs& substitutes) {
         const auto& transforms = pkg.get_transformations();
@@ -138,12 +138,12 @@ namespace
             const auto& t = std::get<0>(it);
             auto&       p = std::get<1>(it);
             auto&       s = std::get<2>(it);
-            p = cv::gimpl::GCompiler::makeGraph(t.pattern().priv());
-            s = cv::gimpl::GCompiler::makeGraph(t.substitute().priv());
+            p = ncvslideio::gimpl::GCompiler::makeGraph(t.pattern().priv());
+            s = ncvslideio::gimpl::GCompiler::makeGraph(t.substitute().priv());
         }
     }
 
-    void checkTransformations(const cv::GKernelPackage& pkg,
+    void checkTransformations(const ncvslideio::GKernelPackage& pkg,
                               const adeGraphs& patterns,
                               const adeGraphs& substitutes) {
         const auto& transforms = pkg.get_transformations();
@@ -153,7 +153,7 @@ namespace
         GAPI_Assert(size == patterns.size());
         GAPI_Assert(size == substitutes.size());
 
-        const auto empty = [] (const cv::gimpl::SubgraphMatch& m) {
+        const auto empty = [] (const ncvslideio::gimpl::SubgraphMatch& m) {
             return m.inputDataNodes.empty() && m.startOpNodes.empty()
                 && m.finishOpNodes.empty() && m.outputDataNodes.empty()
                 && m.inputTestDataNodes.empty() && m.outputTestDataNodes.empty();
@@ -165,7 +165,7 @@ namespace
             const auto& p = patterns[i];
             const auto& s = substitutes[i];
 
-            auto matchInSubstitute = cv::gimpl::findMatches(*p, *s);
+            auto matchInSubstitute = ncvslideio::gimpl::findMatches(*p, *s);
             if (!empty(matchInSubstitute)) {
                 std::stringstream ss;
                 ss << "Error: (in transformation with description: '"
@@ -180,7 +180,7 @@ namespace
 
 // GCompiler implementation ////////////////////////////////////////////////////
 
-cv::gimpl::GCompiler::GCompiler(const cv::GComputation &c,
+ncvslideio::gimpl::GCompiler::GCompiler(const ncvslideio::GComputation &c,
                                 GMetaArgs              &&metas,
                                 GCompileArgs           &&args)
     : m_c(c), m_metas(std::move(metas)), m_args(std::move(args))
@@ -189,14 +189,14 @@ cv::gimpl::GCompiler::GCompiler(const cv::GComputation &c,
 
     auto kernels_to_use  = getKernelPackage(m_args);
     auto networks_to_use = getNetworkPackage(m_args);
-    std::unordered_set<cv::gapi::GBackend> all_backends;
-    const auto take = [&](std::vector<cv::gapi::GBackend> &&v) {
+    std::unordered_set<ncvslideio::gapi::GBackend> all_backends;
+    const auto take = [&](std::vector<ncvslideio::gapi::GBackend> &&v) {
         all_backends.insert(v.begin(), v.end());
     };
     take(kernels_to_use.backends());
     take(networks_to_use.backends());
 
-    m_all_kernels = cv::gapi::combine(kernels_to_use,
+    m_all_kernels = ncvslideio::gapi::combine(kernels_to_use,
                                       auxKernelsFrom(all_backends));
     // NB: The expectation in the line above is that
     // NN backends (present here via network package) always add their
@@ -234,7 +234,7 @@ cv::gimpl::GCompiler::GCompiler(const cv::GComputation &c,
     // - etc, etc, etc
 
     // Remove GCompoundBackend to avoid calling setupBackend() with it in the list
-    m_all_kernels.remove(cv::gapi::compound::backend());
+    m_all_kernels.remove(ncvslideio::gapi::compound::backend());
 
     m_e.addPassStage("kernels");
     m_e.addPass("kernels", "bind_net_params",
@@ -300,7 +300,7 @@ cv::gimpl::GCompiler::GCompiler(const cv::GComputation &c,
     }
 }
 
-void cv::gimpl::GCompiler::validateInputMeta()
+void ncvslideio::gimpl::GCompiler::validateInputMeta()
 {
     // FIXME: implement testing/accessor methods at the Priv's API level?
     if (!util::holds_alternative<GComputation::Priv::Expr>(m_c.priv().m_shape))
@@ -309,7 +309,7 @@ void cv::gimpl::GCompiler::validateInputMeta()
                                " deserialized graphs!");
         return;
     }
-    const auto &c_expr = util::get<cv::GComputation::Priv::Expr>(m_c.priv().m_shape);
+    const auto &c_expr = util::get<ncvslideio::GComputation::Priv::Expr>(m_c.priv().m_shape);
     if (m_metas.size() != c_expr.m_ins.size())
     {
         util::throw_error(std::logic_error
@@ -322,21 +322,21 @@ void cv::gimpl::GCompiler::validateInputMeta()
         switch (proto.index())
         {
         // FIXME: Auto-generate methods like this from traits:
-        case GProtoArg::index_of<cv::GMat>():
-        case GProtoArg::index_of<cv::GMatP>():
-            return util::holds_alternative<cv::GMatDesc>(meta);
+        case GProtoArg::index_of<ncvslideio::GMat>():
+        case GProtoArg::index_of<ncvslideio::GMatP>():
+            return util::holds_alternative<ncvslideio::GMatDesc>(meta);
 
-        case GProtoArg::index_of<cv::GFrame>():
-            return util::holds_alternative<cv::GFrameDesc>(meta);
+        case GProtoArg::index_of<ncvslideio::GFrame>():
+            return util::holds_alternative<ncvslideio::GFrameDesc>(meta);
 
-        case GProtoArg::index_of<cv::GScalar>():
-            return util::holds_alternative<cv::GScalarDesc>(meta);
+        case GProtoArg::index_of<ncvslideio::GScalar>():
+            return util::holds_alternative<ncvslideio::GScalarDesc>(meta);
 
-        case GProtoArg::index_of<cv::detail::GArrayU>():
-            return util::holds_alternative<cv::GArrayDesc>(meta);
+        case GProtoArg::index_of<ncvslideio::detail::GArrayU>():
+            return util::holds_alternative<ncvslideio::GArrayDesc>(meta);
 
-        case GProtoArg::index_of<cv::detail::GOpaqueU>():
-            return util::holds_alternative<cv::GOpaqueDesc>(meta);
+        case GProtoArg::index_of<ncvslideio::detail::GOpaqueU>():
+            return util::holds_alternative<ncvslideio::GOpaqueDesc>(meta);
 
         default:
             GAPI_Error("InternalError");
@@ -368,7 +368,7 @@ void cv::gimpl::GCompiler::validateInputMeta()
     // All checks are ok
 }
 
-void cv::gimpl::GCompiler::validateOutProtoArgs()
+void ncvslideio::gimpl::GCompiler::validateOutProtoArgs()
 {
     // FIXME: implement testing/accessor methods at the Priv's API level?
     if (!util::holds_alternative<GComputation::Priv::Expr>(m_c.priv().m_shape))
@@ -377,11 +377,11 @@ void cv::gimpl::GCompiler::validateOutProtoArgs()
                                " deserialized graphs!");
         return;
     }
-    const auto &c_expr = util::get<cv::GComputation::Priv::Expr>(m_c.priv().m_shape);
+    const auto &c_expr = util::get<ncvslideio::GComputation::Priv::Expr>(m_c.priv().m_shape);
     for (const auto out_pos : ade::util::indexed(c_expr.m_outs))
     {
         const auto &node = proto::origin_of(ade::util::value(out_pos)).node;
-        if (node.shape() != cv::GNode::NodeShape::CALL)
+        if (node.shape() != ncvslideio::GNode::NodeShape::CALL)
         {
             auto pos = ade::util::index(out_pos);
             util::throw_error(std::logic_error
@@ -391,7 +391,7 @@ void cv::gimpl::GCompiler::validateOutProtoArgs()
     }
 }
 
-cv::gimpl::GCompiler::GPtr cv::gimpl::GCompiler::generateGraph()
+ncvslideio::gimpl::GCompiler::GPtr ncvslideio::gimpl::GCompiler::generateGraph()
 {
     if (!m_metas.empty())
     {
@@ -410,18 +410,18 @@ cv::gimpl::GCompiler::GPtr cv::gimpl::GCompiler::generateGraph()
     return g;
 }
 
-void cv::gimpl::GCompiler::runPasses(ade::Graph &g)
+void ncvslideio::gimpl::GCompiler::runPasses(ade::Graph &g)
 {
     m_e.runPasses(g);
     GAPI_LOG_INFO(NULL, "All compiler passes are successful");
 }
 
-void cv::gimpl::GCompiler::compileIslands(ade::Graph &g)
+void ncvslideio::gimpl::GCompiler::compileIslands(ade::Graph &g)
 {
     compileIslands(g, m_args);
 }
 
-void cv::gimpl::GCompiler::compileIslands(ade::Graph &g, const cv::GCompileArgs &args)
+void ncvslideio::gimpl::GCompiler::compileIslands(ade::Graph &g, const ncvslideio::GCompileArgs &args)
 {
     GModel::Graph gm(g);
     std::shared_ptr<ade::Graph> gptr(gm.metadata().get<IslandModel>().model);
@@ -430,7 +430,7 @@ void cv::gimpl::GCompiler::compileIslands(ade::Graph &g, const cv::GCompileArgs 
     GIslandModel::compileIslands(gim, g, args);
 }
 
-cv::GCompiled cv::gimpl::GCompiler::produceCompiled(GPtr &&pg)
+ncvslideio::GCompiled ncvslideio::gimpl::GCompiler::produceCompiled(GPtr &&pg)
 {
     // This is the final compilation step. Here:
     // - An instance of GExecutor is created. Depending on the platform,
@@ -454,7 +454,7 @@ cv::GCompiled cv::gimpl::GCompiler::produceCompiled(GPtr &&pg)
     // FIXME: select which executor will be actually used,
     // make GExecutor abstract.
 
-    auto use_threaded_exec = cv::gapi::getCompileArg<cv::use_threaded_executor>(m_args);
+    auto use_threaded_exec = ncvslideio::gapi::getCompileArg<ncvslideio::use_threaded_executor>(m_args);
     std::unique_ptr<GAbstractExecutor> pE;
     if (use_threaded_exec) {
         const auto num_threads = use_threaded_exec.value().num_threads;
@@ -469,7 +469,7 @@ cv::GCompiled cv::gimpl::GCompiler::produceCompiled(GPtr &&pg)
     return compiled;
 }
 
-cv::GStreamingCompiled cv::gimpl::GCompiler::produceStreamingCompiled(GPtr &&pg)
+ncvslideio::GStreamingCompiled ncvslideio::gimpl::GCompiler::produceStreamingCompiled(GPtr &&pg)
 {
     GStreamingCompiled compiled;
     GMetaArgs outMetas;
@@ -498,7 +498,7 @@ cv::GStreamingCompiled cv::gimpl::GCompiler::produceStreamingCompiled(GPtr &&pg)
     return compiled;
 }
 
-cv::GCompiled cv::gimpl::GCompiler::compile()
+ncvslideio::GCompiled ncvslideio::gimpl::GCompiler::compile()
 {
     std::unique_ptr<ade::Graph> pG = generateGraph();
     runPasses(*pG);
@@ -506,7 +506,7 @@ cv::GCompiled cv::gimpl::GCompiler::compile()
     return produceCompiled(std::move(pG));
 }
 
-cv::GStreamingCompiled cv::gimpl::GCompiler::compileStreaming()
+ncvslideio::GStreamingCompiled ncvslideio::gimpl::GCompiler::compileStreaming()
 {
     // FIXME: self-note to DM: now keep these compile()/compileStreaming() in sync!
     std::unique_ptr<ade::Graph> pG = generateGraph();
@@ -520,12 +520,12 @@ cv::GStreamingCompiled cv::gimpl::GCompiler::compileStreaming()
     return produceStreamingCompiled(std::move(pG));
 }
 
-void cv::gimpl::GCompiler::runMetaPasses(ade::Graph &g, const cv::GMetaArgs &metas)
+void ncvslideio::gimpl::GCompiler::runMetaPasses(ade::Graph &g, const ncvslideio::GMetaArgs &metas)
 {
     auto pass_ctx = ade::passes::PassContext{g};
-    cv::gimpl::passes::initMeta(pass_ctx, metas);
-    cv::gimpl::passes::inferMeta(pass_ctx, true);
-    cv::gimpl::passes::storeResultingMeta(pass_ctx);
+    ncvslideio::gimpl::passes::initMeta(pass_ctx, metas);
+    ncvslideio::gimpl::passes::inferMeta(pass_ctx, true);
+    ncvslideio::gimpl::passes::storeResultingMeta(pass_ctx);
 
     // Also run meta-sensitive backend-specific passes, if there's any.
     // FIXME: This may be hazardous if our backend are not very robust
@@ -546,24 +546,24 @@ void cv::gimpl::GCompiler::runMetaPasses(ade::Graph &g, const cv::GMetaArgs &met
 
 // Creates ADE graph from input/output proto args OR from its
 // deserialized form
-cv::gimpl::GCompiler::GPtr cv::gimpl::GCompiler::makeGraph(const cv::GComputation::Priv &priv) {
+ncvslideio::gimpl::GCompiler::GPtr ncvslideio::gimpl::GCompiler::makeGraph(const ncvslideio::GComputation::Priv &priv) {
     std::unique_ptr<ade::Graph> pG(new ade::Graph);
     ade::Graph& g = *pG;
 
-    if (cv::util::holds_alternative<cv::GComputation::Priv::Expr>(priv.m_shape)) {
-        auto c_expr = cv::util::get<cv::GComputation::Priv::Expr>(priv.m_shape);
-        cv::gimpl::GModel::Graph gm(g);
-        cv::gimpl::GModel::init(gm);
-        cv::gimpl::GModelBuilder builder(g);
+    if (ncvslideio::util::holds_alternative<ncvslideio::GComputation::Priv::Expr>(priv.m_shape)) {
+        auto c_expr = ncvslideio::util::get<ncvslideio::GComputation::Priv::Expr>(priv.m_shape);
+        ncvslideio::gimpl::GModel::Graph gm(g);
+        ncvslideio::gimpl::GModel::init(gm);
+        ncvslideio::gimpl::GModelBuilder builder(g);
         auto proto_slots = builder.put(c_expr.m_ins, c_expr.m_outs);
 
         // Store Computation's protocol in metadata
-        cv::gimpl::Protocol p;
+        ncvslideio::gimpl::Protocol p;
         std::tie(p.inputs, p.outputs, p.in_nhs, p.out_nhs) = proto_slots;
         gm.metadata().set(p);
-    } else if (cv::util::holds_alternative<cv::GComputation::Priv::Dump>(priv.m_shape)) {
-        auto c_dump = cv::util::get<cv::GComputation::Priv::Dump>(priv.m_shape);
-        cv::gapi::s11n::reconstruct(c_dump, g);
+    } else if (ncvslideio::util::holds_alternative<ncvslideio::GComputation::Priv::Dump>(priv.m_shape)) {
+        auto c_dump = ncvslideio::util::get<ncvslideio::GComputation::Priv::Dump>(priv.m_shape);
+        ncvslideio::gapi::s11n::reconstruct(c_dump, g);
     }
     return pG;
 }

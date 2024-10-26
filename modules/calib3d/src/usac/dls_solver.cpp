@@ -45,7 +45,7 @@
 #include "opencv_lapack.h"
 #endif
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class DLSPnPImpl : public DLSPnP {
 #if defined(HAVE_LAPACK) || defined(HAVE_EIGEN)
 private:

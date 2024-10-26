@@ -24,7 +24,7 @@
 #include <opencv2/gapi/gcommon.hpp>  // OpaqueKind
 #include <opencv2/gapi/garray.hpp>  // TypeHintBase
 
-namespace cv
+namespace ncvslideio
 {
 // Forward declaration; GNode and GOrigin are an internal
 // (user-inaccessible) classes.
@@ -46,7 +46,7 @@ template<typename U> GOpaqueDesc descr_of(const U &) { return {};}
 GAPI_EXPORTS_W inline GOpaqueDesc empty_gopaque_desc() {return {}; }
 /** @} */
 
-std::ostream& operator<<(std::ostream& os, const cv::GOpaqueDesc &desc);
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GOpaqueDesc &desc);
 
 namespace detail
 {
@@ -77,9 +77,9 @@ namespace detail
 
     protected:
         GOpaqueU();                                // Default constructor
-        template<class> friend class cv::GOpaque;  // (available for GOpaque<T> only)
+        template<class> friend class ncvslideio::GOpaque;  // (available for GOpaque<T> only)
 
-        void setConstructFcn(ConstructOpaque &&cv);  // Store T-aware constructor
+        void setConstructFcn(ConstructOpaque &&ncvslideio);  // Store T-aware constructor
 
         template <typename T>
         void specifyType();                       // Store type of initial GOpaque<T>
@@ -87,7 +87,7 @@ namespace detail
         template <typename T>
         void storeKind();
 
-        void setKind(cv::detail::OpaqueKind);
+        void setKind(ncvslideio::detail::OpaqueKind);
 
         std::shared_ptr<GOrigin> m_priv;
         std::shared_ptr<TypeHintBase> m_hint;
@@ -107,8 +107,8 @@ namespace detail
 
     template <typename T>
     void GOpaqueU::storeKind(){
-        // FIXME: Add assert here on cv::Mat and cv::Scalar?
-        setKind(cv::detail::GOpaqueTraits<T>::kind);
+        // FIXME: Add assert here on ncvslideio::Mat and ncvslideio::Scalar?
+        setKind(ncvslideio::detail::GOpaqueTraits<T>::kind);
     }
 
     // This class represents a typed object reference.
@@ -118,12 +118,12 @@ namespace detail
     class BasicOpaqueRef
     {
     public:
-        cv::GOpaqueDesc m_desc;
+        ncvslideio::GOpaqueDesc m_desc;
         virtual ~BasicOpaqueRef() {}
 
         virtual void mov(BasicOpaqueRef &ref) = 0;
         virtual const void* ptr() const = 0;
-        virtual void set(const cv::util::any &a) = 0;
+        virtual void set(const ncvslideio::util::any &a) = 0;
     };
 
     template<typename T> class OpaqueRefT final: public BasicOpaqueRef
@@ -141,7 +141,7 @@ namespace detail
 
         void init(const T* obj = nullptr)
         {
-            if (obj) m_desc = cv::descr_of(*obj);
+            if (obj) m_desc = ncvslideio::descr_of(*obj);
         }
 
     public:
@@ -163,7 +163,7 @@ namespace detail
             if (isEmpty())
             {
                 T empty_obj{};
-                m_desc = cv::descr_of(empty_obj);
+                m_desc = ncvslideio::descr_of(empty_obj);
                 m_ref  = std::move(empty_obj);
                 GAPI_Assert(isRWOwn());
             }
@@ -218,7 +218,7 @@ namespace detail
 
         virtual const void* ptr() const override { return &rref(); }
 
-        virtual void set(const cv::util::any &a) override {
+        virtual void set(const ncvslideio::util::any &a) override {
             wref() = util::any_cast<T>(a);
         }
     };
@@ -232,7 +232,7 @@ namespace detail
     class OpaqueRef
     {
         std::shared_ptr<BasicOpaqueRef> m_ref;
-        cv::detail::OpaqueKind m_kind = cv::detail::OpaqueKind::CV_UNKNOWN;
+        ncvslideio::detail::OpaqueKind m_kind = ncvslideio::detail::OpaqueKind::CV_UNKNOWN;
 
         template<typename T> inline void check() const
         {
@@ -251,7 +251,7 @@ namespace detail
             m_ref(new OpaqueRefT<util::decay_t<T>>(std::forward<T>(obj))),
             m_kind(GOpaqueTraits<util::decay_t<T>>::kind) {}
 
-        cv::detail::OpaqueKind getKind() const
+        ncvslideio::detail::OpaqueKind getKind() const
         {
             return m_kind;
         }
@@ -267,7 +267,7 @@ namespace detail
         template <typename T>
         void storeKind()
         {
-            m_kind = cv::detail::GOpaqueTraits<T>::kind;
+            m_kind = ncvslideio::detail::GOpaqueTraits<T>::kind;
         }
 
         template<typename T> T& wref()
@@ -287,7 +287,7 @@ namespace detail
             m_ref->mov(*v.m_ref);
         }
 
-        cv::GOpaqueDesc descr_of() const
+        ncvslideio::GOpaqueDesc descr_of() const
         {
             return m_ref->m_desc;
         }
@@ -296,7 +296,7 @@ namespace detail
         const void *ptr() const { return m_ref->ptr(); }
 
         // Introduced for in-graph meta handling
-        OpaqueRef& operator= (const cv::util::any &a)
+        OpaqueRef& operator= (const ncvslideio::util::any &a)
         {
             m_ref->set(a);
             return *this;
@@ -308,19 +308,19 @@ namespace detail
  * @{
  */
 /**
- * @brief `cv::GOpaque<T>` template class represents an object of
+ * @brief `ncvslideio::GOpaque<T>` template class represents an object of
  * class `T` in the graph.
  *
- * `cv::GOpaque<T>` describes a functional relationship between operations
- * consuming and producing object of class `T`. `cv::GOpaque<T>` is
+ * `ncvslideio::GOpaque<T>` describes a functional relationship between operations
+ * consuming and producing object of class `T`. `ncvslideio::GOpaque<T>` is
  * designed to extend G-API with user-defined data types, which are
  * often required with user-defined operations. G-API can't apply any
  * optimizations to user-defined types since these types are opaque to
  * the framework. However, there is a number of G-API operations
- * declared with `cv::GOpaque<T>` as a return type,
- * e.g. cv::gapi::streaming::timestamp() or cv::gapi::streaming::size().
+ * declared with `ncvslideio::GOpaque<T>` as a return type,
+ * e.g. ncvslideio::gapi::streaming::timestamp() or ncvslideio::gapi::streaming::size().
  *
- * @sa `cv::GArray<T>`
+ * @sa `ncvslideio::GArray<T>`
  */
 template<typename T> class GOpaque
 {
@@ -331,10 +331,10 @@ public:
     using HT = typename detail::flatten_g<util::decay_t<T>>::type;
 
     /**
-     * @brief Constructs an empty `cv::GOpaque<T>`
+     * @brief Constructs an empty `ncvslideio::GOpaque<T>`
      *
      * Normally, empty G-API data objects denote a starting point of
-     * the graph. When an empty `cv::GOpaque<T>` is assigned to a result
+     * the graph. When an empty `ncvslideio::GOpaque<T>` is assigned to a result
      * of some operation, it obtains a functional link to this
      * operation (and is not empty anymore).
      */
@@ -364,6 +364,6 @@ private:
 
 /** @} */
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GOPAQUE_HPP

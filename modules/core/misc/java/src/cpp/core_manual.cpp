@@ -8,14 +8,14 @@ static int quietCallback( int, const char*, const char*, const char*, int, void*
     return 0;
 }
 
-namespace cv {
+namespace ncvslideio {
 
 void setErrorVerbosity(bool verbose)
 {
     if(verbose)
-        cv::redirectError(0);
+        ncvslideio::redirectError(0);
     else
-        cv::redirectError((cv::ErrorCallback)quietCallback);
+        ncvslideio::redirectError((ncvslideio::ErrorCallback)quietCallback);
 }
 
 }

@@ -7,7 +7,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup objdetect_dnn_face
@@ -59,7 +59,7 @@ public:
      * ![image](pics/lena-face-detection.jpg)
 
      *  @param image an image to detect
-     *  @param faces detection results stored in a 2D cv::Mat of shape [num_faces, 15]
+     *  @param faces detection results stored in a 2D ncvslideio::Mat of shape [num_faces, 15]
      *  - 0-1: x, y of bbox top left corner
      *  - 2-3: width, height of bbox
      *  - 4-5: x, y of right eye (blue point in the example image)
@@ -174,6 +174,6 @@ public:
 };
 
 //! @}
-} // namespace cv
+} // namespace ncvslideio
 
 #endif

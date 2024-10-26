@@ -20,7 +20,7 @@
 #include <opencv2/gapi/gopaque.hpp>
 #include <opencv2/gapi/gframe.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 // FIXME: Rename to GMeta?
 // FIXME: user shouldn't deal with it - put to detail?
@@ -69,12 +69,12 @@ namespace detail
 // Note: descr_of(std::vector<..>) returns a GArrayDesc, while
 //       descrs_of(std::vector<..>) returns an array of Meta args!
 class UMat;
-GAPI_EXPORTS cv::GMetaArgs descrs_of(const std::vector<cv::Mat> &vec);
-GAPI_EXPORTS cv::GMetaArgs descrs_of(const std::vector<cv::UMat> &vec);
+GAPI_EXPORTS ncvslideio::GMetaArgs descrs_of(const std::vector<ncvslideio::Mat> &vec);
+GAPI_EXPORTS ncvslideio::GMetaArgs descrs_of(const std::vector<ncvslideio::UMat> &vec);
 namespace gapi { namespace own {
-    GAPI_EXPORTS cv::GMetaArgs descrs_of(const std::vector<Mat> &vec);
+    GAPI_EXPORTS ncvslideio::GMetaArgs descrs_of(const std::vector<Mat> &vec);
 }} // namespace gapi::own
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GMETAARG_HPP

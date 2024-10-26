@@ -4,7 +4,7 @@
 
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 

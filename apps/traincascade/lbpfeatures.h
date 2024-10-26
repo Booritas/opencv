@@ -15,11 +15,11 @@ class CvLBPEvaluator : public CvFeatureEvaluator
 public:
     virtual ~CvLBPEvaluator() {}
     virtual void init(const CvFeatureParams *_featureParams,
-        int _maxSampleCount, cv::Size _winSize );
-    virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
+        int _maxSampleCount, ncvslideio::Size _winSize );
+    virtual void setImage(const ncvslideio::Mat& img, uchar clsLabel, int idx);
     virtual float operator()(int featureIdx, int sampleIdx) const
     { return (float)features[featureIdx].calc( sum, sampleIdx); }
-    virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
+    virtual void writeFeatures( ncvslideio::FileStorage &fs, const ncvslideio::Mat& featureMap ) const;
 protected:
     virtual void generateFeatures();
 
@@ -28,18 +28,18 @@ protected:
     public:
         Feature();
         Feature( int offset, int x, int y, int _block_w, int _block_h  );
-        uchar calc( const cv::Mat& _sum, size_t y ) const;
-        void write( cv::FileStorage &fs ) const;
+        uchar calc( const ncvslideio::Mat& _sum, size_t y ) const;
+        void write( ncvslideio::FileStorage &fs ) const;
 
-        cv::Rect rect;
+        ncvslideio::Rect rect;
         int p[16];
     };
     std::vector<Feature> features;
 
-    cv::Mat sum;
+    ncvslideio::Mat sum;
 };
 
-inline uchar CvLBPEvaluator::Feature::calc(const cv::Mat &_sum, size_t y) const
+inline uchar CvLBPEvaluator::Feature::calc(const ncvslideio::Mat &_sum, size_t y) const
 {
     const int* psum = _sum.ptr<int>((int)y);
     int cval = psum[p[5]] - psum[p[6]] - psum[p[9]] + psum[p[10]];

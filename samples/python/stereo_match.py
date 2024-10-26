@@ -35,14 +35,14 @@ def write_ply(fn, verts, colors):
 
 def main():
     print('loading images...')
-    imgL = cv.pyrDown(cv.imread(cv.samples.findFile('aloeL.jpg')))  # downscale images for faster processing
-    imgR = cv.pyrDown(cv.imread(cv.samples.findFile('aloeR.jpg')))
+    imgL = ncvslideio.pyrDown(ncvslideio.imread(ncvslideio.samples.findFile('aloeL.jpg')))  # downscale images for faster processing
+    imgR = ncvslideio.pyrDown(ncvslideio.imread(ncvslideio.samples.findFile('aloeR.jpg')))
 
     # disparity range is tuned for 'aloe' image pair
     window_size = 3
     min_disp = 16
     num_disp = 112-min_disp
-    stereo = cv.StereoSGBM_create(minDisparity = min_disp,
+    stereo = ncvslideio.StereoSGBM_create(minDisparity = min_disp,
         numDisparities = num_disp,
         blockSize = 16,
         P1 = 8*3*window_size**2,
@@ -63,8 +63,8 @@ def main():
                     [0,-1, 0,  0.5*h], # turn points 180 deg around x-axis,
                     [0, 0, 0,     -f], # so that y-axis looks up
                     [0, 0, 1,      0]])
-    points = cv.reprojectImageTo3D(disp, Q)
-    colors = cv.cvtColor(imgL, cv.COLOR_BGR2RGB)
+    points = ncvslideio.reprojectImageTo3D(disp, Q)
+    colors = ncvslideio.cvtColor(imgL, ncvslideio.COLOR_BGR2RGB)
     mask = disp > disp.min()
     out_points = points[mask]
     out_colors = colors[mask]
@@ -72,9 +72,9 @@ def main():
     write_ply(out_fn, out_points, out_colors)
     print('%s saved' % out_fn)
 
-    cv.imshow('left', imgL)
-    cv.imshow('disparity', (disp-min_disp)/num_disp)
-    cv.waitKey()
+    ncvslideio.imshow('left', imgL)
+    ncvslideio.imshow('disparity', (disp-min_disp)/num_disp)
+    ncvslideio.waitKey()
 
     print('Done')
 
@@ -82,4 +82,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -24,26 +24,26 @@ class dft_test(NewOpenCVTests):
         refDftShift = np.fft.fftshift(refDft)
         refMagnitide = np.log(1.0 + np.abs(refDftShift))
 
-        testDft = cv.dft(np.float32(img),flags = cv.DFT_COMPLEX_OUTPUT)
+        testDft = ncvslideio.dft(np.float32(img),flags = ncvslideio.DFT_COMPLEX_OUTPUT)
         testDftShift = np.fft.fftshift(testDft)
-        testMagnitude = np.log(1.0 + cv.magnitude(testDftShift[:,:,0], testDftShift[:,:,1]))
+        testMagnitude = np.log(1.0 + ncvslideio.magnitude(testDftShift[:,:,0], testDftShift[:,:,1]))
 
-        refMagnitide = cv.normalize(refMagnitide, 0.0, 1.0, cv.NORM_MINMAX)
-        testMagnitude = cv.normalize(testMagnitude, 0.0, 1.0, cv.NORM_MINMAX)
+        refMagnitide = ncvslideio.normalize(refMagnitide, 0.0, 1.0, ncvslideio.NORM_MINMAX)
+        testMagnitude = ncvslideio.normalize(testMagnitude, 0.0, 1.0, ncvslideio.NORM_MINMAX)
 
-        self.assertLess(cv.norm(refMagnitide - testMagnitude), eps)
+        self.assertLess(ncvslideio.norm(refMagnitide - testMagnitude), eps)
 
         #test inverse transform
         img_back = np.fft.ifft2(refDft)
         img_back = np.abs(img_back)
 
-        img_backTest = cv.idft(testDft)
-        img_backTest = cv.magnitude(img_backTest[:,:,0], img_backTest[:,:,1])
+        img_backTest = ncvslideio.idft(testDft)
+        img_backTest = ncvslideio.magnitude(img_backTest[:,:,0], img_backTest[:,:,1])
 
-        img_backTest = cv.normalize(img_backTest, 0.0, 1.0, cv.NORM_MINMAX)
-        img_back = cv.normalize(img_back, 0.0, 1.0, cv.NORM_MINMAX)
+        img_backTest = ncvslideio.normalize(img_backTest, 0.0, 1.0, ncvslideio.NORM_MINMAX)
+        img_back = ncvslideio.normalize(img_back, 0.0, 1.0, ncvslideio.NORM_MINMAX)
 
-        self.assertLess(cv.norm(img_back - img_backTest), eps)
+        self.assertLess(ncvslideio.norm(img_back - img_backTest), eps)
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@
 #include "obsensor_stream_channel_interface.hpp"
 
 #ifdef HAVE_OBSENSOR
-namespace cv {
+namespace ncvslideio {
 namespace obsensor {
 #define XU_MAX_DATA_LENGTH 1024
 #define XU_UNIT_ID 4
@@ -107,6 +107,6 @@ protected:
     StreamType streamType_;
     Ptr<IFrameProcessor> depthFrameProcessor_;
 };
-}} // namespace cv::obsensor::
+}} // namespace ncvslideio::obsensor::
 #endif // HAVE_OBSENSOR
 #endif // OPENCV_VIDEOIO_OBSENSOR_UVC_STREAM_CHANNEL_HPP

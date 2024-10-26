@@ -11,12 +11,12 @@ def thresh_callback(val):
 
     ## [Canny]
     # Detect edges using Canny
-    canny_output = cv.Canny(src_gray, threshold, threshold * 2)
+    canny_output = ncvslideio.Canny(src_gray, threshold, threshold * 2)
     ## [Canny]
 
     ## [findContours]
     # Find contours
-    contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = ncvslideio.findContours(canny_output, ncvslideio.RETR_TREE, ncvslideio.CHAIN_APPROX_SIMPLE)
     ## [findContours]
 
     ## [allthework]
@@ -26,9 +26,9 @@ def thresh_callback(val):
     centers = [None]*len(contours)
     radius = [None]*len(contours)
     for i, c in enumerate(contours):
-        contours_poly[i] = cv.approxPolyDP(c, 3, True)
-        boundRect[i] = cv.boundingRect(contours_poly[i])
-        centers[i], radius[i] = cv.minEnclosingCircle(contours_poly[i])
+        contours_poly[i] = ncvslideio.approxPolyDP(c, 3, True)
+        boundRect[i] = ncvslideio.boundingRect(contours_poly[i])
+        centers[i], radius[i] = ncvslideio.minEnclosingCircle(contours_poly[i])
     ## [allthework]
 
     ## [zeroMat]
@@ -39,15 +39,15 @@ def thresh_callback(val):
     # Draw polygonal contour + bonding rects + circles
     for i in range(len(contours)):
         color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
-        cv.drawContours(drawing, contours_poly, i, color)
-        cv.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
+        ncvslideio.drawContours(drawing, contours_poly, i, color)
+        ncvslideio.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
           (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
-        cv.circle(drawing, (int(centers[i][0]), int(centers[i][1])), int(radius[i]), color, 2)
+        ncvslideio.circle(drawing, (int(centers[i][0]), int(centers[i][1])), int(radius[i]), color, 2)
     ## [forContour]
 
     ## [showDrawings]
     # Show in a window
-    cv.imshow('Contours', drawing)
+    ncvslideio.imshow('Contours', drawing)
     ## [showDrawings]
 
 ## [setup]
@@ -56,14 +56,14 @@ parser = argparse.ArgumentParser(description='Code for Creating Bounding boxes a
 parser.add_argument('--input', help='Path to input image.', default='stuff.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 
 # Convert image to gray and blur it
-src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-src_gray = cv.blur(src_gray, (3,3))
+src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
+src_gray = ncvslideio.blur(src_gray, (3,3))
 ## [setup]
 
 ## [createWindow]

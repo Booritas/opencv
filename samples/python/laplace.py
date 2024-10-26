@@ -21,7 +21,7 @@ import sys
 
 def main():
     # Declare the variables we are going to use
-    ddepth = cv.CV_16S
+    ddepth = ncvslideio.CV_16S
     smoothType = "MedianBlur"
     sigma = 3
     if len(sys.argv)==4:
@@ -29,13 +29,13 @@ def main():
         smoothType = sys.argv[2]
         sigma = sys.argv[3]
     # Taking input from the camera
-    cap=cv.VideoCapture(0)
+    cap=ncvslideio.VideoCapture(0)
     # Create Window and Trackbar
-    cv.namedWindow("Laplace of Image", cv.WINDOW_AUTOSIZE)
-    cv.createTrackbar("Kernel Size Bar", "Laplace of Image", sigma, 15, lambda x:x)
+    ncvslideio.namedWindow("Laplace of Image", ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.createTrackbar("Kernel Size Bar", "Laplace of Image", sigma, 15, lambda x:x)
     # Printing frame width, height and FPS
     print("=="*40)
-    print("Frame Width: ", cap.get(cv.CAP_PROP_FRAME_WIDTH), "Frame Height: ", cap.get(cv.CAP_PROP_FRAME_HEIGHT), "FPS: ", cap.get(cv.CAP_PROP_FPS))
+    print("Frame Width: ", cap.get(ncvslideio.CAP_PROP_FRAME_WIDTH), "Frame Height: ", cap.get(ncvslideio.CAP_PROP_FRAME_HEIGHT), "FPS: ", cap.get(ncvslideio.CAP_PROP_FPS))
     while True:
         # Reading input from the camera
         ret, frame = cap.read()
@@ -43,27 +43,27 @@ def main():
             print("Can't open camera/video stream")
             break
         # Taking input/position from the trackbar
-        sigma = cv.getTrackbarPos("Kernel Size Bar", "Laplace of Image")
+        sigma = ncvslideio.getTrackbarPos("Kernel Size Bar", "Laplace of Image")
         # Setting kernel size
         ksize = (sigma*5)|1
         # Removing noise by blurring with a filter
         if smoothType == "GAUSSIAN":
-            smoothed = cv.GaussianBlur(frame, (ksize, ksize), sigma, sigma)
+            smoothed = ncvslideio.GaussianBlur(frame, (ksize, ksize), sigma, sigma)
         if smoothType == "BLUR":
-            smoothed = cv.blur(frame, (ksize, ksize))
+            smoothed = ncvslideio.blur(frame, (ksize, ksize))
         if smoothType == "MedianBlur":
-            smoothed = cv.medianBlur(frame, ksize)
+            smoothed = ncvslideio.medianBlur(frame, ksize)
 
         # Apply Laplace function
-        laplace = cv.Laplacian(smoothed, ddepth, 5)
+        laplace = ncvslideio.Laplacian(smoothed, ddepth, 5)
         # Converting back to uint8
-        result = cv.convertScaleAbs(laplace, (sigma+1)*0.25)
+        result = ncvslideio.convertScaleAbs(laplace, (sigma+1)*0.25)
         # Display Output
-        cv.imshow("Laplace of Image", result)
-        k = cv.waitKey(30)
+        ncvslideio.imshow("Laplace of Image", result)
+        k = ncvslideio.waitKey(30)
         if k == 27:
             return
 if __name__ == "__main__":
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -43,27 +43,27 @@ cv.dnn_registerLayer('Crop', CropLayer)
 #! [Register]
 
 # Load the model.
-net = cv.dnn.readNet(cv.samples.findFile(args.prototxt), cv.samples.findFile(args.caffemodel))
+net = ncvslideio.dnn.readNet(ncvslideio.samples.findFile(args.prototxt), ncvslideio.samples.findFile(args.caffemodel))
 
 kWinName = 'Holistically-Nested Edge Detection'
-cv.namedWindow('Input', cv.WINDOW_NORMAL)
-cv.namedWindow(kWinName, cv.WINDOW_NORMAL)
+cv.namedWindow('Input', ncvslideio.WINDOW_NORMAL)
+cv.namedWindow(kWinName, ncvslideio.WINDOW_NORMAL)
 
-cap = cv.VideoCapture(args.input if args.input else 0)
-while cv.waitKey(1) < 0:
+cap = ncvslideio.VideoCapture(args.input if args.input else 0)
+while ncvslideio.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
-        cv.waitKey()
+        ncvslideio.waitKey()
         break
 
-    cv.imshow('Input', frame)
+    ncvslideio.imshow('Input', frame)
 
-    inp = cv.dnn.blobFromImage(frame, scalefactor=1.0, size=(args.width, args.height),
+    inp = ncvslideio.dnn.blobFromImage(frame, scalefactor=1.0, size=(args.width, args.height),
                                mean=(104.00698793, 116.66876762, 122.67891434),
                                swapRB=False, crop=False)
     net.setInput(inp)
 
     out = net.forward()
     out = out[0, 0]
-    out = cv.resize(out, (frame.shape[1], frame.shape[0]))
-    cv.imshow(kWinName, out)
+    out = ncvslideio.resize(out, (frame.shape[1], frame.shape[0]))
+    ncvslideio.imshow(kWinName, out)

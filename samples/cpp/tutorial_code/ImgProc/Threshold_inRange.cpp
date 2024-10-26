@@ -3,7 +3,7 @@
 #include "opencv2/videoio.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 /** Global Variables */
 const int max_value_H = 360/2;

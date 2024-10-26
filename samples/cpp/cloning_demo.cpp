@@ -28,12 +28,12 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main()
 {
     cout << endl;
-    cout << "Note: specify OPENCV_SAMPLES_DATA_PATH_HINT=<opencv_extra>/testdata/cv" << endl << endl;
+    cout << "Note: specify OPENCV_SAMPLES_DATA_PATH_HINT=<opencv_extra>/testdata/ncvslideio" << endl << endl;
     cout << "Cloning Module" << endl;
     cout << "---------------" << endl;
     cout << "Options: " << endl;

@@ -76,7 +76,7 @@ void CV_InpaintTest::run( int )
     mask.convertTo(inv_mask, CV_8UC3, -1.0, 255.0);
 
     Mat mask1ch;
-    cv::cvtColor(mask, mask1ch, COLOR_BGR2GRAY);
+    ncvslideio::cvtColor(mask, mask1ch, COLOR_BGR2GRAY);
 
     Mat test = orig.clone();
     test.setTo(Scalar::all(255), mask1ch);
@@ -133,8 +133,8 @@ TEST_P(formats, basic)
     Mat dst2;
     inpaint(src, mask, dst2, 10, INPAINT_TELEA);
 
-    ASSERT_EQ(cv::norm(dst, ref, NORM_INF), 0.);
-    ASSERT_EQ(cv::norm(dst2, ref, NORM_INF), 0.);
+    ASSERT_EQ(ncvslideio::norm(dst, ref, NORM_INF), 0.);
+    ASSERT_EQ(ncvslideio::norm(dst2, ref, NORM_INF), 0.);
 }
 
 INSTANTIATE_TEST_CASE_P(Photo_Inpaint, formats, testing::Values(CV_32FC1, CV_16UC1, CV_8UC1, CV_8UC3));
@@ -153,7 +153,7 @@ TEST(Photo_InpaintBorders, regression)
     inpaint(img, mask, inpainted, 1, INPAINT_TELEA);
 
     Mat diff;
-    cv::absdiff(inpainted, 128*Mat::ones(inpainted.size(), inpainted.type()), diff);
+    ncvslideio::absdiff(inpainted, 128*Mat::ones(inpainted.size(), inpainted.type()), diff);
     ASSERT_TRUE(countNonZero(diff) == 0);
 }
 
@@ -173,11 +173,11 @@ TEST_P(Photo_InpaintSmallBorders, regression)
     Mat inpainted, diff;
 
     inpaint(img, mask, inpainted, 1, INPAINT_TELEA);
-    cv::absdiff(inpainted, expected, diff);
+    ncvslideio::absdiff(inpainted, expected, diff);
     ASSERT_EQ(countNonZero(diff.reshape(1)), 0);
 
     inpaint(img, mask, inpainted, 1, INPAINT_NS);
-    cv::absdiff(inpainted, expected, diff);
+    ncvslideio::absdiff(inpainted, expected, diff);
     ASSERT_EQ(countNonZero(diff.reshape(1)), 0);
 }
 

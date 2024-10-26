@@ -7,8 +7,8 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 using namespace std;
 
 // the 313 ab cluster centers from pts_in_hull.npy (already transposed)

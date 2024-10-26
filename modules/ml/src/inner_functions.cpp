@@ -40,7 +40,7 @@
 
 #include "precomp.hpp"
 
-namespace cv { namespace ml {
+namespace ncvslideio { namespace ml {
 
 ParamGrid::ParamGrid() { minVal = maxVal = 0.; logStep = 1; }
 ParamGrid::ParamGrid(double _minVal, double _maxVal, double _logStep)
@@ -63,7 +63,7 @@ bool StatModel::train(const Ptr<TrainData>& trainData, int )
 {
     CV_TRACE_FUNCTION();
     CV_Assert(!trainData.empty());
-    CV_Error(cv::Error::StsNotImplemented, "");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "");
     return false;
 }
 
@@ -180,7 +180,7 @@ static void Cholesky( const Mat& A, Mat& S )
     CV_Assert(A.type() == CV_32F);
 
     S = A.clone();
-    cv::Cholesky ((float*)S.ptr(),S.step, S.rows,NULL, 0, 0);
+    ncvslideio::Cholesky ((float*)S.ptr(),S.step, S.rows,NULL, 0, 0);
     S = S.t();
     for (int i=1;i<S.rows;i++)
         for (int j=0;j<i;j++)

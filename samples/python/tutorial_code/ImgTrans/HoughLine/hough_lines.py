@@ -14,7 +14,7 @@ def main(argv):
     filename = argv[0] if len(argv) > 0 else default_file
 
     # Loads an image
-    src = cv.imread(cv.samples.findFile(filename), cv.IMREAD_GRAYSCALE)
+    src = ncvslideio.imread(ncvslideio.samples.findFile(filename), ncvslideio.IMREAD_GRAYSCALE)
 
     # Check if image is loaded fine
     if src is None:
@@ -25,16 +25,16 @@ def main(argv):
 
     ## [edge_detection]
     # Edge detection
-    dst = cv.Canny(src, 50, 200, None, 3)
+    dst = ncvslideio.Canny(src, 50, 200, None, 3)
     ## [edge_detection]
 
     # Copy edges to the images that will display the results in BGR
-    cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
+    cdst = ncvslideio.cvtColor(dst, ncvslideio.COLOR_GRAY2BGR)
     cdstP = np.copy(cdst)
 
     ## [hough_lines]
     #  Standard Hough Line Transform
-    lines = cv.HoughLines(dst, 1, np.pi / 180, 150, None, 0, 0)
+    lines = ncvslideio.HoughLines(dst, 1, np.pi / 180, 150, None, 0, 0)
     ## [hough_lines]
     ## [draw_lines]
     # Draw the lines
@@ -49,29 +49,29 @@ def main(argv):
             pt1 = (int(x0 + 1000*(-b)), int(y0 + 1000*(a)))
             pt2 = (int(x0 - 1000*(-b)), int(y0 - 1000*(a)))
 
-            cv.line(cdst, pt1, pt2, (0,0,255), 3, cv.LINE_AA)
+            ncvslideio.line(cdst, pt1, pt2, (0,0,255), 3, ncvslideio.LINE_AA)
     ## [draw_lines]
 
     ## [hough_lines_p]
     # Probabilistic Line Transform
-    linesP = cv.HoughLinesP(dst, 1, np.pi / 180, 50, None, 50, 10)
+    linesP = ncvslideio.HoughLinesP(dst, 1, np.pi / 180, 50, None, 50, 10)
     ## [hough_lines_p]
     ## [draw_lines_p]
     # Draw the lines
     if linesP is not None:
         for i in range(0, len(linesP)):
             l = linesP[i][0]
-            cv.line(cdstP, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv.LINE_AA)
+            ncvslideio.line(cdstP, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, ncvslideio.LINE_AA)
     ## [draw_lines_p]
     ## [imshow]
     # Show results
-    cv.imshow("Source", src)
-    cv.imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst)
-    cv.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdstP)
+    ncvslideio.imshow("Source", src)
+    ncvslideio.imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst)
+    ncvslideio.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdstP)
     ## [imshow]
     ## [exit]
     # Wait and Exit
-    cv.waitKey()
+    ncvslideio.waitKey()
     return 0
     ## [exit]
 

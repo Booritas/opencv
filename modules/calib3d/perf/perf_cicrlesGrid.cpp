@@ -4,7 +4,7 @@ namespace opencv_test
 {
 using namespace perf;
 
-typedef tuple<std::string, cv::Size> String_Size_t;
+typedef tuple<std::string, ncvslideio::Size> String_Size_t;
 typedef perf::TestBaseWithParam<String_Size_t> String_Size;
 
 PERF_TEST_P(String_Size, asymm_circles_grid, testing::Values(

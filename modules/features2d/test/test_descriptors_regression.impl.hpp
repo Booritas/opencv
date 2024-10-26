@@ -14,7 +14,7 @@ static void double_image(Mat& src, Mat& dst) {
     Mat H = Mat::zeros(2, 3, CV_32F);
     H.at<float>(0, 0) = 0.5f;
     H.at<float>(1, 1) = 0.5f;
-    cv::warpAffine(src, dst, H, dst.size(), INTER_LINEAR | WARP_INVERSE_MAP, BORDER_REFLECT);
+    ncvslideio::warpAffine(src, dst, H, dst.size(), INTER_LINEAR | WARP_INVERSE_MAP, BORDER_REFLECT);
 
 }
 
@@ -182,8 +182,8 @@ protected:
             Mat downsized_back(dbl.rows/2, dbl.cols/2, CV_32F);
             resize(dbl, downsized_back, Size(dbl.cols/2, dbl.rows/2), 0, 0, INTER_NEAREST);
 
-            cv::Mat diff = (image != downsized_back);
-            ASSERT_EQ(0, cv::norm(image, downsized_back, NORM_INF));
+            ncvslideio::Mat diff = (image != downsized_back);
+            ASSERT_EQ(0, ncvslideio::norm(image, downsized_back, NORM_INF));
         }
         catch(...)
         {

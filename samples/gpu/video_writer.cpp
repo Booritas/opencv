@@ -11,7 +11,7 @@
 #include "opencv2/cudacodec.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 int main(int argc, const char* argv[])
 {
     if (argc != 2)
@@ -22,7 +22,7 @@ int main(int argc, const char* argv[])
 
     constexpr double fps = 25.0;
 
-    cv::VideoCapture reader(argv[1]);
+    ncvslideio::VideoCapture reader(argv[1]);
 
     if (!reader.isOpened())
     {
@@ -30,14 +30,14 @@ int main(int argc, const char* argv[])
         return -1;
     }
 
-    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+    ncvslideio::cuda::printShortCudaDeviceInfo(ncvslideio::cuda::getDevice());
 
-    cv::VideoWriter writer;
-    cv::Ptr<cv::cudacodec::VideoWriter> d_writer;
+    ncvslideio::VideoWriter writer;
+    ncvslideio::Ptr<ncvslideio::cudacodec::VideoWriter> d_writer;
 
-    cv::Mat frame;
-    cv::cuda::GpuMat d_frame;
-    cv::cuda::Stream stream;
+    ncvslideio::Mat frame;
+    ncvslideio::cuda::GpuMat d_frame;
+    ncvslideio::cuda::Stream stream;
 
     for (int i = 1;; ++i)
     {
@@ -54,7 +54,7 @@ int main(int argc, const char* argv[])
             std::cout << "Frame Size : " << frame.cols << "x" << frame.rows << std::endl;
             std::cout << "Open CPU Writer" << std::endl;
             const String outputFilename = "output_cpu.avi";
-            if (!writer.open(outputFilename, cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), fps, frame.size()))
+            if (!writer.open(outputFilename, ncvslideio::VideoWriter::fourcc('X', 'V', 'I', 'D'), fps, frame.size()))
                 return -1;
             std::cout << "Writing to " << outputFilename << std::endl;
         }
@@ -62,8 +62,8 @@ int main(int argc, const char* argv[])
         if (d_writer.empty())
         {
             std::cout << "Open CUDA Writer" << std::endl;
-            const cv::String outputFilename = "output_gpu.h264";
-            d_writer = cv::cudacodec::createVideoWriter(outputFilename, frame.size(), cv::cudacodec::Codec::H264, fps, cv::cudacodec::ColorFormat::BGR, 0, stream);
+            const ncvslideio::String outputFilename = "output_gpu.h264";
+            d_writer = ncvslideio::cudacodec::createVideoWriter(outputFilename, frame.size(), ncvslideio::cudacodec::Codec::H264, fps, ncvslideio::cudacodec::ColorFormat::BGR, 0, stream);
             std::cout << "Writing to " << outputFilename << std::endl;
         }
 

@@ -48,7 +48,7 @@
 #include "fast_nlmeans_denoising_invoker_commons.hpp"
 #include "arrays.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 template <typename T, typename IT, typename UIT, typename D, typename WT>
 struct FastNlMeansDenoisingInvoker :

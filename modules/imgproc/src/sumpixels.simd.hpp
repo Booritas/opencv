@@ -47,7 +47,7 @@
 #include "sumpixels.avx512_skx.hpp"
 #endif
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 // forward declarations
@@ -1156,4 +1156,4 @@ bool integral_SIMD(
 
 #endif
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-}} // cv::hal::
+}} // ncvslideio::hal::

@@ -42,14 +42,14 @@ CV_EXPORTS @interface DMatch : NSObject
 */
 @property float distance;
 #ifdef __cplusplus
-@property(readonly) cv::DMatch& nativeRef;
+@property(readonly) ncvslideio::DMatch& nativeRef;
 #endif
 
 - (instancetype)init;
 - (instancetype)initWithQueryIdx:(int)queryIdx trainIdx:(int)trainIdx distance:(float)distance;
 - (instancetype)initWithQueryIdx:(int)queryIdx trainIdx:(int)trainIdx imgIdx:(int)imgIdx distance:(float)distance;
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::DMatch&)dMatch;
++ (instancetype)fromNative:(ncvslideio::DMatch&)dMatch;
 #endif
 
 /**

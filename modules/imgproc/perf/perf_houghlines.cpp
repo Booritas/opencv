@@ -10,7 +10,7 @@ typedef perf::TestBaseWithParam<Image_RhoStep_ThetaStep_Threshold_t> Image_RhoSt
 
 PERF_TEST_P(Image_RhoStep_ThetaStep_Threshold, HoughLines,
             testing::Combine(
-                testing::Values( "cv/shared/pic5.png", "stitching/a1.png" ),
+                testing::Values( "ncvslideio/shared/pic5.png", "stitching/a1.png" ),
                 testing::Values( 1, 10 ),
                 testing::Values( 0.01, 0.1 ),
                 testing::Values( 0.5, 1.1 )
@@ -49,7 +49,7 @@ PERF_TEST_P(Image_RhoStep_ThetaStep_Threshold, HoughLines,
     EXPECT_LT(lines.size(), 3000u);
 
 #if 0
-    cv::cvtColor(image,image,cv::COLOR_GRAY2BGR);
+    ncvslideio::cvtColor(image,image,ncvslideio::COLOR_GRAY2BGR);
     for( size_t i = 0; i < lines.size(); i++ )
     {
         float rho = lines[i][0], theta = lines[i][1];
@@ -60,10 +60,10 @@ PERF_TEST_P(Image_RhoStep_ThetaStep_Threshold, HoughLines,
         pt1.y = cvRound(y0 + 1000*(a));
         pt2.x = cvRound(x0 - 1000*(-b));
         pt2.y = cvRound(y0 - 1000*(a));
-        line(image, pt1, pt2, Scalar(0,0,255), 1, cv::LINE_AA);
+        line(image, pt1, pt2, Scalar(0,0,255), 1, ncvslideio::LINE_AA);
     }
-    cv::imshow("result", image);
-    cv::waitKey();
+    ncvslideio::imshow("result", image);
+    ncvslideio::waitKey();
 #endif
 
     SANITY_CHECK_NOTHING();
@@ -71,7 +71,7 @@ PERF_TEST_P(Image_RhoStep_ThetaStep_Threshold, HoughLines,
 
 PERF_TEST_P(Image_RhoStep_ThetaStep_Threshold, HoughLines3f,
             testing::Combine(
-                testing::Values( "cv/shared/pic5.png", "stitching/a1.png" ),
+                testing::Values( "ncvslideio/shared/pic5.png", "stitching/a1.png" ),
                 testing::Values( 1, 10 ),
                 testing::Values( 0.01, 0.1 ),
                 testing::Values( 0.5, 1.1 )

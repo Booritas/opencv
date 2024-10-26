@@ -29,7 +29,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class MlesacLoss {
   public:
     MlesacLoss(double threshold) : squared_thr(threshold * threshold), norm_thr(squared_thr*3), one_over_thr(1/norm_thr), inv_sq_thr(1/squared_thr) {}

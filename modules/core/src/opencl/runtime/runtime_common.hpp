@@ -42,7 +42,7 @@
 #ifndef __OPENCV_CORE_OCL_RUNTIME_COMMON_HPP__
 #define __OPENCV_CORE_OCL_RUNTIME_COMMON_HPP__
 
-namespace cv { namespace ocl { namespace runtime {
+namespace ncvslideio { namespace ocl { namespace runtime {
 
 struct DynamicFnEntry
 {
@@ -50,8 +50,8 @@ struct DynamicFnEntry
     void** ppFn; // &clCreateContext_pfn
 };
 
-} } } // namespace cv::ocl::runtime
+} } } // namespace ncvslideio::ocl::runtime
 
-using namespace cv::ocl::runtime;
+using namespace ncvslideio::ocl::runtime;
 
 #endif // __OPENCV_CORE_OCL_RUNTIME_COMMON_HPP__

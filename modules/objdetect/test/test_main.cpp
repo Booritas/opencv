@@ -22,4 +22,4 @@ void initTests()
 #endif  // HAVE_OPENCV_DNN
 }
 
-CV_TEST_MAIN("cv", initTests())
+CV_TEST_MAIN("ncvslideio", initTests())

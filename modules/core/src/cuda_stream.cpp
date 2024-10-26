@@ -43,8 +43,8 @@
 #include "precomp.hpp"
 #include <cstdint>
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4702)  // unreachable code
@@ -267,7 +267,7 @@ namespace
 
 #ifndef HAVE_CUDA
 
-class cv::cuda::Stream::Impl
+class ncvslideio::cuda::Stream::Impl
 {
 public:
     Impl(void* ptr = 0)
@@ -284,7 +284,7 @@ namespace
     class StackAllocator;
 }
 
-class cv::cuda::Stream::Impl
+class ncvslideio::cuda::Stream::Impl
 {
 public:
     cudaStream_t stream;
@@ -300,7 +300,7 @@ public:
     ~Impl();
 };
 
-cv::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
+ncvslideio::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
 {
     cudaSafeCall( cudaStreamCreate(&stream) );
     ownStream = true;
@@ -308,25 +308,25 @@ cv::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
     allocator = makePtr<StackAllocator>(stream);
 }
 
-cv::cuda::Stream::Impl::Impl(const Ptr<GpuMat::Allocator>& allocator) : stream(0), ownStream(false), allocator(allocator)
+ncvslideio::cuda::Stream::Impl::Impl(const Ptr<GpuMat::Allocator>& allocator) : stream(0), ownStream(false), allocator(allocator)
 {
     cudaSafeCall( cudaStreamCreate(&stream) );
     ownStream = true;
 }
 
-cv::cuda::Stream::Impl::Impl(const unsigned int cudaFlags) : stream(0), ownStream(false)
+ncvslideio::cuda::Stream::Impl::Impl(const unsigned int cudaFlags) : stream(0), ownStream(false)
 {
     cudaSafeCall(cudaStreamCreateWithFlags(&stream, cudaFlags));
     ownStream = true;
     allocator = makePtr<StackAllocator>(stream);
 }
 
-cv::cuda::Stream::Impl::Impl(cudaStream_t stream_) : stream(stream_), ownStream(false)
+ncvslideio::cuda::Stream::Impl::Impl(cudaStream_t stream_) : stream(stream_), ownStream(false)
 {
     allocator = makePtr<StackAllocator>(stream);
 }
 
-cv::cuda::Stream::Impl::~Impl()
+ncvslideio::cuda::Stream::Impl::~Impl()
 {
     allocator.release();
 
@@ -343,7 +343,7 @@ cv::cuda::Stream::Impl::~Impl()
 
 #ifdef HAVE_CUDA
 
-namespace cv { namespace cuda
+namespace ncvslideio { namespace cuda
 {
     class DefaultDeviceInitializer
     {
@@ -440,7 +440,7 @@ namespace cv { namespace cuda
 /////////////////////////////////////////////////////////////
 /// Stream
 
-cv::cuda::Stream::Stream()
+ncvslideio::cuda::Stream::Stream()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -449,7 +449,7 @@ cv::cuda::Stream::Stream()
 #endif
 }
 
-cv::cuda::Stream::Stream(const Ptr<GpuMat::Allocator>& allocator)
+ncvslideio::cuda::Stream::Stream(const Ptr<GpuMat::Allocator>& allocator)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(allocator);
@@ -459,7 +459,7 @@ cv::cuda::Stream::Stream(const Ptr<GpuMat::Allocator>& allocator)
 #endif
 }
 
-cv::cuda::Stream::Stream(const size_t cudaFlags)
+ncvslideio::cuda::Stream::Stream(const size_t cudaFlags)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(cudaFlags);
@@ -469,7 +469,7 @@ cv::cuda::Stream::Stream(const size_t cudaFlags)
 #endif
 }
 
-bool cv::cuda::Stream::queryIfComplete() const
+bool ncvslideio::cuda::Stream::queryIfComplete() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -484,7 +484,7 @@ bool cv::cuda::Stream::queryIfComplete() const
 #endif
 }
 
-void cv::cuda::Stream::waitForCompletion()
+void ncvslideio::cuda::Stream::waitForCompletion()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -493,7 +493,7 @@ void cv::cuda::Stream::waitForCompletion()
 #endif
 }
 
-void cv::cuda::Stream::waitEvent(const Event& event)
+void ncvslideio::cuda::Stream::waitEvent(const Event& event)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(event);
@@ -525,7 +525,7 @@ namespace
 
 #endif
 
-void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userData)
+void ncvslideio::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userData)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(callback);
@@ -535,7 +535,7 @@ void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userDa
     #if CUDART_VERSION < 5000
         CV_UNUSED(callback);
         CV_UNUSED(userData);
-        CV_Error(cv::Error::StsNotImplemented, "This function requires CUDA >= 5.0");
+        CV_Error(ncvslideio::Error::StsNotImplemented, "This function requires CUDA >= 5.0");
     #else
         CallbackData* data = new CallbackData(callback, userData);
 
@@ -544,7 +544,7 @@ void cv::cuda::Stream::enqueueHostCallback(StreamCallback callback, void* userDa
 #endif
 }
 
-Stream& cv::cuda::Stream::Null()
+Stream& ncvslideio::cuda::Stream::Null()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -554,7 +554,7 @@ Stream& cv::cuda::Stream::Null()
 #endif
 }
 
-void* cv::cuda::Stream::cudaPtr() const
+void* ncvslideio::cuda::Stream::cudaPtr() const
 {
 #ifndef HAVE_CUDA
     return nullptr;
@@ -563,7 +563,7 @@ void* cv::cuda::Stream::cudaPtr() const
 #endif
 }
 
-cv::cuda::Stream::operator bool_type() const
+ncvslideio::cuda::Stream::operator bool_type() const
 {
 #ifndef HAVE_CUDA
     return 0;
@@ -574,24 +574,24 @@ cv::cuda::Stream::operator bool_type() const
 
 #ifdef HAVE_CUDA
 
-cudaStream_t cv::cuda::StreamAccessor::getStream(const Stream& stream)
+cudaStream_t ncvslideio::cuda::StreamAccessor::getStream(const Stream& stream)
 {
     return stream.impl_->stream;
 }
 
-Stream cv::cuda::StreamAccessor::wrapStream(cudaStream_t stream)
+Stream ncvslideio::cuda::StreamAccessor::wrapStream(cudaStream_t stream)
 {
     return Stream(makePtr<Stream::Impl>(stream));
 }
 
 #endif
 
-Stream cv::cuda::wrapStream(size_t cudaStreamMemoryAddress) {
+Stream ncvslideio::cuda::wrapStream(size_t cudaStreamMemoryAddress) {
 #ifndef HAVE_CUDA
     CV_UNUSED(cudaStreamMemoryAddress);
     throw_no_cuda();
 #else
-    return cv::cuda::StreamAccessor::wrapStream(reinterpret_cast<cudaStream_t>(cudaStreamMemoryAddress));
+    return ncvslideio::cuda::StreamAccessor::wrapStream(reinterpret_cast<cudaStream_t>(cudaStreamMemoryAddress));
 #endif
 }
 
@@ -696,7 +696,7 @@ namespace
 /////////////////////////////////////////////////////////////
 /// BufferPool
 
-void cv::cuda::setBufferPoolUsage(bool on)
+void ncvslideio::cuda::setBufferPoolUsage(bool on)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(on);
@@ -706,7 +706,7 @@ void cv::cuda::setBufferPoolUsage(bool on)
 #endif
 }
 
-void cv::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCount)
+void ncvslideio::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCount)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(deviceId);
@@ -737,18 +737,18 @@ void cv::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCoun
 }
 
 #ifndef HAVE_CUDA
-cv::cuda::BufferPool::BufferPool(Stream& stream)
+ncvslideio::cuda::BufferPool::BufferPool(Stream& stream)
 {
     CV_UNUSED(stream);
     throw_no_cuda();
 }
 #else
-cv::cuda::BufferPool::BufferPool(Stream& stream) : allocator_(stream.impl_->allocator)
+ncvslideio::cuda::BufferPool::BufferPool(Stream& stream) : allocator_(stream.impl_->allocator)
 {
 }
 #endif
 
-GpuMat cv::cuda::BufferPool::getBuffer(int rows, int cols, int type)
+GpuMat ncvslideio::cuda::BufferPool::getBuffer(int rows, int cols, int type)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(rows);
@@ -768,7 +768,7 @@ GpuMat cv::cuda::BufferPool::getBuffer(int rows, int cols, int type)
 
 #ifndef HAVE_CUDA
 
-class cv::cuda::Event::Impl
+class ncvslideio::cuda::Event::Impl
 {
 public:
     Impl(unsigned int)
@@ -779,7 +779,7 @@ public:
 
 #else
 
-class cv::cuda::Event::Impl
+class ncvslideio::cuda::Event::Impl
 {
 public:
     cudaEvent_t event;
@@ -790,17 +790,17 @@ public:
     ~Impl();
 };
 
-cv::cuda::Event::Impl::Impl(unsigned int flags) : event(0), ownEvent(false)
+ncvslideio::cuda::Event::Impl::Impl(unsigned int flags) : event(0), ownEvent(false)
 {
     cudaSafeCall( cudaEventCreateWithFlags(&event, flags) );
     ownEvent = true;
 }
 
-cv::cuda::Event::Impl::Impl(cudaEvent_t e) : event(e), ownEvent(false)
+ncvslideio::cuda::Event::Impl::Impl(cudaEvent_t e) : event(e), ownEvent(false)
 {
 }
 
-cv::cuda::Event::Impl::~Impl()
+ncvslideio::cuda::Event::Impl::~Impl()
 {
     if (event && ownEvent)
     {
@@ -808,19 +808,19 @@ cv::cuda::Event::Impl::~Impl()
     }
 }
 
-cudaEvent_t cv::cuda::EventAccessor::getEvent(const Event& event)
+cudaEvent_t ncvslideio::cuda::EventAccessor::getEvent(const Event& event)
 {
     return event.impl_->event;
 }
 
-Event cv::cuda::EventAccessor::wrapEvent(cudaEvent_t event)
+Event ncvslideio::cuda::EventAccessor::wrapEvent(cudaEvent_t event)
 {
     return Event(makePtr<Event::Impl>(event));
 }
 
 #endif
 
-cv::cuda::Event::Event(const Event::CreateFlags flags)
+ncvslideio::cuda::Event::Event(const Event::CreateFlags flags)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(flags);
@@ -830,7 +830,7 @@ cv::cuda::Event::Event(const Event::CreateFlags flags)
 #endif
 }
 
-void cv::cuda::Event::record(Stream& stream)
+void ncvslideio::cuda::Event::record(Stream& stream)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(stream);
@@ -840,7 +840,7 @@ void cv::cuda::Event::record(Stream& stream)
 #endif
 }
 
-bool cv::cuda::Event::queryIfComplete() const
+bool ncvslideio::cuda::Event::queryIfComplete() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -855,7 +855,7 @@ bool cv::cuda::Event::queryIfComplete() const
 #endif
 }
 
-void cv::cuda::Event::waitForCompletion()
+void ncvslideio::cuda::Event::waitForCompletion()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -864,7 +864,7 @@ void cv::cuda::Event::waitForCompletion()
 #endif
 }
 
-float cv::cuda::Event::elapsedTime(const Event& start, const Event& end)
+float ncvslideio::cuda::Event::elapsedTime(const Event& start, const Event& end)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(start);

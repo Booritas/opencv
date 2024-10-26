@@ -12,7 +12,7 @@
 #include "../precomp.hpp"
 #include <opencv2/features2d.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 //*************************************************************************************
 

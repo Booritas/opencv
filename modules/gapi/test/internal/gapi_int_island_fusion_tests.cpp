@@ -28,35 +28,35 @@ TEST(IslandFusion, TwoOps_OneIsland)
     //          :          "island0"            :
     //          :<----------------------------->:
 
-    cv::GMat in;
-    cv::GMat tmp0 = I::Foo::on(in);
-    cv::GMat out  = I::Foo::on(tmp0);
-    cv::GComputation cc(in, out);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp0 = I::Foo::on(in);
+    ncvslideio::GMat out  = I::Foo::on(tmp0);
+    ncvslideio::GComputation cc(in, out);
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<J::Foo>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<J::Foo>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
     // Inspect the graph and verify the islands configuration
-    cv::gimpl::GModel::ConstGraph gm(*graph);
-    cv::gimpl::GModel::ConstLayoutGraph glm(*graph);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
+    ncvslideio::gimpl::GModel::ConstLayoutGraph glm(*graph);
 
-    auto in_nh  = cv::gimpl::GModel::dataNodeOf(glm, in);
-    auto tmp_nh = cv::gimpl::GModel::dataNodeOf(glm, tmp0);
-    auto out_nh = cv::gimpl::GModel::dataNodeOf(glm, out);
+    auto in_nh  = ncvslideio::gimpl::GModel::dataNodeOf(glm, in);
+    auto tmp_nh = ncvslideio::gimpl::GModel::dataNodeOf(glm, tmp0);
+    auto out_nh = ncvslideio::gimpl::GModel::dataNodeOf(glm, out);
 
     // in/out mats shouldn't be assigned to any Island
-    EXPECT_FALSE(gm.metadata(in_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out_nh).contains<ncvslideio::gimpl::Island>());
 
     // Since tmp is surrounded by two J kernels, tmp should be assigned
     // to island J
-    EXPECT_TRUE(gm.metadata(tmp_nh).contains<cv::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp_nh).contains<ncvslideio::gimpl::Island>());
 }
 
 TEST(IslandFusion, TwoOps_TwoIslands)
@@ -71,53 +71,53 @@ TEST(IslandFusion, TwoOps_TwoIslands)
     //          :          :         :          :
     //          :<-------->:         :<-------->:
 
-    cv::GMat in;
-    cv::GMat tmp0 = I::Foo::on(in);
-    cv::GMat out  = I::Bar::on(tmp0, tmp0);
-    cv::GComputation cc(in, out);
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp0 = I::Foo::on(in);
+    ncvslideio::GMat out  = I::Bar::on(tmp0, tmp0);
+    ncvslideio::GComputation cc(in, out);
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<J::Foo, S::Bar>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<J::Foo, S::Bar>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
     // Inspect the graph and verify the islands configuration
-    cv::gimpl::GModel::ConstGraph gm(*graph);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
 
-    auto in_nh  = cv::gimpl::GModel::dataNodeOf(gm, in);
-    auto tmp_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp0);
-    auto out_nh = cv::gimpl::GModel::dataNodeOf(gm, out);
+    auto in_nh  = ncvslideio::gimpl::GModel::dataNodeOf(gm, in);
+    auto tmp_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp0);
+    auto out_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out);
 
     // in/tmp/out mats shouldn't be assigned to any Island
-    EXPECT_FALSE(gm.metadata(in_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out_nh).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(tmp_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(tmp_nh).contains<ncvslideio::gimpl::Island>());
 
-    auto isl_model = gm.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    auto isl_model = gm.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
     // There should be two islands in the GIslandModel
     const auto is_island = [&](ade::NodeHandle nh) {
-        return (cv::gimpl::NodeKind::ISLAND
-                == gim.metadata(nh).get<cv::gimpl::NodeKind>().k);
+        return (ncvslideio::gimpl::NodeKind::ISLAND
+                == gim.metadata(nh).get<ncvslideio::gimpl::NodeKind>().k);
     };
     const std::size_t num_isl = std::count_if(gim.nodes().begin(),
                                               gim.nodes().end(),
                                               is_island);
     EXPECT_EQ(2u, num_isl);
 
-    auto isl_foo_nh  = cv::gimpl::GIslandModel::producerOf(gim, tmp_nh);
-    auto isl_bar_nh  = cv::gimpl::GIslandModel::producerOf(gim, out_nh);
+    auto isl_foo_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, tmp_nh);
+    auto isl_bar_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, out_nh);
     ASSERT_NE(nullptr, isl_foo_nh);
     ASSERT_NE(nullptr, isl_bar_nh);
 
     // Islands should be different
-    auto isl_foo_obj = gim.metadata(isl_foo_nh).get<cv::gimpl::FusedIsland>().object;
-    auto isl_bar_obj = gim.metadata(isl_bar_nh).get<cv::gimpl::FusedIsland>().object;
+    auto isl_foo_obj = gim.metadata(isl_foo_nh).get<ncvslideio::gimpl::FusedIsland>().object;
+    auto isl_bar_obj = gim.metadata(isl_bar_nh).get<ncvslideio::gimpl::FusedIsland>().object;
     EXPECT_FALSE(isl_foo_obj == isl_bar_obj);
 }
 
@@ -139,44 +139,44 @@ TEST(IslandFusion, ConsumerHasTwoInputs)
     GMat tmp = I::Foo::on(in[0]);
     GMat out = I::Bar::on(tmp, in[1]);
 
-    cv::GComputation cc(cv::GIn(in[0], in[1]), cv::GOut(out));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out));
 
     // Prepare compilation parameters manually
-    cv::GMetaArgs in_metas = {GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)}),
-                              GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)})};
-    const auto pkg = cv::gapi::kernels<J::Foo, J::Bar>();
+    ncvslideio::GMetaArgs in_metas = {GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)}),
+                              GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)})};
+    const auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, std::move(in_metas), cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, std::move(in_metas), ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
-    cv::gimpl::GModel::ConstGraph gm(*graph);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
 
-    auto in0_nh = cv::gimpl::GModel::dataNodeOf(gm, in[0]);
-    auto in1_nh = cv::gimpl::GModel::dataNodeOf(gm, in[1]);
-    auto tmp_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp);
-    auto out_nh = cv::gimpl::GModel::dataNodeOf(gm, out);
+    auto in0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, in[0]);
+    auto in1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, in[1]);
+    auto tmp_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp);
+    auto out_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out);
 
-    EXPECT_FALSE(gm.metadata(in0_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(in1_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out_nh).contains<cv::gimpl::Island>());
-    EXPECT_TRUE(gm.metadata(tmp_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in0_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in1_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp_nh).contains<ncvslideio::gimpl::Island>());
 
-    auto isl_model = gm.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    auto isl_model = gm.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
     const auto is_island = [&](ade::NodeHandle nh) {
-        return (cv::gimpl::NodeKind::ISLAND
-                == gim.metadata(nh).get<cv::gimpl::NodeKind>().k);
+        return (ncvslideio::gimpl::NodeKind::ISLAND
+                == gim.metadata(nh).get<ncvslideio::gimpl::NodeKind>().k);
     };
     const std::size_t num_isl = std::count_if(gim.nodes().begin(),
                                               gim.nodes().end(),
                                               is_island);
     EXPECT_EQ(1u, num_isl);
 
-    auto isl_nh  = cv::gimpl::GIslandModel::producerOf(gim, out_nh);
-    auto isl_obj = gim.metadata(isl_nh).get<cv::gimpl::FusedIsland>().object;
+    auto isl_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, out_nh);
+    auto isl_obj = gim.metadata(isl_nh).get<ncvslideio::gimpl::FusedIsland>().object;
 
     EXPECT_TRUE(ade::util::contains(isl_obj->contents(), tmp_nh));
 
@@ -202,38 +202,38 @@ TEST(IslandFusion, DataNodeUsedDifferentBackend)
     namespace J = Jupiter;
     namespace S = Saturn;
 
-    cv::GMat in, tmp, out0;
-    cv::GScalar out1;
+    ncvslideio::GMat in, tmp, out0;
+    ncvslideio::GScalar out1;
     tmp  = I::Foo::on(in);
     out0 = I::Foo::on(tmp);
     out1 = I::Baz::on(tmp);
 
-    cv::GComputation cc(cv::GIn(in), cv::GOut(out0, out1));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in), ncvslideio::GOut(out0, out1));
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<J::Foo, S::Baz>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<J::Foo, S::Baz>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
     // Inspect the graph and verify the islands configuration
-    cv::gimpl::GModel::ConstGraph gm(*graph);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
 
-    auto in_nh   = cv::gimpl::GModel::dataNodeOf(gm, in);
-    auto tmp_nh  = cv::gimpl::GModel::dataNodeOf(gm, tmp);
-    auto out0_nh = cv::gimpl::GModel::dataNodeOf(gm, out0);
-    auto out1_nh = cv::gimpl::GModel::dataNodeOf(gm, out1);
+    auto in_nh   = ncvslideio::gimpl::GModel::dataNodeOf(gm, in);
+    auto tmp_nh  = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp);
+    auto out0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out0);
+    auto out1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out1);
 
-    EXPECT_TRUE(gm.metadata(tmp_nh).contains<cv::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp_nh).contains<ncvslideio::gimpl::Island>());
 
-    auto isl_model = gm.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    auto isl_model = gm.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
-    auto isl_nh  = cv::gimpl::GIslandModel::producerOf(gim, tmp_nh);
-    auto isl_obj = gim.metadata(isl_nh).get<cv::gimpl::FusedIsland>().object;
+    auto isl_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, tmp_nh);
+    auto isl_obj = gim.metadata(isl_nh).get<ncvslideio::gimpl::FusedIsland>().object;
 
     EXPECT_TRUE(ade::util::contains(isl_obj->contents(), tmp_nh));
 
@@ -261,47 +261,47 @@ TEST(IslandFusion, LoopBetweenDifferentBackends)
     namespace J = Jupiter;
     namespace S = Saturn;
 
-    cv::GScalar tmp0;
-    cv::GMat in, tmp1, out0, out1;
+    ncvslideio::GScalar tmp0;
+    ncvslideio::GMat in, tmp1, out0, out1;
 
     tmp0 = I::Baz::on(in);
     tmp1 = I::Foo::on(in);
     out1 = I::Qux::on(tmp1, tmp0);
     out0 = I::Quux::on(tmp0, tmp1);
 
-    cv::GComputation cc(cv::GIn(in), cv::GOut(out1, out0));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in), ncvslideio::GOut(out1, out0));
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<J::Baz, J::Quux, S::Foo, S::Qux>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<J::Baz, J::Quux, S::Foo, S::Qux>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
-    cv::gimpl::GModel::ConstGraph gm(*graph);
-    auto isl_model = gm.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
+    auto isl_model = gm.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
-    auto in_nh   = cv::gimpl::GModel::dataNodeOf(gm, in);
-    auto tmp0_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp0);
-    auto tmp1_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp1);
-    auto out0_nh = cv::gimpl::GModel::dataNodeOf(gm, out0);
-    auto out1_nh = cv::gimpl::GModel::dataNodeOf(gm, out1);
+    auto in_nh   = ncvslideio::gimpl::GModel::dataNodeOf(gm, in);
+    auto tmp0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp0);
+    auto tmp1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp1);
+    auto out0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out0);
+    auto out1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out1);
 
-    EXPECT_FALSE(gm.metadata(in_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out0_nh).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out1_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out0_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out1_nh).contains<ncvslideio::gimpl::Island>());
     // The node does not belong to the island so as not to form a cycle
-    EXPECT_FALSE(gm.metadata(tmp1_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(tmp1_nh).contains<ncvslideio::gimpl::Island>());
 
-    EXPECT_TRUE(gm.metadata(tmp0_nh).contains<cv::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp0_nh).contains<ncvslideio::gimpl::Island>());
 
     // There should be three islands in the GIslandModel
     const auto is_island = [&](ade::NodeHandle nh) {
-        return (cv::gimpl::NodeKind::ISLAND
-                == gim.metadata(nh).get<cv::gimpl::NodeKind>().k);
+        return (ncvslideio::gimpl::NodeKind::ISLAND
+                == gim.metadata(nh).get<ncvslideio::gimpl::NodeKind>().k);
     };
     const std::size_t num_isl = std::count_if(gim.nodes().begin(),
                                               gim.nodes().end(),
@@ -330,38 +330,38 @@ TEST(IslandsFusion, PartionOverlapUserIsland)
     GMat tmp = I::Foo::on(in[0]);
     GMat out = I::Bar::on(tmp, in[1]);
 
-    cv::gapi::island("isl0", cv::GIn(tmp, in[1]), cv::GOut(out));
-    cv::GComputation cc(cv::GIn(in[0], in[1]), cv::GOut(out));
+    ncvslideio::gapi::island("isl0", ncvslideio::GIn(tmp, in[1]), ncvslideio::GOut(out));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out));
 
     // Prepare compilation parameters manually
-    cv::GMetaArgs in_metas = {GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)}),
-                              GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)})};
-    const auto pkg = cv::gapi::kernels<J::Foo, J::Bar>();
+    ncvslideio::GMetaArgs in_metas = {GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)}),
+                              GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)})};
+    const auto pkg = ncvslideio::gapi::kernels<J::Foo, J::Bar>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, std::move(in_metas), cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, std::move(in_metas), ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
-    cv::gimpl::GModel::ConstGraph gm(*graph);
-    auto isl_model = gm.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
+    auto isl_model = gm.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
-    auto in0_nh = cv::gimpl::GModel::dataNodeOf(gm, in[0]);
-    auto in1_nh = cv::gimpl::GModel::dataNodeOf(gm, in[1]);
-    auto tmp_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp);
-    auto out_nh = cv::gimpl::GModel::dataNodeOf(gm, out);
+    auto in0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, in[0]);
+    auto in1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, in[1]);
+    auto tmp_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp);
+    auto out_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, out);
 
-    auto foo_nh  = cv::gimpl::GIslandModel::producerOf(gim, tmp_nh);
-    auto foo_obj = gim.metadata(foo_nh).get<cv::gimpl::FusedIsland>().object;
+    auto foo_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, tmp_nh);
+    auto foo_obj = gim.metadata(foo_nh).get<ncvslideio::gimpl::FusedIsland>().object;
 
-    auto bar_nh  = cv::gimpl::GIslandModel::producerOf(gim, out_nh);
-    auto bar_obj = gim.metadata(bar_nh).get<cv::gimpl::FusedIsland>().object;
+    auto bar_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, out_nh);
+    auto bar_obj = gim.metadata(bar_nh).get<ncvslideio::gimpl::FusedIsland>().object;
 
-    EXPECT_FALSE(gm.metadata(in0_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(in1_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out_nh).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(tmp_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in0_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in1_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(tmp_nh).contains<ncvslideio::gimpl::Island>());
     EXPECT_FALSE(foo_obj->is_user_specified());
     EXPECT_TRUE(bar_obj->is_user_specified());
 }
@@ -387,17 +387,17 @@ TEST(IslandsFusion, DISABLED_IslandContainsDifferentBackends)
     GMat tmp = I::Foo::on(in[0]);
     GMat out = I::Bar::on(tmp, in[1]);
 
-    cv::gapi::island("isl0", cv::GIn(in[0], in[1]), cv::GOut(out));
-    cv::GComputation cc(cv::GIn(in[0], in[1]), cv::GOut(out));
+    ncvslideio::gapi::island("isl0", ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out));
+    ncvslideio::GComputation cc(ncvslideio::GIn(in[0], in[1]), ncvslideio::GOut(out));
 
     // Prepare compilation parameters manually
-    cv::GMetaArgs in_metas = {GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)}),
-                              GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)})};
-    const auto pkg = cv::gapi::kernels<J::Foo, S::Bar>();
+    ncvslideio::GMetaArgs in_metas = {GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)}),
+                              GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)})};
+    const auto pkg = ncvslideio::gapi::kernels<J::Foo, S::Bar>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, std::move(in_metas), cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, std::move(in_metas), ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     EXPECT_ANY_THROW(compiler.runPasses(*graph));
 }
 
@@ -416,58 +416,58 @@ TEST(IslandFusion, WithLoop)
     // Then this island both produces data for Baz and consumes data
     // from Baz. This is a cycle and it should be avoided by the merging code.
     //
-    cv::GMat    in;
-    cv::GMat    tmp0 = I::Foo::on(in);
-    cv::GMat    tmp1 = I::Foo::on(tmp0);
-    cv::GScalar scl0 = I::Baz::on(tmp0);
-    cv::GMat    out  = I::Qux::on(tmp1, scl0);
-    cv::GComputation cc(in, out);
+    ncvslideio::GMat    in;
+    ncvslideio::GMat    tmp0 = I::Foo::on(in);
+    ncvslideio::GMat    tmp1 = I::Foo::on(tmp0);
+    ncvslideio::GScalar scl0 = I::Baz::on(tmp0);
+    ncvslideio::GMat    out  = I::Qux::on(tmp1, scl0);
+    ncvslideio::GComputation cc(in, out);
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<J::Foo, J::Baz, J::Qux>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<J::Foo, J::Baz, J::Qux>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(cc, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(cc, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
     // Inspect the graph and verify the islands configuration
-    cv::gimpl::GModel::ConstGraph gm(*graph);
+    ncvslideio::gimpl::GModel::ConstGraph gm(*graph);
 
-    auto in_nh   = cv::gimpl::GModel::dataNodeOf(gm, in);
-    auto tmp0_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp0);
-    auto tmp1_nh = cv::gimpl::GModel::dataNodeOf(gm, tmp1);
-    auto scl0_nh = cv::gimpl::GModel::dataNodeOf(gm, scl0);
-    auto out_nh  = cv::gimpl::GModel::dataNodeOf(gm, out);
+    auto in_nh   = ncvslideio::gimpl::GModel::dataNodeOf(gm, in);
+    auto tmp0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp0);
+    auto tmp1_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, tmp1);
+    auto scl0_nh = ncvslideio::gimpl::GModel::dataNodeOf(gm, scl0);
+    auto out_nh  = ncvslideio::gimpl::GModel::dataNodeOf(gm, out);
 
     // in/out mats shouldn't be assigned to any Island
-    EXPECT_FALSE(gm.metadata(in_nh ).contains<cv::gimpl::Island>());
-    EXPECT_FALSE(gm.metadata(out_nh).contains<cv::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(in_nh ).contains<ncvslideio::gimpl::Island>());
+    EXPECT_FALSE(gm.metadata(out_nh).contains<ncvslideio::gimpl::Island>());
 
     // tmp0/tmp1/scl should be assigned to island
-    EXPECT_TRUE(gm.metadata(tmp0_nh).contains<cv::gimpl::Island>());
-    EXPECT_TRUE(gm.metadata(tmp1_nh).contains<cv::gimpl::Island>());
-    EXPECT_TRUE(gm.metadata(scl0_nh).contains<cv::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp0_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(tmp1_nh).contains<ncvslideio::gimpl::Island>());
+    EXPECT_TRUE(gm.metadata(scl0_nh).contains<ncvslideio::gimpl::Island>());
 
     // Check that there's a single island object and it contains all
     // that data object handles
 
-    cv::gimpl::GModel::ConstGraph cg(*graph);
-    auto isl_model = cg.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    ncvslideio::gimpl::GModel::ConstGraph cg(*graph);
+    auto isl_model = cg.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
     const auto is_island = [&](ade::NodeHandle nh) {
-        return (cv::gimpl::NodeKind::ISLAND
-                == gim.metadata(nh).get<cv::gimpl::NodeKind>().k);
+        return (ncvslideio::gimpl::NodeKind::ISLAND
+                == gim.metadata(nh).get<ncvslideio::gimpl::NodeKind>().k);
     };
     const std::size_t num_isl = std::count_if(gim.nodes().begin(),
                                               gim.nodes().end(),
                                               is_island);
     EXPECT_EQ(1u, num_isl);
 
-    auto isl_nh  = cv::gimpl::GIslandModel::producerOf(gim, out_nh);
-    auto isl_obj = gim.metadata(isl_nh).get<cv::gimpl::FusedIsland>().object;
+    auto isl_nh  = ncvslideio::gimpl::GIslandModel::producerOf(gim, out_nh);
+    auto isl_obj = gim.metadata(isl_nh).get<ncvslideio::gimpl::FusedIsland>().object;
     EXPECT_TRUE(ade::util::contains(isl_obj->contents(), tmp0_nh));
     EXPECT_TRUE(ade::util::contains(isl_obj->contents(), tmp1_nh));
     EXPECT_TRUE(ade::util::contains(isl_obj->contents(), scl0_nh));
@@ -480,31 +480,31 @@ TEST(IslandFusion, Regression_ShouldFuseAll)
     // GModel graph could be fused into a single GIsland node).
     // Example of this is custom RGB 2 YUV pipeline as shown below:
 
-    cv::GMat r, g, b;
-    cv::GMat y = 0.299f*r + 0.587f*g + 0.114f*b;
-    cv::GMat u = 0.492f*(b - y);
-    cv::GMat v = 0.877f*(r - y);
+    ncvslideio::GMat r, g, b;
+    ncvslideio::GMat y = 0.299f*r + 0.587f*g + 0.114f*b;
+    ncvslideio::GMat u = 0.492f*(b - y);
+    ncvslideio::GMat v = 0.877f*(r - y);
 
-    cv::GComputation customCvt({r, g, b}, {y, u, v});
+    ncvslideio::GComputation customCvt({r, g, b}, {y, u, v});
 
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(customCvt, {in_meta,in_meta,in_meta}, cv::compile_args());
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(customCvt, {in_meta,in_meta,in_meta}, ncvslideio::compile_args());
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
-    cv::gimpl::GModel::ConstGraph cg(*graph);
-    auto isl_model = cg.metadata().get<cv::gimpl::IslandModel>().model;
-    cv::gimpl::GIslandModel::ConstGraph gim(*isl_model);
+    ncvslideio::gimpl::GModel::ConstGraph cg(*graph);
+    auto isl_model = cg.metadata().get<ncvslideio::gimpl::IslandModel>().model;
+    ncvslideio::gimpl::GIslandModel::ConstGraph gim(*isl_model);
 
     std::vector<ade::NodeHandle> data_nhs;
     std::vector<ade::NodeHandle> isl_nhs;
     for (auto &&nh : gim.nodes())
     {
-        if (gim.metadata(nh).contains<cv::gimpl::FusedIsland>())
+        if (gim.metadata(nh).contains<ncvslideio::gimpl::FusedIsland>())
             isl_nhs.push_back(std::move(nh));
-        else if (gim.metadata(nh).contains<cv::gimpl::DataSlot>())
+        else if (gim.metadata(nh).contains<ncvslideio::gimpl::DataSlot>())
             data_nhs.push_back(std::move(nh));
         else FAIL() << "GIslandModel node with unexpected metadata type";
     }
@@ -515,23 +515,23 @@ TEST(IslandFusion, Regression_ShouldFuseAll)
 
 TEST(IslandFusion, Test_Desync_NoFuse)
 {
-    cv::GMat in;
-    cv::GMat tmp1 = in*0.5f;
-    cv::GMat tmp2 = tmp1 + in;
+    ncvslideio::GMat in;
+    ncvslideio::GMat tmp1 = in*0.5f;
+    ncvslideio::GMat tmp2 = tmp1 + in;
 
-    cv::GMat tmp3 = cv::gapi::streaming::desync(tmp1);
-    cv::GMat tmp4 = tmp3*0.1f;
+    ncvslideio::GMat tmp3 = ncvslideio::gapi::streaming::desync(tmp1);
+    ncvslideio::GMat tmp4 = tmp3*0.1f;
 
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    cv::GComputation comp(cv::GIn(in), cv::GOut(tmp2, tmp4));
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(tmp2, tmp4));
 
     //////////////////////////////////////////////////////////////////
     // Compile the graph in "regular" mode, it should produce a single island
     // Note: with copy moved to a separate backend there is always 3 islands in this test
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
 
-        GCompiler compiler(comp, {in_meta}, cv::compile_args());
+        GCompiler compiler(comp, {in_meta}, ncvslideio::compile_args());
         GCompiler::GPtr graph = compiler.generateGraph();
         compiler.runPasses(*graph);
 
@@ -552,9 +552,9 @@ TEST(IslandFusion, Test_Desync_NoFuse)
     // It has to produce two islands
     // Note: with copy moved to a separate backend there is always 3 islands in this test
     {
-        using namespace cv::gimpl;
+        using namespace ncvslideio::gimpl;
 
-        GCompiler compiler(comp, {in_meta}, cv::compile_args());
+        GCompiler compiler(comp, {in_meta}, ncvslideio::compile_args());
         GCompiler::GPtr graph = compiler.generateGraph();
         GModel::Graph(*graph).metadata().set(Streaming{});
         compiler.runPasses(*graph);

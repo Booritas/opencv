@@ -19,12 +19,12 @@
 #endif
 #endif  // HAVE_HALIDE
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
 #ifdef HAVE_HALIDE
-    // Returns four-dimensional buffer with float32 type that wrap cv::Mat data.
+    // Returns four-dimensional buffer with float32 type that wrap ncvslideio::Mat data.
     // No data copy here.
     Halide::Buffer<float> wrapToHalideBuffer(const Mat& mat);
 
@@ -58,7 +58,7 @@ namespace dnn
     class HalideBackendWrapper : public BackendWrapper
     {
     public:
-        HalideBackendWrapper(int targetId, const cv::Mat& m);
+        HalideBackendWrapper(int targetId, const ncvslideio::Mat& m);
 
         HalideBackendWrapper(const Ptr<BackendWrapper>& base, const MatShape& shape);
 
@@ -91,6 +91,6 @@ namespace dnn
 
     bool haveHalide();
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // __OPENCV_DNN_OP_HALIDE_HPP__

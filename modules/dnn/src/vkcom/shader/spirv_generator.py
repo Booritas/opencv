@@ -17,7 +17,7 @@ license_decl = \
 
 precomp = '#include \"../../precomp.hpp\"\n'
 ns_head = '\nnamespace cv { namespace dnn { namespace vkcom {\n\n'
-ns_tail = '\n}}} // namespace cv::dnn::vkcom\n'
+ns_tail = '\n}}} // namespace ncvslideio::dnn::vkcom\n'
 
 headfile = open('spv_shader.hpp', 'w')
 headfile.write(license_decl)

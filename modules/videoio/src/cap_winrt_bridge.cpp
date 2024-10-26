@@ -122,7 +122,7 @@ void VideoioBridge::updateFrameContainer()
 void VideoioBridge::imshow()
 {
     swapOutputBuffers();
-    requestForUIthreadAsync(cv::UPDATE_IMAGE_ELEMENT);
+    requestForUIthreadAsync(ncvslideio::UPDATE_IMAGE_ELEMENT);
 }
 
 int VideoioBridge::getDeviceIndex()

@@ -18,26 +18,26 @@
 
 namespace custom {
 
-G_API_NET(ObjDetector,   <cv::GMat(cv::GMat)>, "object-detector");
+G_API_NET(ObjDetector,   <ncvslideio::GMat(ncvslideio::GMat)>, "object-detector");
 
-using GDetections = cv::GArray<cv::Rect>;
-using GSize       = cv::GOpaque<cv::Size>;
-using GPrims      = cv::GArray<cv::gapi::wip::draw::Prim>;
+using GDetections = ncvslideio::GArray<ncvslideio::Rect>;
+using GSize       = ncvslideio::GOpaque<ncvslideio::Size>;
+using GPrims      = ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim>;
 
 G_API_OP(BBoxes, <GPrims(GDetections)>, "sample.custom.b-boxes") {
-    static cv::GArrayDesc outMeta(const cv::GArrayDesc &) {
-        return cv::empty_array_desc();
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
 GAPI_OCV_KERNEL(OCVBBoxes, BBoxes) {
     // This kernel converts the rectangles into G-API's
     // rendering primitives
-    static void run(const std::vector<cv::Rect> &in_obj_rcs,
-                          std::vector<cv::gapi::wip::draw::Prim> &out_prims) {
+    static void run(const std::vector<ncvslideio::Rect> &in_obj_rcs,
+                          std::vector<ncvslideio::gapi::wip::draw::Prim> &out_prims) {
         out_prims.clear();
-        const auto cvt = [](const cv::Rect &rc, const cv::Scalar &clr) {
-            return cv::gapi::wip::draw::Rect(rc, clr, 2);
+        const auto cvt = [](const ncvslideio::Rect &rc, const ncvslideio::Scalar &clr) {
+            return ncvslideio::gapi::wip::draw::Rect(rc, clr, 2);
         };
         for (auto &&rc : in_obj_rcs) {
             out_prims.emplace_back(cvt(rc, CV_RGB(0,255,0)));   // green
@@ -52,21 +52,21 @@ GAPI_OCV_KERNEL(OCVBBoxes, BBoxes) {
 } // namespace custom
 
 namespace {
-void remap_ssd_ports(const std::unordered_map<std::string, cv::Mat> &onnx,
-                           std::unordered_map<std::string, cv::Mat> &gapi) {
+void remap_ssd_ports(const std::unordered_map<std::string, ncvslideio::Mat> &onnx,
+                           std::unordered_map<std::string, ncvslideio::Mat> &gapi) {
     // Assemble ONNX-processed outputs back to a single 1x1x200x7 blob
     // to preserve compatibility with OpenVINO-based SSD pipeline
-    const cv::Mat &num_detections = onnx.at("num_detections:0");
-    const cv::Mat &detection_boxes = onnx.at("detection_boxes:0");
-    const cv::Mat &detection_scores = onnx.at("detection_scores:0");
-    const cv::Mat &detection_classes = onnx.at("detection_classes:0");
+    const ncvslideio::Mat &num_detections = onnx.at("num_detections:0");
+    const ncvslideio::Mat &detection_boxes = onnx.at("detection_boxes:0");
+    const ncvslideio::Mat &detection_scores = onnx.at("detection_scores:0");
+    const ncvslideio::Mat &detection_classes = onnx.at("detection_classes:0");
 
     GAPI_Assert(num_detections.depth() == CV_32F);
     GAPI_Assert(detection_boxes.depth() == CV_32F);
     GAPI_Assert(detection_scores.depth() == CV_32F);
     GAPI_Assert(detection_classes.depth() == CV_32F);
 
-    cv::Mat &ssd_output = gapi.at("detection_output");
+    ncvslideio::Mat &ssd_output = gapi.at("detection_output");
 
     const int num_objects = static_cast<int>(num_detections.ptr<float>()[0]);
     const float *in_boxes = detection_boxes.ptr<float>();
@@ -102,7 +102,7 @@ const std::string keys =
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     if (cmd.has("help")) {
         cmd.printMessage();
         return 0;
@@ -113,41 +113,41 @@ int main(int argc, char *argv[])
     const std::string output = cmd.get<std::string>("output");
     const auto obj_model_path = cmd.get<std::string>("detm");
 
-    auto obj_net = cv::gapi::onnx::Params<custom::ObjDetector>{obj_model_path}
+    auto obj_net = ncvslideio::gapi::onnx::Params<custom::ObjDetector>{obj_model_path}
         .cfgOutputLayers({"detection_output"})
-        .cfgPostProc({cv::GMatDesc{CV_32F, {1,1,200,7}}}, remap_ssd_ports);
-    auto kernels = cv::gapi::kernels<custom::OCVBBoxes>();
-    auto networks = cv::gapi::networks(obj_net);
+        .cfgPostProc({ncvslideio::GMatDesc{CV_32F, {1,1,200,7}}}, remap_ssd_ports);
+    auto kernels = ncvslideio::gapi::kernels<custom::OCVBBoxes>();
+    auto networks = ncvslideio::gapi::networks(obj_net);
 
     // Now build the graph
-    cv::GMat in;
-    auto blob = cv::gapi::infer<custom::ObjDetector>(in);
-    cv::GArray<cv::Rect> rcs =
-        cv::gapi::parseSSD(blob, cv::gapi::streaming::size(in), 0.5f, true, true);
-    auto  out = cv::gapi::wip::draw::render3ch(in, custom::BBoxes::on(rcs));
-    cv::GStreamingCompiled pipeline = cv::GComputation(cv::GIn(in), cv::GOut(out))
-        .compileStreaming(cv::compile_args(kernels, networks));
+    ncvslideio::GMat in;
+    auto blob = ncvslideio::gapi::infer<custom::ObjDetector>(in);
+    ncvslideio::GArray<ncvslideio::Rect> rcs =
+        ncvslideio::gapi::parseSSD(blob, ncvslideio::gapi::streaming::size(in), 0.5f, true, true);
+    auto  out = ncvslideio::gapi::wip::draw::render3ch(in, custom::BBoxes::on(rcs));
+    ncvslideio::GStreamingCompiled pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out))
+        .compileStreaming(ncvslideio::compile_args(kernels, networks));
 
-    auto inputs = cv::gin(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input));
+    auto inputs = ncvslideio::gin(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input));
 
     // The execution part
     pipeline.setSource(std::move(inputs));
 
-    cv::TickMeter tm;
-    cv::VideoWriter writer;
+    ncvslideio::TickMeter tm;
+    ncvslideio::VideoWriter writer;
     size_t frames = 0u;
-    cv::Mat outMat;
+    ncvslideio::Mat outMat;
 
     tm.start();
     pipeline.start();
-    while (pipeline.pull(cv::gout(outMat))) {
+    while (pipeline.pull(ncvslideio::gout(outMat))) {
         ++frames;
-        cv::imshow("Out", outMat);
-        cv::waitKey(1);
+        ncvslideio::imshow("Out", outMat);
+        ncvslideio::waitKey(1);
         if (!output.empty()) {
             if (!writer.isOpened()) {
-                const auto sz = cv::Size{outMat.cols, outMat.rows};
-                writer.open(output, cv::VideoWriter::fourcc('M','J','P','G'), 25.0, sz);
+                const auto sz = ncvslideio::Size{outMat.cols, outMat.rows};
+                writer.open(output, ncvslideio::VideoWriter::fourcc('M','J','P','G'), 25.0, sz);
                 CV_Assert(writer.isOpened());
             }
             writer << outMat;

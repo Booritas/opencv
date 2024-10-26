@@ -3,7 +3,7 @@
 '''
 Texture flow direction estimation.
 
-Sample shows how cv.cornerEigenValsAndVecs function can be used
+Sample shows how ncvslideio.cornerEigenValsAndVecs function can be used
 to estimate image texture flow direction.
 '''
 
@@ -23,10 +23,10 @@ class texture_flow_test(NewOpenCVTests):
 
         img = self.get_sample('samples/data/chessboard.png')
 
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        gray = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
         h, w = img.shape[:2]
 
-        eigen = cv.cornerEigenValsAndVecs(gray, 5, 3)
+        eigen = ncvslideio.cornerEigenValsAndVecs(gray, 5, 3)
         eigen = eigen.reshape(h, w, 3, 2)  # [[e1, e2], v1, v2]
         flow = eigen[:,:,2]
 
@@ -40,8 +40,8 @@ class texture_flow_test(NewOpenCVTests):
             textureVectors.append(np.int32(flow[y, x]*d))
 
         for i in range(len(textureVectors)):
-            self.assertTrue(cv.norm(textureVectors[i], cv.NORM_L2) < eps
-            or abs(cv.norm(textureVectors[i], cv.NORM_L2) - d) < eps)
+            self.assertTrue(ncvslideio.norm(textureVectors[i], ncvslideio.NORM_L2) < eps
+            or abs(ncvslideio.norm(textureVectors[i], ncvslideio.NORM_L2) - d) < eps)
 
 if __name__ == '__main__':
     NewOpenCVTests.bootstrap()

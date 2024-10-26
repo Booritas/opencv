@@ -28,7 +28,7 @@
 #include <libobsensor/ObSensor.hpp>
 #include <mutex>
 
-namespace cv
+namespace ncvslideio
 {
 
 struct CameraParam

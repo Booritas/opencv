@@ -45,7 +45,7 @@
 #include "_modelest.h"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 class BareModelEstimator : public CvModelEstimator2
 {

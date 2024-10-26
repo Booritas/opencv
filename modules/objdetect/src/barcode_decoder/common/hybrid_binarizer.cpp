@@ -7,7 +7,7 @@
 #include "../../precomp.hpp"
 #include "hybrid_binarizer.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 

@@ -7,7 +7,7 @@
 #include "precomp.hpp"
 
 // needs to be included regardless if IE is present or not
-// (cv::gapi::ie::backend() is still there and is defined always)
+// (ncvslideio::gapi::ie::backend() is still there and is defined always)
 #include "backends/ie/giebackend.hpp"
 
 #if defined HAVE_INF_ENGINE && INF_ENGINE_RELEASE < 2023010000
@@ -59,7 +59,7 @@
 template<typename T> using QueueClass = tbb::concurrent_bounded_queue<T>;
 #else
 #  include "executor/conc_queue.hpp"
-template<typename T> using QueueClass = cv::gapi::own::concurrent_bounded_queue<T>;
+template<typename T> using QueueClass = ncvslideio::gapi::own::concurrent_bounded_queue<T>;
 #endif // TBB
 
 #include "utils/itt.hpp"
@@ -87,13 +87,13 @@ IE::Layout toIE(const std::string &layout) {
 
     const auto it = layouts.find(layout);
     if (it == layouts.end()) {
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
                 std::logic_error("IE Backend: Unsupported layout: " + layout));
     }
     return it->second;
 };
 
-inline IE::ROI toIE(const cv::Rect &rc) {
+inline IE::ROI toIE(const ncvslideio::Rect &rc) {
     return IE::ROI
         { 0u
         , static_cast<std::size_t>(rc.x)
@@ -103,8 +103,8 @@ inline IE::ROI toIE(const cv::Rect &rc) {
         };
 }
 
-inline IE::SizeVector toIE(const cv::MatSize &sz) {
-    return cv::to_own<IE::SizeVector::value_type>(sz);
+inline IE::SizeVector toIE(const ncvslideio::MatSize &sz) {
+    return ncvslideio::to_own<IE::SizeVector::value_type>(sz);
 }
 inline std::vector<int> toCV(const IE::SizeVector &vsz) {
     std::vector<int> result;
@@ -154,8 +154,8 @@ inline int toCV(IE::Precision prec) {
 
 inline IE::ResizeAlgorithm toIEInterp(int interpolation) {
     switch (interpolation) {
-        case cv::INTER_LINEAR: return IE::RESIZE_BILINEAR;
-        case cv::INTER_AREA:   return IE::RESIZE_AREA;
+        case ncvslideio::INTER_LINEAR: return IE::RESIZE_BILINEAR;
+        case ncvslideio::INTER_AREA:   return IE::RESIZE_AREA;
         default: GAPI_Error("IE Backend: Unsupported resize algorithm");
     }
     // Unreachable code
@@ -163,17 +163,17 @@ inline IE::ResizeAlgorithm toIEInterp(int interpolation) {
 }
 
 template <typename Attr>
-using AttrMap = cv::gapi::ie::detail::AttrMap<Attr>;
+using AttrMap = ncvslideio::gapi::ie::detail::AttrMap<Attr>;
 
 template <typename Attr>
-using LayerVariantAttr = cv::gapi::ie::detail::LayerVariantAttr<Attr>;
+using LayerVariantAttr = ncvslideio::gapi::ie::detail::LayerVariantAttr<Attr>;
 
 template <typename Attr> AttrMap<Attr>
 broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
                    const std::vector<std::string> &layer_names) {
     AttrMap<Attr> map;
-    if (cv::util::holds_alternative<AttrMap<Attr>>(layer_attr)) {
-        map = cv::util::get<AttrMap<Attr>>(layer_attr);
+    if (ncvslideio::util::holds_alternative<AttrMap<Attr>>(layer_attr)) {
+        map = ncvslideio::util::get<AttrMap<Attr>>(layer_attr);
         // NB: Validate map:
         std::unordered_set<std::string> existing_layers =
             {layer_names.begin(), layer_names.end()};
@@ -181,14 +181,14 @@ broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
         for (const auto &p : map) {
             const auto it = existing_layers.find(p.first);
             if (it == existing_layers.end()) {
-                cv::util::throw_error(
+                ncvslideio::util::throw_error(
                         std::logic_error("IE Backend: Failed to"
                                          " find layer with name: " + p.first));
             }
         }
-    } else if (cv::util::holds_alternative<Attr>(layer_attr)) {
+    } else if (ncvslideio::util::holds_alternative<Attr>(layer_attr)) {
         // NB: Broadcast value to all layers.
-        auto elem = cv::util::get<Attr>(layer_attr);
+        auto elem = ncvslideio::util::get<Attr>(layer_attr);
         for (auto &&layer_name : layer_names) {
             map.emplace(layer_name, elem);
         }
@@ -198,15 +198,15 @@ broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
 
 // TODO: Move it to some common place
 template <typename K, typename V>
-cv::optional<V> lookUp(const std::map<K, V> &map, const K& key) {
+ncvslideio::optional<V> lookUp(const std::map<K, V> &map, const K& key) {
     const auto it = map.find(key);
     if (it == map.end()) {
         return {};
     }
-    return cv::util::make_optional(std::move(it->second));
+    return ncvslideio::util::make_optional(std::move(it->second));
 }
 
-static bool isImage(const cv::GMatDesc   &desc,
+static bool isImage(const ncvslideio::GMatDesc   &desc,
                     const IE::SizeVector &model_dims) {
     return (model_dims.size() == 4u)                       &&
            (!desc.isND())  /* dims == 2 */                 &&
@@ -215,28 +215,28 @@ static bool isImage(const cv::GMatDesc   &desc,
            (desc.depth == CV_8U);
 }
 
-cv::gapi::ie::TraitAs clarifyTrait(const cv::GMatDesc   &mat_desc,
+ncvslideio::gapi::ie::TraitAs clarifyTrait(const ncvslideio::GMatDesc   &mat_desc,
                                    const IE::SizeVector &model_dims) {
     if (isImage(mat_desc, model_dims)) {
-        return cv::gapi::ie::TraitAs::IMAGE;
+        return ncvslideio::gapi::ie::TraitAs::IMAGE;
     }
-    return cv::gapi::ie::TraitAs::TENSOR;
+    return ncvslideio::gapi::ie::TraitAs::TENSOR;
 }
 
-cv::gapi::ie::TraitAs clarifyTrait(const cv::GMetaArg   &meta,
+ncvslideio::gapi::ie::TraitAs clarifyTrait(const ncvslideio::GMetaArg   &meta,
                                    const IE::SizeVector &model_dims) {
     // NB: All media formats: BGR, NV12, Gray
     // are traited as image.
-    if (cv::util::holds_alternative<cv::GFrameDesc>(meta)) {
-        return cv::gapi::ie::TraitAs::IMAGE;
+    if (ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(meta)) {
+        return ncvslideio::gapi::ie::TraitAs::IMAGE;
     }
-    GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(meta));
-    return clarifyTrait(cv::util::get<cv::GMatDesc>(meta), model_dims);
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(meta));
+    return clarifyTrait(ncvslideio::util::get<ncvslideio::GMatDesc>(meta), model_dims);
 }
 
-inline IE::TensorDesc toIE(const cv::Mat &mat, cv::gapi::ie::TraitAs hint) {
+inline IE::TensorDesc toIE(const ncvslideio::Mat &mat, ncvslideio::gapi::ie::TraitAs hint) {
     const auto &sz = mat.size;
-    if (sz.dims() == 2 && hint == cv::gapi::ie::TraitAs::IMAGE)
+    if (sz.dims() == 2 && hint == ncvslideio::gapi::ie::TraitAs::IMAGE)
     {
         // NB: This logic is mainly taken from IE samples
         const size_t channels = mat.channels();
@@ -277,7 +277,7 @@ inline IE::SizeVector toIEDims(const IE::SizeVector &dims,
 // NB: Inference dimmensions always follow NCDHW order
 // even though the real layout is different.
 // E.g if U8 blob has {1, 3, 240, 320} dims and NHWC layout
-// need to create cv::Mat({1, 240, 320, 3}, CV_8U);
+// need to create ncvslideio::Mat({1, 240, 320, 3}, CV_8U);
 inline std::vector<int> toCVDims(const std::vector<int> &dims,
                                  const IE::Layout       layout) {
     switch (layout) {
@@ -292,11 +292,11 @@ inline std::vector<int> toCVDims(const std::vector<int> &dims,
     GAPI_Assert(false);
 }
 
-inline IE::TensorDesc toIE(const cv::Mat               &mat,
-                           const cv::gapi::ie::TraitAs hint,
+inline IE::TensorDesc toIE(const ncvslideio::Mat               &mat,
+                           const ncvslideio::gapi::ie::TraitAs hint,
                            const IE::Layout            layout) {
     const auto &sz = mat.size;
-    if (sz.dims() == 2 && hint == cv::gapi::ie::TraitAs::IMAGE)
+    if (sz.dims() == 2 && hint == ncvslideio::gapi::ie::TraitAs::IMAGE)
     {
         // NB: This logic is mainly taken from IE samples
         const size_t channels = mat.channels();
@@ -318,8 +318,8 @@ inline IE::TensorDesc toIE(const cv::Mat               &mat,
                           layout);
 }
 
-inline IE::Blob::Ptr wrapIE(const cv::Mat         &mat,
-                            cv::gapi::ie::TraitAs hint,
+inline IE::Blob::Ptr wrapIE(const ncvslideio::Mat         &mat,
+                            ncvslideio::gapi::ie::TraitAs hint,
                             const IE::Layout      layout = IE::Layout::ANY) {
     const auto tDesc = toIE(mat, hint, layout);
     switch (mat.depth()) {
@@ -337,22 +337,22 @@ inline IE::Blob::Ptr wrapIE(const cv::Mat         &mat,
     return IE::Blob::Ptr{};
 }
 
-inline IE::Blob::Ptr wrapIE(const cv::MediaFrame::View& view,
-                            const cv::GFrameDesc& desc) {
+inline IE::Blob::Ptr wrapIE(const ncvslideio::MediaFrame::View& view,
+                            const ncvslideio::GFrameDesc& desc) {
 
     switch (desc.fmt) {
-        case cv::MediaFormat::BGR: {
-            auto bgr = cv::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
-            return wrapIE(bgr, cv::gapi::ie::TraitAs::IMAGE);
+        case ncvslideio::MediaFormat::BGR: {
+            auto bgr = ncvslideio::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
+            return wrapIE(bgr, ncvslideio::gapi::ie::TraitAs::IMAGE);
         }
-        case cv::MediaFormat::NV12: {
-            auto y_plane  = cv::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
-            auto uv_plane = cv::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
-            return cv::gapi::ie::util::to_ie(y_plane, uv_plane);
+        case ncvslideio::MediaFormat::NV12: {
+            auto y_plane  = ncvslideio::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+            auto uv_plane = ncvslideio::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
+            return ncvslideio::gapi::ie::util::to_ie(y_plane, uv_plane);
         }
-        case cv::MediaFormat::GRAY: {
-            auto gray = cv::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
-            return wrapIE(gray, cv::gapi::ie::TraitAs::IMAGE);
+        case ncvslideio::MediaFormat::GRAY: {
+            auto gray = ncvslideio::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+            return wrapIE(gray, ncvslideio::gapi::ie::TraitAs::IMAGE);
         }
         default:
             GAPI_Error("Unsupported media format for IE backend");
@@ -381,11 +381,11 @@ inline void copyFromIE(const IE::Blob::Ptr &blob, MatType &mat) {
         HANDLE(U8, uint8_t);
         HANDLE(FP32, float);
         HANDLE(I32, int);
-        HANDLE(FP16, cv::hfloat);
+        HANDLE(FP16, ncvslideio::hfloat);
 #undef HANDLE
         case IE::Precision::I64: {
-            GAPI_LOG_WARNING(NULL, "INT64 isn't supported for cv::Mat. Conversion to INT32 is used.");
-            cv::gimpl::convertInt64ToInt32(blob->buffer().as<int64_t*>(),
+            GAPI_LOG_WARNING(NULL, "INT64 isn't supported for ncvslideio::Mat. Conversion to INT32 is used.");
+            ncvslideio::gimpl::convertInt64ToInt32(blob->buffer().as<int64_t*>(),
                                            reinterpret_cast<int*>(mat.data),
                                            mat.total());
             break;
@@ -431,15 +431,15 @@ void checkOutputLayerNames(const MapT&                     network_map,
 struct IEUnit {
     static const char *name() { return "IEModelConfig"; }
 
-    cv::gapi::ie::detail::ParamDesc params;
+    ncvslideio::gapi::ie::detail::ParamDesc params;
     IE::CNNNetwork net;
 
     IE::ExecutableNetwork this_network;
-    cv::gimpl::ie::wrap::Plugin this_plugin;
+    ncvslideio::gimpl::ie::wrap::Plugin this_plugin;
 
     InferenceEngine::RemoteContext::Ptr rctx = nullptr;
 
-    std::shared_ptr<cv::gapi::wip::IPreprocEngine> preproc_engine_impl;
+    std::shared_ptr<ncvslideio::gapi::wip::IPreprocEngine> preproc_engine_impl;
 
     // FIXME: Unlike loadNetwork case, importNetwork requires that preprocessing
     // should be passed as ExecutableNetwork::SetBlob method, so need to collect
@@ -453,14 +453,14 @@ struct IEUnit {
     // for network info.
     // In term of introducing custom VPP/VPL preprocessing functionality
     // It was decided to use GFrameDesc as such aggregated network info with limitation
-    // that VPP/VPL produces cv::MediaFrame only. But it should be not considered as
+    // that VPP/VPL produces ncvslideio::MediaFrame only. But it should be not considered as
     // final solution
     class InputFramesDesc {
         using input_name_type = std::string;
-        using description_type = cv::GFrameDesc;
+        using description_type = ncvslideio::GFrameDesc;
         std::map<input_name_type, description_type> map;
     public:
-        static bool is_applicable(const cv::GMetaArg &mm);
+        static bool is_applicable(const ncvslideio::GMetaArg &mm);
         const description_type &get_param(const input_name_type &input) const;
 
         void set_param(const input_name_type &input,
@@ -468,32 +468,32 @@ struct IEUnit {
     };
 
     InputFramesDesc net_input_params;
-    std::unordered_map<std::string, cv::gapi::ie::TraitAs> inputs_type;
+    std::unordered_map<std::string, ncvslideio::gapi::ie::TraitAs> inputs_type;
 
-    explicit IEUnit(const cv::gapi::ie::detail::ParamDesc &pp)
+    explicit IEUnit(const ncvslideio::gapi::ie::detail::ParamDesc &pp)
         : params(pp) {
         InferenceEngine::ParamMap* ctx_params =
-                            cv::util::any_cast<InferenceEngine::ParamMap>(&params.context_config);
+                            ncvslideio::util::any_cast<InferenceEngine::ParamMap>(&params.context_config);
         if (ctx_params != nullptr) {
-            auto ie_core = cv::gimpl::ie::wrap::getCore();
+            auto ie_core = ncvslideio::gimpl::ie::wrap::getCore();
             GAPI_LOG_DEBUG(nullptr, "create IE remote ctx for device id: " << params.device_id);
             rctx = ie_core.CreateContext(params.device_id, *ctx_params);
         }
 
-        if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
-            net = cv::gimpl::ie::wrap::readNetwork(params);
+        if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
+            net = ncvslideio::gimpl::ie::wrap::readNetwork(params);
             // NB: Set batch size only if user asked. (don't set by default)
             if (params.batch_size.has_value())  {
                 net.setBatchSize(params.batch_size.value());
             }
-        } else if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import) {
-            this_plugin = cv::gimpl::ie::wrap::getPlugin(params);
-            this_network = cv::gimpl::ie::wrap::importNetwork(this_plugin, params, rctx);
+        } else if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import) {
+            this_plugin = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            this_network = ncvslideio::gimpl::ie::wrap::importNetwork(this_plugin, params, rctx);
             if (!params.reshape_table.empty() || !params.layer_names_to_reshape.empty()) {
                 GAPI_LOG_WARNING(NULL, "Reshape isn't supported for imported network");
             }
         } else {
-            cv::util::throw_error(std::logic_error("Unsupported ParamDesc::Kind"));
+            ncvslideio::util::throw_error(std::logic_error("Unsupported ParamDesc::Kind"));
         }
 
         // The practice shows that not all inputs and not all outputs
@@ -504,22 +504,22 @@ struct IEUnit {
         // names. Otherwise, names are picked up automatically.
         // TODO: Probably this check could be done at the API entry point? (gnet)
         if (params.num_in > 1u && params.num_in != params.input_names.size()) {
-            cv::util::throw_error(std::logic_error("Please specify input layer names for "
+            ncvslideio::util::throw_error(std::logic_error("Please specify input layer names for "
                                                    + params.model_path));
         }
         if (params.num_out > 1u && params.num_out != params.output_names.size()) {
-            cv::util::throw_error(std::logic_error("Please specify output layer names for "
+            ncvslideio::util::throw_error(std::logic_error("Please specify output layer names for "
                                                    + params.model_path));
         }
         if (params.num_in == 1u && params.input_names.empty()) {
-            if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+            if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
                 params.input_names = { net.getInputsInfo().begin()->first };
             } else {
                 params.input_names = { this_network.GetInputsInfo().begin()->first };
             }
         }
         if (params.num_out == 1u && params.output_names.empty()) {
-            if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+            if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
                 params.output_names = { net.getOutputsInfo().begin()->first };
             } else {
                 params.output_names = { this_network.GetOutputsInfo().begin()->first };
@@ -531,26 +531,26 @@ struct IEUnit {
                         "Number of layers to reshape must be less than or equal to number of inputs");
         }
 
-        if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+        if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
             checkInputLayerNames(net.getInputsInfo(), params.input_names);
             checkOutputLayerNames(net.getOutputsInfo(), params.output_names);
-        } else if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import) {
+        } else if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import) {
             checkInputLayerNames(this_network.GetInputsInfo(), params.input_names);
             checkOutputLayerNames(this_network.GetOutputsInfo(), params.output_names);
         } else {
-            cv::util::throw_error(std::logic_error("Unsupported ParamDesc::Kind"));
+            ncvslideio::util::throw_error(std::logic_error("Unsupported ParamDesc::Kind"));
         }
 
-        if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import &&
-            !cv::util::holds_alternative<cv::util::monostate>(params.output_precision)) {
-            cv::util::throw_error(
+        if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import &&
+            !ncvslideio::util::holds_alternative<ncvslideio::util::monostate>(params.output_precision)) {
+            ncvslideio::util::throw_error(
                     std::logic_error("Setting output precision isn't supported for imported network"));
         }
 
 
-        using namespace cv::gapi::wip::onevpl;
+        using namespace ncvslideio::gapi::wip::onevpl;
         if (params.vpl_preproc_device.has_value() && params.vpl_preproc_ctx.has_value()) {
-            using namespace cv::gapi::wip;
+            using namespace ncvslideio::gapi::wip;
             GAPI_LOG_INFO(nullptr, "VPP preproc creation requested");
             preproc_engine_impl =
                 IPreprocEngine::create_preproc_engine<onevpl::VPPPreprocDispatcher>(
@@ -559,22 +559,22 @@ struct IEUnit {
             GAPI_LOG_INFO(nullptr, "VPP preproc created successfuly");
         }
 
-        if (params.mode == cv::gapi::ie::InferMode::Sync &&
+        if (params.mode == ncvslideio::gapi::ie::InferMode::Sync &&
             params.nireq != 1u) {
             throw std::logic_error(
-                    "Failed: cv::gapi::ie::InferMode::Sync works only with nireq equal to 1.");
+                    "Failed: ncvslideio::gapi::ie::InferMode::Sync works only with nireq equal to 1.");
         }
     }
 
     // This method is [supposed to be] called at Island compilation stage
-    cv::gimpl::ie::IECompiled compile() const {
+    ncvslideio::gimpl::ie::IECompiled compile() const {
         IEUnit* non_const_this = const_cast<IEUnit*>(this);
         // FIXME: LoadNetwork must be called only after all necessary model
         // inputs information is set, since it's done in outMeta and compile called after that,
         // this place seems to be suitable, but consider another place not to break const agreements.
-        if (params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
-            non_const_this->this_plugin  = cv::gimpl::ie::wrap::getPlugin(params);
-            non_const_this->this_network = cv::gimpl::ie::wrap::loadNetwork(non_const_this->this_plugin,
+        if (params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
+            non_const_this->this_plugin  = ncvslideio::gimpl::ie::wrap::getPlugin(params);
+            non_const_this->this_network = ncvslideio::gimpl::ie::wrap::loadNetwork(non_const_this->this_plugin,
                                                                             net, params, rctx);
         }
 
@@ -582,8 +582,8 @@ struct IEUnit {
     }
 };
 
-bool IEUnit::InputFramesDesc::is_applicable(const cv::GMetaArg &mm) {
-    return cv::util::holds_alternative<cv::GFrameDesc>(mm);
+bool IEUnit::InputFramesDesc::is_applicable(const ncvslideio::GMetaArg &mm) {
+    return ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm);
 }
 
 const IEUnit::InputFramesDesc::description_type &
@@ -596,7 +596,7 @@ IEUnit::InputFramesDesc::get_param(const input_name_type &input) const {
 void IEUnit::InputFramesDesc::set_param(const input_name_type &input,
                                         const IE::TensorDesc& desc) {
     description_type ret;
-    ret.fmt = cv::MediaFormat::NV12;
+    ret.fmt = ncvslideio::MediaFormat::NV12;
     const InferenceEngine::SizeVector& inDims = desc.getDims();
     auto layout = desc.getLayout();
     GAPI_LOG_DEBUG(nullptr, "network input: " << input <<
@@ -619,14 +619,14 @@ class IECallContext
 {
 public:
     IECallContext(const IEUnit                                      &  unit,
-                  cv::gimpl::GIslandExecutable::IOutput             &  output,
-                  const cv::GArgs                                   &  args,
-                  const std::vector<cv::gimpl::RcDesc>              &  outs,
-                  cv::GRunArg::Meta                                 && meta,
-                  std::vector<cv::gimpl::GIslandExecutable::InObj>  && input_objs,
-                  std::vector<cv::gimpl::GIslandExecutable::OutObj> && output_objs);
+                  ncvslideio::gimpl::GIslandExecutable::IOutput             &  output,
+                  const ncvslideio::GArgs                                   &  args,
+                  const std::vector<ncvslideio::gimpl::RcDesc>              &  outs,
+                  ncvslideio::GRunArg::Meta                                 && meta,
+                  std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  && input_objs,
+                  std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> && output_objs);
 
-    const cv::GArgs& inArgs() const;
+    const ncvslideio::GArgs& inArgs() const;
 
     // Generic accessor API
     template<typename T>
@@ -640,75 +640,75 @@ public:
     }
 
     // Syntax sugar
-          cv::GShape      inShape(std::size_t input) const;
-    const cv::Mat&        inMat  (std::size_t input) const;
-    const cv::MediaFrame& inFrame(std::size_t input) const;
+          ncvslideio::GShape      inShape(std::size_t input) const;
+    const ncvslideio::Mat&        inMat  (std::size_t input) const;
+    const ncvslideio::MediaFrame& inFrame(std::size_t input) const;
 
-    cv::GRunArgP output (std::size_t idx);
-    cv::Mat&     outMatR(std::size_t idx);
+    ncvslideio::GRunArgP output (std::size_t idx);
+    ncvslideio::Mat&     outMatR(std::size_t idx);
 
-    cv::gapi::ie::TraitAs getInputType(const std::string &layer_name) const;
+    ncvslideio::gapi::ie::TraitAs getInputType(const std::string &layer_name) const;
 
     const IEUnit                          &uu;
-    cv::gimpl::GIslandExecutable::IOutput &out;
+    ncvslideio::gimpl::GIslandExecutable::IOutput &out;
 
     // NB: Need to guarantee that MediaFrame::View doesn't die until request is over.
-    using Views = std::vector<std::unique_ptr<cv::MediaFrame::View>>;
+    using Views = std::vector<std::unique_ptr<ncvslideio::MediaFrame::View>>;
     Views views;
 
     // To store exception appeared in callback.
     std::exception_ptr eptr;
 
-    const cv::GRunArg::Meta& getMeta() { return m_meta; };
+    const ncvslideio::GRunArg::Meta& getMeta() { return m_meta; };
 
     using req_key_t = void*;
-    cv::MediaFrame* prepareKeepAliveFrameSlot(req_key_t key);
+    ncvslideio::MediaFrame* prepareKeepAliveFrameSlot(req_key_t key);
     size_t releaseKeepAliveFrame(req_key_t key);
 private:
-    cv::detail::VectorRef& outVecRef(std::size_t idx);
+    ncvslideio::detail::VectorRef& outVecRef(std::size_t idx);
 
-    cv::GArg packArg(const cv::GArg &arg);
+    ncvslideio::GArg packArg(const ncvslideio::GArg &arg);
 
     // To propagate accumulated meta from all inputs to output.
-    cv::GRunArg::Meta m_meta;
+    ncvslideio::GRunArg::Meta m_meta;
 
     // To store input/output data from frames
-    std::vector<cv::gimpl::GIslandExecutable::InObj>  m_input_objs;
-    std::vector<cv::gimpl::GIslandExecutable::OutObj> m_output_objs;
+    std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  m_input_objs;
+    std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> m_output_objs;
 
-    // To simplify access to cv::Mat inside cv::RMat
-    cv::gimpl::Mag m_res;
+    // To simplify access to ncvslideio::Mat inside ncvslideio::RMat
+    ncvslideio::gimpl::Mag m_res;
 
     // FIXME: avoid conversion of arguments from internal representation to OpenCV one on each call
     //to OCV kernel. (This can be achieved by a two single time conversions in GCPUExecutable::run,
     //once on enter for input and output arguments, and once before return for output arguments only
     // FIXME: check if the above applies to this backend (taken from CPU)
-    std::unordered_map<std::size_t, cv::GRunArgP> m_results;
+    std::unordered_map<std::size_t, ncvslideio::GRunArgP> m_results;
 
     // Input parameters passed to an inference operation.
-    cv::GArgs m_args;
-    cv::GShapes m_in_shapes;
+    ncvslideio::GArgs m_args;
+    ncvslideio::GShapes m_in_shapes;
 
     // keep alive preprocessed frames
     std::mutex keep_alive_frames_mutex;
-    std::unordered_map<req_key_t, cv::MediaFrame> keep_alive_pp_frames;
+    std::unordered_map<req_key_t, ncvslideio::MediaFrame> keep_alive_pp_frames;
 
     // NB: Hint to wrap input data properly into IE::Blob (see: wrapIE)
-    std::unordered_map<std::string, cv::gapi::ie::TraitAs> input_type;
+    std::unordered_map<std::string, ncvslideio::gapi::ie::TraitAs> input_type;
 };
 
 IECallContext::IECallContext(const IEUnit                                      &  unit,
-                             cv::gimpl::GIslandExecutable::IOutput             &  output,
-                             const cv::GArgs                                   &  args,
-                             const std::vector<cv::gimpl::RcDesc>              &  outs,
-                             cv::GRunArg::Meta                                 && meta,
-                             std::vector<cv::gimpl::GIslandExecutable::InObj>  && input_objs,
-                             std::vector<cv::gimpl::GIslandExecutable::OutObj> && output_objs)
+                             ncvslideio::gimpl::GIslandExecutable::IOutput             &  output,
+                             const ncvslideio::GArgs                                   &  args,
+                             const std::vector<ncvslideio::gimpl::RcDesc>              &  outs,
+                             ncvslideio::GRunArg::Meta                                 && meta,
+                             std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  && input_objs,
+                             std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> && output_objs)
 : uu(unit), out(output), m_meta(std::move(meta)),
   m_input_objs(std::move(input_objs)), m_output_objs(std::move(output_objs))
 {
-    for (auto& it : m_input_objs)  cv::gimpl::magazine::bindInArg (m_res, it.first, it.second);
-    for (auto& it : m_output_objs) cv::gimpl::magazine::bindOutArg(m_res, it.first, it.second);
+    for (auto& it : m_input_objs)  ncvslideio::gimpl::magazine::bindInArg (m_res, it.first, it.second);
+    for (auto& it : m_output_objs) ncvslideio::gimpl::magazine::bindOutArg(m_res, it.first, it.second);
 
     m_args.reserve(args.size());
     using namespace std::placeholders;
@@ -717,92 +717,92 @@ IECallContext::IECallContext(const IEUnit                                      &
                          std::bind(&IECallContext::packArg, this, _1));
 
     ade::util::transform(args, std::back_inserter(m_in_shapes),
-            [](const cv::GArg& arg) {
-                return arg.get<cv::gimpl::RcDesc>().shape;
+            [](const ncvslideio::GArg& arg) {
+                return arg.get<ncvslideio::gimpl::RcDesc>().shape;
             });
 
     for (const auto out_it : ade::util::indexed(outs)) {
         // FIXME: Can the same GArg type resolution mechanism be reused here?
         const auto port  = ade::util::index(out_it);
         const auto desc  = ade::util::value(out_it);
-        m_results[port] = cv::gimpl::magazine::getObjPtr(m_res, desc);
+        m_results[port] = ncvslideio::gimpl::magazine::getObjPtr(m_res, desc);
     }
 }
 
-cv::gapi::ie::TraitAs
+ncvslideio::gapi::ie::TraitAs
 IECallContext::getInputType(const std::string &layer_name) const {
     const auto it = uu.inputs_type.find(layer_name);
     if (it == uu.inputs_type.end()) {
-        cv::util::throw_error(std::logic_error(
+        ncvslideio::util::throw_error(std::logic_error(
             "Failed to find input type for layer: \"" + layer_name + "\""));
     }
     return it->second;
 }
 
-const cv::GArgs& IECallContext::inArgs() const {
+const ncvslideio::GArgs& IECallContext::inArgs() const {
     return m_args;
 }
 
-cv::GShape IECallContext::inShape(std::size_t i) const {
+ncvslideio::GShape IECallContext::inShape(std::size_t i) const {
     return m_in_shapes[i];
 }
 
-const cv::Mat& IECallContext::inMat(std::size_t input) const {
-    return inArg<cv::Mat>(input);
+const ncvslideio::Mat& IECallContext::inMat(std::size_t input) const {
+    return inArg<ncvslideio::Mat>(input);
 }
 
-const cv::MediaFrame& IECallContext::inFrame(std::size_t input) const {
-    return inArg<cv::MediaFrame>(input);
+const ncvslideio::MediaFrame& IECallContext::inFrame(std::size_t input) const {
+    return inArg<ncvslideio::MediaFrame>(input);
 }
 
-cv::Mat& IECallContext::outMatR(std::size_t idx) {
-    return *cv::util::get<cv::Mat*>(m_results.at(idx));
+ncvslideio::Mat& IECallContext::outMatR(std::size_t idx) {
+    return *ncvslideio::util::get<ncvslideio::Mat*>(m_results.at(idx));
 }
 
-cv::GRunArgP IECallContext::output(std::size_t idx) {
+ncvslideio::GRunArgP IECallContext::output(std::size_t idx) {
     return m_output_objs[idx].second;
 };
 
-cv::detail::VectorRef& IECallContext::outVecRef(std::size_t idx) {
-    return cv::util::get<cv::detail::VectorRef>(m_results.at(idx));
+ncvslideio::detail::VectorRef& IECallContext::outVecRef(std::size_t idx) {
+    return ncvslideio::util::get<ncvslideio::detail::VectorRef>(m_results.at(idx));
 }
 
-cv::GArg IECallContext::packArg(const cv::GArg &arg) {
+ncvslideio::GArg IECallContext::packArg(const ncvslideio::GArg &arg) {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                && arg.kind != cv::detail::ArgKind::GSCALAR
-                && arg.kind != cv::detail::ArgKind::GARRAY);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                && arg.kind != ncvslideio::detail::ArgKind::GARRAY);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF) {
-        cv::util::throw_error(std::logic_error("Inference supports G-types ONLY!"));
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF) {
+        ncvslideio::util::throw_error(std::logic_error("Inference supports G-types ONLY!"));
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case cv::GShape::GMAT: return cv::GArg(m_res.slot<cv::Mat>()[ref.id]);
+    case ncvslideio::GShape::GMAT: return ncvslideio::GArg(m_res.slot<ncvslideio::Mat>()[ref.id]);
 
     // Note: .at() is intentional for GArray as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case cv::GShape::GARRAY:  return cv::GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
+    case ncvslideio::GShape::GARRAY:  return ncvslideio::GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
 
     // Note: .at() is intentional for GOpaque as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case cv::GShape::GOPAQUE:  return cv::GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
+    case ncvslideio::GShape::GOPAQUE:  return ncvslideio::GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
 
-    case cv::GShape::GFRAME:  return cv::GArg(m_res.slot<cv::MediaFrame>().at(ref.id));
+    case ncvslideio::GShape::GFRAME:  return ncvslideio::GArg(m_res.slot<ncvslideio::MediaFrame>().at(ref.id));
 
     default:
-        cv::util::throw_error(std::logic_error("Unsupported GShape type"));
+        ncvslideio::util::throw_error(std::logic_error("Unsupported GShape type"));
         break;
     }
 }
 
-cv::MediaFrame* IECallContext::prepareKeepAliveFrameSlot(req_key_t key) {
+ncvslideio::MediaFrame* IECallContext::prepareKeepAliveFrameSlot(req_key_t key) {
     std::lock_guard<std::mutex> lock(keep_alive_frames_mutex);
     return &keep_alive_pp_frames[key];
 }
@@ -822,11 +822,11 @@ size_t IECallContext::releaseKeepAliveFrame(req_key_t key) {
         auto ka_frame_it = keep_alive_pp_frames.find(key);
         if (ka_frame_it != keep_alive_pp_frames.end()) {
             prev_slot = &ka_frame_it->second;
-            ka_frame_it->second = cv::MediaFrame();
+            ka_frame_it->second = ncvslideio::MediaFrame();
         }
         elapsed_count = keep_alive_pp_frames.size();
     }
-    cv::util::suppress_unused_warning(prev_slot);
+    ncvslideio::util::suppress_unused_warning(prev_slot);
     GAPI_LOG_DEBUG(nullptr, "Release keep alive frame, slot: " << prev_slot <<
                             ", reserved frames count: " << elapsed_count);
     return elapsed_count;
@@ -834,12 +834,12 @@ size_t IECallContext::releaseKeepAliveFrame(req_key_t key) {
 
 struct IECallable {
     static const char *name() { return "IERequestCallable"; }
-    using Run = std::function<void(std::shared_ptr<IECallContext>, cv::gimpl::ie::RequestPool&)>;
+    using Run = std::function<void(std::shared_ptr<IECallContext>, ncvslideio::gimpl::ie::RequestPool&)>;
     Run run;
 };
 
 struct KImpl {
-    cv::gimpl::CustomMetaFunction::CM customMetaFunc;
+    ncvslideio::gimpl::CustomMetaFunction::CM customMetaFunc;
     IECallable::Run run;
 };
 
@@ -850,34 +850,34 @@ struct KImpl {
 //
 // If not, we need to introduce that!
 using GIEModel = ade::TypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , IEUnit
     , IECallable
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGIEModel = ade::ConstTypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , IEUnit
     , IECallable
     >;
 
-cv::MediaFrame preprocess_frame_impl(cv::MediaFrame &&in_frame, const std::string &layer_name,
+ncvslideio::MediaFrame preprocess_frame_impl(ncvslideio::MediaFrame &&in_frame, const std::string &layer_name,
                                     IECallContext& ctx,
-                                    const cv::util::optional<cv::Rect> &opt_roi,
-                                    cv::MediaFrame* out_keep_alive_frame,
+                                    const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi,
+                                    ncvslideio::MediaFrame* out_keep_alive_frame,
                                     bool* out_is_preprocessed) {
-    cv::util::optional<cv::gapi::wip::pp_params> param =
+    ncvslideio::util::optional<ncvslideio::gapi::wip::pp_params> param =
                         ctx.uu.preproc_engine_impl->is_applicable(in_frame);
     if (param.has_value()) {
         GAPI_LOG_DEBUG(nullptr, "VPP preprocessing for decoded remote frame will be used");
-        cv::GFrameDesc expected_net_input_descr =
+        ncvslideio::GFrameDesc expected_net_input_descr =
                     ctx.uu.net_input_params.get_param(layer_name);
 
         // TODO: Find a better place to configure media format for GPU
@@ -888,12 +888,12 @@ cv::MediaFrame preprocess_frame_impl(cv::MediaFrame &&in_frame, const std::strin
             if (it != ctx.uu.params.config.end()) {
                 if (it->second == "YES") {
                     GAPI_LOG_DEBUG(nullptr, "Adjust preprocessing GPU media format to NV12");
-                    expected_net_input_descr.fmt = cv::MediaFormat::NV12;
+                    expected_net_input_descr.fmt = ncvslideio::MediaFormat::NV12;
                 }
             }
         }
 
-        cv::gapi::wip::pp_session pp_sess =
+        ncvslideio::gapi::wip::pp_session pp_sess =
                     ctx.uu.preproc_engine_impl->initialize_preproc(param.value(),
                                                                    expected_net_input_descr);
 
@@ -913,14 +913,14 @@ cv::MediaFrame preprocess_frame_impl(cv::MediaFrame &&in_frame, const std::strin
 
 inline IE::Blob::Ptr extractBlob(IECallContext& ctx,
                                  std::size_t i,
-                                 const cv::gapi::ie::TraitAs hint,
+                                 const ncvslideio::gapi::ie::TraitAs hint,
                                  const IE::Layout &layout,
                                  const std::string& layer_name,
-                                 const cv::util::optional<cv::Rect> &opt_roi,
-                                 cv::MediaFrame* out_keep_alive_frame = nullptr,
+                                 const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi,
+                                 ncvslideio::MediaFrame* out_keep_alive_frame = nullptr,
                                  bool* out_is_preprocessed = nullptr) {
     switch (ctx.inShape(i)) {
-        case cv::GShape::GFRAME: {
+        case ncvslideio::GShape::GFRAME: {
             auto frame = ctx.inFrame(i);
             if (ctx.uu.preproc_engine_impl) {
                 GAPI_LOG_DEBUG(nullptr, "Try to use preprocessing for decoded frame in local ctx");
@@ -933,11 +933,11 @@ inline IE::Blob::Ptr extractBlob(IECallContext& ctx,
             // then we create a remote blob without memory copy
             if (ctx.uu.rctx != nullptr) {
                 // Request params for result frame whatever it got preprocessed or not
-                cv::util::any any_blob_params = frame.blobParams();
+                ncvslideio::util::any any_blob_params = frame.blobParams();
                 using ParamType = std::pair<InferenceEngine::TensorDesc, InferenceEngine::ParamMap>;
                 using NV12ParamType = std::pair<ParamType, ParamType>;
 
-                NV12ParamType* blob_params = cv::util::any_cast<NV12ParamType>(&any_blob_params);
+                NV12ParamType* blob_params = ncvslideio::util::any_cast<NV12ParamType>(&any_blob_params);
                 if (blob_params == nullptr) {
                     GAPI_Error("Incorrect type of blobParams:"
                                          "expected std::pair<ParamType, ParamType>,"
@@ -950,7 +950,7 @@ inline IE::Blob::Ptr extractBlob(IECallContext& ctx,
                 auto uv_blob = ctx.uu.rctx->CreateBlob(blob_params->second.first, blob_params->second.second);
 
 #if INF_ENGINE_RELEASE > 2023000000
-                cv::util::throw_error(std::logic_error(
+                ncvslideio::util::throw_error(std::logic_error(
                             "IE Backend: NV12 feature has been deprecated in OpenVINO 1.0 API."
                             " The last version which supports this is 2023.0"));
 #elif INF_ENGINE_RELEASE >= 2021010000
@@ -962,10 +962,10 @@ inline IE::Blob::Ptr extractBlob(IECallContext& ctx,
 
             // NB: If no OV remote context created then use default MediaFrame accessor approach:
             // it invokes memory copying operation If GPU MediaFrame come
-            ctx.views.emplace_back(new cv::MediaFrame::View(frame.access(cv::MediaFrame::Access::R)));
+            ctx.views.emplace_back(new ncvslideio::MediaFrame::View(frame.access(ncvslideio::MediaFrame::Access::R)));
             return wrapIE(*(ctx.views.back()), frame.desc());
         }
-        case cv::GShape::GMAT: {
+        case ncvslideio::GShape::GMAT: {
             return wrapIE(ctx.inMat(i), hint, layout);
         }
         default:
@@ -981,7 +981,7 @@ static void setBlob(InferenceEngine::InferRequest& req,
     // TODO: Ideally we shouldn't do SetBlob() but GetBlob() instead,
     // and redirect our data producers to this memory
     // (A memory dialog comes to the picture again)
-    using namespace cv::gapi::ie::detail;
+    using namespace ncvslideio::gapi::ie::detail;
     if (ctx.uu.params.kind == ParamDesc::Kind::Load) {
         req.SetBlob(layer_name, blob);
     } else {
@@ -1000,7 +1000,7 @@ static void setBlob(InferenceEngine::InferRequest& req,
 static void setROIBlob(InferenceEngine::InferRequest& req,
                        const std::string&             layer_name,
                        const IE::Blob::Ptr&           blob,
-                       const cv::Rect                 &roi,
+                       const ncvslideio::Rect                 &roi,
                        const IECallContext&           ctx) {
     if (ctx.uu.params.device_id.find("GPU") != std::string::npos &&
         ctx.uu.rctx) {
@@ -1015,7 +1015,7 @@ static void setROIBlob(InferenceEngine::InferRequest& req,
             GAPI_LOG_WARNING(nullptr, "cannot set ROI blob for layer: " << layer_name <<
                                       ", reason:\n" << ex.what() <<
                                       "\nTry using self GAPI preprocessing feature: "
-                                      " Check method `cfgPreprocessingParams` in `cv::gapi::ie::Params`");
+                                      " Check method `cfgPreprocessingParams` in `ncvslideio::gapi::ie::Params`");
             throw;
         }
     } else {
@@ -1024,7 +1024,7 @@ static void setROIBlob(InferenceEngine::InferRequest& req,
 }
 } // anonymous namespace
 
-std::vector<InferenceEngine::InferRequest> cv::gimpl::ie::IECompiled::createInferRequests() {
+std::vector<InferenceEngine::InferRequest> ncvslideio::gimpl::ie::IECompiled::createInferRequests() {
     std::vector<InferenceEngine::InferRequest> requests;
     requests.reserve(params.nireq);
 
@@ -1035,7 +1035,7 @@ std::vector<InferenceEngine::InferRequest> cv::gimpl::ie::IECompiled::createInfe
         for (auto &&p : params.const_inputs) {
             // FIXME: SetBlob is known to be inefficient,
             // it is worth to make a customizable "initializer" and pass the
-            // cv::Mat-wrapped blob there to support IE's optimal "GetBlob idiom"
+            // ncvslideio::Mat-wrapped blob there to support IE's optimal "GetBlob idiom"
             // Still, constant data is to set only once.
             request.SetBlob(p.first, wrapIE(p.second.first, p.second.second));
         }
@@ -1126,10 +1126,10 @@ void AsyncInferExecutor::callback(IInferExecutor::Task task,
     m_notify();
 }
 
-class cv::gimpl::ie::RequestPool {
+class ncvslideio::gimpl::ie::RequestPool {
 public:
 
-    explicit RequestPool(cv::gapi::ie::InferMode                      mode,
+    explicit RequestPool(ncvslideio::gapi::ie::InferMode                      mode,
                          std::vector<InferenceEngine::InferRequest>&& requests);
 
     IInferExecutor::Ptr getIdleRequest();
@@ -1143,46 +1143,46 @@ private:
     std::vector<IInferExecutor::Ptr> m_requests;
 };
 
-void cv::gimpl::ie::RequestPool::release(const size_t id) {
+void ncvslideio::gimpl::ie::RequestPool::release(const size_t id) {
     m_idle_ids.push(id);
 }
 
 // RequestPool implementation //////////////////////////////////////////////
-cv::gimpl::ie::RequestPool::RequestPool(cv::gapi::ie::InferMode                      mode,
+ncvslideio::gimpl::ie::RequestPool::RequestPool(ncvslideio::gapi::ie::InferMode                      mode,
                                         std::vector<InferenceEngine::InferRequest>&& requests) {
     for (size_t i = 0; i < requests.size(); ++i) {
         IInferExecutor::Ptr iexec = nullptr;
         switch (mode) {
-            case cv::gapi::ie::InferMode::Async:
+            case ncvslideio::gapi::ie::InferMode::Async:
                 iexec = std::make_shared<AsyncInferExecutor>(std::move(requests[i]),
                                                              std::bind(&RequestPool::release, this, i));
                 break;
-            case cv::gapi::ie::InferMode::Sync:
+            case ncvslideio::gapi::ie::InferMode::Sync:
                 iexec = std::make_shared<SyncInferExecutor>(std::move(requests[i]),
                                                              std::bind(&RequestPool::release, this, i));
                 break;
             default:
-                GAPI_Error("Unsupported cv::gapi::ie::InferMode");
+                GAPI_Error("Unsupported ncvslideio::gapi::ie::InferMode");
         }
         m_requests.emplace_back(std::move(iexec));
     }
     setup();
 }
 
-void cv::gimpl::ie::RequestPool::setup() {
+void ncvslideio::gimpl::ie::RequestPool::setup() {
     for (size_t i = 0; i < m_requests.size(); ++i) {
         m_idle_ids.push(i);
     }
 }
 
-IInferExecutor::Ptr cv::gimpl::ie::RequestPool::getIdleRequest() {
+IInferExecutor::Ptr ncvslideio::gimpl::ie::RequestPool::getIdleRequest() {
     size_t id = 0u;
     m_idle_ids.pop(id);
     return m_requests[id];
 }
 
 // NB: Not thread-safe.
-void cv::gimpl::ie::RequestPool::waitAll() {
+void ncvslideio::gimpl::ie::RequestPool::waitAll() {
     // NB: It will be blocked if at least one request is busy.
     for (size_t i = 0; i < m_requests.size(); ++i) {
         size_t id = 0u;
@@ -1192,7 +1192,7 @@ void cv::gimpl::ie::RequestPool::waitAll() {
 }
 
 // GCPUExcecutable implementation //////////////////////////////////////////////
-cv::gimpl::ie::GIEExecutable::GIEExecutable(const ade::Graph &g,
+ncvslideio::gimpl::ie::GIEExecutable::GIEExecutable(const ade::Graph &g,
                                             const std::vector<ade::NodeHandle> &nodes)
     : m_g(g), m_gm(m_g) {
     // FIXME: Currently this backend is capable to run a single inference node only.
@@ -1227,8 +1227,8 @@ cv::gimpl::ie::GIEExecutable::GIEExecutable(const ade::Graph &g,
     }
 }
 
-void cv::gimpl::ie::GIEExecutable::run(cv::gimpl::GIslandExecutable::IInput  &in,
-                                       cv::gimpl::GIslandExecutable::IOutput &out) {
+void ncvslideio::gimpl::ie::GIEExecutable::run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                                       ncvslideio::gimpl::GIslandExecutable::IOutput &out) {
     // General algorithm:
     //     1. Collect island inputs/outputs.
     //     2. Create kernel context. (Every kernel has his own context).
@@ -1247,18 +1247,18 @@ void cv::gimpl::ie::GIEExecutable::run(cv::gimpl::GIslandExecutable::IInput  &in
     const auto &in_desc = in.desc();
           auto  in_msg  = in.get();
 
-    if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg))
+    if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg))
     {
         // (3) Wait until all passed task are done.
         m_reqPool->waitAll();
-        out.post(cv::gimpl::EndOfStream{});
+        out.post(ncvslideio::gimpl::EndOfStream{});
         return;
     }
 
-    GAPI_Assert(cv::util::holds_alternative<cv::GRunArgs>(in_msg));
-    const auto in_vector = cv::util::get<cv::GRunArgs>(in_msg);
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GRunArgs>(in_msg));
+    const auto in_vector = ncvslideio::util::get<ncvslideio::GRunArgs>(in_msg);
     // NB: Collect meta from all inputs.
-    cv::GRunArg::Meta stub_meta;
+    ncvslideio::GRunArg::Meta stub_meta;
     for (auto &&in_arg : in_vector)
     {
         stub_meta.insert(in_arg.meta.begin(), in_arg.meta.end());
@@ -1310,11 +1310,11 @@ void cv::gimpl::ie::GIEExecutable::run(cv::gimpl::GIslandExecutable::IInput  &in
     }
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace ie {
 static void configureInputReshapeByImage(const IE::InputInfo::Ptr& ii,
-                                         const cv::GMetaArg mm,
+                                         const ncvslideio::GMetaArg mm,
                                          IE::ICNNNetwork::InputShapes& input_reshape_table) {
     const auto& layer_name = ii->name();
     // Finding name in reshape table
@@ -1326,17 +1326,17 @@ static void configureInputReshapeByImage(const IE::InputInfo::Ptr& ii,
         GAPI_Assert(false &&
                     "Names of layers for reshape with specified dimensions shouldn't intersect with names for reshape by image");
     }
-    cv::Size image_sz;
+    ncvslideio::Size image_sz;
     switch (mm.index()) {
-        case cv::GMetaArg::index_of<cv::GMatDesc>():
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>():
             {
-                const auto &meta = util::get<cv::GMatDesc>(mm);
+                const auto &meta = util::get<ncvslideio::GMatDesc>(mm);
                 image_sz = meta.size;
                 break;
             }
-        case cv::GMetaArg::index_of<cv::GFrameDesc>():
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GFrameDesc>():
             {
-                const auto &meta = util::get<cv::GFrameDesc>(mm);
+                const auto &meta = util::get<ncvslideio::GFrameDesc>(mm);
                 image_sz = meta.size;
                 break;
             }
@@ -1354,14 +1354,14 @@ static void configureInputReshapeByImage(const IE::InputInfo::Ptr& ii,
     input_reshape_table.emplace(layer_name, input_dims);
 }
 
-static void cfgInputPrecision(const IE::InputInfo::Ptr& ii, const cv::GMetaArg mm) {
+static void cfgInputPrecision(const IE::InputInfo::Ptr& ii, const ncvslideio::GMetaArg mm) {
     switch (mm.index()) {
-        case cv::GMetaArg::index_of<cv::GMatDesc>(): {
-            const auto &desc = util::get<cv::GMatDesc>(mm);
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>(): {
+            const auto &desc = util::get<ncvslideio::GMatDesc>(mm);
             ii->setPrecision(toIE(desc.depth));
             break;
         }
-        case cv::GMetaArg::index_of<cv::GFrameDesc>():
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GFrameDesc>():
             ii->setPrecision(toIE(CV_8U));
             break;
         default:
@@ -1370,20 +1370,20 @@ static void cfgInputPrecision(const IE::InputInfo::Ptr& ii, const cv::GMetaArg m
 }
 
 static void cfgImagePreprocessing(const IE::InputInfo::Ptr  &ii,
-                                  const cv::GMetaArg        &mm,
+                                  const ncvslideio::GMetaArg        &mm,
                                   const IE::ResizeAlgorithm interp) {
-    if (!cv::util::holds_alternative<cv::GMatDesc>(mm) &&
-        !cv::util::holds_alternative<cv::GFrameDesc>(mm)) {
+    if (!ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm) &&
+        !ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm)) {
         util::throw_error(std::runtime_error("Unsupported input meta for IE backend"));
     }
 
     ii->getPreProcess().setResizeAlgorithm(interp);
-    if (cv::util::holds_alternative<cv::GFrameDesc>(mm)) {
-        const auto &meta = util::get<cv::GFrameDesc>(mm);
-        if (meta.fmt == cv::MediaFormat::NV12) {
+    if (ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm)) {
+        const auto &meta = util::get<ncvslideio::GFrameDesc>(mm);
+        if (meta.fmt == ncvslideio::MediaFormat::NV12) {
 #if INF_ENGINE_RELEASE > 2023000000
-            cv::util::throw_error(std::logic_error(
-                        "IE Backend: cv::MediaFrame with NV12 format is no longer supported"
+            ncvslideio::util::throw_error(std::logic_error(
+                        "IE Backend: ncvslideio::MediaFrame with NV12 format is no longer supported"
                         " because NV12 feature has been deprecated in OpenVINO 1.0 API."
                         " The last version which supports this is 2023.0"));
 #else
@@ -1395,16 +1395,16 @@ static void cfgImagePreprocessing(const IE::InputInfo::Ptr  &ii,
 
 // NB: This function is used in order to configure
 // preprocessing for "Load" case networks.
-static void cfgInputPreprocessing(const cv::gapi::ie::TraitAs trait,
+static void cfgInputPreprocessing(const ncvslideio::gapi::ie::TraitAs trait,
                                   const IE::InputInfo::Ptr    &ii,
-                                  const cv::GMetaArg          &mm,
+                                  const ncvslideio::GMetaArg          &mm,
                                   const std::string           &layer_name,
                                   const AttrMap<std::string>  &layout_map,
                                   const AttrMap<int>          &interp_map) {
     cfgInputPrecision(ii, mm);
     const auto explicit_input_layout = lookUp(layout_map, layer_name);
     const auto explicit_resize = lookUp(interp_map, layer_name);
-    if (trait == cv::gapi::ie::TraitAs::IMAGE) {
+    if (trait == ncvslideio::gapi::ie::TraitAs::IMAGE) {
         // NB: Image case - preprocessing is configured automatically.
         GAPI_LOG_DEBUG(NULL, "IE Backend: Input: \"" <<
                        layer_name << " " << mm  << "\" is image.");
@@ -1433,20 +1433,20 @@ static void cfgInputPreprocessing(const cv::gapi::ie::TraitAs trait,
     }
 }
 
-static IE::PreProcessInfo createImagePreProcInfo(const cv::GMetaArg         &mm,
+static IE::PreProcessInfo createImagePreProcInfo(const ncvslideio::GMetaArg         &mm,
                                                  const IE::ResizeAlgorithm  interp) {
-    if (!cv::util::holds_alternative<cv::GMatDesc>(mm) &&
-        !cv::util::holds_alternative<cv::GFrameDesc>(mm)) {
+    if (!ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm) &&
+        !ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm)) {
         util::throw_error(std::runtime_error("Unsupported input meta for IE backend"));
     }
     IE::PreProcessInfo info;
     info.setResizeAlgorithm(interp);
-    if (cv::util::holds_alternative<cv::GFrameDesc>(mm)) {
-        const auto &meta = util::get<cv::GFrameDesc>(mm);
-        if (meta.fmt == cv::MediaFormat::NV12) {
+    if (ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm)) {
+        const auto &meta = util::get<ncvslideio::GFrameDesc>(mm);
+        if (meta.fmt == ncvslideio::MediaFormat::NV12) {
 #if INF_ENGINE_RELEASE > 2023000000
-            cv::util::throw_error(std::logic_error(
-                        "IE Backend: cv::MediaFrame with NV12 format is no longer supported"
+            ncvslideio::util::throw_error(std::logic_error(
+                        "IE Backend: ncvslideio::MediaFrame with NV12 format is no longer supported"
                         " because NV12 feature has been deprecated in OpenVINO 1.0 API."
                         " The last version which supports this is 2023.0"));
 #else
@@ -1459,10 +1459,10 @@ static IE::PreProcessInfo createImagePreProcInfo(const cv::GMetaArg         &mm,
 
 // NB: This function is used in order to create
 // preprocessing for "Import" case networks.
-static IE::PreProcessInfo createPreProcInfo(const cv::gapi::ie::TraitAs trait,
-                                            const cv::GMetaArg&         mm,
-                                            const cv::optional<int>     explicit_resize) {
-    if (trait == cv::gapi::ie::TraitAs::IMAGE) {
+static IE::PreProcessInfo createPreProcInfo(const ncvslideio::gapi::ie::TraitAs trait,
+                                            const ncvslideio::GMetaArg&         mm,
+                                            const ncvslideio::optional<int>     explicit_resize) {
+    if (trait == ncvslideio::gapi::ie::TraitAs::IMAGE) {
         const auto interp = explicit_resize ? toIEInterp(*explicit_resize)
                                             : IE::RESIZE_BILINEAR;
         return createImagePreProcInfo(mm, interp);
@@ -1475,10 +1475,10 @@ static IE::PreProcessInfo createPreProcInfo(const cv::gapi::ie::TraitAs trait,
     return info;
 }
 
-using namespace cv::gapi::ie::detail;
+using namespace ncvslideio::gapi::ie::detail;
 static void configureOutputPrecision(const IE::OutputsDataMap           &outputs_info,
                                      const ParamDesc::PrecisionVariantT &output_precision) {
-    cv::util::visit(cv::util::overload_lambdas(
+    ncvslideio::util::visit(ncvslideio::util::overload_lambdas(
             [&outputs_info](ParamDesc::PrecisionT cvdepth) {
                 auto precision = toIE(cvdepth);
                 for (auto it : outputs_info) {
@@ -1490,7 +1490,7 @@ static void configureOutputPrecision(const IE::OutputsDataMap           &outputs
                     outputs_info.at(it.first)->setPrecision(toIE(it.second));
                 }
             },
-            [&outputs_info](cv::util::monostate) {
+            [&outputs_info](ncvslideio::util::monostate) {
                 // Do nothing.
             }
         ), output_precision
@@ -1505,7 +1505,7 @@ static void configureOutputLayout(const IE::OutputsDataMap   &outputs_info,
 }
 
 // NB: This is a callback used by async infer
-// to post outputs blobs (cv::GMat's).
+// to post outputs blobs (ncvslideio::GMat's).
 static void PostOutputs(InferenceEngine::InferRequest &request,
                         InferenceEngine::StatusCode    code,
                         std::shared_ptr<IECallContext> ctx) {
@@ -1576,7 +1576,7 @@ void PostOutputsList::operator()(InferenceEngine::InferRequest &req,
 
     if (!ctx->eptr) {
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
-            std::vector<cv::Mat> &out_vec = ctx->outVecR<cv::Mat>(i);
+            std::vector<ncvslideio::Mat> &out_vec = ctx->outVecR<ncvslideio::Mat>(i);
 
             IE::Blob::Ptr out_blob = req.GetBlob(ctx->uu.params.output_names[i]);
             GAPI_Assert(out_blob);
@@ -1597,21 +1597,21 @@ void PostOutputsList::operator()(InferenceEngine::InferRequest &req,
     }
 }
 
-struct Infer: public cv::detail::KernelTag {
-    using API = cv::GInferBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ie::backend(); }
+struct Infer: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ie::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         // Specify network's output layer metadata to the framework
         // Also specify the input information to the IE from the framework
         // NB: Have no clue if network's input [dimensions] may ever define
         // its output dimensions. It seems possible with OpenCV DNN APIs
 
-        cv::GMetaArgs result;
+        ncvslideio::GMetaArgs result;
 
         GConstGIEModel gm(gr);
         const auto &uu = gm.metadata(nh).get<IEUnit>();
@@ -1629,7 +1629,7 @@ struct Infer: public cv::detail::KernelTag {
                                                       uu.params.input_names);
         // NB: Configuring input/output precision and network reshape must be done
         // only in the loadNetwork case.
-        using namespace cv::gapi::ie::detail;
+        using namespace ncvslideio::gapi::ie::detail;
         if (uu.params.kind == ParamDesc::Kind::Load) {
             auto inputs = uu.net.getInputsInfo();
             for (auto &&it : ade::util::zip(ade::util::toRange(uu.params.input_names),
@@ -1703,11 +1703,11 @@ struct Infer: public cv::detail::KernelTag {
             // NOTE: our output_names vector follows the API order
             // of this operation's outputs
             const auto& desc =
-                uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load
+                uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load
                     ? uu.net.getOutputsInfo().at(out_name)->getTensorDesc()
                     : uu.this_network.GetOutputsInfo().at(out_name)->getTensorDesc();
 
-            cv::GMatDesc outm(toCV(desc.getPrecision()),
+            ncvslideio::GMatDesc outm(toCV(desc.getPrecision()),
                               toCVDims(toCV(desc.getDims()), desc.getLayout()));
             result.emplace_back(outm);
         }
@@ -1715,7 +1715,7 @@ struct Infer: public cv::detail::KernelTag {
     }
 
     static void run(std::shared_ptr<IECallContext>  ctx,
-                    cv::gimpl::ie::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ie::RequestPool     &reqPool) {
         using namespace std::placeholders;
         reqPool.getIdleRequest()->execute(
                 IInferExecutor::Task {
@@ -1728,7 +1728,7 @@ struct Infer: public cv::detail::KernelTag {
                             const auto layout = req.GetBlob(layer_name)->getTensorDesc().getLayout();
                             IE::Blob::Ptr this_blob = extractBlob(*ctx, i, hint,
                                                                   layout, layer_name,
-                                                                  cv::util::optional<cv::Rect>{});
+                                                                  ncvslideio::util::optional<ncvslideio::Rect>{});
                             setBlob(req, layer_name, this_blob, *ctx);
                         }
                     },
@@ -1738,16 +1738,16 @@ struct Infer: public cv::detail::KernelTag {
     }
 };
 
-struct InferROI: public cv::detail::KernelTag {
-    using API = cv::GInferROIBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ie::backend(); }
+struct InferROI: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferROIBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ie::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
-        cv::GMetaArgs result;
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
+        ncvslideio::GMetaArgs result;
 
         GConstGIEModel gm(gr);
         const auto &uu = gm.metadata(nh).get<IEUnit>();
@@ -1761,14 +1761,14 @@ struct InferROI: public cv::detail::KernelTag {
         const auto &input_name = uu.params.input_names.at(0);
         auto &&mm = in_metas.at(1u);
         const auto &tensor_desc =
-            (uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load)
+            (uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load)
              ? uu.net.getInputsInfo().at(input_name)->getTensorDesc()
              : uu.this_network.GetInputsInfo().at(input_name)->getTensorDesc();
 
-        if (cv::util::holds_alternative<cv::GMatDesc>(mm) ||
-            cv::util::holds_alternative<cv::GFrameDesc>(mm)) {
+        if (ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm) ||
+            ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm)) {
             const auto trait = clarifyTrait(mm, tensor_desc.getDims());
-            if (trait != cv::gapi::ie::TraitAs::IMAGE) {
+            if (trait != ncvslideio::gapi::ie::TraitAs::IMAGE) {
                 util::throw_error(std::runtime_error(
                             "IE Backend: Only image is supported"
                             " as the 1th argument for InferROI"));
@@ -1785,8 +1785,8 @@ struct InferROI: public cv::detail::KernelTag {
                                                      uu.params.input_names);
         const auto interpolation = broadcastLayerAttr(uu.params.interpolation,
                                                       uu.params.input_names);
-        const auto trait = cv::gapi::ie::TraitAs::IMAGE;
-        if (uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+        const auto trait = ncvslideio::gapi::ie::TraitAs::IMAGE;
+        if (uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
             // 0th is ROI, 1st is input image
             auto inputs = uu.net.getInputsInfo();
             auto ii = inputs.at(input_name);
@@ -1820,7 +1820,7 @@ struct InferROI: public cv::detail::KernelTag {
             configureOutputLayout(uu.net.getOutputsInfo(), output_layout);
             configureOutputPrecision(uu.net.getOutputsInfo(), uu.params.output_precision);
         } else {
-            GAPI_Assert(uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import);
+            GAPI_Assert(uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import);
             auto inputs = uu.this_network.GetInputsInfo();
             // FIXME: This isn't the best place to collect PreProcMap.
             auto* non_const_prepm = const_cast<IEUnit::PreProcMap*>(&uu.preproc_map);
@@ -1843,11 +1843,11 @@ struct InferROI: public cv::detail::KernelTag {
             // NOTE: our output_names vector follows the API order
             // of this operation's outputs
             const auto& desc =
-                uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load
+                uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load
                     ? uu.net.getOutputsInfo().at(out_name)->getTensorDesc()
                     : uu.this_network.GetOutputsInfo().at(out_name)->getTensorDesc();
 
-            cv::GMatDesc outm(toCV(desc.getPrecision()),
+            ncvslideio::GMatDesc outm(toCV(desc.getPrecision()),
                               toCVDims(toCV(desc.getDims()), desc.getLayout()));
             result.emplace_back(outm);
         }
@@ -1855,25 +1855,25 @@ struct InferROI: public cv::detail::KernelTag {
     }
 
     static void run(std::shared_ptr<IECallContext>  ctx,
-                    cv::gimpl::ie::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ie::RequestPool     &reqPool) {
         using namespace std::placeholders;
         reqPool.getIdleRequest()->execute(
                 IInferExecutor::Task {
                     [ctx](InferenceEngine::InferRequest &req) {
                         GAPI_Assert(ctx->uu.params.num_in == 1);
-                        auto&& this_roi = ctx->inArg<cv::detail::OpaqueRef>(0).rref<cv::Rect>();
+                        auto&& this_roi = ctx->inArg<ncvslideio::detail::OpaqueRef>(0).rref<ncvslideio::Rect>();
 
                         // reserve unique slot for keep alive preprocessed frame
-                        cv::MediaFrame* slot_ptr = ctx->prepareKeepAliveFrameSlot(&req);
+                        ncvslideio::MediaFrame* slot_ptr = ctx->prepareKeepAliveFrameSlot(&req);
 
                         // NB: This blob will be used to make roi from its, so
                         // it should be treated as image
                         bool preprocessed = false;
                         IE::Blob::Ptr this_blob =
-                            extractBlob(*ctx, 1, cv::gapi::ie::TraitAs::IMAGE,
+                            extractBlob(*ctx, 1, ncvslideio::gapi::ie::TraitAs::IMAGE,
                                         IE::Layout::ANY,
                                         *(ctx->uu.params.input_names.begin()),
-                                        cv::util::make_optional(this_roi),
+                                        ncvslideio::util::make_optional(this_roi),
                                         slot_ptr, &preprocessed);
                         if (!preprocessed) {
                             setROIBlob(req,
@@ -1892,15 +1892,15 @@ struct InferROI: public cv::detail::KernelTag {
 };
 
 
-struct InferList: public cv::detail::KernelTag {
-    using API = cv::GInferListBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ie::backend(); }
+struct InferList: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferListBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ie::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         // Specify the input information to the IE from the framework
         // NB: Have no clue if network's input [dimensions] may ever define
         // its output dimensions. It seems possible with OpenCV DNN APIs
@@ -1921,7 +1921,7 @@ struct InferList: public cv::detail::KernelTag {
                                                      uu.params.input_names);
         const auto interpolation = broadcastLayerAttr(uu.params.interpolation,
                                                       uu.params.input_names);
-        if (uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+        if (uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
             std::size_t idx = 1u;
             auto inputs = uu.net.getInputsInfo();
             for (auto &&input_name : uu.params.input_names) {
@@ -1930,7 +1930,7 @@ struct InferList: public cv::detail::KernelTag {
 
                 // NB: InferList expects the input starts with index 1 wil be the images.
                 const auto input_trait = clarifyTrait(mm, ii->getTensorDesc().getDims());
-                if (input_trait != cv::gapi::ie::TraitAs::IMAGE) {
+                if (input_trait != ncvslideio::gapi::ie::TraitAs::IMAGE) {
                     util::throw_error(std::runtime_error(
                                 "IE Backend: Only image is supported"
                                 " as the " + std::to_string(idx) + "th argument for InferList"));
@@ -1961,7 +1961,7 @@ struct InferList: public cv::detail::KernelTag {
             configureOutputLayout(uu.net.getOutputsInfo(), output_layout);
             configureOutputPrecision(uu.net.getOutputsInfo(), uu.params.output_precision);
         } else {
-            GAPI_Assert(uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import);
+            GAPI_Assert(uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import);
             std::size_t idx = 1u;
             auto inputs = uu.this_network.GetInputsInfo();
             auto* non_const_prepm = const_cast<IEUnit::PreProcMap*>(&uu.preproc_map);
@@ -1971,7 +1971,7 @@ struct InferList: public cv::detail::KernelTag {
 
                 // NB: InferList expects the input starts with index 1 wil be the images.
                 const auto input_trait = clarifyTrait(mm, ii->getTensorDesc().getDims());
-                if (input_trait != cv::gapi::ie::TraitAs::IMAGE) {
+                if (input_trait != ncvslideio::gapi::ie::TraitAs::IMAGE) {
                     util::throw_error(std::runtime_error(
                                 "IE Backend: Only image is supported"
                                 " as the " + std::to_string(idx) + "th argument for InferList"));
@@ -1987,13 +1987,13 @@ struct InferList: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.params.output_names.size(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.params.output_names.size(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(std::shared_ptr<IECallContext>  ctx,
-                    cv::gimpl::ie::RequestPool     &reqPool) {
-        const auto& in_roi_vec = ctx->inArg<cv::detail::VectorRef>(0u).rref<cv::Rect>();
+                    ncvslideio::gimpl::ie::RequestPool     &reqPool) {
+        const auto& in_roi_vec = ctx->inArg<ncvslideio::detail::VectorRef>(0u).rref<ncvslideio::Rect>();
         // NB: In case there is no input data need to post output anyway
         if (in_roi_vec.empty()) {
             for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
@@ -2006,22 +2006,22 @@ struct InferList: public cv::detail::KernelTag {
 
         // NB: This blob will be used to make roi from its, so
         // it should be treated as image
-        IE::Blob::Ptr this_blob = extractBlob(*ctx, 1, cv::gapi::ie::TraitAs::IMAGE,
+        IE::Blob::Ptr this_blob = extractBlob(*ctx, 1, ncvslideio::gapi::ie::TraitAs::IMAGE,
                                               IE::Layout::ANY,
                                               ctx->uu.params.input_names[0u],
-                                              cv::util::optional<cv::Rect>{});
+                                              ncvslideio::util::optional<ncvslideio::Rect>{});
 
         std::vector<std::vector<int>> cached_dims(ctx->uu.params.num_out);
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
             const auto& out_name = ctx->uu.params.output_names[i];
             const auto& desc =
-                ctx->uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load
+                ctx->uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load
                     ? ctx->uu.net.getOutputsInfo().at(out_name)->getTensorDesc()
                     : ctx->uu.this_network.GetOutputsInfo().at(out_name)->getTensorDesc();
             cached_dims[i] = toCVDims(toCV(desc.getDims()), desc.getLayout());
             // FIXME: Isn't this should be done automatically
             // by some resetInternalData(), etc? (Probably at the GExecutor level)
-            auto& out_vec = ctx->outVecR<cv::Mat>(i);
+            auto& out_vec = ctx->outVecR<ncvslideio::Mat>(i);
             out_vec.clear();
             out_vec.resize(in_roi_vec.size());
         }
@@ -2042,15 +2042,15 @@ struct InferList: public cv::detail::KernelTag {
     }
 };
 
-struct InferList2: public cv::detail::KernelTag {
-    using API = cv::GInferList2Base;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ie::backend(); }
+struct InferList2: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferList2Base;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ie::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         // Specify the input information to the IE from the framework
         // NB: Have no clue if network's input [dimensions] may ever define
         // its output dimensions. It seems possible with OpenCV DNN APIs
@@ -2078,12 +2078,12 @@ struct InferList2: public cv::detail::KernelTag {
         const auto &input_name_0 = uu.params.input_names.front();
         const auto &mm_0 = in_metas[0u];
         const auto &tensor_desc_0 =
-            (uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load)
+            (uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load)
              ? uu.net.getInputsInfo().at(input_name_0)->getTensorDesc()
              : uu.this_network.GetInputsInfo().at(input_name_0)->getTensorDesc();
 
-        if (!(cv::util::holds_alternative<cv::GMatDesc>(mm_0) ||
-              cv::util::holds_alternative<cv::GFrameDesc>(mm_0))) {
+        if (!(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm_0) ||
+              ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm_0))) {
             util::throw_error(std::runtime_error(
                         "IE Backend: Unsupported input meta"
                         " for 0th argument in IE backend"));
@@ -2096,19 +2096,19 @@ struct InferList2: public cv::detail::KernelTag {
                                                       uu.params.input_names);
         for (auto &&input_name : uu.params.input_names) {
             const auto &mm = in_metas[idx];
-            GAPI_Assert(util::holds_alternative<cv::GArrayDesc>(mm)
+            GAPI_Assert(util::holds_alternative<ncvslideio::GArrayDesc>(mm)
                         && "Non-array inputs are not supported");
 
-            if (op.k.inKinds[idx] == cv::detail::OpaqueKind::CV_RECT) {
+            if (op.k.inKinds[idx] == ncvslideio::detail::OpaqueKind::CV_RECT) {
                 const auto input_trait = clarifyTrait(mm_0, tensor_desc_0.getDims());
-                GAPI_Assert(input_trait == cv::gapi::ie::TraitAs::IMAGE
-                            && "IE Backend: Only image is supported as the 0th argument for an input array of cv::Rect");
+                GAPI_Assert(input_trait == ncvslideio::gapi::ie::TraitAs::IMAGE
+                            && "IE Backend: Only image is supported as the 0th argument for an input array of ncvslideio::Rect");
 
                 // NB: Configuring input precision and network reshape must be done
                 // only in the loadNetwork case.
-                if (uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load) {
+                if (uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load) {
                     auto inputs = uu.net.getInputsInfo();
-                    // This is a cv::Rect -- configure the IE preprocessing
+                    // This is a ncvslideio::Rect -- configure the IE preprocessing
                     auto ii = inputs.at(input_name);
                     if (uu.params.layer_names_to_reshape.find(input_name) !=
                         uu.params.layer_names_to_reshape.end()) {
@@ -2132,7 +2132,7 @@ struct InferList2: public cv::detail::KernelTag {
                     configureOutputLayout(uu.net.getOutputsInfo(), output_layout);
                     configureOutputPrecision(uu.net.getOutputsInfo(), uu.params.output_precision);
                 } else {
-                    GAPI_Assert(uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Import);
+                    GAPI_Assert(uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Import);
                     auto inputs = uu.this_network.GetInputsInfo();
                     auto* non_const_prepm = const_cast<IEUnit::PreProcMap*>(&uu.preproc_map);
                     auto ii = inputs.at(input_name);
@@ -2141,12 +2141,12 @@ struct InferList2: public cv::detail::KernelTag {
                             input_name, createPreProcInfo(input_trait, mm_0, explicit_resize));
                 }
             } else {
-                // This is a cv::GMat (equals to: cv::Mat)
+                // This is a ncvslideio::GMat (equals to: ncvslideio::Mat)
                 // Just validate that it is really the type
                 // (other types are prohibited here)
-                GAPI_Assert(op.k.inKinds[idx] == cv::detail::OpaqueKind::CV_MAT);
+                GAPI_Assert(op.k.inKinds[idx] == ncvslideio::detail::OpaqueKind::CV_MAT);
                 // NB: Well, it's even impossible to specify the precision since
-                // there is not such info in GArray<cv::GMat>
+                // there is not such info in GArray<ncvslideio::GMat>
                 const auto explicit_resize = lookUp(interpolation, input_name);
                 const auto explicit_layout = lookUp(input_layout , input_name);
                 if (explicit_resize || explicit_layout) {
@@ -2161,21 +2161,21 @@ struct InferList2: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.params.output_names.size(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.params.output_names.size(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(std::shared_ptr<IECallContext> ctx,
-                    cv::gimpl::ie::RequestPool    &reqPool) {
+                    ncvslideio::gimpl::ie::RequestPool    &reqPool) {
         GAPI_Assert(ctx->inArgs().size() > 1u
                 && "This operation must have at least two arguments");
         // NB: This blob will be used to make roi from its, so
         // it should be treated as image
-        IE::Blob::Ptr blob_0 = extractBlob(*ctx, 0, cv::gapi::ie::TraitAs::IMAGE,
+        IE::Blob::Ptr blob_0 = extractBlob(*ctx, 0, ncvslideio::gapi::ie::TraitAs::IMAGE,
                                            IE::Layout::ANY,
                                            ctx->uu.params.input_names[0u],
-                                           cv::util::optional<cv::Rect>{});
-        const auto list_size = ctx->inArg<cv::detail::VectorRef>(1u).size();
+                                           ncvslideio::util::optional<ncvslideio::Rect>{});
+        const auto list_size = ctx->inArg<ncvslideio::detail::VectorRef>(1u).size();
         if (list_size == 0u) {
             for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
                 auto output = ctx->output(i);
@@ -2189,13 +2189,13 @@ struct InferList2: public cv::detail::KernelTag {
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
             const auto& out_name = ctx->uu.params.output_names[i];
             const auto& desc =
-                ctx->uu.params.kind == cv::gapi::ie::detail::ParamDesc::Kind::Load
+                ctx->uu.params.kind == ncvslideio::gapi::ie::detail::ParamDesc::Kind::Load
                     ? ctx->uu.net.getOutputsInfo().at(out_name)->getTensorDesc()
                     : ctx->uu.this_network.GetOutputsInfo().at(out_name)->getTensorDesc();
             cached_dims[i] = toCVDims(toCV(desc.getDims()), desc.getLayout());
             // FIXME: Isn't this should be done automatically
             // by some resetInternalData(), etc? (Probably at the GExecutor level)
-            auto& out_vec = ctx->outVecR<cv::Mat>(i);
+            auto& out_vec = ctx->outVecR<ncvslideio::Mat>(i);
             out_vec.clear();
             out_vec.resize(list_size);
         }
@@ -2206,19 +2206,19 @@ struct InferList2: public cv::detail::KernelTag {
                 IInferExecutor::Task {
                     [ctx, list_idx, list_size, blob_0](InferenceEngine::InferRequest &req) {
                         for (auto in_idx : ade::util::iota(ctx->uu.params.num_in)) {
-                            const auto &this_vec = ctx->inArg<cv::detail::VectorRef>(in_idx+1u);
+                            const auto &this_vec = ctx->inArg<ncvslideio::detail::VectorRef>(in_idx+1u);
                             GAPI_Assert(this_vec.size() == list_size);
-                            if (this_vec.getKind() == cv::detail::OpaqueKind::CV_RECT) {
-                                const auto &vec = this_vec.rref<cv::Rect>();
+                            if (this_vec.getKind() == ncvslideio::detail::OpaqueKind::CV_RECT) {
+                                const auto &vec = this_vec.rref<ncvslideio::Rect>();
                                 setROIBlob(req, ctx->uu.params.input_names[in_idx],
                                            blob_0, vec[list_idx], *ctx);
-                            } else if (this_vec.getKind() == cv::detail::OpaqueKind::CV_MAT) {
-                                const auto &vec = this_vec.rref<cv::Mat>();
+                            } else if (this_vec.getKind() == ncvslideio::detail::OpaqueKind::CV_MAT) {
+                                const auto &vec = this_vec.rref<ncvslideio::Mat>();
                                 const auto &mat = vec[list_idx];
                                 const auto layer_name = ctx->uu.params.input_names[in_idx];
                                 const auto layout = req.GetBlob(layer_name)->getTensorDesc().getLayout();
                                 setBlob(req, layer_name,
-                                        wrapIE(mat, cv::gapi::ie::TraitAs::TENSOR, layout),
+                                        wrapIE(mat, ncvslideio::gapi::ie::TraitAs::TENSOR, layout),
                                         *ctx);
                             } else {
                                 GAPI_Assert(false &&
@@ -2235,22 +2235,22 @@ struct InferList2: public cv::detail::KernelTag {
 
 } // namespace ie
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 
 // IE backend implementation of GBackend::Priv ///////////////////////
 namespace {
-    class GIEBackendImpl final: public cv::gapi::GBackend::Priv {
+    class GIEBackendImpl final: public ncvslideio::gapi::GBackend::Priv {
         virtual void unpackKernel(ade::Graph            &gr,
                                   const ade::NodeHandle &nh,
-                                  const cv::GKernelImpl &ii) override {
-            using namespace cv::gimpl;
+                                  const ncvslideio::GKernelImpl &ii) override {
+            using namespace ncvslideio::gimpl;
             // FIXME: Introduce a DNNBackend interface which'd specify
             // the framework for this???
             GIEModel gm(gr);
             auto &np = gm.metadata(nh).get<NetworkParams>();
-            auto &pp = cv::util::any_cast<cv::gapi::ie::detail::ParamDesc>(np.opaque);
-            const auto &ki = cv::util::any_cast<KImpl>(ii.opaque);
+            auto &pp = ncvslideio::util::any_cast<ncvslideio::gapi::ie::detail::ParamDesc>(np.opaque);
+            const auto &ki = ncvslideio::util::any_cast<KImpl>(ii.opaque);
 
             GModel::Graph model(gr);
             auto& op = model.metadata(nh).get<Op>();
@@ -2258,7 +2258,7 @@ namespace {
             // NB: In case generic infer, info about in/out names is stored in operation (op.params)
             if (pp.is_generic)
             {
-                auto& info      = cv::util::any_cast<cv::detail::InOutInfo>(op.params);
+                auto& info      = ncvslideio::util::any_cast<ncvslideio::detail::InOutInfo>(op.params);
                 pp.input_names  = info.in_names;
                 pp.output_names = info.out_names;
                 pp.num_in       = info.in_names.size();
@@ -2271,16 +2271,16 @@ namespace {
         }
 
         virtual EPtr compile(const ade::Graph &graph,
-                             const cv::GCompileArgs &,
+                             const ncvslideio::GCompileArgs &,
                              const std::vector<ade::NodeHandle> &nodes) const override {
-            return EPtr{new cv::gimpl::ie::GIEExecutable(graph, nodes)};
+            return EPtr{new ncvslideio::gimpl::ie::GIEExecutable(graph, nodes)};
         }
 
-        virtual cv::GKernelPackage auxiliaryKernels() const override {
-            return cv::gapi::kernels< cv::gimpl::ie::Infer
-                                    , cv::gimpl::ie::InferROI
-                                    , cv::gimpl::ie::InferList
-                                    , cv::gimpl::ie::InferList2
+        virtual ncvslideio::GKernelPackage auxiliaryKernels() const override {
+            return ncvslideio::gapi::kernels< ncvslideio::gimpl::ie::Infer
+                                    , ncvslideio::gimpl::ie::InferROI
+                                    , ncvslideio::gimpl::ie::InferList
+                                    , ncvslideio::gimpl::ie::InferList2
                                     >();
         }
 
@@ -2288,7 +2288,7 @@ namespace {
             return true;
         }
 
-        virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+        virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                                  const ade::NodeHandle &,
                                  const ade::NodeHandle &,
                                  const ade::NodeHandle &) const override {
@@ -2297,31 +2297,31 @@ namespace {
     };
 }
 
-cv::gapi::GBackend cv::gapi::ie::backend() {
-    static cv::gapi::GBackend this_backend(std::make_shared<GIEBackendImpl>());
+ncvslideio::gapi::GBackend ncvslideio::gapi::ie::backend() {
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GIEBackendImpl>());
     return this_backend;
 }
 
-cv::Mat cv::gapi::ie::util::to_ocv(IE::Blob::Ptr blob) {
+ncvslideio::Mat ncvslideio::gapi::ie::util::to_ocv(IE::Blob::Ptr blob) {
     const auto& tdesc = blob->getTensorDesc();
-    return cv::Mat(toCV(tdesc.getDims()),
+    return ncvslideio::Mat(toCV(tdesc.getDims()),
                    toCV(tdesc.getPrecision()),
                    blob->buffer().as<uint8_t*>());
 }
 
-std::vector<int> cv::gapi::ie::util::to_ocv(const IE::SizeVector &dims) {
+std::vector<int> ncvslideio::gapi::ie::util::to_ocv(const IE::SizeVector &dims) {
     return toCV(dims);
 }
 
-IE::Blob::Ptr cv::gapi::ie::util::to_ie(const cv::Mat &blob) {
-    return wrapIE(blob, cv::gapi::ie::TraitAs::IMAGE);
+IE::Blob::Ptr ncvslideio::gapi::ie::util::to_ie(const ncvslideio::Mat &blob) {
+    return wrapIE(blob, ncvslideio::gapi::ie::TraitAs::IMAGE);
 }
 
-IE::Blob::Ptr cv::gapi::ie::util::to_ie(const cv::Mat &y_plane, const cv::Mat &uv_plane) {
-    auto y_blob   = wrapIE(y_plane,  cv::gapi::ie::TraitAs::IMAGE);
-    auto uv_blob  = wrapIE(uv_plane, cv::gapi::ie::TraitAs::IMAGE);
+IE::Blob::Ptr ncvslideio::gapi::ie::util::to_ie(const ncvslideio::Mat &y_plane, const ncvslideio::Mat &uv_plane) {
+    auto y_blob   = wrapIE(y_plane,  ncvslideio::gapi::ie::TraitAs::IMAGE);
+    auto uv_blob  = wrapIE(uv_plane, ncvslideio::gapi::ie::TraitAs::IMAGE);
 #if INF_ENGINE_RELEASE > 2023000000
-    cv::util::throw_error(std::logic_error(
+    ncvslideio::util::throw_error(std::logic_error(
                 "IE Backend: NV12 feature has been deprecated in OpenVINO 1.0 API."
                 " The last version which supports this is 2023.0"));
 #elif INF_ENGINE_RELEASE >= 2021010000
@@ -2333,7 +2333,7 @@ IE::Blob::Ptr cv::gapi::ie::util::to_ie(const cv::Mat &y_plane, const cv::Mat &u
 
 #else // HAVE_INF_ENGINE
 
-cv::gapi::GBackend cv::gapi::ie::backend() {
+ncvslideio::gapi::GBackend ncvslideio::gapi::ie::backend() {
     // Still provide this symbol to avoid linking issues
     util::throw_error(std::runtime_error("G-API has been compiled without OpenVINO IE support"));
 }

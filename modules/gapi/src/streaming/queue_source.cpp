@@ -14,24 +14,24 @@
 
 #include "executor/conc_queue.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 
 class QueueSourceBase::Priv {
 public:
-    explicit Priv(const cv::GMetaArg &meta) {
+    explicit Priv(const ncvslideio::GMetaArg &meta) {
         m = meta;
         halted = false;
     }
 
-    cv::GMetaArg m;
-    cv::gapi::own::concurrent_bounded_queue<cv::GRunArg> q;
+    ncvslideio::GMetaArg m;
+    ncvslideio::gapi::own::concurrent_bounded_queue<ncvslideio::GRunArg> q;
     int64_t c = 0;
     std::atomic<bool> halted;
 };
 
-QueueSourceBase::QueueSourceBase(const cv::GMetaArg &m)
+QueueSourceBase::QueueSourceBase(const ncvslideio::GMetaArg &m)
     : m_priv(new Priv(m)) {
 }
 
@@ -41,8 +41,8 @@ void QueueSourceBase::push(Data &&data) {
     const auto now = std::chrono::system_clock::now();
     const auto dur = std::chrono::duration_cast<std::chrono::microseconds>
         (now.time_since_epoch());
-    data.meta[cv::gapi::streaming::meta_tag::timestamp] = int64_t{dur.count()};
-    data.meta[cv::gapi::streaming::meta_tag::seq_id]    = int64_t{m_priv->c++};
+    data.meta[ncvslideio::gapi::streaming::meta_tag::timestamp] = int64_t{dur.count()};
+    data.meta[ncvslideio::gapi::streaming::meta_tag::seq_id]    = int64_t{m_priv->c++};
 
     m_priv->q.push(data);
 }
@@ -58,20 +58,20 @@ bool QueueSourceBase::pull(Data &data) {
 
 void QueueSourceBase::halt() {
     m_priv->halted.store(true);
-    m_priv->q.push(cv::GRunArg{});
+    m_priv->q.push(ncvslideio::GRunArg{});
 }
 
-cv::GMetaArg QueueSourceBase::descr_of() const {
+ncvslideio::GMetaArg QueueSourceBase::descr_of() const {
     return m_priv->m;
 }
 
-QueueInput::QueueInput(const cv::GMetaArgs &args) {
+QueueInput::QueueInput(const ncvslideio::GMetaArgs &args) {
     for (auto &&m : args) {
-        m_sources.emplace_back(new cv::gapi::wip::QueueSourceBase(m));
+        m_sources.emplace_back(new ncvslideio::gapi::wip::QueueSourceBase(m));
     }
 }
 
-void QueueInput::push(cv::GRunArgs &&args) {
+void QueueInput::push(ncvslideio::GRunArgs &&args) {
     GAPI_Assert(m_sources.size() == args.size());
     for (auto && it : ade::util::zip(ade::util::toRange(m_sources),
                                      ade::util::toRange(args)))
@@ -85,8 +85,8 @@ void QueueInput::push(cv::GRunArgs &&args) {
     }
 }
 
-QueueInput::operator cv::GRunArgs () {
-    cv::GRunArgs args;
+QueueInput::operator ncvslideio::GRunArgs () {
+    ncvslideio::GRunArgs args;
     for (auto &&s : m_sources) {
         args.push_back(s->ptr());
     }

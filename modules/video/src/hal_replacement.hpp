@@ -110,7 +110,7 @@ inline int hal_ni_ScharrDeriv(const uchar* src_data, size_t src_step,
     if (res == CV_HAL_ERROR_OK) \
         return retval; \
     else if (res != CV_HAL_ERROR_NOT_IMPLEMENTED) \
-        CV_Error_(cv::Error::StsInternal, \
+        CV_Error_(ncvslideio::Error::StsInternal, \
             ("HAL implementation " CVAUX_STR(name) " ==> " CVAUX_STR(fun) " returned %d (0x%08x)", res, res));
 
 
@@ -119,7 +119,7 @@ inline int hal_ni_ScharrDeriv(const uchar* src_data, size_t src_step,
     if (res == CV_HAL_ERROR_OK) \
         return; \
     else if (res != CV_HAL_ERROR_NOT_IMPLEMENTED) \
-        CV_Error_(cv::Error::StsInternal, \
+        CV_Error_(ncvslideio::Error::StsInternal, \
             ("HAL implementation " CVAUX_STR(name) " ==> " CVAUX_STR(fun) " returned %d (0x%08x)", res, res));
 //! @endcond
 

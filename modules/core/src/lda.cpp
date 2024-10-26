@@ -21,7 +21,7 @@
 #include <map>
 #include <set>
 
-namespace cv
+namespace ncvslideio
 {
 
 // Removes duplicate elements in a given vector.
@@ -88,7 +88,7 @@ static Mat asRowMatrix(InputArrayOfArrays src, int rtype, double alpha=1, double
 
 static void sortMatrixColumnsByIndices(InputArray _src, InputArray _indices, OutputArray _dst) {
     if(_indices.getMat().type() != CV_32SC1) {
-        CV_Error(Error::StsUnsupportedFormat, "cv::sortColumnsByIndices only works on integer indices!");
+        CV_Error(Error::StsUnsupportedFormat, "ncvslideio::sortColumnsByIndices only works on integer indices!");
     }
     Mat src = _src.getMat();
     std::vector<int> indices = _indices.getMat();
@@ -167,7 +167,7 @@ static bool isSymmetric(InputArray src, double eps=1e-16)
 
 
 //------------------------------------------------------------------------------
-// cv::subspaceProject
+// ncvslideio::subspaceProject
 //------------------------------------------------------------------------------
 Mat LDA::subspaceProject(InputArray _W, InputArray _mean, InputArray _src) {
     // get data matrices
@@ -204,7 +204,7 @@ Mat LDA::subspaceProject(InputArray _W, InputArray _mean, InputArray _src) {
 }
 
 //------------------------------------------------------------------------------
-// cv::subspaceReconstruct
+// ncvslideio::subspaceReconstruct
 //------------------------------------------------------------------------------
 Mat LDA::subspaceReconstruct(InputArray _W, InputArray _mean, InputArray _src)
 {
@@ -921,7 +921,7 @@ public:
 
         if(fallbackSymmetric && isSymmetric(src)) {
             // Fall back to OpenCV for a symmetric matrix!
-            cv::eigen(src, _eigenvalues, _eigenvectors);
+            ncvslideio::eigen(src, _eigenvalues, _eigenvectors);
         } else {
             Mat tmp;
             // Convert the given input matrix to double. Is there any way to
@@ -979,7 +979,7 @@ void eigenNonSymmetric(InputArray _src, OutputArray _evals, OutputArray _evects)
     CV_Assert(eigenvalues64f.size() == n);
 
     std::vector<int> sort_indexes(n);
-    cv::sortIdx(eigenvalues64f, sort_indexes, SORT_EVERY_ROW | SORT_DESCENDING);
+    ncvslideio::sortIdx(eigenvalues64f, sort_indexes, SORT_EVERY_ROW | SORT_DESCENDING);
 
     std::vector<double> sorted_eigenvalues64f(n);
     for (size_t i = 0; i < n; i++) sorted_eigenvalues64f[i] = eigenvalues64f[sort_indexes[i]];

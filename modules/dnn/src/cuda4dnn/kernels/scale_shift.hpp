@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void biasN(const csl::Stream& stream,
@@ -34,6 +34,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
         csl::TensorView<T> input, std::size_t inner_size,
         csl::TensorView<T> weights, csl::TensorView<T> bias);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_SCALE_HPP */

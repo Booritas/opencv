@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include "opencl_kernels_stitching.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 Ptr<Timelapser> Timelapser::createDefault(int type)
@@ -105,4 +105,4 @@ void TimelapserCrop::initialize(const std::vector<Point> &corners, const std::ve
 
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

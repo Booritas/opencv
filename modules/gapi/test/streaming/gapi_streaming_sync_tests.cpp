@@ -17,7 +17,7 @@ namespace {
 
 using ts_t = int64_t;
 using ts_vec = std::vector<ts_t>;
-using cv::gapi::streaming::sync_policy;
+using ncvslideio::gapi::streaming::sync_policy;
 
 ts_t calcLeastCommonMultiple(const ts_vec& values) {
     ts_t res = *std::max_element(values.begin(), values.end());
@@ -38,7 +38,7 @@ struct TimestampGenerationParams {
 };
 
 class MultiFrameSource {
-    class SingleSource : public cv::gapi::wip::IStreamSource {
+    class SingleSource : public ncvslideio::gapi::wip::IStreamSource {
         MultiFrameSource& m_source;
         std::size_t m_idx;
     public:
@@ -46,7 +46,7 @@ class MultiFrameSource {
             : m_source(s)
             , m_idx(idx)
         {}
-        virtual bool pull(cv::gapi::wip::Data& data) {
+        virtual bool pull(ncvslideio::gapi::wip::Data& data) {
             return m_source.pull(data, m_idx);
         }
         virtual GMetaArg descr_of() const { return GMetaArg{m_source.desc()}; }
@@ -54,7 +54,7 @@ class MultiFrameSource {
 
     TimestampGenerationParams p;
     ts_vec m_current_times;
-    cv::Mat m_mat;
+    ncvslideio::Mat m_mat;
 
 public:
     MultiFrameSource(const TimestampGenerationParams& params)
@@ -63,23 +63,23 @@ public:
         , m_mat(8, 8, CV_8UC1) {
     }
 
-    bool pull(cv::gapi::wip::Data& data, std::size_t idx) {
-        cv::randn(m_mat, 127, 32);
+    bool pull(ncvslideio::gapi::wip::Data& data, std::size_t idx) {
+        ncvslideio::randn(m_mat, 127, 32);
         GAPI_Assert(idx < p.frame_times.size());
         m_current_times[idx] += p.frame_times[idx];
         if (m_current_times[idx] >= p.end_time) {
             return false;
         }
         data = m_mat.clone();
-        data.meta[cv::gapi::streaming::meta_tag::timestamp] = m_current_times[idx];
+        data.meta[ncvslideio::gapi::streaming::meta_tag::timestamp] = m_current_times[idx];
         return true;
     }
 
-    cv::gapi::wip::IStreamSource::Ptr getSource(std::size_t idx) {
-        return cv::gapi::wip::IStreamSource::Ptr{new SingleSource(*this, idx)};
+    ncvslideio::gapi::wip::IStreamSource::Ptr getSource(std::size_t idx) {
+        return ncvslideio::gapi::wip::IStreamSource::Ptr{new SingleSource(*this, idx)};
     }
 
-    GMatDesc desc() const { return cv::descr_of(m_mat); }
+    GMatDesc desc() const { return ncvslideio::descr_of(m_mat); }
 };
 
 class TimestampChecker {
@@ -114,7 +114,7 @@ public:
 };
 
 struct TimestampSyncTest : public ::testing::TestWithParam<sync_policy> {
-    void run(cv::GProtoInputArgs&& ins, cv::GProtoOutputArgs&& outs,
+    void run(ncvslideio::GProtoInputArgs&& ins, ncvslideio::GProtoOutputArgs&& outs,
              const ts_vec& frame_times) {
         auto video_in_n = frame_times.size();
         GAPI_Assert(video_in_n <= ins.m_args.size());
@@ -127,23 +127,23 @@ struct TimestampSyncTest : public ::testing::TestWithParam<sync_policy> {
 
         GRunArgs gins;
         for (std::size_t i = 0; i < video_in_n; i++) {
-            gins += cv::gin(source.getSource(i));
+            gins += ncvslideio::gin(source.getSource(i));
         }
         auto desc = source.desc();
-        cv::Mat const_mat = cv::Mat::eye(desc.size.height,
+        ncvslideio::Mat const_mat = ncvslideio::Mat::eye(desc.size.height,
                                          desc.size.width,
                                          CV_MAKE_TYPE(desc.depth, desc.chan));
         for (std::size_t i = 0; i < const_in_n; i++) {
-            gins += cv::gin(const_mat);
+            gins += ncvslideio::gin(const_mat);
         }
         ts_vec out_timestamps(out_n);
-        cv::GRunArgsP gouts{};
+        ncvslideio::GRunArgsP gouts{};
         for (auto& t : out_timestamps) {
-            gouts += cv::gout(t);
+            gouts += ncvslideio::gout(t);
         }
 
-        auto pipe = cv::GComputation(std::move(ins), std::move(outs))
-                    .compileStreaming(cv::compile_args(policy));
+        auto pipe = ncvslideio::GComputation(std::move(ins), std::move(outs))
+                    .compileStreaming(ncvslideio::compile_args(policy));
 
         pipe.setSource(std::move(gins));
         pipe.start();
@@ -163,55 +163,55 @@ struct TimestampSyncTest : public ::testing::TestWithParam<sync_policy> {
 
 TEST_P(TimestampSyncTest, Basic)
 {
-    cv::GMat in1, in2;
-    auto out = cv::gapi::add(in1, in2);
-    auto ts = cv::gapi::streaming::timestamp(out);
+    ncvslideio::GMat in1, in2;
+    auto out = ncvslideio::gapi::add(in1, in2);
+    auto ts = ncvslideio::gapi::streaming::timestamp(out);
 
-    run(cv::GIn(in1, in2), cv::GOut(ts), {1,2});
+    run(ncvslideio::GIn(in1, in2), ncvslideio::GOut(ts), {1,2});
 }
 
 TEST_P(TimestampSyncTest, ThreeInputs)
 {
-    cv::GMat in1, in2, in3;
-    auto tmp = cv::gapi::add(in1, in2);
-    auto out = cv::gapi::add(tmp, in3);
-    auto ts = cv::gapi::streaming::timestamp(out);
+    ncvslideio::GMat in1, in2, in3;
+    auto tmp = ncvslideio::gapi::add(in1, in2);
+    auto out = ncvslideio::gapi::add(tmp, in3);
+    auto ts = ncvslideio::gapi::streaming::timestamp(out);
 
-    run(cv::GIn(in1, in2, in3), cv::GOut(ts), {2,4,3});
+    run(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(ts), {2,4,3});
 }
 
 TEST_P(TimestampSyncTest, TwoOutputs)
 {
-    cv::GMat in1, in2, in3;
-    auto out1 = cv::gapi::add(in1, in3);
-    auto out2 = cv::gapi::add(in2, in3);
-    auto ts1 = cv::gapi::streaming::timestamp(out1);
-    auto ts2 = cv::gapi::streaming::timestamp(out2);
+    ncvslideio::GMat in1, in2, in3;
+    auto out1 = ncvslideio::gapi::add(in1, in3);
+    auto out2 = ncvslideio::gapi::add(in2, in3);
+    auto ts1 = ncvslideio::gapi::streaming::timestamp(out1);
+    auto ts2 = ncvslideio::gapi::streaming::timestamp(out2);
 
-    run(cv::GIn(in1, in2, in3), cv::GOut(ts1, ts2), {1,4,2});
+    run(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(ts1, ts2), {1,4,2});
 }
 
 TEST_P(TimestampSyncTest, ConstInput)
 {
-    cv::GMat in1, in2, in3;
-    auto out1 = cv::gapi::add(in1, in3);
-    auto out2 = cv::gapi::add(in2, in3);
-    auto ts1 = cv::gapi::streaming::timestamp(out1);
-    auto ts2 = cv::gapi::streaming::timestamp(out2);
+    ncvslideio::GMat in1, in2, in3;
+    auto out1 = ncvslideio::gapi::add(in1, in3);
+    auto out2 = ncvslideio::gapi::add(in2, in3);
+    auto ts1 = ncvslideio::gapi::streaming::timestamp(out1);
+    auto ts2 = ncvslideio::gapi::streaming::timestamp(out2);
 
-    run(cv::GIn(in1, in2, in3), cv::GOut(ts1, ts2), {1,2});
+    run(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(ts1, ts2), {1,2});
 }
 
 TEST_P(TimestampSyncTest, ChangeSource)
 {
-    cv::GMat in1, in2, in3;
-    auto out1 = cv::gapi::add(in1, in3);
-    auto out2 = cv::gapi::add(in2, in3);
-    auto ts1 = cv::gapi::streaming::timestamp(out1);
-    auto ts2 = cv::gapi::streaming::timestamp(out2);
+    ncvslideio::GMat in1, in2, in3;
+    auto out1 = ncvslideio::gapi::add(in1, in3);
+    auto out2 = ncvslideio::gapi::add(in2, in3);
+    auto ts1 = ncvslideio::gapi::streaming::timestamp(out1);
+    auto ts2 = ncvslideio::gapi::streaming::timestamp(out2);
 
-    run(cv::GIn(in1, in2, in3), cv::GOut(ts1, ts2), {1,2});
-    run(cv::GIn(in1, in2, in3), cv::GOut(ts1, ts2), {1,2});
+    run(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(ts1, ts2), {1,2});
+    run(ncvslideio::GIn(in1, in2, in3), ncvslideio::GOut(ts1, ts2), {1,2});
 }
 
 INSTANTIATE_TEST_CASE_P(InputSynchronization, TimestampSyncTest,

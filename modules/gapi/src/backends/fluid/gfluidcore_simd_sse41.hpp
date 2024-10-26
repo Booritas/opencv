@@ -25,7 +25,7 @@
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wstrict-overflow"
 #endif
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 namespace sse41 {
@@ -557,5 +557,5 @@ CV_ALWAYS_INLINE void calcRowLinear_8UC_Impl_<3>(uint8_t* dst[],
 } // namespace sse42
 } // namespace fliud
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // !defined(GAPI_STANDALONE)

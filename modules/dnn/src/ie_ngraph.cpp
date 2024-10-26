@@ -23,7 +23,7 @@
 #include "opencv2/core/utils/filesystem.hpp"
 #include "opencv2/core/utils/filesystem.private.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #ifdef HAVE_DNN_NGRAPH
 
@@ -263,7 +263,7 @@ void InfEngineNgraphNet::init(Target targetId)
     initPlugin(cnn);
 }
 
-ov::ParameterVector InfEngineNgraphNet::setInputs(const std::vector<cv::Mat>& inputs,
+ov::ParameterVector InfEngineNgraphNet::setInputs(const std::vector<ncvslideio::Mat>& inputs,
                                    const std::vector<std::string>& names) {
     CV_Assert_N(inputs.size() == names.size());
     ov::ParameterVector current_inp;
@@ -440,7 +440,7 @@ ov::Tensor wrapToNgraphBlob(const Mat& m) {
 }
 
 
-NgraphBackendWrapper::NgraphBackendWrapper(int targetId, const cv::Mat& m)
+NgraphBackendWrapper::NgraphBackendWrapper(int targetId, const ncvslideio::Mat& m)
     : BackendWrapper(DNN_BACKEND_INFERENCE_ENGINE_NGRAPH, targetId)
     , host((Mat*)&m)
 {
@@ -490,7 +490,7 @@ void InfEngineNgraphNet::reset()
     isInit = false;
 }
 
-void InfEngineNgraphNet::addBlobs(const std::vector<cv::Ptr<BackendWrapper> >& ptrs)
+void InfEngineNgraphNet::addBlobs(const std::vector<ncvslideio::Ptr<BackendWrapper> >& ptrs)
 {
     auto wrappers = ngraphWrappers(ptrs);
     for (const auto& wrapper : wrappers)

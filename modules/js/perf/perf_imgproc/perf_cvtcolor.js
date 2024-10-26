@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if (isNodeJs) {
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
   console.log('opencv.js loaded');
   if (isNodeJs) {
-    global.cv = cv;
+    global.ncvslideio = ncvslideio;
     global.combine = HelpFunc.combine;
     global.constructMode = HelpFunc.constructMode;
     global.log = HelpFunc.log;
@@ -31,50 +31,50 @@ function perf() {
 
   // extra color conversions supported implicitly
   {
-    cv.CX_BGRA2HLS      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2HLS,
-    cv.CX_BGRA2HLS_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2HLS_FULL,
-    cv.CX_BGRA2HSV      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2HSV,
-    cv.CX_BGRA2HSV_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2HSV_FULL,
-    cv.CX_BGRA2Lab      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2Lab,
-    cv.CX_BGRA2Luv      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2Luv,
-    cv.CX_BGRA2XYZ      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2XYZ,
-    cv.CX_BGRA2YCrCb    = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2YCrCb,
-    cv.CX_BGRA2YUV      = cv.COLOR_COLORCVT_MAX + cv.COLOR_BGR2YUV,
-    cv.CX_HLS2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_HLS2BGR,
-    cv.CX_HLS2BGRA_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_HLS2BGR_FULL,
-    cv.CX_HLS2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_HLS2RGB,
-    cv.CX_HLS2RGBA_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_HLS2RGB_FULL,
-    cv.CX_HSV2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_HSV2BGR,
-    cv.CX_HSV2BGRA_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_HSV2BGR_FULL,
-    cv.CX_HSV2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_HSV2RGB,
-    cv.CX_HSV2RGBA_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_HSV2RGB_FULL,
-    cv.CX_Lab2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_Lab2BGR,
-    cv.CX_Lab2LBGRA     = cv.COLOR_COLORCVT_MAX + cv.COLOR_Lab2LBGR,
-    cv.CX_Lab2LRGBA     = cv.COLOR_COLORCVT_MAX + cv.COLOR_Lab2LRGB,
-    cv.CX_Lab2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_Lab2RGB,
-    cv.CX_LBGRA2Lab     = cv.COLOR_COLORCVT_MAX + cv.COLOR_LBGR2Lab,
-    cv.CX_LBGRA2Luv     = cv.COLOR_COLORCVT_MAX + cv.COLOR_LBGR2Luv,
-    cv.CX_LRGBA2Lab     = cv.COLOR_COLORCVT_MAX + cv.COLOR_LRGB2Lab,
-    cv.CX_LRGBA2Luv     = cv.COLOR_COLORCVT_MAX + cv.COLOR_LRGB2Luv,
-    cv.CX_Luv2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_Luv2BGR,
-    cv.CX_Luv2LBGRA     = cv.COLOR_COLORCVT_MAX + cv.COLOR_Luv2LBGR,
-    cv.CX_Luv2LRGBA     = cv.COLOR_COLORCVT_MAX + cv.COLOR_Luv2LRGB,
-    cv.CX_Luv2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_Luv2RGB,
-    cv.CX_RGBA2HLS      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2HLS,
-    cv.CX_RGBA2HLS_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2HLS_FULL,
-    cv.CX_RGBA2HSV      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2HSV,
-    cv.CX_RGBA2HSV_FULL = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2HSV_FULL,
-    cv.CX_RGBA2Lab      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2Lab,
-    cv.CX_RGBA2Luv      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2Luv,
-    cv.CX_RGBA2XYZ      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2XYZ,
-    cv.CX_RGBA2YCrCb    = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2YCrCb,
-    cv.CX_RGBA2YUV      = cv.COLOR_COLORCVT_MAX + cv.COLOR_RGB2YUV,
-    cv.CX_XYZ2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_XYZ2BGR,
-    cv.CX_XYZ2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_XYZ2RGB,
-    cv.CX_YCrCb2BGRA    = cv.COLOR_COLORCVT_MAX + cv.COLOR_YCrCb2BGR,
-    cv.CX_YCrCb2RGBA    = cv.COLOR_COLORCVT_MAX + cv.COLOR_YCrCb2RGB,
-    cv.CX_YUV2BGRA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_YUV2BGR,
-    cv.CX_YUV2RGBA      = cv.COLOR_COLORCVT_MAX + cv.COLOR_YUV2RGB
+    ncvslideio.CX_BGRA2HLS      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2HLS,
+    ncvslideio.CX_BGRA2HLS_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2HLS_FULL,
+    ncvslideio.CX_BGRA2HSV      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2HSV,
+    ncvslideio.CX_BGRA2HSV_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2HSV_FULL,
+    ncvslideio.CX_BGRA2Lab      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2Lab,
+    ncvslideio.CX_BGRA2Luv      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2Luv,
+    ncvslideio.CX_BGRA2XYZ      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2XYZ,
+    ncvslideio.CX_BGRA2YCrCb    = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2YCrCb,
+    ncvslideio.CX_BGRA2YUV      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_BGR2YUV,
+    ncvslideio.CX_HLS2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HLS2BGR,
+    ncvslideio.CX_HLS2BGRA_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HLS2BGR_FULL,
+    ncvslideio.CX_HLS2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HLS2RGB,
+    ncvslideio.CX_HLS2RGBA_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HLS2RGB_FULL,
+    ncvslideio.CX_HSV2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HSV2BGR,
+    ncvslideio.CX_HSV2BGRA_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HSV2BGR_FULL,
+    ncvslideio.CX_HSV2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HSV2RGB,
+    ncvslideio.CX_HSV2RGBA_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_HSV2RGB_FULL,
+    ncvslideio.CX_Lab2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Lab2BGR,
+    ncvslideio.CX_Lab2LBGRA     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Lab2LBGR,
+    ncvslideio.CX_Lab2LRGBA     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Lab2LRGB,
+    ncvslideio.CX_Lab2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Lab2RGB,
+    ncvslideio.CX_LBGRA2Lab     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_LBGR2Lab,
+    ncvslideio.CX_LBGRA2Luv     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_LBGR2Luv,
+    ncvslideio.CX_LRGBA2Lab     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_LRGB2Lab,
+    ncvslideio.CX_LRGBA2Luv     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_LRGB2Luv,
+    ncvslideio.CX_Luv2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Luv2BGR,
+    ncvslideio.CX_Luv2LBGRA     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Luv2LBGR,
+    ncvslideio.CX_Luv2LRGBA     = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Luv2LRGB,
+    ncvslideio.CX_Luv2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_Luv2RGB,
+    ncvslideio.CX_RGBA2HLS      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2HLS,
+    ncvslideio.CX_RGBA2HLS_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2HLS_FULL,
+    ncvslideio.CX_RGBA2HSV      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2HSV,
+    ncvslideio.CX_RGBA2HSV_FULL = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2HSV_FULL,
+    ncvslideio.CX_RGBA2Lab      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2Lab,
+    ncvslideio.CX_RGBA2Luv      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2Luv,
+    ncvslideio.CX_RGBA2XYZ      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2XYZ,
+    ncvslideio.CX_RGBA2YCrCb    = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2YCrCb,
+    ncvslideio.CX_RGBA2YUV      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_RGB2YUV,
+    ncvslideio.CX_XYZ2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_XYZ2BGR,
+    ncvslideio.CX_XYZ2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_XYZ2RGB,
+    ncvslideio.CX_YCrCb2BGRA    = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_YCrCb2BGR,
+    ncvslideio.CX_YCrCb2RGBA    = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_YCrCb2RGB,
+    ncvslideio.CX_YUV2BGRA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_YUV2BGR,
+    ncvslideio.CX_YUV2RGBA      = ncvslideio.COLOR_COLORCVT_MAX + ncvslideio.COLOR_YUV2RGB
   };
 
   // didn't support 16u and 32f perf tests according to
@@ -314,14 +314,14 @@ function perf() {
 
   function addCvtColorCase(suite, type) {
     suite.add('cvtColor', function() {
-      cv.cvtColor(mat1, mat2, mode, 0);
+      ncvslideio.cvtColor(mat1, mat2, mode, 0);
       }, {
         'setup': function() {
           let size = this.params.size;
           let matType = this.params.matType;
-          let mode = cv[this.params.mode]%cv.COLOR_COLORCVT_MAX;
-          let mat1 = new cv.Mat(size[1], size[0], cv[matType[0]]);
-          let mat2 = new cv.Mat(size[1], size[0], cv[matType[1]]);
+          let mode = ncvslideio[this.params.mode]%ncvslideio.COLOR_COLORCVT_MAX;
+          let mat1 = new ncvslideio.Mat(size[1], size[0], ncvslideio[matType[0]]);
+          let mat2 = new ncvslideio.Mat(size[1], size[0], ncvslideio[matType[1]]);
             },
         'teardown': function() {
           mat1.delete();
@@ -403,11 +403,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

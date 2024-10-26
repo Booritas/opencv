@@ -78,7 +78,7 @@ void normalizeLabels(Mat1i& imgLabels, int iNumLabels) {
 void CV_ConnectedComponentsTest::run(int /* start_from */)
 {
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
     string exp_path = string(ts->get_data_path()) + "connectedcomponents/ccomp_exp.png";
     Mat exp = imread(exp_path, IMREAD_GRAYSCALE);
@@ -138,35 +138,35 @@ TEST(Imgproc_ConnectedComponents, regression) { CV_ConnectedComponentsTest test;
 
 TEST(Imgproc_ConnectedComponents, grana_buffer_overflow)
 {
-    cv::Mat darkMask;
+    ncvslideio::Mat darkMask;
     darkMask.create(31, 87, CV_8U);
     darkMask = 0;
 
-    cv::Mat labels;
-    cv::Mat stats;
-    cv::Mat centroids;
+    ncvslideio::Mat labels;
+    ncvslideio::Mat stats;
+    ncvslideio::Mat centroids;
 
-    int nbComponents = cv::connectedComponentsWithStats(darkMask, labels, stats, centroids, 8, CV_32S, cv::CCL_GRANA);
+    int nbComponents = ncvslideio::connectedComponentsWithStats(darkMask, labels, stats, centroids, 8, CV_32S, ncvslideio::CCL_GRANA);
     EXPECT_EQ(1, nbComponents);
 }
 
-static cv::Mat createCrashMat(int numThreads) {
+static ncvslideio::Mat createCrashMat(int numThreads) {
     const int h = numThreads * 4 * 2 + 8;
     const double nParallelStripes = std::max(1, std::min(h / 2, numThreads * 4));
     const int w = 4;
 
     const int nstripes = cvRound(nParallelStripes <= 0 ? h : MIN(MAX(nParallelStripes, 1.), h));
-    const cv::Range stripeRange(0, nstripes);
-    const cv::Range wholeRange(0, h);
+    const ncvslideio::Range stripeRange(0, nstripes);
+    const ncvslideio::Range wholeRange(0, h);
 
-    cv::Mat m(h, w, CV_8U);
+    ncvslideio::Mat m(h, w, CV_8U);
     m = 0;
 
     // Look for a range that starts with odd value and ends with even value
-    cv::Range bugRange;
+    ncvslideio::Range bugRange;
     for (int s = stripeRange.start; s < stripeRange.end; s++) {
-        cv::Range sr(s, s + 1);
-        cv::Range r;
+        ncvslideio::Range sr(s, s + 1);
+        ncvslideio::Range r;
         r.start = (int)(wholeRange.start +
             ((uint64)sr.start * (wholeRange.end - wholeRange.start) + nstripes / 2) / nstripes);
         r.end = sr.end >= nstripes ?
@@ -203,22 +203,22 @@ static cv::Mat createCrashMat(int numThreads) {
 
 TEST(Imgproc_ConnectedComponents, parallel_wu_labels)
 {
-    cv::Mat mat = createCrashMat(cv::getNumThreads());
+    ncvslideio::Mat mat = createCrashMat(ncvslideio::getNumThreads());
     if (mat.empty()) {
         return;
     }
 
-    const int nbPixels = cv::countNonZero(mat);
+    const int nbPixels = ncvslideio::countNonZero(mat);
 
-    cv::Mat labels;
-    cv::Mat stats;
-    cv::Mat centroids;
+    ncvslideio::Mat labels;
+    ncvslideio::Mat stats;
+    ncvslideio::Mat centroids;
     int nb = 0;
-    EXPECT_NO_THROW(nb = cv::connectedComponentsWithStats(mat, labels, stats, centroids, 8, CV_32S, cv::CCL_WU));
+    EXPECT_NO_THROW(nb = ncvslideio::connectedComponentsWithStats(mat, labels, stats, centroids, 8, CV_32S, ncvslideio::CCL_WU));
 
     int area = 0;
     for (int i = 1; i < nb; ++i) {
-        area += stats.at<int32_t>(i, cv::CC_STAT_AREA);
+        area += stats.at<int32_t>(i, ncvslideio::CC_STAT_AREA);
     }
 
     EXPECT_EQ(nbPixels, area);
@@ -226,21 +226,21 @@ TEST(Imgproc_ConnectedComponents, parallel_wu_labels)
 
 TEST(Imgproc_ConnectedComponents, missing_background_pixels)
 {
-    cv::Mat m = Mat::ones(10, 10, CV_8U);
-    cv::Mat labels;
-    cv::Mat stats;
-    cv::Mat centroids;
-    EXPECT_NO_THROW(cv::connectedComponentsWithStats(m, labels, stats, centroids, 8, CV_32S, cv::CCL_WU));
-    EXPECT_EQ(stats.at<int32_t>(0, cv::CC_STAT_WIDTH), 0);
-    EXPECT_EQ(stats.at<int32_t>(0, cv::CC_STAT_HEIGHT), 0);
-    EXPECT_EQ(stats.at<int32_t>(0, cv::CC_STAT_LEFT), -1);
+    ncvslideio::Mat m = Mat::ones(10, 10, CV_8U);
+    ncvslideio::Mat labels;
+    ncvslideio::Mat stats;
+    ncvslideio::Mat centroids;
+    EXPECT_NO_THROW(ncvslideio::connectedComponentsWithStats(m, labels, stats, centroids, 8, CV_32S, ncvslideio::CCL_WU));
+    EXPECT_EQ(stats.at<int32_t>(0, ncvslideio::CC_STAT_WIDTH), 0);
+    EXPECT_EQ(stats.at<int32_t>(0, ncvslideio::CC_STAT_HEIGHT), 0);
+    EXPECT_EQ(stats.at<int32_t>(0, ncvslideio::CC_STAT_LEFT), -1);
     EXPECT_TRUE(std::isnan(centroids.at<double>(0, 0)));
     EXPECT_TRUE(std::isnan(centroids.at<double>(0, 1)));
 }
 
 TEST(Imgproc_ConnectedComponents, spaghetti_bbdt_sauf_stats)
 {
-    cv::Mat1b img(16, 16);
+    ncvslideio::Mat1b img(16, 16);
     img << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0,
@@ -258,112 +258,112 @@ TEST(Imgproc_ConnectedComponents, spaghetti_bbdt_sauf_stats)
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1;
 
-    cv::Mat1i labels;
-    cv::Mat1i stats;
-    cv::Mat1d centroids;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat1i stats;
+    ncvslideio::Mat1d centroids;
 
-    int ccltype[] = { cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
     for (uint cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(cv::connectedComponentsWithStats(img, labels, stats, centroids, 8, CV_32S, ccltype[cclt]));
-        EXPECT_EQ(stats(0, cv::CC_STAT_LEFT), 0);
-        EXPECT_EQ(stats(0, cv::CC_STAT_TOP), 0);
-        EXPECT_EQ(stats(0, cv::CC_STAT_WIDTH), 16);
-        EXPECT_EQ(stats(0, cv::CC_STAT_HEIGHT), 15);
-        EXPECT_EQ(stats(0, cv::CC_STAT_AREA), 144);
+        EXPECT_NO_THROW(ncvslideio::connectedComponentsWithStats(img, labels, stats, centroids, 8, CV_32S, ccltype[cclt]));
+        EXPECT_EQ(stats(0, ncvslideio::CC_STAT_LEFT), 0);
+        EXPECT_EQ(stats(0, ncvslideio::CC_STAT_TOP), 0);
+        EXPECT_EQ(stats(0, ncvslideio::CC_STAT_WIDTH), 16);
+        EXPECT_EQ(stats(0, ncvslideio::CC_STAT_HEIGHT), 15);
+        EXPECT_EQ(stats(0, ncvslideio::CC_STAT_AREA), 144);
 
-        EXPECT_EQ(stats(1, cv::CC_STAT_LEFT), 1);
-        EXPECT_EQ(stats(1, cv::CC_STAT_TOP), 1);
-        EXPECT_EQ(stats(1, cv::CC_STAT_WIDTH), 3);
-        EXPECT_EQ(stats(1, cv::CC_STAT_HEIGHT), 3);
-        EXPECT_EQ(stats(1, cv::CC_STAT_AREA), 9);
+        EXPECT_EQ(stats(1, ncvslideio::CC_STAT_LEFT), 1);
+        EXPECT_EQ(stats(1, ncvslideio::CC_STAT_TOP), 1);
+        EXPECT_EQ(stats(1, ncvslideio::CC_STAT_WIDTH), 3);
+        EXPECT_EQ(stats(1, ncvslideio::CC_STAT_HEIGHT), 3);
+        EXPECT_EQ(stats(1, ncvslideio::CC_STAT_AREA), 9);
 
-        EXPECT_EQ(stats(2, cv::CC_STAT_LEFT), 1);
-        EXPECT_EQ(stats(2, cv::CC_STAT_TOP), 1);
-        EXPECT_EQ(stats(2, cv::CC_STAT_WIDTH), 8);
-        EXPECT_EQ(stats(2, cv::CC_STAT_HEIGHT), 7);
-        EXPECT_EQ(stats(2, cv::CC_STAT_AREA), 40);
+        EXPECT_EQ(stats(2, ncvslideio::CC_STAT_LEFT), 1);
+        EXPECT_EQ(stats(2, ncvslideio::CC_STAT_TOP), 1);
+        EXPECT_EQ(stats(2, ncvslideio::CC_STAT_WIDTH), 8);
+        EXPECT_EQ(stats(2, ncvslideio::CC_STAT_HEIGHT), 7);
+        EXPECT_EQ(stats(2, ncvslideio::CC_STAT_AREA), 40);
 
-        EXPECT_EQ(stats(3, cv::CC_STAT_LEFT), 10);
-        EXPECT_EQ(stats(3, cv::CC_STAT_TOP), 2);
-        EXPECT_EQ(stats(3, cv::CC_STAT_WIDTH), 5);
-        EXPECT_EQ(stats(3, cv::CC_STAT_HEIGHT), 2);
-        EXPECT_EQ(stats(3, cv::CC_STAT_AREA), 8);
+        EXPECT_EQ(stats(3, ncvslideio::CC_STAT_LEFT), 10);
+        EXPECT_EQ(stats(3, ncvslideio::CC_STAT_TOP), 2);
+        EXPECT_EQ(stats(3, ncvslideio::CC_STAT_WIDTH), 5);
+        EXPECT_EQ(stats(3, ncvslideio::CC_STAT_HEIGHT), 2);
+        EXPECT_EQ(stats(3, ncvslideio::CC_STAT_AREA), 8);
 
-        EXPECT_EQ(stats(4, cv::CC_STAT_LEFT), 11);
-        EXPECT_EQ(stats(4, cv::CC_STAT_TOP), 5);
-        EXPECT_EQ(stats(4, cv::CC_STAT_WIDTH), 3);
-        EXPECT_EQ(stats(4, cv::CC_STAT_HEIGHT), 3);
-        EXPECT_EQ(stats(4, cv::CC_STAT_AREA), 9);
+        EXPECT_EQ(stats(4, ncvslideio::CC_STAT_LEFT), 11);
+        EXPECT_EQ(stats(4, ncvslideio::CC_STAT_TOP), 5);
+        EXPECT_EQ(stats(4, ncvslideio::CC_STAT_WIDTH), 3);
+        EXPECT_EQ(stats(4, ncvslideio::CC_STAT_HEIGHT), 3);
+        EXPECT_EQ(stats(4, ncvslideio::CC_STAT_AREA), 9);
 
-        EXPECT_EQ(stats(5, cv::CC_STAT_LEFT), 2);
-        EXPECT_EQ(stats(5, cv::CC_STAT_TOP), 9);
-        EXPECT_EQ(stats(5, cv::CC_STAT_WIDTH), 1);
-        EXPECT_EQ(stats(5, cv::CC_STAT_HEIGHT), 1);
-        EXPECT_EQ(stats(5, cv::CC_STAT_AREA), 1);
+        EXPECT_EQ(stats(5, ncvslideio::CC_STAT_LEFT), 2);
+        EXPECT_EQ(stats(5, ncvslideio::CC_STAT_TOP), 9);
+        EXPECT_EQ(stats(5, ncvslideio::CC_STAT_WIDTH), 1);
+        EXPECT_EQ(stats(5, ncvslideio::CC_STAT_HEIGHT), 1);
+        EXPECT_EQ(stats(5, ncvslideio::CC_STAT_AREA), 1);
 
-        EXPECT_EQ(stats(6, cv::CC_STAT_LEFT), 12);
-        EXPECT_EQ(stats(6, cv::CC_STAT_TOP), 9);
-        EXPECT_EQ(stats(6, cv::CC_STAT_WIDTH), 1);
-        EXPECT_EQ(stats(6, cv::CC_STAT_HEIGHT), 1);
-        EXPECT_EQ(stats(6, cv::CC_STAT_AREA), 1);
+        EXPECT_EQ(stats(6, ncvslideio::CC_STAT_LEFT), 12);
+        EXPECT_EQ(stats(6, ncvslideio::CC_STAT_TOP), 9);
+        EXPECT_EQ(stats(6, ncvslideio::CC_STAT_WIDTH), 1);
+        EXPECT_EQ(stats(6, ncvslideio::CC_STAT_HEIGHT), 1);
+        EXPECT_EQ(stats(6, ncvslideio::CC_STAT_AREA), 1);
 
         // Labels' order could be different!
-        if (cclt == cv::CCL_WU || cclt == cv::CCL_SAUF) {
+        if (cclt == ncvslideio::CCL_WU || cclt == ncvslideio::CCL_SAUF) {
             // CCL_SAUF, CCL_WU
-            EXPECT_EQ(stats(9, cv::CC_STAT_LEFT), 1);
-            EXPECT_EQ(stats(9, cv::CC_STAT_TOP), 11);
-            EXPECT_EQ(stats(9, cv::CC_STAT_WIDTH), 4);
-            EXPECT_EQ(stats(9, cv::CC_STAT_HEIGHT), 2);
-            EXPECT_EQ(stats(9, cv::CC_STAT_AREA), 8);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_LEFT), 1);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_TOP), 11);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_WIDTH), 4);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_HEIGHT), 2);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_AREA), 8);
 
-            EXPECT_EQ(stats(7, cv::CC_STAT_LEFT), 6);
-            EXPECT_EQ(stats(7, cv::CC_STAT_TOP), 10);
-            EXPECT_EQ(stats(7, cv::CC_STAT_WIDTH), 4);
-            EXPECT_EQ(stats(7, cv::CC_STAT_HEIGHT), 2);
-            EXPECT_EQ(stats(7, cv::CC_STAT_AREA), 8);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_LEFT), 6);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_TOP), 10);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_WIDTH), 4);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_HEIGHT), 2);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_AREA), 8);
 
-            EXPECT_EQ(stats(8, cv::CC_STAT_LEFT), 0);
-            EXPECT_EQ(stats(8, cv::CC_STAT_TOP), 10);
-            EXPECT_EQ(stats(8, cv::CC_STAT_WIDTH), 16);
-            EXPECT_EQ(stats(8, cv::CC_STAT_HEIGHT), 6);
-            EXPECT_EQ(stats(8, cv::CC_STAT_AREA), 21);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_LEFT), 0);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_TOP), 10);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_WIDTH), 16);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_HEIGHT), 6);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_AREA), 21);
         }
         else {
             // CCL_BBDT, CCL_GRANA, CCL_SPAGHETTI, CCL_BOLELLI
-            EXPECT_EQ(stats(7, cv::CC_STAT_LEFT), 1);
-            EXPECT_EQ(stats(7, cv::CC_STAT_TOP), 11);
-            EXPECT_EQ(stats(7, cv::CC_STAT_WIDTH), 4);
-            EXPECT_EQ(stats(7, cv::CC_STAT_HEIGHT), 2);
-            EXPECT_EQ(stats(7, cv::CC_STAT_AREA), 8);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_LEFT), 1);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_TOP), 11);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_WIDTH), 4);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_HEIGHT), 2);
+            EXPECT_EQ(stats(7, ncvslideio::CC_STAT_AREA), 8);
 
-            EXPECT_EQ(stats(8, cv::CC_STAT_LEFT), 6);
-            EXPECT_EQ(stats(8, cv::CC_STAT_TOP), 10);
-            EXPECT_EQ(stats(8, cv::CC_STAT_WIDTH), 4);
-            EXPECT_EQ(stats(8, cv::CC_STAT_HEIGHT), 2);
-            EXPECT_EQ(stats(8, cv::CC_STAT_AREA), 8);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_LEFT), 6);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_TOP), 10);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_WIDTH), 4);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_HEIGHT), 2);
+            EXPECT_EQ(stats(8, ncvslideio::CC_STAT_AREA), 8);
 
-            EXPECT_EQ(stats(9, cv::CC_STAT_LEFT), 0);
-            EXPECT_EQ(stats(9, cv::CC_STAT_TOP), 10);
-            EXPECT_EQ(stats(9, cv::CC_STAT_WIDTH), 16);
-            EXPECT_EQ(stats(9, cv::CC_STAT_HEIGHT), 6);
-            EXPECT_EQ(stats(9, cv::CC_STAT_AREA), 21);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_LEFT), 0);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_TOP), 10);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_WIDTH), 16);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_HEIGHT), 6);
+            EXPECT_EQ(stats(9, ncvslideio::CC_STAT_AREA), 21);
         }
-        EXPECT_EQ(stats(10, cv::CC_STAT_LEFT), 9);
-        EXPECT_EQ(stats(10, cv::CC_STAT_TOP), 12);
-        EXPECT_EQ(stats(10, cv::CC_STAT_WIDTH), 5);
-        EXPECT_EQ(stats(10, cv::CC_STAT_HEIGHT), 2);
-        EXPECT_EQ(stats(10, cv::CC_STAT_AREA), 7);
+        EXPECT_EQ(stats(10, ncvslideio::CC_STAT_LEFT), 9);
+        EXPECT_EQ(stats(10, ncvslideio::CC_STAT_TOP), 12);
+        EXPECT_EQ(stats(10, ncvslideio::CC_STAT_WIDTH), 5);
+        EXPECT_EQ(stats(10, ncvslideio::CC_STAT_HEIGHT), 2);
+        EXPECT_EQ(stats(10, ncvslideio::CC_STAT_AREA), 7);
     }
 }
 
 TEST(Imgproc_ConnectedComponents, chessboard_even)
 {
-    cv::Size size(16, 16);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(16, 16);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     // Chessboard image with even number of rows and cols
     // Note that this is the maximum number of labels for 4-way connectivity
@@ -423,35 +423,35 @@ TEST(Imgproc_ConnectedComponents, chessboard_even)
             0, 121, 0, 122, 0, 123, 0, 124, 0, 125, 0, 126, 0, 127, 0, 128;
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
 
 TEST(Imgproc_ConnectedComponents, chessboard_odd)
 {
-    cv::Size size(15, 15);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(15, 15);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     // Chessboard image with odd number of rows and cols
     // Note that this is the maximum number of labels for 4-way connectivity
@@ -508,35 +508,35 @@ TEST(Imgproc_ConnectedComponents, chessboard_odd)
             106, 0, 107, 0, 108, 0, 109, 0, 110, 0, 111, 0, 112, 0, 113;
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
 
 TEST(Imgproc_ConnectedComponents, maxlabels_8conn_even)
 {
-    cv::Size size(16, 16);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(16, 16);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     {
         input <<
@@ -594,35 +594,35 @@ TEST(Imgproc_ConnectedComponents, maxlabels_8conn_even)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
 
 TEST(Imgproc_ConnectedComponents, maxlabels_8conn_odd)
 {
-    cv::Size size(15, 15);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(15, 15);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     {
         input <<
@@ -677,35 +677,35 @@ TEST(Imgproc_ConnectedComponents, maxlabels_8conn_odd)
             57, 0, 58, 0, 59, 0, 60, 0, 61, 0, 62, 0, 63, 0, 64;
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
 
 TEST(Imgproc_ConnectedComponents, single_row)
 {
-    cv::Size size(1, 15);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(1, 15);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     {
         input <<
@@ -721,35 +721,35 @@ TEST(Imgproc_ConnectedComponents, single_row)
 
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
 
 TEST(Imgproc_ConnectedComponents, single_column)
 {
-    cv::Size size(15, 1);
-    cv::Mat1b input(size);
-    cv::Mat1i output_8c(size);
-    cv::Mat1i output_4c(size);
+    ncvslideio::Size size(15, 1);
+    ncvslideio::Mat1b input(size);
+    ncvslideio::Mat1i output_8c(size);
+    ncvslideio::Mat1i output_4c(size);
 
     {
         input <<
@@ -765,25 +765,25 @@ TEST(Imgproc_ConnectedComponents, single_column)
 
     }
 
-    int ccltype[] = { cv::CCL_DEFAULT, cv::CCL_WU, cv::CCL_GRANA, cv::CCL_BOLELLI, cv::CCL_SAUF, cv::CCL_BBDT, cv::CCL_SPAGHETTI };
+    int ccltype[] = { ncvslideio::CCL_DEFAULT, ncvslideio::CCL_WU, ncvslideio::CCL_GRANA, ncvslideio::CCL_BOLELLI, ncvslideio::CCL_SAUF, ncvslideio::CCL_BBDT, ncvslideio::CCL_SPAGHETTI };
 
-    cv::Mat1i labels;
-    cv::Mat diff;
+    ncvslideio::Mat1i labels;
+    ncvslideio::Mat diff;
     int nLabels = 0;
     for (size_t cclt = 0; cclt < sizeof(ccltype) / sizeof(int); ++cclt) {
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 8, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_8c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
 
 
-        EXPECT_NO_THROW(nLabels = cv::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
+        EXPECT_NO_THROW(nLabels = ncvslideio::connectedComponents(input, labels, 4, CV_32S, ccltype[cclt]));
         normalizeLabels(labels, nLabels);
 
         diff = labels != output_4c;
-        EXPECT_EQ(cv::countNonZero(diff), 0);
+        EXPECT_EQ(ncvslideio::countNonZero(diff), 0);
     }
 
 }
@@ -794,7 +794,7 @@ TEST(Imgproc_ConnectedComponents, 4conn_regression_21366)
     Mat src = Mat::zeros(Size(10, 10), CV_8UC1);
     {
         Mat labels, stats, centroids;
-        EXPECT_NO_THROW(cv::connectedComponentsWithStats(src, labels, stats, centroids, 4));
+        EXPECT_NO_THROW(ncvslideio::connectedComponentsWithStats(src, labels, stats, centroids, 4));
     }
 }
 

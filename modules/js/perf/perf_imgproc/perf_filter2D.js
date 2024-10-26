@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
     console.log('opencv.js loaded');
     if (isNodeJs) {
-      global.cv = cv;
+      global.ncvslideio = ncvslideio;
       global.combine = HelpFunc.combine;
       global.log = HelpFunc.log;
       global.decodeParams2Case = HelpFunc.decodeParams2Case;
@@ -37,21 +37,21 @@ function perf() {
 
     function addFilter2dCase(suite, type) {
         suite.add('filter2d', function() {
-            cv.filter2D(src, dst, cv.CV_8UC4, kernel, new cv.Point(1, 1), 0.0, borderMode);
+            ncvslideio.filter2D(src, dst, ncvslideio.CV_8UC4, kernel, new ncvslideio.Point(1, 1), 0.0, borderMode);
           }, {
               'setup': function() {
                 let size = this.params.size;
                 let ksize = parseInt(this.params.ksize);
-                let borderMode = cv[this.params.borderMode];
+                let borderMode = ncvslideio[this.params.borderMode];
 
-                let src = new cv.Mat(size, cv.CV_8UC4);
-                let dst = new cv.Mat(size, cv.CV_8UC4);
+                let src = new ncvslideio.Mat(size, ncvslideio.CV_8UC4);
+                let dst = new ncvslideio.Mat(size, ncvslideio.CV_8UC4);
                 let kernelElement = [];
                 for (let i = 0; i < ksize*ksize; i++) {
                     let randNum = Math.random();
                     kernelElement.push(-3.0+randNum*13.0);
                 }
-                let kernel = cv.matFromArray(ksize, ksize, cv.CV_32FC1, kernelElement);
+                let kernel = ncvslideio.matFromArray(ksize, ksize, ncvslideio.CV_32FC1, kernelElement);
                 },
               'teardown': function() {
                 src.delete();
@@ -119,11 +119,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

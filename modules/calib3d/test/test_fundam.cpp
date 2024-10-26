@@ -528,7 +528,7 @@ public:
     CV_RodriguesTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
@@ -562,7 +562,7 @@ CV_RodriguesTest::CV_RodriguesTest()
 }
 
 
-int CV_RodriguesTest::read_params( const cv::FileStorage& fs )
+int CV_RodriguesTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -666,19 +666,19 @@ int CV_RodriguesTest::prepare_test_case( int test_case_idx )
 
 void CV_RodriguesTest::run_func()
 {
-    cv::Mat v = test_mat[INPUT][0], M = test_mat[OUTPUT][0], v2 = test_mat[OUTPUT][2];
-    cv::Mat M0 = M, v2_0 = v2;
+    ncvslideio::Mat v = test_mat[INPUT][0], M = test_mat[OUTPUT][0], v2 = test_mat[OUTPUT][2];
+    ncvslideio::Mat M0 = M, v2_0 = v2;
     if( !calc_jacobians )
     {
-        cv::Rodrigues(v, M);
-        cv::Rodrigues(M, v2);
+        ncvslideio::Rodrigues(v, M);
+        ncvslideio::Rodrigues(M, v2);
     }
     else
     {
-        cv::Mat J1 = test_mat[OUTPUT][1], J2 = test_mat[OUTPUT][3];
-        cv::Mat J1_0 = J1, J2_0 = J2;
-        cv::Rodrigues(v, M, J1);
-        cv::Rodrigues(M, v2, J2);
+        ncvslideio::Mat J1 = test_mat[OUTPUT][1], J2 = test_mat[OUTPUT][3];
+        ncvslideio::Mat J1_0 = J1, J2_0 = J2;
+        ncvslideio::Rodrigues(v, M, J1);
+        ncvslideio::Rodrigues(M, v2, J2);
         if( J1.data != J1_0.data )
         {
             if( J1.size() != J1_0.size() )
@@ -753,7 +753,7 @@ public:
     CV_FundamentalMatTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
@@ -808,7 +808,7 @@ CV_FundamentalMatTest::CV_FundamentalMatTest()
 }
 
 
-int CV_FundamentalMatTest::read_params( const cv::FileStorage& fs )
+int CV_FundamentalMatTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -960,10 +960,10 @@ int CV_FundamentalMatTest::prepare_test_case( int test_case_idx )
 
 void CV_FundamentalMatTest::run_func()
 {
-    // cvFindFundamentalMat calls cv::findFundamentalMat
-    cv::Mat _input0 = test_mat[INPUT][0], _input1 = test_mat[INPUT][1];
-    cv::Mat& F = test_mat[TEMP][0], &mask = test_mat[TEMP][1];
-    F = cv::findFundamentalMat( _input0, _input1, method, MAX(sigma*3, 0.01), 0, mask );
+    // cvFindFundamentalMat calls ncvslideio::findFundamentalMat
+    ncvslideio::Mat _input0 = test_mat[INPUT][0], _input1 = test_mat[INPUT][1];
+    ncvslideio::Mat& F = test_mat[TEMP][0], &mask = test_mat[TEMP][1];
+    F = ncvslideio::findFundamentalMat( _input0, _input1, method, MAX(sigma*3, 0.01), 0, mask );
     f_result = !F.empty();
 }
 
@@ -977,8 +977,8 @@ void CV_FundamentalMatTest::prepare_to_validation( int test_case_idx )
 
     Mat invA1, invA2, R=Rt.colRange(0, 3), T;
 
-    cv::invert(A1, invA1, CV_SVD);
-    cv::invert(A2, invA2, CV_SVD);
+    ncvslideio::invert(A1, invA1, CV_SVD);
+    ncvslideio::invert(A2, invA2, CV_SVD);
 
     double tx = Rt.at<double>(0, 3);
     double ty = Rt.at<double>(1, 3);
@@ -987,9 +987,9 @@ void CV_FundamentalMatTest::prepare_to_validation( int test_case_idx )
     double _t_x[] = { 0, -tz, ty, tz, 0, -tx, -ty, tx, 0 };
 
     // F = (A2^-T)*[t]_x*R*(A1^-1)
-    cv::gemm( invA2, Mat( 3, 3, CV_64F, _t_x ), 1, Mat(), 0, T, CV_GEMM_A_T );
-    cv::gemm( R, invA1, 1, Mat(), 0, invA2 );
-    cv::gemm( T, invA2, 1, Mat(), 0, F0 );
+    ncvslideio::gemm( invA2, Mat( 3, 3, CV_64F, _t_x ), 1, Mat(), 0, T, CV_GEMM_A_T );
+    ncvslideio::gemm( R, invA1, 1, Mat(), 0, invA2 );
+    ncvslideio::gemm( T, invA2, 1, Mat(), 0, F0 );
     F0 *= 1./f0[8];
 
     uchar* status = test_mat[TEMP][1].ptr();
@@ -1039,7 +1039,7 @@ void CV_FundamentalMatTest::prepare_to_validation( int test_case_idx )
 
     f_prop2[0] = f_result != 0;
     f_prop2[1] = f[8];
-    f_prop2[2] = cv::determinant( F );
+    f_prop2[2] = ncvslideio::determinant( F );
 }
 /******************************* find essential matrix ***********************************/
 class CV_EssentialMatTest : public cvtest::ArrayTest
@@ -1048,7 +1048,7 @@ public:
     CV_EssentialMatTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
@@ -1108,7 +1108,7 @@ CV_EssentialMatTest::CV_EssentialMatTest()
 }
 
 
-int CV_EssentialMatTest::read_params( const cv::FileStorage& fs )
+int CV_EssentialMatTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -1264,11 +1264,11 @@ void CV_EssentialMatTest::run_func()
     Mat _input0(test_mat[INPUT][0]), _input1(test_mat[INPUT][1]);
     Mat K(test_mat[INPUT][4]);
     double focal(K.at<double>(0, 0));
-    cv::Point2d pp(K.at<double>(0, 2), K.at<double>(1, 2));
+    ncvslideio::Point2d pp(K.at<double>(0, 2), K.at<double>(1, 2));
 
     RNG& rng = ts->get_rng();
     Mat E, mask1(test_mat[TEMP][1]);
-    E = cv::findEssentialMat( _input0, _input1, focal, pp, method, 0.99, MAX(sigma*3, 0.0001), mask1 );
+    E = ncvslideio::findEssentialMat( _input0, _input1, focal, pp, method, 0.99, MAX(sigma*3, 0.0001), mask1 );
     if (E.rows > 3)
     {
         int count = E.rows / 3;
@@ -1316,7 +1316,7 @@ void CV_EssentialMatTest::prepare_to_validation( int test_case_idx )
 
     Mat invA, R=Rt0.colRange(0, 3), T1, T2;
 
-    cv::invert(A, invA, CV_SVD);
+    ncvslideio::invert(A, invA, CV_SVD);
 
     double tx = Rt0.at<double>(0, 3);
     double ty = Rt0.at<double>(1, 3);
@@ -1325,9 +1325,9 @@ void CV_EssentialMatTest::prepare_to_validation( int test_case_idx )
     double _t_x[] = { 0, -tz, ty, tz, 0, -tx, -ty, tx, 0 };
 
     // F = (A2^-T)*[t]_x*R*(A1^-1)
-    cv::gemm( invA, Mat( 3, 3, CV_64F, _t_x ), 1, Mat(), 0, T1, CV_GEMM_A_T );
-    cv::gemm( R, invA, 1, Mat(), 0, T2 );
-    cv::gemm( T1, T2, 1, Mat(), 0, F0 );
+    ncvslideio::gemm( invA, Mat( 3, 3, CV_64F, _t_x ), 1, Mat(), 0, T1, CV_GEMM_A_T );
+    ncvslideio::gemm( R, invA, 1, Mat(), 0, T2 );
+    ncvslideio::gemm( T1, T2, 1, Mat(), 0, F0 );
     F0 *= 1./f0[8];
 
     uchar* status = test_mat[TEMP][1].ptr();
@@ -1346,8 +1346,8 @@ void CV_EssentialMatTest::prepare_to_validation( int test_case_idx )
     test_convertHomogeneous( test_mat[INPUT][1], p2 );
 
     cvtest::convert(test_mat[TEMP][0], E, E.type());
-    cv::gemm( invA, E, 1, Mat(), 0, T1, CV_GEMM_A_T );
-    cv::gemm( T1, invA, 1, Mat(), 0, F );
+    ncvslideio::gemm( invA, E, 1, Mat(), 0, T1, CV_GEMM_A_T );
+    ncvslideio::gemm( T1, invA, 1, Mat(), 0, F );
 
     for( i = 0; i < pt_count; i++ )
     {
@@ -1409,7 +1409,7 @@ public:
     CV_ConvertHomogeneousTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     double get_success_error_level( int test_case_idx, int i, int j );
@@ -1432,7 +1432,7 @@ CV_ConvertHomogeneousTest::CV_ConvertHomogeneousTest()
 }
 
 
-int CV_ConvertHomogeneousTest::read_params( const cv::FileStorage& fs )
+int CV_ConvertHomogeneousTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -1499,11 +1499,11 @@ void CV_ConvertHomogeneousTest::fill_array( int /*test_case_idx*/, int /*i*/, in
 
 void CV_ConvertHomogeneousTest::run_func()
 {
-    cv::Mat _input = test_mat[INPUT][0], &_output = test_mat[OUTPUT][0];
+    ncvslideio::Mat _input = test_mat[INPUT][0], &_output = test_mat[OUTPUT][0];
     if( dims1 > dims2 )
-        cv::convertPointsFromHomogeneous(_input, _output);
+        ncvslideio::convertPointsFromHomogeneous(_input, _output);
     else
-        cv::convertPointsToHomogeneous(_input, _output);
+        ncvslideio::convertPointsToHomogeneous(_input, _output);
 }
 
 
@@ -1521,7 +1521,7 @@ public:
     CV_ComputeEpilinesTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     double get_success_error_level( int test_case_idx, int i, int j );
@@ -1546,7 +1546,7 @@ CV_ComputeEpilinesTest::CV_ComputeEpilinesTest()
 }
 
 
-int CV_ComputeEpilinesTest::read_params( const cv::FileStorage& fs )
+int CV_ComputeEpilinesTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -1618,8 +1618,8 @@ void CV_ComputeEpilinesTest::fill_array( int test_case_idx, int i, int j, Mat& a
 
 void CV_ComputeEpilinesTest::run_func()
 {
-    cv::Mat _points = test_mat[INPUT][0], _F = test_mat[INPUT][1], &_lines = test_mat[OUTPUT][0];
-    cv::computeCorrespondEpilines( _points, which_image, _F, _lines );
+    ncvslideio::Mat _points = test_mat[INPUT][0], _F = test_mat[INPUT][1], &_lines = test_mat[OUTPUT][0];
+    ncvslideio::computeCorrespondEpilines( _points, which_image, _F, _lines );
 }
 
 
@@ -1633,7 +1633,7 @@ void CV_ComputeEpilinesTest::prepare_to_validation( int /*test_case_idx*/ )
     test_convertHomogeneous( test_mat[INPUT][0], pt );
     test_mat[INPUT][1].convertTo(F, CV_64F);
     if( which_image == 2 )
-        cv::transpose( F, F );
+        ncvslideio::transpose( F, F );
 
     for( int i = 0; i < pt_count; i++ )
     {

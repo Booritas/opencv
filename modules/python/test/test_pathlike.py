@@ -16,20 +16,20 @@ class CanPassPathLike(NewOpenCVTests):
     def test_pathlib_path(self):
         Path = import_path()
 
-        img_path = self.find_file('cv/imgproc/stuff.jpg', [os.environ.get('OPENCV_TEST_DATA_PATH')])
+        img_path = self.find_file('ncvslideio/imgproc/stuff.jpg', [os.environ.get('OPENCV_TEST_DATA_PATH')])
 
-        image_from_str = cv.imread(img_path)
+        image_from_str = ncvslideio.imread(img_path)
         self.assertIsNotNone(image_from_str)
 
-        image_from_path = cv.imread(Path(img_path))
+        image_from_path = ncvslideio.imread(Path(img_path))
         self.assertIsNotNone(image_from_path)
 
 
     def test_type_mismatch(self):
         import_path() # checks python version
 
-        with self.assertRaises(cv.error) as context:
-            cv.imread(123)
+        with self.assertRaises(ncvslideio.error) as context:
+            ncvslideio.imread(123)
 
         self.assertTrue('str or path-like' in str(context.exception))
 

@@ -27,7 +27,7 @@ def draw_detections(img, rects, thickness = 1):
         # the HOG detector returns slightly larger rectangles than the real objects.
         # so we slightly shrink the rectangles to get a nicer output.
         pad_w, pad_h = int(0.15*w), int(0.05*h)
-        cv.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
+        ncvslideio.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
 
 
 def main():
@@ -35,15 +35,15 @@ def main():
     from glob import glob
     import itertools as it
 
-    hog = cv.HOGDescriptor()
-    hog.setSVMDetector( cv.HOGDescriptor_getDefaultPeopleDetector() )
+    hog = ncvslideio.HOGDescriptor()
+    hog.setSVMDetector( ncvslideio.HOGDescriptor_getDefaultPeopleDetector() )
 
-    default = [cv.samples.findFile('basketball2.png')] if len(sys.argv[1:]) == 0 else []
+    default = [ncvslideio.samples.findFile('basketball2.png')] if len(sys.argv[1:]) == 0 else []
 
     for fn in it.chain(*map(glob, default + sys.argv[1:])):
         print(fn, ' - ',)
         try:
-            img = cv.imread(fn)
+            img = ncvslideio.imread(fn)
             if img is None:
                 print('Failed to load image file:', fn)
                 continue
@@ -62,8 +62,8 @@ def main():
         draw_detections(img, found)
         draw_detections(img, found_filtered, 3)
         print('%d (%d) found' % (len(found_filtered), len(found)))
-        cv.imshow('img', img)
-        ch = cv.waitKey()
+        ncvslideio.imshow('img', img)
+        ch = ncvslideio.waitKey()
         if ch == 27:
             break
 
@@ -73,4 +73,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

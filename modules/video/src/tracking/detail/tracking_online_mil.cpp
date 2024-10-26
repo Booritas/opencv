@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "tracking_online_mil.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -274,13 +274,13 @@ void ClfOnlineStump::update(const Mat& posx, const Mat& negx, const Mat_<float>&
         if (posx.cols > 0)
         {
             _mu1 = (_lRate * _mu1 + (1 - _lRate) * posmu);
-            cv::Mat diff = posx.col(_ind) - _mu1;
+            ncvslideio::Mat diff = posx.col(_ind) - _mu1;
             _sig1 = _lRate * _sig1 + (1 - _lRate) * float(mean(diff.mul(diff))[0]);
         }
         if (negx.cols > 0)
         {
             _mu0 = (_lRate * _mu0 + (1 - _lRate) * negmu);
-            cv::Mat diff = negx.col(_ind) - _mu0;
+            ncvslideio::Mat diff = negx.col(_ind) - _mu0;
             _sig0 = _lRate * _sig0 + (1 - _lRate) * float(mean(diff.mul(diff))[0]);
         }
 
@@ -299,16 +299,16 @@ void ClfOnlineStump::update(const Mat& posx, const Mat& negx, const Mat_<float>&
         if (posx.cols > 0)
         {
             _mu1 = posmu;
-            cv::Scalar scal_mean, scal_std_dev;
-            cv::meanStdDev(posx.col(_ind), scal_mean, scal_std_dev);
+            ncvslideio::Scalar scal_mean, scal_std_dev;
+            ncvslideio::meanStdDev(posx.col(_ind), scal_mean, scal_std_dev);
             _sig1 = float(scal_std_dev[0]) * float(scal_std_dev[0]) + 1e-9f;
         }
 
         if (negx.cols > 0)
         {
             _mu0 = negmu;
-            cv::Scalar scal_mean, scal_std_dev;
-            cv::meanStdDev(negx.col(_ind), scal_mean, scal_std_dev);
+            ncvslideio::Scalar scal_mean, scal_std_dev;
+            ncvslideio::meanStdDev(negx.col(_ind), scal_mean, scal_std_dev);
             _sig0 = float(scal_std_dev[0]) * float(scal_std_dev[0]) + 1e-9f;
         }
 
@@ -353,4 +353,4 @@ inline std::vector<float> ClfOnlineStump::classifySetF(const Mat& x)
     return res;
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

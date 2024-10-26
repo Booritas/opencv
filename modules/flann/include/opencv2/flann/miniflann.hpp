@@ -48,7 +48,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/flann/defines.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace flann
@@ -178,7 +178,7 @@ protected:
     Mat features_clone;  // index may store features pointer internally for searching, so avoid dangling pointers: https://github.com/opencv/opencv/issues/17553
 };
 
-} } // namespace cv::flann
+} } // namespace ncvslideio::flann
 
 //! @endcond
 

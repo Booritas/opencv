@@ -8,11 +8,11 @@
 #include "opencv2/video/detail/tracking.detail.hpp"
 #include "tracker_mil_state.hpp"
 
-namespace cv {
+namespace ncvslideio {
 inline namespace tracking {
 namespace impl {
 
-using namespace cv::detail::tracking;
+using namespace ncvslideio::detail::tracking;
 
 /**
  * \brief Implementation of TrackerModel for MIL algorithm
@@ -62,6 +62,6 @@ private:
     int height;  //initial height of the boundingBox
 };
 
-}}}  // namespace cv::tracking::impl
+}}}  // namespace ncvslideio::tracking::impl
 
 #endif

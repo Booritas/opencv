@@ -91,7 +91,7 @@ if sys.version_info >= (3, 6):
 
     class TypingStubsGenerator:
         def __init__(self):
-            self.cv_root = NamespaceNode("cv", export_name="cv2")
+            self.cv_root = NamespaceNode("ncvslideio", export_name="cv2")
             self.exported_enums = {}  # type: Dict[SymbolName, EnumerationNode]
             self.type_hints_ignored_functions = set()  # type: Set[str]
 

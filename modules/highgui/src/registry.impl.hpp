@@ -8,7 +8,7 @@
 
 #include "opencv2/core/utils/filesystem.private.hpp"  // OPENCV_HAVE_FILESYSTEM_SUPPORT
 
-namespace cv { namespace highgui_backend {
+namespace ncvslideio { namespace highgui_backend {
 
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT && defined(ENABLE_PLUGINS)
 #define DECLARE_DYNAMIC_BACKEND(name) \
@@ -21,7 +21,7 @@ BackendInfo { \
 
 #define DECLARE_STATIC_BACKEND(name, createBackendAPI) \
 BackendInfo { \
-    1000, name, std::make_shared<cv::highgui_backend::StaticBackendFactory>([=] () -> std::shared_ptr<cv::highgui_backend::UIBackend> { return createBackendAPI(); }) \
+    1000, name, std::make_shared<ncvslideio::highgui_backend::StaticBackendFactory>([=] () -> std::shared_ptr<ncvslideio::highgui_backend::UIBackend> { return createBackendAPI(); }) \
 },
 
 static
@@ -100,7 +100,7 @@ protected:
             BackendInfo& info = enabledBackends[enabled];
             if (enabled != i)
                 info = enabledBackends[i];
-            size_t param_priority = utils::getConfigurationParameterSizeT(cv::format("OPENCV_UI_PRIORITY_%s", info.name.c_str()).c_str(), (size_t)info.priority);
+            size_t param_priority = utils::getConfigurationParameterSizeT(ncvslideio::format("OPENCV_UI_PRIORITY_%s", info.name.c_str()).c_str(), (size_t)info.priority);
             CV_Assert(param_priority == (size_t)(int)param_priority); // overflow check
             if (param_priority > 0)
             {
@@ -133,7 +133,7 @@ protected:
     bool readPrioritySettings()
     {
         bool hasChanges = false;
-        cv::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_UI_PRIORITY_LIST", NULL);
+        ncvslideio::String prioritized_backends = utils::getConfigurationParameterString("OPENCV_UI_PRIORITY_LIST", NULL);
         if (prioritized_backends.empty())
             return hasChanges;
         CV_LOG_INFO(NULL, "UI: Configured priority list (OPENCV_UI_PRIORITY_LIST): " << prioritized_backends);
@@ -192,7 +192,7 @@ public:
 
 const std::vector<BackendInfo>& getBackendsInfo()
 {
-    return cv::highgui_backend::UIBackendRegistry::getInstance().getEnabledBackends();
+    return ncvslideio::highgui_backend::UIBackendRegistry::getInstance().getEnabledBackends();
 }
 
 }} // namespace

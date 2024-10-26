@@ -8,7 +8,7 @@
 
 // three digit decode method from https://baike.baidu.com/item/EAN-13
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 static constexpr size_t EAN13BITS_NUM = 95;

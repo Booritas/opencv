@@ -11,13 +11,13 @@
 #include <opencv2/gapi/streaming/format.hpp>
 #include "gstreamingkernel.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace streaming {
 
-cv::GKernelPackage kernels();
+ncvslideio::GKernelPackage kernels();
 
-struct GCopy final : public cv::detail::NoTag
+struct GCopy final : public ncvslideio::detail::NoTag
 {
     static constexpr const char* id() { return "org.opencv.streaming.copy"; }
 
@@ -27,12 +27,12 @@ struct GCopy final : public cv::detail::NoTag
     }
 
     template<typename T> static T on(const T& arg) {
-        return cv::GKernelType<GCopy, std::function<T(T)>>::on(arg);
+        return ncvslideio::GKernelType<GCopy, std::function<T(T)>>::on(arg);
     }
 };
 
 } // namespace streaming
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMINGBACKEND_HPP

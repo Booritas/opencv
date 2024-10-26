@@ -121,7 +121,7 @@ TEST(videoio_gstreamer, gray16_writing)
     randu(frame, 0, 65535);
 
     // generate a temp filename, and fix path separators to how GStreamer expects them
-    cv::String temp_file = cv::tempfile(".raw");
+    ncvslideio::String temp_file = ncvslideio::tempfile(".raw");
     std::replace(temp_file.begin(), temp_file.end(), '\\', '/');
 
     // write noise frame to file using GStreamer
@@ -145,7 +145,7 @@ TEST(videoio_gstreamer, gray16_writing)
     fs.close();
 
     // compare to make sure it's identical
-    EXPECT_EQ(0, cv::norm(frame, written_frame, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(frame, written_frame, NORM_INF));
 
     // remove temp file
     EXPECT_EQ(0, remove(temp_file.c_str()));

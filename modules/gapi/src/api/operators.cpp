@@ -12,205 +12,205 @@
 #include <opencv2/gapi/gscalar.hpp>
 #include <opencv2/gapi/operators.hpp>
 
-namespace cv
+namespace ncvslideio
 {
-cv::GMat operator+(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator+(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::add(lhs, rhs);
+    return ncvslideio::gapi::add(lhs, rhs);
 }
 
-cv::GMat operator+(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator+(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::addC(lhs, rhs);
+    return ncvslideio::gapi::addC(lhs, rhs);
 }
 
-cv::GMat operator+(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator+(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::addC(rhs, lhs);
+    return ncvslideio::gapi::addC(rhs, lhs);
 }
 
-cv::GMat operator-(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator-(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::sub(lhs, rhs);
+    return ncvslideio::gapi::sub(lhs, rhs);
 }
 
-cv::GMat operator-(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator-(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::subC(lhs, rhs);
+    return ncvslideio::gapi::subC(lhs, rhs);
 }
 
-cv::GMat operator-(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator-(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::subRC(lhs, rhs);
+    return ncvslideio::gapi::subRC(lhs, rhs);
 }
 
-cv::GMat operator*(const cv::GMat& lhs, float rhs)
+ncvslideio::GMat operator*(const ncvslideio::GMat& lhs, float rhs)
 {
-    return cv::gapi::mulC(lhs, static_cast<double>(rhs));
+    return ncvslideio::gapi::mulC(lhs, static_cast<double>(rhs));
 }
 
-cv::GMat operator*(float lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator*(float lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::mulC(rhs, static_cast<double>(lhs));
+    return ncvslideio::gapi::mulC(rhs, static_cast<double>(lhs));
 }
 
-cv::GMat operator*(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator*(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::mulC(lhs, rhs);
+    return ncvslideio::gapi::mulC(lhs, rhs);
 }
 
-cv::GMat operator*(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator*(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::mulC(rhs, lhs);
+    return ncvslideio::gapi::mulC(rhs, lhs);
 }
 
-cv::GMat operator/(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator/(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::divC(lhs, rhs, 1.0);
+    return ncvslideio::gapi::divC(lhs, rhs, 1.0);
 }
 
-cv::GMat operator/(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator/(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::div(lhs, rhs, 1.0);
+    return ncvslideio::gapi::div(lhs, rhs, 1.0);
 }
 
-cv::GMat operator/(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator/(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::divRC(lhs, rhs, 1.0);
+    return ncvslideio::gapi::divRC(lhs, rhs, 1.0);
 }
 
-cv::GMat operator&(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator&(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_and(lhs, rhs);
+    return ncvslideio::gapi::bitwise_and(lhs, rhs);
 }
 
-cv::GMat operator&(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator&(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::bitwise_and(lhs, rhs);
+    return ncvslideio::gapi::bitwise_and(lhs, rhs);
 }
 
-cv::GMat operator&(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator&(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_and(rhs, lhs);
+    return ncvslideio::gapi::bitwise_and(rhs, lhs);
 }
 
-cv::GMat operator|(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator|(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_or(lhs, rhs);
+    return ncvslideio::gapi::bitwise_or(lhs, rhs);
 }
 
-cv::GMat operator|(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator|(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::bitwise_or(lhs, rhs);
+    return ncvslideio::gapi::bitwise_or(lhs, rhs);
 }
 
-cv::GMat operator|(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator|(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_or(rhs, lhs);
+    return ncvslideio::gapi::bitwise_or(rhs, lhs);
 }
 
-cv::GMat operator^(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator^(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_xor(lhs, rhs);
+    return ncvslideio::gapi::bitwise_xor(lhs, rhs);
 }
 
-cv::GMat operator^(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator^(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::bitwise_xor(lhs, rhs);
+    return ncvslideio::gapi::bitwise_xor(lhs, rhs);
 }
 
-cv::GMat operator^(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator^(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::bitwise_xor(rhs, lhs);
+    return ncvslideio::gapi::bitwise_xor(rhs, lhs);
 }
 
-cv::GMat operator~(const cv::GMat& lhs)
+ncvslideio::GMat operator~(const ncvslideio::GMat& lhs)
 {
-    return cv::gapi::bitwise_not(lhs);
+    return ncvslideio::gapi::bitwise_not(lhs);
 }
 
-cv::GMat operator>(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator>(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpGT(lhs, rhs);
+    return ncvslideio::gapi::cmpGT(lhs, rhs);
 }
 
-cv::GMat operator>=(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator>=(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpGE(lhs, rhs);
+    return ncvslideio::gapi::cmpGE(lhs, rhs);
 }
 
-cv::GMat operator<(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator<(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpLT(lhs, rhs);
+    return ncvslideio::gapi::cmpLT(lhs, rhs);
 }
 
-cv::GMat operator<=(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator<=(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpLE(lhs, rhs);
+    return ncvslideio::gapi::cmpLE(lhs, rhs);
 }
 
-cv::GMat operator==(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator==(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpEQ(lhs, rhs);
+    return ncvslideio::gapi::cmpEQ(lhs, rhs);
 }
 
-cv::GMat operator!=(const cv::GMat& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator!=(const ncvslideio::GMat& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpNE(lhs, rhs);
+    return ncvslideio::gapi::cmpNE(lhs, rhs);
 }
 
-cv::GMat operator>(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator>(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpGT(lhs, rhs);
+    return ncvslideio::gapi::cmpGT(lhs, rhs);
 }
 
-cv::GMat operator>=(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator>=(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpGE(lhs, rhs);
+    return ncvslideio::gapi::cmpGE(lhs, rhs);
 }
 
-cv::GMat operator<(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator<(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpLT(lhs, rhs);
+    return ncvslideio::gapi::cmpLT(lhs, rhs);
 }
 
-cv::GMat operator<=(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator<=(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpLE(lhs, rhs);
+    return ncvslideio::gapi::cmpLE(lhs, rhs);
 }
 
-cv::GMat operator==(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator==(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpEQ(lhs, rhs);
+    return ncvslideio::gapi::cmpEQ(lhs, rhs);
 }
 
-cv::GMat operator!=(const cv::GMat& lhs, const cv::GScalar& rhs)
+ncvslideio::GMat operator!=(const ncvslideio::GMat& lhs, const ncvslideio::GScalar& rhs)
 {
-    return cv::gapi::cmpNE(lhs, rhs);
+    return ncvslideio::gapi::cmpNE(lhs, rhs);
 }
 
-cv::GMat operator>(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator>(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpLT(rhs, lhs);
+    return ncvslideio::gapi::cmpLT(rhs, lhs);
 }
-cv::GMat operator>=(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator>=(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpLE(rhs, lhs);
+    return ncvslideio::gapi::cmpLE(rhs, lhs);
 }
-cv::GMat operator<(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator<(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpGT(rhs, lhs);
+    return ncvslideio::gapi::cmpGT(rhs, lhs);
 }
-cv::GMat operator<=(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator<=(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpGE(rhs, lhs);
+    return ncvslideio::gapi::cmpGE(rhs, lhs);
 }
-cv::GMat operator==(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator==(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpEQ(rhs, lhs);
+    return ncvslideio::gapi::cmpEQ(rhs, lhs);
 }
-cv::GMat operator!=(const cv::GScalar& lhs, const cv::GMat& rhs)
+ncvslideio::GMat operator!=(const ncvslideio::GScalar& lhs, const ncvslideio::GMat& rhs)
 {
-    return cv::gapi::cmpNE(rhs, lhs);
+    return ncvslideio::gapi::cmpNE(rhs, lhs);
 }
 } // cv

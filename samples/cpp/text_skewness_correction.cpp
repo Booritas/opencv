@@ -13,7 +13,7 @@ The program takes as input a skewed source image and shows non skewed text.
 #include <iomanip>
 #include <string>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 
@@ -41,13 +41,13 @@ int main( int argc, char** argv )
     Mat element = getStructuringElement( MORPH_RECT, Size(2*erosion_size+1, 2*erosion_size+1), Point(erosion_size, erosion_size) );
     erode(thresh, thresh, element);
 
-    cv::Mat coords;
+    ncvslideio::Mat coords;
     findNonZero(thresh, coords);
 
     RotatedRect box = minAreaRect(coords);
     float angle = box.angle;
 
-    // The cv::minAreaRect function returns values in the range [-90, 0)
+    // The ncvslideio::minAreaRect function returns values in the range [-90, 0)
     // if the angle is less than -45 we need to add 90 to it
     if (angle < -45.0f)
     {

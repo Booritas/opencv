@@ -46,7 +46,7 @@
 #include "onnx_graph_simplifier.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -256,7 +256,7 @@ void ONNXLayerHandler::fillRegistry(const opencv_onnx::GraphProto &net)
         const auto& dispatch = importer->getDispatchMap(node_proto);
         if (dispatch.find(type) == dispatch.end())
         {
-            addMissing(name, cv::format("%s.%s", layer_type_domain.c_str(), type.c_str()));
+            addMissing(name, ncvslideio::format("%s.%s", layer_type_domain.c_str(), type.c_str()));
         }
     }
     printMissing();
@@ -275,12 +275,12 @@ ONNXImporter::ONNXImporter(Net& net, const char *onnxFile)
     std::fstream input(onnxFile, std::ios::in | std::ios::binary);
     if (!input)
     {
-        CV_Error(Error::StsBadArg, cv::format("Can't read ONNX file: %s", onnxFile));
+        CV_Error(Error::StsBadArg, ncvslideio::format("Can't read ONNX file: %s", onnxFile));
     }
 
     if (!model_proto.ParseFromIstream(&input))
     {
-        CV_Error(Error::StsUnsupportedFormat, cv::format("Failed to parse ONNX model: %s", onnxFile));
+        CV_Error(Error::StsUnsupportedFormat, ncvslideio::format("Failed to parse ONNX model: %s", onnxFile));
     }
 
     populateNet();
@@ -388,7 +388,7 @@ void runLayer(LayerParams& params, const std::vector<Mat>& inputs,
     {
         inpShapes[i] = shape(inputs[i]);
         if (i > 0 && ddepth != inputs[i].depth())
-            CV_Error(Error::StsNotImplemented, cv::format("Mixed input data types. Required type: %d, actual type: %d", ddepth, inputs[i].depth()));
+            CV_Error(Error::StsNotImplemented, ncvslideio::format("Mixed input data types. Required type: %d, actual type: %d", ddepth, inputs[i].depth()));
 
         // Quantize and Dequantize layer have different output type than input.
         if (params.type != "Quantize" && params.type != "Dequantize")
@@ -537,18 +537,18 @@ LayerParams ONNXImporter::getLayerParams(const opencv_onnx::NodeProto& node_prot
             }
             else if (attribute_proto.has_g())
             {
-                CV_Error(Error::StsNotImplemented, cv::format("DNN/ONNX/Attribute[%s]: 'Graph' is not supported", attribute_name.c_str()));
+                CV_Error(Error::StsNotImplemented, ncvslideio::format("DNN/ONNX/Attribute[%s]: 'Graph' is not supported", attribute_name.c_str()));
             }
             else if (attribute_proto.graphs_size() > 0)
             {
                 CV_Error(Error::StsNotImplemented,
-                        cv::format("DNN/ONNX/Attribute[%s]: 'Graphs' (%d) in attributes is not supported",
+                        ncvslideio::format("DNN/ONNX/Attribute[%s]: 'Graphs' (%d) in attributes is not supported",
                                 attribute_name.c_str(), attribute_proto.graphs_size())
                 );
             }
             else if (attribute_proto.strings_size() > 0)
             {
-                std::string msg = cv::format("DNN/ONNX/Attribute[%s]: 'Strings' (%d) are not supported",
+                std::string msg = ncvslideio::format("DNN/ONNX/Attribute[%s]: 'Strings' (%d) are not supported",
                         attribute_name.c_str(), attribute_proto.strings_size());
                 CV_LOG_ERROR(NULL, msg);
                 for (int i = 0; i < attribute_proto.strings_size(); i++)
@@ -560,16 +560,16 @@ LayerParams ONNXImporter::getLayerParams(const opencv_onnx::NodeProto& node_prot
             else if (attribute_proto.tensors_size() > 0)
             {
                 CV_Error(Error::StsNotImplemented,
-                        cv::format("DNN/ONNX/Attribute[%s]: 'Tensors' (%d) in attributes are not supported",
+                        ncvslideio::format("DNN/ONNX/Attribute[%s]: 'Tensors' (%d) in attributes are not supported",
                                 attribute_name.c_str(), attribute_proto.tensors_size())
                 );
             }
             else
             {
-                CV_Error(Error::StsNotImplemented, cv::format("DNN/ONNX/Attribute[%s]: unsupported attribute format", attribute_name.c_str()));
+                CV_Error(Error::StsNotImplemented, ncvslideio::format("DNN/ONNX/Attribute[%s]: unsupported attribute format", attribute_name.c_str()));
             }
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             CV_UNUSED(e);
             if (DNN_DIAGNOSTICS_RUN)
@@ -800,9 +800,9 @@ void ONNXImporter::populateNet()
         framework_version = model_proto.producer_version();
 
     CV_LOG_INFO(NULL, "DNN/ONNX: loading ONNX"
-            << (model_proto.has_ir_version() ? cv::format(" v%d", (int)model_proto.ir_version()) : cv::String())
+            << (model_proto.has_ir_version() ? ncvslideio::format(" v%d", (int)model_proto.ir_version()) : ncvslideio::String())
             << " model produced by '" << framework_name << "'"
-            << (framework_version.empty() ? cv::String() : cv::format(":%s", framework_version.c_str()))
+            << (framework_version.empty() ? ncvslideio::String() : ncvslideio::format(":%s", framework_version.c_str()))
             << ". Number of nodes = " << graph_proto->node_size()
             << ", initializers = " << graph_proto->initializer_size()
             << ", inputs = " << graph_proto->input_size()
@@ -947,7 +947,7 @@ std::string ONNXImporter::extractNodeName(const opencv_onnx::NodeProto& node_pro
     {
         if (useLegacyNames)
             return node_proto.name();
-        return cv::format("onnx_node!%s", node_proto.name().c_str());
+        return ncvslideio::format("onnx_node!%s", node_proto.name().c_str());
     }
     for (int i = 0; i < node_proto.output_size(); ++i)
     {
@@ -959,7 +959,7 @@ std::string ONNXImporter::extractNodeName(const opencv_onnx::NodeProto& node_pro
         {
             if (useLegacyNames)
                 return name.c_str();
-            return cv::format("onnx_node_output_%d!%s", i, name.c_str());
+            return ncvslideio::format("onnx_node_output_%d!%s", i, name.c_str());
         }
     }
     CV_Error(Error::StsAssert, "Couldn't deduce Node name.");
@@ -975,8 +975,8 @@ void ONNXImporter::handleNode(const opencv_onnx::NodeProto& node_proto)
 
     CV_LOG_INFO(NULL, "DNN/ONNX: processing node with " << node_proto.input_size() << " inputs and "
                                                          << node_proto.output_size() << " outputs: "
-                                                         << cv::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
-                                                         << cv::format(" from %sdomain='", onnx_opset_map.count(layer_type_domain) == 1 ? "" : "undeclared ")
+                                                         << ncvslideio::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
+                                                         << ncvslideio::format(" from %sdomain='", onnx_opset_map.count(layer_type_domain) == 1 ? "" : "undeclared ")
                                                          << layer_type_domain << "'"
     );
 
@@ -1007,16 +1007,16 @@ void ONNXImporter::handleNode(const opencv_onnx::NodeProto& node_proto)
             parseCustomLayer(layerParams, node_proto);
         }
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         if (DNN_DIAGNOSTICS_RUN)
         {
             CV_LOG_ERROR(NULL, "DNN/ONNX: Potential problem during processing node with " << node_proto.input_size() << " inputs and " << node_proto.output_size() << " outputs: "
-                    << cv::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
+                    << ncvslideio::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
                     << " from domain='" << layer_type_domain << "'"
                     << "\n" << e.msg
             );
-            cv::AutoLock lock(getLayerFactoryMutex());
+            ncvslideio::AutoLock lock(getLayerFactoryMutex());
             auto registeredLayers = getLayerFactoryImpl();
             if (registeredLayers.find(layerParams.type) != registeredLayers.end())
             {
@@ -1034,7 +1034,7 @@ void ONNXImporter::handleNode(const opencv_onnx::NodeProto& node_proto)
         else
         {
             CV_LOG_ERROR(NULL, "DNN/ONNX: ERROR during processing node with " << node_proto.input_size() << " inputs and " << node_proto.output_size() << " outputs: "
-                    << cv::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
+                    << ncvslideio::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
                     << " from domain='" << layer_type_domain << "'"
             );
         }
@@ -1055,7 +1055,7 @@ void ONNXImporter::handleNode(const opencv_onnx::NodeProto& node_proto)
             }
         }
         else
-            CV_Error(Error::StsError, cv::format("Node [%s@%s]:(%s) parse error: %s", layer_type.c_str(), layer_type_domain.c_str(), name.c_str(), e.what()));
+            CV_Error(Error::StsError, ncvslideio::format("Node [%s@%s]:(%s) parse error: %s", layer_type.c_str(), layer_type_domain.c_str(), name.c_str(), e.what()));
     }
 }
 
@@ -1515,7 +1515,7 @@ void ONNXImporter::lstm_extractConsts(LayerParams& layerParams, const opencv_onn
 void ONNXImporter::lstm_add_reshape(const std::string& input_name, const std::string& output_name, int* layerShape, size_t n)
 {
     LayerParams reshapeLp;
-    reshapeLp.name = cv::format("%s/reshape", input_name.c_str());
+    reshapeLp.name = ncvslideio::format("%s/reshape", input_name.c_str());
     reshapeLp.type = "Reshape";
     CV_Assert(layer_id.find(reshapeLp.name) == layer_id.end());
 
@@ -1530,7 +1530,7 @@ void ONNXImporter::lstm_add_reshape(const std::string& input_name, const std::st
 std::string ONNXImporter::lstm_add_slice(int index, const std::string& input_name, int* begin, int* end, size_t n)
 {
     LayerParams sliceLP;
-    sliceLP.name = cv::format("%s/slice_%d", input_name.c_str(), index);
+    sliceLP.name = ncvslideio::format("%s/slice_%d", input_name.c_str(), index);
     sliceLP.type = "Slice";
     CV_Assert(layer_id.find(sliceLP.name) == layer_id.end());
 
@@ -1550,7 +1550,7 @@ std::string ONNXImporter::lstm_fix_dims(LayerParams& layerParams, const opencv_o
                                         int batch_size, int num_directions, int hidden_size, bool need_y, const std::string& y_name,
                                         const int index)
 {
-    std::string reshape_output = cv::format("%s/reshape_%d", layerParams.name.c_str(), index);
+    std::string reshape_output = ncvslideio::format("%s/reshape_%d", layerParams.name.c_str(), index);
 
     // reshape from Seq, Batch, Dirs*Hidden to Seq, Batch, Dirs, Hidden
     // to not confuse reshape with dynamic first dimension, zero means 'leave unchanged'
@@ -1598,7 +1598,7 @@ void ONNXImporter::lstm_add_transform(int num_directions, int batch_size, int hi
         std::string slice_1 = lstm_add_slice(1, input_name, begin1, end1, sizeof(begin1) / sizeof(begin1[0]));
 
         LayerParams concatLP;
-        concatLP.name = cv::format("%s/concat", input_name.c_str());
+        concatLP.name = ncvslideio::format("%s/concat", input_name.c_str());
         concatLP.type = "Concat";
         CV_Assert(layer_id.find(concatLP.name) == layer_id.end());
 
@@ -1699,7 +1699,7 @@ void ONNXImporter::parseLSTM(LayerParams& layerParams, const opencv_onnx::NodePr
     if (need_y || need_yh)
     {
         // give random names to LSTMLayer's outputs because every output needs postprocessing
-        lstm_proto.add_output(cv::format("%s_y", layerParams.name.c_str()));
+        lstm_proto.add_output(ncvslideio::format("%s_y", layerParams.name.c_str()));
     }
     if (need_yc)
     {
@@ -1961,7 +1961,7 @@ void ONNXImporter::parseGemm(LayerParams& layerParams, const opencv_onnx::NodePr
             std::string const_params_name = i == 1 ? "B" : "C";
 
             layerParams.blobs.push_back(blob);
-            layerParams.set(cv::format("const%s", const_params_name.c_str()), true);
+            layerParams.set(ncvslideio::format("const%s", const_params_name.c_str()), true);
         }
     }
 
@@ -2127,7 +2127,7 @@ void ONNXImporter::parseSqueeze(LayerParams& layerParams, const opencv_onnx::Nod
             }
         }
         else
-            CV_Error(Error::StsNotImplemented, cv::format("ONNX/Squeeze: doesn't support non-constant 'axes' input"));
+            CV_Error(Error::StsNotImplemented, ncvslideio::format("ONNX/Squeeze: doesn't support non-constant 'axes' input"));
     }
 
     MatShape outShape;
@@ -2522,7 +2522,7 @@ void ONNXImporter::parseGather(LayerParams& layerParams, const opencv_onnx::Node
 
             runLayer(layerParams, inputs, output);
             output.back().convertTo(output.back(), type);
-            if (real_ndims < 2)  // In case of scalars or 1D vectors, OpenCV initializes 2D cv::Mat
+            if (real_ndims < 2)  // In case of scalars or 1D vectors, OpenCV initializes 2D ncvslideio::Mat
                 output.back().dims = std::max(input_real_ndims - real_ndims, 1);
             addConstant(node_proto.output(0), output.back());
             return;
@@ -2722,7 +2722,7 @@ void ONNXImporter::parseResize(LayerParams& layerParams, const opencv_onnx::Node
         }
         else
         {
-            CV_Error(Error::StsNotImplemented, cv::format("ONNX/Resize: doesn't support dynamic non-constant 'sizes' input: %s", inputSizes.c_str()));
+            CV_Error(Error::StsNotImplemented, ncvslideio::format("ONNX/Resize: doesn't support dynamic non-constant 'sizes' input: %s", inputSizes.c_str()));
         }
     }
     else
@@ -3208,7 +3208,7 @@ void ONNXImporter::parseEinsum(LayerParams& layerParams, const opencv_onnx::Node
 
     CV_CheckFalse(einsumInpShapes.empty(), "ERROR no inputs shapes");
     for (int i = 0; i < einsumInpShapes.size(); i++) {
-        layerParams.set("inputShapes" + cv::format("%d", i), DictValue::arrayInt(einsumInpShapes[i].begin(), einsumInpShapes[i].size()));
+        layerParams.set("inputShapes" + ncvslideio::format("%d", i), DictValue::arrayInt(einsumInpShapes[i].begin(), einsumInpShapes[i].size()));
     }
 
     // Check if of eqution is valid
@@ -3240,7 +3240,7 @@ void ONNXImporter::parseCustomLayer(LayerParams& layerParams, const opencv_onnx:
     }
 
     CV_LOG_IF_INFO(NULL, !LayerFactory::isLayerRegistered(layer_type), "DNN/ONNX: unknown node type, try using custom handler for node with " << node_proto.input_size() << " inputs and " << node_proto.output_size() << " outputs: "
-            << cv::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
+            << ncvslideio::format("[%s]:(%s)", layer_type.c_str(), name.c_str())
     );
 
     parseSimpleLayers(layerParams, node_proto);
@@ -3384,7 +3384,7 @@ void ONNXImporter::parseQConv(LayerParams& layerParams, const opencv_onnx::NodeP
     Mat outputMultiplier(1, outCn, CV_32F);
     for (int i = 0; i < outCn; i++)
     {
-        biasFused.at<int>(i) = bias.at<int>(i) - inp_zp*(cv::sum(weights_2d.row(i))[0]);
+        biasFused.at<int>(i) = bias.at<int>(i) - inp_zp*(ncvslideio::sum(weights_2d.row(i))[0]);
         outputMultiplier.at<float>(i) = (inp_sc * wt_sc.at<float>(i)) / out_sc;
     }
 
@@ -3430,7 +3430,7 @@ void ONNXImporter::parseQMatMul(LayerParams& layerParams, const opencv_onnx::Nod
     Mat outputMultiplier(1, outCn, CV_32F);
     for (int i = 0; i < outCn; i++)
     {
-        bias.at<int>(i) = -inp_zp*(cv::sum(weights.row(i))[0]);
+        bias.at<int>(i) = -inp_zp*(ncvslideio::sum(weights.row(i))[0]);
         outputMultiplier.at<float>(i) = (inp_sc * wt_sc.at<float>(i)) / out_sc;
     }
 
@@ -3506,7 +3506,7 @@ void ONNXImporter::parseQGemm(LayerParams& layerParams, const opencv_onnx::NodeP
     Mat outputMultiplier(1, outCn, CV_32F);
     for (int i = 0; i < outCn; i++)
     {
-        biasFused.at<int>(i) = bias.at<int>(i) - inp_zp*(cv::sum(weights.row(i))[0]);
+        biasFused.at<int>(i) = bias.at<int>(i) - inp_zp*(ncvslideio::sum(weights.row(i))[0]);
         outputMultiplier.at<float>(i) = (inp_sc * wt_sc.at<float>(i)) / out_sc;
     }
 
@@ -3546,8 +3546,8 @@ void ONNXImporter::parseQEltwise(LayerParams& layerParams, const opencv_onnx::No
     // Set 2nd input as the const input
     if (constId == 0)
     {
-        cv::swap(inp_0_sc, inp_1_sc);
-        cv::swap(inp_0_zp, inp_1_zp);
+        ncvslideio::swap(inp_0_sc, inp_1_sc);
+        ncvslideio::swap(inp_0_zp, inp_1_zp);
     }
 
     float out_sc = getScalarFromMat<float>(getBlob(node_proto, 6));
@@ -4021,13 +4021,13 @@ Mat readTensorFromONNX(const String& path)
     std::fstream input(path.c_str(), std::ios::in | std::ios::binary);
     if (!input)
     {
-        CV_Error(Error::StsBadArg, cv::format("Can't read ONNX file: %s", path.c_str()));
+        CV_Error(Error::StsBadArg, ncvslideio::format("Can't read ONNX file: %s", path.c_str()));
     }
 
     opencv_onnx::TensorProto tensor_proto = opencv_onnx::TensorProto();
     if (!tensor_proto.ParseFromIstream(&input))
     {
-        CV_Error(Error::StsUnsupportedFormat, cv::format("Failed to parse ONNX data: %s", path.c_str()));
+        CV_Error(Error::StsUnsupportedFormat, ncvslideio::format("Failed to parse ONNX data: %s", path.c_str()));
     }
     Mat mat = getMatFromTensor(tensor_proto);
     releaseONNXTensor(tensor_proto);

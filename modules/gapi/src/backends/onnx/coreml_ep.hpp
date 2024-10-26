@@ -12,11 +12,11 @@
 
 #include <onnxruntime_cxx_api.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace onnx {
 void addCoreMLExecutionProvider(Ort::SessionOptions *session_options,
-                                const cv::gapi::onnx::ep::CoreML &coreml_ep);
+                                const ncvslideio::gapi::onnx::ep::CoreML &coreml_ep);
 }}}
 
 #endif  // HAVE_ONNX

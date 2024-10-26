@@ -5,7 +5,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Pose estimation using a ArUco Planar Grid board";
@@ -117,11 +117,11 @@ int main(int argc, char *argv[]) {
         int markersOfBoardDetected = 0;
         if(!ids.empty()) {
             // Get object and image points for the solvePnP function
-            cv::Mat objPoints, imgPoints;
+            ncvslideio::Mat objPoints, imgPoints;
             board.matchImagePoints(corners, ids, objPoints, imgPoints);
 
             // Find pose
-            cv::solvePnP(objPoints, imgPoints, camMatrix, distCoeffs, rvec, tvec);
+            ncvslideio::solvePnP(objPoints, imgPoints, camMatrix, distCoeffs, rvec, tvec);
 
             markersOfBoardDetected = (int)objPoints.total() / 4;
         }
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
             aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
         if(markersOfBoardDetected > 0)
-            cv::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvec, tvec, axisLength);
+            ncvslideio::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvec, tvec, axisLength);
 
         imshow("out", imageCopy);
         char key = (char)waitKey(waitTime);

@@ -31,7 +31,7 @@ from common import Sketcher
 
 class App:
     def __init__(self, fn):
-        self.img = cv.imread(fn)
+        self.img = ncvslideio.imread(fn)
         if self.img is None:
             raise Exception('Failed to load image file: %s' % fn)
 
@@ -49,14 +49,14 @@ class App:
 
     def watershed(self):
         m = self.markers.copy()
-        cv.watershed(self.img, m)
+        ncvslideio.watershed(self.img, m)
         overlay = self.colors[np.maximum(m, 0)]
-        vis = cv.addWeighted(self.img, 0.5, overlay, 0.5, 0.0, dtype=cv.CV_8UC3)
-        cv.imshow('watershed', vis)
+        vis = ncvslideio.addWeighted(self.img, 0.5, overlay, 0.5, 0.0, dtype=ncvslideio.CV_8UC3)
+        ncvslideio.imshow('watershed', vis)
 
     def run(self):
-        while cv.getWindowProperty('img', 0) != -1 or cv.getWindowProperty('watershed', 0) != -1:
-            ch = cv.waitKey(50)
+        while ncvslideio.getWindowProperty('img', 0) != -1 or ncvslideio.getWindowProperty('watershed', 0) != -1:
+            ch = ncvslideio.waitKey(50)
             if ch == 27:
                 break
             if ch >= ord('1') and ch <= ord('7'):
@@ -72,7 +72,7 @@ class App:
                 self.markers[:] = 0
                 self.markers_vis[:] = self.img
                 self.sketch.show()
-        cv.destroyAllWindows()
+        ncvslideio.destroyAllWindows()
 
 
 if __name__ == '__main__':
@@ -82,4 +82,4 @@ if __name__ == '__main__':
         fn = sys.argv[1]
     except:
         fn = 'fruits.jpg'
-    App(cv.samples.findFile(fn)).run()
+    App(ncvslideio.samples.findFile(fn)).run()

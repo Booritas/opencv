@@ -42,7 +42,7 @@ PERF_TEST_P(Size_MatType, DISABLED_pyrDown_ovx, testing::Combine(
 
     declare.in(src, WARMUP_RNG).out(dst);
 
-    TEST_CYCLE() pyrDown(src, dst, cv::Size(), BORDER_REPLICATE);
+    TEST_CYCLE() pyrDown(src, dst, ncvslideio::Size(), BORDER_REPLICATE);
 
     SANITY_CHECK(dst, eps, error_type);
 }

@@ -22,12 +22,12 @@ namespace opencv_test
 TEST(GStreamerPipelineFacadeTest, GetElsByFactoryNameUnitTest)
 {
     auto comparator = [](GstElement* element, const std::string& factoryName) {
-        cv::gapi::wip::gst::GStreamerPtr<gchar> name(
+        ncvslideio::gapi::wip::gst::GStreamerPtr<gchar> name(
             gst_object_get_name(GST_OBJECT(gst_element_get_factory(element))));
         return name && (0 == strcmp(name, factoryName.c_str()));
     };
 
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "
@@ -53,11 +53,11 @@ TEST(GStreamerPipelineFacadeTest, GetElsByFactoryNameUnitTest)
 TEST(GStreamerPipelineFacadeTest, GetElByNameUnitTest)
 {
     auto comparator = [](GstElement* element, const std::string& elementName) {
-        cv::gapi::wip::gst::GStreamerPtr<gchar> name(gst_element_get_name(element));
+        ncvslideio::gapi::wip::gst::GStreamerPtr<gchar> name(gst_element_get_name(element));
         return name && (0 == strcmp(name, elementName.c_str()));
     };
 
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "
@@ -77,7 +77,7 @@ TEST(GStreamerPipelineFacadeTest, GetElByNameUnitTest)
 
 TEST(GStreamerPipelineFacadeTest, CompletePrerollUnitTest)
 {
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "
@@ -90,7 +90,7 @@ TEST(GStreamerPipelineFacadeTest, CompletePrerollUnitTest)
     auto appsink = pipelineFacade.getElementByName("sink1");
     pipelineFacade.completePreroll();
 
-    cv::gapi::wip::gst::GStreamerPtr<GstSample> prerollSample(
+    ncvslideio::gapi::wip::gst::GStreamerPtr<GstSample> prerollSample(
 #if GST_VERSION_MINOR >= 10
             gst_app_sink_try_pull_preroll(GST_APP_SINK(appsink), 5 * GST_SECOND)
 #else // GST_VERSION_MINOR < 10
@@ -104,7 +104,7 @@ TEST(GStreamerPipelineFacadeTest, CompletePrerollUnitTest)
 
 TEST(GStreamerPipelineFacadeTest, PlayUnitTest)
 {
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "
@@ -118,7 +118,7 @@ TEST(GStreamerPipelineFacadeTest, PlayUnitTest)
 
     pipelineFacade.play();
 
-    cv::gapi::wip::gst::PipelineState state;
+    ncvslideio::gapi::wip::gst::PipelineState state;
     GstStateChangeReturn status =
         gst_element_get_state(appsink, &state.current, &state.pending, 5 * GST_SECOND);
     EXPECT_EQ(GST_STATE_CHANGE_SUCCESS, status);
@@ -128,7 +128,7 @@ TEST(GStreamerPipelineFacadeTest, PlayUnitTest)
 
 TEST(GStreamerPipelineFacadeTest, IsPlayingUnitTest)
 {
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "
@@ -145,7 +145,7 @@ TEST(GStreamerPipelineFacadeTest, IsPlayingUnitTest)
 
 TEST(GStreamerPipelineFacadeTest, MTSafetyUnitTest)
 {
-    cv::gapi::wip::gst::GStreamerPipelineFacade
+    ncvslideio::gapi::wip::gst::GStreamerPipelineFacade
         pipelineFacade("videotestsrc is-live=true pattern=colors num-buffers=10 ! "
                        "videorate ! videoscale ! "
                        "video/x-raw,width=1920,height=1080,framerate=3/1 ! "

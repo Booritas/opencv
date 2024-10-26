@@ -50,7 +50,7 @@
 #  pragma warning(disable:4458)  // declaration of 'origWinSize' hides class member
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename _Tp> void copyVectorToUMat(const std::vector<_Tp>& v, UMat& um)
@@ -1358,7 +1358,7 @@ void CascadeClassifierImpl::detectMultiScaleNoGrouping( InputArray _image, std::
             currentMask = maskGenerator->generateMask(gray.getMat());
 
         size_t i, nscales = scales.size();
-        cv::AutoBuffer<int> stripeSizeBuf(nscales);
+        ncvslideio::AutoBuffer<int> stripeSizeBuf(nscales);
         int* stripeSizes = stripeSizeBuf.data();
         const FeatureEvaluator::ScaleData* s = &featureEvaluator->getScaleData(0);
         Size szw = s->getWorkingSize(data.origWinSize);
@@ -1760,4 +1760,4 @@ Ptr<BaseCascadeClassifier::MaskGenerator> CascadeClassifier::getMaskGenerator()
     return cc->getMaskGenerator();
 }
 
-} // namespace cv
+} // namespace ncvslideio

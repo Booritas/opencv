@@ -44,7 +44,7 @@
 #ifndef OPENCV_IMGPROC_CORNER_HPP
 #define OPENCV_IMGPROC_CORNER_HPP
 
-namespace cv
+namespace ncvslideio
 {
 
 #if CV_TRY_AVX

@@ -56,25 +56,25 @@ extern "C" {
 /*********************** Background statistics accumulation *****************************/
 
 /** @brief Adds image to accumulator
-@see cv::accumulate
+@see ncvslideio::accumulate
 */
 CVAPI(void)  cvAcc( const CvArr* image, CvArr* sum,
                    const CvArr* mask CV_DEFAULT(NULL) );
 
 /** @brief Adds squared image to accumulator
-@see cv::accumulateSquare
+@see ncvslideio::accumulateSquare
 */
 CVAPI(void)  cvSquareAcc( const CvArr* image, CvArr* sqsum,
                          const CvArr* mask CV_DEFAULT(NULL) );
 
 /** @brief Adds a product of two images to accumulator
-@see cv::accumulateProduct
+@see ncvslideio::accumulateProduct
 */
 CVAPI(void)  cvMultiplyAcc( const CvArr* image1, const CvArr* image2, CvArr* acc,
                            const CvArr* mask CV_DEFAULT(NULL) );
 
 /** @brief Adds image to accumulator with weights: acc = acc*(1-alpha) + image*alpha
-@see cv::accumulateWeighted
+@see ncvslideio::accumulateWeighted
 */
 CVAPI(void)  cvRunningAvg( const CvArr* image, CvArr* acc, double alpha,
                           const CvArr* mask CV_DEFAULT(NULL) );
@@ -106,7 +106,7 @@ sigma1 is not zero, while size1 and size2 are zeros, the kernel size is calculat
 sigma (to provide accurate enough operation).
 @param sigma2 additional parameter for bilateral filtering
 
-@see cv::GaussianBlur, cv::blur, cv::medianBlur, cv::bilateralFilter.
+@see ncvslideio::GaussianBlur, ncvslideio::blur, ncvslideio::medianBlur, ncvslideio::bilateralFilter.
  */
 CVAPI(void) cvSmooth( const CvArr* src, CvArr* dst,
                       int smoothtype CV_DEFAULT(CV_GAUSSIAN),
@@ -126,13 +126,13 @@ separate color planes using split and process them individually.
 the kernel; the anchor should lie within the kernel; default value (-1,-1) means that the anchor
 is at the kernel center.
 
-@see cv::filter2D
+@see ncvslideio::filter2D
  */
 CVAPI(void) cvFilter2D( const CvArr* src, CvArr* dst, const CvMat* kernel,
                         CvPoint anchor CV_DEFAULT(cvPoint(-1,-1)));
 
 /** @brief Finds integral image: SUM(X,Y) = sum(x<X,y<Y)I(x,y)
-@see cv::integral
+@see ncvslideio::integral
 */
 CVAPI(void) cvIntegral( const CvArr* image, CvArr* sum,
                        CvArr* sqsum CV_DEFAULT(NULL),
@@ -142,7 +142,7 @@ CVAPI(void) cvIntegral( const CvArr* image, CvArr* sum,
 
    dst_width = floor(src_width/2)[+1],
    dst_height = floor(src_height/2)[+1]
-   @see cv::pyrDown
+   @see ncvslideio::pyrDown
 */
 CVAPI(void)  cvPyrDown( const CvArr* src, CvArr* dst,
                         int filter CV_DEFAULT(CV_GAUSSIAN_5x5) );
@@ -151,7 +151,7 @@ CVAPI(void)  cvPyrDown( const CvArr* src, CvArr* dst,
 
    dst_width = src_width*2,
    dst_height = src_height*2
-   @see cv::pyrUp
+   @see ncvslideio::pyrUp
 */
 CVAPI(void)  cvPyrUp( const CvArr* src, CvArr* dst,
                       int filter CV_DEFAULT(CV_GAUSSIAN_5x5) );
@@ -170,14 +170,14 @@ CVAPI(void)  cvReleasePyramid( CvMat*** pyramid, int extra_layers );
 
 
 /** @brief Filters image using meanshift algorithm
-@see cv::pyrMeanShiftFiltering
+@see ncvslideio::pyrMeanShiftFiltering
 */
 CVAPI(void) cvPyrMeanShiftFiltering( const CvArr* src, CvArr* dst,
     double sp, double sr, int max_level CV_DEFAULT(1),
     CvTermCriteria termcrit CV_DEFAULT(cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,5,1)));
 
 /** @brief Segments image using seed "markers"
-@see cv::watershed
+@see ncvslideio::watershed
 */
 CVAPI(void) cvWatershed( const CvArr* image, CvArr* markers );
 
@@ -185,26 +185,26 @@ CVAPI(void) cvWatershed( const CvArr* image, CvArr* markers );
 
    (aperture_size = 1,3,5,7) or Scharr (aperture_size = -1) operator.
    Scharr can be used only for the first dx or dy derivative
-@see cv::Sobel
+@see ncvslideio::Sobel
 */
 CVAPI(void) cvSobel( const CvArr* src, CvArr* dst,
                     int xorder, int yorder,
                     int aperture_size CV_DEFAULT(3));
 
 /** @brief Calculates the image Laplacian: (d2/dx + d2/dy)I
-@see cv::Laplacian
+@see ncvslideio::Laplacian
 */
 CVAPI(void) cvLaplace( const CvArr* src, CvArr* dst,
                       int aperture_size CV_DEFAULT(3) );
 
 /** @brief Converts input array pixels from one color space to another
-@see cv::cvtColor
+@see ncvslideio::cvtColor
 */
 CVAPI(void)  cvCvtColor( const CvArr* src, CvArr* dst, int code );
 
 
 /** @brief Resizes image (input array is resized to fit the destination array)
-@see cv::resize
+@see ncvslideio::resize
 */
 CVAPI(void)  cvResize( const CvArr* src, CvArr* dst,
                        int interpolation CV_DEFAULT( CV_INTER_LINEAR ));
@@ -216,41 +216,41 @@ CVAPI(void)  cvResize( const CvArr* src, CvArr* dst,
 /** @brief Warps image with affine transform
 @note ::cvGetQuadrangleSubPix is similar to ::cvWarpAffine, but the outliers are extrapolated using
 replication border mode.
-@see cv::warpAffine
+@see ncvslideio::warpAffine
 */
 CVAPI(void)  cvWarpAffine( const CvArr* src, CvArr* dst, const CvMat* map_matrix,
                            int flags CV_DEFAULT(CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS),
                            CvScalar fillval CV_DEFAULT(cvScalarAll(0)) );
 
 /** @brief Computes affine transform matrix for mapping src[i] to dst[i] (i=0,1,2)
-@see cv::getAffineTransform
+@see ncvslideio::getAffineTransform
 */
 CVAPI(CvMat*) cvGetAffineTransform( const CvPoint2D32f * src,
                                     const CvPoint2D32f * dst,
                                     CvMat * map_matrix );
 
 /** @brief Computes rotation_matrix matrix
-@see cv::getRotationMatrix2D
+@see ncvslideio::getRotationMatrix2D
 */
 CVAPI(CvMat*)  cv2DRotationMatrix( CvPoint2D32f center, double angle,
                                    double scale, CvMat* map_matrix );
 
 /** @brief Warps image with perspective (projective) transform
-@see cv::warpPerspective
+@see ncvslideio::warpPerspective
 */
 CVAPI(void)  cvWarpPerspective( const CvArr* src, CvArr* dst, const CvMat* map_matrix,
                                 int flags CV_DEFAULT(CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS),
                                 CvScalar fillval CV_DEFAULT(cvScalarAll(0)) );
 
 /** @brief Computes perspective transform matrix for mapping src[i] to dst[i] (i=0,1,2,3)
-@see cv::getPerspectiveTransform
+@see ncvslideio::getPerspectiveTransform
 */
 CVAPI(CvMat*) cvGetPerspectiveTransform( const CvPoint2D32f* src,
                                          const CvPoint2D32f* dst,
                                          CvMat* map_matrix );
 
 /** @brief Performs generic geometric transformation using the specified coordinate maps
-@see cv::remap
+@see ncvslideio::remap
 */
 CVAPI(void)  cvRemap( const CvArr* src, CvArr* dst,
                       const CvArr* mapx, const CvArr* mapy,
@@ -258,20 +258,20 @@ CVAPI(void)  cvRemap( const CvArr* src, CvArr* dst,
                       CvScalar fillval CV_DEFAULT(cvScalarAll(0)) );
 
 /** @brief Converts mapx & mapy from floating-point to integer formats for cvRemap
-@see cv::convertMaps
+@see ncvslideio::convertMaps
 */
 CVAPI(void)  cvConvertMaps( const CvArr* mapx, const CvArr* mapy,
                             CvArr* mapxy, CvArr* mapalpha );
 
 /** @brief Performs forward or inverse log-polar image transform
-@see cv::warpPolar
+@see ncvslideio::warpPolar
 */
 CVAPI(void)  cvLogPolar( const CvArr* src, CvArr* dst,
                          CvPoint2D32f center, double M,
                          int flags CV_DEFAULT(CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS));
 
 /** Performs forward or inverse linear-polar image transform
-@see cv::warpPolar
+@see ncvslideio::warpPolar
 */
 CVAPI(void)  cvLinearPolar( const CvArr* src, CvArr* dst,
                          CvPoint2D32f center, double maxRadius,
@@ -290,11 +290,11 @@ CVAPI(void)  cvLinearPolar( const CvArr* src, CvArr* dst,
 @param rows Height of the structuring element
 @param anchor_x x-coordinate of the anchor
 @param anchor_y y-coordinate of the anchor
-@param shape element shape that could be one of the cv::MorphShapes_c
+@param shape element shape that could be one of the ncvslideio::MorphShapes_c
 @param values integer array of cols*rows elements that specifies the custom shape of the
 structuring element, when shape=CV_SHAPE_CUSTOM.
 
-@see cv::getStructuringElement
+@see ncvslideio::getStructuringElement
  */
  CVAPI(IplConvKernel*)  cvCreateStructuringElementEx(
             int cols, int  rows, int  anchor_x, int  anchor_y,
@@ -307,7 +307,7 @@ CVAPI(void)  cvReleaseStructuringElement( IplConvKernel** element );
 
 /** @brief erodes input image (applies minimum filter) one or more times.
    If element pointer is NULL, 3x3 rectangular element is used
-@see cv::erode
+@see ncvslideio::erode
 */
 CVAPI(void)  cvErode( const CvArr* src, CvArr* dst,
                       IplConvKernel* element CV_DEFAULT(NULL),
@@ -316,21 +316,21 @@ CVAPI(void)  cvErode( const CvArr* src, CvArr* dst,
 /** @brief dilates input image (applies maximum filter) one or more times.
 
    If element pointer is NULL, 3x3 rectangular element is used
-@see cv::dilate
+@see ncvslideio::dilate
 */
 CVAPI(void)  cvDilate( const CvArr* src, CvArr* dst,
                        IplConvKernel* element CV_DEFAULT(NULL),
                        int iterations CV_DEFAULT(1) );
 
 /** @brief Performs complex morphological transformation
-@see cv::morphologyEx
+@see ncvslideio::morphologyEx
 */
 CVAPI(void)  cvMorphologyEx( const CvArr* src, CvArr* dst,
                              CvArr* temp, IplConvKernel* element,
                              int operation, int iterations CV_DEFAULT(1) );
 
 /** @brief Calculates all spatial and central moments up to the 3rd order
-@see cv::moments
+@see ncvslideio::moments
 */
 CVAPI(void) cvMoments( const CvArr* arr, CvMoments* moments, int binary CV_DEFAULT(0));
 
@@ -343,7 +343,7 @@ CVAPI(double)  cvGetNormalizedCentralMoment( CvMoments* moments,
                                              int x_order, int y_order );
 
 /** @brief Calculates 7 Hu's invariants from precalculated spatial and central moments
-@see cv::HuMoments
+@see ncvslideio::HuMoments
 */
 CVAPI(void) cvGetHuMoments( CvMoments*  moments, CvHuMoments*  hu_moments );
 
@@ -352,7 +352,7 @@ CVAPI(void) cvGetHuMoments( CvMoments*  moments, CvHuMoments*  hu_moments );
 /** @brief Fetches pixels that belong to the specified line segment and stores them to the buffer.
 
    Returns the number of retrieved points.
-@see cv::LineSegmentDetector
+@see ncvslideio::LineSegmentDetector
 */
 CVAPI(int)  cvSampleLine( const CvArr* image, CvPoint pt1, CvPoint pt2, void* buffer,
                           int connectivity CV_DEFAULT(8));
@@ -361,7 +361,7 @@ CVAPI(int)  cvSampleLine( const CvArr* image, CvPoint pt1, CvPoint pt2, void* bu
 
  dst(x,y) <- src(x + center.x - dst_width/2, y + center.y - dst_height/2).
  Values of pixels with fractional coordinates are retrieved using bilinear interpolation
-@see cv::getRectSubPix
+@see ncvslideio::getRectSubPix
 */
 CVAPI(void)  cvGetRectSubPix( const CvArr* src, CvArr* dst, CvPoint2D32f center );
 
@@ -378,14 +378,14 @@ CVAPI(void)  cvGetQuadrangleSubPix( const CvArr* src, CvArr* dst,
 
 /** @brief Measures similarity between template and overlapped windows in the source image
    and fills the resultant image with the measurements
-@see cv::matchTemplate
+@see ncvslideio::matchTemplate
 */
 CVAPI(void)  cvMatchTemplate( const CvArr* image, const CvArr* templ,
                               CvArr* result, int method );
 
 /** @brief Computes earth mover distance between
    two weighted point sets (called signatures)
-@see cv::EMD
+@see ncvslideio::EMD
 */
 CVAPI(float)  cvCalcEMD2( const CvArr* signature1,
                           const CvArr* signature2,
@@ -402,7 +402,7 @@ CVAPI(float)  cvCalcEMD2( const CvArr* signature1,
 
 /** @brief Retrieves outer and optionally inner boundaries of white (non-zero) connected
    components in the black (zero) background
-@see cv::findContours, cvStartFindContours, cvFindNextContour, cvSubstituteContour, cvEndFindContours
+@see ncvslideio::findContours, cvStartFindContours, cvFindNextContour, cvSubstituteContour, cvEndFindContours
 */
 CVAPI(int)  cvFindContours( CvArr* image, CvMemStorage* storage, CvSeq** first_contour,
                             int header_size CV_DEFAULT(sizeof(CvContour)),
@@ -486,7 +486,7 @@ CVAPI(CvPoint) cvReadChainPoint( CvChainPtReader* reader );
 
 /** @brief Approximates a single polygonal curve (contour) or
    a tree of polygonal curves (contours)
-@see cv::approxPolyDP
+@see ncvslideio::approxPolyDP
 */
 CVAPI(CvSeq*)  cvApproxPoly( const void* src_seq,
                              int header_size, CvMemStorage* storage,
@@ -494,7 +494,7 @@ CVAPI(CvSeq*)  cvApproxPoly( const void* src_seq,
                              int recursive CV_DEFAULT(0));
 
 /** @brief Calculates perimeter of a contour or length of a part of contour
-@see cv::arcLength
+@see ncvslideio::arcLength
 */
 CVAPI(double)  cvArcLength( const void* curve,
                             CvSlice slice CV_DEFAULT(CV_WHOLE_SEQ),
@@ -510,37 +510,37 @@ CV_INLINE double cvContourPerimeter( const void* contour )
 
 /** @brief Calculates contour bounding rectangle (update=1) or
    just retrieves pre-calculated rectangle (update=0)
-@see cv::boundingRect
+@see ncvslideio::boundingRect
 */
 CVAPI(CvRect)  cvBoundingRect( CvArr* points, int update CV_DEFAULT(0) );
 
 /** @brief Calculates area of a contour or contour segment
-@see cv::contourArea
+@see ncvslideio::contourArea
 */
 CVAPI(double)  cvContourArea( const CvArr* contour,
                               CvSlice slice CV_DEFAULT(CV_WHOLE_SEQ),
                               int oriented CV_DEFAULT(0));
 
 /** @brief Finds minimum area rotated rectangle bounding a set of points
-@see cv::minAreaRect
+@see ncvslideio::minAreaRect
 */
 CVAPI(CvBox2D)  cvMinAreaRect2( const CvArr* points,
                                 CvMemStorage* storage CV_DEFAULT(NULL));
 
 /** @brief Finds minimum enclosing circle for a set of points
-@see cv::minEnclosingCircle
+@see ncvslideio::minEnclosingCircle
 */
 CVAPI(int)  cvMinEnclosingCircle( const CvArr* points,
                                   CvPoint2D32f* center, float* radius );
 
 /** @brief Compares two contours by matching their moments
-@see cv::matchShapes
+@see ncvslideio::matchShapes
 */
 CVAPI(double)  cvMatchShapes( const void* object1, const void* object2,
                               int method, double parameter CV_DEFAULT(0));
 
 /** @brief Calculates exact convex hull of 2d point set
-@see cv::convexHull
+@see ncvslideio::convexHull
 */
 CVAPI(CvSeq*) cvConvexHull2( const CvArr* input,
                              void* hull_storage CV_DEFAULT(NULL),
@@ -548,19 +548,19 @@ CVAPI(CvSeq*) cvConvexHull2( const CvArr* input,
                              int return_points CV_DEFAULT(0));
 
 /** @brief Checks whether the contour is convex or not (returns 1 if convex, 0 if not)
-@see cv::isContourConvex
+@see ncvslideio::isContourConvex
 */
 CVAPI(int)  cvCheckContourConvexity( const CvArr* contour );
 
 
 /** @brief Finds convexity defects for the contour
-@see cv::convexityDefects
+@see ncvslideio::convexityDefects
 */
 CVAPI(CvSeq*)  cvConvexityDefects( const CvArr* contour, const CvArr* convexhull,
                                    CvMemStorage* storage CV_DEFAULT(NULL));
 
 /** @brief Fits ellipse into a set of 2d points
-@see cv::fitEllipse
+@see ncvslideio::fitEllipse
 */
 CVAPI(CvBox2D) cvFitEllipse2( const CvArr* points );
 
@@ -582,7 +582,7 @@ CVAPI(CvSeq*) cvPointSeqFromMat( int seq_kind, const CvArr* mat,
    Returns positive, negative or zero value, correspondingly.
    Optionally, measures a signed distance between
    the point and the nearest polygon edge (measure_dist=1)
-@see cv::pointPolygonTest
+@see ncvslideio::pointPolygonTest
 */
 CVAPI(double) cvPointPolygonTest( const CvArr* contour,
                                   CvPoint2D32f pt, int measure_dist );
@@ -736,7 +736,7 @@ CVAPI(void)  cvCalcBayesianProb( CvHistogram** src, int number,
                                 CvHistogram** dst);
 
 /** @brief Calculates array histogram
-@see cv::calcHist
+@see ncvslideio::calcHist
 */
 CVAPI(void)  cvCalcArrHist( CvArr** arr, CvHistogram* hist,
                             int accumulate CV_DEFAULT(0),
@@ -751,7 +751,7 @@ CV_INLINE  void  cvCalcHist( IplImage** image, CvHistogram* hist,
 }
 
 /** @brief Calculates back project
-@see cvCalcBackProject, cv::calcBackProject
+@see cvCalcBackProject, ncvslideio::calcBackProject
 */
 CVAPI(void)  cvCalcArrBackProject( CvArr** image, CvArr* dst,
                                    const CvHistogram* hist );
@@ -801,13 +801,13 @@ CVAPI(void)  cvCalcProbDensity( const CvHistogram* hist1, const CvHistogram* his
                                 CvHistogram* dst_hist, double scale CV_DEFAULT(255) );
 
 /** @brief equalizes histogram of 8-bit single-channel image
-@see cv::equalizeHist
+@see ncvslideio::equalizeHist
 */
 CVAPI(void)  cvEqualizeHist( const CvArr* src, CvArr* dst );
 
 
 /** @brief Applies distance transform to binary image
-@see cv::distanceTransform
+@see ncvslideio::distanceTransform
 */
 CVAPI(void)  cvDistTransform( const CvArr* src, CvArr* dst,
                               int distance_type CV_DEFAULT(CV_DIST_L2),
@@ -820,7 +820,7 @@ CVAPI(void)  cvDistTransform( const CvArr* src, CvArr* dst,
 /** @brief Applies fixed-level threshold to grayscale image.
 
    This is a basic operation applied before retrieving contours
-@see cv::threshold
+@see ncvslideio::threshold
 */
 CVAPI(double)  cvThreshold( const CvArr*  src, CvArr*  dst,
                             double  threshold, double  max_value,
@@ -832,7 +832,7 @@ CVAPI(double)  cvThreshold( const CvArr*  src, CvArr*  dst,
    CV_ADAPTIVE_THRESH_GAUSSIAN_C are:
    neighborhood size (3, 5, 7 etc.),
    and a constant subtracted from mean (...,-3,-2,-1,0,1,2,3,...)
-@see cv::adaptiveThreshold
+@see ncvslideio::adaptiveThreshold
 */
 CVAPI(void)  cvAdaptiveThreshold( const CvArr* src, CvArr* dst, double max_value,
                                   int adaptive_method CV_DEFAULT(CV_ADAPTIVE_THRESH_MEAN_C),
@@ -841,7 +841,7 @@ CVAPI(void)  cvAdaptiveThreshold( const CvArr* src, CvArr* dst, double max_value
                                   double param1 CV_DEFAULT(5));
 
 /** @brief Fills the connected component until the color difference gets large enough
-@see cv::floodFill
+@see ncvslideio::floodFill
 */
 CVAPI(void)  cvFloodFill( CvArr* image, CvPoint seed_point,
                           CvScalar new_val, CvScalar lo_diff CV_DEFAULT(cvScalarAll(0)),
@@ -855,7 +855,7 @@ CVAPI(void)  cvFloodFill( CvArr* image, CvPoint seed_point,
 \****************************************************************************************/
 
 /** @brief Runs canny edge detector
-@see cv::Canny
+@see ncvslideio::Canny
 */
 CVAPI(void)  cvCanny( const CvArr* image, CvArr* edges, double threshold1,
                       double threshold2, int  aperture_size CV_DEFAULT(3) );
@@ -864,21 +864,21 @@ CVAPI(void)  cvCanny( const CvArr* image, CvArr* edges, double threshold1,
 
    Dx^2 * Dyy + Dxx * Dy^2 - 2 * Dx * Dy * Dxy.
    Applying threshold to the result gives coordinates of corners
-@see cv::preCornerDetect
+@see ncvslideio::preCornerDetect
 */
 CVAPI(void) cvPreCornerDetect( const CvArr* image, CvArr* corners,
                                int aperture_size CV_DEFAULT(3) );
 
 /** @brief Calculates eigen values and vectors of 2x2
    gradient covariation matrix at every image pixel
-@see cv::cornerEigenValsAndVecs
+@see ncvslideio::cornerEigenValsAndVecs
 */
 CVAPI(void)  cvCornerEigenValsAndVecs( const CvArr* image, CvArr* eigenvv,
                                        int block_size, int aperture_size CV_DEFAULT(3) );
 
 /** @brief Calculates minimal eigenvalue for 2x2 gradient covariation matrix at
    every image pixel
-@see cv::cornerMinEigenVal
+@see ncvslideio::cornerMinEigenVal
 */
 CVAPI(void)  cvCornerMinEigenVal( const CvArr* image, CvArr* eigenval,
                                   int block_size, int aperture_size CV_DEFAULT(3) );
@@ -886,14 +886,14 @@ CVAPI(void)  cvCornerMinEigenVal( const CvArr* image, CvArr* eigenval,
 /** @brief Harris corner detector:
 
    Calculates det(M) - k*(trace(M)^2), where M is 2x2 gradient covariation matrix for each pixel
-@see cv::cornerHarris
+@see ncvslideio::cornerHarris
 */
 CVAPI(void)  cvCornerHarris( const CvArr* image, CvArr* harris_response,
                              int block_size, int aperture_size CV_DEFAULT(3),
                              double k CV_DEFAULT(0.04) );
 
 /** @brief Adjust corner position using some sort of gradient search
-@see cv::cornerSubPix
+@see ncvslideio::cornerSubPix
 */
 CVAPI(void)  cvFindCornerSubPix( const CvArr* image, CvPoint2D32f* corners,
                                  int count, CvSize win, CvSize zero_zone,
@@ -901,7 +901,7 @@ CVAPI(void)  cvFindCornerSubPix( const CvArr* image, CvPoint2D32f* corners,
 
 /** @brief Finds a sparse set of points within the selected region
    that seem to be easy to track
-@see cv::goodFeaturesToTrack
+@see ncvslideio::goodFeaturesToTrack
 */
 CVAPI(void)  cvGoodFeaturesToTrack( const CvArr* image, CvArr* eig_image,
                                     CvArr* temp_image, CvPoint2D32f* corners,
@@ -920,7 +920,7 @@ CVAPI(void)  cvGoodFeaturesToTrack( const CvArr* image, CvArr* eig_image,
    rho, theta and threshold are used for each of those methods;
    param1 ~ line length, param2 ~ line gap - for probabilistic,
    param1 ~ srn, param2 ~ stn - for multi-scale
-@see cv::HoughLines
+@see ncvslideio::HoughLines
 */
 CVAPI(CvSeq*)  cvHoughLines2( CvArr* image, void* line_storage, int method,
                               double rho, double theta, int threshold,
@@ -928,7 +928,7 @@ CVAPI(CvSeq*)  cvHoughLines2( CvArr* image, void* line_storage, int method,
                               double min_theta CV_DEFAULT(0), double max_theta CV_DEFAULT(CV_PI));
 
 /** @brief Finds circles in the image
-@see cv::HoughCircles
+@see ncvslideio::HoughCircles
 */
 CVAPI(CvSeq*) cvHoughCircles( CvArr* image, void* circle_storage,
                               int method, double dp, double min_dist,
@@ -938,7 +938,7 @@ CVAPI(CvSeq*) cvHoughCircles( CvArr* image, void* circle_storage,
                               int max_radius CV_DEFAULT(0));
 
 /** @brief Fits a line into set of 2d or 3d points in a robust way (M-estimator technique)
-@see cv::fitLine
+@see ncvslideio::fitLine
 */
 CVAPI(void)  cvFitLine( const CvArr* points, int dist_type, double param,
                         double reps, double aeps, float* line );
@@ -962,7 +962,7 @@ CVAPI(void)  cvFitLine( const CvArr* points, int dist_type, double param,
 #define CV_AA 16
 
 /** @brief Draws 4-connected, 8-connected or antialiased line segment connecting two points
-@see cv::line
+@see ncvslideio::line
 */
 CVAPI(void)  cvLine( CvArr* img, CvPoint pt1, CvPoint pt2,
                      CvScalar color, int thickness CV_DEFAULT(1),
@@ -971,7 +971,7 @@ CVAPI(void)  cvLine( CvArr* img, CvPoint pt1, CvPoint pt2,
 /** @brief Draws a rectangle given two opposite corners of the rectangle (pt1 & pt2)
 
    if thickness<0 (e.g. thickness == CV_FILLED), the filled box is drawn
-@see cv::rectangle
+@see ncvslideio::rectangle
 */
 CVAPI(void)  cvRectangle( CvArr* img, CvPoint pt1, CvPoint pt2,
                           CvScalar color, int thickness CV_DEFAULT(1),
@@ -979,7 +979,7 @@ CVAPI(void)  cvRectangle( CvArr* img, CvPoint pt1, CvPoint pt2,
                           int shift CV_DEFAULT(0));
 
 /** @brief Draws a rectangle specified by a CvRect structure
-@see cv::rectangle
+@see ncvslideio::rectangle
 */
 CVAPI(void)  cvRectangleR( CvArr* img, CvRect r,
                            CvScalar color, int thickness CV_DEFAULT(1),
@@ -990,7 +990,7 @@ CVAPI(void)  cvRectangleR( CvArr* img, CvRect r,
 /** @brief Draws a circle with specified center and radius.
 
    Thickness works in the same way as with cvRectangle
-@see cv::circle
+@see ncvslideio::circle
 */
 CVAPI(void)  cvCircle( CvArr* img, CvPoint center, int radius,
                        CvScalar color, int thickness CV_DEFAULT(1),
@@ -1000,7 +1000,7 @@ CVAPI(void)  cvCircle( CvArr* img, CvPoint center, int radius,
 
    depending on _thickness_, _start_angle_ and _end_angle_ parameters. The resultant figure
    is rotated by _angle_. All the angles are in degrees
-@see cv::ellipse
+@see ncvslideio::ellipse
 */
 CVAPI(void)  cvEllipse( CvArr* img, CvPoint center, CvSize axes,
                         double angle, double start_angle, double end_angle,
@@ -1021,20 +1021,20 @@ CV_INLINE  void  cvEllipseBox( CvArr* img, CvBox2D box, CvScalar color,
 }
 
 /** @brief Fills convex or monotonous polygon.
-@see cv::fillConvexPoly
+@see ncvslideio::fillConvexPoly
 */
 CVAPI(void)  cvFillConvexPoly( CvArr* img, const CvPoint* pts, int npts, CvScalar color,
                                int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0));
 
 /** @brief Fills an area bounded by one or more arbitrary polygons
-@see cv::fillPoly
+@see ncvslideio::fillPoly
 */
 CVAPI(void)  cvFillPoly( CvArr* img, CvPoint** pts, const int* npts,
                          int contours, CvScalar color,
                          int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0) );
 
 /** @brief Draws one or more polygonal curves
-@see cv::polylines
+@see ncvslideio::polylines
 */
 CVAPI(void)  cvPolyLine( CvArr* img, CvPoint** pts, const int* npts, int contours,
                          int is_closed, CvScalar color, int thickness CV_DEFAULT(1),
@@ -1050,7 +1050,7 @@ CVAPI(void)  cvPolyLine( CvArr* img, CvPoint** pts, const int* npts, int contour
    by the rectangular window
 
    (0<=x<img_size.width, 0<=y<img_size.height).
-@see cv::clipLine
+@see ncvslideio::clipLine
 */
 CVAPI(int) cvClipLine( CvSize img_size, CvPoint* pt1, CvPoint* pt2 );
 
@@ -1058,7 +1058,7 @@ CVAPI(int) cvClipLine( CvSize img_size, CvPoint* pt1, CvPoint* pt2 );
 
 Initially, line_iterator->ptr will point to pt1 (or pt2, see left_to_right description) location in
 the image. Returns the number of pixels on the line between the ending points.
-@see cv::LineIterator
+@see ncvslideio::LineIterator
 */
 CVAPI(int)  cvInitLineIterator( const CvArr* image, CvPoint pt1, CvPoint pt2,
                                 CvLineIterator* line_iterator,
@@ -1111,7 +1111,7 @@ CvFont;
 The function initializes the font structure that can be passed to text rendering functions.
 
 @param font Pointer to the font structure initialized by the function
-@param font_face Font name identifier. See cv::HersheyFonts and corresponding old CV_* identifiers.
+@param font_face Font name identifier. See ncvslideio::HersheyFonts and corresponding old CV_* identifiers.
 @param hscale Horizontal scale. If equal to 1.0f , the characters have the original width
 depending on the font type. If equal to 0.5f , the characters are of half the original width.
 @param vscale Vertical scale. If equal to 1.0f , the characters have the original height depending
@@ -1138,13 +1138,13 @@ CV_INLINE CvFont cvFont( double scale, int thickness CV_DEFAULT(1) )
 
 /** @brief Renders text stroke with specified font and color at specified location.
    CvFont should be initialized with cvInitFont
-@see cvInitFont, cvGetTextSize, cvFont, cv::putText
+@see cvInitFont, cvGetTextSize, cvFont, ncvslideio::putText
 */
 CVAPI(void)  cvPutText( CvArr* img, const char* text, CvPoint org,
                         const CvFont* font, CvScalar color );
 
 /** @brief Calculates bounding box of text stroke (useful for alignment)
-@see cv::getTextSize
+@see ncvslideio::getTextSize
 */
 CVAPI(void)  cvGetTextSize( const char* text_string, const CvFont* font,
                             CvSize* text_size, int* baseline );
@@ -1162,13 +1162,13 @@ The ellipse is define by the box of size 'axes' rotated 'angle' around the 'cent
 sweep of the ellipse arc can be done by specifying arc_start and arc_end to be something other than
 0 and 360, respectively. The input array 'pts' must be large enough to hold the result. The total
 number of points stored into 'pts' is returned by this function.
-@see cv::ellipse2Poly
+@see ncvslideio::ellipse2Poly
 */
 CVAPI(int) cvEllipse2Poly( CvPoint center, CvSize axes,
                  int angle, int arc_start, int arc_end, CvPoint * pts, int delta );
 
 /** @brief Draws contour outlines or filled interiors on the image
-@see cv::drawContours
+@see ncvslideio::drawContours
 */
 CVAPI(void)  cvDrawContours( CvArr *img, CvSeq* contour,
                              CvScalar external_color, CvScalar hole_color,

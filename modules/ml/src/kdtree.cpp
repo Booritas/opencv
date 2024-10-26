@@ -45,7 +45,7 @@
 #include "precomp.hpp"
 #include "kdtree.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace ml
 {

@@ -18,34 +18,34 @@
 // FIXME: it should be a visitor!
 // FIXME: Reimplement with traits?
 
-const cv::GOrigin& cv::gimpl::proto::origin_of(const cv::GProtoArg &arg)
+const ncvslideio::GOrigin& ncvslideio::gimpl::proto::origin_of(const ncvslideio::GProtoArg &arg)
 {
     switch (arg.index())
     {
-    case cv::GProtoArg::index_of<cv::GMat>():
-        return util::get<cv::GMat>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::GMat>():
+        return util::get<ncvslideio::GMat>(arg).priv();
 
-    case cv::GProtoArg::index_of<cv::GMatP>():
-        return util::get<cv::GMatP>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::GMatP>():
+        return util::get<ncvslideio::GMatP>(arg).priv();
 
-    case cv::GProtoArg::index_of<cv::GFrame>():
-        return util::get<cv::GFrame>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::GFrame>():
+        return util::get<ncvslideio::GFrame>(arg).priv();
 
-    case cv::GProtoArg::index_of<cv::GScalar>():
-        return util::get<cv::GScalar>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::GScalar>():
+        return util::get<ncvslideio::GScalar>(arg).priv();
 
-    case cv::GProtoArg::index_of<cv::detail::GArrayU>():
-        return util::get<cv::detail::GArrayU>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::detail::GArrayU>():
+        return util::get<ncvslideio::detail::GArrayU>(arg).priv();
 
-    case cv::GProtoArg::index_of<cv::detail::GOpaqueU>():
-        return util::get<cv::detail::GOpaqueU>(arg).priv();
+    case ncvslideio::GProtoArg::index_of<ncvslideio::detail::GOpaqueU>():
+        return util::get<ncvslideio::detail::GOpaqueU>(arg).priv();
 
     default:
         util::throw_error(std::logic_error("Unsupported GProtoArg type"));
     }
 }
 
-const cv::GOrigin& cv::gimpl::proto::origin_of(const cv::GArg &arg)
+const ncvslideio::GOrigin& ncvslideio::gimpl::proto::origin_of(const ncvslideio::GArg &arg)
 {
     // Generic, but not very efficient implementation
     // FIXME: Walking a thin line here!!! Here we rely that GArg and
@@ -54,7 +54,7 @@ const cv::GOrigin& cv::gimpl::proto::origin_of(const cv::GArg &arg)
     return origin_of(rewrap(arg));
 }
 
-bool cv::gimpl::proto::is_dynamic(const cv::GArg& arg)
+bool ncvslideio::gimpl::proto::is_dynamic(const ncvslideio::GArg& arg)
 {
     // FIXME: refactor this method to be auto-generated from
     // - GProtoArg variant parameter pack, and
@@ -74,126 +74,126 @@ bool cv::gimpl::proto::is_dynamic(const cv::GArg& arg)
     }
 }
 
-cv::GRunArg cv::value_of(const cv::GOrigin &origin)
+ncvslideio::GRunArg ncvslideio::value_of(const ncvslideio::GOrigin &origin)
 {
     switch (origin.shape)
     {
-    case GShape::GSCALAR: return GRunArg(util::get<cv::Scalar>(origin.value));
-    case GShape::GARRAY:  return GRunArg(util::get<cv::detail::VectorRef>(origin.value));
-    case GShape::GMAT:    return GRunArg(util::get<cv::Mat>(origin.value));
+    case GShape::GSCALAR: return GRunArg(util::get<ncvslideio::Scalar>(origin.value));
+    case GShape::GARRAY:  return GRunArg(util::get<ncvslideio::detail::VectorRef>(origin.value));
+    case GShape::GMAT:    return GRunArg(util::get<ncvslideio::Mat>(origin.value));
     default: util::throw_error(std::logic_error("Unsupported shape for constant"));
     }
 }
 
-cv::GProtoArg cv::gimpl::proto::rewrap(const cv::GArg &arg)
+ncvslideio::GProtoArg ncvslideio::gimpl::proto::rewrap(const ncvslideio::GArg &arg)
 {
     // FIXME: replace with a more generic any->variant
     // (or variant<T> -> variant<U>) conversion?
     switch (arg.kind)
     {
-    case detail::ArgKind::GMAT:    return GProtoArg(arg.get<cv::GMat>());
-    case detail::ArgKind::GMATP:   return GProtoArg(arg.get<cv::GMatP>());
-    case detail::ArgKind::GFRAME:  return GProtoArg(arg.get<cv::GFrame>());
-    case detail::ArgKind::GSCALAR: return GProtoArg(arg.get<cv::GScalar>());
-    case detail::ArgKind::GARRAY:  return GProtoArg(arg.get<cv::detail::GArrayU>());
-    case detail::ArgKind::GOPAQUE: return GProtoArg(arg.get<cv::detail::GOpaqueU>());
+    case detail::ArgKind::GMAT:    return GProtoArg(arg.get<ncvslideio::GMat>());
+    case detail::ArgKind::GMATP:   return GProtoArg(arg.get<ncvslideio::GMatP>());
+    case detail::ArgKind::GFRAME:  return GProtoArg(arg.get<ncvslideio::GFrame>());
+    case detail::ArgKind::GSCALAR: return GProtoArg(arg.get<ncvslideio::GScalar>());
+    case detail::ArgKind::GARRAY:  return GProtoArg(arg.get<ncvslideio::detail::GArrayU>());
+    case detail::ArgKind::GOPAQUE: return GProtoArg(arg.get<ncvslideio::detail::GOpaqueU>());
     default: util::throw_error(std::logic_error("Unsupported GArg type"));
     }
 }
 
-cv::GMetaArg cv::descr_of(const cv::GRunArg &arg)
+ncvslideio::GMetaArg ncvslideio::descr_of(const ncvslideio::GRunArg &arg)
 {
     switch (arg.index())
     {
-        case GRunArg::index_of<cv::Mat>():
-            return cv::GMetaArg(cv::descr_of(util::get<cv::Mat>(arg)));
+        case GRunArg::index_of<ncvslideio::Mat>():
+            return ncvslideio::GMetaArg(ncvslideio::descr_of(util::get<ncvslideio::Mat>(arg)));
 
-        case GRunArg::index_of<cv::Scalar>():
-            return cv::GMetaArg(descr_of(util::get<cv::Scalar>(arg)));
+        case GRunArg::index_of<ncvslideio::Scalar>():
+            return ncvslideio::GMetaArg(descr_of(util::get<ncvslideio::Scalar>(arg)));
 
-        case GRunArg::index_of<cv::detail::VectorRef>():
-            return cv::GMetaArg(util::get<cv::detail::VectorRef>(arg).descr_of());
+        case GRunArg::index_of<ncvslideio::detail::VectorRef>():
+            return ncvslideio::GMetaArg(util::get<ncvslideio::detail::VectorRef>(arg).descr_of());
 
-        case GRunArg::index_of<cv::detail::OpaqueRef>():
-            return cv::GMetaArg(util::get<cv::detail::OpaqueRef>(arg).descr_of());
+        case GRunArg::index_of<ncvslideio::detail::OpaqueRef>():
+            return ncvslideio::GMetaArg(util::get<ncvslideio::detail::OpaqueRef>(arg).descr_of());
 
-        case GRunArg::index_of<cv::gapi::wip::IStreamSource::Ptr>():
-            return cv::util::get<cv::gapi::wip::IStreamSource::Ptr>(arg)->descr_of();
+        case GRunArg::index_of<ncvslideio::gapi::wip::IStreamSource::Ptr>():
+            return ncvslideio::util::get<ncvslideio::gapi::wip::IStreamSource::Ptr>(arg)->descr_of();
 
-        case GRunArg::index_of<cv::RMat>():
-            return cv::GMetaArg(cv::util::get<cv::RMat>(arg).desc());
+        case GRunArg::index_of<ncvslideio::RMat>():
+            return ncvslideio::GMetaArg(ncvslideio::util::get<ncvslideio::RMat>(arg).desc());
 
-        case GRunArg::index_of<cv::MediaFrame>():
-            return cv::GMetaArg(cv::util::get<cv::MediaFrame>(arg).desc());
+        case GRunArg::index_of<ncvslideio::MediaFrame>():
+            return ncvslideio::GMetaArg(ncvslideio::util::get<ncvslideio::MediaFrame>(arg).desc());
 
         default: util::throw_error(std::logic_error("Unsupported GRunArg type"));
     }
 }
 
-cv::GMetaArgs cv::descr_of(const cv::GRunArgs &args)
+ncvslideio::GMetaArgs ncvslideio::descr_of(const ncvslideio::GRunArgs &args)
 {
-    cv::GMetaArgs metas;
-    ade::util::transform(args, std::back_inserter(metas), [](const cv::GRunArg &arg){ return descr_of(arg); });
+    ncvslideio::GMetaArgs metas;
+    ade::util::transform(args, std::back_inserter(metas), [](const ncvslideio::GRunArg &arg){ return descr_of(arg); });
     return metas;
 }
 
 // FIXME: Is it tested for all types?
-cv::GMetaArg cv::descr_of(const cv::GRunArgP &argp)
+ncvslideio::GMetaArg ncvslideio::descr_of(const ncvslideio::GRunArgP &argp)
 {
     switch (argp.index())
     {
 #if !defined(GAPI_STANDALONE)
-    case GRunArgP::index_of<cv::UMat*>():              return GMetaArg(cv::descr_of(*util::get<cv::UMat*>(argp)));
+    case GRunArgP::index_of<ncvslideio::UMat*>():              return GMetaArg(ncvslideio::descr_of(*util::get<ncvslideio::UMat*>(argp)));
 #endif //  !defined(GAPI_STANDALONE)
-    case GRunArgP::index_of<cv::Mat*>():               return GMetaArg(cv::descr_of(*util::get<cv::Mat*>(argp)));
-    case GRunArgP::index_of<cv::Scalar*>():            return GMetaArg(descr_of(*util::get<cv::Scalar*>(argp)));
-    case GRunArgP::index_of<cv::MediaFrame*>():        return GMetaArg(descr_of(*util::get<cv::MediaFrame*>(argp)));
-    case GRunArgP::index_of<cv::detail::VectorRef>():  return GMetaArg(util::get<cv::detail::VectorRef>(argp).descr_of());
-    case GRunArgP::index_of<cv::detail::OpaqueRef>():  return GMetaArg(util::get<cv::detail::OpaqueRef>(argp).descr_of());
+    case GRunArgP::index_of<ncvslideio::Mat*>():               return GMetaArg(ncvslideio::descr_of(*util::get<ncvslideio::Mat*>(argp)));
+    case GRunArgP::index_of<ncvslideio::Scalar*>():            return GMetaArg(descr_of(*util::get<ncvslideio::Scalar*>(argp)));
+    case GRunArgP::index_of<ncvslideio::MediaFrame*>():        return GMetaArg(descr_of(*util::get<ncvslideio::MediaFrame*>(argp)));
+    case GRunArgP::index_of<ncvslideio::detail::VectorRef>():  return GMetaArg(util::get<ncvslideio::detail::VectorRef>(argp).descr_of());
+    case GRunArgP::index_of<ncvslideio::detail::OpaqueRef>():  return GMetaArg(util::get<ncvslideio::detail::OpaqueRef>(argp).descr_of());
     default: util::throw_error(std::logic_error("Unsupported GRunArgP type"));
     }
 }
 
 // FIXME: Is it tested for all types??
-bool cv::can_describe(const GMetaArg& meta, const GRunArgP& argp)
+bool ncvslideio::can_describe(const GMetaArg& meta, const GRunArgP& argp)
 {
     switch (argp.index())
     {
 #if !defined(GAPI_STANDALONE)
-    case GRunArgP::index_of<cv::UMat*>():              return meta == GMetaArg(cv::descr_of(*util::get<cv::UMat*>(argp)));
+    case GRunArgP::index_of<ncvslideio::UMat*>():              return meta == GMetaArg(ncvslideio::descr_of(*util::get<ncvslideio::UMat*>(argp)));
 #endif //  !defined(GAPI_STANDALONE)
-    case GRunArgP::index_of<cv::Mat*>():               return util::holds_alternative<GMatDesc>(meta) &&
-                                                              util::get<GMatDesc>(meta).canDescribe(*util::get<cv::Mat*>(argp));
-    case GRunArgP::index_of<cv::Scalar*>():            return meta == GMetaArg(cv::descr_of(*util::get<cv::Scalar*>(argp)));
-    case GRunArgP::index_of<cv::MediaFrame*>():        return meta == GMetaArg(cv::descr_of(*util::get<cv::MediaFrame*>(argp)));
-    case GRunArgP::index_of<cv::detail::VectorRef>():  return meta == GMetaArg(util::get<cv::detail::VectorRef>(argp).descr_of());
-    case GRunArgP::index_of<cv::detail::OpaqueRef>():  return meta == GMetaArg(util::get<cv::detail::OpaqueRef>(argp).descr_of());
+    case GRunArgP::index_of<ncvslideio::Mat*>():               return util::holds_alternative<GMatDesc>(meta) &&
+                                                              util::get<GMatDesc>(meta).canDescribe(*util::get<ncvslideio::Mat*>(argp));
+    case GRunArgP::index_of<ncvslideio::Scalar*>():            return meta == GMetaArg(ncvslideio::descr_of(*util::get<ncvslideio::Scalar*>(argp)));
+    case GRunArgP::index_of<ncvslideio::MediaFrame*>():        return meta == GMetaArg(ncvslideio::descr_of(*util::get<ncvslideio::MediaFrame*>(argp)));
+    case GRunArgP::index_of<ncvslideio::detail::VectorRef>():  return meta == GMetaArg(util::get<ncvslideio::detail::VectorRef>(argp).descr_of());
+    case GRunArgP::index_of<ncvslideio::detail::OpaqueRef>():  return meta == GMetaArg(util::get<ncvslideio::detail::OpaqueRef>(argp).descr_of());
     default: util::throw_error(std::logic_error("Unsupported GRunArgP type"));
     }
 }
 
 // FIXME: Is it tested for all types??
-bool cv::can_describe(const GMetaArg& meta, const GRunArg& arg)
+bool ncvslideio::can_describe(const GMetaArg& meta, const GRunArg& arg)
 {
     switch (arg.index())
     {
 #if !defined(GAPI_STANDALONE)
-    case GRunArg::index_of<cv::UMat>():              return meta == cv::GMetaArg(descr_of(util::get<cv::UMat>(arg)));
+    case GRunArg::index_of<ncvslideio::UMat>():              return meta == ncvslideio::GMetaArg(descr_of(util::get<ncvslideio::UMat>(arg)));
 #endif //  !defined(GAPI_STANDALONE)
-    case GRunArg::index_of<cv::Mat>():               return util::holds_alternative<GMatDesc>(meta) &&
-                                                            util::get<GMatDesc>(meta).canDescribe(util::get<cv::Mat>(arg));
-    case GRunArg::index_of<cv::Scalar>():            return meta == cv::GMetaArg(descr_of(util::get<cv::Scalar>(arg)));
-    case GRunArg::index_of<cv::detail::VectorRef>(): return meta == cv::GMetaArg(util::get<cv::detail::VectorRef>(arg).descr_of());
-    case GRunArg::index_of<cv::detail::OpaqueRef>(): return meta == cv::GMetaArg(util::get<cv::detail::OpaqueRef>(arg).descr_of());
-    case GRunArg::index_of<cv::gapi::wip::IStreamSource::Ptr>(): return util::holds_alternative<GMatDesc>(meta); // FIXME(?) may be not the best option
-    case GRunArg::index_of<cv::RMat>():              return util::holds_alternative<GMatDesc>(meta) &&
-                                                            util::get<GMatDesc>(meta).canDescribe(cv::util::get<cv::RMat>(arg));
-    case GRunArg::index_of<cv::MediaFrame>():        return meta == cv::GMetaArg(util::get<cv::MediaFrame>(arg).desc());
+    case GRunArg::index_of<ncvslideio::Mat>():               return util::holds_alternative<GMatDesc>(meta) &&
+                                                            util::get<GMatDesc>(meta).canDescribe(util::get<ncvslideio::Mat>(arg));
+    case GRunArg::index_of<ncvslideio::Scalar>():            return meta == ncvslideio::GMetaArg(descr_of(util::get<ncvslideio::Scalar>(arg)));
+    case GRunArg::index_of<ncvslideio::detail::VectorRef>(): return meta == ncvslideio::GMetaArg(util::get<ncvslideio::detail::VectorRef>(arg).descr_of());
+    case GRunArg::index_of<ncvslideio::detail::OpaqueRef>(): return meta == ncvslideio::GMetaArg(util::get<ncvslideio::detail::OpaqueRef>(arg).descr_of());
+    case GRunArg::index_of<ncvslideio::gapi::wip::IStreamSource::Ptr>(): return util::holds_alternative<GMatDesc>(meta); // FIXME(?) may be not the best option
+    case GRunArg::index_of<ncvslideio::RMat>():              return util::holds_alternative<GMatDesc>(meta) &&
+                                                            util::get<GMatDesc>(meta).canDescribe(ncvslideio::util::get<ncvslideio::RMat>(arg));
+    case GRunArg::index_of<ncvslideio::MediaFrame>():        return meta == ncvslideio::GMetaArg(util::get<ncvslideio::MediaFrame>(arg).desc());
     default: util::throw_error(std::logic_error("Unsupported GRunArg type"));
     }
 }
 
-bool cv::can_describe(const GMetaArgs &metas, const GRunArgs &args)
+bool ncvslideio::can_describe(const GMetaArgs &metas, const GRunArgs &args)
 {
     return metas.size() == args.size() &&
            std::equal(metas.begin(), metas.end(), args.begin(),
@@ -202,13 +202,13 @@ bool cv::can_describe(const GMetaArgs &metas, const GRunArgs &args)
                      });
 }
 
-void cv::gimpl::proto::validate_input_meta_arg(const cv::GMetaArg& meta)
+void ncvslideio::gimpl::proto::validate_input_meta_arg(const ncvslideio::GMetaArg& meta)
 {
     switch (meta.index())
     {
-        case cv::GMetaArg::index_of<cv::GMatDesc>():
+        case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>():
         {
-            cv::gimpl::proto::validate_input_meta(cv::util::get<GMatDesc>(meta)); //may throw
+            ncvslideio::gimpl::proto::validate_input_meta(ncvslideio::util::get<GMatDesc>(meta)); //may throw
             break;
         }
         default:
@@ -216,13 +216,13 @@ void cv::gimpl::proto::validate_input_meta_arg(const cv::GMetaArg& meta)
     }
 }
 
-void cv::gimpl::proto::validate_input_meta(const cv::GMatDesc& meta)
+void ncvslideio::gimpl::proto::validate_input_meta(const ncvslideio::GMatDesc& meta)
 {
     if (meta.dims.empty())
     {
         if (!(meta.size.height > 0 && meta.size.width > 0))
         {
-            cv::util::throw_error
+            ncvslideio::util::throw_error
                 (std::logic_error(
                  "Image format is invalid. Size must contain positive values"
                  ", got width: " + std::to_string(meta.size.width ) +
@@ -231,7 +231,7 @@ void cv::gimpl::proto::validate_input_meta(const cv::GMatDesc& meta)
 
         if (!(meta.chan > 0))
         {
-            cv::util::throw_error
+            ncvslideio::util::throw_error
                 (std::logic_error(
                  "Image format is invalid. Channel mustn't be negative value, got channel: " +
                  std::to_string(meta.chan)));
@@ -240,7 +240,7 @@ void cv::gimpl::proto::validate_input_meta(const cv::GMatDesc& meta)
 
     if (!(meta.depth >= 0))
     {
-        cv::util::throw_error
+        ncvslideio::util::throw_error
             (std::logic_error(
              "Image format is invalid. Depth must be positive value, got depth: " +
              std::to_string(meta.depth)));
@@ -250,23 +250,23 @@ void cv::gimpl::proto::validate_input_meta(const cv::GMatDesc& meta)
 
 // FIXME: Is it tested for all types?
 // FIXME: Where does this validation happen??
-void cv::validate_input_arg(const GRunArg& arg)
+void ncvslideio::validate_input_arg(const GRunArg& arg)
 {
     // FIXME: It checks only Mat argument
     switch (arg.index())
     {
 #if !defined(GAPI_STANDALONE)
-    case GRunArg::index_of<cv::UMat>():
+    case GRunArg::index_of<ncvslideio::UMat>():
     {
-        const auto desc = cv::descr_of(util::get<cv::UMat>(arg));
-        cv::gimpl::proto::validate_input_meta(desc); //may throw
+        const auto desc = ncvslideio::descr_of(util::get<ncvslideio::UMat>(arg));
+        ncvslideio::gimpl::proto::validate_input_meta(desc); //may throw
         break;
     }
 #endif //  !defined(GAPI_STANDALONE)
-    case GRunArg::index_of<cv::Mat>():
+    case GRunArg::index_of<ncvslideio::Mat>():
     {
-        const auto desc = cv::descr_of(util::get<cv::Mat>(arg));
-        cv::gimpl::proto::validate_input_meta(desc); //may throw
+        const auto desc = ncvslideio::descr_of(util::get<ncvslideio::Mat>(arg));
+        ncvslideio::gimpl::proto::validate_input_meta(desc); //may throw
         break;
     }
     default:
@@ -275,7 +275,7 @@ void cv::validate_input_arg(const GRunArg& arg)
     }
 }
 
-void cv::validate_input_args(const GRunArgs& args)
+void ncvslideio::validate_input_args(const GRunArgs& args)
 {
     for (const auto& arg : args)
     {
@@ -283,34 +283,34 @@ void cv::validate_input_args(const GRunArgs& args)
     }
 }
 
-namespace cv {
-std::ostream& operator<<(std::ostream& os, const cv::GMetaArg &arg)
+namespace ncvslideio {
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GMetaArg &arg)
 {
     // FIXME: Implement via variant visitor
     switch (arg.index())
     {
-    case cv::GMetaArg::index_of<util::monostate>():
+    case ncvslideio::GMetaArg::index_of<util::monostate>():
         os << "(unresolved)";
         break;
 
-    case cv::GMetaArg::index_of<cv::GMatDesc>():
-        os << util::get<cv::GMatDesc>(arg);
+    case ncvslideio::GMetaArg::index_of<ncvslideio::GMatDesc>():
+        os << util::get<ncvslideio::GMatDesc>(arg);
         break;
 
-    case cv::GMetaArg::index_of<cv::GScalarDesc>():
-        os << util::get<cv::GScalarDesc>(arg);
+    case ncvslideio::GMetaArg::index_of<ncvslideio::GScalarDesc>():
+        os << util::get<ncvslideio::GScalarDesc>(arg);
         break;
 
-    case cv::GMetaArg::index_of<cv::GArrayDesc>():
-        os << util::get<cv::GArrayDesc>(arg);
+    case ncvslideio::GMetaArg::index_of<ncvslideio::GArrayDesc>():
+        os << util::get<ncvslideio::GArrayDesc>(arg);
         break;
 
-    case cv::GMetaArg::index_of<cv::GOpaqueDesc>():
-        os << util::get<cv::GOpaqueDesc>(arg);
+    case ncvslideio::GMetaArg::index_of<ncvslideio::GOpaqueDesc>():
+        os << util::get<ncvslideio::GOpaqueDesc>(arg);
         break;
 
-    case cv::GMetaArg::index_of<cv::GFrameDesc>():
-        os << util::get<cv::GFrameDesc>(arg);
+    case ncvslideio::GMetaArg::index_of<ncvslideio::GFrameDesc>():
+        os << util::get<ncvslideio::GFrameDesc>(arg);
         break;
 
     default:
@@ -319,28 +319,28 @@ std::ostream& operator<<(std::ostream& os, const cv::GMetaArg &arg)
 
     return os;
 }
-} // namespace cv
+} // namespace ncvslideio
 
-const void* cv::gimpl::proto::ptr(const GRunArgP &arg)
+const void* ncvslideio::gimpl::proto::ptr(const GRunArgP &arg)
 {
     switch (arg.index())
     {
 #if !defined(GAPI_STANDALONE)
-    case GRunArgP::index_of<cv::UMat*>():
-        return static_cast<const void*>(cv::util::get<cv::UMat*>(arg));
+    case GRunArgP::index_of<ncvslideio::UMat*>():
+        return static_cast<const void*>(ncvslideio::util::get<ncvslideio::UMat*>(arg));
 #endif
-    case GRunArgP::index_of<cv::Mat*>():
-        return static_cast<const void*>(cv::util::get<cv::Mat*>(arg));
-    case GRunArgP::index_of<cv::Scalar*>():
-        return static_cast<const void*>(cv::util::get<cv::Scalar*>(arg));
-    case GRunArgP::index_of<cv::RMat*>():
-        return static_cast<const void*>(cv::util::get<cv::RMat*>(arg));
-    case GRunArgP::index_of<cv::detail::VectorRef>():
-        return cv::util::get<cv::detail::VectorRef>(arg).ptr();
-    case GRunArgP::index_of<cv::detail::OpaqueRef>():
-        return cv::util::get<cv::detail::OpaqueRef>(arg).ptr();
-    case GRunArgP::index_of<cv::MediaFrame*>():
-        return static_cast<const void*>(cv::util::get<cv::MediaFrame*>(arg));
+    case GRunArgP::index_of<ncvslideio::Mat*>():
+        return static_cast<const void*>(ncvslideio::util::get<ncvslideio::Mat*>(arg));
+    case GRunArgP::index_of<ncvslideio::Scalar*>():
+        return static_cast<const void*>(ncvslideio::util::get<ncvslideio::Scalar*>(arg));
+    case GRunArgP::index_of<ncvslideio::RMat*>():
+        return static_cast<const void*>(ncvslideio::util::get<ncvslideio::RMat*>(arg));
+    case GRunArgP::index_of<ncvslideio::detail::VectorRef>():
+        return ncvslideio::util::get<ncvslideio::detail::VectorRef>(arg).ptr();
+    case GRunArgP::index_of<ncvslideio::detail::OpaqueRef>():
+        return ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(arg).ptr();
+    case GRunArgP::index_of<ncvslideio::MediaFrame*>():
+        return static_cast<const void*>(ncvslideio::util::get<ncvslideio::MediaFrame*>(arg));
     default:
         util::throw_error(std::logic_error("Unknown GRunArgP type!"));
     }

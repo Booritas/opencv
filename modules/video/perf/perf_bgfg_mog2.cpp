@@ -14,7 +14,7 @@ typedef tuple<std::string, int> VideoMOG2ParamType;
 typedef TestBaseWithParam<VideoMOG2ParamType> MOG2_Apply;
 typedef TestBaseWithParam<VideoMOG2ParamType> MOG2_GetBackgroundImage;
 
-PERF_TEST_P(MOG2_Apply, Mog2, Combine(Values("cv/video/768x576.avi", "cv/video/1920x1080.avi"), Values(1,3)))
+PERF_TEST_P(MOG2_Apply, Mog2, Combine(Values("ncvslideio/video/768x576.avi", "ncvslideio/video/1920x1080.avi"), Values(1,3)))
 {
     VideoMOG2ParamType params = GetParam();
 
@@ -25,7 +25,7 @@ PERF_TEST_P(MOG2_Apply, Mog2, Combine(Values("cv/video/768x576.avi", "cv/video/1
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer);
@@ -34,7 +34,7 @@ PERF_TEST_P(MOG2_Apply, Mog2, Combine(Values("cv/video/768x576.avi", "cv/video/1
 
     TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorMOG2> mog2 = createBackgroundSubtractorMOG2();
+        Ptr<ncvslideio::BackgroundSubtractorMOG2> mog2 = createBackgroundSubtractorMOG2();
         mog2->setDetectShadows(false);
         foreground.release();
         for (int i = 0; i < nFrame; i++)
@@ -46,8 +46,8 @@ PERF_TEST_P(MOG2_Apply, Mog2, Combine(Values("cv/video/768x576.avi", "cv/video/1
 }
 
 PERF_TEST_P(MOG2_GetBackgroundImage, Mog2, Values(
-        std::make_pair<string, int>("cv/video/768x576.avi", 5),
-        std::make_pair<string, int>("cv/video/1920x1080.avi", 5)))
+        std::make_pair<string, int>("ncvslideio/video/768x576.avi", 5),
+        std::make_pair<string, int>("ncvslideio/video/1920x1080.avi", 5)))
 {
     VideoMOG2ParamType params = GetParam();
 
@@ -59,7 +59,7 @@ PERF_TEST_P(MOG2_GetBackgroundImage, Mog2, Values(
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer, skipFrames);
@@ -68,7 +68,7 @@ PERF_TEST_P(MOG2_GetBackgroundImage, Mog2, Values(
 
     TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorMOG2> mog2 = createBackgroundSubtractorMOG2();
+        Ptr<ncvslideio::BackgroundSubtractorMOG2> mog2 = createBackgroundSubtractorMOG2();
         mog2->setDetectShadows(false);
         foreground.release();
         background.release();

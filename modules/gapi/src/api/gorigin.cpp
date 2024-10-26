@@ -11,25 +11,25 @@
 #include "api/gorigin.hpp"
 #include "api/gnode_priv.hpp"
 
-cv::GOrigin::GOrigin(GShape s,
-                    const cv::GNode& n,
+ncvslideio::GOrigin::GOrigin(GShape s,
+                    const ncvslideio::GNode& n,
                     std::size_t p,
-                    const cv::gimpl::HostCtor c,
-                    cv::detail::OpaqueKind k)
+                    const ncvslideio::gimpl::HostCtor c,
+                    ncvslideio::detail::OpaqueKind k)
     : shape(s), node(n), port(p), ctor(c), kind(k)
 {
 }
 
-cv::GOrigin::GOrigin(GShape s, cv::gimpl::ConstVal v)
-    : shape(s), node(cv::GNode::Const()), value(v), port(INVALID_PORT),
+ncvslideio::GOrigin::GOrigin(GShape s, ncvslideio::gimpl::ConstVal v)
+    : shape(s), node(ncvslideio::GNode::Const()), value(v), port(INVALID_PORT),
       kind(util::holds_alternative<detail::VectorRef>(v)
                ? util::get<detail::VectorRef>(v).getKind()
-               : cv::detail::OpaqueKind::CV_UNKNOWN)
+               : ncvslideio::detail::OpaqueKind::CV_UNKNOWN)
 {
 }
 
-bool cv::detail::GOriginCmp::operator() (const cv::GOrigin &lhs,
-                                         const cv::GOrigin &rhs) const
+bool ncvslideio::detail::GOriginCmp::operator() (const ncvslideio::GOrigin &lhs,
+                                         const ncvslideio::GOrigin &rhs) const
 {
     const GNode::Priv* lhs_p = &lhs.node.priv();
     const GNode::Priv* rhs_p = &rhs.node.priv();

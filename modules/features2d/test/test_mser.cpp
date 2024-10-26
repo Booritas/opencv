@@ -123,7 +123,7 @@ TEST(Features2d_MSER, cases)
         if( invert )
             bitwise_not(src, src);
         if( binarize )
-            cv::threshold(src, src, thresh, 255, THRESH_BINARY);
+            ncvslideio::threshold(src, src, thresh, 255, THRESH_BINARY);
         if( blur )
             GaussianBlur(src, src, Size(5, 5), 1.5, 1.5);
 

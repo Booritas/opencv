@@ -17,7 +17,7 @@
 
 #include "api/gnode.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 // GCall is used to capture details (arguments) passed to operation when the graph is
 // constructed. It is, in fact, just a "serialization" of a function call (to some extent). The
@@ -46,7 +46,7 @@ public:
 
     // TODO: Rename to "constructionNode" or smt to reflect its lifetime
     GNode             m_node;
-    cv::util::any     m_params;
+    ncvslideio::util::any     m_params;
 
     explicit Priv(const GKernel &k);
 };

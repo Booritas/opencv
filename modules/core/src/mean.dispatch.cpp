@@ -27,7 +27,7 @@
 #define CV_IPP_RUN(c, f, ...)
 #endif // OPENCV_IPP_MEAN
 
-namespace cv {
+namespace ncvslideio {
 
 #if defined HAVE_IPP
 static bool ipp_mean( Mat &src, Mat &mask, Scalar &ret )
@@ -397,10 +397,10 @@ static bool ipp_meanStdDev(Mat& src, OutputArray _mean, OutputArray _sdv, Mat& m
     // SSE4.2 buffer overrun
 #if defined(_WIN32) && !defined(_WIN64)
     // IPPICV doesn't have AVX2 in 32-bit builds
-    // However cv::ipp::getIppTopFeatures() may return AVX2 value on AVX2 capable H/W
+    // However ncvslideio::ipp::getIppTopFeatures() may return AVX2 value on AVX2 capable H/W
     // details #12959
 #else
-    if (cv::ipp::getIppTopFeatures() == ippCPUID_SSE42) // Linux x64 + OPENCV_IPP=SSE42 is affected too
+    if (ncvslideio::ipp::getIppTopFeatures() == ippCPUID_SSE42) // Linux x64 + OPENCV_IPP=SSE42 is affected too
 #endif
     {
         if (src.depth() == CV_32F && src.dims > 1 && src.size[src.dims - 1] == 6)

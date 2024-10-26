@@ -12,23 +12,23 @@
 
 #include "streaming/onevpl/engine/preproc_engine_interface.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 
 // GAPI_EXPORTS for tests
-class GAPI_EXPORTS VPPPreprocDispatcher final : public cv::gapi::wip::IPreprocEngine {
+class GAPI_EXPORTS VPPPreprocDispatcher final : public ncvslideio::gapi::wip::IPreprocEngine {
 public:
 
-    cv::util::optional<pp_params> is_applicable(const cv::MediaFrame& in_frame) override;
+    ncvslideio::util::optional<pp_params> is_applicable(const ncvslideio::MediaFrame& in_frame) override;
 
     pp_session initialize_preproc(const pp_params& initial_frame_param,
                                   const GFrameDesc& required_frame_descr) override;
 
-    cv::MediaFrame run_sync(const pp_session &session_handle,
-                            const cv::MediaFrame& in_frame,
-                            const cv::util::optional<cv::Rect> &opt_roi) override;
+    ncvslideio::MediaFrame run_sync(const pp_session &session_handle,
+                            const ncvslideio::MediaFrame& in_frame,
+                            const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi) override;
 
     template<class PreprocImpl, class ...Args>
     void insert_worker(Args&& ...args) {
@@ -39,10 +39,10 @@ public:
         return workers.size();
     }
 private:
-    std::vector<std::shared_ptr<cv::gapi::wip::IPreprocEngine>> workers;
+    std::vector<std::shared_ptr<ncvslideio::gapi::wip::IPreprocEngine>> workers;
 };
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // GAPI_STREAMING_ONEVPL_PREPROC_DISPATCHER_HPP

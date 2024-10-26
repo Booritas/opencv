@@ -42,7 +42,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-namespace cv {
+namespace ncvslideio {
 
 int validateToInt(size_t step);
 
@@ -51,7 +51,7 @@ size_t safeCastToSizeT(const _Tp v_origin, const char* msg)
 {
     const size_t value_cast = (size_t)v_origin;
     if ((_Tp)value_cast != v_origin)
-        CV_Error(cv::Error::StsError, msg ? msg : "Can't cast value into size_t");
+        CV_Error(ncvslideio::Error::StsError, msg ? msg : "Can't cast value into size_t");
     return value_cast;
 }
 

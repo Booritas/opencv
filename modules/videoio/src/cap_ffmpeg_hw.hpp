@@ -62,7 +62,7 @@ extern "C" {
 #define HW_DEFAULT_POOL_SIZE    32
 #define HW_DEFAULT_SW_FORMAT    AV_PIX_FMT_NV12
 
-using namespace cv;
+using namespace ncvslideio;
 
 static AVCodec *hw_find_codec(AVCodecID id, AVHWDeviceType hw_type, int (*check_category)(const AVCodec *),
                               const char *disabled_codecs, AVPixelFormat *hw_pix_fmt);
@@ -312,7 +312,7 @@ AVBufferRef* hw_create_derived_context(AVHWDeviceType hw_type, AVBufferRef* hw_d
     }
 }
 
-#ifdef HAVE_OPENCL // GPU buffer interop with cv::UMat
+#ifdef HAVE_OPENCL // GPU buffer interop with ncvslideio::UMat
 
 // FFmpeg context attached to OpenCL context
 class OpenCL_FFMPEG_Context : public ocl::Context::UserContext {
@@ -796,7 +796,7 @@ AVPixelFormat hw_get_format_callback(struct AVCodecContext *ctx, const enum AVPi
 
 // GPU color conversion NV12->BGRA via OpenCL extensions
 static bool
-hw_copy_frame_to_umat(AVBufferRef* ctx, AVFrame* hw_frame, cv::OutputArray output) {
+hw_copy_frame_to_umat(AVBufferRef* ctx, AVFrame* hw_frame, ncvslideio::OutputArray output) {
     CV_UNUSED(hw_frame);
     CV_UNUSED(output);
     if (!ctx)
@@ -830,7 +830,7 @@ hw_copy_frame_to_umat(AVBufferRef* ctx, AVFrame* hw_frame, cv::OutputArray outpu
             if (texture && singleTexture) {
                 // Copy D3D11 sub-texture to D3D11 single texture
                 d3d11_device_ctx->device_context->CopySubresourceRegion(singleTexture, 0, 0, 0, 0, texture, subresource, NULL);
-                // Copy D3D11 single texture to cv::UMat
+                // Copy D3D11 single texture to ncvslideio::UMat
                 directx::convertFromD3D11Texture2D(singleTexture, output);
                 return true;
             }
@@ -848,7 +848,7 @@ hw_copy_frame_to_umat(AVBufferRef* ctx, AVFrame* hw_frame, cv::OutputArray outpu
 
 // GPU color conversion BGRA->NV12 via OpenCL extensions
 static bool
-hw_copy_umat_to_frame(AVBufferRef* ctx, cv::InputArray input, AVFrame* hw_frame) {
+hw_copy_umat_to_frame(AVBufferRef* ctx, ncvslideio::InputArray input, AVFrame* hw_frame) {
     CV_UNUSED(input);
     CV_UNUSED(hw_frame);
     if (!ctx)
@@ -880,7 +880,7 @@ hw_copy_umat_to_frame(AVBufferRef* ctx, cv::InputArray input, AVFrame* hw_frame)
             ID3D11Texture2D* texture = hw_get_d3d11_texture(hw_frame, &subresource);
             ID3D11Texture2D* singleTexture = hw_get_d3d11_single_texture(hw_frame, d3d11_device_ctx, texture);
             if (texture && singleTexture) {
-                // Copy cv::UMat to D3D11 single texture
+                // Copy ncvslideio::UMat to D3D11 single texture
                 directx::convertToD3D11Texture2D(input, singleTexture);
                 // Copy D3D11 single texture to D3D11 sub-texture
                 d3d11_device_ctx->device_context->CopySubresourceRegion(texture, subresource, 0, 0, 0, singleTexture, 0, NULL);

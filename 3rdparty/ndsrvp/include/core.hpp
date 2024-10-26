@@ -5,7 +5,7 @@
 #ifndef OPENCV_NDSRVP_CORE_HPP
 #define OPENCV_NDSRVP_CORE_HPP
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -96,19 +96,19 @@ struct operators_add_t {
 };
 
 #undef cv_hal_add8u
-#define cv_hal_add8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_add_t>)
+#define cv_hal_add8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_add_t>)
 
 #undef cv_hal_add8s
-#define cv_hal_add8s (cv::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, cv::ndsrvp::operators_add_t>)
+#define cv_hal_add8s (ncvslideio::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, ncvslideio::ndsrvp::operators_add_t>)
 
 #undef cv_hal_add16u
-#define cv_hal_add16u (cv::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, cv::ndsrvp::operators_add_t>)
+#define cv_hal_add16u (ncvslideio::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, ncvslideio::ndsrvp::operators_add_t>)
 
 #undef cv_hal_add16s
-#define cv_hal_add16s (cv::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, cv::ndsrvp::operators_add_t>)
+#define cv_hal_add16s (ncvslideio::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, ncvslideio::ndsrvp::operators_add_t>)
 
 #undef cv_hal_add32s
-#define cv_hal_add32s (cv::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, cv::ndsrvp::operators_add_t>)
+#define cv_hal_add32s (ncvslideio::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, ncvslideio::ndsrvp::operators_add_t>)
 
 // ################ sub ################
 
@@ -131,19 +131,19 @@ struct operators_sub_t {
 };
 
 #undef cv_hal_sub8u
-#define cv_hal_sub8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_sub_t>)
+#define cv_hal_sub8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_sub_t>)
 
 #undef cv_hal_sub8s
-#define cv_hal_sub8s (cv::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, cv::ndsrvp::operators_sub_t>)
+#define cv_hal_sub8s (ncvslideio::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, ncvslideio::ndsrvp::operators_sub_t>)
 
 #undef cv_hal_sub16u
-#define cv_hal_sub16u (cv::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, cv::ndsrvp::operators_sub_t>)
+#define cv_hal_sub16u (ncvslideio::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, ncvslideio::ndsrvp::operators_sub_t>)
 
 #undef cv_hal_sub16s
-#define cv_hal_sub16s (cv::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, cv::ndsrvp::operators_sub_t>)
+#define cv_hal_sub16s (ncvslideio::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, ncvslideio::ndsrvp::operators_sub_t>)
 
 #undef cv_hal_sub32s
-#define cv_hal_sub32s (cv::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, cv::ndsrvp::operators_sub_t>)
+#define cv_hal_sub32s (ncvslideio::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, ncvslideio::ndsrvp::operators_sub_t>)
 
 // ################ max ################
 
@@ -166,19 +166,19 @@ struct operators_max_t {
 };
 
 #undef cv_hal_max8u
-#define cv_hal_max8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_max_t>)
+#define cv_hal_max8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_max_t>)
 
 #undef cv_hal_max8s
-#define cv_hal_max8s (cv::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, cv::ndsrvp::operators_max_t>)
+#define cv_hal_max8s (ncvslideio::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, ncvslideio::ndsrvp::operators_max_t>)
 
 #undef cv_hal_max16u
-#define cv_hal_max16u (cv::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, cv::ndsrvp::operators_max_t>)
+#define cv_hal_max16u (ncvslideio::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, ncvslideio::ndsrvp::operators_max_t>)
 
 #undef cv_hal_max16s
-#define cv_hal_max16s (cv::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, cv::ndsrvp::operators_max_t>)
+#define cv_hal_max16s (ncvslideio::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, ncvslideio::ndsrvp::operators_max_t>)
 
 #undef cv_hal_max32s
-#define cv_hal_max32s (cv::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, cv::ndsrvp::operators_max_t>)
+#define cv_hal_max32s (ncvslideio::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, ncvslideio::ndsrvp::operators_max_t>)
 
 // ################ min ################
 
@@ -201,19 +201,19 @@ struct operators_min_t {
 };
 
 #undef cv_hal_min8u
-#define cv_hal_min8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_min_t>)
+#define cv_hal_min8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_min_t>)
 
 #undef cv_hal_min8s
-#define cv_hal_min8s (cv::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, cv::ndsrvp::operators_min_t>)
+#define cv_hal_min8s (ncvslideio::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, ncvslideio::ndsrvp::operators_min_t>)
 
 #undef cv_hal_min16u
-#define cv_hal_min16u (cv::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, cv::ndsrvp::operators_min_t>)
+#define cv_hal_min16u (ncvslideio::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, ncvslideio::ndsrvp::operators_min_t>)
 
 #undef cv_hal_min16s
-#define cv_hal_min16s (cv::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, cv::ndsrvp::operators_min_t>)
+#define cv_hal_min16s (ncvslideio::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, ncvslideio::ndsrvp::operators_min_t>)
 
 #undef cv_hal_min32s
-#define cv_hal_min32s (cv::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, cv::ndsrvp::operators_min_t>)
+#define cv_hal_min32s (ncvslideio::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, ncvslideio::ndsrvp::operators_min_t>)
 
 // ################ absdiff ################
 
@@ -236,19 +236,19 @@ struct operators_absdiff_t {
 };
 
 #undef cv_hal_absdiff8u
-#define cv_hal_absdiff8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_absdiff_t>)
+#define cv_hal_absdiff8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_absdiff_t>)
 
 #undef cv_hal_absdiff8s
-#define cv_hal_absdiff8s (cv::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, cv::ndsrvp::operators_absdiff_t>)
+#define cv_hal_absdiff8s (ncvslideio::ndsrvp::elemwise_binop<schar, schar, int8x8_t, int8x8_t, 8, ncvslideio::ndsrvp::operators_absdiff_t>)
 
 #undef cv_hal_absdiff16u
-#define cv_hal_absdiff16u (cv::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, cv::ndsrvp::operators_absdiff_t>)
+#define cv_hal_absdiff16u (ncvslideio::ndsrvp::elemwise_binop<ushort, ushort, uint16x4_t, uint16x4_t, 4, ncvslideio::ndsrvp::operators_absdiff_t>)
 
 #undef cv_hal_absdiff16s
-#define cv_hal_absdiff16s (cv::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, cv::ndsrvp::operators_absdiff_t>)
+#define cv_hal_absdiff16s (ncvslideio::ndsrvp::elemwise_binop<short, short, int16x4_t, int16x4_t, 4, ncvslideio::ndsrvp::operators_absdiff_t>)
 
 #undef cv_hal_absdiff32s
-#define cv_hal_absdiff32s (cv::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, cv::ndsrvp::operators_absdiff_t>)
+#define cv_hal_absdiff32s (ncvslideio::ndsrvp::elemwise_binop<int, int, int32x2_t, int32x2_t, 2, ncvslideio::ndsrvp::operators_absdiff_t>)
 
 // ################ bitwise ################
 
@@ -259,7 +259,7 @@ struct operators_and_t {
 };
 
 #undef cv_hal_and8u
-#define cv_hal_and8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_and_t>)
+#define cv_hal_and8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_and_t>)
 
 template <typename src, typename dst>
 struct operators_or_t {
@@ -268,7 +268,7 @@ struct operators_or_t {
 };
 
 #undef cv_hal_or8u
-#define cv_hal_or8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_or_t>)
+#define cv_hal_or8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_or_t>)
 
 template <typename src, typename dst>
 struct operators_xor_t {
@@ -277,7 +277,7 @@ struct operators_xor_t {
 };
 
 #undef cv_hal_xor8u
-#define cv_hal_xor8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_xor_t>)
+#define cv_hal_xor8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_xor_t>)
 
 template <typename src, typename dst>
 struct operators_not_t {
@@ -286,7 +286,7 @@ struct operators_not_t {
 };
 
 #undef cv_hal_not8u
-#define cv_hal_not8u (cv::ndsrvp::elemwise_unop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_not_t>)
+#define cv_hal_not8u (ncvslideio::ndsrvp::elemwise_unop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_not_t>)
 
 // ################ cmp ################
 
@@ -466,16 +466,16 @@ struct operators_cmp_t {
 };
 
 #undef cv_hal_cmp8u
-#define cv_hal_cmp8u (cv::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_cmp_t>)
+#define cv_hal_cmp8u (ncvslideio::ndsrvp::elemwise_binop<uchar, uchar, uint8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_cmp_t>)
 
 #undef cv_hal_cmp8s
-#define cv_hal_cmp8s (cv::ndsrvp::elemwise_binop<schar, uchar, int8x8_t, uint8x8_t, 8, cv::ndsrvp::operators_cmp_t>)
+#define cv_hal_cmp8s (ncvslideio::ndsrvp::elemwise_binop<schar, uchar, int8x8_t, uint8x8_t, 8, ncvslideio::ndsrvp::operators_cmp_t>)
 
 #undef cv_hal_cmp16u
-#define cv_hal_cmp16u (cv::ndsrvp::elemwise_binop<ushort, uchar, uint16x4_t, uint8x4_t, 4, cv::ndsrvp::operators_cmp_t>)
+#define cv_hal_cmp16u (ncvslideio::ndsrvp::elemwise_binop<ushort, uchar, uint16x4_t, uint8x4_t, 4, ncvslideio::ndsrvp::operators_cmp_t>)
 
 #undef cv_hal_cmp16s
-#define cv_hal_cmp16s (cv::ndsrvp::elemwise_binop<short, uchar, int16x4_t, uint8x4_t, 4, cv::ndsrvp::operators_cmp_t>)
+#define cv_hal_cmp16s (ncvslideio::ndsrvp::elemwise_binop<short, uchar, int16x4_t, uint8x4_t, 4, ncvslideio::ndsrvp::operators_cmp_t>)
 
 // ################ split ################
 
@@ -493,13 +493,13 @@ int split(const srctype* src_data, srctype** dst_data, int len, int cn)
 }
 
 #undef cv_hal_split8u
-#define cv_hal_split8u (cv::ndsrvp::split<uchar, uint8x8_t, 8>)
+#define cv_hal_split8u (ncvslideio::ndsrvp::split<uchar, uint8x8_t, 8>)
 
 #undef cv_hal_split16u
-#define cv_hal_split16u (cv::ndsrvp::split<ushort, uint16x4_t, 4>)
+#define cv_hal_split16u (ncvslideio::ndsrvp::split<ushort, uint16x4_t, 4>)
 
 #undef cv_hal_split32s
-#define cv_hal_split32s (cv::ndsrvp::split<int, int32x2_t, 2>)*/
+#define cv_hal_split32s (ncvslideio::ndsrvp::split<int, int32x2_t, 2>)*/
 
 // ################ merge ################
 
@@ -517,16 +517,16 @@ int merge(const srctype** src_data, srctype* dst_data, int len, int cn)
 }
 
 #undef cv_hal_merge8u
-#define cv_hal_merge8u (cv::ndsrvp::merge<uchar, uint8x8_t, 8>)
+#define cv_hal_merge8u (ncvslideio::ndsrvp::merge<uchar, uint8x8_t, 8>)
 
 #undef cv_hal_merge16u
-#define cv_hal_merge16u (cv::ndsrvp::merge<ushort, uint16x4_t, 4>)
+#define cv_hal_merge16u (ncvslideio::ndsrvp::merge<ushort, uint16x4_t, 4>)
 
 #undef cv_hal_merge32s
-#define cv_hal_merge32s (cv::ndsrvp::merge<int, int32x2_t, 2>)*/
+#define cv_hal_merge32s (ncvslideio::ndsrvp::merge<int, int32x2_t, 2>)*/
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif

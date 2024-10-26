@@ -77,7 +77,7 @@
 #include <opencv2/core/utils/logger.hpp>
 #include "opencv2/imgproc.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 #ifndef BIT_ALLIN
     #define BIT_ALLIN(x,y) ( ((x)&(y)) == (y) )
@@ -152,7 +152,7 @@ void cvImageWidgetSetImage(CvImageWidget * widget, const CvArr *arr)
         gtk_widget_queue_resize( GTK_WIDGET( widget ) );
     }
     CV_Assert(origin == 0);
-    convertToShow(cv::cvarrToMat(arr), widget->original_image);
+    convertToShow(ncvslideio::cvarrToMat(arr), widget->original_image);
     if(widget->scaled_image){
         cvResize( widget->original_image, widget->scaled_image, CV_INTER_AREA );
     }
@@ -272,7 +272,7 @@ cvImageWidget_get_preferred_width (GtkWidget *widget, gint *minimal_width, gint 
   CvImageWidget * image_widget = CV_IMAGE_WIDGET( widget );
 
   if(image_widget->original_image != NULL) {
-    *minimal_width = (image_widget->flags & cv::WINDOW_AUTOSIZE) != cv::WINDOW_AUTOSIZE ?
+    *minimal_width = (image_widget->flags & ncvslideio::WINDOW_AUTOSIZE) != ncvslideio::WINDOW_AUTOSIZE ?
       gdk_window_get_width(gtk_widget_get_window(widget)) : image_widget->original_image->cols;
   }
   else {
@@ -296,7 +296,7 @@ cvImageWidget_get_preferred_height (GtkWidget *widget, gint *minimal_height, gin
   CvImageWidget * image_widget = CV_IMAGE_WIDGET( widget );
 
   if(image_widget->original_image != NULL) {
-    *minimal_height = (image_widget->flags & cv::WINDOW_AUTOSIZE) != cv::WINDOW_AUTOSIZE ?
+    *minimal_height = (image_widget->flags & ncvslideio::WINDOW_AUTOSIZE) != ncvslideio::WINDOW_AUTOSIZE ?
       gdk_window_get_height(gtk_widget_get_window(widget)) : image_widget->original_image->rows;
   }
   else {
@@ -323,7 +323,7 @@ cvImageWidget_size_request (GtkWidget      *widget,
     //printf("cvImageWidget_size_request ");
     // the case the first time cvShowImage called or when AUTOSIZE
     if( image_widget->original_image &&
-        ((image_widget->flags & cv::WINDOW_AUTOSIZE) ||
+        ((image_widget->flags & ncvslideio::WINDOW_AUTOSIZE) ||
          (image_widget->flags & CV_WINDOW_NO_IMAGE)))
     {
         //printf("original ");
@@ -352,7 +352,7 @@ static void cvImageWidget_set_size(GtkWidget * widget, int max_width, int max_he
     //printf("cvImageWidget_set_size %d %d\n", max_width, max_height);
 
     // don't allow to set the size
-    if(image_widget->flags & cv::WINDOW_AUTOSIZE) return;
+    if(image_widget->flags & ncvslideio::WINDOW_AUTOSIZE) return;
     if(!image_widget->original_image) return;
 
     CvSize scaled_image_size = cvImageWidget_calc_size( image_widget->original_image->cols,
@@ -391,7 +391,7 @@ cvImageWidget_size_allocate (GtkWidget     *widget,
   image_widget = CV_IMAGE_WIDGET (widget);
 
 
-  if( (image_widget->flags & cv::WINDOW_AUTOSIZE)==0 && image_widget->original_image ){
+  if( (image_widget->flags & ncvslideio::WINDOW_AUTOSIZE)==0 && image_widget->original_image ){
       // (re) allocated scaled image
       if( image_widget->flags & CV_WINDOW_NO_IMAGE ){
           cvImageWidget_set_size( widget, image_widget->original_image->cols,
@@ -408,7 +408,7 @@ cvImageWidget_size_allocate (GtkWidget     *widget,
       image_widget = CV_IMAGE_WIDGET (widget);
 
       if( image_widget->original_image &&
-              ((image_widget->flags & cv::WINDOW_AUTOSIZE) ||
+              ((image_widget->flags & ncvslideio::WINDOW_AUTOSIZE) ||
                (image_widget->flags & CV_WINDOW_NO_IMAGE)) )
       {
 #if defined (GTK_VERSION3)
@@ -679,7 +679,7 @@ gpointer icvWindowThreadLoop(gpointer /*data*/)
 {
     while(1){
         {
-            cv::AutoLock lock(getWindowMutex());
+            ncvslideio::AutoLock lock(getWindowMutex());
             gtk_main_iteration_do(FALSE);
         }
 
@@ -691,7 +691,7 @@ gpointer icvWindowThreadLoop(gpointer /*data*/)
     return NULL;
 }
 
-#define CV_LOCK_MUTEX() cv::AutoLock lock(getWindowMutex())
+#define CV_LOCK_MUTEX() ncvslideio::AutoLock lock(getWindowMutex())
 
 static
 std::shared_ptr<CvWindow> icvFindWindowByName(const std::string& name)
@@ -737,7 +737,7 @@ CvRect cvGetWindowRect_GTK(const char* name)
     CV_LOCK_MUTEX();
     const auto window = icvFindWindowByName(name);
     if (!window)
-        CV_Error( cv::Error::StsNullPtr, "NULL window" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL window" );
 
     return cvRect(getImageRect_(window));
 }
@@ -779,7 +779,7 @@ double cvGetModeWindow_GTK(const char* name)//YV
     CV_LOCK_MUTEX();
     const auto window = icvFindWindowByName(name);
     if (!window)
-        CV_Error( cv::Error::StsNullPtr, "NULL window" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL window" );
 
     double result = window->status;
     return result;
@@ -794,14 +794,14 @@ void cvSetModeWindow_GTK( const char* name, double prop_value)//Yannick Verdie
 
     const auto window = icvFindWindowByName(name);
     if (!window)
-        CV_Error( cv::Error::StsNullPtr, "NULL window" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL window" );
 
     setModeWindow_(window, (int)prop_value);
 }
 
 static bool setModeWindow_(const std::shared_ptr<CvWindow>& window, int mode)
 {
-    if (window->flags & cv::WINDOW_AUTOSIZE) //if the flag cv::WINDOW_AUTOSIZE is set
+    if (window->flags & ncvslideio::WINDOW_AUTOSIZE) //if the flag ncvslideio::WINDOW_AUTOSIZE is set
         return false;
 
     //so easy to do fullscreen here, Linux rocks !
@@ -809,17 +809,17 @@ static bool setModeWindow_(const std::shared_ptr<CvWindow>& window, int mode)
     if (window->status == mode)
         return true;
 
-    if (window->status==cv::WINDOW_FULLSCREEN && mode==cv::WINDOW_NORMAL)
+    if (window->status==ncvslideio::WINDOW_FULLSCREEN && mode==ncvslideio::WINDOW_NORMAL)
     {
         gtk_window_unfullscreen(GTK_WINDOW(window->frame));
-        window->status=cv::WINDOW_NORMAL;
+        window->status=ncvslideio::WINDOW_NORMAL;
         return true;
     }
 
-    if (window->status==cv::WINDOW_NORMAL && mode==cv::WINDOW_FULLSCREEN)
+    if (window->status==ncvslideio::WINDOW_NORMAL && mode==ncvslideio::WINDOW_FULLSCREEN)
     {
         gtk_window_fullscreen(GTK_WINDOW(window->frame));
-        window->status=cv::WINDOW_FULLSCREEN;
+        window->status=ncvslideio::WINDOW_FULLSCREEN;
         return true;
     }
 
@@ -852,7 +852,7 @@ double cvGetPropWindowAutoSize_GTK(const char* name)
     if (!window)
         return -1; // keep silence here
 
-    double result = window->flags & cv::WINDOW_AUTOSIZE;
+    double result = window->flags & ncvslideio::WINDOW_AUTOSIZE;
     return result;
 }
 
@@ -909,7 +909,7 @@ namespace
         CV_UNUSED(user_data);
         gtk_gl_area_make_current(area);
         if (gtk_gl_area_get_error(area) != NULL)
-            CV_Error(cv::Error::OpenGlApiCallError, "OpenGL context is not initialized");
+            CV_Error(ncvslideio::Error::OpenGlApiCallError, "OpenGL context is not initialized");
     }
 
     gboolean glRenderCallback(GtkGLArea* area, GdkGLContext* context, gpointer user_data) {
@@ -917,7 +917,7 @@ namespace
         CvWindow* window = (CvWindow*)user_data;
         gtk_gl_area_make_current(area);
         if (gtk_gl_area_get_error(area) != NULL) {
-            CV_Error(cv::Error::OpenGlApiCallError, "OpenGL context is not initialized");
+            CV_Error(ncvslideio::Error::OpenGlApiCallError, "OpenGL context is not initialized");
             return FALSE;
         }
         if(window->glDrawCallback) {
@@ -941,11 +941,11 @@ namespace
         // Try double-buffered visual
         glconfig = gdk_gl_config_new_by_mode((GdkGLConfigMode)(GDK_GL_MODE_RGB | GDK_GL_MODE_DEPTH | GDK_GL_MODE_DOUBLE));
         if (!glconfig)
-            CV_Error( cv::Error::OpenGlApiCallError, "Can't Create A GL Device Context" );
+            CV_Error( ncvslideio::Error::OpenGlApiCallError, "Can't Create A GL Device Context" );
 
         // Set OpenGL-capability to the widget
         if (!gtk_widget_set_gl_capability(window->widget, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE))
-            CV_Error( cv::Error::OpenGlApiCallError, "Can't Create A GL Device Context" );
+            CV_Error( ncvslideio::Error::OpenGlApiCallError, "Can't Create A GL Device Context" );
 
         #endif
 
@@ -958,7 +958,7 @@ namespace
 
         GtkGLArea* gtkGlArea = GTK_GL_AREA(window->glArea);
         if (gtk_gl_area_get_error(gtkGlArea) != NULL)
-            CV_Error(cv::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context");
+            CV_Error(ncvslideio::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context");
 
         if (window->glDrawCallback)
             window->glDrawCallback(window->glDrawData);
@@ -969,7 +969,7 @@ namespace
         GdkGLDrawable* gldrawable = gtk_widget_get_gl_drawable(window->widget);
 
         if (!gdk_gl_drawable_gl_begin (gldrawable, glcontext))
-            CV_Error( cv::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context" );
+            CV_Error( ncvslideio::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context" );
 
         glViewport(0, 0, gtk_widget_get_allocated_width(window->widget), gtk_widget_get_allocated_height(window->widget));
 
@@ -1076,14 +1076,14 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
     auto window_ptr = std::make_shared<CvWindow>(name);
     CvWindow* window = window_ptr.get();
     window->flags = flags;
-    window->status = cv::WINDOW_NORMAL;//YV
+    window->status = ncvslideio::WINDOW_NORMAL;//YV
 
     window->frame = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 
     window->widget = cvImageWidgetNew( flags );
 
 #if defined(HAVE_OPENGL) && defined(GTK_VERSION3)
-    if (flags & cv::WINDOW_OPENGL) {
+    if (flags & ncvslideio::WINDOW_OPENGL) {
         window->glArea = gtk_gl_area_new();
         gtk_container_add(GTK_CONTAINER(window->frame), window->glArea);
         gtk_widget_show(window->glArea);
@@ -1103,10 +1103,10 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
 #endif
 
 #ifndef HAVE_OPENGL
-    if (flags & cv::WINDOW_OPENGL)
-        CV_Error( cv::Error::OpenGlNotSupported, "Library was built without OpenGL support" );
+    if (flags & ncvslideio::WINDOW_OPENGL)
+        CV_Error( ncvslideio::Error::OpenGlNotSupported, "Library was built without OpenGL support" );
 #else
-    if (flags & cv::WINDOW_OPENGL)
+    if (flags & ncvslideio::WINDOW_OPENGL)
         createGlContext(window);
 
     window->glDrawCallback = 0;
@@ -1151,7 +1151,7 @@ static std::shared_ptr<CvWindow> namedWindow_(const std::string& name, int flags
         getGTKWindows().push_back(window_ptr);
     }
 
-    bool b_nautosize = ((flags & cv::WINDOW_AUTOSIZE) == 0);
+    bool b_nautosize = ((flags & ncvslideio::WINDOW_AUTOSIZE) == 0);
     gtk_window_set_resizable( GTK_WINDOW(window->frame), b_nautosize );
 
     // allow window to be resized
@@ -1182,15 +1182,15 @@ CV_IMPL void cvSetOpenGlContext(const char* name)
 
     auto window = icvFindWindowByName(name);
     if (!window)
-        CV_Error( cv::Error::StsNullPtr, "NULL window" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL window" );
 
     if (!window->useGl)
-        CV_Error( cv::Error::OpenGlNotSupported, "Window doesn't support OpenGL" );
+        CV_Error( ncvslideio::Error::OpenGlNotSupported, "Window doesn't support OpenGL" );
 
 #ifdef GTK_VERSION3
 
     if(gtk_gl_area_get_error(GTK_GL_AREA(window->glArea)) != NULL)
-        CV_Error( cv::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context");
+        CV_Error( ncvslideio::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context");
 
 #else
 
@@ -1201,7 +1201,7 @@ CV_IMPL void cvSetOpenGlContext(const char* name)
     gldrawable = gtk_widget_get_gl_drawable(window->widget);
 
     if (!gdk_gl_drawable_make_current(gldrawable, glcontext))
-        CV_Error( cv::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context" );
+        CV_Error( ncvslideio::Error::OpenGlApiCallError, "Can't Activate The GL Rendering Context" );
 
 #endif
 
@@ -1245,7 +1245,7 @@ CV_IMPL void cvSetOpenGlDrawCallback(const char* name, CvOpenGlDrawCallback call
         return;
 
     if (!window->useGl)
-        CV_Error( cv::Error::OpenGlNotSupported, "Window was created without OpenGL context" );
+        CV_Error( ncvslideio::Error::OpenGlNotSupported, "Window was created without OpenGL context" );
 
     window->glDrawCallback = callback;
     window->glDrawData = userdata;
@@ -1377,7 +1377,7 @@ cvShowImage( const char* name, const CvArr* arr )
     #ifdef HAVE_OPENGL
         if (window->useGl)
         {
-            cv::imshow(name, cv::cvarrToMat(arr));
+            ncvslideio::imshow(name, ncvslideio::cvarrToMat(arr));
             return;
         }
     #endif
@@ -1406,7 +1406,7 @@ void resizeWindow_(const std::shared_ptr<CvWindow>& window, int width, int heigh
 {
     CV_Assert(window);
     CvImageWidget* image_widget = CV_IMAGE_WIDGET( window->widget );
-    //if(image_widget->flags & cv::WINDOW_AUTOSIZE)
+    //if(image_widget->flags & ncvslideio::WINDOW_AUTOSIZE)
         //EXIT;
 
     gtk_window_set_resizable( GTK_WINDOW(window->frame), 1 );
@@ -1457,7 +1457,7 @@ icvCreateTrackbar( const char* trackbar_name, const char* window_name,
     CV_Assert(trackbar_name && "NULL trackbar name");
 
     if( count <= 0 )
-        CV_Error( cv::Error::StsOutOfRange, "Bad trackbar maximal value" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "Bad trackbar maximal value" );
 
     CV_LOCK_MUTEX();
 
@@ -1630,7 +1630,7 @@ CV_IMPL void cvSetTrackbarPos( const char* trackbar_name, const char* window_nam
     const auto trackbar = icvFindTrackbarByName(window, trackbar_name);
     if (!trackbar)
     {
-        CV_Error( cv::Error::StsNullPtr, "No trackbar found" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "No trackbar found" );
     }
 
     return setTrackbarPos_(trackbar, pos);
@@ -1749,7 +1749,7 @@ static void icvShowSaveAsDialog(GtkWidget* widget, CvWindow* window)
                       NULL);
     gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
 
-    cv::String sname = gtk_window_get_title(GTK_WINDOW(window->frame));
+    ncvslideio::String sname = gtk_window_get_title(GTK_WINDOW(window->frame));
     sname = sname.substr(sname.find_last_of("\\/") + 1) + ".png";
     gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sname.c_str());
 
@@ -1779,7 +1779,7 @@ static void icvShowSaveAsDialog(GtkWidget* widget, CvWindow* window)
         gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), file_filters[idx]); // filter ownership is transferred to dialog
     gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter_images);
 
-    cv::String filename;
+    ncvslideio::String filename;
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
     {
         char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -1790,9 +1790,9 @@ static void icvShowSaveAsDialog(GtkWidget* widget, CvWindow* window)
 
     if (!filename.empty())
     {
-        cv::Mat bgr;
-        cv::cvtColor(cv::cvarrToMat(image_widget->original_image), bgr, cv::COLOR_RGB2BGR);
-        cv::imwrite(filename, bgr);
+        ncvslideio::Mat bgr;
+        ncvslideio::cvtColor(ncvslideio::cvarrToMat(image_widget->original_image), bgr, ncvslideio::COLOR_RGB2BGR);
+        ncvslideio::imwrite(filename, bgr);
     }
 }
 
@@ -1987,7 +1987,7 @@ static gboolean icvOnMouse( GtkWidget *widget, GdkEvent *event, gpointer user_da
     if( cv_event >= 0 )
     {
         // scale point if image is scaled
-        if( (image_widget->flags & cv::WINDOW_AUTOSIZE)==0 &&
+        if( (image_widget->flags & ncvslideio::WINDOW_AUTOSIZE)==0 &&
              image_widget->original_image &&
              image_widget->scaled_image )
         {
@@ -2054,7 +2054,7 @@ CV_IMPL int cvWaitKey( int delay )
         else{
             if (getGTKWindows().empty())
             {
-                CV_LOG_WARNING(NULL, "cv::waitKey() is called without timeout and missing active windows. Ignoring");
+                CV_LOG_WARNING(NULL, "ncvslideio::waitKey() is called without timeout and missing active windows. Ignoring");
             }
             else
             {
@@ -2086,9 +2086,9 @@ CV_IMPL int cvWaitKey( int delay )
     return last_key;
 }
 
-namespace cv { namespace impl {
+namespace ncvslideio { namespace impl {
 
-using namespace cv::highgui_backend;
+using namespace ncvslideio::highgui_backend;
 
 class GTKTrackbar;
 
@@ -2121,7 +2121,7 @@ public:
 
     void destroy() CV_OVERRIDE
     {
-        cv::AutoLock lock(getWindowMutex());
+        ncvslideio::AutoLock lock(getWindowMutex());
         if (!window_.expired())
         {
             auto window = window_.lock();
@@ -2149,17 +2149,17 @@ public:
         // see cvGetWindowProperty
         switch (prop)
         {
-        case cv::WND_PROP_FULLSCREEN:
+        case ncvslideio::WND_PROP_FULLSCREEN:
             return (double)window->status;
 
-        case cv::WND_PROP_AUTOSIZE:
-            return (window->flags & cv::WINDOW_AUTOSIZE) ? 1.0 : 0.0;
+        case ncvslideio::WND_PROP_AUTOSIZE:
+            return (window->flags & ncvslideio::WINDOW_AUTOSIZE) ? 1.0 : 0.0;
 
-        case cv::WND_PROP_ASPECT_RATIO:
+        case ncvslideio::WND_PROP_ASPECT_RATIO:
             return getRatioWindow_(window);
 
 #ifdef HAVE_OPENGL
-        case cv::WND_PROP_OPENGL:
+        case ncvslideio::WND_PROP_OPENGL:
             return window->useGl ? 1.0 : 0.0;
 #endif
 
@@ -2176,8 +2176,8 @@ public:
         // see cvSetWindowProperty
         switch (prop)
         {
-        case cv::WND_PROP_FULLSCREEN:
-            if (value != cv::WINDOW_NORMAL && value != cv::WINDOW_FULLSCREEN)  // bad arg
+        case ncvslideio::WND_PROP_FULLSCREEN:
+            if (value != ncvslideio::WINDOW_NORMAL && value != ncvslideio::WINDOW_FULLSCREEN)  // bad arg
                 break;
             setModeWindow_(window, value);
             return true;
@@ -2237,7 +2237,7 @@ public:
         auto trackbar = createTrackbar_(window, name, count, onChange, userdata);
         auto ui_trackbar = std::make_shared<GTKTrackbar>(name, trackbar, shared_from_this());
         {
-            cv::AutoLock lock(getWindowMutex());
+            ncvslideio::AutoLock lock(getWindowMutex());
             trackbars_.emplace(name, ui_trackbar);
         }
         return std::static_pointer_cast<UITrackbar>(ui_trackbar);
@@ -2245,7 +2245,7 @@ public:
 
     std::shared_ptr<UITrackbar> findTrackbar(const std::string& name) CV_OVERRIDE
     {
-        cv::AutoLock lock(getWindowMutex());
+        ncvslideio::AutoLock lock(getWindowMutex());
         auto i = trackbars_.find(name);
         if (i != trackbars_.end())
         {
@@ -2300,14 +2300,14 @@ public:
         return setTrackbarPos_(trackbar, pos);
     }
 
-    cv::Range getRange() const CV_OVERRIDE
+    ncvslideio::Range getRange() const CV_OVERRIDE
     {
         auto trackbar = trackbar_.lock();
         CV_Assert(trackbar);
-        return cv::Range(trackbar->minval, trackbar->maxval);
+        return ncvslideio::Range(trackbar->minval, trackbar->maxval);
     }
 
-    void setRange(const cv::Range& range) CV_OVERRIDE
+    void setRange(const ncvslideio::Range& range) CV_OVERRIDE
     {
         auto trackbar = trackbar_.lock();
         CV_Assert(trackbar);
@@ -2405,7 +2405,7 @@ CvResult cv_getInstance(CV_OUT CvPluginUIBackend* handle) CV_NOEXCEPT
     {
         if (!handle)
             return CV_ERROR_FAIL;
-        *handle = cv::impl::getInstance().get();
+        *handle = ncvslideio::impl::getInstance().get();
         return CV_ERROR_OK;
     }
     catch (...)

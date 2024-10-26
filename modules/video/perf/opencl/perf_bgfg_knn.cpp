@@ -19,7 +19,7 @@ typedef TestBaseWithParam<VideoKNNParamType> KNN_GetBackgroundImage;
 
 using namespace opencv_test;
 
-OCL_PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video/1920x1080.avi"), Values(1,3)))
+OCL_PERF_TEST_P(KNN_Apply, KNN, Combine(Values("ncvslideio/video/768x576.avi", "ncvslideio/video/1920x1080.avi"), Values(1,3)))
 {
     VideoKNNParamType params = GetParam();
 
@@ -30,7 +30,7 @@ OCL_PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer);
@@ -39,7 +39,7 @@ OCL_PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video
 
     OCL_TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
+        Ptr<ncvslideio::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
         knn->setDetectShadows(false);
         u_foreground.release();
         for (int i = 0; i < nFrame; i++)
@@ -51,8 +51,8 @@ OCL_PERF_TEST_P(KNN_Apply, KNN, Combine(Values("cv/video/768x576.avi", "cv/video
 }
 
 OCL_PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
-        std::make_pair<string, int>("cv/video/768x576.avi", 5),
-        std::make_pair<string, int>("cv/video/1920x1080.avi", 5)))
+        std::make_pair<string, int>("ncvslideio/video/768x576.avi", 5),
+        std::make_pair<string, int>("ncvslideio/video/1920x1080.avi", 5)))
 {
     VideoKNNParamType params = GetParam();
 
@@ -64,7 +64,7 @@ OCL_PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
 
     vector<Mat> frame_buffer(nFrame);
 
-    cv::VideoCapture cap(inputFile);
+    ncvslideio::VideoCapture cap(inputFile);
     if (!cap.isOpened())
         throw SkipTestException("Video file can not be opened");
     prepareData(cap, cn, frame_buffer, skipFrames);
@@ -73,7 +73,7 @@ OCL_PERF_TEST_P(KNN_GetBackgroundImage, KNN, Values(
 
     OCL_TEST_CYCLE()
     {
-        Ptr<cv::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
+        Ptr<ncvslideio::BackgroundSubtractorKNN> knn = createBackgroundSubtractorKNN();
         knn->setDetectShadows(false);
         u_foreground.release();
         u_background.release();

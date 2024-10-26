@@ -6,7 +6,7 @@
 //
 // This is .hpp file included from qrcode_encoder.cpp
 
-namespace cv {
+namespace ncvslideio {
 
 const int MAX_ALIGNMENT = 7;
 const int MODES = 4;

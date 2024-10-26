@@ -7,7 +7,7 @@
 #include "opencv2/highgui.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int thresh = 50, N = 11;
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
     {
         int64 t_start = getTickCount();
         findSquares(image, squares);
-        t_cpp += cv::getTickCount() - t_start;
+        t_cpp += ncvslideio::getTickCount() - t_start;
 
         t_start  = getTickCount();
 

@@ -12,19 +12,19 @@
 
 #include <opencv2/gapi/gframe.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 namespace utils {
 
-cv::MediaFormat fourcc_to_MediaFormat(int value);
-int MediaFormat_to_fourcc(cv::MediaFormat value);
-int MediaFormat_to_chroma(cv::MediaFormat value);
+ncvslideio::MediaFormat fourcc_to_MediaFormat(int value);
+int MediaFormat_to_fourcc(ncvslideio::MediaFormat value);
+int MediaFormat_to_chroma(ncvslideio::MediaFormat value);
 
-mfxFrameInfo to_mfxFrameInfo(const cv::GFrameDesc& frame_info);
+mfxFrameInfo to_mfxFrameInfo(const ncvslideio::GFrameDesc& frame_info);
 } // namespace utils
-} // namespace cv
+} // namespace ncvslideio
 } // namespace gapi
 } // namespace wip
 } // namespace onevpl

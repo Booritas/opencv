@@ -6,7 +6,7 @@
 #include "opencv2/videoio/registry.hpp"
 #include "videoio_registry.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 // Legacy C-like API
 

@@ -20,7 +20,7 @@
 #define IVX_USE_OPENCV
 #include "ivx.hpp"
 
-namespace cv{
+namespace ncvslideio{
 namespace ovx{
 // Get common thread local OpenVX context
 CV_EXPORTS_W ivx::Context& getOpenVXContext();
@@ -29,7 +29,7 @@ template <int kernel_id> inline bool skipSmallImages(int w, int h)     { return 
 }}
 
 #define CV_OVX_RUN(condition, func, ...)          \
-    if (cv::useOpenVX() && (condition) && func)   \
+    if (ncvslideio::useOpenVX() && (condition) && func)   \
     {                                             \
         return __VA_ARGS__;                       \
     }
@@ -40,7 +40,7 @@ template <int kernel_id> inline bool skipSmallImages(int w, int h)     { return 
 
 // Throw an error in debug mode or try another implementation in release
 #ifdef _DEBUG
-#define VX_DbgThrow(s) CV_Error(cv::Error::StsInternal, (s))
+#define VX_DbgThrow(s) CV_Error(ncvslideio::Error::StsInternal, (s))
 #else
 #define VX_DbgThrow(s) return false
 #endif

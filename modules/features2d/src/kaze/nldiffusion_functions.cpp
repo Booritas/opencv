@@ -30,7 +30,7 @@
 
 /* ************************************************************************* */
 
-namespace cv
+namespace ncvslideio
 {
 using namespace std;
 
@@ -43,7 +43,7 @@ using namespace std;
  * @param ksize_y Kernel size in Y-direction (vertical)
  * @param sigma Kernel standard deviation
  */
-void gaussian_2D_convolution(const cv::Mat& src, cv::Mat& dst, int ksize_x, int ksize_y, float sigma) {
+void gaussian_2D_convolution(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int ksize_x, int ksize_y, float sigma) {
 
     int ksize_x_ = 0, ksize_y_ = 0;
 
@@ -78,7 +78,7 @@ void gaussian_2D_convolution(const cv::Mat& src, cv::Mat& dst, int ksize_x, int 
  * A Scheme for Coherence-Enhancing Diffusion Filtering with Optimized Rotation Invariance,
  * Journal of Visual Communication and Image Representation 2002
  */
-void image_derivatives_scharr(const cv::Mat& src, cv::Mat& dst, int xorder, int yorder) {
+void image_derivatives_scharr(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int xorder, int yorder) {
     Scharr(src, dst, CV_32F, xorder, yorder, 1.0, 0, BORDER_DEFAULT);
 }
 
@@ -226,7 +226,7 @@ void charbonnier_diffusivity(InputArray _Lx, InputArray _Ly, OutputArray _dst, f
  * @param ksize_y Kernel size in Y-direction (vertical) for the Gaussian smoothing kernel
  * @return k contrast factor
  */
-float compute_k_percentile(const cv::Mat& img, float perc, float gscale, int nbins, int ksize_x, int ksize_y) {
+float compute_k_percentile(const ncvslideio::Mat& img, float perc, float gscale, int nbins, int ksize_x, int ksize_y) {
     CV_INSTRUMENT_REGION();
 
     int nbin = 0, nelements = 0, nthreshold = 0, k = 0;
@@ -246,8 +246,8 @@ float compute_k_percentile(const cv::Mat& img, float perc, float gscale, int nbi
     gaussian_2D_convolution(img, gaussian, ksize_x, ksize_y, gscale);
 
     // Compute the Gaussian derivatives Lx and Ly
-    Scharr(gaussian, Lx, CV_32F, 1, 0, 1, 0, cv::BORDER_DEFAULT);
-    Scharr(gaussian, Ly, CV_32F, 0, 1, 1, 0, cv::BORDER_DEFAULT);
+    Scharr(gaussian, Lx, CV_32F, 1, 0, 1, 0, ncvslideio::BORDER_DEFAULT);
+    Scharr(gaussian, Ly, CV_32F, 0, 1, 1, 0, ncvslideio::BORDER_DEFAULT);
 
     // Skip the borders for computing the histogram
     for (int i = 1; i < gaussian.rows - 1; i++) {
@@ -310,7 +310,7 @@ float compute_k_percentile(const cv::Mat& img, float perc, float gscale, int nbi
  * @param yorder Derivative order in Y-direction (vertical)
  * @param scale Scale factor for the derivative size
  */
-void compute_scharr_derivatives(const cv::Mat& src, cv::Mat& dst, int xorder, int yorder, int scale) {
+void compute_scharr_derivatives(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int xorder, int yorder, int scale) {
     Mat kx, ky;
     compute_derivative_kernels(kx, ky, xorder, yorder, scale);
     sepFilter2D(src, dst, CV_32F, kx, ky);
@@ -325,7 +325,7 @@ void compute_scharr_derivatives(const cv::Mat& src, cv::Mat& dst, int xorder, in
  * @param dy Derivative order in Y-direction (vertical)
  * @param scale Scale factor or derivative size
  */
-void compute_derivative_kernels(cv::OutputArray _kx, cv::OutputArray _ky, int dx, int dy, int scale) {
+void compute_derivative_kernels(ncvslideio::OutputArray _kx, ncvslideio::OutputArray _ky, int dx, int dy, int scale) {
     CV_INSTRUMENT_REGION();
 
     int ksize = 3 + 2 * (scale - 1);
@@ -362,10 +362,10 @@ void compute_derivative_kernels(cv::OutputArray _kx, cv::OutputArray _ky, int dx
     }
 }
 
-class Nld_Step_Scalar_Invoker : public cv::ParallelLoopBody
+class Nld_Step_Scalar_Invoker : public ncvslideio::ParallelLoopBody
 {
 public:
-    Nld_Step_Scalar_Invoker(cv::Mat& Ld, const cv::Mat& c, cv::Mat& Lstep, float _stepsize)
+    Nld_Step_Scalar_Invoker(ncvslideio::Mat& Ld, const ncvslideio::Mat& c, ncvslideio::Mat& Lstep, float _stepsize)
         : _Ld(&Ld)
         , _c(&c)
         , _Lstep(&Lstep)
@@ -378,11 +378,11 @@ public:
 
     }
 
-    void operator()(const cv::Range& range) const CV_OVERRIDE
+    void operator()(const ncvslideio::Range& range) const CV_OVERRIDE
     {
-        cv::Mat& Ld = *_Ld;
-        const cv::Mat& c = *_c;
-        cv::Mat& Lstep = *_Lstep;
+        ncvslideio::Mat& Ld = *_Ld;
+        const ncvslideio::Mat& c = *_c;
+        ncvslideio::Mat& Lstep = *_Lstep;
 
         for (int i = range.start; i < range.end; i++)
         {
@@ -406,9 +406,9 @@ public:
         }
     }
 private:
-    cv::Mat * _Ld;
-    const cv::Mat * _c;
-    cv::Mat * _Lstep;
+    ncvslideio::Mat * _Ld;
+    const ncvslideio::Mat * _c;
+    ncvslideio::Mat * _Lstep;
     float stepsize;
 };
 
@@ -423,10 +423,10 @@ private:
 * The function c is a scalar value that depends on the gradient norm
 * dL_by_ds = d(c dL_by_dx)_by_dx + d(c dL_by_dy)_by_dy
 */
-void nld_step_scalar(cv::Mat& Ld, const cv::Mat& c, cv::Mat& Lstep, float stepsize) {
+void nld_step_scalar(ncvslideio::Mat& Ld, const ncvslideio::Mat& c, ncvslideio::Mat& Lstep, float stepsize) {
     CV_INSTRUMENT_REGION();
 
-    cv::parallel_for_(cv::Range(1, Lstep.rows - 1), Nld_Step_Scalar_Invoker(Ld, c, Lstep, stepsize), (double)Ld.total()/(1 << 16));
+    ncvslideio::parallel_for_(ncvslideio::Range(1, Lstep.rows - 1), Nld_Step_Scalar_Invoker(Ld, c, Lstep, stepsize), (double)Ld.total()/(1 << 16));
 
     float xneg, xpos, yneg, ypos;
     float* dst = Lstep.ptr<float>(0);
@@ -493,11 +493,11 @@ void nld_step_scalar(cv::Mat& Ld, const cv::Mat& c, cv::Mat& Lstep, float stepsi
 * @param src Input image to be downsampled
 * @param dst Output image with half of the resolution of the input image
 */
-void halfsample_image(const cv::Mat& src, cv::Mat& dst) {
+void halfsample_image(const ncvslideio::Mat& src, ncvslideio::Mat& dst) {
     // Make sure the destination image is of the right size
     CV_Assert(src.cols / 2 == dst.cols);
     CV_Assert(src.rows / 2 == dst.rows);
-    resize(src, dst, dst.size(), 0, 0, cv::INTER_AREA);
+    resize(src, dst, dst.size(), 0, 0, ncvslideio::INTER_AREA);
 }
 
 /* ************************************************************************* */
@@ -511,7 +511,7 @@ void halfsample_image(const cv::Mat& src, cv::Mat& dst) {
  * @param same_img Flag to indicate if the image value at (x,y) is in the input image
  * @return 1->is maximum, 0->otherwise
  */
-bool check_maximum_neighbourhood(const cv::Mat& img, int dsize, float value, int row, int col, bool same_img) {
+bool check_maximum_neighbourhood(const ncvslideio::Mat& img, int dsize, float value, int row, int col, bool same_img) {
 
     bool response = true;
 

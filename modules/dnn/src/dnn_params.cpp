@@ -7,7 +7,7 @@
 #include "dnn_common.hpp"
 #include <opencv2/core/utils/configuration.private.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -64,4 +64,4 @@ bool getParam_DNN_CHECK_NAN_INF_RAISE_ERROR()
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

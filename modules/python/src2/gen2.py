@@ -248,7 +248,7 @@ python_reserved_keywords = {
 
 
 def normalize_class_name(name):
-    return re.sub(r"^cv\.", "", name).replace(".", "_")
+    return re.sub(r"^ncvslideio\.", "", name).replace(".", "_")
 
 
 def get_type_format_string(arg_type_info):
@@ -276,7 +276,7 @@ class ClassProp(object):
 
 class ClassInfo(object):
     def __init__(self, name, decl=None, codegen=None):
-        # Scope name can be a module or other class e.g. cv::SimpleBlobDetector::Params
+        # Scope name can be a module or other class e.g. ncvslideio::SimpleBlobDetector::Params
         self.original_scope_name, self.original_name = name.rsplit(".", 1)
 
         # In case scope refer the outer class exported with different name
@@ -286,7 +286,7 @@ class ClassInfo(object):
             )
         else:
             self.export_scope_name = self.original_scope_name
-        self.export_scope_name = re.sub(r"^cv\.?", "", self.export_scope_name)
+        self.export_scope_name = re.sub(r"^ncvslideio\.?", "", self.export_scope_name)
 
         self.export_name = self.original_name
 
@@ -313,7 +313,7 @@ class ClassInfo(object):
                 #return sys.exit(-1)
             elif len(bases) == 1:
                 self.base = bases[0].strip(",")
-                if self.base.startswith("cv::"):
+                if self.base.startswith("ncvslideio::"):
                     self.base = self.base[4:]
                 if self.base == "Algorithm":
                     self.isalgorithm = True
@@ -332,7 +332,7 @@ class ClassInfo(object):
                     self.issimple = True
             self.props = [ClassProp(p) for p in decl[3]]
 
-        if not self.has_export_alias and self.original_name.startswith("Cv"):
+        if not self.has_export_alias and self.original_name.startswith("ncvslideio"):
             self.export_name = self.export_name[2:]
 
     @property
@@ -348,7 +348,7 @@ class ClassInfo(object):
 
     @property
     def full_export_scope_name(self):
-        return "cv." + self.export_scope_name if len(self.export_scope_name) else "cv"
+        return "ncvslideio." + self.export_scope_name if len(self.export_scope_name) else "ncvslideio"
 
     @property
     def full_export_name(self):
@@ -574,7 +574,7 @@ def find_argument_class_info(argument_type, function_namespace,
 
     # Trying to find argument type in the namespace of the function
     type_to_match = '{}_{}'.format(
-        function_namespace.lstrip('cv.').replace('.', '_'), type_to_match
+        function_namespace.lstrip('ncvslideio.').replace('.', '_'), type_to_match
     )
     if type_to_match in possible_classes:
         return known_classes[type_to_match]
@@ -627,7 +627,7 @@ class FuncVariant(object):
 
     def init_pyproto(self, namespace, classname, known_classes):
         # string representation of argument list, with '[', ']' symbols denoting optional arguments, e.g.
-        # "src1, src2[, dst[, mask]]" for cv.add
+        # "src1, src2[, dst[, mask]]" for ncvslideio.add
         argstr = ""
 
         # list of all input arguments of the Python function, with the argument numbers:
@@ -721,7 +721,7 @@ class FuncVariant(object):
             assert outlist == []
             outlist = [("self", -1)]
         if self.isconstructor:
-            if classname.startswith("Cv"):
+            if classname.startswith("ncvslideio"):
                 classname = classname[2:]
             outstr = "<%s object>" % (classname,)
         elif outlist:
@@ -1314,7 +1314,7 @@ class PythonWrapperGenerator(object):
         cname = enum_name.replace(".", "::")
 
         code = ""
-        if re.sub(r"^cv\.", "", enum_name) != wname:
+        if re.sub(r"^ncvslideio\.", "", enum_name) != wname:
             code += "typedef {0} {1};\n".format(cname, wname)
         code += "CV_PY_FROM_ENUM({0})\nCV_PY_TO_ENUM({0})\n\n".format(wname)
         self.code_enums.write(code)
@@ -1460,7 +1460,7 @@ class PythonWrapperGenerator(object):
 
         # step 3: generate the code for all the global functions
         for ns_name, ns in sorted(self.namespaces.items()):
-            if ns_name.split('.')[0] != 'cv':
+            if ns_name.split('.')[0] != 'ncvslideio':
                 continue
             for name, func in sorted(ns.funcs.items()):
                 if func.isconstructor:

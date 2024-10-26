@@ -7,7 +7,7 @@ using namespace perf;
 ///////////////////////////////////////////////////////dft//////////////////////////////////////////////////////////////
 
 #define MAT_TYPES_DFT  CV_32FC1, CV_32FC2, CV_64FC1
-#define MAT_SIZES_DFT  cv::Size(320, 480), cv::Size(800, 600), cv::Size(1280, 1024), sz1080p, sz2K
+#define MAT_SIZES_DFT  ncvslideio::Size(320, 480), ncvslideio::Size(800, 600), ncvslideio::Size(1280, 1024), sz1080p, sz2K
 CV_ENUM(FlagsType, 0, DFT_INVERSE, DFT_SCALE, DFT_COMPLEX_OUTPUT, DFT_ROWS, DFT_INVERSE|DFT_COMPLEX_OUTPUT)
 #define TEST_MATS_DFT  testing::Combine(testing::Values(MAT_SIZES_DFT), testing::Values(MAT_TYPES_DFT), FlagsType::all(), testing::Values(true, false))
 
@@ -44,8 +44,8 @@ typedef tuple<Size, MatType, DCT_FlagsType> Size_MatType_Flag_t;
 typedef perf::TestBaseWithParam<Size_MatType_Flag_t> Size_MatType_Flag;
 
 PERF_TEST_P(Size_MatType_Flag, dct, testing::Combine(
-                                    testing::Values(cv::Size(320, 240),cv::Size(800, 600),
-                                                    cv::Size(1024, 768), cv::Size(1280, 1024),
+                                    testing::Values(ncvslideio::Size(320, 240),ncvslideio::Size(800, 600),
+                                                    ncvslideio::Size(1024, 768), ncvslideio::Size(1280, 1024),
                                                     sz1080p, sz2K),
                                     testing::Values(CV_32FC1, CV_64FC1), DCT_FlagsType::all()))
 {

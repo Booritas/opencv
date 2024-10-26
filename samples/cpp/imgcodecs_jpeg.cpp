@@ -5,13 +5,13 @@
 #include <vector>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int /*argc*/, const char** /* argv */ )
 {
-    Mat framebuffer( 160 * 2, 160 * 5, CV_8UC3, cv::Scalar::all(255) );
+    Mat framebuffer( 160 * 2, 160 * 5, CV_8UC3, ncvslideio::Scalar::all(255) );
 
-    Mat img( 160, 160, CV_8UC3, cv::Scalar::all(255) );
+    Mat img( 160, 160, CV_8UC3, ncvslideio::Scalar::all(255) );
 
     // Create test image.
     {
@@ -19,9 +19,9 @@ int main(int /*argc*/, const char** /* argv */ )
 
         for( int radius = 5; radius < img.rows ; radius += 3 )
         {
-            cv::circle( img, center, radius, Scalar(255,0,255) );
+            ncvslideio::circle( img, center, radius, Scalar(255,0,255) );
         }
-        cv::rectangle( img, Point(0,0), Point(img.rows-1, img.cols-1), Scalar::all(0), 2 );
+        ncvslideio::rectangle( img, Point(0,0), Point(img.rows-1, img.cols-1), Scalar::all(0), 2 );
     }
 
     // Draw original image(s).
@@ -31,7 +31,7 @@ int main(int /*argc*/, const char** /* argv */ )
             Mat roi = framebuffer( Rect( left, top, img.rows, img.cols ) );
             img.copyTo(roi);
 
-            cv::putText( roi, "original", Point(5,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar::all(0), 2, 4, false );
+            ncvslideio::putText( roi, "original", Point(5,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar::all(0), 2, 4, false );
         }
     }
 
@@ -69,7 +69,7 @@ int main(int /*argc*/, const char** /* argv */ )
             // Copy into framebuffer and comment
             Mat roi = framebuffer( Rect( left, top, lossy_img.rows, lossy_img.cols ) );
             lossy_img.copyTo(roi);
-            cv::putText( roi, config[i].comment, Point(5,155), FONT_HERSHEY_SIMPLEX, 0.5, Scalar::all(0), 2, 4, false );
+            ncvslideio::putText( roi, config[i].comment, Point(5,155), FONT_HERSHEY_SIMPLEX, 0.5, Scalar::all(0), 2, 4, false );
 
             left += lossy_img.rows;
         }

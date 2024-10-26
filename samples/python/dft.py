@@ -71,50 +71,50 @@ def main():
         fname = 'baboon.jpg'
         print("usage : python dft.py <image_file>")
 
-    im = cv.imread(cv.samples.findFile(fname))
+    im = ncvslideio.imread(ncvslideio.samples.findFile(fname))
 
     # convert to grayscale
-    im = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
+    im = ncvslideio.cvtColor(im, ncvslideio.COLOR_BGR2GRAY)
     h, w = im.shape[:2]
 
     realInput = im.astype(np.float64)
 
     # perform an optimally sized dft
-    dft_M = cv.getOptimalDFTSize(w)
-    dft_N = cv.getOptimalDFTSize(h)
+    dft_M = ncvslideio.getOptimalDFTSize(w)
+    dft_N = ncvslideio.getOptimalDFTSize(h)
 
     # copy A to dft_A and pad dft_A with zeros
     dft_A = np.zeros((dft_N, dft_M, 2), dtype=np.float64)
     dft_A[:h, :w, 0] = realInput
 
     # no need to pad bottom part of dft_A with zeros because of
-    # use of nonzeroRows parameter in cv.dft()
-    cv.dft(dft_A, dst=dft_A, nonzeroRows=h)
+    # use of nonzeroRows parameter in ncvslideio.dft()
+    ncvslideio.dft(dft_A, dst=dft_A, nonzeroRows=h)
 
-    cv.imshow("win", im)
+    ncvslideio.imshow("win", im)
 
     # Split fourier into real and imaginary parts
-    image_Re, image_Im = cv.split(dft_A)
+    image_Re, image_Im = ncvslideio.split(dft_A)
 
     # Compute the magnitude of the spectrum Mag = sqrt(Re^2 + Im^2)
-    magnitude = cv.sqrt(image_Re**2.0 + image_Im**2.0)
+    magnitude = ncvslideio.sqrt(image_Re**2.0 + image_Im**2.0)
 
     # Compute log(1 + Mag)
-    log_spectrum = cv.log(1.0 + magnitude)
+    log_spectrum = ncvslideio.log(1.0 + magnitude)
 
     # Rearrange the quadrants of Fourier image so that the origin is at
     # the image center
     shift_dft(log_spectrum, log_spectrum)
 
     # normalize and display the results as rgb
-    cv.normalize(log_spectrum, log_spectrum, 0.0, 1.0, cv.NORM_MINMAX)
-    cv.imshow("magnitude", log_spectrum)
+    ncvslideio.normalize(log_spectrum, log_spectrum, 0.0, 1.0, ncvslideio.NORM_MINMAX)
+    ncvslideio.imshow("magnitude", log_spectrum)
 
-    cv.waitKey(0)
+    ncvslideio.waitKey(0)
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -23,7 +23,7 @@
 #endif // defined(HAVE_VA) || defined(HAVE_VA_INTEL)
 #endif // __linux__
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -43,7 +43,7 @@ struct GAPI_EXPORTS VPLVAAPIAccelerationPolicy final : public VPLAccelerationPol
     size_t get_free_surface_count(pool_key_t key) const override;
     size_t get_surface_count(pool_key_t key) const override;
 
-    cv::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
+    ncvslideio::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
                                                     const FrameConstructorArgs& args) override;
 
 private:
@@ -55,7 +55,7 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_ACCEL_POLICY_VA_API_HPP

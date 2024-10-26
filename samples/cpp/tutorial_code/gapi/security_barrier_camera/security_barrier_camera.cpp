@@ -59,33 +59,33 @@ std::ostream& operator<<(std::ostream &os, const Avg::Elapsed &e) {
 
 
 namespace custom {
-G_API_NET(VehicleLicenseDetector, <cv::GMat(cv::GMat)>, "vehicle-license-plate-detector");
+G_API_NET(VehicleLicenseDetector, <ncvslideio::GMat(ncvslideio::GMat)>, "vehicle-license-plate-detector");
 
-using Attrs = std::tuple<cv::GMat, cv::GMat>;
-G_API_NET(VehicleAttributes,      <Attrs(cv::GMat)>,    "vehicle-attributes");
-G_API_NET(LPR,                    <cv::GMat(cv::GMat)>, "license-plate-recognition");
+using Attrs = std::tuple<ncvslideio::GMat, ncvslideio::GMat>;
+G_API_NET(VehicleAttributes,      <Attrs(ncvslideio::GMat)>,    "vehicle-attributes");
+G_API_NET(LPR,                    <ncvslideio::GMat(ncvslideio::GMat)>, "license-plate-recognition");
 
-using GVehiclesPlates = std::tuple< cv::GArray<cv::Rect>
-                                  , cv::GArray<cv::Rect> >;
+using GVehiclesPlates = std::tuple< ncvslideio::GArray<ncvslideio::Rect>
+                                  , ncvslideio::GArray<ncvslideio::Rect> >;
 G_API_OP_M(ProcessDetections,
-           <GVehiclesPlates(cv::GMat, cv::GMat)>,
+           <GVehiclesPlates(ncvslideio::GMat, ncvslideio::GMat)>,
            "custom.security_barrier.detector.postproc") {
-    static std::tuple<cv::GArrayDesc,cv::GArrayDesc>
-    outMeta(const cv::GMatDesc &, const cv::GMatDesc) {
+    static std::tuple<ncvslideio::GArrayDesc,ncvslideio::GArrayDesc>
+    outMeta(const ncvslideio::GMatDesc &, const ncvslideio::GMatDesc) {
         // FIXME: Need to get rid of this - literally there's nothing useful
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc());
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
 GAPI_OCV_KERNEL(OCVProcessDetections, ProcessDetections) {
-    static void run(const cv::Mat &in_ssd_result,
-                    const cv::Mat &in_frame,
-                    std::vector<cv::Rect> &out_vehicles,
-                    std::vector<cv::Rect> &out_plates) {
+    static void run(const ncvslideio::Mat &in_ssd_result,
+                    const ncvslideio::Mat &in_frame,
+                    std::vector<ncvslideio::Rect> &out_vehicles,
+                    std::vector<ncvslideio::Rect> &out_plates) {
         const int MAX_PROPOSALS = 200;
         const int OBJECT_SIZE   =   7;
-        const cv::Size upscale = in_frame.size();
-        const cv::Rect surface({0,0}, upscale);
+        const ncvslideio::Size upscale = in_frame.size();
+        const ncvslideio::Rect surface({0,0}, upscale);
 
         out_vehicles.clear();
         out_plates.clear();
@@ -107,14 +107,14 @@ GAPI_OCV_KERNEL(OCVProcessDetections, ProcessDetections) {
                 continue;
             }
 
-            cv::Rect rc;
+            ncvslideio::Rect rc;
             rc.x      = static_cast<int>(rc_left   * upscale.width);
             rc.y      = static_cast<int>(rc_top    * upscale.height);
             rc.width  = static_cast<int>(rc_right  * upscale.width)  - rc.x;
             rc.height = static_cast<int>(rc_bottom * upscale.height) - rc.y;
 
-            using PT = cv::Point;
-            using SZ = cv::Size;
+            using PT = ncvslideio::Point;
+            using SZ = ncvslideio::Size;
             switch (static_cast<int>(label)) {
             case 1: out_vehicles.push_back(rc & surface); break;
             case 2: out_plates.emplace_back((rc-PT(15,15)+SZ(30,30)) & surface); break;
@@ -148,12 +148,12 @@ const std::vector<std::string> license_text = {
     "U", "V", "W", "X", "Y", "Z"
 };
 namespace {
-void DrawResults(cv::Mat &frame,
-                 const std::vector<cv::Rect> &vehicles,
-                 const std::vector<cv::Mat>  &out_colors,
-                 const std::vector<cv::Mat>  &out_types,
-                 const std::vector<cv::Rect> &plates,
-                 const std::vector<cv::Mat>  &out_numbers) {
+void DrawResults(ncvslideio::Mat &frame,
+                 const std::vector<ncvslideio::Rect> &vehicles,
+                 const std::vector<ncvslideio::Mat>  &out_colors,
+                 const std::vector<ncvslideio::Mat>  &out_types,
+                 const std::vector<ncvslideio::Rect> &plates,
+                 const std::vector<ncvslideio::Mat>  &out_numbers) {
     CV_Assert(vehicles.size() == out_colors.size());
     CV_Assert(vehicles.size() == out_types.size());
     CV_Assert(plates.size()   == out_numbers.size());
@@ -168,17 +168,17 @@ void DrawResults(cv::Mat &frame,
         const auto  type_id = std::max_element(types_data,  types_data  + 4) - types_data;
 
         const int ATTRIB_OFFSET = 25;
-        cv::rectangle(frame, rc, {0, 255, 0},  4);
-        cv::putText(frame, labels::colors[color_id],
-                    cv::Point(rc.x + 5, rc.y + ATTRIB_OFFSET),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+        ncvslideio::rectangle(frame, rc, {0, 255, 0},  4);
+        ncvslideio::putText(frame, labels::colors[color_id],
+                    ncvslideio::Point(rc.x + 5, rc.y + ATTRIB_OFFSET),
+                    ncvslideio::FONT_HERSHEY_COMPLEX_SMALL,
                     1,
-                    cv::Scalar(255, 0, 0));
-        cv::putText(frame, labels::types[type_id],
-                    cv::Point(rc.x + 5, rc.y + ATTRIB_OFFSET * 2),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+                    ncvslideio::Scalar(255, 0, 0));
+        ncvslideio::putText(frame, labels::types[type_id],
+                    ncvslideio::Point(rc.x + 5, rc.y + ATTRIB_OFFSET * 2),
+                    ncvslideio::FONT_HERSHEY_COMPLEX_SMALL,
                     1,
-                    cv::Scalar(255, 0, 0));
+                    ncvslideio::Scalar(255, 0, 0));
     }
 
     for (auto it = plates.begin(); it != plates.end(); ++it) {
@@ -196,25 +196,25 @@ void DrawResults(cv::Mat &frame,
         }
 
         const int y_pos = std::max(0, rc.y + rc.height - LPR_OFFSET);
-        cv::rectangle(frame, rc, {0, 0, 255},  4);
-        cv::putText(frame, result,
-                    cv::Point(rc.x, y_pos),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+        ncvslideio::rectangle(frame, rc, {0, 0, 255},  4);
+        ncvslideio::putText(frame, result,
+                    ncvslideio::Point(rc.x, y_pos),
+                    ncvslideio::FONT_HERSHEY_COMPLEX_SMALL,
                     1,
-                    cv::Scalar(0, 0, 255));
+                    ncvslideio::Scalar(0, 0, 255));
     }
 }
 
-void DrawFPS(cv::Mat &frame, std::size_t n, double fps) {
+void DrawFPS(ncvslideio::Mat &frame, std::size_t n, double fps) {
     std::ostringstream out;
     out << "FRAME " << n << ": "
         << std::fixed << std::setprecision(2) << fps
         << " FPS (AVG)";
-    cv::putText(frame, out.str(),
-                cv::Point(0, frame.rows),
-                cv::FONT_HERSHEY_SIMPLEX,
+    ncvslideio::putText(frame, out.str(),
+                ncvslideio::Point(0, frame.rows),
+                ncvslideio::FONT_HERSHEY_SIMPLEX,
                 1,
-                cv::Scalar(0, 0, 0),
+                ncvslideio::Scalar(0, 0, 0),
                 2);
 }
 } // anonymous namespace
@@ -222,7 +222,7 @@ void DrawFPS(cv::Mat &frame, std::size_t n, double fps) {
 
 int main(int argc, char *argv[])
 {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -231,29 +231,29 @@ int main(int argc, char *argv[])
     const std::string input = cmd.get<std::string>("input");
     const bool no_show = cmd.get<bool>("pure");
 
-    cv::GComputation pp([]() {
-            cv::GMat in;
-            cv::GMat detections          = cv::gapi::infer<custom::VehicleLicenseDetector>(in);
-            cv::GArray<cv::Rect> vehicles;
-            cv::GArray<cv::Rect> plates;
+    ncvslideio::GComputation pp([]() {
+            ncvslideio::GMat in;
+            ncvslideio::GMat detections          = ncvslideio::gapi::infer<custom::VehicleLicenseDetector>(in);
+            ncvslideio::GArray<ncvslideio::Rect> vehicles;
+            ncvslideio::GArray<ncvslideio::Rect> plates;
             std::tie(vehicles, plates)   = custom::ProcessDetections::on(detections, in);
-            cv::GArray<cv::GMat> colors;
-            cv::GArray<cv::GMat> types;
-            std::tie(colors, types)      = cv::gapi::infer<custom::VehicleAttributes>(vehicles, in);
-            cv::GArray<cv::GMat> numbers = cv::gapi::infer<custom::LPR>(plates, in);
-            cv::GMat frame = cv::gapi::copy(in); // pass-through the input frame
-            return cv::GComputation(cv::GIn(in),
-                                    cv::GOut(frame, vehicles, colors, types, plates, numbers));
+            ncvslideio::GArray<ncvslideio::GMat> colors;
+            ncvslideio::GArray<ncvslideio::GMat> types;
+            std::tie(colors, types)      = ncvslideio::gapi::infer<custom::VehicleAttributes>(vehicles, in);
+            ncvslideio::GArray<ncvslideio::GMat> numbers = ncvslideio::gapi::infer<custom::LPR>(plates, in);
+            ncvslideio::GMat frame = ncvslideio::gapi::copy(in); // pass-through the input frame
+            return ncvslideio::GComputation(ncvslideio::GIn(in),
+                                    ncvslideio::GOut(frame, vehicles, colors, types, plates, numbers));
         });
 
     // Note: it might be very useful to have dimensions loaded at this point!
-    auto det_net = cv::gapi::ie::Params<custom::VehicleLicenseDetector> {
+    auto det_net = ncvslideio::gapi::ie::Params<custom::VehicleLicenseDetector> {
         cmd.get<std::string>("detm"),   // path to topology IR
         cmd.get<std::string>("detw"),   // path to weights
         cmd.get<std::string>("detd"),   // device specifier
     };
 
-    auto attr_net = cv::gapi::ie::Params<custom::VehicleAttributes> {
+    auto attr_net = ncvslideio::gapi::ie::Params<custom::VehicleAttributes> {
         cmd.get<std::string>("vehm"),   // path to topology IR
         cmd.get<std::string>("vehw"),   // path to weights
         cmd.get<std::string>("vehd"),   // device specifier
@@ -262,53 +262,53 @@ int main(int argc, char *argv[])
     // Fill a special LPR input (seq_ind) with a predefined value
     // First element is 0.f, the rest 87 are 1.f
     const std::vector<int> lpr_seq_dims = {88,1};
-    cv::Mat lpr_seq(lpr_seq_dims, CV_32F, cv::Scalar(1.f));
+    ncvslideio::Mat lpr_seq(lpr_seq_dims, CV_32F, ncvslideio::Scalar(1.f));
     lpr_seq.ptr<float>()[0] = 0.f;
-    auto lpr_net = cv::gapi::ie::Params<custom::LPR> {
+    auto lpr_net = ncvslideio::gapi::ie::Params<custom::LPR> {
         cmd.get<std::string>("lprm"),   // path to topology IR
         cmd.get<std::string>("lprw"),   // path to weights
         cmd.get<std::string>("lprd"),   // device specifier
     }.constInput("seq_ind", lpr_seq);
 
-    auto kernels = cv::gapi::kernels<custom::OCVProcessDetections>();
-    auto networks = cv::gapi::networks(det_net, attr_net, lpr_net);
+    auto kernels = ncvslideio::gapi::kernels<custom::OCVProcessDetections>();
+    auto networks = ncvslideio::gapi::networks(det_net, attr_net, lpr_net);
 
     Avg avg;
-    cv::Mat frame;
-    std::vector<cv::Rect> vehicles, plates;
-    std::vector<cv::Mat> out_colors;
-    std::vector<cv::Mat> out_types;
-    std::vector<cv::Mat> out_numbers;
+    ncvslideio::Mat frame;
+    std::vector<ncvslideio::Rect> vehicles, plates;
+    std::vector<ncvslideio::Mat> out_colors;
+    std::vector<ncvslideio::Mat> out_types;
+    std::vector<ncvslideio::Mat> out_numbers;
     std::size_t frames = 0u;
 
     std::cout << "Reading " << input << std::endl;
 
     if (cmd.get<bool>("ser")) {
         std::cout << "Going serial..." << std::endl;
-        cv::VideoCapture cap(input);
+        ncvslideio::VideoCapture cap(input);
 
-        auto cc = pp.compile(cv::GMatDesc{CV_8U,3,cv::Size(1920,1080)},
-                             cv::compile_args(kernels, networks));
+        auto cc = pp.compile(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size(1920,1080)},
+                             ncvslideio::compile_args(kernels, networks));
 
         avg.start();
-        while (cv::waitKey(1) < 0) {
+        while (ncvslideio::waitKey(1) < 0) {
             cap >> frame;
             if (frame.empty()) break;
 
-            cc(cv::gin(frame),
-               cv::gout(frame, vehicles, out_colors, out_types, plates, out_numbers));
+            cc(ncvslideio::gin(frame),
+               ncvslideio::gout(frame, vehicles, out_colors, out_types, plates, out_numbers));
             frames++;
             labels::DrawResults(frame, vehicles, out_colors, out_types, plates, out_numbers);
             labels::DrawFPS(frame, frames, avg.fps(frames));
-            if (!no_show) cv::imshow("Out", frame);
+            if (!no_show) ncvslideio::imshow("Out", frame);
         }
     } else {
         std::cout << "Going pipelined..." << std::endl;
 
-        auto cc = pp.compileStreaming(cv::GMatDesc{CV_8U,3,cv::Size(1920,1080)},
-                                      cv::compile_args(kernels, networks));
+        auto cc = pp.compileStreaming(ncvslideio::GMatDesc{CV_8U,3,ncvslideio::Size(1920,1080)},
+                                      ncvslideio::compile_args(kernels, networks));
 
-        cc.setSource(cv::gapi::wip::make_src<cv::gapi::wip::GCaptureSource>(input));
+        cc.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::wip::GCaptureSource>(input));
 
         avg.start();
         cc.start();
@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
         // Implement different execution policies depending on the display option
         // for the best performance.
         while (cc.running()) {
-            auto out_vector = cv::gout(frame, vehicles, out_colors, out_types, plates, out_numbers);
+            auto out_vector = ncvslideio::gout(frame, vehicles, out_colors, out_types, plates, out_numbers);
             if (no_show) {
                 // This is purely a video processing. No need to balance with UI rendering.
                 // Use a blocking pull() to obtain data. Break the loop if the stream is over.
@@ -325,14 +325,14 @@ int main(int argc, char *argv[])
             } else if (!cc.try_pull(std::move(out_vector))) {
                 // Use a non-blocking try_pull() to obtain data.
                 // If there's no data, let UI refresh (and handle keypress)
-                if (cv::waitKey(1) >= 0) break;
+                if (ncvslideio::waitKey(1) >= 0) break;
                 else continue;
             }
             // At this point we have data for sure (obtained in either blocking or non-blocking way).
             frames++;
             labels::DrawResults(frame, vehicles, out_colors, out_types, plates, out_numbers);
             labels::DrawFPS(frame, frames, avg.fps(frames));
-            if (!no_show) cv::imshow("Out", frame);
+            if (!no_show) ncvslideio::imshow("Out", frame);
         }
         cc.stop();
     }

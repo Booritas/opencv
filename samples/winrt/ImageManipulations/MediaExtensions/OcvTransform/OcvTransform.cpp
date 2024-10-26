@@ -1311,9 +1311,9 @@ HRESULT OcvImageManipulations::OnProcessOutput(IMFMediaBuffer *pIn, IMFMediaBuff
         return hr;
     }
 
-    cv::Mat InputFrame(m_imageHeightInPixels + m_imageHeightInPixels/2, m_imageWidthInPixels, CV_8UC1, pSrc, lSrcStride);
-    cv::Mat InputGreyScale(InputFrame, cv::Range(0, m_imageHeightInPixels), cv::Range(0, m_imageWidthInPixels));
-    cv::Mat OutputFrame(m_imageHeightInPixels + m_imageHeightInPixels/2, m_imageWidthInPixels, CV_8UC1, pDest, lDestStride);
+    ncvslideio::Mat InputFrame(m_imageHeightInPixels + m_imageHeightInPixels/2, m_imageWidthInPixels, CV_8UC1, pSrc, lSrcStride);
+    ncvslideio::Mat InputGreyScale(InputFrame, ncvslideio::Range(0, m_imageHeightInPixels), ncvslideio::Range(0, m_imageWidthInPixels));
+    ncvslideio::Mat OutputFrame(m_imageHeightInPixels + m_imageHeightInPixels/2, m_imageWidthInPixels, CV_8UC1, pDest, lDestStride);
 
     switch (m_TransformType)
     {
@@ -1323,22 +1323,22 @@ HRESULT OcvImageManipulations::OnProcessOutput(IMFMediaBuffer *pIn, IMFMediaBuff
         } break;
     case GrayScale:
         {
-            OutputFrame.setTo(cv::Scalar(128));
-            cv::Mat OutputGreyScale(OutputFrame, cv::Range(0, m_imageHeightInPixels), cv::Range(0, m_imageWidthInPixels));
+            OutputFrame.setTo(ncvslideio::Scalar(128));
+            ncvslideio::Mat OutputGreyScale(OutputFrame, ncvslideio::Range(0, m_imageHeightInPixels), ncvslideio::Range(0, m_imageWidthInPixels));
             InputGreyScale.copyTo(OutputGreyScale);
         } break;
     case Canny:
         {
-            OutputFrame.setTo(cv::Scalar(128));
-            cv::Mat OutputGreyScale(OutputFrame, cv::Range(0, m_imageHeightInPixels), cv::Range(0, m_imageWidthInPixels));
-            cv::Canny(InputGreyScale, OutputGreyScale, 80, 90);
+            OutputFrame.setTo(ncvslideio::Scalar(128));
+            ncvslideio::Mat OutputGreyScale(OutputFrame, ncvslideio::Range(0, m_imageHeightInPixels), ncvslideio::Range(0, m_imageWidthInPixels));
+            ncvslideio::Canny(InputGreyScale, OutputGreyScale, 80, 90);
 
         } break;
     case Sobel:
         {
-            OutputFrame.setTo(cv::Scalar(128));
-            cv::Mat OutputGreyScale(OutputFrame, cv::Range(0, m_imageHeightInPixels), cv::Range(0, m_imageWidthInPixels));
-            cv::Sobel(InputGreyScale, OutputGreyScale, CV_8U, 1, 1);
+            OutputFrame.setTo(ncvslideio::Scalar(128));
+            ncvslideio::Mat OutputGreyScale(OutputFrame, ncvslideio::Range(0, m_imageHeightInPixels), ncvslideio::Range(0, m_imageWidthInPixels));
+            ncvslideio::Sobel(InputGreyScale, OutputGreyScale, CV_8U, 1, 1);
         } break;
     case Histogram:
         {
@@ -1348,17 +1348,17 @@ HRESULT OcvImageManipulations::OnProcessOutput(IMFMediaBuffer *pIn, IMFMediaBuff
             const float baseRabge[] = {0.f,256.f};
             const float* ranges[] = {baseRabge};
 
-            const cv::Scalar mColorsY[] = { cv::Scalar(76), cv::Scalar(149), cv::Scalar(29) };
-            const cv::Scalar mColorsUV[] = { cv::Scalar(84, 255), cv::Scalar(43, 21), cv::Scalar(255, 107) };
+            const ncvslideio::Scalar mColorsY[] = { ncvslideio::Scalar(76), ncvslideio::Scalar(149), ncvslideio::Scalar(29) };
+            const ncvslideio::Scalar mColorsUV[] = { ncvslideio::Scalar(84, 255), ncvslideio::Scalar(43, 21), ncvslideio::Scalar(255, 107) };
 
-            cv::Mat OutputY(m_imageHeightInPixels, m_imageWidthInPixels, CV_8UC1, pDest, lDestStride);
-            cv::Mat OutputUV(m_imageHeightInPixels/2, m_imageWidthInPixels/2,
+            ncvslideio::Mat OutputY(m_imageHeightInPixels, m_imageWidthInPixels, CV_8UC1, pDest, lDestStride);
+            ncvslideio::Mat OutputUV(m_imageHeightInPixels/2, m_imageWidthInPixels/2,
                              CV_8UC2, pDest+m_imageHeightInPixels*lDestStride, lDestStride);
-            cv::Mat BgrFrame;
+            ncvslideio::Mat BgrFrame;
 
             InputFrame.copyTo(OutputFrame);
 
-            cv::cvtColor(InputFrame, BgrFrame, cv::COLOR_YUV420sp2BGR);
+            ncvslideio::cvtColor(InputFrame, BgrFrame, ncvslideio::COLOR_YUV420sp2BGR);
             int thikness = (int) (BgrFrame.cols / (mHistSizeNum + 10) / 5);
             if(thikness > 5) thikness = 5;
             int offset = (int) ((BgrFrame.cols - (5*mHistSizeNum + 4*10)*thikness)/2);
@@ -1366,23 +1366,23 @@ HRESULT OcvImageManipulations::OnProcessOutput(IMFMediaBuffer *pIn, IMFMediaBuff
             // RGB
             for (int c=0; c<3; c++)
             {
-                cv::Mat hist;
-                cv::calcHist(&BgrFrame, 1, channels[c], cv::Mat(), hist, 1, mHistSize, ranges);
-                cv::normalize(hist, hist, BgrFrame.rows/2, 0, cv::NORM_INF);
+                ncvslideio::Mat hist;
+                ncvslideio::calcHist(&BgrFrame, 1, channels[c], ncvslideio::Mat(), hist, 1, mHistSize, ranges);
+                ncvslideio::normalize(hist, hist, BgrFrame.rows/2, 0, ncvslideio::NORM_INF);
                 for(int h=0; h<mHistSizeNum; h++) {
-                    cv::Point mP1, mP2;
+                    ncvslideio::Point mP1, mP2;
                     // Draw on Y plane
                     mP1.x = mP2.x = offset + (c * (mHistSizeNum + 10) + h) * thikness;
                     mP1.y = BgrFrame.rows-1;
                     mP2.y = mP1.y - 2 - (int)hist.at<float>(h);
-                    cv::line(OutputY, mP1, mP2, mColorsY[c], thikness);
+                    ncvslideio::line(OutputY, mP1, mP2, mColorsY[c], thikness);
 
                     // Draw on UV planes
                     mP1.x /= 2;
                     mP1.y /= 2;
                     mP2.x /= 2;
                     mP2.y /= 2;
-                    cv::line(OutputUV, mP1, mP2, mColorsUV[c], thikness/2);
+                    ncvslideio::line(OutputUV, mP1, mP2, mColorsUV[c], thikness/2);
                 }
             }
         } break;

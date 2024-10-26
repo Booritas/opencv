@@ -77,7 +77,7 @@
 #include "../../../modules/core/include/opencv2/core/hal/intrin.hpp"
 #include "../../../modules/core/include/opencv2/core/utils/trace.hpp"
 #include "../../../modules/ts/include/opencv2/ts/ts_gtest.h"
-namespace cv {
+namespace ncvslideio {
 namespace hal {
 #include "../../../modules/core/test/test_intrin_utils.hpp"
 }
@@ -85,18 +85,18 @@ namespace hal {
 #endif
 
 using namespace emscripten;
-using namespace cv;
+using namespace ncvslideio;
 
-using namespace cv::segmentation;  // FIXIT
+using namespace ncvslideio::segmentation;  // FIXIT
 
 #ifdef HAVE_OPENCV_OBJDETECT
-using namespace cv::aruco;
+using namespace ncvslideio::aruco;
 typedef aruco::DetectorParameters aruco_DetectorParameters;
 typedef QRCodeDetectorAruco::Params QRCodeDetectorAruco_Params;
 #endif
 
 #ifdef HAVE_OPENCV_DNN
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 #endif
 
 #ifdef HAVE_OPENCV_FEATURES2D
@@ -119,30 +119,30 @@ namespace binding_utils
     }
 
     template<typename T>
-    emscripten::val matData(const cv::Mat& mat)
+    emscripten::val matData(const ncvslideio::Mat& mat)
     {
         return emscripten::val(emscripten::memory_view<T>((mat.total()*mat.elemSize())/sizeof(T),
                                (T*)mat.data));
     }
 
     template<typename T>
-    emscripten::val matPtr(const cv::Mat& mat, int i)
+    emscripten::val matPtr(const ncvslideio::Mat& mat, int i)
     {
         return emscripten::val(emscripten::memory_view<T>(mat.step1(0), mat.ptr<T>(i)));
     }
 
     template<typename T>
-    emscripten::val matPtr(const cv::Mat& mat, int i, int j)
+    emscripten::val matPtr(const ncvslideio::Mat& mat, int i, int j)
     {
         return emscripten::val(emscripten::memory_view<T>(mat.step1(1), mat.ptr<T>(i,j)));
     }
 
-    cv::Mat* createMat(int rows, int cols, int type, intptr_t data, size_t step)
+    ncvslideio::Mat* createMat(int rows, int cols, int type, intptr_t data, size_t step)
     {
-        return new cv::Mat(rows, cols, type, reinterpret_cast<void*>(data), step);
+        return new ncvslideio::Mat(rows, cols, type, reinterpret_cast<void*>(data), step);
     }
 
-    static emscripten::val getMatSize(const cv::Mat& mat)
+    static emscripten::val getMatSize(const ncvslideio::Mat& mat)
     {
         emscripten::val size = emscripten::val::array();
         for (int i = 0; i < mat.dims; i++) {
@@ -151,7 +151,7 @@ namespace binding_utils
         return size;
     }
 
-    static emscripten::val getMatStep(const cv::Mat& mat)
+    static emscripten::val getMatStep(const ncvslideio::Mat& mat)
     {
         emscripten::val step = emscripten::val::array();
         for (int i = 0; i < mat.dims; i++) {
@@ -162,12 +162,12 @@ namespace binding_utils
 
     static Mat matEye(int rows, int cols, int type)
     {
-        return Mat(cv::Mat::eye(rows, cols, type));
+        return Mat(ncvslideio::Mat::eye(rows, cols, type));
     }
 
     static Mat matEye(Size size, int type)
     {
-        return Mat(cv::Mat::eye(size, type));
+        return Mat(ncvslideio::Mat::eye(size, type));
     }
 
     void convertTo(const Mat& obj, Mat& m, int rtype, double alpha, double beta)
@@ -185,84 +185,84 @@ namespace binding_utils
         obj.convertTo(m, rtype, alpha);
     }
 
-    Size matSize(const cv::Mat& mat)
+    Size matSize(const ncvslideio::Mat& mat)
     {
         return mat.size();
     }
 
-    cv::Mat matZeros(int arg0, int arg1, int arg2)
+    ncvslideio::Mat matZeros(int arg0, int arg1, int arg2)
     {
-        return cv::Mat::zeros(arg0, arg1, arg2);
+        return ncvslideio::Mat::zeros(arg0, arg1, arg2);
     }
 
-    cv::Mat matZeros(cv::Size arg0, int arg1)
+    ncvslideio::Mat matZeros(ncvslideio::Size arg0, int arg1)
     {
-        return cv::Mat::zeros(arg0,arg1);
+        return ncvslideio::Mat::zeros(arg0,arg1);
     }
 
-    cv::Mat matOnes(int arg0, int arg1, int arg2)
+    ncvslideio::Mat matOnes(int arg0, int arg1, int arg2)
     {
-        return cv::Mat::ones(arg0, arg1, arg2);
+        return ncvslideio::Mat::ones(arg0, arg1, arg2);
     }
 
-    cv::Mat matOnes(cv::Size arg0, int arg1)
+    ncvslideio::Mat matOnes(ncvslideio::Size arg0, int arg1)
     {
-        return cv::Mat::ones(arg0, arg1);
+        return ncvslideio::Mat::ones(arg0, arg1);
     }
 
-    double matDot(const cv::Mat& obj, const Mat& mat)
+    double matDot(const ncvslideio::Mat& obj, const Mat& mat)
     {
         return  obj.dot(mat);
     }
 
-    Mat matMul(const cv::Mat& obj, const Mat& mat, double scale)
+    Mat matMul(const ncvslideio::Mat& obj, const Mat& mat, double scale)
     {
         return  Mat(obj.mul(mat, scale));
     }
 
-    Mat matT(const cv::Mat& obj)
+    Mat matT(const ncvslideio::Mat& obj)
     {
         return  Mat(obj.t());
     }
 
-    Mat matInv(const cv::Mat& obj, int type)
+    Mat matInv(const ncvslideio::Mat& obj, int type)
     {
         return  Mat(obj.inv(type));
     }
 
-    void matCopyTo(const cv::Mat& obj, cv::Mat& mat)
+    void matCopyTo(const ncvslideio::Mat& obj, ncvslideio::Mat& mat)
     {
         return obj.copyTo(mat);
     }
 
-    void matCopyTo(const cv::Mat& obj, cv::Mat& mat, const cv::Mat& mask)
+    void matCopyTo(const ncvslideio::Mat& obj, ncvslideio::Mat& mat, const ncvslideio::Mat& mask)
     {
         return obj.copyTo(mat, mask);
     }
 
-    Mat matDiag(const cv::Mat& obj, int d)
+    Mat matDiag(const ncvslideio::Mat& obj, int d)
     {
         return obj.diag(d);
     }
 
-    Mat matDiag(const cv::Mat& obj)
+    Mat matDiag(const ncvslideio::Mat& obj)
     {
         return obj.diag();
     }
 
-    void matSetTo(cv::Mat& obj, const cv::Scalar& s)
+    void matSetTo(ncvslideio::Mat& obj, const ncvslideio::Scalar& s)
     {
         obj.setTo(s);
     }
 
-    void matSetTo(cv::Mat& obj, const cv::Scalar& s, const cv::Mat& mask)
+    void matSetTo(ncvslideio::Mat& obj, const ncvslideio::Scalar& s, const ncvslideio::Mat& mask)
     {
         obj.setTo(s, mask);
     }
 
-    emscripten::val rotatedRectPoints(const cv::RotatedRect& obj)
+    emscripten::val rotatedRectPoints(const ncvslideio::RotatedRect& obj)
     {
-        cv::Point2f points[4];
+        ncvslideio::Point2f points[4];
         obj.points(points);
         emscripten::val pointsArray = emscripten::val::array();
         for (int i = 0; i < 4; i++) {
@@ -271,12 +271,12 @@ namespace binding_utils
         return pointsArray;
     }
 
-    Rect rotatedRectBoundingRect(const cv::RotatedRect& obj)
+    Rect rotatedRectBoundingRect(const ncvslideio::RotatedRect& obj)
     {
         return obj.boundingRect();
     }
 
-    Rect2f rotatedRectBoundingRect2f(const cv::RotatedRect& obj)
+    Rect2f rotatedRectBoundingRect2f(const ncvslideio::RotatedRect& obj)
     {
         return obj.boundingRect2f();
     }
@@ -295,17 +295,17 @@ namespace binding_utils
         Point maxLoc;
     };
 
-    MinMaxLoc minMaxLoc(const cv::Mat& src, const cv::Mat& mask)
+    MinMaxLoc minMaxLoc(const ncvslideio::Mat& src, const ncvslideio::Mat& mask)
     {
         MinMaxLoc result;
-        cv::minMaxLoc(src, &result.minVal, &result.maxVal, &result.minLoc, &result.maxLoc, mask);
+        ncvslideio::minMaxLoc(src, &result.minVal, &result.maxVal, &result.minLoc, &result.maxLoc, mask);
         return result;
     }
 
-    MinMaxLoc minMaxLoc_1(const cv::Mat& src)
+    MinMaxLoc minMaxLoc_1(const ncvslideio::Mat& src)
     {
         MinMaxLoc result;
-        cv::minMaxLoc(src, &result.minVal, &result.maxVal, &result.minLoc, &result.maxLoc);
+        ncvslideio::minMaxLoc(src, &result.minVal, &result.maxVal, &result.minLoc, &result.maxLoc);
         return result;
     }
 
@@ -317,18 +317,18 @@ namespace binding_utils
     };
 
 #ifdef HAVE_OPENCV_IMGPROC
-    Circle minEnclosingCircle(const cv::Mat& points)
+    Circle minEnclosingCircle(const ncvslideio::Mat& points)
     {
         Circle circle;
-        cv::minEnclosingCircle(points, circle.center, circle.radius);
+        ncvslideio::minEnclosingCircle(points, circle.center, circle.radius);
         return circle;
     }
 
-    int floodFill_withRect_helper(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6 = Scalar(), Scalar arg7 = Scalar(), int arg8 = 4)
+    int floodFill_withRect_helper(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6 = Scalar(), Scalar arg7 = Scalar(), int arg8 = 4)
     {
-        cv::Rect rect;
+        ncvslideio::Rect rect;
 
-        int rc = cv::floodFill(arg1, arg2, arg3, arg4, &rect, arg6, arg7, arg8);
+        int rc = ncvslideio::floodFill(arg1, arg2, arg3, arg4, &rect, arg6, arg7, arg8);
 
         arg5.set("x", emscripten::val(rect.x));
         arg5.set("y", emscripten::val(rect.y));
@@ -338,40 +338,40 @@ namespace binding_utils
         return rc;
     }
 
-    int floodFill_wrapper(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6, Scalar arg7, int arg8) {
+    int floodFill_wrapper(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6, Scalar arg7, int arg8) {
         return floodFill_withRect_helper(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
     }
 
-    int floodFill_wrapper_1(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6, Scalar arg7) {
+    int floodFill_wrapper_1(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6, Scalar arg7) {
         return floodFill_withRect_helper(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
-    int floodFill_wrapper_2(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6) {
+    int floodFill_wrapper_2(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5, Scalar arg6) {
         return floodFill_withRect_helper(arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
-    int floodFill_wrapper_3(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5) {
+    int floodFill_wrapper_3(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4, emscripten::val arg5) {
         return floodFill_withRect_helper(arg1, arg2, arg3, arg4, arg5);
     }
 
-    int floodFill_wrapper_4(cv::Mat& arg1, cv::Mat& arg2, Point arg3, Scalar arg4) {
-        return cv::floodFill(arg1, arg2, arg3, arg4);
+    int floodFill_wrapper_4(ncvslideio::Mat& arg1, ncvslideio::Mat& arg2, Point arg3, Scalar arg4) {
+        return ncvslideio::floodFill(arg1, arg2, arg3, arg4);
     }
 #endif
 
 #ifdef HAVE_OPENCV_VIDEO
-    emscripten::val CamShiftWrapper(const cv::Mat& arg1, Rect& arg2, TermCriteria arg3)
+    emscripten::val CamShiftWrapper(const ncvslideio::Mat& arg1, Rect& arg2, TermCriteria arg3)
     {
-        RotatedRect rotatedRect = cv::CamShift(arg1, arg2, arg3);
+        RotatedRect rotatedRect = ncvslideio::CamShift(arg1, arg2, arg3);
         emscripten::val result = emscripten::val::array();
         result.call<void>("push", rotatedRect);
         result.call<void>("push", arg2);
         return result;
     }
 
-    emscripten::val meanShiftWrapper(const cv::Mat& arg1, Rect& arg2, TermCriteria arg3)
+    emscripten::val meanShiftWrapper(const ncvslideio::Mat& arg1, Rect& arg2, TermCriteria arg3)
     {
-        int n = cv::meanShift(arg1, arg2, arg3);
+        int n = ncvslideio::meanShift(arg1, arg2, arg3);
         emscripten::val result = emscripten::val::array();
         result.call<void>("push", n);
         result.call<void>("push", arg2);
@@ -379,12 +379,12 @@ namespace binding_utils
     }
 
 
-    void Tracker_init_wrapper(cv::Tracker& arg0, const cv::Mat& arg1, const Rect& arg2)
+    void Tracker_init_wrapper(ncvslideio::Tracker& arg0, const ncvslideio::Mat& arg1, const Rect& arg2)
     {
         return arg0.init(arg1, arg2);
     }
 
-    emscripten::val Tracker_update_wrapper(cv::Tracker& arg0, const cv::Mat& arg1)
+    emscripten::val Tracker_update_wrapper(ncvslideio::Tracker& arg0, const ncvslideio::Mat& arg1)
     {
         Rect rect;
         bool update = arg0.update(arg1, rect);
@@ -396,65 +396,65 @@ namespace binding_utils
     }
 #endif  // HAVE_OPENCV_VIDEO
 
-    std::string getExceptionMsg(const cv::Exception& e) {
+    std::string getExceptionMsg(const ncvslideio::Exception& e) {
         return e.msg;
     }
 
-    void setExceptionMsg(cv::Exception& e, std::string msg) {
+    void setExceptionMsg(ncvslideio::Exception& e, std::string msg) {
         e.msg = msg;
         return;
     }
 
-    cv::Exception exceptionFromPtr(intptr_t ptr) {
-        return *reinterpret_cast<cv::Exception*>(ptr);
+    ncvslideio::Exception exceptionFromPtr(intptr_t ptr) {
+        return *reinterpret_cast<ncvslideio::Exception*>(ptr);
     }
 
     std::string getBuildInformation() {
-        return cv::getBuildInformation();
+        return ncvslideio::getBuildInformation();
     }
 
 #ifdef TEST_WASM_INTRIN
     void test_hal_intrin_uint8() {
-        cv::hal::test_hal_intrin_uint8();
+        ncvslideio::hal::test_hal_intrin_uint8();
     }
     void test_hal_intrin_int8() {
-        cv::hal::test_hal_intrin_int8();
+        ncvslideio::hal::test_hal_intrin_int8();
     }
     void test_hal_intrin_uint16() {
-        cv::hal::test_hal_intrin_uint16();
+        ncvslideio::hal::test_hal_intrin_uint16();
     }
     void test_hal_intrin_int16() {
-        cv::hal::test_hal_intrin_int16();
+        ncvslideio::hal::test_hal_intrin_int16();
     }
     void test_hal_intrin_uint32() {
-        cv::hal::test_hal_intrin_uint32();
+        ncvslideio::hal::test_hal_intrin_uint32();
     }
     void test_hal_intrin_int32() {
-        cv::hal::test_hal_intrin_int32();
+        ncvslideio::hal::test_hal_intrin_int32();
     }
     void test_hal_intrin_uint64() {
-        cv::hal::test_hal_intrin_uint64();
+        ncvslideio::hal::test_hal_intrin_uint64();
     }
     void test_hal_intrin_int64() {
-        cv::hal::test_hal_intrin_int64();
+        ncvslideio::hal::test_hal_intrin_int64();
     }
     void test_hal_intrin_float32() {
-        cv::hal::test_hal_intrin_float32();
+        ncvslideio::hal::test_hal_intrin_float32();
     }
     void test_hal_intrin_float64() {
-        cv::hal::test_hal_intrin_float64();
+        ncvslideio::hal::test_hal_intrin_float64();
     }
     void test_hal_intrin_all() {
-        cv::hal::test_hal_intrin_uint8();
-        cv::hal::test_hal_intrin_int8();
-        cv::hal::test_hal_intrin_uint16();
-        cv::hal::test_hal_intrin_int16();
-        cv::hal::test_hal_intrin_uint32();
-        cv::hal::test_hal_intrin_int32();
-        cv::hal::test_hal_intrin_uint64();
-        cv::hal::test_hal_intrin_int64();
-        cv::hal::test_hal_intrin_float32();
-        cv::hal::test_hal_intrin_float64();
+        ncvslideio::hal::test_hal_intrin_uint8();
+        ncvslideio::hal::test_hal_intrin_int8();
+        ncvslideio::hal::test_hal_intrin_uint16();
+        ncvslideio::hal::test_hal_intrin_int16();
+        ncvslideio::hal::test_hal_intrin_uint32();
+        ncvslideio::hal::test_hal_intrin_int32();
+        ncvslideio::hal::test_hal_intrin_uint64();
+        ncvslideio::hal::test_hal_intrin_int64();
+        ncvslideio::hal::test_hal_intrin_float32();
+        ncvslideio::hal::test_hal_intrin_float64();
     }
 #endif
 }
@@ -466,15 +466,15 @@ EMSCRIPTEN_BINDINGS(binding_utils)
     register_vector<float>("FloatVector");
     register_vector<double>("DoubleVector");
     register_vector<std::string>("StringVector");
-    register_vector<cv::Point>("PointVector");
-    register_vector<cv::Mat>("MatVector");
-    register_vector<cv::Rect>("RectVector");
-    register_vector<cv::KeyPoint>("KeyPointVector");
-    register_vector<cv::DMatch>("DMatchVector");
-    register_vector<std::vector<cv::DMatch>>("DMatchVectorVector");
+    register_vector<ncvslideio::Point>("PointVector");
+    register_vector<ncvslideio::Mat>("MatVector");
+    register_vector<ncvslideio::Rect>("RectVector");
+    register_vector<ncvslideio::KeyPoint>("KeyPointVector");
+    register_vector<ncvslideio::DMatch>("DMatchVector");
+    register_vector<std::vector<ncvslideio::DMatch>>("DMatchVectorVector");
 
 
-    emscripten::class_<cv::Mat>("Mat")
+    emscripten::class_<ncvslideio::Mat>("Mat")
         .constructor<>()
         .constructor<const Mat&>()
         .constructor<Size, int>()
@@ -489,8 +489,8 @@ EMSCRIPTEN_BINDINGS(binding_utils)
         .class_function("zeros", select_overload<Mat(Size, int)>(&binding_utils::matZeros))
         .class_function("zeros", select_overload<Mat(int, int, int)>(&binding_utils::matZeros))
 
-        .property("rows", &cv::Mat::rows)
-        .property("cols", &cv::Mat::cols)
+        .property("rows", &ncvslideio::Mat::rows)
+        .property("cols", &ncvslideio::Mat::cols)
         .property("matSize", &binding_utils::getMatSize)
         .property("step", &binding_utils::getMatStep)
         .property("data", &binding_utils::matData<unsigned char>)
@@ -501,36 +501,36 @@ EMSCRIPTEN_BINDINGS(binding_utils)
         .property("data32F", &binding_utils::matData<float>)
         .property("data64F", &binding_utils::matData<double>)
 
-        .function("elemSize", select_overload<size_t()const>(&cv::Mat::elemSize))
-        .function("elemSize1", select_overload<size_t()const>(&cv::Mat::elemSize1))
-        .function("channels", select_overload<int()const>(&cv::Mat::channels))
+        .function("elemSize", select_overload<size_t()const>(&ncvslideio::Mat::elemSize))
+        .function("elemSize1", select_overload<size_t()const>(&ncvslideio::Mat::elemSize1))
+        .function("channels", select_overload<int()const>(&ncvslideio::Mat::channels))
         .function("convertTo", select_overload<void(const Mat&, Mat&, int, double, double)>(&binding_utils::convertTo))
         .function("convertTo", select_overload<void(const Mat&, Mat&, int)>(&binding_utils::convertTo))
         .function("convertTo", select_overload<void(const Mat&, Mat&, int, double)>(&binding_utils::convertTo))
-        .function("total", select_overload<size_t()const>(&cv::Mat::total))
-        .function("row", select_overload<Mat(int)const>(&cv::Mat::row))
-        .function("create", select_overload<void(int, int, int)>(&cv::Mat::create))
-        .function("create", select_overload<void(Size, int)>(&cv::Mat::create))
-        .function("rowRange", select_overload<Mat(int, int)const>(&cv::Mat::rowRange))
-        .function("rowRange", select_overload<Mat(const Range&)const>(&cv::Mat::rowRange))
+        .function("total", select_overload<size_t()const>(&ncvslideio::Mat::total))
+        .function("row", select_overload<Mat(int)const>(&ncvslideio::Mat::row))
+        .function("create", select_overload<void(int, int, int)>(&ncvslideio::Mat::create))
+        .function("create", select_overload<void(Size, int)>(&ncvslideio::Mat::create))
+        .function("rowRange", select_overload<Mat(int, int)const>(&ncvslideio::Mat::rowRange))
+        .function("rowRange", select_overload<Mat(const Range&)const>(&ncvslideio::Mat::rowRange))
         .function("copyTo", select_overload<void(const Mat&, Mat&)>(&binding_utils::matCopyTo))
         .function("copyTo", select_overload<void(const Mat&, Mat&, const Mat&)>(&binding_utils::matCopyTo))
-        .function("type", select_overload<int()const>(&cv::Mat::type))
-        .function("empty", select_overload<bool()const>(&cv::Mat::empty))
-        .function("colRange", select_overload<Mat(int, int)const>(&cv::Mat::colRange))
-        .function("colRange", select_overload<Mat(const Range&)const>(&cv::Mat::colRange))
-        .function("step1", select_overload<size_t(int)const>(&cv::Mat::step1))
-        .function("clone", select_overload<Mat()const>(&cv::Mat::clone))
-        .function("depth", select_overload<int()const>(&cv::Mat::depth))
-        .function("col", select_overload<Mat(int)const>(&cv::Mat::col))
+        .function("type", select_overload<int()const>(&ncvslideio::Mat::type))
+        .function("empty", select_overload<bool()const>(&ncvslideio::Mat::empty))
+        .function("colRange", select_overload<Mat(int, int)const>(&ncvslideio::Mat::colRange))
+        .function("colRange", select_overload<Mat(const Range&)const>(&ncvslideio::Mat::colRange))
+        .function("step1", select_overload<size_t(int)const>(&ncvslideio::Mat::step1))
+        .function("clone", select_overload<Mat()const>(&ncvslideio::Mat::clone))
+        .function("depth", select_overload<int()const>(&ncvslideio::Mat::depth))
+        .function("col", select_overload<Mat(int)const>(&ncvslideio::Mat::col))
         .function("dot", select_overload<double(const Mat&, const Mat&)>(&binding_utils::matDot))
         .function("mul", select_overload<Mat(const Mat&, const Mat&, double)>(&binding_utils::matMul))
         .function("inv", select_overload<Mat(const Mat&, int)>(&binding_utils::matInv))
         .function("t", select_overload<Mat(const Mat&)>(&binding_utils::matT))
-        .function("roi", select_overload<Mat(const Rect&)const>(&cv::Mat::operator()))
+        .function("roi", select_overload<Mat(const Rect&)const>(&ncvslideio::Mat::operator()))
         .function("diag", select_overload<Mat(const Mat&, int)>(&binding_utils::matDiag))
         .function("diag", select_overload<Mat(const Mat&)>(&binding_utils::matDiag))
-        .function("isContinuous", select_overload<bool()const>(&cv::Mat::isContinuous))
+        .function("isContinuous", select_overload<bool()const>(&ncvslideio::Mat::isContinuous))
         .function("setTo", select_overload<void(Mat&, const Scalar&)>(&binding_utils::matSetTo))
         .function("setTo", select_overload<void(Mat&, const Scalar&, const Mat&)>(&binding_utils::matSetTo))
         .function("size", select_overload<Size(const Mat&)>(&binding_utils::matSize))
@@ -552,36 +552,36 @@ EMSCRIPTEN_BINDINGS(binding_utils)
         .function("doublePtr", select_overload<val(const Mat&, int)>(&binding_utils::matPtr<double>))
         .function("doublePtr", select_overload<val(const Mat&, int, int)>(&binding_utils::matPtr<double>))
 
-        .function("charAt", select_overload<char&(int)>(&cv::Mat::at<char>))
-        .function("charAt", select_overload<char&(int, int)>(&cv::Mat::at<char>))
-        .function("charAt", select_overload<char&(int, int, int)>(&cv::Mat::at<char>))
-        .function("ucharAt", select_overload<unsigned char&(int)>(&cv::Mat::at<unsigned char>))
-        .function("ucharAt", select_overload<unsigned char&(int, int)>(&cv::Mat::at<unsigned char>))
-        .function("ucharAt", select_overload<unsigned char&(int, int, int)>(&cv::Mat::at<unsigned char>))
-        .function("shortAt", select_overload<short&(int)>(&cv::Mat::at<short>))
-        .function("shortAt", select_overload<short&(int, int)>(&cv::Mat::at<short>))
-        .function("shortAt", select_overload<short&(int, int, int)>(&cv::Mat::at<short>))
-        .function("ushortAt", select_overload<unsigned short&(int)>(&cv::Mat::at<unsigned short>))
-        .function("ushortAt", select_overload<unsigned short&(int, int)>(&cv::Mat::at<unsigned short>))
-        .function("ushortAt", select_overload<unsigned short&(int, int, int)>(&cv::Mat::at<unsigned short>))
-        .function("intAt", select_overload<int&(int)>(&cv::Mat::at<int>) )
-        .function("intAt", select_overload<int&(int, int)>(&cv::Mat::at<int>) )
-        .function("intAt", select_overload<int&(int, int, int)>(&cv::Mat::at<int>) )
-        .function("floatAt", select_overload<float&(int)>(&cv::Mat::at<float>))
-        .function("floatAt", select_overload<float&(int, int)>(&cv::Mat::at<float>))
-        .function("floatAt", select_overload<float&(int, int, int)>(&cv::Mat::at<float>))
-        .function("doubleAt", select_overload<double&(int, int, int)>(&cv::Mat::at<double>))
-        .function("doubleAt", select_overload<double&(int)>(&cv::Mat::at<double>))
-        .function("doubleAt", select_overload<double&(int, int)>(&cv::Mat::at<double>));
+        .function("charAt", select_overload<char&(int)>(&ncvslideio::Mat::at<char>))
+        .function("charAt", select_overload<char&(int, int)>(&ncvslideio::Mat::at<char>))
+        .function("charAt", select_overload<char&(int, int, int)>(&ncvslideio::Mat::at<char>))
+        .function("ucharAt", select_overload<unsigned char&(int)>(&ncvslideio::Mat::at<unsigned char>))
+        .function("ucharAt", select_overload<unsigned char&(int, int)>(&ncvslideio::Mat::at<unsigned char>))
+        .function("ucharAt", select_overload<unsigned char&(int, int, int)>(&ncvslideio::Mat::at<unsigned char>))
+        .function("shortAt", select_overload<short&(int)>(&ncvslideio::Mat::at<short>))
+        .function("shortAt", select_overload<short&(int, int)>(&ncvslideio::Mat::at<short>))
+        .function("shortAt", select_overload<short&(int, int, int)>(&ncvslideio::Mat::at<short>))
+        .function("ushortAt", select_overload<unsigned short&(int)>(&ncvslideio::Mat::at<unsigned short>))
+        .function("ushortAt", select_overload<unsigned short&(int, int)>(&ncvslideio::Mat::at<unsigned short>))
+        .function("ushortAt", select_overload<unsigned short&(int, int, int)>(&ncvslideio::Mat::at<unsigned short>))
+        .function("intAt", select_overload<int&(int)>(&ncvslideio::Mat::at<int>) )
+        .function("intAt", select_overload<int&(int, int)>(&ncvslideio::Mat::at<int>) )
+        .function("intAt", select_overload<int&(int, int, int)>(&ncvslideio::Mat::at<int>) )
+        .function("floatAt", select_overload<float&(int)>(&ncvslideio::Mat::at<float>))
+        .function("floatAt", select_overload<float&(int, int)>(&ncvslideio::Mat::at<float>))
+        .function("floatAt", select_overload<float&(int, int, int)>(&ncvslideio::Mat::at<float>))
+        .function("doubleAt", select_overload<double&(int, int, int)>(&ncvslideio::Mat::at<double>))
+        .function("doubleAt", select_overload<double&(int)>(&ncvslideio::Mat::at<double>))
+        .function("doubleAt", select_overload<double&(int, int)>(&ncvslideio::Mat::at<double>));
 
-    emscripten::value_object<cv::Range>("Range")
-        .field("start", &cv::Range::start)
-        .field("end", &cv::Range::end);
+    emscripten::value_object<ncvslideio::Range>("Range")
+        .field("start", &ncvslideio::Range::start)
+        .field("end", &ncvslideio::Range::end);
 
-    emscripten::value_object<cv::TermCriteria>("TermCriteria")
-        .field("type", &cv::TermCriteria::type)
-        .field("maxCount", &cv::TermCriteria::maxCount)
-        .field("epsilon", &cv::TermCriteria::epsilon);
+    emscripten::value_object<ncvslideio::TermCriteria>("TermCriteria")
+        .field("type", &ncvslideio::TermCriteria::type)
+        .field("maxCount", &ncvslideio::TermCriteria::maxCount)
+        .field("epsilon", &ncvslideio::TermCriteria::epsilon);
 
 #define EMSCRIPTEN_CV_SIZE(type) \
     emscripten::value_object<type>("#type") \
@@ -600,39 +600,39 @@ EMSCRIPTEN_BINDINGS(binding_utils)
     EMSCRIPTEN_CV_POINT(Point2f)
 
 #define EMSCRIPTEN_CV_RECT(type, name) \
-    emscripten::value_object<cv::Rect_<type>> (name) \
-        .field("x", &cv::Rect_<type>::x) \
-        .field("y", &cv::Rect_<type>::y) \
-        .field("width", &cv::Rect_<type>::width) \
-        .field("height", &cv::Rect_<type>::height);
+    emscripten::value_object<ncvslideio::Rect_<type>> (name) \
+        .field("x", &ncvslideio::Rect_<type>::x) \
+        .field("y", &ncvslideio::Rect_<type>::y) \
+        .field("width", &ncvslideio::Rect_<type>::width) \
+        .field("height", &ncvslideio::Rect_<type>::height);
 
     EMSCRIPTEN_CV_RECT(int, "Rect")
     EMSCRIPTEN_CV_RECT(float, "Rect2f")
 
-    emscripten::value_object<cv::RotatedRect>("RotatedRect")
-        .field("center", &cv::RotatedRect::center)
-        .field("size", &cv::RotatedRect::size)
-        .field("angle", &cv::RotatedRect::angle);
+    emscripten::value_object<ncvslideio::RotatedRect>("RotatedRect")
+        .field("center", &ncvslideio::RotatedRect::center)
+        .field("size", &ncvslideio::RotatedRect::size)
+        .field("angle", &ncvslideio::RotatedRect::angle);
 
-    function("rotatedRectPoints", select_overload<emscripten::val(const cv::RotatedRect&)>(&binding_utils::rotatedRectPoints));
-    function("rotatedRectBoundingRect", select_overload<Rect(const cv::RotatedRect&)>(&binding_utils::rotatedRectBoundingRect));
-    function("rotatedRectBoundingRect2f", select_overload<Rect2f(const cv::RotatedRect&)>(&binding_utils::rotatedRectBoundingRect2f));
+    function("rotatedRectPoints", select_overload<emscripten::val(const ncvslideio::RotatedRect&)>(&binding_utils::rotatedRectPoints));
+    function("rotatedRectBoundingRect", select_overload<Rect(const ncvslideio::RotatedRect&)>(&binding_utils::rotatedRectBoundingRect));
+    function("rotatedRectBoundingRect2f", select_overload<Rect2f(const ncvslideio::RotatedRect&)>(&binding_utils::rotatedRectBoundingRect2f));
 
-    emscripten::value_object<cv::KeyPoint>("KeyPoint")
-        .field("angle", &cv::KeyPoint::angle)
-        .field("class_id", &cv::KeyPoint::class_id)
-        .field("octave", &cv::KeyPoint::octave)
-        .field("pt", &cv::KeyPoint::pt)
-        .field("response", &cv::KeyPoint::response)
-        .field("size", &cv::KeyPoint::size);
+    emscripten::value_object<ncvslideio::KeyPoint>("KeyPoint")
+        .field("angle", &ncvslideio::KeyPoint::angle)
+        .field("class_id", &ncvslideio::KeyPoint::class_id)
+        .field("octave", &ncvslideio::KeyPoint::octave)
+        .field("pt", &ncvslideio::KeyPoint::pt)
+        .field("response", &ncvslideio::KeyPoint::response)
+        .field("size", &ncvslideio::KeyPoint::size);
 
-    emscripten::value_object<cv::DMatch>("DMatch")
-        .field("queryIdx", &cv::DMatch::queryIdx)
-        .field("trainIdx", &cv::DMatch::trainIdx)
-        .field("imgIdx", &cv::DMatch::imgIdx)
-        .field("distance", &cv::DMatch::distance);
+    emscripten::value_object<ncvslideio::DMatch>("DMatch")
+        .field("queryIdx", &ncvslideio::DMatch::queryIdx)
+        .field("trainIdx", &ncvslideio::DMatch::trainIdx)
+        .field("imgIdx", &ncvslideio::DMatch::imgIdx)
+        .field("distance", &ncvslideio::DMatch::distance);
 
-    emscripten::value_array<cv::Scalar_<double>> ("Scalar")
+    emscripten::value_array<ncvslideio::Scalar_<double>> ("Scalar")
         .element(emscripten::index<0>())
         .element(emscripten::index<1>())
         .element(emscripten::index<2>())
@@ -648,78 +648,78 @@ EMSCRIPTEN_BINDINGS(binding_utils)
         .field("center", &binding_utils::Circle::center)
         .field("radius", &binding_utils::Circle::radius);
 
-    emscripten::value_object<cv::Moments >("Moments")
-        .field("m00", &cv::Moments::m00)
-        .field("m10", &cv::Moments::m10)
-        .field("m01", &cv::Moments::m01)
-        .field("m20", &cv::Moments::m20)
-        .field("m11", &cv::Moments::m11)
-        .field("m02", &cv::Moments::m02)
-        .field("m30", &cv::Moments::m30)
-        .field("m21", &cv::Moments::m21)
-        .field("m12", &cv::Moments::m12)
-        .field("m03", &cv::Moments::m03)
-        .field("mu20", &cv::Moments::mu20)
-        .field("mu11", &cv::Moments::mu11)
-        .field("mu02", &cv::Moments::mu02)
-        .field("mu30", &cv::Moments::mu30)
-        .field("mu21", &cv::Moments::mu21)
-        .field("mu12", &cv::Moments::mu12)
-        .field("mu03", &cv::Moments::mu03)
-        .field("nu20", &cv::Moments::nu20)
-        .field("nu11", &cv::Moments::nu11)
-        .field("nu02", &cv::Moments::nu02)
-        .field("nu30", &cv::Moments::nu30)
-        .field("nu21", &cv::Moments::nu21)
-        .field("nu12", &cv::Moments::nu12)
-        .field("nu03", &cv::Moments::nu03);
+    emscripten::value_object<ncvslideio::Moments >("Moments")
+        .field("m00", &ncvslideio::Moments::m00)
+        .field("m10", &ncvslideio::Moments::m10)
+        .field("m01", &ncvslideio::Moments::m01)
+        .field("m20", &ncvslideio::Moments::m20)
+        .field("m11", &ncvslideio::Moments::m11)
+        .field("m02", &ncvslideio::Moments::m02)
+        .field("m30", &ncvslideio::Moments::m30)
+        .field("m21", &ncvslideio::Moments::m21)
+        .field("m12", &ncvslideio::Moments::m12)
+        .field("m03", &ncvslideio::Moments::m03)
+        .field("mu20", &ncvslideio::Moments::mu20)
+        .field("mu11", &ncvslideio::Moments::mu11)
+        .field("mu02", &ncvslideio::Moments::mu02)
+        .field("mu30", &ncvslideio::Moments::mu30)
+        .field("mu21", &ncvslideio::Moments::mu21)
+        .field("mu12", &ncvslideio::Moments::mu12)
+        .field("mu03", &ncvslideio::Moments::mu03)
+        .field("nu20", &ncvslideio::Moments::nu20)
+        .field("nu11", &ncvslideio::Moments::nu11)
+        .field("nu02", &ncvslideio::Moments::nu02)
+        .field("nu30", &ncvslideio::Moments::nu30)
+        .field("nu21", &ncvslideio::Moments::nu21)
+        .field("nu12", &ncvslideio::Moments::nu12)
+        .field("nu03", &ncvslideio::Moments::nu03);
 
-    emscripten::value_object<cv::Exception>("Exception")
-        .field("code", &cv::Exception::code)
+    emscripten::value_object<ncvslideio::Exception>("Exception")
+        .field("code", &ncvslideio::Exception::code)
         .field("msg", &binding_utils::getExceptionMsg, &binding_utils::setExceptionMsg);
 
     function("exceptionFromPtr", &binding_utils::exceptionFromPtr, allow_raw_pointers());
 
 #ifdef HAVE_OPENCV_IMGPROC
-    function("minEnclosingCircle", select_overload<binding_utils::Circle(const cv::Mat&)>(&binding_utils::minEnclosingCircle));
+    function("minEnclosingCircle", select_overload<binding_utils::Circle(const ncvslideio::Mat&)>(&binding_utils::minEnclosingCircle));
 
-    function("floodFill", select_overload<int(cv::Mat&, cv::Mat&, Point, Scalar, emscripten::val, Scalar, Scalar, int)>(&binding_utils::floodFill_wrapper));
+    function("floodFill", select_overload<int(ncvslideio::Mat&, ncvslideio::Mat&, Point, Scalar, emscripten::val, Scalar, Scalar, int)>(&binding_utils::floodFill_wrapper));
 
-    function("floodFill", select_overload<int(cv::Mat&, cv::Mat&, Point, Scalar, emscripten::val, Scalar, Scalar)>(&binding_utils::floodFill_wrapper_1));
+    function("floodFill", select_overload<int(ncvslideio::Mat&, ncvslideio::Mat&, Point, Scalar, emscripten::val, Scalar, Scalar)>(&binding_utils::floodFill_wrapper_1));
 
-    function("floodFill", select_overload<int(cv::Mat&, cv::Mat&, Point, Scalar, emscripten::val, Scalar)>(&binding_utils::floodFill_wrapper_2));
+    function("floodFill", select_overload<int(ncvslideio::Mat&, ncvslideio::Mat&, Point, Scalar, emscripten::val, Scalar)>(&binding_utils::floodFill_wrapper_2));
 
-    function("floodFill", select_overload<int(cv::Mat&, cv::Mat&, Point, Scalar, emscripten::val)>(&binding_utils::floodFill_wrapper_3));
+    function("floodFill", select_overload<int(ncvslideio::Mat&, ncvslideio::Mat&, Point, Scalar, emscripten::val)>(&binding_utils::floodFill_wrapper_3));
 
-    function("floodFill", select_overload<int(cv::Mat&, cv::Mat&, Point, Scalar)>(&binding_utils::floodFill_wrapper_4));
+    function("floodFill", select_overload<int(ncvslideio::Mat&, ncvslideio::Mat&, Point, Scalar)>(&binding_utils::floodFill_wrapper_4));
 #endif
 
-    function("minMaxLoc", select_overload<binding_utils::MinMaxLoc(const cv::Mat&, const cv::Mat&)>(&binding_utils::minMaxLoc));
+    function("minMaxLoc", select_overload<binding_utils::MinMaxLoc(const ncvslideio::Mat&, const ncvslideio::Mat&)>(&binding_utils::minMaxLoc));
 
-    function("minMaxLoc", select_overload<binding_utils::MinMaxLoc(const cv::Mat&)>(&binding_utils::minMaxLoc_1));
+    function("minMaxLoc", select_overload<binding_utils::MinMaxLoc(const ncvslideio::Mat&)>(&binding_utils::minMaxLoc_1));
 
 #ifdef HAVE_OPENCV_IMGPROC
-    function("morphologyDefaultBorderValue", &cv::morphologyDefaultBorderValue);
+    function("morphologyDefaultBorderValue", &ncvslideio::morphologyDefaultBorderValue);
 #endif
 
     function("CV_MAT_DEPTH", &binding_utils::cvMatDepth);
 
 #ifdef HAVE_OPENCV_VIDEO
-    function("CamShift", select_overload<emscripten::val(const cv::Mat&, Rect&, TermCriteria)>(&binding_utils::CamShiftWrapper));
+    function("CamShift", select_overload<emscripten::val(const ncvslideio::Mat&, Rect&, TermCriteria)>(&binding_utils::CamShiftWrapper));
 
-    function("meanShift", select_overload<emscripten::val(const cv::Mat&, Rect&, TermCriteria)>(&binding_utils::meanShiftWrapper));
+    function("meanShift", select_overload<emscripten::val(const ncvslideio::Mat&, Rect&, TermCriteria)>(&binding_utils::meanShiftWrapper));
 
-    emscripten::class_<cv::Tracker >("Tracker")
-        .function("init", select_overload<void(cv::Tracker&,const cv::Mat&,const Rect&)>(&binding_utils::Tracker_init_wrapper), pure_virtual())
-        .function("update", select_overload<emscripten::val(cv::Tracker&,const cv::Mat&)>(&binding_utils::Tracker_update_wrapper), pure_virtual());
+    emscripten::class_<ncvslideio::Tracker >("Tracker")
+        .function("init", select_overload<void(ncvslideio::Tracker&,const ncvslideio::Mat&,const Rect&)>(&binding_utils::Tracker_init_wrapper), pure_virtual())
+        .function("update", select_overload<emscripten::val(ncvslideio::Tracker&,const ncvslideio::Mat&)>(&binding_utils::Tracker_update_wrapper), pure_virtual());
 
 #endif
 
     function("getBuildInformation", &binding_utils::getBuildInformation);
 
 #ifdef HAVE_PTHREADS_PF
-    function("parallel_pthreads_set_threads_num", &cv::parallel_pthreads_set_threads_num);
-    function("parallel_pthreads_get_threads_num", &cv::parallel_pthreads_get_threads_num);
+    function("parallel_pthreads_set_threads_num", &ncvslideio::parallel_pthreads_set_threads_num);
+    function("parallel_pthreads_get_threads_num", &ncvslideio::parallel_pthreads_get_threads_num);
 #endif
 
 #ifdef TEST_WASM_INTRIN

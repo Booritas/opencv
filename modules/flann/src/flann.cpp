@@ -44,11 +44,11 @@ namespace cvflann
     void set_distance_type(flann_distance_t distance_type, int /*order*/)
     {
         printf("[WARNING] The cvflann::set_distance_type function is deperecated, "
-            "use cv::flann::GenericIndex<Distance> instead.\n");
+            "use ncvslideio::flann::GenericIndex<Distance> instead.\n");
         if (distance_type != FLANN_DIST_L1 && distance_type != FLANN_DIST_L2) {
             printf("[ERROR] cvflann::set_distance_type only provides backwards compatibility "
             "for the L1 and L2 distances. "
-            "For other distance types you must use cv::flann::GenericIndex<Distance>\n");
+            "For other distance types you must use ncvslideio::flann::GenericIndex<Distance>\n");
         }
         flann_distance_type_ = distance_type;
     }

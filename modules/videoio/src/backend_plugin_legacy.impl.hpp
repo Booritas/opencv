@@ -6,11 +6,11 @@
 // Not a standalone header.
 //
 
-namespace cv { namespace impl { namespace legacy {
+namespace ncvslideio { namespace impl { namespace legacy {
 
 //==================================================================================================
 
-class PluginCapture : public cv::IVideoCapture
+class PluginCapture : public ncvslideio::IVideoCapture
 {
     const OpenCV_VideoIO_Plugin_API_preview* plugin_api_;
     CvPluginCapture capture_;
@@ -72,17 +72,17 @@ public:
     static CvResult CV_API_CALL retrieve_callback(int stream_idx, const unsigned char* data, int step, int width, int height, int cn, void* userdata)
     {
         CV_UNUSED(stream_idx);
-        cv::_OutputArray* dst = static_cast<cv::_OutputArray*>(userdata);
+        ncvslideio::_OutputArray* dst = static_cast<ncvslideio::_OutputArray*>(userdata);
         if (!dst)
             return CV_ERROR_FAIL;
-        cv::Mat(cv::Size(width, height), CV_MAKETYPE(CV_8U, cn), (void*)data, step).copyTo(*dst);
+        ncvslideio::Mat(ncvslideio::Size(width, height), CV_MAKETYPE(CV_8U, cn), (void*)data, step).copyTo(*dst);
         return CV_ERROR_OK;
     }
-    bool retrieveFrame(int idx, cv::OutputArray img) CV_OVERRIDE
+    bool retrieveFrame(int idx, ncvslideio::OutputArray img) CV_OVERRIDE
     {
         bool res = false;
         if (plugin_api_->v0.Capture_retreive)
-            if (CV_ERROR_OK == plugin_api_->v0.Capture_retreive(capture_, idx, retrieve_callback, (cv::_OutputArray*)&img))
+            if (CV_ERROR_OK == plugin_api_->v0.Capture_retreive(capture_, idx, retrieve_callback, (ncvslideio::_OutputArray*)&img))
                 res = true;
         return res;
     }
@@ -99,7 +99,7 @@ public:
 
 //==================================================================================================
 
-class PluginWriter : public cv::IVideoWriter
+class PluginWriter : public ncvslideio::IVideoWriter
 {
     const OpenCV_VideoIO_Plugin_API_preview* plugin_api_;
     CvPluginWriter writer_;
@@ -107,7 +107,7 @@ class PluginWriter : public cv::IVideoWriter
 public:
     static
     Ptr<PluginWriter> create(const OpenCV_VideoIO_Plugin_API_preview* plugin_api,
-            const std::string& filename, int fourcc, double fps, const cv::Size& sz,
+            const std::string& filename, int fourcc, double fps, const ncvslideio::Size& sz,
             const VideoWriterParameters& params)
     {
         CV_Assert(plugin_api);
@@ -178,9 +178,9 @@ public:
     {
         return writer_ != NULL;  // TODO always true
     }
-    void write(cv::InputArray arr) CV_OVERRIDE
+    void write(ncvslideio::InputArray arr) CV_OVERRIDE
     {
-        cv::Mat img = arr.getMat();
+        ncvslideio::Mat img = arr.getMat();
         CV_DbgAssert(writer_);
         CV_Assert(plugin_api_->v0.Writer_write);
         if (CV_ERROR_OK != plugin_api_->v0.Writer_write(writer_, img.data, (int)img.step[0], img.cols, img.rows, img.channels()))

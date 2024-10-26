@@ -32,7 +32,7 @@
 #include "streaming/onevpl/data_provider_defines.hpp"
 #include "streaming/onevpl/utils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -102,10 +102,10 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else // _WIN32
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -119,7 +119,7 @@ struct GAPI_EXPORTS MFPAsyncDemuxDataProvider : public IDataProvider {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // _WIN32
 #endif // HAVE_ONEVPL

@@ -3,7 +3,7 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int, char* [])
 {

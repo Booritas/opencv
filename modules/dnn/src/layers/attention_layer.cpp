@@ -8,7 +8,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 static void packWeight(size_t num_heads, size_t head_size, size_t input_hidden_size,
                        const float *weight_data, size_t hidden_size, std::vector<float> &packed_weight, const FastGemmOpt &opt) {
@@ -293,4 +293,4 @@ Ptr<AttentionLayer> AttentionLayer::create(const LayerParams &params) {
     return makePtr<AttentionLayerImpl>(params);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

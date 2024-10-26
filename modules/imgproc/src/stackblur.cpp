@@ -86,7 +86,7 @@ static unsigned char const stackblurShr[255] =
                 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24
         };
 
-namespace cv{
+namespace ncvslideio{
 
 #if (CV_SIMD || CV_SIMD_SCALABLE)
 template<typename T>

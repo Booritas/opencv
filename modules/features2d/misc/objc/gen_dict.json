@@ -18,7 +18,7 @@
             "(DescriptorMatcher*)create:(NSString*)descriptorMatcherType" : { "create" : {"name" : "create2"} }
         },
         "FlannBasedMatcher": {
-            "FlannBasedMatcher": { "indexParams" : {"defval" : "cv::makePtr<cv::flann::KDTreeIndexParams>()"}, "searchParams" : {"defval" : "cv::makePtr<cv::flann::SearchParams>()"} }
+            "FlannBasedMatcher": { "indexParams" : {"defval" : "ncvslideio::makePtr<ncvslideio::flann::KDTreeIndexParams>()"}, "searchParams" : {"defval" : "ncvslideio::makePtr<ncvslideio::flann::SearchParams>()"} }
         },
         "BFMatcher": {
             "BFMatcher" : { "normType" : {"ctype" : "NormTypes"} },

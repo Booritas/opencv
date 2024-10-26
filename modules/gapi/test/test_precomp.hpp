@@ -30,7 +30,7 @@
 #include <opencv2/gapi/fluid/core.hpp>
 #include <opencv2/gapi/infer.hpp>
 
-namespace cv {
+namespace ncvslideio {
 static inline void countNonZero_is_forbidden_in_tests_use_norm_instead() {}
 }
 #define countNonZero() countNonZero_is_forbidden_in_tests_use_norm_instead()

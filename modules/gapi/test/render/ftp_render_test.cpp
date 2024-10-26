@@ -19,7 +19,7 @@ namespace opencv_test
 {
     static std::string getFontPath()
     {
-        static std::string path = cv::utils::getConfigurationParameterString("OPENCV_TEST_FREETYPE_FONT_PATH",
+        static std::string path = ncvslideio::utils::getConfigurationParameterString("OPENCV_TEST_FREETYPE_FONT_PATH",
                                                                          "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc");
         return path;
     }
@@ -29,7 +29,7 @@ namespace opencv_test
                         size_t lower_char_code,
                         size_t upper_char_code)
     {
-        cv::gapi::wip::draw::FTTextRender ftpr(font);
+        ncvslideio::gapi::wip::draw::FTTextRender ftpr(font);
 
         std::mt19937 gen{std::random_device()()};
         std::uniform_int_distribution<int> dist(lower_char_code, upper_char_code);
@@ -48,12 +48,12 @@ namespace opencv_test
 
             int fh       = dist_size(gen);
             int baseline = 0;
-            cv::Size size;
+            ncvslideio::Size size;
 
             ASSERT_NO_THROW(size = ftpr.getTextSize(text, fh, &baseline));
 
-            cv::Mat bmp(size, CV_8UC1, cv::Scalar::all(0));
-            cv::Point org(0, bmp.rows - baseline);
+            ncvslideio::Mat bmp(size, CV_8UC1, ncvslideio::Scalar::all(0));
+            ncvslideio::Point org(0, bmp.rows - baseline);
 
             ASSERT_NO_THROW(ftpr.putText(bmp, text, org, fh));
         }

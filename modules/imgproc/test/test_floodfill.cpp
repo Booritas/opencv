@@ -208,14 +208,14 @@ void CV_FloodFillTest::run_func()
     }
     else
     {
-        cv::Mat img = cv::cvarrToMat(test_array[INPUT_OUTPUT][0]),
-            mask = test_array[INPUT_OUTPUT][1] ? cv::cvarrToMat(test_array[INPUT_OUTPUT][1]) : cv::Mat();
-        cv::Rect rect;
+        ncvslideio::Mat img = ncvslideio::cvarrToMat(test_array[INPUT_OUTPUT][0]),
+            mask = test_array[INPUT_OUTPUT][1] ? ncvslideio::cvarrToMat(test_array[INPUT_OUTPUT][1]) : ncvslideio::Mat();
+        ncvslideio::Rect rect;
         int area;
         if( mask.empty() )
-            area = cv::floodFill( img, seed_pt, new_val, &rect, l_diff, u_diff, flags );
+            area = ncvslideio::floodFill( img, seed_pt, new_val, &rect, l_diff, u_diff, flags );
         else
-            area = cv::floodFill( img, mask, seed_pt, new_val, &rect, l_diff, u_diff, flags );
+            area = ncvslideio::floodFill( img, mask, seed_pt, new_val, &rect, l_diff, u_diff, flags );
         odata[0] = area;
         odata[1] = rect.x;
         odata[2] = rect.y;

@@ -9,7 +9,7 @@
 #ifdef HAVE_CUDA
 // #include "../cuda4dnn/primitives/matmul.hpp"
 #include "../cuda4dnn/primitives/inner_product.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 #include "../op_cann.hpp"
 #include "../ie_ngraph.hpp"
@@ -18,7 +18,7 @@ using namespace cv::dnn::cuda4dnn;
 #include <opencv2/dnn/shape_utils.hpp>
 #include "cpu_kernels/fast_gemm.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class GemmLayerImpl CV_FINAL : public GemmLayer {
 public:
@@ -101,7 +101,7 @@ public:
         return false;
     }
 
-    // TODO: replace with cv::broadcast() once 1d mat is supported
+    // TODO: replace with ncvslideio::broadcast() once 1d mat is supported
     // FIXME: fix if conditions if 1d mat is supported properly
     void broadcastCWtihBeta(int M, int N, const Mat &C) {
         if (beta != 0 && !C.empty()) {
@@ -228,7 +228,7 @@ public:
         auto C = have_bias && const_C ? blobs[1] : Mat(); // in most cases C is constant
 
         if (!trans_b)
-            cv::transpose(B, B);
+            ncvslideio::transpose(B, B);
         auto flatten_start_axis = normalize_axis(1, wrapper_A->getRank());
         return make_cuda_node<cuda4dnn::InnerProductOp>(preferableTarget, std::move(context->stream), std::move(context->cublas_handle), flatten_start_axis, B, C);
     }
@@ -256,7 +256,7 @@ public:
         // set inputs : x2
         if (const_B) {
             auto B = blobs[0];
-            auto op_const_B = std::make_shared<CannConstOp>(B.data, B.type(), shape(B), cv::format("%s_w", name.c_str()));
+            auto op_const_B = std::make_shared<CannConstOp>(B.data, B.type(), shape(B), ncvslideio::format("%s_w", name.c_str()));
             op->set_input_x2_by_name(*(op_const_B->getOp()), "y");
             op->update_input_desc_x2(*(op_const_B->getTensorDesc()));
         } else {
@@ -274,7 +274,7 @@ public:
             int dim = static_cast<int>(mat_C.total());
             shape_C = std::vector<int>{dim};
         }
-        auto op_const_C = std::make_shared<CannConstOp>(mat_C.data, mat_C.type(), shape_C, cv::format("%s_b", name.c_str()));
+        auto op_const_C = std::make_shared<CannConstOp>(mat_C.data, mat_C.type(), shape_C, ncvslideio::format("%s_b", name.c_str()));
         op->set_input_bias(*(op_const_C->getOp()));
         op->update_input_desc_bias(*(op_const_C->getTensorDesc()));
 
@@ -378,4 +378,4 @@ Ptr<GemmLayer> GemmLayer::create(const LayerParams& params) {
     return makePtr<GemmLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

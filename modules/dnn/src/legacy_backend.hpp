@@ -7,7 +7,7 @@
 
 #include "layer_internals.hpp"  // LayerPin LayerData DataLayer
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 inline namespace detail {
 
@@ -330,10 +330,10 @@ private:
 };  // BlobManager
 
 
-Ptr<BackendWrapper> wrapMat(int backendId, int targetId, cv::Mat& m);
+Ptr<BackendWrapper> wrapMat(int backendId, int targetId, ncvslideio::Mat& m);
 
 
 }  // namespace detail
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 #endif  // __OPENCV_DNN_SRC_LEGACY_BACKEND_HPP__

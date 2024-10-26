@@ -15,7 +15,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 void softmax(Mat &dst, const Mat &src, int axis, int axisBias, int axisStep);
 
@@ -23,6 +23,6 @@ void softmax(Mat &dst, const Mat &src, int axis);
 
 void logSoftmax(Mat &dst, const Mat &src, int axis);
 
-}} // cv::dnn
+}} // ncvslideio::dnn
 
 #endif // OPENCV_DNN_SOFTMAX_HPP

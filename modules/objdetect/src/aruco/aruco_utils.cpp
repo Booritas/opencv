@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "aruco_utils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 using namespace std;
 
@@ -33,7 +33,7 @@ void _copyVector2Output(vector<vector<Point2f> > &vec, OutputArrayOfArrays out, 
         }
     }
     else {
-        CV_Error(cv::Error::StsNotImplemented,
+        CV_Error(ncvslideio::Error::StsNotImplemented,
                  "Only Mat vector, UMat vector, and vector<vector> OutputArrays are currently supported.");
     }
 }

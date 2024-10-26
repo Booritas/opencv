@@ -204,7 +204,7 @@ calib3d = {
         'projectPoints',
         'undistort',
 
-        # cv::fisheye namespace
+        # ncvslideio::fisheye namespace
         'fisheye_initUndistortRectifyMap',
         'fisheye_projectPoints',
     ],

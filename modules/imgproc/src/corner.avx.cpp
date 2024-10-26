@@ -46,7 +46,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include "corner.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 // load three 8-packed float vector and deinterleave

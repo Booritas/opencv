@@ -7,7 +7,7 @@
 #include "opencv2/videoio.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 Ptr<CLAHE> pFilter;
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         "{ o output   | clahe_output.jpg   | specify output save path}"
         "{ h help     |                    | print help message }";
 
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     if (cmd.has("help"))
     {
         cout << "Usage : clahe [options]" << endl;
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
             break;
         else if(key == 'm')
         {
-            ocl::setUseOpenCL(!cv::ocl::useOpenCL());
+            ocl::setUseOpenCL(!ncvslideio::ocl::useOpenCL());
             cout << "Switched to " << (ocl::useOpenCL() ? "OpenCL enabled" : "CPU") << " mode\n";
         }
     }

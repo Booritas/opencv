@@ -7,17 +7,17 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/core/utils/trace.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
-static void process_frame(const cv::UMat& frame)
+static void process_frame(const ncvslideio::UMat& frame)
 {
     CV_TRACE_FUNCTION(); // OpenCV Trace macro for function
 
     imshow("Live", frame);
 
     UMat gray, processed;
-    cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
+    ncvslideio::cvtColor(frame, gray, COLOR_BGR2GRAY);
     Canny(gray, processed, 32, 64, 3);
     imshow("Processed", processed);
 }
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 {
     CV_TRACE_FUNCTION();
 
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{help h ? |     | help message}"
         "{n        | 100 | number of frames to process }"
         "{@video   | 0   | video filename or cameraID }"

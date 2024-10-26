@@ -18,7 +18,7 @@
 #include "streaming/onevpl/onevpl_export.hpp"
 #include "streaming/onevpl/accelerators/surface/base_frame_adapter.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -64,14 +64,14 @@ struct VPLAccelerationPolicy
     virtual size_t get_free_surface_count(pool_key_t key) const = 0;
     virtual size_t get_surface_count(pool_key_t key) const = 0;
 
-    virtual cv::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
+    virtual ncvslideio::MediaFrame::AdapterPtr create_frame_adapter(pool_key_t key,
                                                             const FrameConstructorArgs &params) = 0;
     device_selector_ptr_t device_selector;
 };
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_ACCEL_POLICY_INTERFACE_HPP

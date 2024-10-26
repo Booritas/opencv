@@ -7,7 +7,7 @@
 #include <map>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 //================================================================================
 

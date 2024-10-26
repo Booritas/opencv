@@ -93,7 +93,7 @@ private:
 
 extern PyObject* opencv_error;
 
-void pyRaiseCVException(const cv::Exception &e);
+void pyRaiseCVException(const ncvslideio::Exception &e);
 
 #define ERRWRAP2(expr) \
 try \
@@ -101,7 +101,7 @@ try \
     PyAllowThreads allowThreads; \
     expr; \
 } \
-catch (const cv::Exception &e) \
+catch (const ncvslideio::Exception &e) \
 { \
     pyRaiseCVException(e); \
     return 0; \
@@ -119,7 +119,7 @@ catch (...) \
 
 //======================================================================================================================
 
-extern cv::TLSData<std::vector<std::string> > conversionErrorsTLS;
+extern ncvslideio::TLSData<std::vector<std::string> > conversionErrorsTLS;
 
 inline void pyPrepareArgumentConversionErrorsStorage(std::size_t size)
 {

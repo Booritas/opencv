@@ -24,7 +24,7 @@
 #define OPENCV_ALLOCATOR_STATS_COUNTER_TYPE long long
 #endif
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 #ifdef CV__ALLOCATOR_STATS_LOG
 namespace {
@@ -70,7 +70,7 @@ public:
     void onAllocate(size_t sz)
     {
 #ifdef CV__ALLOCATOR_STATS_LOG
-        CV__ALLOCATOR_STATS_LOG(cv::format("allocate: %lld (curr=%lld)", (long long int)sz, (long long int)curr.load()));
+        CV__ALLOCATOR_STATS_LOG(ncvslideio::format("allocate: %lld (curr=%lld)", (long long int)sz, (long long int)curr.load()));
 #endif
 
         counter_t new_curr = curr.fetch_add((counter_t)sz) + (counter_t)sz;
@@ -90,7 +90,7 @@ public:
     void onFree(size_t sz)
     {
 #ifdef CV__ALLOCATOR_STATS_LOG
-        CV__ALLOCATOR_STATS_LOG(cv::format("free: %lld (curr=%lld)", (long long int)sz, (long long int)curr.load()));
+        CV__ALLOCATOR_STATS_LOG(ncvslideio::format("free: %lld (curr=%lld)", (long long int)sz, (long long int)curr.load()));
 #endif
         curr -= (counter_t)sz;
     }

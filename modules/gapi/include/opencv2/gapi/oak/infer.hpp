@@ -18,7 +18,7 @@
 #include <opencv2/core/cvdef.h>     // GAPI_EXPORTS
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace oak {
 
@@ -50,9 +50,9 @@ public:
     };
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend() const { return cv::gapi::oak::backend(); }
+    GBackend      backend() const { return ncvslideio::gapi::oak::backend(); }
     std::string   tag()     const { return Net::tag(); }
-    cv::util::any params()  const { return { desc }; }
+    ncvslideio::util::any params()  const { return { desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -61,6 +61,6 @@ protected:
 
 } // namespace oak
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_OAK_INFER_HPP

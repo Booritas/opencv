@@ -21,8 +21,8 @@ from tests_common import NewOpenCVTests, intersectionRate
 class peopledetect_test(NewOpenCVTests):
     def test_peopledetect(self):
 
-        hog = cv.HOGDescriptor()
-        hog.setSVMDetector( cv.HOGDescriptor_getDefaultPeopleDetector() )
+        hog = ncvslideio.HOGDescriptor()
+        hog.setSVMDetector( ncvslideio.HOGDescriptor_getDefaultPeopleDetector() )
 
         dirPath = 'samples/data/'
         samples = ['basketball1.png', 'basketball2.png']

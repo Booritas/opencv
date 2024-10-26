@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include "opencv2/core/hal/hal.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 
@@ -57,7 +57,7 @@ static inline bool decomposeCholesky(double* A, size_t astep, int m)
 } // namespace
 
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 void focalsFromHomography(const Mat& H, double &f0, double &f1, bool &f0_ok, bool &f1_ok)
@@ -199,4 +199,4 @@ bool calibrateRotatingCamera(const std::vector<Mat> &Hs, Mat &K)
 }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

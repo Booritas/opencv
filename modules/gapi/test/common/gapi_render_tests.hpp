@@ -16,9 +16,9 @@ namespace opencv_test
 template<typename ...SpecificParams>
 struct RenderParams : public Params<SpecificParams...>
 {
-    using common_params_t = std::tuple<cv::Size>;
+    using common_params_t = std::tuple<ncvslideio::Size>;
     using specific_params_t = std::tuple<SpecificParams...>;
-    using params_t = std::tuple<cv::Size, SpecificParams...>;
+    using params_t = std::tuple<ncvslideio::Size, SpecificParams...>;
 
     static constexpr const size_t common_params_size = std::tuple_size<common_params_t>::value;
     static constexpr const size_t specific_params_size = std::tuple_size<specific_params_t>::value;
@@ -63,36 +63,36 @@ struct RenderTestBase : public TestWithParam<typename RenderParams<SpecificParam
         return AllParams::template getSpecific<I>(this->GetParam());
     }
 
-    cv::Size sz_ = getCommonParam<0>();
+    ncvslideio::Size sz_ = getCommonParam<0>();
 };
 
 template <typename ...Args>
 class RenderBGRTestBase : public RenderTestBase<Args...>
 {
 protected:
-    void Init(const cv::Size& sz)
+    void Init(const ncvslideio::Size& sz)
     {
         MatType type = CV_8UC3;
 
         ref_mat.create(sz, type);
         gapi_mat.create(sz, type);
 
-        cv::randu(ref_mat, cv::Scalar::all(0), cv::Scalar::all(255));
+        ncvslideio::randu(ref_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
         ref_mat.copyTo(gapi_mat);
     }
 
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
 };
 
 template <typename ...Args>
 class RenderNV12TestBase : public RenderTestBase<Args...>
 {
 protected:
-    void Init(const cv::Size& sz)
+    void Init(const ncvslideio::Size& sz)
     {
-        auto create_rand_mats = [](const cv::Size& size, MatType type, cv::Mat& ref_mat, cv::Mat& gapi_mat) {
+        auto create_rand_mats = [](const ncvslideio::Size& size, MatType type, ncvslideio::Mat& ref_mat, ncvslideio::Mat& gapi_mat) {
             ref_mat.create(size, type);
-            cv::randu(ref_mat, cv::Scalar::all(0), cv::Scalar::all(255));
+            ncvslideio::randu(ref_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
             ref_mat.copyTo(gapi_mat);
         };
 
@@ -100,15 +100,15 @@ protected:
         create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat , uv_gapi_mat);
     }
 
-    cv::Mat y_ref_mat, uv_ref_mat, y_gapi_mat, uv_gapi_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat, y_gapi_mat, uv_gapi_mat;
 };
 
-cv::Scalar cvtBGRToYUVC(const cv::Scalar& bgr);
-void drawMosaicRef(const cv::Mat& mat, const cv::Rect &rect, int cellSz);
-void blendImageRef(cv::Mat& mat,
-                   const cv::Point& org,
-                   const cv::Mat& img,
-                   const cv::Mat& alpha);
+ncvslideio::Scalar cvtBGRToYUVC(const ncvslideio::Scalar& bgr);
+void drawMosaicRef(const ncvslideio::Mat& mat, const ncvslideio::Rect &rect, int cellSz);
+void blendImageRef(ncvslideio::Mat& mat,
+                   const ncvslideio::Point& org,
+                   const ncvslideio::Mat& img,
+                   const ncvslideio::Mat& alpha);
 
 #define GAPI_RENDER_TEST_FIXTURE_NV12(Fixture, API, Number, ...)  \
 struct Fixture : public RenderNV12TestBase API {                  \
@@ -133,14 +133,14 @@ struct Fixture : public RenderBGRTestBase API {                  \
     GAPI_RENDER_TEST_FIXTURE_NV12(RenderMFrame##Fixture, GET_VA_ARGS(API), Number, __VA_ARGS__) \
 
 
-using Points = std::vector<cv::Point>;
-GAPI_RENDER_TEST_FIXTURES(TestTexts,     FIXTURE_API(std::string, cv::Point, double, cv::Scalar), 4, text, org, fs, color)
-GAPI_RENDER_TEST_FIXTURES(TestRects,     FIXTURE_API(cv::Rect, cv::Scalar, int),                  3, rect, color, thick)
-GAPI_RENDER_TEST_FIXTURES(TestCircles,   FIXTURE_API(cv::Point, int, cv::Scalar, int),            4, center, radius, color, thick)
-GAPI_RENDER_TEST_FIXTURES(TestLines,     FIXTURE_API(cv::Point, cv::Point, cv::Scalar, int),      4, pt1, pt2, color, thick)
-GAPI_RENDER_TEST_FIXTURES(TestMosaics,   FIXTURE_API(cv::Rect, int, int),                         3, mos, cellsz, decim)
-GAPI_RENDER_TEST_FIXTURES(TestImages,    FIXTURE_API(cv::Rect, cv::Scalar, double),               3, rect, color, transparency)
-GAPI_RENDER_TEST_FIXTURES(TestPolylines, FIXTURE_API(Points, cv::Scalar, int),                    3, points, color, thick)
+using Points = std::vector<ncvslideio::Point>;
+GAPI_RENDER_TEST_FIXTURES(TestTexts,     FIXTURE_API(std::string, ncvslideio::Point, double, ncvslideio::Scalar), 4, text, org, fs, color)
+GAPI_RENDER_TEST_FIXTURES(TestRects,     FIXTURE_API(ncvslideio::Rect, ncvslideio::Scalar, int),                  3, rect, color, thick)
+GAPI_RENDER_TEST_FIXTURES(TestCircles,   FIXTURE_API(ncvslideio::Point, int, ncvslideio::Scalar, int),            4, center, radius, color, thick)
+GAPI_RENDER_TEST_FIXTURES(TestLines,     FIXTURE_API(ncvslideio::Point, ncvslideio::Point, ncvslideio::Scalar, int),      4, pt1, pt2, color, thick)
+GAPI_RENDER_TEST_FIXTURES(TestMosaics,   FIXTURE_API(ncvslideio::Rect, int, int),                         3, mos, cellsz, decim)
+GAPI_RENDER_TEST_FIXTURES(TestImages,    FIXTURE_API(ncvslideio::Rect, ncvslideio::Scalar, double),               3, rect, color, transparency)
+GAPI_RENDER_TEST_FIXTURES(TestPolylines, FIXTURE_API(Points, ncvslideio::Scalar, int),                    3, points, color, thick)
 
 } // opencv_test
 

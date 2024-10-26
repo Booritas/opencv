@@ -3,7 +3,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static const Scalar greenColor(0, 255, 0);
@@ -72,7 +72,7 @@ struct TheApp
         ostringstream buf;
         buf << modeString()
             << " (" << corners.size() / 4 << "/" << decode_type.size() << "/" << decode_info.size() << ") "
-            << cv::format("%.2f", fps) << " FPS ";
+            << ncvslideio::format("%.2f", fps) << " FPS ";
         putText(frame, buf.str(), Point(25, 25), FONT_HERSHEY_COMPLEX, 0.8, redColor, 2);
     }
 

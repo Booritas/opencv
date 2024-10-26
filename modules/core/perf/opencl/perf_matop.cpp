@@ -351,9 +351,9 @@ static Rect getROI(enum ROIType t, const Size& sz)
     CV_Assert(false);
 }
 
-typedef TestBaseWithParam< tuple<cv::Size, MatType, ROIType> > OpenCLBuffer;
+typedef TestBaseWithParam< tuple<ncvslideio::Size, MatType, ROIType> > OpenCLBuffer;
 
-static inline void PrintTo(const tuple<cv::Size, MatType, enum ROIType>& v, std::ostream* os)
+static inline void PrintTo(const tuple<ncvslideio::Size, MatType, enum ROIType>& v, std::ostream* os)
 {
     *os << "(" << get<0>(v) << ", " << typeToString(get<1>(v)) << ", ";
     enum ROIType roiType = get<2>(v);

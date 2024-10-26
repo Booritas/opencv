@@ -21,10 +21,10 @@ int main()
 #else
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
-struct Worker : public cv::ParallelLoopBody
+struct Worker : public ncvslideio::ParallelLoopBody
 {
     void operator()(const Range& r) const CV_OVERRIDE
     {
@@ -43,7 +43,7 @@ int main()
     }
     for (int i = 0; i < num_devices; ++i)
     {
-        cv::cuda::printShortCudaDeviceInfo(i);
+        ncvslideio::cuda::printShortCudaDeviceInfo(i);
 
         DeviceInfo dev_info(i);
         if (!dev_info.isCompatible())
@@ -56,8 +56,8 @@ int main()
     }
 
     // Execute calculation in two threads using two GPUs
-    cv::Range devices(0, 2);
-    cv::parallel_for_(devices, Worker(), devices.size());
+    ncvslideio::Range devices(0, 2);
+    ncvslideio::parallel_for_(devices, Worker(), devices.size());
 
     return 0;
 }
@@ -74,7 +74,7 @@ void Worker::operator()(int device_id) const
     rng.fill(src, RNG::UNIFORM, 0, 1);
 
     // CPU works
-    cv::transpose(src, dst);
+    ncvslideio::transpose(src, dst);
 
     // GPU works
     GpuMat d_src(src);
@@ -82,7 +82,7 @@ void Worker::operator()(int device_id) const
     cuda::transpose(d_src, d_dst);
 
     // Check results
-    bool passed = cv::norm(dst - Mat(d_dst), NORM_INF) < 1e-3;
+    bool passed = ncvslideio::norm(dst - Mat(d_dst), NORM_INF) < 1e-3;
     std::cout << "GPU #" << device_id << " (" << DeviceInfo().name() << "): "
         << (passed ? "passed" : "FAILED") << endl;
 

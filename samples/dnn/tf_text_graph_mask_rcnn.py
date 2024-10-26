@@ -4,7 +4,7 @@ from tf_text_graph_common import *
 
 parser = argparse.ArgumentParser(description='Run this script to get a text graph of '
                                              'Mask-RCNN model from TensorFlow Object Detection API. '
-                                             'Then pass it with .pb file to cv::dnn::readNetFromTensorflow function.')
+                                             'Then pass it with .pb file to ncvslideio::dnn::readNetFromTensorflow function.')
 parser.add_argument('--input', required=True, help='Path to frozen TensorFlow graph.')
 parser.add_argument('--output', required=True, help='Path to output text graph.')
 parser.add_argument('--config', required=True, help='Path to a *.config file is used for training.')

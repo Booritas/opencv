@@ -4,7 +4,7 @@
 
 #include "../../precomp.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 extern const unsigned int conv_implicit_gemm_spv[3565] = {
     0x07230203,0x00010000,0x0008000b,0x00000257,0x00000000,0x00020011,0x00000001,0x0006000b,
@@ -455,4 +455,4 @@ extern const unsigned int conv_implicit_gemm_spv[3565] = {
     0x0000021a,0x000200f8,0x0000021c,0x000100fd,0x00010038
 };
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

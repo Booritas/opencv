@@ -45,7 +45,7 @@ enum { CONV_1D = 0, CONV_2D = 1, CONV_3D = 2 };
 
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 struct FastConv
@@ -139,6 +139,6 @@ void winofunc_AtXA_8x8_F32(const float* inptr, int inpstep,
 
 
 } // namespace dnn
-} // namespace cv
+} // namespace ncvslideio
 
 #endif //OPENCV_FAST_CONVOLUTION_HPP

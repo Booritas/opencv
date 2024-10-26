@@ -15,12 +15,12 @@ PERF_TEST_P_(BroadcastTest, basic)
     int dt_type = get<1>(GetParam());
     std::vector<int> shape_dst = get<2>(GetParam());
 
-    cv::Mat src(static_cast<int>(shape_src.size()), shape_src.data(), dt_type);
-    cv::Mat dst(static_cast<int>(shape_dst.size()), shape_dst.data(), dt_type);
+    ncvslideio::Mat src(static_cast<int>(shape_src.size()), shape_src.data(), dt_type);
+    ncvslideio::Mat dst(static_cast<int>(shape_dst.size()), shape_dst.data(), dt_type);
 
-    cv::randu(src, -1.f, 1.f);
+    ncvslideio::randu(src, -1.f, 1.f);
 
-    TEST_CYCLE() cv::broadcast(src, shape_dst, dst);
+    TEST_CYCLE() ncvslideio::broadcast(src, shape_dst, dst);
 
     SANITY_CHECK_NOTHING();
 }
@@ -39,13 +39,13 @@ PERF_TEST_P_(BinaryOpTest, min)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::min(a, b, c);
+    TEST_CYCLE() ncvslideio::min(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -54,13 +54,13 @@ PERF_TEST_P_(BinaryOpTest, minScalarDouble)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::min(a, b, c);
+    TEST_CYCLE() ncvslideio::min(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -69,9 +69,9 @@ PERF_TEST_P_(BinaryOpTest, minScalarSameType)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -84,7 +84,7 @@ PERF_TEST_P_(BinaryOpTest, minScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::min(a, b, c);
+    TEST_CYCLE() ncvslideio::min(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -93,13 +93,13 @@ PERF_TEST_P_(BinaryOpTest, max)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::max(a, b, c);
+    TEST_CYCLE() ncvslideio::max(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -108,13 +108,13 @@ PERF_TEST_P_(BinaryOpTest, maxScalarDouble)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::max(a, b, c);
+    TEST_CYCLE() ncvslideio::max(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -123,9 +123,9 @@ PERF_TEST_P_(BinaryOpTest, maxScalarSameType)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -138,7 +138,7 @@ PERF_TEST_P_(BinaryOpTest, maxScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::max(a, b, c);
+    TEST_CYCLE() ncvslideio::max(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -147,9 +147,9 @@ PERF_TEST_P_(BinaryOpTest, absdiff)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -160,7 +160,7 @@ PERF_TEST_P_(BinaryOpTest, absdiff)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::absdiff(a, b, c);
+    TEST_CYCLE() ncvslideio::absdiff(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -169,9 +169,9 @@ PERF_TEST_P_(BinaryOpTest, absdiffScalarDouble)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -182,7 +182,7 @@ PERF_TEST_P_(BinaryOpTest, absdiffScalarDouble)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::absdiff(a, b, c);
+    TEST_CYCLE() ncvslideio::absdiff(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -191,9 +191,9 @@ PERF_TEST_P_(BinaryOpTest, absdiffScalarSameType)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -208,7 +208,7 @@ PERF_TEST_P_(BinaryOpTest, absdiffScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::absdiff(a, b, c);
+    TEST_CYCLE() ncvslideio::absdiff(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -217,9 +217,9 @@ PERF_TEST_P_(BinaryOpTest, add)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     declare.time(50);
@@ -231,7 +231,7 @@ PERF_TEST_P_(BinaryOpTest, add)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::add(a, b, c);
+    TEST_CYCLE() ncvslideio::add(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -240,9 +240,9 @@ PERF_TEST_P_(BinaryOpTest, addScalarDouble)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -253,7 +253,7 @@ PERF_TEST_P_(BinaryOpTest, addScalarDouble)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::add(a, b, c);
+    TEST_CYCLE() ncvslideio::add(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -262,9 +262,9 @@ PERF_TEST_P_(BinaryOpTest, addScalarSameType)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -279,7 +279,7 @@ PERF_TEST_P_(BinaryOpTest, addScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::add(a, b, c, noArray(), type);
+    TEST_CYCLE() ncvslideio::add(a, b, c, noArray(), type);
 
     SANITY_CHECK_NOTHING();
 }
@@ -288,9 +288,9 @@ PERF_TEST_P_(BinaryOpTest, subtract)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -301,7 +301,7 @@ PERF_TEST_P_(BinaryOpTest, subtract)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -310,9 +310,9 @@ PERF_TEST_P_(BinaryOpTest, subtractScalarDouble)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -323,7 +323,7 @@ PERF_TEST_P_(BinaryOpTest, subtractScalarDouble)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -332,9 +332,9 @@ PERF_TEST_P_(BinaryOpTest, subtractScalarSameType)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -349,7 +349,7 @@ PERF_TEST_P_(BinaryOpTest, subtractScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c, noArray(), type);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c, noArray(), type);
 
     SANITY_CHECK_NOTHING();
 }
@@ -358,7 +358,7 @@ PERF_TEST_P_(BinaryOpTest, multiply)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a(sz, type), b(sz, type), c(sz, type);
+    ncvslideio::Mat a(sz, type), b(sz, type), c(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     if (CV_MAT_DEPTH(type) == CV_32S)
@@ -368,7 +368,7 @@ PERF_TEST_P_(BinaryOpTest, multiply)
         b /= (2 << 16);
     }
 
-    TEST_CYCLE() cv::multiply(a, b, c);
+    TEST_CYCLE() ncvslideio::multiply(a, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -377,7 +377,7 @@ PERF_TEST_P_(BinaryOpTest, multiplyScale)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a(sz, type), b(sz, type), c(sz, type);
+    ncvslideio::Mat a(sz, type), b(sz, type), c(sz, type);
     double scale = 0.5;
 
     declare.in(a, b, WARMUP_RNG).out(c);
@@ -389,7 +389,7 @@ PERF_TEST_P_(BinaryOpTest, multiplyScale)
         b /= (2 << 16);
     }
 
-    TEST_CYCLE() cv::multiply(a, b, c, scale);
+    TEST_CYCLE() ncvslideio::multiply(a, b, c, scale);
 
     SANITY_CHECK_NOTHING();
 }
@@ -398,12 +398,12 @@ PERF_TEST_P_(BinaryOpTest, divide)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a(sz, type), b(sz, type), c(sz, type);
+    ncvslideio::Mat a(sz, type), b(sz, type), c(sz, type);
     double scale = 0.5;
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::divide(a, b, c, scale);
+    TEST_CYCLE() ncvslideio::divide(a, b, c, scale);
 
     SANITY_CHECK_NOTHING();
 }
@@ -412,12 +412,12 @@ PERF_TEST_P_(BinaryOpTest, reciprocal)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat b(sz, type), c(sz, type);
+    ncvslideio::Mat b(sz, type), c(sz, type);
     double scale = 0.5;
 
     declare.in(b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::divide(scale, b, c);
+    TEST_CYCLE() ncvslideio::divide(scale, b, c);
 
     SANITY_CHECK_NOTHING();
 }
@@ -427,7 +427,7 @@ PERF_TEST_P_(BinaryOpTest, transposeND)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type).reshape(1);
+    ncvslideio::Mat a = Mat(sz, type).reshape(1);
 
     std::vector<int> order(a.dims);
     std::iota(order.begin(), order.end(), 0);
@@ -436,11 +436,11 @@ PERF_TEST_P_(BinaryOpTest, transposeND)
     std::vector<int> new_sz(a.dims);
     std::copy(a.size.p, a.size.p + a.dims, new_sz.begin());
     std::reverse(new_sz.begin(), new_sz.end());
-    cv::Mat b = Mat(new_sz, type);
+    ncvslideio::Mat b = Mat(new_sz, type);
 
     declare.in(a,WARMUP_RNG).out(b);
 
-    TEST_CYCLE() cv::transposeND(a, order, b);
+    TEST_CYCLE() ncvslideio::transposeND(a, order, b);
 
     SANITY_CHECK_NOTHING();
 }
@@ -454,7 +454,7 @@ INSTANTIATE_TEST_CASE_P(/*nothing*/ , BinaryOpTest,
 
 ///////////// Mixed type arithmetics ////////
 
-typedef perf::TestBaseWithParam<std::tuple<cv::Size, std::tuple<perf::MatType, perf::MatType>>> ArithmMixedTest;
+typedef perf::TestBaseWithParam<std::tuple<ncvslideio::Size, std::tuple<perf::MatType, perf::MatType>>> ArithmMixedTest;
 
 PERF_TEST_P_(ArithmMixedTest, add)
 {
@@ -463,9 +463,9 @@ PERF_TEST_P_(ArithmMixedTest, add)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Mat b = Mat(sz, srcType);
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Mat b = Mat(sz, srcType);
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     declare.time(50);
@@ -477,7 +477,7 @@ PERF_TEST_P_(ArithmMixedTest, add)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::add(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::add(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -489,9 +489,9 @@ PERF_TEST_P_(ArithmMixedTest, addScalarDouble)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -502,7 +502,7 @@ PERF_TEST_P_(ArithmMixedTest, addScalarDouble)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::add(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::add(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -514,9 +514,9 @@ PERF_TEST_P_(ArithmMixedTest, addScalarSameType)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -531,7 +531,7 @@ PERF_TEST_P_(ArithmMixedTest, addScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::add(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::add(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -543,9 +543,9 @@ PERF_TEST_P_(ArithmMixedTest, subtract)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Mat b = Mat(sz, srcType);
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Mat b = Mat(sz, srcType);
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -556,7 +556,7 @@ PERF_TEST_P_(ArithmMixedTest, subtract)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -568,9 +568,9 @@ PERF_TEST_P_(ArithmMixedTest, subtractScalarDouble)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -581,7 +581,7 @@ PERF_TEST_P_(ArithmMixedTest, subtractScalarDouble)
         b /= 2;
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -593,9 +593,9 @@ PERF_TEST_P_(ArithmMixedTest, subtractScalarSameType)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a = Mat(sz, srcType);
-    cv::Scalar b;
-    cv::Mat c = Mat(sz, dstType);
+    ncvslideio::Mat a = Mat(sz, srcType);
+    ncvslideio::Scalar b;
+    ncvslideio::Mat c = Mat(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
@@ -610,7 +610,7 @@ PERF_TEST_P_(ArithmMixedTest, subtractScalarSameType)
         b = Scalar(1, 0, -3, 4); // don't pass non-integer values for 32S processing
     }
 
-    TEST_CYCLE() cv::subtract(a, b, c, /* mask */ noArray(), dstType);
+    TEST_CYCLE() ncvslideio::subtract(a, b, c, /* mask */ noArray(), dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -622,7 +622,7 @@ PERF_TEST_P_(ArithmMixedTest, multiply)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
+    ncvslideio::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     if (CV_MAT_DEPTH(dstType) == CV_32S)
@@ -632,7 +632,7 @@ PERF_TEST_P_(ArithmMixedTest, multiply)
         b /= (2 << 16);
     }
 
-    TEST_CYCLE() cv::multiply(a, b, c, /* scale */ 1.0, dstType);
+    TEST_CYCLE() ncvslideio::multiply(a, b, c, /* scale */ 1.0, dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -644,7 +644,7 @@ PERF_TEST_P_(ArithmMixedTest, multiplyScale)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
+    ncvslideio::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
     double scale = 0.5;
 
     declare.in(a, b, WARMUP_RNG).out(c);
@@ -656,7 +656,7 @@ PERF_TEST_P_(ArithmMixedTest, multiplyScale)
         b /= (2 << 16);
     }
 
-    TEST_CYCLE() cv::multiply(a, b, c, scale, dstType);
+    TEST_CYCLE() ncvslideio::multiply(a, b, c, scale, dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -668,12 +668,12 @@ PERF_TEST_P_(ArithmMixedTest, divide)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
+    ncvslideio::Mat a(sz, srcType), b(sz, srcType), c(sz, dstType);
     double scale = 0.5;
 
     declare.in(a, b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::divide(a, b, c, scale, dstType);
+    TEST_CYCLE() ncvslideio::divide(a, b, c, scale, dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -685,12 +685,12 @@ PERF_TEST_P_(ArithmMixedTest, reciprocal)
     int srcType = get<0>(get<1>(p));
     int dstType = get<1>(get<1>(p));
 
-    cv::Mat b(sz, srcType), c(sz, dstType);
+    ncvslideio::Mat b(sz, srcType), c(sz, dstType);
     double scale = 0.5;
 
     declare.in(b, WARMUP_RNG).out(c);
 
-    TEST_CYCLE() cv::divide(scale, b, c, dstType);
+    TEST_CYCLE() ncvslideio::divide(scale, b, c, dstType);
 
     SANITY_CHECK_NOTHING();
 }
@@ -708,18 +708,18 @@ INSTANTIATE_TEST_CASE_P(/*nothing*/ , ArithmMixedTest,
 
 ///////////// Rotate ////////////////////////
 
-typedef perf::TestBaseWithParam<std::tuple<cv::Size, int, perf::MatType>> RotateTest;
+typedef perf::TestBaseWithParam<std::tuple<ncvslideio::Size, int, perf::MatType>> RotateTest;
 
 PERF_TEST_P_(RotateTest, rotate)
 {
     Size sz        = get<0>(GetParam());
     int rotatecode = get<1>(GetParam());
     int type       = get<2>(GetParam());
-    cv::Mat a(sz, type), b(sz, type);
+    ncvslideio::Mat a(sz, type), b(sz, type);
 
     declare.in(a, WARMUP_RNG).out(b);
 
-    TEST_CYCLE() cv::rotate(a, b, rotatecode);
+    TEST_CYCLE() ncvslideio::rotate(a, b, rotatecode);
 
     SANITY_CHECK_NOTHING();
 }
@@ -786,7 +786,7 @@ PERF_TEST_P_(PatchNaNsFixture, PatchNaNs)
         }
     }
 
-    TEST_CYCLE() cv::patchNaNs(src, 17.7);
+    TEST_CYCLE() ncvslideio::patchNaNs(src, 17.7);
 
     SANITY_CHECK(src);
 }

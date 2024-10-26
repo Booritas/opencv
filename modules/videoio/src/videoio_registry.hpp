@@ -7,7 +7,7 @@
 
 #include "backend.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /** Capabilities bitmask */

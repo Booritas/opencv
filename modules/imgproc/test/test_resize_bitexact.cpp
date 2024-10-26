@@ -146,9 +146,9 @@ TEST(Resize_Bitexact, Linear8U)
                 }
             }
 
-            cv::resize(src, dst, Size(dcols, drows), 0, 0, cv::INTER_LINEAR_EXACT);
-            EXPECT_GE(0, cvtest::norm(refdst, dst, cv::NORM_L1))
-                << "Resize " << cn << "-chan mat from " << cols << "x" << rows << " to " << dcols << "x" << drows << " failed with max diff " << cvtest::norm(refdst, dst, cv::NORM_INF);
+            ncvslideio::resize(src, dst, Size(dcols, drows), 0, 0, ncvslideio::INTER_LINEAR_EXACT);
+            EXPECT_GE(0, cvtest::norm(refdst, dst, ncvslideio::NORM_L1))
+                << "Resize " << cn << "-chan mat from " << cols << "x" << rows << " to " << dcols << "x" << drows << " failed with max diff " << cvtest::norm(refdst, dst, ncvslideio::NORM_INF);
         }
 }
 
@@ -164,10 +164,10 @@ public:
 
     double CountDiff(const Mat& src)
     {
-        Mat dstExact; cv::resize(src, dstExact, Size(), 2, 1, INTER_NEAREST_EXACT);
-        Mat dstNonExact; cv::resize(src, dstNonExact, Size(), 2, 1, INTER_NEAREST);
+        Mat dstExact; ncvslideio::resize(src, dstExact, Size(), 2, 1, INTER_NEAREST_EXACT);
+        Mat dstNonExact; ncvslideio::resize(src, dstNonExact, Size(), 2, 1, INTER_NEAREST);
 
-        return cv::norm(dstExact, dstNonExact, NORM_INF);
+        return ncvslideio::norm(dstExact, dstNonExact, NORM_INF);
     }
 };
 
@@ -175,7 +175,7 @@ TEST_P(Resize_Bitexact, Nearest8U_vsNonExact)
 {
     Mat mat_color, mat_gray;
     Mat src_color = imread(cvtest::findDataFile("shared/lena.png"));
-    Mat src_gray; cv::cvtColor(src_color, src_gray, COLOR_BGR2GRAY);
+    Mat src_gray; ncvslideio::cvtColor(src_color, src_gray, COLOR_BGR2GRAY);
     src_color.convertTo(mat_color, depth);
     src_gray.convertTo(mat_gray, depth);
 
@@ -233,10 +233,10 @@ TEST(Resize_Bitexact, Nearest8U)
     {
         Mat calc;
         resize(src[i], calc, dst[i].size(), 0, 0, INTER_NEAREST_EXACT);
-        EXPECT_EQ(cvtest::norm(calc, dst[i], cv::NORM_L1), 0);
+        EXPECT_EQ(cvtest::norm(calc, dst[i], ncvslideio::NORM_L1), 0);
 
         resize(src[i].t(), calc, dst[i].t().size(), 0, 0, INTER_NEAREST_EXACT);
-        EXPECT_EQ(cvtest::norm(calc, dst[i].t(), cv::NORM_L1), 0);
+        EXPECT_EQ(cvtest::norm(calc, dst[i].t(), ncvslideio::NORM_L1), 0);
     }
 }
 

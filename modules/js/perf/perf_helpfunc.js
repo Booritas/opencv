@@ -5,9 +5,9 @@ if(isNodeJs) {
   global.getCvSize = Base.getCvSize;
 }
 
-var fillGradient = function(cv, img, delta=5) {
+var fillGradient = function(ncvslideio, img, delta=5) {
   let ch = img.channels();
-  console.assert(!img.empty() && img.depth() == cv.CV_8U && ch <= 4);
+  console.assert(!img.empty() && img.depth() == ncvslideio.CV_8U && ch <= 4);
 
   let n = 255 / delta;
   for(let r = 0; r < img.rows; ++r) {
@@ -23,14 +23,14 @@ var fillGradient = function(cv, img, delta=5) {
   }
 }
 
-var smoothBorder = function(cv, img, color, delta=5) {
+var smoothBorder = function(ncvslideio, img, color, delta=5) {
   let ch = img.channels();
-  console.assert(!img.empty() && img.depth() == cv.CV_8U && ch <= 4);
+  console.assert(!img.empty() && img.depth() == ncvslideio.CV_8U && ch <= 4);
 
   let n = 100/delta;
   let nR = Math.min(n, (img.rows+1)/2);
   let nC = Math.min(n, (img.cols+1)/2);
-  let s = new cv.Scalar();
+  let s = new ncvslideio.Scalar();
 
   for (let r = 0; r < nR; r++) {
     let k1 = r*delta/100.0, k2 = 1-k1;

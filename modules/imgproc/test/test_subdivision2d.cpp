@@ -23,22 +23,22 @@ TEST(Imgproc_Subdiv2D_getTriangleList, regression_5788)
         { 860, 1117}, { 820, 1135}, { 783, 1141 }, { 751, 1140 }, { 706, 1130},
         { 675, 1102}, { 743, 1094}, { 774, 1094 }, { 809, 1088 }, { 878, 1082}
     };
-    std::vector<cv::Point2f> pts;
-    cv::Rect rect(0, 0, 1500, 2000);
-    cv::Subdiv2D subdiv(rect);
+    std::vector<ncvslideio::Point2f> pts;
+    ncvslideio::Rect rect(0, 0, 1500, 2000);
+    ncvslideio::Subdiv2D subdiv(rect);
     for( int i = 0; i < 65; i++ )
     {
-        cv::Point2f pt(points[i][0], points[i][1]);
+        ncvslideio::Point2f pt(points[i][0], points[i][1]);
         pts.push_back(pt);
     }
 
     subdiv.insert(pts);
 
-    std::vector<cv::Vec6f> triangles;
+    std::vector<ncvslideio::Vec6f> triangles;
     subdiv.getTriangleList(triangles);
 
     int trig_cnt = 0;
-    for( std::vector<cv::Vec6f>::const_iterator it = triangles.begin(); it != triangles.end(); it++, trig_cnt++ )
+    for( std::vector<ncvslideio::Vec6f>::const_iterator it = triangles.begin(); it != triangles.end(); it++, trig_cnt++ )
     {
         EXPECT_TRUE( (0 <= triangles.at(trig_cnt).val[0] && triangles.at(trig_cnt).val[0] < 1500) &&
                      (0 <= triangles.at(trig_cnt).val[1] && triangles.at(trig_cnt).val[1] < 2000) &&

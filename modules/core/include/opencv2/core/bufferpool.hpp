@@ -12,7 +12,7 @@
 #pragma warning(disable: 4265)
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_opencl

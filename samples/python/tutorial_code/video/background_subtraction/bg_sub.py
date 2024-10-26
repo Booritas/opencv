@@ -11,13 +11,13 @@ args = parser.parse_args()
 ## [create]
 #create Background Subtractor objects
 if args.algo == 'MOG2':
-    backSub = cv.createBackgroundSubtractorMOG2()
+    backSub = ncvslideio.createBackgroundSubtractorMOG2()
 else:
-    backSub = cv.createBackgroundSubtractorKNN()
+    backSub = ncvslideio.createBackgroundSubtractorKNN()
 ## [create]
 
 ## [capture]
-capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
+capture = ncvslideio.VideoCapture(ncvslideio.samples.findFileOrKeep(args.input))
 if not capture.isOpened():
     print('Unable to open: ' + args.input)
     exit(0)
@@ -35,17 +35,17 @@ while True:
 
     ## [display_frame_number]
     #get the frame number and write it on the current frame
-    cv.rectangle(frame, (10, 2), (100,20), (255,255,255), -1)
-    cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
-               cv.FONT_HERSHEY_SIMPLEX, 0.5 , (0,0,0))
+    ncvslideio.rectangle(frame, (10, 2), (100,20), (255,255,255), -1)
+    ncvslideio.putText(frame, str(capture.get(ncvslideio.CAP_PROP_POS_FRAMES)), (15, 15),
+               ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5 , (0,0,0))
     ## [display_frame_number]
 
     ## [show]
     #show the current frame and the fg masks
-    cv.imshow('Frame', frame)
-    cv.imshow('FG Mask', fgMask)
+    ncvslideio.imshow('Frame', frame)
+    ncvslideio.imshow('FG Mask', fgMask)
     ## [show]
 
-    keyboard = cv.waitKey(30)
+    keyboard = ncvslideio.waitKey(30)
     if keyboard == 'q' or keyboard == 27:
         break

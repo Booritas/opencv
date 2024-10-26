@@ -26,17 +26,17 @@ parser.add_argument('--annotations', help='Path to COCO annotations file.', requ
 args = parser.parse_args()
 
 ### Get OpenCV predictions #####################################################
-net = cv.dnn.readNetFromTensorflow(cv.samples.findFile(args.weights), cv.samples.findFile(args.prototxt))
-net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
+net = ncvslideio.dnn.readNetFromTensorflow(ncvslideio.samples.findFile(args.weights), ncvslideio.samples.findFile(args.prototxt))
+net.setPreferableBackend(ncvslideio.dnn.DNN_BACKEND_OPENCV)
 
 detections = []
 for imgName in os.listdir(args.images):
-    inp = cv.imread(cv.samples.findFile(os.path.join(args.images, imgName)))
+    inp = ncvslideio.imread(ncvslideio.samples.findFile(os.path.join(args.images, imgName)))
     rows = inp.shape[0]
     cols = inp.shape[1]
-    inp = cv.resize(inp, (300, 300))
+    inp = ncvslideio.resize(inp, (300, 300))
 
-    net.setInput(cv.dnn.blobFromImage(inp, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), True))
+    net.setInput(ncvslideio.dnn.blobFromImage(inp, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), True))
     out = net.forward()
 
     for i in range(out.shape[2]):
@@ -73,10 +73,10 @@ with tf.Session() as sess:
 
     detections = []
     for imgName in os.listdir(args.images):
-        inp = cv.imread(os.path.join(args.images, imgName))
+        inp = ncvslideio.imread(os.path.join(args.images, imgName))
         rows = inp.shape[0]
         cols = inp.shape[1]
-        inp = cv.resize(inp, (300, 300))
+        inp = ncvslideio.resize(inp, (300, 300))
         inp = inp[:, :, [2, 1, 0]]  # BGR2RGB
         out = sess.run([sess.graph.get_tensor_by_name('num_detections:0'),
                         sess.graph.get_tensor_by_name('detection_scores:0'),

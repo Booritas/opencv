@@ -46,7 +46,7 @@
 *                                       Image Alignment (ECC algorithm)                  *
 \****************************************************************************************/
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void image_jacobian_homo_ECC(const Mat& src1, const Mat& src2,
                                     const Mat& src3, const Mat& src4,
@@ -312,7 +312,7 @@ static void update_warping_matrix_ECC (Mat& map_matrix, const Mat& update, const
 /** Function that computes enhanced corelation coefficient from Georgios et.al. 2008
 *   See https://github.com/opencv/opencv/issues/12432
 */
-double cv::computeECC(InputArray templateImage, InputArray inputImage, InputArray inputMask)
+double ncvslideio::computeECC(InputArray templateImage, InputArray inputImage, InputArray inputMask)
 {
     CV_Assert(!templateImage.empty());
     CV_Assert(!inputImage.empty());
@@ -339,9 +339,9 @@ double cv::computeECC(InputArray templateImage, InputArray inputImage, InputArra
         int newType = type == CV_8U ? CV_16S : CV_32S;
         Mat templateMatConverted, inputMatConverted;
         templateMat.convertTo(templateMatConverted, newType);
-        cv::swap(templateMat, templateMatConverted);
+        ncvslideio::swap(templateMat, templateMatConverted);
         inputMat.convertTo(inputMatConverted, newType);
-        cv::swap(inputMat, inputMatConverted);
+        ncvslideio::swap(inputMat, inputMatConverted);
     }
     subtract(templateMat, meanTemplate, templateImage_zeromean, inputMask);
     double templateImagenorm = std::sqrt(active_pixels*sdTemplate.val[0]*sdTemplate.val[0]);
@@ -357,7 +357,7 @@ double cv::computeECC(InputArray templateImage, InputArray inputImage, InputArra
 }
 
 
-double cv::findTransformECC(InputArray templateImage,
+double ncvslideio::findTransformECC(InputArray templateImage,
                             InputArray inputImage,
                             InputOutputArray warpMatrix,
                             int motionType,
@@ -606,7 +606,7 @@ double cv::findTransformECC(InputArray templateImage,
     return rho;
 }
 
-double cv::findTransformECC(InputArray templateImage, InputArray inputImage,
+double ncvslideio::findTransformECC(InputArray templateImage, InputArray inputImage,
     InputOutputArray warpMatrix, int motionType,
     TermCriteria criteria,
     InputArray inputMask)

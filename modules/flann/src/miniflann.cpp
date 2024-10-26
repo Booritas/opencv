@@ -2,17 +2,17 @@
 
 #define MINIFLANN_SUPPORT_EXOTIC_DISTANCE_TYPES 0
 
-static cvflann::IndexParams& get_params(const cv::flann::IndexParams& p)
+static cvflann::IndexParams& get_params(const ncvslideio::flann::IndexParams& p)
 {
     return *(cvflann::IndexParams*)(p.params);
 }
 
-cv::flann::IndexParams::~IndexParams()
+ncvslideio::flann::IndexParams::~IndexParams()
 {
     delete &get_params(*this);
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace flann

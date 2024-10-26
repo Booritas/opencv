@@ -19,7 +19,7 @@
 #include "backends/common/gbackend.hpp"
 #include "compiler/gislandmodel.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 struct FluidUnit
 {
@@ -74,9 +74,9 @@ public:
     std::vector<int> in_buffer_ids;
     std::vector<int> out_buffer_ids;
 
-    cv::GArgs in_args;
-    std::vector<cv::gapi::fluid::View>   in_views; // sparce list of IN views
-    std::vector<cv::gapi::fluid::Buffer*> out_buffers;
+    ncvslideio::GArgs in_args;
+    std::vector<ncvslideio::gapi::fluid::View>   in_views; // sparce list of IN views
+    std::vector<ncvslideio::gapi::fluid::Buffer*> out_buffers;
 
     // FIXME Current assumption is that outputs have EQUAL SIZES
     int m_outputLines = 0;
@@ -128,7 +128,7 @@ class GFluidExecutable final: public GIslandExecutable
 
     std::vector<FluidAgent*> m_script;
 
-    cv::gimpl::Mag m_res;
+    ncvslideio::gimpl::Mag m_res;
 
     std::size_t m_num_int_buffers; // internal buffers counter (m_buffers - num_scratch)
     std::vector<std::size_t> m_scratch_users;
@@ -136,14 +136,14 @@ class GFluidExecutable final: public GIslandExecutable
     std::unordered_map<int, std::size_t> m_id_map; // GMat id -> buffer idx map
     std::map<std::size_t, ade::NodeHandle> m_all_gmat_ids;
 
-    std::vector<cv::gapi::fluid::Buffer> m_buffers;
+    std::vector<ncvslideio::gapi::fluid::Buffer> m_buffers;
 
     void bindInArg (const RcDesc &rc, const GRunArg &arg);
     void bindOutArg(const RcDesc &rc, const GRunArgP &arg);
     void packArg   (GArg &in_arg, const GArg &op_arg);
 
-    void initBufferRois(std::vector<int>& readStarts, std::vector<cv::Rect>& rois, const std::vector<cv::Rect> &out_rois);
-    void makeReshape(const std::vector<cv::Rect>& out_rois);
+    void initBufferRois(std::vector<int>& readStarts, std::vector<ncvslideio::Rect>& rois, const std::vector<ncvslideio::Rect> &out_rois);
+    void makeReshape(const std::vector<ncvslideio::Rect>& out_rois);
     std::size_t total_buffers_size() const;
 
 public:
@@ -161,7 +161,7 @@ public:
 
      GFluidExecutable(const ade::Graph                          &g,
                       const FluidGraphInputData                 &graph_data,
-                      const std::vector<cv::Rect>               &outputRois);
+                      const std::vector<ncvslideio::Rect>               &outputRois);
 };
 
 
@@ -183,7 +183,7 @@ public:
     virtual void run(std::vector<InObj>  &&input_objs,
                      std::vector<OutObj> &&output_objs) override;
 };
-}} // cv::gimpl
+}} // ncvslideio::gimpl
 
 
 #endif // OPENCV_GAPI_FLUID_BACKEND_HPP

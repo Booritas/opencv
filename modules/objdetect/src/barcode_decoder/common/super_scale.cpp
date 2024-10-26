@@ -11,7 +11,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/core/utils/logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 #ifdef HAVE_OPENCV_DNN
@@ -96,4 +96,4 @@ void SuperScale::processImageScale(const Mat &src, Mat &dst, float scale, const 
 #endif // HAVE_OPENCV_DNN
 
 }  // namespace barcode
-}  // namespace cv
+}  // namespace ncvslideio

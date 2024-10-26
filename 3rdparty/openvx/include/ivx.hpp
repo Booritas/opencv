@@ -1718,7 +1718,7 @@ static const vx_enum
     }
 
 #ifdef IVX_USE_OPENCV
-    /// Convert image format (fourcc) to cv::Mat type, throws WrapperError if not possible
+    /// Convert image format (fourcc) to ncvslideio::Mat type, throws WrapperError if not possible
     static int formatToMatType(vx_df_image format, vx_uint32 planeIdx = 0)
     {
         switch (format)
@@ -1742,7 +1742,7 @@ static const vx_enum
         }
     }
 
-    /// Convert cv::Mat type to standard image format (fourcc), throws WrapperError if not possible
+    /// Convert ncvslideio::Mat type to standard image format (fourcc), throws WrapperError if not possible
     static vx_df_image matTypeToFormat(int matType)
     {
         switch (matType)
@@ -1754,12 +1754,12 @@ static const vx_enum
         case CV_16SC1: return VX_DF_IMAGE_S16;
         case CV_32SC1: return VX_DF_IMAGE_S32;
         case CV_32FC1: return VX_DF_IMAGE('F', '0', '3', '2');
-        default:       throw WrapperError(std::string(__func__)+"(): unsupported cv::Mat type");
+        default:       throw WrapperError(std::string(__func__)+"(): unsupported ncvslideio::Mat type");
         }
     }
 
-    /// Initialize cv::Mat shape to fit the specified image plane data
-    void createMatForPlane(cv::Mat& m, vx_uint32 planeIdx)
+    /// Initialize ncvslideio::Mat shape to fit the specified image plane data
+    void createMatForPlane(ncvslideio::Mat& m, vx_uint32 planeIdx)
     {
         vx_df_image f = format();
         //vx_uint32 w = width(), h = height();
@@ -1799,22 +1799,22 @@ static const vx_enum
         }
     }
 
-    /// Create vx_imagepatch_addressing_t corresponding to the provided cv::Mat
-    static vx_imagepatch_addressing_t createAddressing(const cv::Mat& m)
+    /// Create vx_imagepatch_addressing_t corresponding to the provided ncvslideio::Mat
+    static vx_imagepatch_addressing_t createAddressing(const ncvslideio::Mat& m)
     {
         if(m.empty()) throw WrapperError(std::string(__func__)+"(): empty input Mat");
         return createAddressing((vx_uint32)m.cols, (vx_uint32)m.rows, (vx_int32)m.elemSize(), (vx_int32)m.step);
     }
 
-    /// Copy image plane content to the provided cv::Mat (reallocate if needed)
-    void copyTo(vx_uint32 planeIdx, cv::Mat& m)
+    /// Copy image plane content to the provided ncvslideio::Mat (reallocate if needed)
+    void copyTo(vx_uint32 planeIdx, ncvslideio::Mat& m)
     {
         createMatForPlane(m, planeIdx);
         copyTo(planeIdx, createAddressing((vx_uint32)m.cols, (vx_uint32)m.rows, (vx_int32)m.elemSize(), (vx_int32)m.step), m.ptr());
     }
 
-    /// Copy the provided cv::Mat data to the specified image plane
-    void copyFrom(vx_uint32 planeIdx, const cv::Mat& m)
+    /// Copy the provided ncvslideio::Mat data to the specified image plane
+    void copyFrom(vx_uint32 planeIdx, const ncvslideio::Mat& m)
     {
         if(m.empty()) throw WrapperError(std::string(__func__)+"(): empty input Mat");
         // TODO: add sizes consistency checks
@@ -1824,11 +1824,11 @@ static const vx_enum
 
 /*
 private:
-    cv::Mat _mat; // TODO: update copy/move-c-tors, operator=() and swapHandles()
+    ncvslideio::Mat _mat; // TODO: update copy/move-c-tors, operator=() and swapHandles()
 public:
-    static Image createFromHandle(vx_context context, const cv::Mat& mat)
+    static Image createFromHandle(vx_context context, const ncvslideio::Mat& mat)
     {
-        if(mat.empty()) throw WrapperError(std::string(__func__)+"(): empty cv::Mat");
+        if(mat.empty()) throw WrapperError(std::string(__func__)+"(): empty ncvslideio::Mat");
         Image res = createFromHandle(context, matTypeToFormat(mat.type()), createAddressing(mat), mat.data );
         res._mat = mat;
         return res;
@@ -1878,8 +1878,8 @@ public:
     { return _img != 0; }
 
 #ifdef IVX_USE_OPENCV
-    /// Reference to cv::Mat instance wrapping the mapped image data, becomes invalid after unmap()
-    cv::Mat& getMat()
+    /// Reference to ncvslideio::Mat instance wrapping the mapped image data, becomes invalid after unmap()
+    ncvslideio::Mat& getMat()
     { return _m; }
 #endif //IVX_USE_OPENCV
 
@@ -1895,7 +1895,7 @@ protected:
     vx_uint32 _planeIdx;
 #endif
 #ifdef IVX_USE_OPENCV
-    cv::Mat _m;
+    ncvslideio::Mat _m;
 #endif
 
 public:
@@ -1952,7 +1952,7 @@ public:
         vx_df_image format;
         IVX_CHECK_STATUS( vxQueryImage(_img, VX_IMAGE_FORMAT, &format, sizeof(format)) );
         int matType = formatToMatType(format);
-        _m = cv::Mat( vx_int32((vx_int64)_addr.dim_y * VX_SCALE_UNITY / _addr.scale_y),
+        _m = ncvslideio::Mat( vx_int32((vx_int64)_addr.dim_y * VX_SCALE_UNITY / _addr.scale_y),
                       vx_int32((vx_int64)_addr.dim_x * VX_SCALE_UNITY / _addr.scale_x),
                       matType, _data, std::size_t(_addr.stride_y) );
 #endif
@@ -2353,16 +2353,16 @@ public:
     { copyRangeFrom(0, itemCount(), data); }
 
 #ifdef IVX_USE_OPENCV
-    void addItems(cv::InputArray ia)
+    void addItems(ncvslideio::InputArray ia)
     {
-        cv::Mat m = ia.getMat();
+        ncvslideio::Mat m = ia.getMat();
         if (m.type() != enumToCVType(itemType()))
             throw WrapperError(std::string(__func__) + "(): destination type is wrong");
         addItems(m.total(), m.isContinuous() ? m.ptr() : m.clone().ptr(),
                  (vx_size)(m.elemSize()));
     }
 
-    void copyRangeTo(size_t start, size_t end, cv::Mat& m)
+    void copyRangeTo(size_t start, size_t end, ncvslideio::Mat& m)
     {
         if (m.type() != enumToCVType(itemType()))
             throw WrapperError(std::string(__func__) + "(): destination type is wrong");
@@ -2378,7 +2378,7 @@ public:
         }
         else
         {
-            cv::Mat tmp(1, (int)(end - start), enumToCVType(itemType()));
+            ncvslideio::Mat tmp(1, (int)(end - start), enumToCVType(itemType()));
             copyRangeTo(start, end, tmp.ptr());
             if (m.empty())
                 m = tmp;
@@ -2387,10 +2387,10 @@ public:
         }
     }
 
-    void copyTo(cv::Mat& m)
+    void copyTo(ncvslideio::Mat& m)
     { copyRangeTo(0, itemCount(), m); }
 
-    void copyRangeFrom(size_t start, size_t end, const cv::Mat& m)
+    void copyRangeFrom(size_t start, size_t end, const ncvslideio::Mat& m)
     {
         if (!(
                 ((vx_size)(m.rows) == (end - start) && m.cols == 1) ||
@@ -2402,7 +2402,7 @@ public:
         copyFrom(m.isContinuous() ? m.ptr() : m.clone().ptr());
     }
 
-    void copyFrom(const cv::Mat& m)
+    void copyFrom(const ncvslideio::Mat& m)
     { copyRangeFrom(0, itemCount(), m); }
 #endif //IVX_USE_OPENCV
 };
@@ -2526,7 +2526,7 @@ public:
     }
 
 #ifdef IVX_USE_OPENCV
-    void copyTo(cv::Mat& m)
+    void copyTo(ncvslideio::Mat& m)
     {
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): destination type is wrong");
         if (((vx_size)(m.rows) != rows() || (vx_size)(m.cols) != columns()) && !m.empty())
@@ -2538,7 +2538,7 @@ public:
         }
         else
         {
-            cv::Mat tmp((int)rows(), (int)columns(), enumToCVType(dataType()));
+            ncvslideio::Mat tmp((int)rows(), (int)columns(), enumToCVType(dataType()));
             copyTo(tmp.ptr());
             if (m.empty())
                 m = tmp;
@@ -2547,7 +2547,7 @@ public:
         }
     }
 
-    void copyFrom(const cv::Mat& m)
+    void copyFrom(const ncvslideio::Mat& m)
     {
         if ((vx_size)(m.rows) != rows() || (vx_size)(m.cols) != columns()) throw WrapperError(std::string(__func__) + "(): source size is wrong");
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): source type is wrong");
@@ -2688,7 +2688,7 @@ public:
     }
 
 #ifdef IVX_USE_OPENCV
-    void copyTo(cv::Mat& m)
+    void copyTo(ncvslideio::Mat& m)
     {
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): destination type is wrong");
         if (((vx_size)(m.rows) != rows() || (vx_size)(m.cols) != columns()) && !m.empty())
@@ -2700,7 +2700,7 @@ public:
         }
         else
         {
-            cv::Mat tmp((int)rows(), (int)columns(), enumToCVType(dataType()));
+            ncvslideio::Mat tmp((int)rows(), (int)columns(), enumToCVType(dataType()));
             copyTo(tmp.ptr());
             if (m.empty())
                 m = tmp;
@@ -2709,7 +2709,7 @@ public:
         }
     }
 
-    void copyFrom(const cv::Mat& m)
+    void copyFrom(const ncvslideio::Mat& m)
     {
         if ((vx_size)(m.rows) != rows() || (vx_size)(m.cols) != columns()) throw WrapperError(std::string(__func__) + "(): source size is wrong");
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): source type is wrong");
@@ -2841,7 +2841,7 @@ public:
     }
 
 #ifdef IVX_USE_OPENCV
-    void copyTo(cv::Mat& m)
+    void copyTo(ncvslideio::Mat& m)
     {
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): destination type is wrong");
         if (!(
@@ -2856,7 +2856,7 @@ public:
         }
         else
         {
-            cv::Mat tmp(1, (int)count(), enumToCVType(dataType()));
+            ncvslideio::Mat tmp(1, (int)count(), enumToCVType(dataType()));
             copyTo(tmp.ptr());
             if (m.empty())
                 m = tmp;
@@ -2865,7 +2865,7 @@ public:
         }
     }
 
-    void copyFrom(const cv::Mat& m)
+    void copyFrom(const ncvslideio::Mat& m)
     {
         if (!(
                 ((vx_size)(m.rows) == count() && m.cols == 1) ||
@@ -3076,7 +3076,7 @@ public:
     }
 
 #ifdef IVX_USE_OPENCV
-    void copyTo(cv::Mat& m)
+    void copyTo(ncvslideio::Mat& m)
     {
         if (m.type() != enumToCVType(dataType())) throw WrapperError(std::string(__func__) + "(): destination type is wrong");
         if (!(
@@ -3091,7 +3091,7 @@ public:
         }
         else
         {
-            cv::Mat tmp(1, (int)bins(), enumToCVType(dataType()));
+            ncvslideio::Mat tmp(1, (int)bins(), enumToCVType(dataType()));
             copyTo(tmp.ptr());
             if (m.empty())
                 m = tmp;
@@ -3100,7 +3100,7 @@ public:
         }
     }
 
-    void copyFrom(const cv::Mat& m)
+    void copyFrom(const ncvslideio::Mat& m)
     {
         if (!(
             ((vx_size)(m.rows) == bins() && m.cols == 1) ||
@@ -3178,7 +3178,7 @@ public:
     { IVX_CHECK_STATUS(vxGetRemapPoint(ref, dst_x, dst_y, &src_x, &src_y)); }
 
 #ifdef IVX_USE_OPENCV
-    void setMappings(const cv::Mat& map_x, const cv::Mat& map_y)
+    void setMappings(const ncvslideio::Mat& map_x, const ncvslideio::Mat& map_y)
     {
         if (map_x.type() != enumToCVType(srcCoordType()) || map_y.type() != enumToCVType(srcCoordType()))
             throw WrapperError(std::string(__func__) + "(): mapping type is wrong");
@@ -3196,7 +3196,7 @@ public:
         }
     }
 
-    void setMappings(const cv::Mat& map)
+    void setMappings(const ncvslideio::Mat& map)
     {
         if (map.depth() != CV_MAT_DEPTH(enumToCVType(srcCoordType())) || map.channels() != 2)
             throw WrapperError(std::string(__func__) + "(): mapping type is wrong");
@@ -3211,7 +3211,7 @@ public:
         }
     }
 
-    void getMappings(cv::Mat& map_x, cv::Mat& map_y) const
+    void getMappings(ncvslideio::Mat& map_x, ncvslideio::Mat& map_y) const
     {
         if (map_x.type() != enumToCVType(srcCoordType()) || map_y.type() != enumToCVType(srcCoordType()))
             throw WrapperError(std::string(__func__) + "(): mapping type is wrong");
@@ -3221,9 +3221,9 @@ public:
             throw WrapperError(std::string(__func__) + "(): y mapping size is wrong");
 
         if (map_x.empty())
-            map_x = cv::Mat((int)dstHeight(), (int)dstWidth(), enumToCVType(srcCoordType()));
+            map_x = ncvslideio::Mat((int)dstHeight(), (int)dstWidth(), enumToCVType(srcCoordType()));
         if (map_y.empty())
-            map_y = cv::Mat((int)dstHeight(), (int)dstWidth(), enumToCVType(srcCoordType()));
+            map_y = ncvslideio::Mat((int)dstHeight(), (int)dstWidth(), enumToCVType(srcCoordType()));
 
         for (vx_uint32 y = 0; y < dstHeight(); y++)
         {
@@ -3234,7 +3234,7 @@ public:
         }
     }
 
-    void getMappings(cv::Mat& map) const
+    void getMappings(ncvslideio::Mat& map) const
     {
         if (map.depth() != CV_MAT_DEPTH(enumToCVType(srcCoordType())) || map.channels() != 2)
             throw WrapperError(std::string(__func__) + "(): mapping type is wrong");
@@ -3242,7 +3242,7 @@ public:
             throw WrapperError(std::string(__func__) + "(): x mapping size is wrong");
 
         if (map.empty())
-            map = cv::Mat((int)dstHeight(), (int)dstWidth(), CV_MAKETYPE(CV_MAT_DEPTH(enumToCVType(srcCoordType())),2));
+            map = ncvslideio::Mat((int)dstHeight(), (int)dstWidth(), CV_MAKETYPE(CV_MAT_DEPTH(enumToCVType(srcCoordType())),2));
 
         for (vx_uint32 y = 0; y < dstHeight(); y++)
         {

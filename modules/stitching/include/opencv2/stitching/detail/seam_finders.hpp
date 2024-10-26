@@ -47,7 +47,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/opencv_modules.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching_seam
@@ -266,16 +266,16 @@ public:
                           : cost_type_(cost_type), terminal_cost_(terminal_cost),
                             bad_region_penalty_(bad_region_penalty) {}
 
-    void find(const std::vector<cv::UMat> &src, const std::vector<cv::Point> &corners,
-              std::vector<cv::UMat> &masks) CV_OVERRIDE;
+    void find(const std::vector<ncvslideio::UMat> &src, const std::vector<ncvslideio::Point> &corners,
+              std::vector<ncvslideio::UMat> &masks) CV_OVERRIDE;
     void findInPair(size_t first, size_t second, Rect roi) CV_OVERRIDE;
 
 private:
-    void setGraphWeightsColor(const cv::Mat &img1, const cv::Mat &img2, const cv::Mat &mask1, const cv::Mat &mask2,
-                              cv::Mat &terminals, cv::Mat &leftT, cv::Mat &rightT, cv::Mat &top, cv::Mat &bottom);
-    void setGraphWeightsColorGrad(const cv::Mat &img1, const cv::Mat &img2, const cv::Mat &dx1, const cv::Mat &dx2,
-                                  const cv::Mat &dy1, const cv::Mat &dy2, const cv::Mat &mask1, const cv::Mat &mask2,
-                                  cv::Mat &terminals, cv::Mat &leftT, cv::Mat &rightT, cv::Mat &top, cv::Mat &bottom);
+    void setGraphWeightsColor(const ncvslideio::Mat &img1, const ncvslideio::Mat &img2, const ncvslideio::Mat &mask1, const ncvslideio::Mat &mask2,
+                              ncvslideio::Mat &terminals, ncvslideio::Mat &leftT, ncvslideio::Mat &rightT, ncvslideio::Mat &top, ncvslideio::Mat &bottom);
+    void setGraphWeightsColorGrad(const ncvslideio::Mat &img1, const ncvslideio::Mat &img2, const ncvslideio::Mat &dx1, const ncvslideio::Mat &dx2,
+                                  const ncvslideio::Mat &dy1, const ncvslideio::Mat &dy2, const ncvslideio::Mat &mask1, const ncvslideio::Mat &mask2,
+                                  ncvslideio::Mat &terminals, ncvslideio::Mat &leftT, ncvslideio::Mat &rightT, ncvslideio::Mat &top, ncvslideio::Mat &bottom);
     std::vector<Mat> dx_, dy_;
     int cost_type_;
     float terminal_cost_;
@@ -286,6 +286,6 @@ private:
 //! @}
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_SEAM_FINDERS_HPP

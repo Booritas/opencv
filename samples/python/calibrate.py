@@ -77,42 +77,42 @@ def main():
 
     obj_points = []
     img_points = []
-    h, w = cv.imread(img_names[0], cv.IMREAD_GRAYSCALE).shape[:2]  # TODO: use imquery call to retrieve results
+    h, w = ncvslideio.imread(img_names[0], ncvslideio.IMREAD_GRAYSCALE).shape[:2]  # TODO: use imquery call to retrieve results
 
     aruco_dicts = {
-        'DICT_4X4_50': cv.aruco.DICT_4X4_50,
-        'DICT_4X4_100': cv.aruco.DICT_4X4_100,
-        'DICT_4X4_250': cv.aruco.DICT_4X4_250,
-        'DICT_4X4_1000': cv.aruco.DICT_4X4_1000,
-        'DICT_5X5_50': cv.aruco.DICT_5X5_50,
-        'DICT_5X5_100': cv.aruco.DICT_5X5_100,
-        'DICT_5X5_250': cv.aruco.DICT_5X5_250,
-        'DICT_5X5_1000': cv.aruco.DICT_5X5_1000,
-        'DICT_6X6_50': cv.aruco.DICT_6X6_50,
-        'DICT_6X6_100': cv.aruco.DICT_6X6_100,
-        'DICT_6X6_250': cv.aruco.DICT_6X6_250,
-        'DICT_6X6_1000': cv.aruco.DICT_6X6_1000,
-        'DICT_7X7_50': cv.aruco.DICT_7X7_50,
-        'DICT_7X7_100': cv.aruco.DICT_7X7_100,
-        'DICT_7X7_250': cv.aruco.DICT_7X7_250,
-        'DICT_7X7_1000': cv.aruco.DICT_7X7_1000,
-        'DICT_ARUCO_ORIGINAL': cv.aruco.DICT_ARUCO_ORIGINAL,
-        'DICT_APRILTAG_16h5': cv.aruco.DICT_APRILTAG_16h5,
-        'DICT_APRILTAG_25h9': cv.aruco.DICT_APRILTAG_25h9,
-        'DICT_APRILTAG_36h10': cv.aruco.DICT_APRILTAG_36h10,
-        'DICT_APRILTAG_36h11': cv.aruco.DICT_APRILTAG_36h11
+        'DICT_4X4_50': ncvslideio.aruco.DICT_4X4_50,
+        'DICT_4X4_100': ncvslideio.aruco.DICT_4X4_100,
+        'DICT_4X4_250': ncvslideio.aruco.DICT_4X4_250,
+        'DICT_4X4_1000': ncvslideio.aruco.DICT_4X4_1000,
+        'DICT_5X5_50': ncvslideio.aruco.DICT_5X5_50,
+        'DICT_5X5_100': ncvslideio.aruco.DICT_5X5_100,
+        'DICT_5X5_250': ncvslideio.aruco.DICT_5X5_250,
+        'DICT_5X5_1000': ncvslideio.aruco.DICT_5X5_1000,
+        'DICT_6X6_50': ncvslideio.aruco.DICT_6X6_50,
+        'DICT_6X6_100': ncvslideio.aruco.DICT_6X6_100,
+        'DICT_6X6_250': ncvslideio.aruco.DICT_6X6_250,
+        'DICT_6X6_1000': ncvslideio.aruco.DICT_6X6_1000,
+        'DICT_7X7_50': ncvslideio.aruco.DICT_7X7_50,
+        'DICT_7X7_100': ncvslideio.aruco.DICT_7X7_100,
+        'DICT_7X7_250': ncvslideio.aruco.DICT_7X7_250,
+        'DICT_7X7_1000': ncvslideio.aruco.DICT_7X7_1000,
+        'DICT_ARUCO_ORIGINAL': ncvslideio.aruco.DICT_ARUCO_ORIGINAL,
+        'DICT_APRILTAG_16h5': ncvslideio.aruco.DICT_APRILTAG_16h5,
+        'DICT_APRILTAG_25h9': ncvslideio.aruco.DICT_APRILTAG_25h9,
+        'DICT_APRILTAG_36h10': ncvslideio.aruco.DICT_APRILTAG_36h10,
+        'DICT_APRILTAG_36h11': ncvslideio.aruco.DICT_APRILTAG_36h11
     }
 
     if (aruco_dict_name not in set(aruco_dicts.keys())):
         print("unknown aruco dictionary name")
         return None
-    aruco_dict = cv.aruco.getPredefinedDictionary(aruco_dicts[aruco_dict_name])
-    board = cv.aruco.CharucoBoard(pattern_size, square_size, marker_size, aruco_dict)
-    charuco_detector = cv.aruco.CharucoDetector(board)
+    aruco_dict = ncvslideio.aruco.getPredefinedDictionary(aruco_dicts[aruco_dict_name])
+    board = ncvslideio.aruco.CharucoBoard(pattern_size, square_size, marker_size, aruco_dict)
+    charuco_detector = ncvslideio.aruco.CharucoDetector(board)
 
     def processImage(fn):
         print('processing %s... ' % fn)
-        img = cv.imread(fn, cv.IMREAD_GRAYSCALE)
+        img = ncvslideio.imread(fn, ncvslideio.IMREAD_GRAYSCALE)
         if img is None:
             print("Failed to load", fn)
             return None
@@ -121,10 +121,10 @@ def main():
         found = False
         corners = 0
         if pattern_type == 'chessboard':
-            found, corners = cv.findChessboardCorners(img, pattern_size)
+            found, corners = ncvslideio.findChessboardCorners(img, pattern_size)
             if found:
-                term = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_COUNT, 30, 0.1)
-                cv.cornerSubPix(img, corners, (5, 5), (-1, -1), term)
+                term = (ncvslideio.TERM_CRITERIA_EPS + ncvslideio.TERM_CRITERIA_COUNT, 30, 0.1)
+                ncvslideio.cornerSubPix(img, corners, (5, 5), (-1, -1), term)
                 frame_img_points = corners.reshape(-1, 2)
                 frame_obj_points = pattern_points
         elif pattern_type == 'charucoboard':
@@ -139,14 +139,14 @@ def main():
             return None
 
         if debug_dir:
-            vis = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
+            vis = ncvslideio.cvtColor(img, ncvslideio.COLOR_GRAY2BGR)
             if pattern_type == 'chessboard':
-                cv.drawChessboardCorners(vis, pattern_size, corners, found)
+                ncvslideio.drawChessboardCorners(vis, pattern_size, corners, found)
             elif pattern_type == 'charucoboard':
-                cv.aruco.drawDetectedCornersCharuco(vis, corners, charucoIds=charucoIds)
+                ncvslideio.aruco.drawDetectedCornersCharuco(vis, corners, charucoIds=charucoIds)
             _path, name, _ext = splitfn(fn)
             outfile = os.path.join(debug_dir, name + '_board.png')
-            cv.imwrite(outfile, vis)
+            ncvslideio.imwrite(outfile, vis)
 
         if not found:
             print('pattern not found')
@@ -170,7 +170,7 @@ def main():
         obj_points.append(pattern_points)
 
     # calculate camera distortion
-    rms, camera_matrix, dist_coefs, _rvecs, _tvecs = cv.calibrateCamera(obj_points, img_points, (w, h), None, None)
+    rms, camera_matrix, dist_coefs, _rvecs, _tvecs = ncvslideio.calibrateCamera(obj_points, img_points, (w, h), None, None)
 
     print("\nRMS:", rms)
     print("camera matrix:\n", camera_matrix)
@@ -183,21 +183,21 @@ def main():
         img_found = os.path.join(debug_dir, name + '_board.png')
         outfile = os.path.join(debug_dir, name + '_undistorted.png')
 
-        img = cv.imread(img_found)
+        img = ncvslideio.imread(img_found)
         if img is None:
             continue
 
         h, w = img.shape[:2]
-        newcameramtx, roi = cv.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (w, h), 1, (w, h))
+        newcameramtx, roi = ncvslideio.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (w, h), 1, (w, h))
 
-        dst = cv.undistort(img, camera_matrix, dist_coefs, None, newcameramtx)
+        dst = ncvslideio.undistort(img, camera_matrix, dist_coefs, None, newcameramtx)
 
         # crop and save the image
         x, y, w, h = roi
         dst = dst[y:y+h, x:x+w]
 
         print('Undistorted image written to: %s' % outfile)
-        cv.imwrite(outfile, dst)
+        ncvslideio.imwrite(outfile, dst)
 
     print('Done')
 
@@ -205,4 +205,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

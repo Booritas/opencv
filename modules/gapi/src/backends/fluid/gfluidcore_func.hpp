@@ -10,7 +10,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -317,6 +317,6 @@ CONVERTTO_SCALED_SIMD(float, float)
 
 }  // namespace fluid
 }  // namespace gapi
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // !defined(GAPI_STANDALONE)

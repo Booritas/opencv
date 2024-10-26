@@ -8,11 +8,11 @@
 #include "../csl/stream.hpp"
 #include "../csl/span.hpp"
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     void fp32_to_fp16(const csl::Stream& stream, csl::Span<half> output, csl::View<float> input);
     void fp16_to_fp32(const csl::Stream& stream, csl::Span<float> output, csl::View<half> input);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_FP_CONVERSION_HPP */

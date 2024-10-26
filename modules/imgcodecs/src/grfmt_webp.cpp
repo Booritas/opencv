@@ -56,7 +56,7 @@
 
 #include <opencv2/core/utils/configuration.private.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 // 64Mb limit to avoid memory DDOS

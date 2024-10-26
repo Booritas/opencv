@@ -30,12 +30,12 @@
 //#include "../vulkan/vk_functions.hpp"
 //#include "../vulkan/vk_loader.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 extern VkQueue kQueue;
 extern VkDevice kDevice;
-extern cv::Mutex kContextMtx;
+extern ncvslideio::Mutex kContextMtx;
 extern Ptr<CommandPool> cmdPoolPtr;
 extern Ptr<PipelineFactory> pipelineFactoryPtr;
 extern VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
@@ -92,6 +92,6 @@ size_t elementSize(Format fmt);
 int shapeCount(const Shape& shape, int start = -1, int end = -1);
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #endif // OPENCV_DNN_VKCOM_COMMON_HPP

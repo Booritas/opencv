@@ -15,18 +15,18 @@ class SurfacePool;
 class MFXVideoDECODE;
 class MFXVideoENCODE;
 
-class VideoWriter_IntelMFX : public cv::IVideoWriter
+class VideoWriter_IntelMFX : public ncvslideio::IVideoWriter
 {
 public:
-    VideoWriter_IntelMFX(const cv::String &filename, int _fourcc, double fps, cv::Size frameSize, bool isColor);
+    VideoWriter_IntelMFX(const ncvslideio::String &filename, int _fourcc, double fps, ncvslideio::Size frameSize, bool isColor);
     ~VideoWriter_IntelMFX() CV_OVERRIDE;
     double getProperty(int) const CV_OVERRIDE;
     bool setProperty(int, double) CV_OVERRIDE;
     bool isOpened() const CV_OVERRIDE;
-    void write(cv::InputArray input) CV_OVERRIDE;
-    int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_INTEL_MFX; }
+    void write(ncvslideio::InputArray input) CV_OVERRIDE;
+    int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_INTEL_MFX; }
 protected:
-    bool write_one(cv::InputArray bgr);
+    bool write_one(ncvslideio::InputArray bgr);
 
 private:
     VideoWriter_IntelMFX(const VideoWriter_IntelMFX &);
@@ -40,7 +40,7 @@ private:
     MFXVideoENCODE *encoder;
     SurfacePool *pool;
     void *outSurface;
-    cv::Size frameSize;
+    ncvslideio::Size frameSize;
     bool good;
 };
 

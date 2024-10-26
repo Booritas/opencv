@@ -178,8 +178,8 @@ OCL_TEST_P(WarpAffine, Mat)
         Mat M = getRotationMatrix2D(Point2f(src_roi.cols / 2.0f, src_roi.rows / 2.0f),
             rng.uniform(-180.f, 180.f), rng.uniform(0.4f, 2.0f));
 
-        OCL_OFF(cv::warpAffine(src_roi, dst_roi, M, dsize, interpolation));
-        OCL_ON(cv::warpAffine(usrc_roi, udst_roi, M, dsize, interpolation));
+        OCL_OFF(ncvslideio::warpAffine(src_roi, dst_roi, M, dsize, interpolation));
+        OCL_ON(ncvslideio::warpAffine(usrc_roi, udst_roi, M, dsize, interpolation));
 
         Near(eps);
     }
@@ -195,8 +195,8 @@ OCL_TEST_P(WarpAffine, inplace_25853) // when src and dst are the same variable,
         Mat M = getRotationMatrix2D(Point2f(src_roi.cols / 2.0f, src_roi.rows / 2.0f),
             rng.uniform(-180.f, 180.f), rng.uniform(0.4f, 2.0f));
 
-        OCL_OFF(cv::warpAffine(src_roi, src_roi, M, dsize, interpolation));
-        OCL_ON(cv::warpAffine(usrc_roi, usrc_roi, M, dsize, interpolation));
+        OCL_OFF(ncvslideio::warpAffine(src_roi, src_roi, M, dsize, interpolation));
+        OCL_ON(ncvslideio::warpAffine(usrc_roi, usrc_roi, M, dsize, interpolation));
 
         dst_roi = src_roi.clone();
         udst_roi = usrc_roi.clone();
@@ -217,8 +217,8 @@ OCL_TEST_P(WarpAffine_cols4, Mat)
         Mat M = getRotationMatrix2D(Point2f(src_roi.cols / 2.0f, src_roi.rows / 2.0f),
             rng.uniform(-180.f, 180.f), rng.uniform(0.4f, 2.0f));
 
-        OCL_OFF(cv::warpAffine(src_roi, dst_roi, M, dsize, interpolation));
-        OCL_ON(cv::warpAffine(usrc_roi, udst_roi, M, dsize, interpolation));
+        OCL_OFF(ncvslideio::warpAffine(src_roi, dst_roi, M, dsize, interpolation));
+        OCL_ON(ncvslideio::warpAffine(usrc_roi, udst_roi, M, dsize, interpolation));
 
         Near(eps);
     }
@@ -244,8 +244,8 @@ OCL_TEST_P(WarpPerspective, Mat)
             Point2f(rng.uniform(cols2, cols), rng.uniform(rows2, rows)) };
         Mat M = getPerspectiveTransform(sp, dp);
 
-        OCL_OFF(cv::warpPerspective(src_roi, dst_roi, M, dsize, interpolation));
-        OCL_ON(cv::warpPerspective(usrc_roi, udst_roi, M, dsize, interpolation));
+        OCL_OFF(ncvslideio::warpPerspective(src_roi, dst_roi, M, dsize, interpolation));
+        OCL_ON(ncvslideio::warpPerspective(usrc_roi, udst_roi, M, dsize, interpolation));
 
         Near(eps);
     }
@@ -269,8 +269,8 @@ OCL_TEST_P(WarpPerspective_cols4, Mat)
             Point2f(rng.uniform(cols2, cols), rng.uniform(rows2, rows)) };
         Mat M = getPerspectiveTransform(sp, dp);
 
-        OCL_OFF(cv::warpPerspective(src_roi, dst_roi, M, dsize, interpolation));
-        OCL_ON(cv::warpPerspective(usrc_roi, udst_roi, M, dsize, interpolation));
+        OCL_OFF(ncvslideio::warpPerspective(src_roi, dst_roi, M, dsize, interpolation));
+        OCL_ON(ncvslideio::warpPerspective(usrc_roi, udst_roi, M, dsize, interpolation));
 
         Near(eps);
     }
@@ -340,8 +340,8 @@ OCL_TEST_P(Resize, Mat)
 
         random_roi();
 
-        OCL_OFF(cv::resize(src_roi, dst_roi, Size(), fx, fy, interpolation));
-        OCL_ON(cv::resize(usrc_roi, udst_roi, Size(), fx, fy, interpolation));
+        OCL_OFF(ncvslideio::resize(src_roi, dst_roi, Size(), fx, fy, interpolation));
+        OCL_ON(ncvslideio::resize(usrc_roi, udst_roi, Size(), fx, fy, interpolation));
 
         OCL_EXPECT_MAT_N_DIFF(dst, eps);
     }
@@ -354,10 +354,10 @@ OCL_TEST(Resize, overflow_21198)
     src.copyTo(src_u);
 
     Mat dst;
-    cv::resize(src, dst, Size(1024, 1024), 0, 0, INTER_LINEAR);
+    ncvslideio::resize(src, dst, Size(1024, 1024), 0, 0, INTER_LINEAR);
     UMat dst_u;
-    cv::resize(src_u, dst_u, Size(1024, 1024), 0, 0, INTER_LINEAR);
-    EXPECT_LE(cv::norm(dst_u, dst, NORM_INF), 1.0f);
+    ncvslideio::resize(src_u, dst_u, Size(1024, 1024), 0, 0, INTER_LINEAR);
+    EXPECT_LE(ncvslideio::norm(dst_u, dst, NORM_INF), 1.0f);
 }
 
 
@@ -427,8 +427,8 @@ OCL_TEST_P(Remap_INTER_NEAREST, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::remap(src_roi, dst_roi, map1_roi, map2_roi, INTER_NEAREST, borderType, val));
-        OCL_ON(cv::remap(usrc_roi, udst_roi, umap1_roi, umap2_roi, INTER_NEAREST, borderType, val));
+        OCL_OFF(ncvslideio::remap(src_roi, dst_roi, map1_roi, map2_roi, INTER_NEAREST, borderType, val));
+        OCL_ON(ncvslideio::remap(usrc_roi, udst_roi, umap1_roi, umap2_roi, INTER_NEAREST, borderType, val));
 
         OCL_EXPECT_MAT_N_DIFF(dst, 1.0);
     }
@@ -445,14 +445,14 @@ OCL_TEST_P(Remap_INTER_LINEAR, Mat)
         double eps = 2.0;
 #ifdef __ANDROID__
         // TODO investigate accuracy
-        if (cv::ocl::Device::getDefault().isNVidia())
+        if (ncvslideio::ocl::Device::getDefault().isNVidia())
             eps = 8.0;
 #elif defined(__arm__)
         eps = 8.0;
 #endif
 
-        OCL_OFF(cv::remap(src_roi, dst_roi, map1_roi, map2_roi, INTER_LINEAR, borderType, val));
-        OCL_ON(cv::remap(usrc_roi, udst_roi, umap1_roi, umap2_roi, INTER_LINEAR, borderType, val));
+        OCL_OFF(ncvslideio::remap(src_roi, dst_roi, map1_roi, map2_roi, INTER_LINEAR, borderType, val));
+        OCL_ON(ncvslideio::remap(usrc_roi, udst_roi, umap1_roi, umap2_roi, INTER_LINEAR, borderType, val));
 
         OCL_EXPECT_MAT_N_DIFF(dst, eps);
     }
@@ -492,25 +492,25 @@ PARAM_TEST_CASE(RemapRelative, MatDepth, Channels, Interpolation, BorderType, bo
         useFixedPoint = GET_PARAM(4);
 
         const int nChannels = CV_MAT_CN(srcType);
-        const cv::Size size(127, 61);
-        cv::Mat data64FC1(1, size.area()*nChannels, CV_64FC1);
+        const ncvslideio::Size size(127, 61);
+        ncvslideio::Mat data64FC1(1, size.area()*nChannels, CV_64FC1);
         data64FC1.forEach<double>([&](double& pixel, const int* position) {pixel = static_cast<double>(position[1]);});
 
-        cv::Mat src;
+        ncvslideio::Mat src;
         data64FC1.reshape(nChannels, size.height).convertTo(src, srcType);
 
-        cv::Mat mapRelativeX32F(size, CV_32FC1);
-        mapRelativeX32F.setTo(cv::Scalar::all(-0.33));
+        ncvslideio::Mat mapRelativeX32F(size, CV_32FC1);
+        mapRelativeX32F.setTo(ncvslideio::Scalar::all(-0.33));
 
-        cv::Mat mapRelativeY32F(size, CV_32FC1);
-        mapRelativeY32F.setTo(cv::Scalar::all(-0.33));
+        ncvslideio::Mat mapRelativeY32F(size, CV_32FC1);
+        mapRelativeY32F.setTo(ncvslideio::Scalar::all(-0.33));
 
-        cv::Mat mapAbsoluteX32F = mapRelativeX32F.clone();
+        ncvslideio::Mat mapAbsoluteX32F = mapRelativeX32F.clone();
         mapAbsoluteX32F.forEach<float>([&](float& pixel, const int* position) {
             pixel += static_cast<float>(position[1]);
             });
 
-        cv::Mat mapAbsoluteY32F = mapRelativeY32F.clone();
+        ncvslideio::Mat mapAbsoluteY32F = mapRelativeY32F.clone();
         mapAbsoluteY32F.forEach<float>([&](float& pixel, const int* position) {
             pixel += static_cast<float>(position[0]);
             });
@@ -523,31 +523,31 @@ PARAM_TEST_CASE(RemapRelative, MatDepth, Channels, Interpolation, BorderType, bo
 
         if (useFixedPoint)
         {
-            const bool nninterpolation = (interpolation == cv::INTER_NEAREST) || (interpolation == cv::INTER_NEAREST_EXACT);
-            OCL_ON(cv::convertMaps(uMapAbsoluteX32F, uMapAbsoluteY32F, uMapAbsoluteX16S, uMapAbsoluteY16S, CV_16SC2, nninterpolation));
-            OCL_ON(cv::convertMaps(uMapRelativeX32F, uMapRelativeY32F, uMapRelativeX16S, uMapRelativeY16S, CV_16SC2, nninterpolation));
+            const bool nninterpolation = (interpolation == ncvslideio::INTER_NEAREST) || (interpolation == ncvslideio::INTER_NEAREST_EXACT);
+            OCL_ON(ncvslideio::convertMaps(uMapAbsoluteX32F, uMapAbsoluteY32F, uMapAbsoluteX16S, uMapAbsoluteY16S, CV_16SC2, nninterpolation));
+            OCL_ON(ncvslideio::convertMaps(uMapRelativeX32F, uMapRelativeY32F, uMapRelativeX16S, uMapRelativeY16S, CV_16SC2, nninterpolation));
         }
     }
 };
 
 OCL_TEST_P(RemapRelative, Mat)
 {
-    cv::UMat uDstAbsolute;
-    cv::UMat uDstRelative;
+    ncvslideio::UMat uDstAbsolute;
+    ncvslideio::UMat uDstRelative;
     if (useFixedPoint)
     {
-        OCL_ON(cv::remap(uSrc, uDstAbsolute, uMapAbsoluteX16S, uMapAbsoluteY16S, interpolation, borderType));
-        OCL_ON(cv::remap(uSrc, uDstRelative, uMapRelativeX16S, uMapRelativeY16S, interpolation | WARP_RELATIVE_MAP, borderType));
+        OCL_ON(ncvslideio::remap(uSrc, uDstAbsolute, uMapAbsoluteX16S, uMapAbsoluteY16S, interpolation, borderType));
+        OCL_ON(ncvslideio::remap(uSrc, uDstRelative, uMapRelativeX16S, uMapRelativeY16S, interpolation | WARP_RELATIVE_MAP, borderType));
     }
     else
     {
-        OCL_ON(cv::remap(uSrc, uDstAbsolute, uMapAbsoluteX32F, uMapAbsoluteY32F, interpolation, borderType));
-        OCL_ON(cv::remap(uSrc, uDstRelative, uMapRelativeX32F, uMapRelativeY32F, interpolation | WARP_RELATIVE_MAP, borderType));
+        OCL_ON(ncvslideio::remap(uSrc, uDstAbsolute, uMapAbsoluteX32F, uMapAbsoluteY32F, interpolation, borderType));
+        OCL_ON(ncvslideio::remap(uSrc, uDstRelative, uMapRelativeX32F, uMapRelativeY32F, interpolation | WARP_RELATIVE_MAP, borderType));
     }
 
-    cv::Mat dstAbsolute;
+    ncvslideio::Mat dstAbsolute;
     OCL_ON(uDstAbsolute.copyTo(dstAbsolute));
-    cv::Mat dstRelative;
+    ncvslideio::Mat dstRelative;
     OCL_ON(uDstRelative.copyTo(dstRelative));
 
     EXPECT_MAT_NEAR(dstAbsolute, dstRelative, dstAbsolute.depth() == CV_32F ? 1e-3 : 1.0);

@@ -12,7 +12,7 @@ typedef perf::TestBaseWithParam<Img_BlockSize_ApertureSize_k_BorderType_t> Img_B
 
 PERF_TEST_P(Img_BlockSize_ApertureSize_k_BorderType, cornerHarris,
             testing::Combine(
-                testing::Values( "stitching/a1.png", "cv/shared/pic5.png"),
+                testing::Values( "stitching/a1.png", "ncvslideio/shared/pic5.png"),
                 testing::Values( 3, 5 ),
                 testing::Values( 3, 5 ),
                 testing::Values( 0.04, 0.1 ),
@@ -41,7 +41,7 @@ typedef perf::TestBaseWithParam<Img_BlockSize_ApertureSize_BorderType_t> Img_Blo
 
 PERF_TEST_P(Img_BlockSize_ApertureSize_BorderType, cornerEigenValsAndVecs,
             testing::Combine(
-                testing::Values( "stitching/a1.png", "cv/shared/pic5.png"),
+                testing::Values( "stitching/a1.png", "ncvslideio/shared/pic5.png"),
                 testing::Values( 3, 5 ),
                 testing::Values( 3, 5 ),
                 BorderType::all()
@@ -68,7 +68,7 @@ PERF_TEST_P(Img_BlockSize_ApertureSize_BorderType, cornerEigenValsAndVecs,
 
 PERF_TEST_P(Img_BlockSize_ApertureSize_BorderType, cornerMinEigenVal,
             testing::Combine(
-                testing::Values( "stitching/a1.png", "cv/shared/pic5.png"),
+                testing::Values( "stitching/a1.png", "ncvslideio/shared/pic5.png"),
                 testing::Values( 3, 5 ),
                 testing::Values( 3, 5 ),
                 BorderType::all()

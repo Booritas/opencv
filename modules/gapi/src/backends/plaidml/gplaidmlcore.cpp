@@ -40,22 +40,22 @@ GAPI_PLAIDML_KERNEL(Name, API) \
     }; \
 }; \
 
-GAPI_PLAIDML_LOGICAL_OP(GPlaidMLAnd, cv::gapi::core::GAnd, &);
-GAPI_PLAIDML_LOGICAL_OP(GPlaidMLXor, cv::gapi::core::GXor, ^);
-GAPI_PLAIDML_LOGICAL_OP(GPlaidMLOr , cv::gapi::core::GOr , |)
+GAPI_PLAIDML_LOGICAL_OP(GPlaidMLAnd, ncvslideio::gapi::core::GAnd, &);
+GAPI_PLAIDML_LOGICAL_OP(GPlaidMLXor, ncvslideio::gapi::core::GXor, ^);
+GAPI_PLAIDML_LOGICAL_OP(GPlaidMLOr , ncvslideio::gapi::core::GOr , |)
 
-GAPI_PLAIDML_ARITHMETIC_OP(GPlaidMLAdd, cv::gapi::core::GAdd, +);
-GAPI_PLAIDML_ARITHMETIC_OP(GPlaidMLSub, cv::gapi::core::GSub, -);
+GAPI_PLAIDML_ARITHMETIC_OP(GPlaidMLAdd, ncvslideio::gapi::core::GAdd, +);
+GAPI_PLAIDML_ARITHMETIC_OP(GPlaidMLSub, ncvslideio::gapi::core::GSub, -);
 
-cv::GKernelPackage cv::gapi::core::plaidml::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::core::plaidml::kernels()
 {
-    static auto pkg = cv::gapi::kernels<GPlaidMLAdd, GPlaidMLSub, GPlaidMLAnd, GPlaidMLXor, GPlaidMLOr>();
+    static auto pkg = ncvslideio::gapi::kernels<GPlaidMLAdd, GPlaidMLSub, GPlaidMLAnd, GPlaidMLXor, GPlaidMLOr>();
     return pkg;
 }
 
 #else // HAVE_PLAIDML
 
-cv::GKernelPackage cv::gapi::core::plaidml::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::core::plaidml::kernels()
 {
     // Still provide this symbol to avoid linking issues
     util::throw_error(std::runtime_error("G-API has been compiled without PlaidML2 support"));

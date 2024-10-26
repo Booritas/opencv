@@ -36,40 +36,40 @@ namespace calib
 
     struct calibrationData
     {
-        cv::Mat cameraMatrix;
-        cv::Mat distCoeffs;
-        cv::Mat stdDeviations;
-        cv::Mat perViewErrors;
-        std::vector<cv::Mat> rvecs;
-        std::vector<cv::Mat> tvecs;
+        ncvslideio::Mat cameraMatrix;
+        ncvslideio::Mat distCoeffs;
+        ncvslideio::Mat stdDeviations;
+        ncvslideio::Mat perViewErrors;
+        std::vector<ncvslideio::Mat> rvecs;
+        std::vector<ncvslideio::Mat> tvecs;
         double totalAvgErr;
-        cv::Size imageSize;
+        ncvslideio::Size imageSize;
 
-        std::vector<cv::Mat> allFrames;
+        std::vector<ncvslideio::Mat> allFrames;
 
-        std::vector<std::vector<cv::Point2f> > imagePoints;
-        std::vector< std::vector<cv::Point3f> > objectPoints;
+        std::vector<std::vector<ncvslideio::Point2f> > imagePoints;
+        std::vector< std::vector<ncvslideio::Point3f> > objectPoints;
 
-        std::vector<cv::Mat> allCharucoCorners;
-        std::vector<cv::Mat> allCharucoIds;
+        std::vector<ncvslideio::Mat> allCharucoCorners;
+        std::vector<ncvslideio::Mat> allCharucoIds;
 
-        cv::Mat undistMap1, undistMap2;
+        ncvslideio::Mat undistMap1, undistMap2;
 
         calibrationData()
         {
-            imageSize = cv::Size(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+            imageSize = ncvslideio::Size(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
         }
     };
 
     struct cameraParameters
     {
-        cv::Mat cameraMatrix;
-        cv::Mat distCoeffs;
-        cv::Mat stdDeviations;
+        ncvslideio::Mat cameraMatrix;
+        ncvslideio::Mat distCoeffs;
+        ncvslideio::Mat stdDeviations;
         double avgError;
 
         cameraParameters(){}
-        cameraParameters(cv::Mat& _cameraMatrix, cv::Mat& _distCoeffs, cv::Mat& _stdDeviations, double _avgError = 0) :
+        cameraParameters(ncvslideio::Mat& _cameraMatrix, ncvslideio::Mat& _distCoeffs, ncvslideio::Mat& _stdDeviations, double _avgError = 0) :
             cameraMatrix(_cameraMatrix), distCoeffs(_distCoeffs), stdDeviations(_stdDeviations), avgError(_avgError)
         {}
     };
@@ -79,9 +79,9 @@ namespace calib
         InputType captureMethod;
         InputVideoSource source;
         TemplateType board;
-        cv::Size inputBoardSize;
-        cv::Size boardSizeInnerCorners; // board size in inner corners for chessboard
-        cv::Size boardSizeUnits; // board size in squares, circles, etc.
+        ncvslideio::Size inputBoardSize;
+        ncvslideio::Size boardSizeInnerCorners; // board size in inner corners for chessboard
+        ncvslideio::Size boardSizeUnits; // board size in squares, circles, etc.
         int charucoDictName;
         std::string charucoDictFile;
         int calibrationStep;
@@ -93,7 +93,7 @@ namespace calib
         bool flipVertical;
         int camID;
         int fps;
-        cv::Size cameraResolution;
+        ncvslideio::Size cameraResolution;
         int maxFramesNum;
         int minFramesNum;
         bool saveFrames;
@@ -107,7 +107,7 @@ namespace calib
             maxFramesNum = 30;
             minFramesNum = 10;
             fps = 30;
-            cameraResolution = cv::Size(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+            cameraResolution = ncvslideio::Size(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
             saveFrames = false;
         }
     };

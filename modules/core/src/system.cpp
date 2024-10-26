@@ -68,7 +68,7 @@
 #include <opencv2/core/utils/fp_control_utils.hpp>
 #include <opencv2/core/utils/fp_control.private.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 static void _initSystem()
 {
@@ -107,7 +107,7 @@ void* allocSingletonBuffer(size_t size) { return fastMalloc(size); }
 void* allocSingletonNewBuffer(size_t size) { return malloc(size); }
 
 
-} // namespace cv
+} // namespace ncvslideio
 
 #ifndef CV_ERROR_SET_TERMINATE_HANDLER  // build config option
 # if defined(_WIN32)
@@ -316,7 +316,7 @@ DECLARE_CV_CPUID_X86
 
 #include <chrono>
 
-namespace cv
+namespace ncvslideio
 {
 
 Exception::Exception() { code = 0; line = 0; }
@@ -337,12 +337,12 @@ const char* Exception::what() const CV_NOEXCEPT { return msg.c_str(); }
 void Exception::formatMessage()
 {
     size_t pos = err.find('\n');
-    bool multiline = pos != cv::String::npos;
+    bool multiline = pos != ncvslideio::String::npos;
     if (multiline)
     {
         std::stringstream ss;
         size_t prev_pos = 0;
-        while (pos != cv::String::npos)
+        while (pos != ncvslideio::String::npos)
         {
            ss << "> " << err.substr(prev_pos, pos - prev_pos) << std::endl;
            prev_pos = pos + 1;
@@ -454,7 +454,7 @@ struct HWFeatures
         if (getenv("OPENCV_DUMP_CONFIG"))
         {
             fprintf(stderr, "\nOpenCV build configuration is:\n%s\n",
-                cv::getBuildInformation().c_str());
+                ncvslideio::getBuildInformation().c_str());
         }
 #endif
 
@@ -606,7 +606,7 @@ struct HWFeatures
       #if defined HAVE_CPUFEATURES
         CV_LOG_INFO(NULL, "calling android_getCpuFeatures() ...");
         uint64_t features = android_getCpuFeatures();
-        CV_LOG_INFO(NULL, cv::format("calling android_getCpuFeatures() ... Done (%llx)", (long long)features));
+        CV_LOG_INFO(NULL, ncvslideio::format("calling android_getCpuFeatures() ... Done (%llx)", (long long)features));
         have[CV_CPU_NEON] = (features & ANDROID_CPU_ARM_FEATURE_NEON) != 0;
         have[CV_CPU_FP16] = (features & ANDROID_CPU_ARM_FEATURE_VFP_FP16) != 0;
       #else
@@ -750,7 +750,7 @@ struct HWFeatures
                     "******************************************************************\n");
             fprintf(stderr, "\nRequired baseline features:\n");
             checkFeatures(baseline_features, sizeof(baseline_features) / sizeof(baseline_features[0]), true);
-            CV_Error(cv::Error::StsAssert, "Missing support for required CPU baseline features. Check OpenCV build configuration and required CPU/HW setup.");
+            CV_Error(ncvslideio::Error::StsAssert, "Missing support for required CPU baseline features. Check OpenCV build configuration and required CPU/HW setup.");
         }
 
         readSettings(baseline_features, sizeof(baseline_features) / sizeof(baseline_features[0]));
@@ -810,7 +810,7 @@ struct HWFeatures
                 }
                 if (end == start)
                     continue;
-                cv::String feature(start, end);
+                ncvslideio::String feature(start, end);
                 start = end;
 
                 CV_Assert(feature.size() > 0);
@@ -1223,7 +1223,7 @@ static void dumpException(const Exception& exc)
         errorStr, exc.err.c_str(), exc.func.size() > 0 ?
         exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line);
 #ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_ERROR, "cv::error()", "%s", buf);
+    __android_log_print(ANDROID_LOG_ERROR, "ncvslideio::error()", "%s", buf);
 #else
     fflush(stdout); fflush(stderr);
     fprintf(stderr, "%s\n", buf);
@@ -1234,7 +1234,7 @@ static void dumpException(const Exception& exc)
 #ifdef CV_ERROR_SET_TERMINATE_HANDLER
 static bool cv_terminate_handler_installed = false;
 static std::terminate_handler cv_old_terminate_handler;
-static cv::Exception cv_terminate_handler_exception;
+static ncvslideio::Exception cv_terminate_handler_exception;
 static bool param_setupTerminateHandler = utils::getConfigurationParameterBool("OPENCV_SETUP_TERMINATE_HANDLER", true);
 static void cv_terminate_handler() {
     std::cerr << "OpenCV: terminate handler is called! The last OpenCV error is:\n";
@@ -1257,7 +1257,7 @@ void error( const Exception& exc )
 {
 #ifdef CV_ERROR_SET_TERMINATE_HANDLER
     {
-        cv::AutoLock lock(getInitializationMutex());
+        ncvslideio::AutoLock lock(getInitializationMutex());
         if (!cv_terminate_handler_installed)
         {
             if (param_setupTerminateHandler)
@@ -1294,7 +1294,7 @@ void error( const Exception& exc )
 
 void error(int _code, const String& _err, const char* _func, const char* _file, int _line)
 {
-    error(cv::Exception(_code, _err, _func, _file, _line));
+    error(ncvslideio::Exception(_code, _err, _func, _file, _line));
 #ifdef __GNUC__
 # if !defined __clang__ && !defined __APPLE__
     // this suppresses this warning: "noreturn" function does return [enabled by default]
@@ -1327,7 +1327,7 @@ redirectError( ErrorCallback errCallback, void* userdata, void** prevUserdata)
 
 void terminate(int _code, const String& _err, const char* _func, const char* _file, int _line) CV_NOEXCEPT
 {
-    dumpException(cv::Exception(_code, _err, _func, _file, _line));
+    dumpException(ncvslideio::Exception(_code, _err, _func, _file, _line));
     std::terminate();
 }
 
@@ -1336,30 +1336,30 @@ void terminate(int _code, const String& _err, const char* _func, const char* _fi
 CV_IMPL int cvCheckHardwareSupport(int feature)
 {
     CV_DbgAssert( 0 <= feature && feature <= CV_HARDWARE_MAX_FEATURE );
-    return cv::currentFeatures->have[feature];
+    return ncvslideio::currentFeatures->have[feature];
 }
 
 CV_IMPL int cvUseOptimized( int flag )
 {
-    int prevMode = cv::useOptimizedFlag;
-    cv::setUseOptimized( flag != 0 );
+    int prevMode = ncvslideio::useOptimizedFlag;
+    ncvslideio::setUseOptimized( flag != 0 );
     return prevMode;
 }
 
 CV_IMPL int64  cvGetTickCount(void)
 {
-    return cv::getTickCount();
+    return ncvslideio::getTickCount();
 }
 
 CV_IMPL double cvGetTickFrequency(void)
 {
-    return cv::getTickFrequency()*1e-6;
+    return ncvslideio::getTickFrequency()*1e-6;
 }
 
 CV_IMPL CvErrorCallback
 cvRedirectError( CvErrorCallback errCallback, void* userdata, void** prevUserdata)
 {
-    return cv::redirectError(errCallback, userdata, prevUserdata);
+    return ncvslideio::redirectError(errCallback, userdata, prevUserdata);
 }
 
 CV_IMPL int cvNulDevReport( int, const char*, const char*,
@@ -1392,38 +1392,38 @@ CV_IMPL const char* cvErrorStr( int status )
 
     switch (status)
     {
-    case cv::Error::StsOk :                  return "No Error";
-    case cv::Error::StsBackTrace :           return "Backtrace";
-    case cv::Error::StsError :               return "Unspecified error";
-    case cv::Error::StsInternal :            return "Internal error";
-    case cv::Error::StsNoMem :               return "Insufficient memory";
-    case cv::Error::StsBadArg :              return "Bad argument";
-    case cv::Error::StsNoConv :              return "Iterations do not converge";
-    case cv::Error::StsAutoTrace :           return "Autotrace call";
-    case cv::Error::StsBadSize :             return "Incorrect size of input array";
-    case cv::Error::StsNullPtr :             return "Null pointer";
-    case cv::Error::StsDivByZero :           return "Division by zero occurred";
-    case cv::Error::BadStep :                return "Image step is wrong";
-    case cv::Error::StsInplaceNotSupported : return "Inplace operation is not supported";
-    case cv::Error::StsObjectNotFound :      return "Requested object was not found";
-    case cv::Error::BadDepth :               return "Input image depth is not supported by function";
-    case cv::Error::StsUnmatchedFormats :    return "Formats of input arguments do not match";
-    case cv::Error::StsUnmatchedSizes :      return "Sizes of input arguments do not match";
-    case cv::Error::StsOutOfRange :          return "One of the arguments\' values is out of range";
-    case cv::Error::StsUnsupportedFormat :   return "Unsupported format or combination of formats";
-    case cv::Error::BadCOI :                 return "Input COI is not supported";
-    case cv::Error::BadNumChannels :         return "Bad number of channels";
-    case cv::Error::StsBadFlag :             return "Bad flag (parameter or structure field)";
-    case cv::Error::StsBadPoint :            return "Bad parameter of type CvPoint";
-    case cv::Error::StsBadMask :             return "Bad type of mask argument";
-    case cv::Error::StsParseError :          return "Parsing error";
-    case cv::Error::StsNotImplemented :      return "The function/feature is not implemented";
-    case cv::Error::StsBadMemBlock :         return "Memory block has been corrupted";
-    case cv::Error::StsAssert :              return "Assertion failed";
-    case cv::Error::GpuNotSupported :        return "No CUDA support";
-    case cv::Error::GpuApiCallError :        return "Gpu API call";
-    case cv::Error::OpenGlNotSupported :     return "No OpenGL support";
-    case cv::Error::OpenGlApiCallError :     return "OpenGL API call";
+    case ncvslideio::Error::StsOk :                  return "No Error";
+    case ncvslideio::Error::StsBackTrace :           return "Backtrace";
+    case ncvslideio::Error::StsError :               return "Unspecified error";
+    case ncvslideio::Error::StsInternal :            return "Internal error";
+    case ncvslideio::Error::StsNoMem :               return "Insufficient memory";
+    case ncvslideio::Error::StsBadArg :              return "Bad argument";
+    case ncvslideio::Error::StsNoConv :              return "Iterations do not converge";
+    case ncvslideio::Error::StsAutoTrace :           return "Autotrace call";
+    case ncvslideio::Error::StsBadSize :             return "Incorrect size of input array";
+    case ncvslideio::Error::StsNullPtr :             return "Null pointer";
+    case ncvslideio::Error::StsDivByZero :           return "Division by zero occurred";
+    case ncvslideio::Error::BadStep :                return "Image step is wrong";
+    case ncvslideio::Error::StsInplaceNotSupported : return "Inplace operation is not supported";
+    case ncvslideio::Error::StsObjectNotFound :      return "Requested object was not found";
+    case ncvslideio::Error::BadDepth :               return "Input image depth is not supported by function";
+    case ncvslideio::Error::StsUnmatchedFormats :    return "Formats of input arguments do not match";
+    case ncvslideio::Error::StsUnmatchedSizes :      return "Sizes of input arguments do not match";
+    case ncvslideio::Error::StsOutOfRange :          return "One of the arguments\' values is out of range";
+    case ncvslideio::Error::StsUnsupportedFormat :   return "Unsupported format or combination of formats";
+    case ncvslideio::Error::BadCOI :                 return "Input COI is not supported";
+    case ncvslideio::Error::BadNumChannels :         return "Bad number of channels";
+    case ncvslideio::Error::StsBadFlag :             return "Bad flag (parameter or structure field)";
+    case ncvslideio::Error::StsBadPoint :            return "Bad parameter of type CvPoint";
+    case ncvslideio::Error::StsBadMask :             return "Bad type of mask argument";
+    case ncvslideio::Error::StsParseError :          return "Parsing error";
+    case ncvslideio::Error::StsNotImplemented :      return "The function/feature is not implemented";
+    case ncvslideio::Error::StsBadMemBlock :         return "Memory block has been corrupted";
+    case ncvslideio::Error::StsAssert :              return "Assertion failed";
+    case ncvslideio::Error::GpuNotSupported :        return "No CUDA support";
+    case ncvslideio::Error::GpuApiCallError :        return "Gpu API call";
+    case ncvslideio::Error::OpenGlNotSupported :     return "No OpenGL support";
+    case ncvslideio::Error::OpenGlApiCallError :     return "OpenGL API call";
     };
 
     snprintf(buf, sizeof(buf), "Unknown %s code %d", status >= 0 ? "status":"error", status);
@@ -1454,7 +1454,7 @@ CV_IMPL void cvError( int code, const char* func_name,
                       const char* err_msg,
                       const char* file_name, int line )
 {
-    cv::error(cv::Exception(code, err_msg, func_name, file_name, line));
+    ncvslideio::error(ncvslideio::Exception(code, err_msg, func_name, file_name, line));
 }
 
 /* function, which converts int to int */
@@ -1463,33 +1463,33 @@ cvErrorFromIppStatus( int status )
 {
     switch (status)
     {
-    case CV_BADSIZE_ERR:               return cv::Error::StsBadSize;
-    case CV_BADMEMBLOCK_ERR:           return cv::Error::StsBadMemBlock;
-    case CV_NULLPTR_ERR:               return cv::Error::StsNullPtr;
-    case CV_DIV_BY_ZERO_ERR:           return cv::Error::StsDivByZero;
-    case CV_BADSTEP_ERR:               return cv::Error::BadStep;
-    case CV_OUTOFMEM_ERR:              return cv::Error::StsNoMem;
-    case CV_BADARG_ERR:                return cv::Error::StsBadArg;
-    case CV_NOTDEFINED_ERR:            return cv::Error::StsError;
-    case CV_INPLACE_NOT_SUPPORTED_ERR: return cv::Error::StsInplaceNotSupported;
-    case CV_NOTFOUND_ERR:              return cv::Error::StsObjectNotFound;
-    case CV_BADCONVERGENCE_ERR:        return cv::Error::StsNoConv;
-    case CV_BADDEPTH_ERR:              return cv::Error::BadDepth;
-    case CV_UNMATCHED_FORMATS_ERR:     return cv::Error::StsUnmatchedFormats;
-    case CV_UNSUPPORTED_COI_ERR:       return cv::Error::BadCOI;
-    case CV_UNSUPPORTED_CHANNELS_ERR:  return cv::Error::BadNumChannels;
-    case CV_BADFLAG_ERR:               return cv::Error::StsBadFlag;
-    case CV_BADRANGE_ERR:              return cv::Error::StsBadArg;
-    case CV_BADCOEF_ERR:               return cv::Error::StsBadArg;
-    case CV_BADFACTOR_ERR:             return cv::Error::StsBadArg;
-    case CV_BADPOINT_ERR:              return cv::Error::StsBadPoint;
+    case CV_BADSIZE_ERR:               return ncvslideio::Error::StsBadSize;
+    case CV_BADMEMBLOCK_ERR:           return ncvslideio::Error::StsBadMemBlock;
+    case CV_NULLPTR_ERR:               return ncvslideio::Error::StsNullPtr;
+    case CV_DIV_BY_ZERO_ERR:           return ncvslideio::Error::StsDivByZero;
+    case CV_BADSTEP_ERR:               return ncvslideio::Error::BadStep;
+    case CV_OUTOFMEM_ERR:              return ncvslideio::Error::StsNoMem;
+    case CV_BADARG_ERR:                return ncvslideio::Error::StsBadArg;
+    case CV_NOTDEFINED_ERR:            return ncvslideio::Error::StsError;
+    case CV_INPLACE_NOT_SUPPORTED_ERR: return ncvslideio::Error::StsInplaceNotSupported;
+    case CV_NOTFOUND_ERR:              return ncvslideio::Error::StsObjectNotFound;
+    case CV_BADCONVERGENCE_ERR:        return ncvslideio::Error::StsNoConv;
+    case CV_BADDEPTH_ERR:              return ncvslideio::Error::BadDepth;
+    case CV_UNMATCHED_FORMATS_ERR:     return ncvslideio::Error::StsUnmatchedFormats;
+    case CV_UNSUPPORTED_COI_ERR:       return ncvslideio::Error::BadCOI;
+    case CV_UNSUPPORTED_CHANNELS_ERR:  return ncvslideio::Error::BadNumChannels;
+    case CV_BADFLAG_ERR:               return ncvslideio::Error::StsBadFlag;
+    case CV_BADRANGE_ERR:              return ncvslideio::Error::StsBadArg;
+    case CV_BADCOEF_ERR:               return ncvslideio::Error::StsBadArg;
+    case CV_BADFACTOR_ERR:             return ncvslideio::Error::StsBadArg;
+    case CV_BADPOINT_ERR:              return ncvslideio::Error::StsBadPoint;
 
     default:
-      return cv::Error::StsError;
+      return ncvslideio::Error::StsError;
     }
 }
 
-namespace cv {
+namespace ncvslideio {
 bool __termination = false;
 
 
@@ -1569,7 +1569,7 @@ static __declspec( thread ) void* tlsData = NULL; // using C++11 thread attribut
 TlsAbstraction::TlsAbstraction() {}
 void TlsAbstraction::releaseSystemResources()
 {
-    cv::__termination = true;  // DllMain is missing in static builds
+    ncvslideio::__termination = true;  // DllMain is missing in static builds
 }
 void* TlsAbstraction::getData() const
 {
@@ -1595,7 +1595,7 @@ TlsAbstraction::TlsAbstraction()
 }
 void TlsAbstraction::releaseSystemResources()
 {
-    cv::__termination = true;  // DllMain is missing in static builds
+    ncvslideio::__termination = true;  // DllMain is missing in static builds
     disposed = true;
 #ifndef CV_USE_FLS
     TlsFree(tlsKey);
@@ -1634,7 +1634,7 @@ TlsAbstraction::TlsAbstraction()
 }
 void TlsAbstraction::releaseSystemResources()
 {
-    cv::__termination = true;  // DllMain is missing in static builds
+    ncvslideio::__termination = true;  // DllMain is missing in static builds
     disposed = true;
     if (pthread_key_delete(tlsKey) != 0)
     {
@@ -1908,7 +1908,7 @@ static void WINAPI opencv_fls_destructor(void* pData)
         // 3. ... called with DLL_PROCESS_DETACH
         // 7. The termination status of the process changes from STILL_ACTIVE to the exit value of the process.
         // (ref: https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-exitprocess)
-        cv::__termination = true;
+        ncvslideio::__termination = true;
     }
 
     if (!g_isTlsStorageInitialized)
@@ -2128,7 +2128,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID lpReserved)
     {
         if (lpReserved != NULL) // called after ExitProcess() call
         {
-            cv::__termination = true;
+            ncvslideio::__termination = true;
         }
         else
         {
@@ -2161,7 +2161,7 @@ public:
     {
 #ifdef OPENCV_WITH_ITT
         if (overrideThreadName())
-            __itt_thread_set_name(cv::format("OpenCVThread-%03d", id).c_str());
+            __itt_thread_set_name(ncvslideio::format("OpenCVThread-%03d", id).c_str());
 #endif
     }
 };
@@ -2214,8 +2214,8 @@ inline size_t parseOption(const std::string &value)
         if (!isdigit(value[pos]))
             break;
     }
-    cv::String valueStr = value.substr(0, pos);
-    cv::String suffixStr = value.substr(pos, value.length() - pos);
+    ncvslideio::String valueStr = value.substr(0, pos);
+    ncvslideio::String suffixStr = value.substr(pos, value.length() - pos);
     size_t v = (size_t)std::stoull(valueStr);
     if (suffixStr.length() == 0)
         return v;
@@ -2227,7 +2227,7 @@ inline size_t parseOption(const std::string &value)
 }
 
 template<>
-inline cv::String parseOption(const std::string &value)
+inline ncvslideio::String parseOption(const std::string &value)
 {
     return value;
 }
@@ -2274,7 +2274,7 @@ inline T read(const std::string & k, const T & defaultValue)
     }
     catch (const ParseError &err)
     {
-        CV_Error(cv::Error::StsBadArg, err.toString(k));
+        CV_Error(ncvslideio::Error::StsBadArg, err.toString(k));
     }
     return defaultValue;
 }
@@ -2289,9 +2289,9 @@ size_t utils::getConfigurationParameterSizeT(const char* name, size_t defaultVal
     return read<size_t>(name, defaultValue);
 }
 
-cv::String utils::getConfigurationParameterString(const char* name, const char* defaultValue)
+ncvslideio::String utils::getConfigurationParameterString(const char* name, const char* defaultValue)
 {
-    return read<cv::String>(name, defaultValue ? cv::String(defaultValue) : cv::String());
+    return read<ncvslideio::String>(name, defaultValue ? ncvslideio::String(defaultValue) : ncvslideio::String());
 }
 
 utils::Paths utils::getConfigurationParameterPaths(const char* name, const utils::Paths &defaultValue)
@@ -2308,7 +2308,7 @@ ImplCollector& getImplData()
 
 void setImpl(int flags)
 {
-    cv::AutoLock lock(getImplData().mutex);
+    ncvslideio::AutoLock lock(getImplData().mutex);
 
     getImplData().implFlags = flags;
     getImplData().implCode.clear();
@@ -2317,7 +2317,7 @@ void setImpl(int flags)
 
 void addImpl(int flag, const char* func)
 {
-    cv::AutoLock lock(getImplData().mutex);
+    ncvslideio::AutoLock lock(getImplData().mutex);
 
     getImplData().implFlags |= flag;
     if(func) // use lazy collection if name was not specified
@@ -2333,7 +2333,7 @@ void addImpl(int flag, const char* func)
 
 int getImpl(std::vector<int> &impl, std::vector<String> &funName)
 {
-    cv::AutoLock lock(getImplData().mutex);
+    ncvslideio::AutoLock lock(getImplData().mutex);
 
     impl    = getImplData().implCode;
     funName = getImplData().implFun;
@@ -2347,7 +2347,7 @@ bool useCollection()
 
 void setUseCollection(bool flag)
 {
-    cv::AutoLock lock(getImplData().mutex);
+    ncvslideio::AutoLock lock(getImplData().mutex);
 
     getImplData().useCollection = flag;
 }
@@ -2407,9 +2407,9 @@ FLAGS getFlags()
 #endif
 }
 
-NodeData::NodeData(const char* funName, const char* fileName, int lineNum, void* retAddress, bool alwaysExpand, cv::instr::TYPE instrType, cv::instr::IMPL implType)
+NodeData::NodeData(const char* funName, const char* fileName, int lineNum, void* retAddress, bool alwaysExpand, ncvslideio::instr::TYPE instrType, ncvslideio::instr::IMPL implType)
 {
-    m_funName       = funName ? cv::String(funName) : cv::String();  // std::string doesn't accept NULL
+    m_funName       = funName ? ncvslideio::String(funName) : ncvslideio::String();  // std::string doesn't accept NULL
     m_instrType     = instrType;
     m_implType      = implType;
     m_fileName      = fileName;
@@ -2452,7 +2452,7 @@ bool operator==(const NodeData& left, const NodeData& right)
 {
     if(left.m_lineNum == right.m_lineNum && left.m_funName == right.m_funName && left.m_fileName == right.m_fileName)
     {
-        if(left.m_retAddress == right.m_retAddress || !(cv::instr::getFlags()&cv::instr::FLAGS_EXPAND_SAME_NAMES || left.m_alwaysExpand))
+        if(left.m_retAddress == right.m_retAddress || !(ncvslideio::instr::getFlags()&ncvslideio::instr::FLAGS_EXPAND_SAME_NAMES || left.m_alwaysExpand))
             return true;
     }
     return false;
@@ -2505,7 +2505,7 @@ IntrumentationRegion::IntrumentationRegion(const char* funName, const char* file
         if(pStruct->flags&FLAGS_MAPPING)
         {
             // Critical section
-            cv::AutoLock guard(pStruct->mutexCreate); // Guard from concurrent child creation
+            ncvslideio::AutoLock guard(pStruct->mutexCreate); // Guard from concurrent child creation
             pChild = pTLS->pCurrentNode->findChild(payload);
             if(!pChild)
             {
@@ -2537,16 +2537,16 @@ IntrumentationRegion::~IntrumentationRegion()
         {
             InstrTLSStruct *pTLS = &getInstrumentTLSStruct();
 
-            if (pTLS->pCurrentNode->m_payload.m_implType == cv::instr::IMPL_OPENCL &&
-                (pTLS->pCurrentNode->m_payload.m_instrType == cv::instr::TYPE_FUN ||
-                    pTLS->pCurrentNode->m_payload.m_instrType == cv::instr::TYPE_WRAPPER))
+            if (pTLS->pCurrentNode->m_payload.m_implType == ncvslideio::instr::IMPL_OPENCL &&
+                (pTLS->pCurrentNode->m_payload.m_instrType == ncvslideio::instr::TYPE_FUN ||
+                    pTLS->pCurrentNode->m_payload.m_instrType == ncvslideio::instr::TYPE_WRAPPER))
             {
-                cv::ocl::finish(); // TODO Support "async" OpenCL instrumentation
+                ncvslideio::ocl::finish(); // TODO Support "async" OpenCL instrumentation
             }
 
             uint64 ticks = (getTickCount() - m_regionTicks);
             {
-                cv::AutoLock guard(pStruct->mutexCount); // Concurrent ticks accumulation
+                ncvslideio::AutoLock guard(pStruct->mutexCount); // Concurrent ticks accumulation
                 pTLS->pCurrentNode->m_payload.m_counter++;
                 pTLS->pCurrentNode->m_payload.m_ticksTotal += ticks;
                 pTLS->pCurrentNode->m_payload.m_tls.get()->m_ticksTotal += ticks;
@@ -2589,7 +2589,7 @@ public:
         ippFeatures = cpuFeatures;
 
         const char* pIppEnv = getenv("OPENCV_IPP");
-        cv::String env;
+        ncvslideio::String env;
         if(pIppEnv != NULL)
             env = pIppEnv;
         if(env.size())
@@ -2847,7 +2847,7 @@ void setFPDenormalsIgnoreHint(bool ignore, CV_OUT FPDenormalsModeState& state)
     const unsigned old_flags = _mm_getcsr();
     const unsigned old_value = old_flags & mask;
     unsigned flags = (old_flags & ~mask) | value;
-    CV_LOG_DEBUG(NULL, "core: update FP mxcsr flags = " << cv::format("0x%08x", flags));
+    CV_LOG_DEBUG(NULL, "core: update FP mxcsr flags = " << ncvslideio::format("0x%08x", flags));
     // save state
     state.reserved[0] = (uint32_t)mask;
     state.reserved[1] = (uint32_t)old_value;
@@ -2886,7 +2886,7 @@ bool restoreFPDenormalsState(const FPDenormalsModeState& state)
     CV_DbgCheck((int)value, value == (value & mask), "invalid SSE FP state");
     const unsigned old_flags = _mm_getcsr();
     unsigned flags = (old_flags & ~mask) | value;
-    CV_LOG_DEBUG(NULL, "core: restore FP mxcsr flags = " << cv::format("0x%08x", flags));
+    CV_LOG_DEBUG(NULL, "core: restore FP mxcsr flags = " << ncvslideio::format("0x%08x", flags));
     _mm_setcsr(flags);
     return true;
 #else
@@ -2906,6 +2906,6 @@ AlgorithmHint getDefaultAlgorithmHint()
 #endif
 };
 
-} // namespace cv
+} // namespace ncvslideio
 
 /* End of file. */

@@ -16,7 +16,7 @@ class TypeNode(abc.ABC):
     time or not available at all:
         - There is no possible way to derive correspondence between C++ type
           and its Python equivalent if it is not exposed from library
-          e.g. `cv::Rect`.
+          e.g. `ncvslideio::Rect`.
         - There is no information about types visibility (see `ASTNodeTypeNode`).
     """
     compatible_to_runtime_usage = False
@@ -867,21 +867,21 @@ def _resolve_symbol(root: Optional[ASTNode], full_symbol_name: str) -> Optional[
         Optional[ASTNode]: ASTNode with full export name equal to
             `full_symbol_name`, None otherwise.
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> cls = root.add_class('Algorithm').add_class('Params')
-    >>> _resolve_symbol(root, 'cv.Algorithm.Params') == cls
+    >>> _resolve_symbol(root, 'ncvslideio.Algorithm.Params') == cls
     True
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> enum = root.add_namespace('detail').add_enumeration('AlgorithmType')
     >>> _resolve_symbol(root, 'cv_detail_AlgorithmType') == enum
     True
 
-    >>> root = NamespaceNode('cv')
-    >>> _resolve_symbol(root, 'cv.detail.Algorithm')
+    >>> root = NamespaceNode('ncvslideio')
+    >>> _resolve_symbol(root, 'ncvslideio.detail.Algorithm')
     None
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> enum = root.add_namespace('detail').add_enumeration('AlgorithmType')
     >>> _resolve_symbol(root, 'AlgorithmType')
     None

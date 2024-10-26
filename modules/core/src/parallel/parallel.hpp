@@ -6,7 +6,7 @@
 
 #include "opencv2/core/parallel/parallel_backend.hpp"
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 
 extern int numThreads;
 
@@ -15,11 +15,11 @@ std::shared_ptr<ParallelForAPI>& getCurrentParallelForAPI();
 #ifndef BUILD_PLUGIN
 
 #ifdef HAVE_TBB
-std::shared_ptr<cv::parallel::ParallelForAPI> createParallelBackendTBB();
+std::shared_ptr<ncvslideio::parallel::ParallelForAPI> createParallelBackendTBB();
 #endif
 
 #ifdef HAVE_OPENMP
-std::shared_ptr<cv::parallel::ParallelForAPI> createParallelBackendOpenMP();
+std::shared_ptr<ncvslideio::parallel::ParallelForAPI> createParallelBackendOpenMP();
 #endif
 
 #endif  // BUILD_PLUGIN

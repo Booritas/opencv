@@ -16,7 +16,7 @@
 //
 // PLEASE don't put any stuff here if it is NOT used in public API headers!
 
-namespace cv
+namespace ncvslideio
 {
 namespace detail
 {
@@ -183,7 +183,7 @@ struct find_adapter_impl<AdapterT, T, Types...>
                                   find_adapter_impl<AdapterT, Types...>::found;
 };
 } // namespace util
-} // namespace cv
+} // namespace ncvslideio
 
 // \endcond
 

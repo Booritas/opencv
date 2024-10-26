@@ -32,7 +32,7 @@ TEST(Core_OutputArrayCreate, _1997)
 TEST(Core_SaturateCast, NegativeNotClipped)
 {
     double d = -1.0;
-    unsigned int val = cv::saturate_cast<unsigned int>(d);
+    unsigned int val = ncvslideio::saturate_cast<unsigned int>(d);
 
     ASSERT_EQ(0xffffffff, val);
 }
@@ -187,8 +187,8 @@ TEST(Core_OutputArray, FixedType)
 
 TEST(Core_OutputArrayCreate, _13772)
 {
-    cv::Mat1d mat;
-    cv::OutputArray o(mat);
+    ncvslideio::Mat1d mat;
+    ncvslideio::OutputArray o(mat);
     ASSERT_NO_THROW(o.create(3, 5, CV_64F, -1, true));
 }
 
@@ -196,16 +196,16 @@ TEST(Core_OutputArrayCreate, _13772)
 
 TEST(Core_String, find_last_of__with__empty_string)
 {
-    cv::String s;
+    ncvslideio::String s;
     size_t p = s.find_last_of('q', 0);
-    // npos is not exported: EXPECT_EQ(cv::String::npos, p);
+    // npos is not exported: EXPECT_EQ(ncvslideio::String::npos, p);
     EXPECT_EQ(std::string::npos, p);
 }
 
 TEST(Core_String, end_method_regression)
 {
-    cv::String old_string = "012345";
-    cv::String new_string(old_string.begin(), old_string.end());
+    ncvslideio::String old_string = "012345";
+    ncvslideio::String new_string(old_string.begin(), old_string.end());
     EXPECT_EQ(6u, new_string.size());
 }
 
@@ -219,12 +219,12 @@ TEST(Core_Copy, repeat_regression_8972)
 }
 
 
-class ThrowErrorParallelLoopBody : public cv::ParallelLoopBody
+class ThrowErrorParallelLoopBody : public ncvslideio::ParallelLoopBody
 {
 public:
-    ThrowErrorParallelLoopBody(cv::Mat& dst, int i) : dst_(dst), i_(i) {}
+    ThrowErrorParallelLoopBody(ncvslideio::Mat& dst, int i) : dst_(dst), i_(i) {}
     ~ThrowErrorParallelLoopBody() {}
-    void operator()(const cv::Range& r) const
+    void operator()(const ncvslideio::Range& r) const
     {
         for (int i = r.start; i < r.end; i++)
         {
@@ -241,37 +241,37 @@ TEST(Core_Parallel, propagate_exceptions)
 {
     Mat dst1(1000, 100, CV_8SC1, Scalar::all(0));
     ASSERT_NO_THROW({
-        parallel_for_(cv::Range(0, dst1.rows), ThrowErrorParallelLoopBody(dst1, -1));
+        parallel_for_(ncvslideio::Range(0, dst1.rows), ThrowErrorParallelLoopBody(dst1, -1));
     });
 
     Mat dst2(1000, 100, CV_8SC1, Scalar::all(0));
     ASSERT_THROW({
-        parallel_for_(cv::Range(0, dst2.rows), ThrowErrorParallelLoopBody(dst2, dst2.rows / 2));
-    }, cv::Exception);
+        parallel_for_(ncvslideio::Range(0, dst2.rows), ThrowErrorParallelLoopBody(dst2, dst2.rows / 2));
+    }, ncvslideio::Exception);
 }
 
-class FPDenormalsHintCheckerParallelLoopBody : public cv::ParallelLoopBody
+class FPDenormalsHintCheckerParallelLoopBody : public ncvslideio::ParallelLoopBody
 {
 public:
     FPDenormalsHintCheckerParallelLoopBody()
         : isOK(true)
     {
-        state_values_to_check = cv::details::saveFPDenormalsState(base_state);
+        state_values_to_check = ncvslideio::details::saveFPDenormalsState(base_state);
     }
     ~FPDenormalsHintCheckerParallelLoopBody() {}
-    void operator()(const cv::Range& r) const
+    void operator()(const ncvslideio::Range& r) const
     {
         CV_UNUSED(r);
-        cv::details::FPDenormalsModeState state;
-        if (cv::details::saveFPDenormalsState(state))
+        ncvslideio::details::FPDenormalsModeState state;
+        if (ncvslideio::details::saveFPDenormalsState(state))
         {
             for (int i = 0; i < state_values_to_check; ++i)
             {
                 if (base_state.reserved[i] != state.reserved[i])
                 {
-                    CV_LOG_ERROR(NULL, cv::format("FP state[%d] mismatch: base=0x%08x thread=0x%08x", i, base_state.reserved[i], state.reserved[i]));
+                    CV_LOG_ERROR(NULL, ncvslideio::format("FP state[%d] mismatch: base=0x%08x thread=0x%08x", i, base_state.reserved[i], state.reserved[i]));
                     isOK = false;
-                    cv::details::restoreFPDenormalsState(base_state);
+                    ncvslideio::details::restoreFPDenormalsState(base_state);
                 }
             }
         }
@@ -283,7 +283,7 @@ public:
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    cv::details::FPDenormalsModeState base_state;
+    ncvslideio::details::FPDenormalsModeState base_state;
     int state_values_to_check;
 
     mutable bool isOK;
@@ -291,14 +291,14 @@ public:
 
 TEST(Core_Parallel, propagate_fp_denormals_ignore_hint)
 {
-    int nThreads = std::max(1, cv::getNumThreads()) * 3;
+    int nThreads = std::max(1, ncvslideio::getNumThreads()) * 3;
     for (int i = 0; i < 4; ++i)
     {
-        SCOPED_TRACE(cv::format("Case=%d: FP denormals ignore hint: %s\n", i, ((i & 1) != 0) ? "enable" : "disable"));
+        SCOPED_TRACE(ncvslideio::format("Case=%d: FP denormals ignore hint: %s\n", i, ((i & 1) != 0) ? "enable" : "disable"));
         FPDenormalsIgnoreHintScope fp_denormals_scope((i & 1) != 0);
         FPDenormalsHintCheckerParallelLoopBody job;
         ASSERT_NO_THROW({
-            parallel_for_(cv::Range(0, nThreads), job);
+            parallel_for_(ncvslideio::Range(0, nThreads), job);
         });
         EXPECT_TRUE(job.isOK);
     }
@@ -308,10 +308,10 @@ TEST(Core_Version, consistency)
 {
     // this test verifies that OpenCV version loaded in runtime
     //   is the same this test has been built with
-    EXPECT_EQ(CV_VERSION_MAJOR, cv::getVersionMajor());
-    EXPECT_EQ(CV_VERSION_MINOR, cv::getVersionMinor());
-    EXPECT_EQ(CV_VERSION_REVISION, cv::getVersionRevision());
-    EXPECT_EQ(String(CV_VERSION), cv::getVersionString());
+    EXPECT_EQ(CV_VERSION_MAJOR, ncvslideio::getVersionMajor());
+    EXPECT_EQ(CV_VERSION_MINOR, ncvslideio::getVersionMinor());
+    EXPECT_EQ(CV_VERSION_REVISION, ncvslideio::getVersionRevision());
+    EXPECT_EQ(String(CV_VERSION), ncvslideio::getVersionString());
 }
 
 
@@ -331,7 +331,7 @@ TEST(Core_Check, testEQ_int_fail)
         test_check_eq_1(123, 5678);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation check failed (expected: 'value_1 == value_2'), where\n"
@@ -369,7 +369,7 @@ TEST(Core_Check, testEQ_float_fail)
         test_check_eq_2(1234.5f, 1234.55f);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation check failed (float) (expected: 'value_1 == value_2'), where\n"
@@ -407,7 +407,7 @@ TEST(Core_Check, testEQ_double_fail)
         test_check_eq_3(1234.5, 1234.56);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation check failed (double) (expected: 'value_1 == value_2'), where\n"
@@ -445,7 +445,7 @@ TEST(Core_Check, testNE_int_fail)
         test_check_ne_1(123, 123);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation NE check failed (expected: 'value_1 != value_2'), where\n"
@@ -483,7 +483,7 @@ TEST(Core_Check, testLE_int_fail)
         test_check_le_1(1234, 123);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation LE check failed (expected: 'value_1 <= value_2'), where\n"
@@ -524,7 +524,7 @@ TEST(Core_Check, testLT_int_fail)
         test_check_lt_1(1234, 123);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation LT check failed (expected: 'value_1 < value_2'), where\n"
@@ -549,7 +549,7 @@ TEST(Core_Check, testLT_int_fail_eq)
         test_check_lt_1(123, 123);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation LT check failed (expected: 'value_1 < value_2'), where\n"
@@ -587,7 +587,7 @@ TEST(Core_Check, testGE_int_fail)
         test_check_ge_1(123, 1234);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation GE check failed (expected: 'value_1 >= value_2'), where\n"
@@ -628,7 +628,7 @@ TEST(Core_Check, testGT_int_fail)
         test_check_gt_1(123, 1234);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation GT check failed (expected: 'value_1 > value_2'), where\n"
@@ -653,7 +653,7 @@ TEST(Core_Check, testGT_int_fail_eq)
         test_check_gt_1(123, 123);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Validation GT check failed (expected: 'value_1 > value_2'), where\n"
@@ -698,7 +698,7 @@ TEST(Core_Check, testMatType_fail_1)
         test_check_MatType_1(CV_8UC1);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Unsupported source type (expected: 'src_type == CV_32FC1'), where\n"
@@ -728,7 +728,7 @@ TEST(Core_Check, testMatType_fail_2)
         test_check_MatType_2(CV_8UC1);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Unsupported src:\n"
@@ -765,7 +765,7 @@ TEST(Core_Check, testMatDepth_fail_1)
         test_check_MatDepth_1(CV_8U);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Unsupported source depth (expected: 'src_depth == CV_32F'), where\n"
@@ -795,7 +795,7 @@ TEST(Core_Check, testMatDepth_fail_2)
         test_check_MatDepth_2(CV_8U);
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Unsupported src:\n"
@@ -826,7 +826,7 @@ TEST(Core_Check, testSize_1)
         test_check_Size_1(Size(2, 1));
         FAIL() << "Unreachable code called";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_STREQ(e.err.c_str(),
 "> Unsupported src size:\n"
@@ -850,12 +850,12 @@ TEST(Core_Allocation, alignedAllocation)
     // iterate from size=1 to approximate byte size of 8K 32bpp image buffer
     for (int i = 0; i < 200; i++) {
         const size_t size = static_cast<size_t>(std::pow(1.091, (double)i));
-        void * const buf = cv::fastMalloc(size);
+        void * const buf = ncvslideio::fastMalloc(size);
         ASSERT_NE((uintptr_t)0, (uintptr_t)buf)
             << "failed to allocate memory";
         ASSERT_EQ((uintptr_t)0, (uintptr_t)buf % CV_MALLOC_ALIGN)
             << "memory not aligned to " << CV_MALLOC_ALIGN;
-        cv::fastFree(buf);
+        ncvslideio::fastFree(buf);
     }
 }
 
@@ -863,22 +863,22 @@ TEST(Core_Allocation, alignedAllocation)
 #if !(defined(__GNUC__) && __GNUC__ < 5)  // GCC 4.8 emits: 'is_trivially_copyable' is not a member of 'std'
 TEST(Core_Types, trivially_copyable)
 {
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Complexd>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Point>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Point3f>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Size>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Range>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Rect>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::RotatedRect>::value);
-    //EXPECT_TRUE(std::is_trivially_copyable<cv::Scalar>::value);  // derived from Vec (Matx)
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Complexd>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Point>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Point3f>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Size>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Range>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Rect>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::RotatedRect>::value);
+    //EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Scalar>::value);  // derived from Vec (Matx)
 }
 
 TEST(Core_Types, trivially_copyable_extra)
 {
-    EXPECT_TRUE(std::is_trivially_copyable<cv::KeyPoint>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::DMatch>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::TermCriteria>::value);
-    EXPECT_TRUE(std::is_trivially_copyable<cv::Moments>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::KeyPoint>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::DMatch>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::TermCriteria>::value);
+    EXPECT_TRUE(std::is_trivially_copyable<ncvslideio::Moments>::value);
 }
 #endif
 

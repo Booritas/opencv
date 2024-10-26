@@ -8,7 +8,7 @@
 #include <iostream>
 
 template <typename T>
-static bool readFromNode(cv::FileNode node, T& value)
+static bool readFromNode(ncvslideio::FileNode node, T& value)
 {
     if(!node.isNone()) {
         node >> value;
@@ -28,8 +28,8 @@ static bool checkAssertion(bool value, const std::string& msg)
 
 bool calib::parametersController::loadFromFile(const std::string &inputFileName)
 {
-    cv::FileStorage reader;
-    reader.open(inputFileName, cv::FileStorage::READ);
+    ncvslideio::FileStorage reader;
+    reader.open(inputFileName, ncvslideio::FileStorage::READ);
 
     if(!reader.isOpened()) {
         std::cerr << "Warning: Unable to open " << inputFileName <<
@@ -82,7 +82,7 @@ calib::internalParameters calib::parametersController::getInternalParameters() c
     return mInternalParameters;
 }
 
-bool calib::parametersController::loadFromParser(cv::CommandLineParser &parser)
+bool calib::parametersController::loadFromParser(ncvslideio::CommandLineParser &parser)
 {
     mCapParams.flipVertical = parser.get<bool>("flip");
     mCapParams.captureDelay = parser.get<float>("d");
@@ -110,47 +110,47 @@ bool calib::parametersController::loadFromParser(cv::CommandLineParser &parser)
 
     if(templateType.find("symcircles", 0) == 0) {
         mCapParams.board = CirclesGrid;
-        mCapParams.boardSizeUnits = cv::Size(4, 11);
+        mCapParams.boardSizeUnits = ncvslideio::Size(4, 11);
     }
     else if(templateType.find("circles", 0) == 0) {
         mCapParams.board = AcirclesGrid;
-        mCapParams.boardSizeUnits = cv::Size(4, 11);
+        mCapParams.boardSizeUnits = ncvslideio::Size(4, 11);
     }
     else if(templateType.find("chessboard", 0) == 0) {
         mCapParams.board = Chessboard;
-        mCapParams.boardSizeUnits = cv::Size(7, 7);
+        mCapParams.boardSizeUnits = ncvslideio::Size(7, 7);
     }
     else if(templateType.find("dualcircles", 0) == 0) {
         mCapParams.board = DoubleAcirclesGrid;
-        mCapParams.boardSizeUnits = cv::Size(4, 11);
+        mCapParams.boardSizeUnits = ncvslideio::Size(4, 11);
     }
     else if(templateType.find("charuco", 0) == 0) {
         mCapParams.board = ChArUco;
-        mCapParams.boardSizeUnits = cv::Size(5, 7);
+        mCapParams.boardSizeUnits = ncvslideio::Size(5, 7);
         mCapParams.charucoDictFile = parser.get<std::string>("fad");
         std::string arucoDictName = parser.get<std::string>("ad");
 
-        if (arucoDictName == "DICT_4X4_50") { mCapParams.charucoDictName = cv::aruco::DICT_4X4_50; }
-        else if (arucoDictName == "DICT_4X4_100") { mCapParams.charucoDictName = cv::aruco::DICT_4X4_100; }
-        else if (arucoDictName == "DICT_4X4_250") { mCapParams.charucoDictName = cv::aruco::DICT_4X4_250; }
-        else if (arucoDictName == "DICT_4X4_1000") { mCapParams.charucoDictName = cv::aruco::DICT_4X4_1000; }
-        else if (arucoDictName == "DICT_5X5_50") { mCapParams.charucoDictName = cv::aruco::DICT_5X5_50; }
-        else if (arucoDictName == "DICT_5X5_100") { mCapParams.charucoDictName = cv::aruco::DICT_5X5_100; }
-        else if (arucoDictName == "DICT_5X5_250") { mCapParams.charucoDictName = cv::aruco::DICT_5X5_250; }
-        else if (arucoDictName == "DICT_5X5_1000") { mCapParams.charucoDictName = cv::aruco::DICT_5X5_1000; }
-        else if (arucoDictName == "DICT_6X6_50") { mCapParams.charucoDictName = cv::aruco::DICT_6X6_50; }
-        else if (arucoDictName == "DICT_6X6_100") { mCapParams.charucoDictName = cv::aruco::DICT_6X6_100; }
-        else if (arucoDictName == "DICT_6X6_250") { mCapParams.charucoDictName = cv::aruco::DICT_6X6_250; }
-        else if (arucoDictName == "DICT_6X6_1000") { mCapParams.charucoDictName = cv::aruco::DICT_6X6_1000; }
-        else if (arucoDictName == "DICT_7X7_50") { mCapParams.charucoDictName = cv::aruco::DICT_7X7_50; }
-        else if (arucoDictName == "DICT_7X7_100") { mCapParams.charucoDictName = cv::aruco::DICT_7X7_100; }
-        else if (arucoDictName == "DICT_7X7_250") { mCapParams.charucoDictName = cv::aruco::DICT_7X7_250; }
-        else if (arucoDictName == "DICT_7X7_1000") { mCapParams.charucoDictName = cv::aruco::DICT_7X7_1000; }
-        else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { mCapParams.charucoDictName = cv::aruco::DICT_ARUCO_ORIGINAL; }
-        else if (arucoDictName == "DICT_APRILTAG_16h5") { mCapParams.charucoDictName = cv::aruco::DICT_APRILTAG_16h5; }
-        else if (arucoDictName == "DICT_APRILTAG_25h9") { mCapParams.charucoDictName = cv::aruco::DICT_APRILTAG_25h9; }
-        else if (arucoDictName == "DICT_APRILTAG_36h10") { mCapParams.charucoDictName = cv::aruco::DICT_APRILTAG_36h10; }
-        else if (arucoDictName == "DICT_APRILTAG_36h11") { mCapParams.charucoDictName = cv::aruco::DICT_APRILTAG_36h11; }
+        if (arucoDictName == "DICT_4X4_50") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_4X4_50; }
+        else if (arucoDictName == "DICT_4X4_100") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_4X4_100; }
+        else if (arucoDictName == "DICT_4X4_250") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_4X4_250; }
+        else if (arucoDictName == "DICT_4X4_1000") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_4X4_1000; }
+        else if (arucoDictName == "DICT_5X5_50") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_5X5_50; }
+        else if (arucoDictName == "DICT_5X5_100") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_5X5_100; }
+        else if (arucoDictName == "DICT_5X5_250") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_5X5_250; }
+        else if (arucoDictName == "DICT_5X5_1000") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_5X5_1000; }
+        else if (arucoDictName == "DICT_6X6_50") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_6X6_50; }
+        else if (arucoDictName == "DICT_6X6_100") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_6X6_100; }
+        else if (arucoDictName == "DICT_6X6_250") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_6X6_250; }
+        else if (arucoDictName == "DICT_6X6_1000") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_6X6_1000; }
+        else if (arucoDictName == "DICT_7X7_50") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_7X7_50; }
+        else if (arucoDictName == "DICT_7X7_100") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_7X7_100; }
+        else if (arucoDictName == "DICT_7X7_250") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_7X7_250; }
+        else if (arucoDictName == "DICT_7X7_1000") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_7X7_1000; }
+        else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_ARUCO_ORIGINAL; }
+        else if (arucoDictName == "DICT_APRILTAG_16h5") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_APRILTAG_16h5; }
+        else if (arucoDictName == "DICT_APRILTAG_25h9") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_APRILTAG_25h9; }
+        else if (arucoDictName == "DICT_APRILTAG_36h10") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_APRILTAG_36h10; }
+        else if (arucoDictName == "DICT_APRILTAG_36h11") { mCapParams.charucoDictName = ncvslideio::aruco::DICT_APRILTAG_36h11; }
         else {
             std::cout << "incorrect name of aruco dictionary \n";
             return false;
@@ -164,7 +164,7 @@ bool calib::parametersController::loadFromParser(cv::CommandLineParser &parser)
     }
 
     if(parser.has("w") && parser.has("h")) {
-        mCapParams.inputBoardSize = cv::Size(parser.get<int>("w"), parser.get<int>("h"));
+        mCapParams.inputBoardSize = ncvslideio::Size(parser.get<int>("w"), parser.get<int>("h"));
         //only for chessboard pattern board size given in inner corners
         if (templateType != "chessboard") {
             mCapParams.boardSizeUnits = mCapParams.inputBoardSize;

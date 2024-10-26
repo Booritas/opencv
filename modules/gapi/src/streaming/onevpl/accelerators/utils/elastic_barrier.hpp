@@ -8,7 +8,7 @@
 #define GAPI_STREAMING_ONEVPL_ACCELERATORS_UTILS_ELASTIC_BARRIER_HPP
 #include <atomic>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -291,6 +291,6 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_UTILS_ELASTIC_BARRIER_HPP

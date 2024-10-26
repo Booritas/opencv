@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <opencv2/calib3d.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace sqpnp {
 
 const double PoseSolver::RANK_TOLERANCE = 1e-7;
@@ -69,8 +69,8 @@ const int PoseSolver::SQP_MAX_ITERATION = 15;
 // are assumed to be valid
 template <typename tp, int snrows, int sncols,
     int dnrows, int dncols>
-    void set(int row, int col, cv::Matx<tp, dnrows, dncols>& dest,
-        const cv::Matx<tp, snrows, sncols>& source)
+    void set(int row, int col, ncvslideio::Matx<tp, dnrows, dncols>& dest,
+        const ncvslideio::Matx<tp, snrows, sncols>& source)
 {
     for (int y = 0; y < snrows; y++)
     {
@@ -151,11 +151,11 @@ void PoseSolver::solve(InputArray objectPoints, InputArray imagePoints, OutputAr
 
 void PoseSolver::computeOmega(InputArray objectPoints, InputArray imagePoints)
 {
-    omega_ = cv::Matx<double, 9, 9>::zeros();
-    cv::Matx<double, 3, 9> qa_sum = cv::Matx<double, 3, 9>::zeros();
+    omega_ = ncvslideio::Matx<double, 9, 9>::zeros();
+    ncvslideio::Matx<double, 3, 9> qa_sum = ncvslideio::Matx<double, 3, 9>::zeros();
 
-    cv::Point2d sum_img(0, 0);
-    cv::Point3d sum_obj(0, 0, 0);
+    ncvslideio::Point2d sum_img(0, 0);
+    ncvslideio::Point3d sum_obj(0, 0, 0);
     double sq_norm_sum = 0;
 
     Mat _imagePoints = imagePoints.getMat();
@@ -165,8 +165,8 @@ void PoseSolver::computeOmega(InputArray objectPoints, InputArray imagePoints)
 
     for (int i = 0; i < n; i++)
     {
-        const cv::Point2d& img_pt = _imagePoints.at<cv::Point2d>(i);
-        const cv::Point3d& obj_pt = _objectPoints.at<cv::Point3d>(i);
+        const ncvslideio::Point2d& img_pt = _imagePoints.at<ncvslideio::Point2d>(i);
+        const ncvslideio::Point3d& obj_pt = _objectPoints.at<ncvslideio::Point3d>(i);
 
         sum_img += img_pt;
         sum_obj += obj_pt;
@@ -241,7 +241,7 @@ void PoseSolver::computeOmega(InputArray objectPoints, InputArray imagePoints)
     omega_(7, 0) = omega_(0, 7); omega_(7, 1) = omega_(1, 7); omega_(7, 2) = omega_(2, 7); omega_(7, 3) = omega_(3, 7); omega_(7, 4) = omega_(4, 7); omega_(7, 5) = omega_(5, 7);
     omega_(8, 0) = omega_(0, 8); omega_(8, 1) = omega_(1, 8); omega_(8, 2) = omega_(2, 8); omega_(8, 3) = omega_(3, 8); omega_(8, 4) = omega_(4, 8); omega_(8, 5) = omega_(5, 8);
 
-    cv::Matx<double, 3, 3> q;
+    ncvslideio::Matx<double, 3, 3> q;
     q(0, 0) = n; q(0, 1) = 0; q(0, 2) = -sum_img.x;
     q(1, 0) = 0; q(1, 1) = n; q(1, 2) = -sum_img.y;
     q(2, 0) = -sum_img.x; q(2, 1) = -sum_img.y; q(2, 2) = sq_norm_sum;
@@ -263,22 +263,22 @@ void PoseSolver::computeOmega(InputArray objectPoints, InputArray imagePoints)
     // Rank revealing QR nullspace computation with full pivoting.
     // This is slightly less accurate compared to SVD but x2-x3 faster
     Eigen::Matrix<double, 9, 9> omega_eig, tmp_eig;
-    cv::cv2eigen(omega_, omega_eig);
+    ncvslideio::cv2eigen(omega_, omega_eig);
     Eigen::FullPivHouseholderQR<Eigen::Matrix<double, 9, 9> > rrqr(omega_eig);
     tmp_eig = rrqr.matrixQ();
-    cv::eigen2cv(tmp_eig, u_);
+    ncvslideio::eigen2cv(tmp_eig, u_);
 
     tmp_eig = rrqr.matrixQR().template triangularView<Eigen::Upper>(); // R
     Eigen::Matrix<double, 9, 1> S_eig = tmp_eig.diagonal().array().abs();
-    cv::eigen2cv(S_eig, s_);
+    ncvslideio::eigen2cv(S_eig, s_);
 #else
     // Use OpenCV's SVD
-    cv::SVD omega_svd(omega_, cv::SVD::FULL_UV);
+    ncvslideio::SVD omega_svd(omega_, ncvslideio::SVD::FULL_UV);
     s_ = omega_svd.w;
-    u_ = cv::Mat(omega_svd.vt.t());
+    u_ = ncvslideio::Mat(omega_svd.vt.t());
 #if 0
     // EVD equivalent of the SVD; less accurate
-    cv::eigen(omega_, s_, u_);
+    ncvslideio::eigen(omega_, s_, u_);
     u_ = u_.t(); // eigenvectors were returned as rows
 #endif
 
@@ -290,7 +290,7 @@ void PoseSolver::computeOmega(InputArray objectPoints, InputArray imagePoints)
 
     CV_Assert(++num_null_vectors_ <= 6);
 
-    point_mean_ = cv::Vec3d(sum_obj.x / n, sum_obj.y / n, sum_obj.z / n);
+    point_mean_ = ncvslideio::Vec3d(sum_obj.x / n, sum_obj.y / n, sum_obj.z / n);
 }
 
 void PoseSolver::solveInternal(InputArray objectPoints)
@@ -300,7 +300,7 @@ void PoseSolver::solveInternal(InputArray objectPoints)
 
     for (int i = 9 - num_eigen_points; i < 9; i++)
     {
-        const cv::Matx<double, 9, 1> e = SQRT3 * u_.col(i);
+        const ncvslideio::Matx<double, 9, 1> e = SQRT3 * u_.col(i);
         double orthogonality_sq_err = orthogonalityError(e);
 
         SQPSolution solutions[2];
@@ -330,7 +330,7 @@ void PoseSolver::solveInternal(InputArray objectPoints)
     int index, c = 1;
     while ((index = 9 - num_eigen_points - c) > 0 && min_sq_err > 3 * s_[index])
     {
-        const cv::Matx<double, 9, 1> e = u_.col(index);
+        const ncvslideio::Matx<double, 9, 1> e = u_.col(index);
         SQPSolution solutions[2];
 
         Matx<double, 9, 1> r;
@@ -348,19 +348,19 @@ void PoseSolver::solveInternal(InputArray objectPoints)
     }
 }
 
-PoseSolver::SQPSolution PoseSolver::runSQP(const cv::Matx<double, 9, 1>& r0)
+PoseSolver::SQPSolution PoseSolver::runSQP(const ncvslideio::Matx<double, 9, 1>& r0)
 {
-    cv::Matx<double, 9, 1> r = r0;
+    ncvslideio::Matx<double, 9, 1> r = r0;
 
     double delta_squared_norm = std::numeric_limits<double>::max();
-    cv::Matx<double, 9, 1> delta;
+    ncvslideio::Matx<double, 9, 1> delta;
 
     int step = 0;
     while (delta_squared_norm > SQP_SQUARED_TOLERANCE && step++ < SQP_MAX_ITERATION)
     {
         solveSQPSystem(r, delta);
         r += delta;
-        delta_squared_norm = cv::norm(delta, cv::NORM_L2SQR);
+        delta_squared_norm = ncvslideio::norm(delta, ncvslideio::NORM_L2SQR);
     }
 
     SQPSolution solution;
@@ -384,7 +384,7 @@ PoseSolver::SQPSolution PoseSolver::runSQP(const cv::Matx<double, 9, 1>& r0)
     return solution;
 }
 
-void PoseSolver::solveSQPSystem(const cv::Matx<double, 9, 1>& r, cv::Matx<double, 9, 1>& delta)
+void PoseSolver::solveSQPSystem(const ncvslideio::Matx<double, 9, 1>& r, ncvslideio::Matx<double, 9, 1>& delta)
 {
     double sqnorm_r1 = r(0) * r(0) + r(1) * r(1) + r(2) * r(2),
         sqnorm_r2 = r(3) * r(3) + r(4) * r(4) + r(5) * r(5),
@@ -393,16 +393,16 @@ void PoseSolver::solveSQPSystem(const cv::Matx<double, 9, 1>& r, cv::Matx<double
         dot_r1r3 = r(0) * r(6) + r(1) * r(7) + r(2) * r(8),
         dot_r2r3 = r(3) * r(6) + r(4) * r(7) + r(5) * r(8);
 
-    cv::Matx<double, 9, 3> N;
-    cv::Matx<double, 9, 6> H;
-    cv::Matx<double, 6, 6> JH;
+    ncvslideio::Matx<double, 9, 3> N;
+    ncvslideio::Matx<double, 9, 6> H;
+    ncvslideio::Matx<double, 6, 6> JH;
 
     computeRowAndNullspace(r, H, N, JH);
 
-    cv::Matx<double, 6, 1> g;
+    ncvslideio::Matx<double, 6, 1> g;
     g(0) = 1 - sqnorm_r1; g(1) = 1 - sqnorm_r2; g(2) = 1 - sqnorm_r3; g(3) = -dot_r1r2; g(4) = -dot_r2r3; g(5) = -dot_r1r3;
 
-    cv::Matx<double, 6, 1> x;
+    ncvslideio::Matx<double, 6, 1> x;
     x(0) = g(0) / JH(0, 0);
     x(1) = g(1) / JH(1, 1);
     x(2) = g(2) / JH(2, 2);
@@ -413,12 +413,12 @@ void PoseSolver::solveSQPSystem(const cv::Matx<double, 9, 1>& r, cv::Matx<double
     delta = H * x;
 
 
-    cv::Matx<double, 3, 9> nt_omega = N.t() * omega_;
-    cv::Matx<double, 3, 3> W = nt_omega * N, W_inv;
+    ncvslideio::Matx<double, 3, 9> nt_omega = N.t() * omega_;
+    ncvslideio::Matx<double, 3, 3> W = nt_omega * N, W_inv;
 
     analyticalInverse3x3Symm(W, W_inv);
 
-    cv::Matx<double, 3, 1> y = -W_inv * nt_omega * (delta + r);
+    ncvslideio::Matx<double, 3, 1> y = -W_inv * nt_omega * (delta + r);
     delta += N * y;
 }
 
@@ -431,7 +431,7 @@ void PoseSolver::solveSQPSystem(const cv::Matx<double, 9, 1>& r, cv::Matx<double
 //
 // see http://euler.nmt.edu/~brian/ldlt.html
 //
-bool PoseSolver::invertSPD3x3(const cv::Matx<double, 3, 3>& A, cv::Matx<double, 3, 3>& A1)
+bool PoseSolver::invertSPD3x3(const ncvslideio::Matx<double, 3, 3>& A, ncvslideio::Matx<double, 3, 3>& A1)
 {
     double L[3*3], D[3], v[2], x[3];
 
@@ -493,8 +493,8 @@ bool PoseSolver::invertSPD3x3(const cv::Matx<double, 3, 3>& A, cv::Matx<double, 
     return true;
 }
 
-bool PoseSolver::analyticalInverse3x3Symm(const cv::Matx<double, 3, 3>& Q,
-    cv::Matx<double, 3, 3>& Qinv,
+bool PoseSolver::analyticalInverse3x3Symm(const ncvslideio::Matx<double, 3, 3>& Q,
+    ncvslideio::Matx<double, 3, 3>& Qinv,
     const double& threshold)
 {
     // 1. Get the elements of the matrix
@@ -511,7 +511,7 @@ bool PoseSolver::analyticalInverse3x3Symm(const cv::Matx<double, 3, 3>& Q,
     t12 = c * c;
     double det = -t4 * f + a * t2 + t7 * f - 2.0 * t9 * e + t12 * d;
 
-    if (fabs(det) < threshold) { cv::invert(Q, Qinv, cv::DECOMP_SVD); return false; } // fall back to pseudoinverse
+    if (fabs(det) < threshold) { ncvslideio::invert(Q, Qinv, ncvslideio::DECOMP_SVD); return false; } // fall back to pseudoinverse
 
     // 3. Inverse
     double t15, t20, t24, t30;
@@ -529,13 +529,13 @@ bool PoseSolver::analyticalInverse3x3Symm(const cv::Matx<double, 3, 3>& Q,
     return true;
 }
 
-void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
-    cv::Matx<double, 9, 6>& H,
-    cv::Matx<double, 9, 3>& N,
-    cv::Matx<double, 6, 6>& K,
+void PoseSolver::computeRowAndNullspace(const ncvslideio::Matx<double, 9, 1>& r,
+    ncvslideio::Matx<double, 9, 6>& H,
+    ncvslideio::Matx<double, 9, 3>& N,
+    ncvslideio::Matx<double, 6, 6>& K,
     const double& norm_threshold)
 {
-    H = cv::Matx<double, 9, 6>::zeros();
+    H = ncvslideio::Matx<double, 9, 6>::zeros();
 
     // 1. q1
     double norm_r1 = sqrt(r(0) * r(0) + r(1) * r(1) + r(2) * r(2));
@@ -602,7 +602,7 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     H(6, 4) = r(3) - dot_j5q3 * H(6, 2); H(7, 4) = r(4) - dot_j5q3 * H(7, 2); H(8, 4) = r(5) - dot_j5q3 * H(8, 2);
 
     Matx<double, 9, 1> q4 = H.col(4);
-    q4 *= (1.0 / cv::norm(q4));
+    q4 *= (1.0 / ncvslideio::norm(q4));
     set<double, 9, 1, 9, 6>(0, 4, H, q4);
 
     K(4, 0) = 0;
@@ -631,7 +631,7 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     H(8, 5) = r(2) - dot_j6q3 * H(8, 2) - dot_j6q5 * H(8, 4);
 
     Matx<double, 9, 1> q5 = H.col(5);
-    q5 *= (1.0 / cv::norm(q5));
+    q5 *= (1.0 / ncvslideio::norm(q5));
     set<double, 9, 1, 9, 6>(0, 5, H, q5);
 
     K(5, 0) = r(6) * H(0, 0) + r(7) * H(1, 0) + r(8) * H(2, 0);
@@ -643,7 +643,7 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     // Great! Now H is an orthogonalized, sparse basis of the Jacobian row space and K is filled.
     //
     // Now get a projector onto the null space H:
-    const cv::Matx<double, 9, 9> Pn = cv::Matx<double, 9, 9>::eye() - (H * H.t());
+    const ncvslideio::Matx<double, 9, 9> Pn = ncvslideio::Matx<double, 9, 9>::eye() - (H * H.t());
 
     // Now we need to pick 3 columns of P with non-zero norm (> 0.3) and some angle between them (> 0.3).
     //
@@ -659,7 +659,7 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     double col_norms[9];
     for (int i = 0; i < 9; i++)
     {
-        col_norms[i] = cv::norm(Pn.col(i));
+        col_norms[i] = ncvslideio::norm(Pn.col(i));
         if (col_norms[i] >= norm_threshold)
         {
             if (max_norm1 < col_norms[i])
@@ -693,7 +693,7 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     Matx<double, 9, 1> v2 = Pn.col(index2);
     Matx<double, 9, 1> n0 = N.col(0);
     v2 -= v2.dot(n0) * n0;
-    v2 *= (1.0 / cv::norm(v2));
+    v2 *= (1.0 / ncvslideio::norm(v2));
     set<double, 9, 1, 9, 3>(0, 1, N, v2);
     col_norms[index2] = -1.0; // mark to avoid use in subsequent loops
 
@@ -717,21 +717,21 @@ void PoseSolver::computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
     Matx<double, 9, 1> v3 = Pn.col(index3);
     Matx<double, 9, 1> n1 = N.col(1);
     v3 -= (v3.dot(n1)) * n1 - (v3.dot(n0)) * n0;
-    v3 *= (1.0 / cv::norm(v3));
+    v3 *= (1.0 / ncvslideio::norm(v3));
     set<double, 9, 1, 9, 3>(0, 2, N, v3);
 
 }
 
 // if e = u*w*vt then r=u*diag([1, 1, det(u)*det(v)])*vt
-void PoseSolver::nearestRotationMatrixSVD(const cv::Matx<double, 9, 1>& e,
-    cv::Matx<double, 9, 1>& r)
+void PoseSolver::nearestRotationMatrixSVD(const ncvslideio::Matx<double, 9, 1>& e,
+    ncvslideio::Matx<double, 9, 1>& r)
 {
-    cv::Matx<double, 3, 3> e33 = e.reshape<3, 3>();
-    cv::SVD e33_svd(e33, cv::SVD::FULL_UV);
-    double detuv = cv::determinant(e33_svd.u)*cv::determinant(e33_svd.vt);
-    cv::Matx<double, 3, 3> diag = cv::Matx33d::eye();
+    ncvslideio::Matx<double, 3, 3> e33 = e.reshape<3, 3>();
+    ncvslideio::SVD e33_svd(e33, ncvslideio::SVD::FULL_UV);
+    double detuv = ncvslideio::determinant(e33_svd.u)*ncvslideio::determinant(e33_svd.vt);
+    ncvslideio::Matx<double, 3, 3> diag = ncvslideio::Matx33d::eye();
     diag(2, 2) = detuv;
-    cv::Matx<double, 3, 3> r33 = cv::Mat(e33_svd.u*diag*e33_svd.vt);
+    ncvslideio::Matx<double, 3, 3> r33 = ncvslideio::Mat(e33_svd.u*diag*e33_svd.vt);
     r = r33.reshape<9, 1>();
 }
 
@@ -749,8 +749,8 @@ void PoseSolver::nearestRotationMatrixSVD(const cv::Matx<double, 9, 1>& e,
  *  Institute of Computer Science, Foundation for Research & Technology - Hellas
  *  Heraklion, Crete, Greece.
  */
-void PoseSolver::nearestRotationMatrixFOAM(const cv::Matx<double, 9, 1>& e,
-    cv::Matx<double, 9, 1>& r)
+void PoseSolver::nearestRotationMatrixFOAM(const ncvslideio::Matx<double, 9, 1>& e,
+    ncvslideio::Matx<double, 9, 1>& r)
 {
     int i;
     double l, lprev, det_e, e_sq, adj_e_sq, adj_e[9];
@@ -834,7 +834,7 @@ void PoseSolver::nearestRotationMatrixFOAM(const cv::Matx<double, 9, 1>& e,
     }
 }
 
-double PoseSolver::det3x3(const cv::Matx<double, 9, 1>& e)
+double PoseSolver::det3x3(const ncvslideio::Matx<double, 9, 1>& e)
 {
     return ( e(0) * e(4) * e(8) + e(1) * e(5) * e(6) + e(2) * e(3) * e(7) )
          - ( e(6) * e(4) * e(2) + e(7) * e(5) * e(0) + e(8) * e(3) * e(1) );
@@ -842,16 +842,16 @@ double PoseSolver::det3x3(const cv::Matx<double, 9, 1>& e)
 
 inline bool PoseSolver::positiveDepth(const SQPSolution& solution) const
 {
-    const cv::Matx<double, 9, 1>& r = solution.r_hat;
-    const cv::Matx<double, 3, 1>& t = solution.t;
-    const cv::Vec3d& mean = point_mean_;
+    const ncvslideio::Matx<double, 9, 1>& r = solution.r_hat;
+    const ncvslideio::Matx<double, 3, 1>& t = solution.t;
+    const ncvslideio::Vec3d& mean = point_mean_;
     return (r(6) * mean(0) + r(7) * mean(1) + r(8) * mean(2) + t(2) > 0);
 }
 
 inline bool PoseSolver::positiveMajorityDepths(const SQPSolution& solution, InputArray objectPoints) const
 {
-    const cv::Matx<double, 9, 1>& r = solution.r_hat;
-    const cv::Matx<double, 3, 1>& t = solution.t;
+    const ncvslideio::Matx<double, 9, 1>& r = solution.r_hat;
+    const ncvslideio::Matx<double, 3, 1>& t = solution.t;
     int npos = 0, nneg = 0;
 
     Mat _objectPoints = objectPoints.getMat();
@@ -860,7 +860,7 @@ inline bool PoseSolver::positiveMajorityDepths(const SQPSolution& solution, Inpu
 
     for (int i = 0; i < n; i++)
     {
-        const cv::Point3d& obj_pt = _objectPoints.at<cv::Point3d>(i);
+        const ncvslideio::Point3d& obj_pt = _objectPoints.at<ncvslideio::Point3d>(i);
         if (r(6) * obj_pt.x + r(7) * obj_pt.y + r(8) * obj_pt.z + t(2) > 0) ++npos;
         else ++nneg;
     }
@@ -889,7 +889,7 @@ void PoseSolver::checkSolution(SQPSolution& solution, InputArray objectPoints, d
             bool found = false;
             for (int i = 0; i < num_solutions_; i++)
             {
-                if (cv::norm(solutions_[i].r_hat - solution.r_hat, cv::NORM_L2SQR) < EQUAL_VECTORS_SQUARED_DIFF)
+                if (ncvslideio::norm(solutions_[i].r_hat - solution.r_hat, ncvslideio::NORM_L2SQR) < EQUAL_VECTORS_SQUARED_DIFF)
                 {
                     if (solutions_[i].sq_error > solution.sq_error)
                     {
@@ -909,7 +909,7 @@ void PoseSolver::checkSolution(SQPSolution& solution, InputArray objectPoints, d
     }
 }
 
-double PoseSolver::orthogonalityError(const cv::Matx<double, 9, 1>& e)
+double PoseSolver::orthogonalityError(const ncvslideio::Matx<double, 9, 1>& e)
 {
     double sq_norm_e1 = e(0) * e(0) + e(1) * e(1) + e(2) * e(2);
     double sq_norm_e2 = e(3) * e(3) + e(4) * e(4) + e(5) * e(5);

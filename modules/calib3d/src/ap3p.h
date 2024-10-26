@@ -3,11 +3,11 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 class ap3p {
 private:
     template<typename T>
-    void init_camera_parameters(const cv::Mat &cameraMatrix) {
+    void init_camera_parameters(const ncvslideio::Mat &cameraMatrix) {
         cx = cameraMatrix.at<T>(0, 2);
         cy = cameraMatrix.at<T>(1, 2);
         fx = cameraMatrix.at<T>(0, 0);
@@ -15,7 +15,7 @@ private:
     }
 
     template<typename OpointType, typename IpointType>
-    void extract_points(const cv::Mat &opoints, const cv::Mat &ipoints, std::vector<double> &points) {
+    void extract_points(const ncvslideio::Mat &opoints, const ncvslideio::Mat &ipoints, std::vector<double> &points) {
         points.clear();
         int npoints = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F));
         points.resize(5*4); //resize vector to fit for p4p case
@@ -43,10 +43,10 @@ public:
 
     ap3p(double fx, double fy, double cx, double cy);
 
-    ap3p(cv::Mat cameraMatrix);
+    ap3p(ncvslideio::Mat cameraMatrix);
 
-    bool solve(cv::Mat &R, cv::Mat &tvec, const cv::Mat &opoints, const cv::Mat &ipoints);
-    int solve(std::vector<cv::Mat> &Rs, std::vector<cv::Mat> &tvecs, const cv::Mat &opoints, const cv::Mat &ipoints);
+    bool solve(ncvslideio::Mat &R, ncvslideio::Mat &tvec, const ncvslideio::Mat &opoints, const ncvslideio::Mat &ipoints);
+    int solve(std::vector<ncvslideio::Mat> &Rs, std::vector<ncvslideio::Mat> &tvecs, const ncvslideio::Mat &opoints, const ncvslideio::Mat &ipoints);
 
     int solve(double R[4][3][3], double t[4][3],
               double mu0, double mv0, double X0, double Y0, double Z0,

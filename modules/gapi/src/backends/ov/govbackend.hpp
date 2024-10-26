@@ -7,7 +7,7 @@
 #ifndef OPENCV_GAPI_GOVBACKEND_HPP
 #define OPENCV_GAPI_GOVBACKEND_HPP
 
-// Include anyway - cv::gapi::ov::backend() still needs to be defined
+// Include anyway - ncvslideio::gapi::ov::backend() still needs to be defined
 #include "opencv2/gapi/infer/ov.hpp"
 
 #if defined HAVE_INF_ENGINE && INF_ENGINE_RELEASE >= 2022010000
@@ -16,7 +16,7 @@
 
 #include "backends/common/gbackend.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace ov {
 
@@ -53,7 +53,7 @@ class GOVExecutable final: public GIslandExecutable
 
 public:
     GOVExecutable(const ade::Graph                   &graph,
-                  const cv::GCompileArgs             &compileArgs,
+                  const ncvslideio::GCompileArgs             &compileArgs,
                   const std::vector<ade::NodeHandle> &nodes);
 
     virtual inline bool canReshape() const override { return false; }

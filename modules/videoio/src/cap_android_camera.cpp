@@ -17,7 +17,7 @@
 #include <camera/NdkCameraMetadataTags.h>
 #include <media/NdkImageReader.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 #define TAG "NativeCamera"
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
@@ -358,13 +358,13 @@ public:
             Mat yuv(frameHeight + frameHeight/2, frameWidth, CV_8UC1, buffer.data());
             switch (fourCC) {
                 case FOURCC_BGR:
-                    cv::cvtColor(yuv, out, cv::COLOR_YUV2BGR_YV12);
+                    ncvslideio::cvtColor(yuv, out, ncvslideio::COLOR_YUV2BGR_YV12);
                     break;
                 case FOURCC_RGB:
-                    cv::cvtColor(yuv, out, cv::COLOR_YUV2RGB_YV12);
+                    ncvslideio::cvtColor(yuv, out, ncvslideio::COLOR_YUV2RGB_YV12);
                     break;
                 case FOURCC_GRAY:
-                    cv::cvtColor(yuv, out, cv::COLOR_YUV2GRAY_YV12);
+                    ncvslideio::cvtColor(yuv, out, ncvslideio::COLOR_YUV2GRAY_YV12);
                     break;
                 case FOURCC_YV12:
                     yuv.copyTo(out);
@@ -378,13 +378,13 @@ public:
             Mat tmp = (frameWidth == frameStride) ? yuv : yuv(Rect(0, 0, frameWidth, frameHeight + frameHeight / 2));
             switch (fourCC) {
                 case FOURCC_BGR:
-                    cv::cvtColor(tmp, out, cv::COLOR_YUV2BGR_NV21);
+                    ncvslideio::cvtColor(tmp, out, ncvslideio::COLOR_YUV2BGR_NV21);
                     break;
                 case FOURCC_RGB:
-                    cv::cvtColor(tmp, out, cv::COLOR_YUV2RGB_NV21);
+                    ncvslideio::cvtColor(tmp, out, ncvslideio::COLOR_YUV2RGB_NV21);
                     break;
                 case FOURCC_GRAY:
-                    cv::cvtColor(tmp, out, cv::COLOR_YUV2GRAY_NV21);
+                    ncvslideio::cvtColor(tmp, out, ncvslideio::COLOR_YUV2GRAY_NV21);
                     break;
                 case FOURCC_NV21:
                     tmp.copyTo(out);
@@ -788,7 +788,7 @@ void OnCaptureFailed(void* context,
 
 /****************** Implementation of interface functions ********************/
 
-Ptr<IVideoCapture> cv::createAndroidCapture_cam( int index ) {
+Ptr<IVideoCapture> ncvslideio::createAndroidCapture_cam( int index ) {
     Ptr<AndroidCameraCapture> res = makePtr<AndroidCameraCapture>();
     if (res && res->initCapture(index))
         return res;

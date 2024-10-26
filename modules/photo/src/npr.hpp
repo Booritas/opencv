@@ -48,7 +48,7 @@
 
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 double myinf = std::numeric_limits<double>::infinity();
 

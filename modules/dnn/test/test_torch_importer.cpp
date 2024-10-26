@@ -49,8 +49,8 @@ namespace opencv_test
 
 using namespace std;
 using namespace testing;
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 template<typename TStr>
 static std::string _tf(TStr filename, bool inTorchDir = true, bool required = true)
@@ -554,14 +554,14 @@ TEST_P(Test_Torch_nets, FastNeuralStyle_accuracy)
         getPlane(out, 0, 0) += 103.939;
         getPlane(out, 0, 1) += 116.779;
         getPlane(out, 0, 2) += 123.68;
-        out = cv::min(cv::max(0, out), 255);
+        out = ncvslideio::min(ncvslideio::max(0, out), 255);
 
         Mat ref = imread(findDataFile(targets[i]));
         Mat refBlob = blobFromImage(ref, 1.0, Size(), Scalar(), false);
 
         if (target == DNN_TARGET_OPENCL_FP16 || target == DNN_TARGET_MYRIAD)
         {
-            double normL1 = cvtest::norm(refBlob, out, cv::NORM_L1) / refBlob.total();
+            double normL1 = cvtest::norm(refBlob, out, ncvslideio::NORM_L1) / refBlob.total();
             if (target == DNN_TARGET_MYRIAD)
                 EXPECT_LE(normL1, 4.0f);
             else if (backend == DNN_BACKEND_INFERENCE_ENGINE_NGRAPH && target == DNN_TARGET_OPENCL_FP16)

@@ -15,7 +15,7 @@
 
 #include <opencv2/gapi/own/exports.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi{
 
 /**
@@ -58,6 +58,6 @@ public:
 };
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif //OPENCV_GAPI_GASYNC_CONTEXT_HPP

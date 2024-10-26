@@ -42,7 +42,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace cv{
+namespace ncvslideio{
 
     class AddFloatToCharScaled{
         public:

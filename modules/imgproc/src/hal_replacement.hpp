@@ -104,7 +104,7 @@ struct cvhalFilter2D {};
    @param anchor_y relative Y position of center point within the kernel
    @param allowSubmatrix indicates whether the submatrices will be allowed as source image
    @param allowInplace indicates whether the inplace operation will be possible
-   @sa cv::filter2D, cv::hal::Filter2D
+   @sa ncvslideio::filter2D, ncvslideio::hal::Filter2D
  */
 inline int hal_ni_filterInit(cvhalFilter2D **context, uchar *kernel_data, size_t kernel_step, int kernel_type, int kernel_width, int kernel_height, int max_width, int max_height, int src_type, int dst_type, int borderType, double delta, int anchor_x, int anchor_y, bool allowSubmatrix, bool allowInplace) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -120,13 +120,13 @@ inline int hal_ni_filterInit(cvhalFilter2D **context, uchar *kernel_data, size_t
    @param full_height full height of source image (outside the ROI)
    @param offset_x source image ROI offset X
    @param offset_y source image ROI offset Y
-   @sa cv::filter2D, cv::hal::Filter2D
+   @sa ncvslideio::filter2D, ncvslideio::hal::Filter2D
  */
 inline int hal_ni_filter(cvhalFilter2D *context, uchar *src_data, size_t src_step, uchar *dst_data, size_t dst_step, int width, int height, int full_width, int full_height, int offset_x, int offset_y) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
    @brief hal_filterFree
    @param context pointer to user-defined context
-   @sa cv::filter2D, cv::hal::Filter2D
+   @sa ncvslideio::filter2D, ncvslideio::hal::Filter2D
  */
 inline int hal_ni_filterFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 
@@ -150,7 +150,7 @@ inline int hal_ni_filterFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NOT_I
    @param anchor_y relative Y position of center point within the kernel
    @param delta added to pixel values
    @param borderType border processing mode (CV_HAL_BORDER_REFLECT, ...)
-   @sa cv::sepFilter2D, cv::hal::SepFilter2D
+   @sa ncvslideio::sepFilter2D, ncvslideio::hal::SepFilter2D
  */
 inline int hal_ni_sepFilterInit(cvhalFilter2D **context, int src_type, int dst_type, int kernel_type, uchar *kernelx_data, int kernelx_length, uchar *kernely_data, int kernely_length, int anchor_x, int anchor_y, double delta, int borderType) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -166,13 +166,13 @@ inline int hal_ni_sepFilterInit(cvhalFilter2D **context, int src_type, int dst_t
    @param full_height full height of source image (outside the ROI)
    @param offset_x source image ROI offset X
    @param offset_y source image ROI offset Y
-   @sa cv::sepFilter2D, cv::hal::SepFilter2D
+   @sa ncvslideio::sepFilter2D, ncvslideio::hal::SepFilter2D
  */
 inline int hal_ni_sepFilter(cvhalFilter2D *context, uchar *src_data, size_t src_step, uchar* dst_data, size_t dst_step, int width, int height, int full_width, int full_height, int offset_x, int offset_y) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
    @brief hal_sepFilterFree
    @param context pointer to user-defined context
-   @sa cv::sepFilter2D, cv::hal::SepFilter2D
+   @sa ncvslideio::sepFilter2D, ncvslideio::hal::SepFilter2D
  */
 inline int hal_ni_sepFilterFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 
@@ -202,7 +202,7 @@ inline int hal_ni_sepFilterFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NO
    @param iterations number of iterations
    @param allowSubmatrix indicates whether the submatrices will be allowed as source image
    @param allowInplace indicates whether the inplace operation will be possible
-   @sa cv::erode, cv::dilate, cv::morphologyEx, cv::hal::Morph
+   @sa ncvslideio::erode, ncvslideio::dilate, ncvslideio::morphologyEx, ncvslideio::hal::Morph
  */
 inline int hal_ni_morphInit(cvhalFilter2D **context, int operation, int src_type, int dst_type, int max_width, int max_height, int kernel_type, uchar *kernel_data, size_t kernel_step, int kernel_width, int kernel_height, int anchor_x, int anchor_y, int borderType, const double borderValue[4], int iterations, bool allowSubmatrix, bool allowInplace) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -222,13 +222,13 @@ inline int hal_ni_morphInit(cvhalFilter2D **context, int operation, int src_type
    @param dst_full_height full height of destination image
    @param dst_roi_x destination image ROI X offset
    @param dst_roi_y destination image ROI Y offset
-   @sa cv::erode, cv::dilate, cv::morphologyEx, cv::hal::Morph
+   @sa ncvslideio::erode, ncvslideio::dilate, ncvslideio::morphologyEx, ncvslideio::hal::Morph
  */
 inline int hal_ni_morph(cvhalFilter2D *context, uchar *src_data, size_t src_step, uchar *dst_data, size_t dst_step, int width, int height, int src_full_width, int src_full_height, int src_roi_x, int src_roi_y, int dst_full_width, int dst_full_height, int dst_roi_x, int dst_roi_y) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
    @brief hal_morphFree
    @param context pointer to user-defined context
-   @sa cv::erode, cv::dilate, cv::morphologyEx, cv::hal::Morph
+   @sa ncvslideio::erode, ncvslideio::dilate, ncvslideio::morphologyEx, ncvslideio::hal::Morph
  */
 inline int hal_ni_morphFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 
@@ -252,7 +252,7 @@ inline int hal_ni_morphFree(cvhalFilter2D *context) { return CV_HAL_ERROR_NOT_IM
    @param inv_scale_x inversed scale X coefficient
    @param inv_scale_y inversed scale Y coefficient
    @param interpolation interpolation mode (CV_HAL_INTER_NEAREST, ...)
-   @sa cv::resize, cv::hal::resize
+   @sa ncvslideio::resize, ncvslideio::hal::resize
  */
 inline int hal_ni_resize(int src_type, const uchar *src_data, size_t src_step, int src_width, int src_height, uchar *dst_data, size_t dst_step, int dst_width, int dst_height, double inv_scale_x, double inv_scale_y, int interpolation) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -270,7 +270,7 @@ inline int hal_ni_resize(int src_type, const uchar *src_data, size_t src_step, i
    @param interpolation interpolation mode (CV_HAL_INTER_NEAREST, ...)
    @param borderType border processing mode (CV_HAL_BORDER_REFLECT, ...)
    @param borderValue values to use for CV_HAL_BORDER_CONSTANT mode
-   @sa cv::warpAffine, cv::hal::warpAffine
+   @sa ncvslideio::warpAffine, ncvslideio::hal::warpAffine
  */
 inline int hal_ni_warpAffine(int src_type, const uchar *src_data, size_t src_step, int src_width, int src_height, uchar *dst_data, size_t dst_step, int dst_width, int dst_height, const double M[6], int interpolation, int borderType, const double borderValue[4]) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -281,7 +281,7 @@ inline int hal_ni_warpAffine(int src_type, const uchar *src_data, size_t src_ste
    @param X0 input M1 * y + M2 value
    @param Y0 input M4 * y + M5 value
    @param bw length of the row
-   @sa cv::warpAffineBlocklineNN, cv::hal::warpAffineBlocklineNN
+   @sa ncvslideio::warpAffineBlocklineNN, ncvslideio::hal::warpAffineBlocklineNN
  */
 inline int hal_ni_warpAffineBlocklineNN(int *adelta, int *bdelta, short* xy, int X0, int Y0, int bw) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -293,7 +293,7 @@ inline int hal_ni_warpAffineBlocklineNN(int *adelta, int *bdelta, short* xy, int
    @param X0 input M1 * y + M2 value
    @param Y0 input M4 * y + M5 value
    @param bw length of the row
-   @sa cv::warpAffineBlockline, cv::hal::warpAffineBlockline
+   @sa ncvslideio::warpAffineBlockline, ncvslideio::hal::warpAffineBlockline
  */
 inline int hal_ni_warpAffineBlockline(int *adelta, int *bdelta, short* xy, short* alpha, int X0, int Y0, int bw) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -311,7 +311,7 @@ inline int hal_ni_warpAffineBlockline(int *adelta, int *bdelta, short* xy, short
    @param interpolation interpolation mode (CV_HAL_INTER_NEAREST, ...)
    @param borderType border processing mode (CV_HAL_BORDER_REFLECT, ...)
    @param borderValue values to use for CV_HAL_BORDER_CONSTANT mode
-   @sa cv::warpPerspective, cv::hal::warpPerspective
+   @sa ncvslideio::warpPerspective, ncvslideio::hal::warpPerspective
  */
 inline int hal_ni_warpPerspective(int src_type, const uchar *src_data, size_t src_step, int src_width, int src_height, uchar *dst_data, size_t dst_step, int dst_width, int dst_height, const double M[9], int interpolation, int borderType, const double borderValue[4]) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -322,7 +322,7 @@ inline int hal_ni_warpPerspective(int src_type, const uchar *src_data, size_t sr
    @param Y0 input M3 * x0 + M4 * y + M5 value
    @param W0 input M6 * x0 + M7 * y + M8 value
    @param bw length of the row
-   @sa cv::warpPerspectiveBlocklineNN, cv::hal::warpPerspectiveBlocklineNN
+   @sa ncvslideio::warpPerspectiveBlocklineNN, ncvslideio::hal::warpPerspectiveBlocklineNN
  */
 inline int hal_ni_warpPerspectiveBlocklineNN(const double *M, short* xy, double X0, double Y0, double W0, int bw) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 /**
@@ -334,7 +334,7 @@ inline int hal_ni_warpPerspectiveBlocklineNN(const double *M, short* xy, double 
    @param Y0 input M3 * x0 + M4 * y + M5 value
    @param W0 input M6 * x0 + M7 * y + M8 value
    @param bw length of the row
-   @sa cv::warpPerspectiveBlockline, cv::hal::warpPerspectiveBlockline
+   @sa ncvslideio::warpPerspectiveBlockline, ncvslideio::hal::warpPerspectiveBlockline
  */
 inline int hal_ni_warpPerspectiveBlockline(const double *M, short* xy, short* alpha, double X0, double Y0, double W0, int bw) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 
@@ -366,7 +366,7 @@ inline int hal_ni_warpPerspectiveBlockline(const double *M, short* xy, short* al
    @param interpolation interpolation mode (CV_HAL_INTER_NEAREST, ...)
    @param border_type border processing mode (CV_HAL_BORDER_REFLECT, ...)
    @param border_value values to use for CV_HAL_BORDER_CONSTANT mode
-   @sa cv::remap
+   @sa ncvslideio::remap
  */
 inline int hal_ni_remap32f(int src_type, const uchar *src_data, size_t src_step, int src_width, int src_height,
                            uchar *dst_data, size_t dst_step, int dst_width, int dst_height,
@@ -972,7 +972,7 @@ inline int hal_ni_cvtMultipliedRGBAtoRGBA(const uchar * src_data, size_t src_ste
    CV_32F | CV_32F | CV_32F
    CV_32F | CV_64F | CV_64F
    CV_64F | CV_64F | CV_64F
-   @sa cv::integral
+   @sa ncvslideio::integral
 */
 inline int hal_ni_integral(int depth, int sdepth, int sqdepth, const uchar * src_data, size_t src_step, uchar * sum_data, size_t sum_step, uchar * sqsum_data, size_t sqsum_step, uchar * tilted_data, size_t tilted_step, int width, int height, int cn) { return CV_HAL_ERROR_NOT_IMPLEMENTED; }
 
@@ -1344,7 +1344,7 @@ inline int hal_ni_polygonMoments(const uchar* src_data, size_t src_size, int src
     if (res == CV_HAL_ERROR_OK) \
         return retval; \
     else if (res != CV_HAL_ERROR_NOT_IMPLEMENTED) \
-        CV_Error_(cv::Error::StsInternal, \
+        CV_Error_(ncvslideio::Error::StsInternal, \
             ("HAL implementation " CVAUX_STR(name) " ==> " CVAUX_STR(fun) " returned %d (0x%08x)", res, res));
 
 
@@ -1353,7 +1353,7 @@ inline int hal_ni_polygonMoments(const uchar* src_data, size_t src_size, int src
     if (res == CV_HAL_ERROR_OK) \
         return; \
     else if (res != CV_HAL_ERROR_NOT_IMPLEMENTED) \
-        CV_Error_(cv::Error::StsInternal, \
+        CV_Error_(ncvslideio::Error::StsInternal, \
             ("HAL implementation " CVAUX_STR(name) " ==> " CVAUX_STR(fun) " returned %d (0x%08x)", res, res));
 //! @endcond
 

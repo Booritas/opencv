@@ -17,7 +17,7 @@ typedef perf::TestBaseWithParam<SrcSize_DistType_MaskSize_LabelType> DistanceTra
 
 PERF_TEST_P(DistanceTransform_Test, distanceTransform,
             testing::Combine(
-                testing::Values(cv::Size(640, 480), cv::Size(800, 600), cv::Size(1024, 768), cv::Size(1280, 1024)),
+                testing::Values(ncvslideio::Size(640, 480), ncvslideio::Size(800, 600), ncvslideio::Size(1024, 768), ncvslideio::Size(1280, 1024)),
                 DistanceType::all(),
                 MaskSize::all(),
                 DstType::all()
@@ -46,7 +46,7 @@ PERF_TEST_P(DistanceTransform_Test, distanceTransform,
 
 PERF_TEST_P(DistanceTransform_NeedLabels_Test, distanceTransform_NeedLabels,
             testing::Combine(
-                testing::Values(cv::Size(640, 480), cv::Size(800, 600), cv::Size(1024, 768), cv::Size(1280, 1024)),
+                testing::Values(ncvslideio::Size(640, 480), ncvslideio::Size(800, 600), ncvslideio::Size(1024, 768), ncvslideio::Size(1280, 1024)),
                 DistanceType::all(),
                 MaskSize::all(),
                 LabelType::all()

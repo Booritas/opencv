@@ -10,7 +10,7 @@
 #include "opencv2/video/video.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 typedef unsigned char uchar;
 #define LOOP_NUM 10
@@ -109,8 +109,8 @@ int main(int argc, const char* argv[])
     UMat frame1;
     imread(fname1, IMREAD_GRAYSCALE).copyTo(frame1);
 
-    vector<cv::Point2f> pts(points);
-    vector<cv::Point2f> nextPts(points);
+    vector<ncvslideio::Point2f> pts(points);
+    vector<ncvslideio::Point2f> nextPts(points);
     vector<unsigned char> status(points);
     vector<float> err;
 
@@ -188,7 +188,7 @@ int main(int argc, const char* argv[])
                 break;
             else if (key == 'm' || key == 'M')
             {
-                ocl::setUseOpenCL(!cv::ocl::useOpenCL());
+                ocl::setUseOpenCL(!ncvslideio::ocl::useOpenCL());
                 cout << "Switched to " << (ocl::useOpenCL() ? "OpenCL" : "CPU") << " mode\n";
             }
         }

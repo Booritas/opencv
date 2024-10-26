@@ -92,7 +92,7 @@ TEST(blobFromImage_4ch, Regression)
     for (int i = 0; i < 4; i++)
     {
         ch[i] = Mat(img.rows, img.cols, CV_32F, blob.ptr(0, i));
-        ASSERT_DOUBLE_EQ(cvtest::norm(ch[i], cv::NORM_INF), i);
+        ASSERT_DOUBLE_EQ(cvtest::norm(ch[i], ncvslideio::NORM_INF), i);
     }
 }
 
@@ -110,16 +110,16 @@ TEST(imagesFromBlob, Regression)
 {
     int nbOfImages = 8;
 
-    std::vector<cv::Mat> inputImgs(nbOfImages);
+    std::vector<ncvslideio::Mat> inputImgs(nbOfImages);
     for (int i = 0; i < nbOfImages; i++)
     {
-        inputImgs[i] = cv::Mat::ones(100, 100, CV_32FC3);
-        cv::randu(inputImgs[i], cv::Scalar::all(0), cv::Scalar::all(1));
+        inputImgs[i] = ncvslideio::Mat::ones(100, 100, CV_32FC3);
+        ncvslideio::randu(inputImgs[i], ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(1));
     }
 
-    cv::Mat blob = cv::dnn::blobFromImages(inputImgs, 1., cv::Size(), cv::Scalar(), false, false);
-    std::vector<cv::Mat> outputImgs;
-    cv::dnn::imagesFromBlob(blob, outputImgs);
+    ncvslideio::Mat blob = ncvslideio::dnn::blobFromImages(inputImgs, 1., ncvslideio::Size(), ncvslideio::Scalar(), false, false);
+    std::vector<ncvslideio::Mat> outputImgs;
+    ncvslideio::dnn::imagesFromBlob(blob, outputImgs);
 
     for (int i = 0; i < nbOfImages; i++)
     {
@@ -132,7 +132,7 @@ TEST(imagesFromBlob, Regression)
 
 TEST(blobFromImageWithParams_4ch, NHWC_scalar_scale)
 {
-    Mat img(10, 10, CV_8UC4, cv::Scalar(0, 1, 2, 3));
+    Mat img(10, 10, CV_8UC4, ncvslideio::Scalar(0, 1, 2, 3));
     std::vector<double> factorVec = { 0.1, 0.2, 0.3, 0.4 };
 
     Scalar scalefactor(factorVec[0], factorVec[1], factorVec[2], factorVec[3]);
@@ -170,7 +170,7 @@ TEST(blobFromImageWithParams_CustomPadding, letter_box)
 
     Mat targetImg = img.clone();
 
-    cv::copyMakeBorder(
+    ncvslideio::copyMakeBorder(
         targetImg, targetImg, 0, 0,
         targetSize.width / 2,
         targetSize.width / 2,
@@ -194,7 +194,7 @@ TEST(blobFromImageWithParams_CustomPadding, letter_box)
 
 TEST(blobFromImageWithParams_4ch, letter_box)
 {
-    Mat img(40, 20, CV_8UC4, cv::Scalar(0, 1, 2, 3));
+    Mat img(40, 20, CV_8UC4, ncvslideio::Scalar(0, 1, 2, 3));
 
     // Construct target mat.
     Mat targetCh[4];
@@ -222,7 +222,7 @@ TEST(blobFromImageWithParams_4ch, letter_box)
 
 TEST(blobFromImagesWithParams_4ch, multi_image)
 {
-    Mat img(10, 10, CV_8UC4, cv::Scalar(0, 1, 2, 3));
+    Mat img(10, 10, CV_8UC4, ncvslideio::Scalar(0, 1, 2, 3));
     Scalar scalefactor(0.1, 0.2, 0.3, 0.4);
 
     Image2BlobParams param;
@@ -274,15 +274,15 @@ TEST(readNet, do_not_call_setInput)  // https://github.com/opencv/opencv/issues/
     EXPECT_THROW(
     {
         res = net.forward();  // no inputs after loading => should fail
-    }, cv::Exception);
+    }, ncvslideio::Exception);
     EXPECT_TRUE(res.empty()) << res.size;
 }
 
 TEST(Net, empty_forward_18392)
 {
-    cv::dnn::Net net;
+    ncvslideio::dnn::Net net;
     Mat image(Size(512, 512), CV_8UC3, Scalar::all(0));
-    Mat inputBlob = cv::dnn::blobFromImage(image, 1.0, Size(512, 512), Scalar(0,0,0), true, false);
+    Mat inputBlob = ncvslideio::dnn::blobFromImage(image, 1.0, Size(512, 512), Scalar(0,0,0), true, false);
     net.setInput(inputBlob);
     EXPECT_ANY_THROW(Mat output = net.forward());
 }
@@ -309,7 +309,7 @@ void test_readNet_IE_do_not_call_setInput(Backend backendId)
     EXPECT_THROW(
     {
         res = net.forward();  // no inputs after loading => should fail
-    }, cv::Exception);
+    }, ncvslideio::Exception);
     EXPECT_TRUE(res.empty()) << res.size;
 }
 
@@ -338,7 +338,7 @@ TEST_P(dump, Regression)
     ASSERT_EQ(net.getLayerInputs(net.getLayerId("fire2/concat")).size(), 2);
 
     int size[] = {1, 3, 227, 227};
-    Mat input = cv::Mat::ones(4, size, CV_32F);
+    Mat input = ncvslideio::Mat::ones(4, size, CV_32F);
     net.setInput(input);
     net.setPreferableBackend(backend);
     net.setPreferableTarget(target);
@@ -473,7 +473,7 @@ public:
     virtual void forward(std::vector<Mat*> &inputs, std::vector<Mat> &outputs, std::vector<Mat> &internals) CV_OVERRIDE
     {
         CV_Assert_N(inputs[0]->depth() == CV_32F, outputs[0].depth() == CV_32F);
-        cv::add(*inputs[0], 0.5f, outputs[0]);
+        ncvslideio::add(*inputs[0], 0.5f, outputs[0]);
     }
 };
 
@@ -501,7 +501,7 @@ public:
     virtual void forward(std::vector<Mat*> &inputs, std::vector<Mat> &outputs, std::vector<Mat> &internals) CV_OVERRIDE
     {
         CV_Assert_N(inputs[0]->depth() == CV_32F, outputs[0].depth() == CV_32F);
-        cv::add(*inputs[0], 0.5f, outputs[0]);
+        ncvslideio::add(*inputs[0], 0.5f, outputs[0]);
     }
 
 #ifdef HAVE_OPENCL
@@ -514,7 +514,7 @@ public:
         std::vector<UMat> outputs;
         inputs_arr.getUMatVector(inputs);
         outputs_arr.getUMatVector(outputs);
-        cv::add(inputs[0], 0.5f, outputs[0]);
+        ncvslideio::add(inputs[0], 0.5f, outputs[0]);
         return true;
     }
 #endif

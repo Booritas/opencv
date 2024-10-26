@@ -6,7 +6,7 @@ using namespace perf;
 
 #define DECL_ROUND_TEST(NAME, OP, EXTRA) \
     template <typename T>                                          \
-    static void OP ## Mat(const cv::Mat & src, cv::Mat & dst)      \
+    static void OP ## Mat(const ncvslideio::Mat & src, ncvslideio::Mat & dst)      \
     {                                                              \
         for (int y = 0; y < dst.rows; ++y)                         \
         {                                                          \
@@ -25,7 +25,7 @@ using namespace perf;
         Size size = get<0>(GetParam());                            \
         int type = get<1>(GetParam()), depth = CV_MAT_DEPTH(type); \
                                                                    \
-        cv::Mat src(size, type), dst(size, CV_32SC1);              \
+        ncvslideio::Mat src(size, type), dst(size, CV_32SC1);              \
                                                                    \
         declare.in(src, WARMUP_RNG).out(dst);                      \
                                                                    \

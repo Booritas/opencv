@@ -108,7 +108,7 @@ OCL_TEST_P(HOG, SVMDetector)
     hog_first.copyTo(hog_second);
 
     // second -> empty
-    hog_first.setSVMDetector(cv::noArray());
+    hog_first.setSVMDetector(ncvslideio::noArray());
     hog_first.copyTo(hog_second);
 }
 

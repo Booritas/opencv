@@ -8,27 +8,27 @@
 #include "opencv2/core/parallel/backend/parallel_for.openmp.hpp"
 //! [openmp_include]
 
-namespace cv { // private.hpp
+namespace ncvslideio { // private.hpp
 CV_EXPORTS const char* currentParallelFramework();
 }
 
 static
 std::string currentParallelFrameworkSafe()
 {
-    const char* framework = cv::currentParallelFramework();
+    const char* framework = ncvslideio::currentParallelFramework();
     if (framework)
         return framework;
     return std::string();
 }
 
-using namespace cv;
+using namespace ncvslideio;
 int main()
 {
     std::cout << "OpenCV builtin parallel framework: '" << currentParallelFrameworkSafe() << "' (nthreads=" << getNumThreads() << ")" << std::endl;
 
     //! [openmp_backend]
     //omp_set_dynamic(1);
-    cv::parallel::setParallelForBackend(std::make_shared<cv::parallel::openmp::ParallelForBackend>());
+    ncvslideio::parallel::setParallelForBackend(std::make_shared<ncvslideio::parallel::openmp::ParallelForBackend>());
     //! [openmp_backend]
 
     std::cout << "New parallel backend: '" << currentParallelFrameworkSafe() << "'" << "' (nthreads=" << getNumThreads() << ")" << std::endl;

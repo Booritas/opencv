@@ -28,7 +28,7 @@ CV_EXPORTS @interface Size2d : NSObject
 @property double width;
 @property double height;
 #ifdef __cplusplus
-@property(readonly) cv::Size2d& nativeRef;
+@property(readonly) ncvslideio::Size2d& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -39,7 +39,7 @@ CV_EXPORTS @interface Size2d : NSObject
 - (instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Size2d&)size;
++ (instancetype)fromNative:(ncvslideio::Size2d&)size;
 #endif
 + (instancetype)width:(double)width height:(double)height;
 

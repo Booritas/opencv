@@ -12,8 +12,8 @@ var persons = {};
 
 //! [Run face detection model]
 function detectFaces(img) {
-  netDet.setInputSize(new cv.Size(img.cols, img.rows));
-  var out = new cv.Mat();
+  netDet.setInputSize(new ncvslideio.Size(img.cols, img.rows));
+  var out = new ncvslideio.Mat();
   netDet.detect(img, out);
   var faces = [];
   for (var i = 0, n = out.data32F.length; i < n; i += 15) {
@@ -53,7 +53,7 @@ function detectFaces(img) {
 
 //! [Get 128 floating points feature vector]
 function face2vec(face) {
-  var blob = cv.blobFromImage(face, 1.0, {width: 112, height: 112}, [0, 0, 0, 0], true, false)
+  var blob = ncvslideio.blobFromImage(face, 1.0, {width: 112, height: 112}, [0, 0, 0, 0], true, false)
   netRecogn.setInput(blob);
   var vec = netRecogn.forward();
   blob.delete();
@@ -89,15 +89,15 @@ function loadModels(callback) {
     document.getElementById('status').innerHTML = 'Downloading OpenFace model';
     utils.createFileFromUrl('face_recognition_sface_2021dec.onnx', recognModel, () => {
       document.getElementById('status').innerHTML = '';
-      netDet = new cv.FaceDetectorYN("face_detection_yunet_2023mar.onnx", "", new cv.Size(320, 320), 0.9, 0.3, 5000);
-      netRecogn = cv.readNet('face_recognition_sface_2021dec.onnx');
+      netDet = new ncvslideio.FaceDetectorYN("face_detection_yunet_2023mar.onnx", "", new ncvslideio.Size(320, 320), 0.9, 0.3, 5000);
+      netRecogn = ncvslideio.readNet('face_recognition_sface_2021dec.onnx');
       callback();
     });
   });
 };
 
 function main() {
-  if(!cv.FaceDetectorYN){
+  if(!ncvslideio.FaceDetectorYN){
     alert(`Error: This sample require OpenCV.js built with FaceDetectorYN. Please rebuild it with FaceDetectorYN or use the latest version of OpenCV.js.`);
     return;
   }
@@ -117,9 +117,9 @@ function main() {
   });
 
   //! [Open a camera stream]
-  var cap = new cv.VideoCapture(camera);
-  var frame = new cv.Mat(camera.height, camera.width, cv.CV_8UC4);
-  var frameBGR = new cv.Mat(camera.height, camera.width, cv.CV_8UC3);
+  var cap = new ncvslideio.VideoCapture(camera);
+  var frame = new ncvslideio.Mat(camera.height, camera.width, ncvslideio.CV_8UC4);
+  var frameBGR = new ncvslideio.Mat(camera.height, camera.width, ncvslideio.CV_8UC3);
   //! [Open a camera stream]
 
   //! [Add a person]
@@ -140,10 +140,10 @@ function main() {
       var cell = document.getElementById("targetImgs").insertCell(0);
       cell.appendChild(canvas);
 
-      var faceResized = new cv.Mat(canvas.height, canvas.width, cv.CV_8UC3);
-      cv.resize(face, faceResized, {width: canvas.width, height: canvas.height});
-      cv.cvtColor(faceResized, faceResized, cv.COLOR_BGR2RGB);
-      cv.imshow(canvas, faceResized);
+      var faceResized = new ncvslideio.Mat(canvas.height, canvas.width, ncvslideio.CV_8UC3);
+      ncvslideio.resize(face, faceResized, {width: canvas.width, height: canvas.height});
+      ncvslideio.cvtColor(faceResized, faceResized, ncvslideio.COLOR_BGR2RGB);
+      ncvslideio.imshow(canvas, faceResized);
       faceResized.delete();
     }
   };
@@ -155,28 +155,28 @@ function main() {
   function captureFrame() {
     var begin = Date.now();
     cap.read(frame);  // Read a frame from camera
-    cv.cvtColor(frame, frameBGR, cv.COLOR_RGBA2BGR);
+    ncvslideio.cvtColor(frame, frameBGR, ncvslideio.COLOR_RGBA2BGR);
 
     var faces = detectFaces(frameBGR);
     faces.forEach(function(rect) {
-      cv.rectangle(frame, {x: rect.x, y: rect.y}, {x: rect.x + rect.width, y: rect.y + rect.height}, [0, 255, 0, 255]);
+      ncvslideio.rectangle(frame, {x: rect.x, y: rect.y}, {x: rect.x + rect.width, y: rect.y + rect.height}, [0, 255, 0, 255]);
       if(rect.x1>0 && rect.y1>0)
-        cv.circle(frame, {x: rect.x1, y: rect.y1}, 2, [255, 0, 0, 255], 2)
+        ncvslideio.circle(frame, {x: rect.x1, y: rect.y1}, 2, [255, 0, 0, 255], 2)
       if(rect.x2>0 && rect.y2>0)
-        cv.circle(frame, {x: rect.x2, y: rect.y2}, 2, [0, 0, 255, 255], 2)
+        ncvslideio.circle(frame, {x: rect.x2, y: rect.y2}, 2, [0, 0, 255, 255], 2)
       if(rect.x3>0 && rect.y3>0)
-        cv.circle(frame, {x: rect.x3, y: rect.y3}, 2, [0, 255, 0, 255], 2)
+        ncvslideio.circle(frame, {x: rect.x3, y: rect.y3}, 2, [0, 255, 0, 255], 2)
       if(rect.x4>0 && rect.y4>0)
-        cv.circle(frame, {x: rect.x4, y: rect.y4}, 2, [255, 0, 255, 255], 2)
+        ncvslideio.circle(frame, {x: rect.x4, y: rect.y4}, 2, [255, 0, 255, 255], 2)
       if(rect.x5>0 && rect.y5>0)
-        cv.circle(frame, {x: rect.x5, y: rect.y5}, 2, [0, 255, 255, 255], 2)
+        ncvslideio.circle(frame, {x: rect.x5, y: rect.y5}, 2, [0, 255, 255, 255], 2)
 
       var face = frameBGR.roi(rect);
       var name = recognize(face);
-      cv.putText(frame, name, {x: rect.x, y: rect.y}, cv.FONT_HERSHEY_SIMPLEX, 1.0, [0, 255, 0, 255]);
+      ncvslideio.putText(frame, name, {x: rect.x, y: rect.y}, ncvslideio.FONT_HERSHEY_SIMPLEX, 1.0, [0, 255, 0, 255]);
     });
 
-    cv.imshow(output, frame);
+    ncvslideio.imshow(output, frame);
 
     // Loop this function.
     if (isRunning) {
@@ -214,7 +214,7 @@ function main() {
 
 </head>
 
-<body onload="cv['onRuntimeInitialized']=()=>{ main() }">
+<body onload="ncvslideio['onRuntimeInitialized']=()=>{ main() }">
   <button id="startStopButton" type="button" disabled="true">Start</button>
   <div id="status"></div>
   <canvas id="output" width=640 height=480 style="max-width: 100%"></canvas>

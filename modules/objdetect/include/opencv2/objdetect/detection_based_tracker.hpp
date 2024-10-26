@@ -48,7 +48,7 @@
 
 #include <vector>
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup objdetect_cascade_classifier
@@ -75,21 +75,21 @@ class CV_EXPORTS DetectionBasedTracker
                     scaleFactor(1.1f)
                 {}
 
-                virtual void detect(const cv::Mat& image, std::vector<cv::Rect>& objects) = 0;
+                virtual void detect(const ncvslideio::Mat& image, std::vector<ncvslideio::Rect>& objects) = 0;
 
-                void setMinObjectSize(const cv::Size& min)
+                void setMinObjectSize(const ncvslideio::Size& min)
                 {
                     minObjSize = min;
                 }
-                void setMaxObjectSize(const cv::Size& max)
+                void setMaxObjectSize(const ncvslideio::Size& max)
                 {
                     maxObjSize = max;
                 }
-                cv::Size getMinObjectSize() const
+                ncvslideio::Size getMinObjectSize() const
                 {
                     return minObjSize;
                 }
-                cv::Size getMaxObjectSize() const
+                ncvslideio::Size getMaxObjectSize() const
                 {
                     return maxObjSize;
                 }
@@ -112,27 +112,27 @@ class CV_EXPORTS DetectionBasedTracker
                 virtual ~IDetector() {}
 
             protected:
-                cv::Size minObjSize;
-                cv::Size maxObjSize;
+                ncvslideio::Size minObjSize;
+                ncvslideio::Size maxObjSize;
                 int minNeighbours;
                 float scaleFactor;
         };
 
-        DetectionBasedTracker(cv::Ptr<IDetector> mainDetector, cv::Ptr<IDetector> trackingDetector, const Parameters& params);
+        DetectionBasedTracker(ncvslideio::Ptr<IDetector> mainDetector, ncvslideio::Ptr<IDetector> trackingDetector, const Parameters& params);
         virtual ~DetectionBasedTracker();
 
         virtual bool run();
         virtual void stop();
         virtual void resetTracking();
 
-        virtual void process(const cv::Mat& imageGray);
+        virtual void process(const ncvslideio::Mat& imageGray);
 
         bool setParameters(const Parameters& params);
         const Parameters& getParameters() const;
 
 
-        typedef std::pair<cv::Rect, int> Object;
-        virtual void getObjects(std::vector<cv::Rect>& result) const;
+        typedef std::pair<ncvslideio::Rect, int> Object;
+        virtual void getObjects(std::vector<ncvslideio::Rect>& result) const;
         virtual void getObjects(std::vector<Object>& result) const;
 
         enum ObjectStatus
@@ -145,9 +145,9 @@ class CV_EXPORTS DetectionBasedTracker
         struct ExtObject
         {
             int id;
-            cv::Rect location;
+            ncvslideio::Rect location;
             ObjectStatus status;
-            ExtObject(int _id, cv::Rect _location, ObjectStatus _status)
+            ExtObject(int _id, ncvslideio::Rect _location, ObjectStatus _status)
                 :id(_id), location(_location), status(_status)
             {
             }
@@ -155,11 +155,11 @@ class CV_EXPORTS DetectionBasedTracker
         virtual void getObjects(std::vector<ExtObject>& result) const;
 
 
-        virtual int addObject(const cv::Rect& location); //returns id of the new object
+        virtual int addObject(const ncvslideio::Rect& location); //returns id of the new object
 
     protected:
         class SeparateDetectionWork;
-        cv::Ptr<SeparateDetectionWork> separateDetectionWork;
+        ncvslideio::Ptr<SeparateDetectionWork> separateDetectionWork;
         friend void* workcycleObjectDetectorFunction(void* p);
 
         struct InnerParameters
@@ -180,7 +180,7 @@ class CV_EXPORTS DetectionBasedTracker
 
         struct TrackedObject
         {
-            typedef std::vector<cv::Rect> PositionsVector;
+            typedef std::vector<ncvslideio::Rect> PositionsVector;
 
             PositionsVector lastPositions;
 
@@ -188,7 +188,7 @@ class CV_EXPORTS DetectionBasedTracker
             int numFramesNotDetected;
             int id;
 
-            TrackedObject(const cv::Rect& rect):numDetectedFrames(1), numFramesNotDetected(0)
+            TrackedObject(const ncvslideio::Rect& rect):numDetectedFrames(1), numFramesNotDetected(0)
             {
                 lastPositions.push_back(rect);
                 id=getNextId();
@@ -207,16 +207,16 @@ class CV_EXPORTS DetectionBasedTracker
         std::vector<float> weightsPositionsSmoothing;
         std::vector<float> weightsSizesSmoothing;
 
-        cv::Ptr<IDetector> cascadeForTracking;
+        ncvslideio::Ptr<IDetector> cascadeForTracking;
 
-        void updateTrackedObjects(const std::vector<cv::Rect>& detectedObjects);
-        cv::Rect calcTrackedObjectPositionToShow(int i) const;
-        cv::Rect calcTrackedObjectPositionToShow(int i, ObjectStatus& status) const;
-        void detectInRegion(const cv::Mat& img, const cv::Rect& r, std::vector<cv::Rect>& detectedObjectsInRegions);
+        void updateTrackedObjects(const std::vector<ncvslideio::Rect>& detectedObjects);
+        ncvslideio::Rect calcTrackedObjectPositionToShow(int i) const;
+        ncvslideio::Rect calcTrackedObjectPositionToShow(int i, ObjectStatus& status) const;
+        void detectInRegion(const ncvslideio::Mat& img, const ncvslideio::Rect& r, std::vector<ncvslideio::Rect>& detectedObjectsInRegions);
 };
 
 //! @}
 
-} //end of cv namespace
+} //end of ncvslideio namespace
 
 #endif

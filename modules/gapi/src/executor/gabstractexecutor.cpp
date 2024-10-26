@@ -10,7 +10,7 @@
 
 #include "executor/gabstractexecutor.hpp"
 
-cv::gimpl::GAbstractExecutor::GAbstractExecutor(std::unique_ptr<ade::Graph> &&g_model)
+ncvslideio::gimpl::GAbstractExecutor::GAbstractExecutor(std::unique_ptr<ade::Graph> &&g_model)
     : m_orig_graph(std::move(g_model))
     , m_island_graph(GModel::Graph(*m_orig_graph).metadata()
                      .get<IslandModel>().model)
@@ -19,7 +19,7 @@ cv::gimpl::GAbstractExecutor::GAbstractExecutor(std::unique_ptr<ade::Graph> &&g_
 {
 }
 
-const cv::gimpl::GModel::Graph& cv::gimpl::GAbstractExecutor::model() const
+const ncvslideio::gimpl::GModel::Graph& ncvslideio::gimpl::GAbstractExecutor::model() const
 {
     return m_gm;
 }

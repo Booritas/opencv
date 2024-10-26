@@ -12,7 +12,7 @@
 
 namespace opencv_test
 {
-using Mat = cv::gapi::own::Mat;
+using Mat = ncvslideio::gapi::own::Mat;
 using Dims = std::vector<int>;
 
 namespace {
@@ -36,12 +36,12 @@ TEST(OwnMat, DefaultConstruction)
 
 TEST(OwnMat, Create)
 {
-    auto size = cv::gapi::own::Size{32,16};
+    auto size = ncvslideio::gapi::own::Size{32,16};
     Mat m;
     m.create(size, CV_8UC1);
 
     ASSERT_NE(nullptr, m.data);
-    ASSERT_EQ(size, (cv::gapi::own::Size{m.cols, m.rows}));
+    ASSERT_EQ(size, (ncvslideio::gapi::own::Size{m.cols, m.rows}));
 
     ASSERT_EQ(static_cast<size_t>(size.height) * size.width, m.total());
     ASSERT_EQ(CV_8UC1, m.type());
@@ -60,7 +60,7 @@ TEST(OwnMat, CreateND)
     m.create(dims, CV_32F);
 
     ASSERT_NE(nullptr , m.data);
-    ASSERT_EQ((cv::gapi::own::Size{0,0}), (cv::gapi::own::Size{m.cols, m.rows}));
+    ASSERT_EQ((ncvslideio::gapi::own::Size{0,0}), (ncvslideio::gapi::own::Size{m.cols, m.rows}));
 
     ASSERT_EQ(multiply_dims(dims), m.total());
     ASSERT_EQ(CV_32F, m.type());
@@ -74,12 +74,12 @@ TEST(OwnMat, CreateND)
 
 TEST(OwnMat, CreateOverload)
 {
-    auto size = cv::gapi::own::Size{32,16};
+    auto size = ncvslideio::gapi::own::Size{32,16};
     Mat m;
     m.create(size.height,size.width, CV_8UC1);
 
     ASSERT_NE(nullptr, m.data);
-    ASSERT_EQ(size, (cv::Size{m.cols, m.rows}));
+    ASSERT_EQ(size, (ncvslideio::Size{m.cols, m.rows}));
 
     ASSERT_EQ(static_cast<size_t>(size.height) * size.width, m.total());
     ASSERT_EQ(CV_8UC1, m.type());
@@ -93,12 +93,12 @@ TEST(OwnMat, CreateOverload)
 
 TEST(OwnMat, Create3chan)
 {
-    auto size = cv::Size{32,16};
+    auto size = ncvslideio::Size{32,16};
     Mat m;
     m.create(size, CV_8UC3);
 
     ASSERT_NE(nullptr, m.data);
-    ASSERT_EQ(size, (cv::Size{m.cols, m.rows}));
+    ASSERT_EQ(size, (ncvslideio::Size{m.cols, m.rows}));
 
     ASSERT_EQ(CV_8UC3, m.type());
     ASSERT_EQ(CV_8U, m.depth());
@@ -110,7 +110,7 @@ TEST(OwnMat, Create3chan)
 }
 
 struct NonEmptyMat {
-    cv::gapi::own::Size size{32,16};
+    ncvslideio::gapi::own::Size size{32,16};
     Mat m;
     NonEmptyMat() {
         m.create(size, CV_8UC1);
@@ -124,7 +124,7 @@ namespace {
     auto state_of = [](Mat const& mat) {
         return std::make_tuple(
                 mat.data,
-                cv::Size{mat.cols, mat.rows},
+                ncvslideio::Size{mat.cols, mat.rows},
                 mat.type(),
                 mat.depth(),
                 mat.channels(),
@@ -182,7 +182,7 @@ struct OwnMatNonOwningView : NonEmptyMat, ::testing::Test {
         EXPECT_EQ(state_of(m), initial_state)<<"State of the source matrix changed?";
         //ASAN should complain here if memory is freed here (e.g. by bug in non owning logic of own::Mat)
         volatile uchar dummy =  m.data[0];
-        cv::util::suppress_unused_warning(dummy);
+        ncvslideio::util::suppress_unused_warning(dummy);
     }
 
 };
@@ -222,10 +222,10 @@ TEST(OwnMatConversion, WithStep)
     {
         data[i] = static_cast<int>(i);
     }
-    cv::Mat cvMat(cv::Size{width, height}, CV_32S, data.data(), stepInPixels * sizeof(int));
+    ncvslideio::Mat cvMat(ncvslideio::Size{width, height}, CV_32S, data.data(), stepInPixels * sizeof(int));
 
     auto ownMat = to_own(cvMat);
-    auto cvMatFromOwn = cv::gapi::own::to_ocv(ownMat);
+    auto cvMatFromOwn = ncvslideio::gapi::own::to_ocv(ownMat);
 
     EXPECT_EQ(0, cvtest::norm(cvMat, cvMatFromOwn, NORM_INF))
     << cvMat << std::endl
@@ -240,11 +240,11 @@ TEST(OwnMatConversion, WithND)
     {
         data[i] = static_cast<uint8_t>(i);
     }
-    cv::Mat cvMat(dims, CV_8U, data.data());
+    ncvslideio::Mat cvMat(dims, CV_8U, data.data());
     auto ownMat = to_own(cvMat);
-    auto cvMatFromOwn = cv::gapi::own::to_ocv(ownMat);
+    auto cvMatFromOwn = ncvslideio::gapi::own::to_ocv(ownMat);
 
-    EXPECT_EQ(0, cv::norm(cvMat, cvMatFromOwn, NORM_INF))
+    EXPECT_EQ(0, ncvslideio::norm(cvMat, cvMatFromOwn, NORM_INF))
         << cvMat << std::endl
         << (cvMat != cvMatFromOwn);
 }
@@ -299,7 +299,7 @@ TEST(OwnMat, CopyToWithStep)
 
 TEST(OwnMat, AssignNDtoRegular)
 {
-    const auto sz   = cv::gapi::own::Size{32,32};
+    const auto sz   = ncvslideio::gapi::own::Size{32,32};
     const auto dims = Dims{1,3,224,224};
 
     Mat a;
@@ -307,7 +307,7 @@ TEST(OwnMat, AssignNDtoRegular)
     const auto *old_ptr = a.data;
 
     ASSERT_NE(nullptr , a.data);
-    ASSERT_EQ(sz      , (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ(sz      , (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(static_cast<size_t>(sz.width) * sz.height, a.total());
     ASSERT_EQ(CV_8U   , a.type());
     ASSERT_EQ(CV_8U   , a.depth());
@@ -322,7 +322,7 @@ TEST(OwnMat, AssignNDtoRegular)
 
     ASSERT_NE(nullptr , a.data);
     ASSERT_NE(old_ptr , a.data);
-    ASSERT_EQ((cv::gapi::own::Size{0,0}), (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ((ncvslideio::gapi::own::Size{0,0}), (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(multiply_dims(dims), a.total());
     ASSERT_EQ(CV_32F  , a.type());
     ASSERT_EQ(CV_32F  , a.depth());
@@ -334,7 +334,7 @@ TEST(OwnMat, AssignNDtoRegular)
 
 TEST(OwnMat, AssignRegularToND)
 {
-    const auto sz   = cv::gapi::own::Size{32,32};
+    const auto sz   = ncvslideio::gapi::own::Size{32,32};
     const auto dims = Dims{1,3,224,224};
 
     Mat a;
@@ -342,7 +342,7 @@ TEST(OwnMat, AssignRegularToND)
     const auto *old_ptr = a.data;
 
     ASSERT_NE(nullptr , a.data);
-    ASSERT_EQ((cv::gapi::own::Size{0,0}), (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ((ncvslideio::gapi::own::Size{0,0}), (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(multiply_dims(dims), a.total());
     ASSERT_EQ(CV_32F  , a.type());
     ASSERT_EQ(CV_32F  , a.depth());
@@ -357,7 +357,7 @@ TEST(OwnMat, AssignRegularToND)
 
     ASSERT_NE(nullptr , a.data);
     ASSERT_NE(old_ptr , a.data);
-    ASSERT_EQ(sz      , (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ(sz      , (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(static_cast<size_t>(sz.width) * sz.height, a.total());
     ASSERT_EQ(CV_8U   , a.type());
     ASSERT_EQ(CV_8U   , a.depth());
@@ -369,7 +369,7 @@ TEST(OwnMat, AssignRegularToND)
 
 TEST(OwnMat, CopyNDtoRegular)
 {
-    const auto sz   = cv::gapi::own::Size{32,32};
+    const auto sz   = ncvslideio::gapi::own::Size{32,32};
     const auto dims = Dims{1,3,224,224};
 
     Mat a;
@@ -377,7 +377,7 @@ TEST(OwnMat, CopyNDtoRegular)
     const auto *old_ptr = a.data;
 
     ASSERT_NE(nullptr , a.data);
-    ASSERT_EQ(sz      , (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ(sz      , (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(static_cast<size_t>(sz.width) * sz.height, a.total());
     ASSERT_EQ(CV_8U   , a.type());
     ASSERT_EQ(CV_8U   , a.depth());
@@ -393,7 +393,7 @@ TEST(OwnMat, CopyNDtoRegular)
     ASSERT_NE(nullptr , a.data);
     ASSERT_NE(old_ptr , a.data);
     ASSERT_NE(b.data  , a.data);
-    ASSERT_EQ((cv::gapi::own::Size{0,0}), (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ((ncvslideio::gapi::own::Size{0,0}), (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(multiply_dims(dims), a.total());
     ASSERT_EQ(CV_32F  , a.type());
     ASSERT_EQ(CV_32F  , a.depth());
@@ -405,7 +405,7 @@ TEST(OwnMat, CopyNDtoRegular)
 
 TEST(OwnMat, CopyRegularToND)
 {
-    const auto sz   = cv::gapi::own::Size{32,32};
+    const auto sz   = ncvslideio::gapi::own::Size{32,32};
     const auto dims = Dims{1,3,224,224};
 
     Mat a;
@@ -414,7 +414,7 @@ TEST(OwnMat, CopyRegularToND)
 
 
     ASSERT_NE(nullptr , a.data);
-    ASSERT_EQ((cv::gapi::own::Size{0,0}), (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ((ncvslideio::gapi::own::Size{0,0}), (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(multiply_dims(dims), a.total());
     ASSERT_EQ(CV_32F  , a.type());
     ASSERT_EQ(CV_32F  , a.depth());
@@ -430,7 +430,7 @@ TEST(OwnMat, CopyRegularToND)
     ASSERT_NE(nullptr , a.data);
     ASSERT_NE(old_ptr , a.data);
     ASSERT_NE(b.data  , a.data);
-    ASSERT_EQ(sz      , (cv::gapi::own::Size{a.cols, a.rows}));
+    ASSERT_EQ(sz      , (ncvslideio::gapi::own::Size{a.cols, a.rows}));
     ASSERT_EQ(static_cast<size_t>(sz.width) * sz.height, a.total());
     ASSERT_EQ(CV_8U   , a.type());
     ASSERT_EQ(CV_8U   , a.depth());
@@ -453,7 +453,7 @@ TEST(OwnMat, ScalarAssign32SC1)
     }
     Mat mat(height, width, CV_32S, data.data(), stepInPixels * sizeof(data[0]));
 
-    mat = cv::gapi::own::Scalar{-1};
+    mat = ncvslideio::gapi::own::Scalar{-1};
 
     std::array<int, height * stepInPixels> expected;
 
@@ -466,7 +466,7 @@ TEST(OwnMat, ScalarAssign32SC1)
         }
     }
 
-    auto cmp_result_mat = (cv::Mat{height, stepInPixels, CV_32S, data.data()} != cv::Mat{height, stepInPixels, CV_32S, expected.data()});
+    auto cmp_result_mat = (ncvslideio::Mat{height, stepInPixels, CV_32S, data.data()} != ncvslideio::Mat{height, stepInPixels, CV_32S, expected.data()});
     EXPECT_EQ(0, cvtest::norm(cmp_result_mat, NORM_INF))
         << cmp_result_mat;
 }
@@ -484,7 +484,7 @@ TEST(OwnMat, ScalarAssign8UC1)
     }
     Mat mat(height, width, CV_8U, data.data(), stepInPixels * sizeof(data[0]));
 
-    mat = cv::gapi::own::Scalar{-1};
+    mat = ncvslideio::gapi::own::Scalar{-1};
 
     std::array<uchar, height * stepInPixels> expected;
 
@@ -493,11 +493,11 @@ TEST(OwnMat, ScalarAssign8UC1)
         for (size_t col = 0; col < stepInPixels; col++)
         {
             auto index = row*stepInPixels + col;
-            expected[index] = col < width ? cv::saturate_cast<uchar>(-1) : static_cast<uchar>(index);
+            expected[index] = col < width ? ncvslideio::saturate_cast<uchar>(-1) : static_cast<uchar>(index);
         }
     }
 
-    auto cmp_result_mat = (cv::Mat{height, stepInPixels, CV_8U, data.data()} != cv::Mat{height, stepInPixels, CV_8U, expected.data()});
+    auto cmp_result_mat = (ncvslideio::Mat{height, stepInPixels, CV_8U, data.data()} != ncvslideio::Mat{height, stepInPixels, CV_8U, expected.data()});
     EXPECT_EQ(0, cvtest::norm(cmp_result_mat, NORM_INF))
         << cmp_result_mat;
 }
@@ -507,7 +507,7 @@ TEST(OwnMat, ScalarAssignND)
     std::vector<int> dims = {1,1000};
     Mat m;
     m.create(dims, CV_32F);
-    m = cv::gapi::own::Scalar{-1};
+    m = ncvslideio::gapi::own::Scalar{-1};
     const float *ptr = reinterpret_cast<float*>(m.data);
 
     for (auto i = 0u; i < m.total(); i++) {
@@ -533,7 +533,7 @@ TEST(OwnMat, ScalarAssign8UC3)
 
     Mat mat(height, width, cv_type, data.data(), channels * stepInPixels * sizeof(data[0]));
 
-    mat = cv::gapi::own::Scalar{-10, -11, -12};
+    mat = ncvslideio::gapi::own::Scalar{-10, -11, -12};
 
     std::array<schar, data.size()> expected;
 
@@ -548,13 +548,13 @@ TEST(OwnMat, ScalarAssign8UC3)
         }
     }
 
-    auto cmp_result_mat = (cv::Mat{height, stepInPixels, cv_type, data.data()} != cv::Mat{height, stepInPixels, cv_type, expected.data()});
+    auto cmp_result_mat = (ncvslideio::Mat{height, stepInPixels, cv_type, data.data()} != ncvslideio::Mat{height, stepInPixels, cv_type, expected.data()});
     EXPECT_EQ(0, cvtest::norm(cmp_result_mat, NORM_INF))
         << cmp_result_mat << std::endl
         << "data : " << std::endl
-        << cv::Mat{height, stepInPixels, cv_type, data.data()}     << std::endl
+        << ncvslideio::Mat{height, stepInPixels, cv_type, data.data()}     << std::endl
         << "expected : " << std::endl
-        << cv::Mat{height, stepInPixels, cv_type, expected.data()} << std::endl;
+        << ncvslideio::Mat{height, stepInPixels, cv_type, expected.data()} << std::endl;
 }
 
 TEST(OwnMat, ROIView)
@@ -570,7 +570,7 @@ TEST(OwnMat, ROIView)
     }
 
 
-//    std::cout<<cv::Mat{height, stepInPixels, CV_8U, data.data()}<<std::endl;
+//    std::cout<<ncvslideio::Mat{height, stepInPixels, CV_8U, data.data()}<<std::endl;
 
     std::array<uchar, 4 * 4> expected;
 
@@ -583,11 +583,11 @@ TEST(OwnMat, ROIView)
     }
 
     Mat mat(height, width, CV_8U, data.data(), stepInPixels * sizeof(data[0]));
-    Mat roi_view (mat, cv::gapi::own::Rect{2,2,4,4});
+    Mat roi_view (mat, ncvslideio::gapi::own::Rect{2,2,4,4});
 
-//    std::cout<<cv::Mat{4, 4, CV_8U, expected.data()}<<std::endl;
+//    std::cout<<ncvslideio::Mat{4, 4, CV_8U, expected.data()}<<std::endl;
 //
-    auto expected_cv_mat = cv::Mat{4, 4, CV_8U, expected.data()};
+    auto expected_cv_mat = ncvslideio::Mat{4, 4, CV_8U, expected.data()};
 
     auto cmp_result_mat = (to_ocv(roi_view) != expected_cv_mat);
     EXPECT_EQ(0, cvtest::norm(cmp_result_mat, NORM_INF))
@@ -599,43 +599,43 @@ TEST(OwnMat, ROIView)
 TEST(OwnMat, CreateWithNegativeDims)
 {
     Mat own_mat;
-    ASSERT_ANY_THROW(own_mat.create(cv::Size{-1, -1}, CV_8U));
+    ASSERT_ANY_THROW(own_mat.create(ncvslideio::Size{-1, -1}, CV_8U));
 }
 
 TEST(OwnMat, CreateWithNegativeWidth)
 {
     Mat own_mat;
-    ASSERT_ANY_THROW(own_mat.create(cv::Size{-1, 1}, CV_8U));
+    ASSERT_ANY_THROW(own_mat.create(ncvslideio::Size{-1, 1}, CV_8U));
 }
 
 TEST(OwnMat, CreateWithNegativeHeight)
 {
     Mat own_mat;
-    ASSERT_ANY_THROW(own_mat.create(cv::Size{1, -1}, CV_8U));
+    ASSERT_ANY_THROW(own_mat.create(ncvslideio::Size{1, -1}, CV_8U));
 }
 
 TEST(OwnMat, ZeroHeightMat)
 {
-    cv::GMat in, a, b, c, d;
-    std::tie(a, b, c, d) = cv::gapi::split4(in);
-    cv::GMat out = cv::gapi::merge3(a, b, c);
-    cv::Mat in_mat(cv::Size(8, 0), CV_8UC4);
-    cv::Mat out_mat(cv::Size(8, 8), CV_8UC3);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    ASSERT_ANY_THROW(comp.apply(cv::gin(in_mat), cv::gout(out_mat),
-        cv::compile_args(cv::gapi::core::fluid::kernels())));
+    ncvslideio::GMat in, a, b, c, d;
+    std::tie(a, b, c, d) = ncvslideio::gapi::split4(in);
+    ncvslideio::GMat out = ncvslideio::gapi::merge3(a, b, c);
+    ncvslideio::Mat in_mat(ncvslideio::Size(8, 0), CV_8UC4);
+    ncvslideio::Mat out_mat(ncvslideio::Size(8, 8), CV_8UC3);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    ASSERT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(out_mat),
+        ncvslideio::compile_args(ncvslideio::gapi::core::fluid::kernels())));
 }
 
 TEST(OwnMat, ZeroWidthMat)
 {
-    cv::GMat in, a, b, c, d;
-    std::tie(a, b, c, d) = cv::gapi::split4(in);
-    cv::GMat out = cv::gapi::merge3(a, b, c);
-    cv::Mat in_mat(cv::Size(0, 8), CV_8UC4);
-    cv::Mat out_mat(cv::Size(8, 8), CV_8UC3);
-    cv::GComputation comp(cv::GIn(in), cv::GOut(out));
-    ASSERT_ANY_THROW(comp.apply(cv::gin(in_mat), cv::gout(out_mat),
-        cv::compile_args(cv::gapi::core::fluid::kernels())));
+    ncvslideio::GMat in, a, b, c, d;
+    std::tie(a, b, c, d) = ncvslideio::gapi::split4(in);
+    ncvslideio::GMat out = ncvslideio::gapi::merge3(a, b, c);
+    ncvslideio::Mat in_mat(ncvslideio::Size(0, 8), CV_8UC4);
+    ncvslideio::Mat out_mat(ncvslideio::Size(8, 8), CV_8UC3);
+    ncvslideio::GComputation comp(ncvslideio::GIn(in), ncvslideio::GOut(out));
+    ASSERT_ANY_THROW(comp.apply(ncvslideio::gin(in_mat), ncvslideio::gout(out_mat),
+        ncvslideio::compile_args(ncvslideio::gapi::core::fluid::kernels())));
 }
 
 } // namespace opencv_test

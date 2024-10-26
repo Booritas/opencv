@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     /* inplace_output = activation(inplace_output) + eltwise */
 
@@ -35,6 +35,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
     template <class T>
     void power_eltwise_sum_2_inplace(const csl::Stream& stream, csl::Span<T> inplace_output, csl::View<T> eltwise, T exp, T scale, T shift);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_ACTIVATION_ELTWISE_HPP */

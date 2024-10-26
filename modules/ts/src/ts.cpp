@@ -96,14 +96,14 @@
 #include "opencv2/core/opencl/opencl_info.hpp"
 
 #include "opencv2/core/utils/allocator_stats.hpp"
-namespace cv { namespace ocl {
-cv::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics();
+namespace ncvslideio { namespace ocl {
+ncvslideio::utils::AllocatorStatisticsInterface& getOpenCLAllocatorStatistics();
 }}
 #endif // HAVE_OPENCL
 
 #include "opencv2/core/utils/allocator_stats.hpp"
-namespace cv {
-CV_EXPORTS cv::utils::AllocatorStatisticsInterface& getAllocatorStatistics();
+namespace ncvslideio {
+CV_EXPORTS ncvslideio::utils::AllocatorStatisticsInterface& getAllocatorStatistics();
 }
 
 #include "opencv_tests_config.hpp"
@@ -134,7 +134,7 @@ details::SkipTestExceptionBase::SkipTestExceptionBase(bool handlingTags)
         testTagIncreaseSkipCount("skip_other", true, true);
     }
 }
-details::SkipTestExceptionBase::SkipTestExceptionBase(const cv::String& message, bool handlingTags)
+details::SkipTestExceptionBase::SkipTestExceptionBase(const ncvslideio::String& message, bool handlingTags)
 {
     if (!handlingTags)
         testTagIncreaseSkipCount("skip_other", true, true);
@@ -265,14 +265,14 @@ void BaseTest::clear()
 }
 
 
-cv::FileNode BaseTest::find_param( const cv::FileStorage& fs, const char* param_name )
+ncvslideio::FileNode BaseTest::find_param( const ncvslideio::FileStorage& fs, const char* param_name )
 {
-    cv::FileNode node = fs[get_name()];
+    ncvslideio::FileNode node = fs[get_name()];
     return node[param_name];
 }
 
 
-int BaseTest::read_params( const cv::FileStorage& )
+int BaseTest::read_params( const ncvslideio::FileStorage& )
 {
     return 0;
 }
@@ -306,12 +306,12 @@ void BaseTest::safe_run( int start_from )
             run( start_from );
         #endif
         }
-        catch (const cv::Exception& exc)
+        catch (const ncvslideio::Exception& exc)
         {
             const char* errorStr = cvErrorStr(exc.code);
             char buf[1 << 16];
 
-            const char* delim = exc.err.find('\n') == cv::String::npos ? "" : "\n";
+            const char* delim = exc.err.find('\n') == ncvslideio::String::npos ? "" : "\n";
             snprintf( buf, sizeof(buf), "OpenCV Error:\n\t%s (%s%s) in %s, file %s, line %d",
                     errorStr, delim, exc.err.c_str(), exc.func.size() > 0 ?
                     exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line );
@@ -342,7 +342,7 @@ void BaseTest::run( int start_from )
 {
     int test_case_idx, count = get_test_case_count();
     int64 t_start = cvGetTickCount();
-    double freq = cv::getTickFrequency();
+    double freq = ncvslideio::getTickFrequency();
     bool ff = can_do_fast_forward();
     int progress = 0, code;
     int64 t1 = t_start;
@@ -450,11 +450,11 @@ int BadArgTest::run_test_case( int expected_code, const string& _descr )
     {
         run_func();
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         thrown = true;
         if (e.code != expected_code &&
-            e.code != cv::Error::StsError && e.code != cv::Error::StsAssert  // Exact error codes support will be dropped. Checks should provide proper text messages instead.
+            e.code != ncvslideio::Error::StsError && e.code != ncvslideio::Error::StsAssert  // Exact error codes support will be dropped. Checks should provide proper text messages instead.
         )
         {
             ts->printf(TS::LOG, "%s (test case #%d): the error code %d is different from the expected %d\n",
@@ -564,7 +564,7 @@ void TS::init( const string& modulename )
         data_path = path_join(path_join(datapath_dir, modulename), "");
     }
 
-    cv::redirectError((cv::ErrorCallback)tsErrorCallback, this);
+    ncvslideio::redirectError((ncvslideio::ErrorCallback)tsErrorCallback, this);
 
     if( ::testing::GTEST_FLAG(catch_exceptions) )
     {
@@ -590,7 +590,7 @@ void TS::init( const string& modulename )
     }
 
     if( params.use_optimized == 0 )
-        cv::setUseOptimized(false);
+        ncvslideio::setUseOptimized(false);
 }
 
 
@@ -638,7 +638,7 @@ void TS::update_context( BaseTest* test, int test_case_idx, bool update_ts_conte
     current_test_info.test = test;
     current_test_info.test_case_idx = test_case_idx;
     current_test_info.code = 0;
-    cvSetErrStatus( cv::Error::StsOk );
+    cvSetErrStatus( ncvslideio::Error::StsOk );
 }
 
 
@@ -769,16 +769,16 @@ void checkIppStatus()
 {
     if (test_ipp_check)
     {
-        int status = cv::ipp::getIppStatus();
-        EXPECT_LE(0, status) << cv::ipp::getIppErrorLocation().c_str();
+        int status = ncvslideio::ipp::getIppStatus();
+        EXPECT_LE(0, status) << ncvslideio::ipp::getIppErrorLocation().c_str();
     }
 }
 
-static bool checkTestData = cv::utils::getConfigurationParameterBool("OPENCV_TEST_REQUIRE_DATA", false);
+static bool checkTestData = ncvslideio::utils::getConfigurationParameterBool("OPENCV_TEST_REQUIRE_DATA", false);
 bool skipUnstableTests = false;
 bool runBigDataTests = false;
 int testThreads = 0;
-int debugLevel = (int)cv::utils::getConfigurationParameterSizeT("OPENCV_TEST_DEBUG", 0);
+int debugLevel = (int)ncvslideio::utils::getConfigurationParameterSizeT("OPENCV_TEST_DEBUG", 0);
 
 
 static size_t memory_usage_base = 0;
@@ -790,22 +790,22 @@ static uint64_t memory_usage_base_opencl = 0;
 void testSetUp()
 {
     fflush(stdout); fflush(stderr);
-    cv::ipp::setIppStatus(0);
-    cv::theRNG().state = cvtest::param_seed;
-    cv::setNumThreads(cvtest::testThreads);
+    ncvslideio::ipp::setIppStatus(0);
+    ncvslideio::theRNG().state = cvtest::param_seed;
+    ncvslideio::setNumThreads(cvtest::testThreads);
     if (malloc_peak)  // if memory profiler is available
     {
         malloc_reset_peak();
         memory_usage_base = malloc_peak(); // equal to malloc_current()
     }
     {
-        cv::utils::AllocatorStatisticsInterface& ocv_stats = cv::getAllocatorStatistics();
+        ncvslideio::utils::AllocatorStatisticsInterface& ocv_stats = ncvslideio::getAllocatorStatistics();
         ocv_stats.resetPeakUsage();
         memory_usage_base_opencv = ocv_stats.getCurrentUsage();
     }
 #ifdef HAVE_OPENCL
     {
-        cv::utils::AllocatorStatisticsInterface& ocl_stats = cv::ocl::getOpenCLAllocatorStatistics();
+        ncvslideio::utils::AllocatorStatisticsInterface& ocl_stats = ncvslideio::ocl::getOpenCLAllocatorStatistics();
         ocl_stats.resetPeakUsage();
         memory_usage_base_opencl = ocl_stats.getCurrentUsage();
     }
@@ -831,7 +831,7 @@ void testTearDown()
         // core/src/alloc.cpp: #define OPENCV_ALLOC_ENABLE_STATISTICS
         // handle large buffers via fastAlloc()
         // (not always accurate on heavy 3rdparty usage, like protobuf)
-        cv::utils::AllocatorStatisticsInterface& ocv_stats = cv::getAllocatorStatistics();
+        ncvslideio::utils::AllocatorStatisticsInterface& ocv_stats = ncvslideio::getAllocatorStatistics();
         ocv_peak = ocv_stats.getPeakUsage();
         ocv_memory_usage = ocv_peak - memory_usage_base_opencv;
         if (ocv_peak)
@@ -844,7 +844,7 @@ void testTearDown()
 #ifdef HAVE_OPENCL
     uint64_t ocl_memory_usage = 0, ocl_peak = 0;
     {
-        cv::utils::AllocatorStatisticsInterface& ocl_stats = cv::ocl::getOpenCLAllocatorStatistics();
+        ncvslideio::utils::AllocatorStatisticsInterface& ocl_stats = ncvslideio::ocl::getOpenCLAllocatorStatistics();
         ocl_peak = ocl_stats.getPeakUsage();
         ocl_memory_usage = ocl_peak - memory_usage_base_opencl;
         if (ocl_memory_usage > 0)
@@ -852,7 +852,7 @@ void testTearDown()
             CV_LOG_INFO(NULL, "Memory_usage (OpenCL): " << ocl_memory_usage << " (base=" << memory_usage_base_opencl << "  current=" << ocl_stats.getCurrentUsage() << ")");
         }
         ::testing::Test::RecordProperty("ocl_memory_usage",
-                cv::format("%llu", (unsigned long long)ocl_memory_usage));
+                ncvslideio::format("%llu", (unsigned long long)ocl_memory_usage));
     }
 #else
     uint64_t ocl_memory_usage = 0;
@@ -863,9 +863,9 @@ void testTearDown()
     {
         CV_LOG_INFO(NULL, "Memory usage total: " << (memory_usage + ocl_memory_usage));
         ::testing::Test::RecordProperty("memory_usage",
-                cv::format("%llu", (unsigned long long)memory_usage));
+                ncvslideio::format("%llu", (unsigned long long)memory_usage));
         ::testing::Test::RecordProperty("total_memory_usage",
-                cv::format("%llu", (unsigned long long)(memory_usage + ocl_memory_usage)));
+                ncvslideio::format("%llu", (unsigned long long)(memory_usage + ocl_memory_usage)));
     }
 }
 
@@ -894,7 +894,7 @@ void parseCustomOptions(int argc, char **argv)
         "{ h   help           |false    |print help info                          }"
     );
 
-    cv::CommandLineParser parser(argc, argv, command_line_keys);
+    ncvslideio::CommandLineParser parser(argc, argv, command_line_keys);
     if (parser.get<bool>("help"))
     {
         std::cout << "\nAvailable options besides google test option: \n";
@@ -917,7 +917,7 @@ void parseCustomOptions(int argc, char **argv)
     runBigDataTests = parser.get<bool>("test_bigdata");
     if (parser.has("test_debug"))
     {
-        cv::String s = parser.get<cv::String>("test_debug");
+        ncvslideio::String s = parser.get<ncvslideio::String>("test_debug");
         if (s.empty() || s == "true")
             debugLevel = 1;
         else
@@ -1022,7 +1022,7 @@ static std::string findData(const std::string& relative_path, bool required, boo
                 CHECK_FILE_WITH_PREFIX(prefix, result_);
                 if (!required && !result_.empty())
                 {
-                    static bool checkOptionalFlag = cv::utils::getConfigurationParameterBool("OPENCV_TEST_CHECK_OPTIONAL_DATA", false);
+                    static bool checkOptionalFlag = ncvslideio::utils::getConfigurationParameterBool("OPENCV_TEST_CHECK_OPTIONAL_DATA", false);
                     if (checkOptionalFlag)
                     {
                         std::cout << "TEST ERROR: Don't use 'optional' findData() for " << relative_path << std::endl;
@@ -1064,8 +1064,8 @@ static std::string findData(const std::string& relative_path, bool required, boo
 #endif
     const char* type = findDirectory ? "directory" : "data file";
     if (required || checkTestData)
-        CV_Error(cv::Error::StsError, cv::format("OpenCV tests: Can't find required %s: %s", type, relative_path.c_str()));
-    throw SkipTestException(cv::format("OpenCV tests: Can't find %s: %s", type, relative_path.c_str()));
+        CV_Error(ncvslideio::Error::StsError, ncvslideio::format("OpenCV tests: Can't find required %s: %s", type, relative_path.c_str()));
+    throw SkipTestException(ncvslideio::format("OpenCV tests: Can't find %s: %s", type, relative_path.c_str()));
 }
 
 std::string findDataFile(const std::string& relative_path, bool required)
@@ -1080,7 +1080,7 @@ std::string findDataDirectory(const std::string& relative_path, bool required)
 
 inline static std::string getSnippetFromConfig(const std::string & start, const std::string & end)
 {
-    const std::string buildInfo = cv::getBuildInformation();
+    const std::string buildInfo = ncvslideio::getBuildInformation();
     size_t pos1 = buildInfo.find(start);
     if (pos1 != std::string::npos)
     {
@@ -1123,28 +1123,28 @@ inline static void recordPropertyVerbose(const std::string & property,
 void SystemInfoCollector::OnTestProgramStart(const testing::UnitTest&)
 {
     std::cout << "CTEST_FULL_OUTPUT" << std::endl; // Tell CTest not to discard any output
-    recordPropertyVerbose("cv_version", "OpenCV version", cv::getVersionString(), CV_VERSION);
+    recordPropertyVerbose("cv_version", "OpenCV version", ncvslideio::getVersionString(), CV_VERSION);
     recordPropertyVerbose("cv_vcs_version", "OpenCV VCS version", getSnippetFromConfig("Version control:", "\n"));
     recordPropertyVerbose("cv_build_type", "Build type", getSnippetFromConfig("Configuration:", "\n"), CV_TEST_BUILD_CONFIG);
     recordPropertyVerbose("cv_compiler", "Compiler", getSnippetFromConfig("C++ Compiler:", "\n"));
     recordPropertyVerbose("implementation_hint", "Algorithm hint", getSnippetFromConfig("Algorithm Hint:", "\n"));
     recordPropertyVerbose("hal", "HAL", getSnippetFromConfig("Custom HAL:", "\n"));
-    const char* parallelFramework = cv::currentParallelFramework();
+    const char* parallelFramework = ncvslideio::currentParallelFramework();
     if (parallelFramework)
     {
         ::testing::Test::RecordProperty("cv_parallel_framework", parallelFramework);
-        int threads = testThreads > 0 ? testThreads : cv::getNumThreads();
+        int threads = testThreads > 0 ? testThreads : ncvslideio::getNumThreads();
         ::testing::Test::RecordProperty("cv_parallel_threads", threads);
         std::cout << "Parallel framework: " << parallelFramework << " (nthreads=" << threads << ")" << std::endl;
     }
-    recordPropertyVerbose("cv_cpu_features", "CPU features", cv::getCPUFeaturesLine());
+    recordPropertyVerbose("cv_cpu_features", "CPU features", ncvslideio::getCPUFeaturesLine());
 #ifdef HAVE_IPP
-    recordPropertyVerbose("cv_ipp_version", "Intel(R) IPP version", cv::ipp::useIPP() ? cv::ipp::getIppVersion() : "disabled");
-    if (cv::ipp::useIPP())
-        recordPropertyVerbose("cv_ipp_features", "Intel(R) IPP features code", cv::format("0x%llx", cv::ipp::getIppTopFeatures()));
+    recordPropertyVerbose("cv_ipp_version", "Intel(R) IPP version", ncvslideio::ipp::useIPP() ? ncvslideio::ipp::getIppVersion() : "disabled");
+    if (ncvslideio::ipp::useIPP())
+        recordPropertyVerbose("cv_ipp_features", "Intel(R) IPP features code", ncvslideio::format("0x%llx", ncvslideio::ipp::getIppTopFeatures()));
 #endif
 #ifdef HAVE_OPENCL
-    cv::dumpOpenCLInformation();
+    ncvslideio::dumpOpenCLInformation();
 #endif
 }
 

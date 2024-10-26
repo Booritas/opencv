@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace onnx {
 
@@ -28,8 +28,8 @@ public:
 
     GAPI_WRAP
     PyParams& cfgMeanStd(const std::string &layer_name,
-                         const cv::Scalar &m,
-                         const cv::Scalar &s);
+                         const ncvslideio::Scalar &m,
+                         const ncvslideio::Scalar &s);
     GAPI_WRAP
     PyParams& cfgNormalize(const std::string &layer_name, bool flag);
 
@@ -59,16 +59,16 @@ public:
 
     GBackend backend() const;
     std::string tag() const;
-    cv::util::any params() const;
+    ncvslideio::util::any params() const;
 
 private:
-    std::shared_ptr<Params<cv::gapi::Generic>> m_priv;
+    std::shared_ptr<Params<ncvslideio::gapi::Generic>> m_priv;
 };
 
 GAPI_EXPORTS_W PyParams params(const std::string& tag, const std::string& model_path);
 
 }  // namespace onnx
 }  // namespace gapi
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif  // OPENCV_GAPI_INFER_BINDINGS_ONNX_HPP

@@ -57,15 +57,15 @@ using std::max;
 
 #ifdef HAVE_OPENCL
 #include "opencl_kernels_dnn.hpp"
-using namespace cv::dnn::ocl4dnn;
+using namespace ncvslideio::dnn::ocl4dnn;
 #endif
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/softmax.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -260,7 +260,7 @@ public:
         getCanonicalSize(inputBuffer, &inW, &inH, &inC, &inN);
 
         if (inW != 1 || inH != 1)
-            CV_Error(cv::Error::StsNotImplemented,
+            CV_Error(ncvslideio::Error::StsNotImplemented,
                      "Halide backend for SoftMax with spatial size "
                      "more than 1x1 is not implemented");
 

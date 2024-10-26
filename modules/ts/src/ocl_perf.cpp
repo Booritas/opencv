@@ -52,11 +52,11 @@ void checkDeviceMaxMemoryAllocSize(const Size& size, int type, int factor)
 {
     CV_Assert(factor > 0);
 
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
         return;
 
     size_t memSize = size.area() * CV_ELEM_SIZE(type);
-    const cv::ocl::Device& dev = cv::ocl::Device::getDefault();
+    const ncvslideio::ocl::Device& dev = ncvslideio::ocl::Device::getDefault();
 
     if (memSize * factor >= dev.maxMemAllocSize())
         throw ::perf::TestBase::PerfSkipTestException();
@@ -65,15 +65,15 @@ void checkDeviceMaxMemoryAllocSize(const Size& size, int type, int factor)
 void randu(InputOutputArray dst)
 {
     if (dst.depth() == CV_8U)
-        cv::randu(dst, 0, 256);
+        ncvslideio::randu(dst, 0, 256);
     else if (dst.depth() == CV_8S)
-        cv::randu(dst, -128, 128);
+        ncvslideio::randu(dst, -128, 128);
     else if (dst.depth() == CV_16U)
-        cv::randu(dst, 0, 1024);
+        ncvslideio::randu(dst, 0, 1024);
     else if (dst.depth() == CV_32F || dst.depth() == CV_64F || dst.depth() == CV_16F)
-        cv::randu(dst, -1.0, 1.0);
+        ncvslideio::randu(dst, -1.0, 1.0);
     else if (dst.depth() == CV_16S || dst.depth() == CV_32S)
-        cv::randu(dst, -4096, 4096);
+        ncvslideio::randu(dst, -4096, 4096);
     else
         CV_Error(Error::StsUnsupportedFormat, "Unsupported format");
 }

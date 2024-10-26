@@ -13,7 +13,7 @@
 
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class ROIPoolingOp final : public CUDABackendNode {
@@ -24,8 +24,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
             : stream(std::move(stream_)), spatial_scale{spatial_scale} { }
 
         void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             csl::Workspace& workspace) override
         {
             CV_Assert(inputs.size() == 2 && outputs.size() == 1);
@@ -47,6 +47,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         float spatial_scale;
     };
 
-}}} /* namespace cv::dnn::cuda4dnn */
+}}} /* namespace ncvslideio::dnn::cuda4dnn */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_ROI_POOLING_HPP */

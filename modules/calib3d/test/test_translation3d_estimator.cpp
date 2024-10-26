@@ -10,7 +10,7 @@ namespace opencv_test { namespace {
 TEST(Calib3d_EstimateTranslation3D, test4Points)
 {
     Matx13d trans;
-    cv::randu(trans, Scalar(1), Scalar(3));
+    ncvslideio::randu(trans, Scalar(1), Scalar(3));
 
     // setting points that are no in the same line
 
@@ -47,7 +47,7 @@ TEST(Calib3d_EstimateTranslation3D, test4Points)
 TEST(Calib3d_EstimateTranslation3D, testNPoints)
 {
     Matx13d trans;
-    cv::randu(trans, Scalar(-2), Scalar(2));
+    ncvslideio::randu(trans, Scalar(-2), Scalar(2));
 
     // setting points that are no in the same line
 

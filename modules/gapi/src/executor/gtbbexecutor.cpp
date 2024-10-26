@@ -30,7 +30,7 @@
 #define LOG_DEBUG(tag, ...)   GAPI_LOG_DEBUG(tag, __VA_ARGS__)
 
 
-namespace cv { namespace gimpl { namespace parallel {
+namespace ncvslideio { namespace gimpl { namespace parallel {
 
 namespace detail {
 // some helper staff to deal with tbb::task related entities
@@ -115,7 +115,7 @@ std::size_t inline tg_context_traits() {
 namespace async {
 struct async_tasks_t {
     std::atomic<size_t>         count {0};
-    std::condition_variable     cv;
+    std::condition_variable     ncvslideio;
     std::mutex                  mtx;
 };
 
@@ -141,7 +141,7 @@ void inline wake_master(async_tasks_t& async_tasks, wake_tbb_master wake_master)
 
         // There is no need to _hold_ the lock while signaling, only to acquire it.
         std::unique_lock<std::mutex> {async_tasks.mtx};   // Acquire and release the lock.
-        async_tasks.cv.notify_one();
+        async_tasks.ncvslideio.notify_one();
     }
 }
 
@@ -361,9 +361,9 @@ namespace graph {
     };
 }
 } // namespace detail
-}}}  // namespace cv::gimpl::parallel
+}}}  // namespace ncvslideio::gimpl::parallel
 
-void cv::gimpl::parallel::execute(prio_items_queue_t& q) {
+void ncvslideio::gimpl::parallel::execute(prio_items_queue_t& q) {
     // get the reference to current task_arena (i.e. one we are running in)
 #if TBB_INTERFACE_VERSION > 9002
     using attach_t = tbb::task_arena::attach;
@@ -375,7 +375,7 @@ void cv::gimpl::parallel::execute(prio_items_queue_t& q) {
     execute(q, arena);
 }
 
-void cv::gimpl::parallel::execute(prio_items_queue_t& q, tbb::task_arena& arena) {
+void ncvslideio::gimpl::parallel::execute(prio_items_queue_t& q, tbb::task_arena& arena) {
     using namespace detail;
     graph::exec_ctx ctx{arena, q};
 
@@ -403,7 +403,7 @@ void cv::gimpl::parallel::execute(prio_items_queue_t& q, tbb::task_arena& arena)
                    std::unique_lock<std::mutex> lk(ctx.async_tasks.mtx);
                    // Wait (probably by sleeping) until all async tasks are completed or new TBB tasks are created.
                    // FIXME: Use TBB resumable tasks here to avoid blocking TBB thread
-                   ctx.async_tasks.cv.wait(lk, [&]{return async_work_done() || !tbb_work_done() ;});
+                   ctx.async_tasks.ncvslideio.wait(lk, [&]{return async_work_done() || !tbb_work_done() ;});
 
                    LOG_INFO(NULL, "Slept for " << duration_cast<milliseconds>(timer.now() - start).count() << " ms \n");
                }
@@ -417,7 +417,7 @@ void cv::gimpl::parallel::execute(prio_items_queue_t& q, tbb::task_arena& arena)
     LOG_INFO(NULL, "Done. Executed " << ctx.executed << " tasks");
 }
 
-std::ostream& cv::gimpl::parallel::operator<<(std::ostream& o, tile_node const& n) {
+std::ostream& ncvslideio::gimpl::parallel::operator<<(std::ostream& o, tile_node const& n) {
     o << "("
             << " at:"    << &n << ","
             << "indx: "  << n.total_order_index << ","

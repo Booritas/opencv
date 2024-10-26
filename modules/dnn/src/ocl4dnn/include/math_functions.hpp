@@ -44,7 +44,7 @@
 #define _OPENCV_GREENTEA_MATH_FUNCTIONS_HPP_
 #include "common.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {

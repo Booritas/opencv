@@ -45,7 +45,7 @@ template<> int atoT<int>(const std::string& s) { return std::atoi(s.c_str()); }
 template<> double atoT<double>(const std::string& s) { return std::atof(s.c_str()); }
 
 template<typename T>
-T read_number(cv::RLByteStream& strm)
+T read_number(ncvslideio::RLByteStream& strm)
 {
   // should be enough to take string representation of any number
   const size_t buffer_size = 2048;
@@ -64,7 +64,7 @@ T read_number(cv::RLByteStream& strm)
   return atoT<T>(str);
 }
 
-template<typename T> bool write_anything(cv::WLByteStream& strm, const T& t)
+template<typename T> bool write_anything(ncvslideio::WLByteStream& strm, const T& t)
 {
   std::ostringstream ss;
   ss << t;
@@ -73,7 +73,7 @@ template<typename T> bool write_anything(cv::WLByteStream& strm, const T& t)
 
 }
 
-namespace cv {
+namespace ncvslideio {
 
 PFMDecoder::~PFMDecoder()
 {
@@ -140,7 +140,7 @@ bool PFMDecoder::readData(Mat& mat)
   }
 
   if (buffer.channels() == 3 && !m_use_rgb) {
-    cv::cvtColor(buffer, buffer, cv::COLOR_BGR2RGB);
+    ncvslideio::cvtColor(buffer, buffer, ncvslideio::COLOR_BGR2RGB);
   }
 
   CV_Assert(fabs(m_scale_factor) > 0.0f);

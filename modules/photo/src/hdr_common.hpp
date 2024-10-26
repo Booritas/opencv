@@ -45,7 +45,7 @@
 #include "precomp.hpp"
 #include "opencv2/photo.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 void checkImageDimensions(const std::vector<Mat>& images);

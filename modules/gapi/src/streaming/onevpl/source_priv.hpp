@@ -20,7 +20,7 @@
 #include "streaming/onevpl/onevpl_export.hpp"
 #include "streaming/onevpl/engine/processing_engine_base.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -38,7 +38,7 @@ struct GSource::Priv
     static const std::vector<CfgParam>& getDefaultCfgParams();
     const std::vector<CfgParam>& getCfgParams() const;
 
-    bool pull(cv::gapi::wip::Data& data);
+    bool pull(ncvslideio::gapi::wip::Data& data);
     GMetaArg descr_of() const;
 private:
     Priv();
@@ -52,7 +52,7 @@ private:
 
     mfxSession mfx_session;
 
-    cv::GFrameDesc description;
+    ncvslideio::GFrameDesc description;
     bool description_is_valid;
 
     std::unique_ptr<ProcessingEngineBase> engine;
@@ -62,22 +62,22 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else // HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 struct GSource::Priv final
 {
-    bool pull(cv::gapi::wip::Data&);
+    bool pull(ncvslideio::gapi::wip::Data&);
     GMetaArg descr_of() const;
 };
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL
 #endif // OPENCV_GAPI_STREAMING_ONEVPL_ONEVPL_SOURCE_PRIV_HPP

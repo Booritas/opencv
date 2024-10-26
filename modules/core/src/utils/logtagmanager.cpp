@@ -6,7 +6,7 @@
 #include "logtagmanager.hpp"
 #include "logtagconfigparser.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 

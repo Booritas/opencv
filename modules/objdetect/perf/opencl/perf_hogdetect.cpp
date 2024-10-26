@@ -55,8 +55,8 @@ namespace ocl {
 
 struct RectLess
 {
-    bool operator()(const cv::Rect& a,
-        const cv::Rect& b) const
+    bool operator()(const ncvslideio::Rect& a,
+        const ncvslideio::Rect& b) const
     {
         if (a.x != b.x)
             return a.x < b.x;
@@ -72,10 +72,10 @@ struct RectLess
 OCL_PERF_TEST(HOGFixture, HOG)
 {
     UMat src;
-    imread(getDataPath("gpu/hog/road.png"), cv::IMREAD_GRAYSCALE).copyTo(src);
+    imread(getDataPath("gpu/hog/road.png"), ncvslideio::IMREAD_GRAYSCALE).copyTo(src);
     ASSERT_FALSE(src.empty());
 
-    vector<cv::Rect> found_locations;
+    vector<ncvslideio::Rect> found_locations;
     declare.in(src);
 
     HOGDescriptor hog;

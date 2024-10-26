@@ -24,10 +24,10 @@ Implementation of Batch Normalization layer.
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/batch_norm.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -416,19 +416,19 @@ public:
         op->update_input_desc_x(*x_desc);
         // set inputs : scale (blobs[2])
         std::vector<int> shape_{channel};
-        auto op_const_scale = std::make_shared<CannConstOp>(blobs[2].data, blobs[2].type(), shape_, cv::format("%s_scale", name.c_str()));
+        auto op_const_scale = std::make_shared<CannConstOp>(blobs[2].data, blobs[2].type(), shape_, ncvslideio::format("%s_scale", name.c_str()));
         op->set_input_scale(*(op_const_scale->getOp()));
         op->update_input_desc_scale(*(op_const_scale->getTensorDesc()));
         // set inputs : offset (blobs[3])
-        auto op_const_offset = std::make_shared<CannConstOp>(blobs[3].data, blobs[3].type(), shape_, cv::format("%s_offset", name.c_str()));
+        auto op_const_offset = std::make_shared<CannConstOp>(blobs[3].data, blobs[3].type(), shape_, ncvslideio::format("%s_offset", name.c_str()));
         op->set_input_offset(*(op_const_offset->getOp()));
         op->update_input_desc_offset(*(op_const_offset->getTensorDesc()));
         // set inputs : mean (blobs[0])
-        auto op_const_mean = std::make_shared<CannConstOp>(blobs[0].data, blobs[0].type(), shape_, cv::format("%s_mean", name.c_str()));
+        auto op_const_mean = std::make_shared<CannConstOp>(blobs[0].data, blobs[0].type(), shape_, ncvslideio::format("%s_mean", name.c_str()));
         op->set_input_mean(*(op_const_mean->getOp()));
         op->update_input_desc_mean(*(op_const_mean->getTensorDesc()));
         // set inputs : variance (blobs[1])
-        auto op_const_var = std::make_shared<CannConstOp>(blobs[1].data, blobs[1].type(), shape_, cv::format("%s_var", name.c_str()));
+        auto op_const_var = std::make_shared<CannConstOp>(blobs[1].data, blobs[1].type(), shape_, ncvslideio::format("%s_var", name.c_str()));
         op->set_input_variance(*(op_const_var->getOp()));
         op->update_input_desc_variance(*(op_const_var->getTensorDesc()));
 
@@ -522,4 +522,4 @@ Ptr<BatchNormLayer> BatchNormLayer::create(const LayerParams& params)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

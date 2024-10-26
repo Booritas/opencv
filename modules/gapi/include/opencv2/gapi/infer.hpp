@@ -23,7 +23,7 @@
 #include <opencv2/gapi/gcommon.hpp>   // CompileArgTag
 #include <opencv2/gapi/gmetaarg.hpp>  // GMetaArg
 
-namespace cv {
+namespace ncvslideio {
 
 template<typename, typename> class GNetworkType;
 
@@ -33,8 +33,8 @@ namespace detail {
 template<typename T>
 struct accepted_infer_types {
     static constexpr const auto value =
-            std::is_same<typename std::decay<T>::type, cv::GMat>::value
-         || std::is_same<typename std::decay<T>::type, cv::GFrame>::value;
+            std::is_same<typename std::decay<T>::type, ncvslideio::GMat>::value
+         || std::is_same<typename std::decay<T>::type, ncvslideio::GFrame>::value;
 };
 
 template<typename... Ts>
@@ -47,14 +47,14 @@ struct valid_infer2_types;
 
 // Terminal case 1 (50/50 success)
 template<typename T>
-struct valid_infer2_types< std::tuple<cv::GMat>, std::tuple<T> > {
+struct valid_infer2_types< std::tuple<ncvslideio::GMat>, std::tuple<T> > {
     // By default, Nets are limited to GMat argument types only
     // for infer2, every GMat argument may translate to either
     // GArray<GMat> or GArray<Rect>. GArray<> part is stripped
     // already at this point.
     static constexpr const auto value =
-            std::is_same<typename std::decay<T>::type, cv::GMat>::value
-         || std::is_same<typename std::decay<T>::type, cv::Rect>::value;
+            std::is_same<typename std::decay<T>::type, ncvslideio::GMat>::value
+         || std::is_same<typename std::decay<T>::type, ncvslideio::Rect>::value;
 };
 
 // Terminal case 2 (100% failure)
@@ -71,9 +71,9 @@ struct valid_infer2_types< std::tuple<Ns...>, std::tuple<> >
 
 // Recursion -- generic
 template<typename... Ns, typename T, typename...Ts>
-struct valid_infer2_types< std::tuple<cv::GMat,Ns...>, std::tuple<T,Ts...> > {
+struct valid_infer2_types< std::tuple<ncvslideio::GMat,Ns...>, std::tuple<T,Ts...> > {
     static constexpr const auto value =
-           valid_infer2_types< std::tuple<cv::GMat>, std::tuple<T> >::value
+           valid_infer2_types< std::tuple<ncvslideio::GMat>, std::tuple<T> >::value
         && valid_infer2_types< std::tuple<Ns...>, std::tuple<Ts...> >::value;
 };
 
@@ -90,7 +90,7 @@ class GInferOutputsTyped
 {
 public:
     GInferOutputsTyped() = default;
-    GInferOutputsTyped(std::shared_ptr<cv::GCall> call)
+    GInferOutputsTyped(std::shared_ptr<ncvslideio::GCall> call)
         : m_priv(std::make_shared<Priv>(std::move(call)))
     {
     }
@@ -100,14 +100,14 @@ public:
         auto it = m_priv->blobs.find(name);
         if (it == m_priv->blobs.end()) {
             // FIXME: Avoid modifying GKernel
-            auto shape = cv::detail::GTypeTraits<OutT>::shape;
-            auto kind  = cv::detail::GTypeTraits<OutT>::op_kind;
+            auto shape = ncvslideio::detail::GTypeTraits<OutT>::shape;
+            auto kind  = ncvslideio::detail::GTypeTraits<OutT>::op_kind;
             m_priv->call->kernel().outShapes.push_back(shape);
-            m_priv->call->kernel().outCtors.emplace_back(cv::detail::GObtainCtor<OutT>::get());
+            m_priv->call->kernel().outCtors.emplace_back(ncvslideio::detail::GObtainCtor<OutT>::get());
             m_priv->call->kernel().outKinds.emplace_back(kind);
             auto out_idx = static_cast<int>(m_priv->blobs.size());
             it = m_priv->blobs.emplace(name,
-                    cv::detail::Yield<OutT>::yield(*(m_priv->call), out_idx)).first;
+                    ncvslideio::detail::Yield<OutT>::yield(*(m_priv->call), out_idx)).first;
             m_priv->info->out_names.push_back(name);
         }
         return it->second;
@@ -115,12 +115,12 @@ public:
 private:
     struct Priv
     {
-        Priv(std::shared_ptr<cv::GCall> c)
-            : call(std::move(c)), info(cv::util::any_cast<InOutInfo>(&call->params()))
+        Priv(std::shared_ptr<ncvslideio::GCall> c)
+            : call(std::move(c)), info(ncvslideio::util::any_cast<InOutInfo>(&call->params()))
         {
         }
 
-        std::shared_ptr<cv::GCall> call;
+        std::shared_ptr<ncvslideio::GCall> call;
         InOutInfo* info = nullptr;
         std::unordered_map<std::string, OutT> blobs;
     };
@@ -146,7 +146,7 @@ public:
         return *this;
     }
 
-    using StorageT = cv::util::variant<Ts...>;
+    using StorageT = ncvslideio::util::variant<Ts...>;
     StorageT& operator[](const std::string& name) {
         return m_priv->blobs[name];
     }
@@ -166,11 +166,11 @@ private:
 };
 
 template<typename InferT>
-std::shared_ptr<cv::GCall> makeCall(const std::string         &tag,
-                                    std::vector<cv::GArg>    &&args,
+std::shared_ptr<ncvslideio::GCall> makeCall(const std::string         &tag,
+                                    std::vector<ncvslideio::GArg>    &&args,
                                     std::vector<std::string> &&names,
-                                    cv::GKinds               &&kinds) {
-    auto call = std::make_shared<cv::GCall>(GKernel{
+                                    ncvslideio::GKinds               &&kinds) {
+    auto call = std::make_shared<ncvslideio::GCall>(GKernel{
                 InferT::id(),
                 tag,
                 InferT::getOutMeta,
@@ -181,7 +181,7 @@ std::shared_ptr<cv::GCall> makeCall(const std::string         &tag,
             });
 
     call->setArgs(std::move(args));
-    call->params() = cv::detail::InOutInfo{std::move(names), {}};
+    call->params() = ncvslideio::detail::InOutInfo{std::move(names), {}};
 
     return call;
 }
@@ -200,7 +200,7 @@ public:
     using Result  = OutArgs;
     using API     = std::function<Result(Args...)>;
 
-    using ResultL = std::tuple< cv::GArray<R>... >;
+    using ResultL = std::tuple< ncvslideio::GArray<R>... >;
 };
 
 // Single-return-value network definition (specialized base class)
@@ -214,7 +214,7 @@ public:
     using Result  = R;
     using API     = std::function<R(Args...)>;
 
-    using ResultL = cv::GArray<R>;
+    using ResultL = ncvslideio::GArray<R>;
 };
 
 // InferAPI: Accepts either GMat or GFrame for very individual network's input
@@ -233,7 +233,7 @@ struct InferAPIRoi {
     using type = typename std::enable_if
         <    detail::valid_infer_types<T>::value
           && std::tuple_size<typename Net::InArgs>::value == 1u
-          , std::function<typename Net::Result(cv::GOpaque<cv::Rect>, T)>
+          , std::function<typename Net::Result(ncvslideio::GOpaque<ncvslideio::Rect>, T)>
         >::type;
 };
 
@@ -244,19 +244,19 @@ struct InferAPIList {
     using type = typename std::enable_if
         <    detail::valid_infer_types<Ts...>::value
           && std::tuple_size<typename Net::InArgs>::value == sizeof...(Ts)
-        , std::function<typename Net::ResultL(cv::GArray<cv::Rect>, Ts...)>
+        , std::function<typename Net::ResultL(ncvslideio::GArray<ncvslideio::Rect>, Ts...)>
         >::type;
 };
 
 // APIList2 is also template to allow different calling options
-// (GArray<cv::Rect> vs GArray<cv::GMat> per input)
+// (GArray<ncvslideio::Rect> vs GArray<ncvslideio::GMat> per input)
 template<class Net, typename T, class... Ts>
 struct InferAPIList2 {
     using type = typename std::enable_if
         < detail::valid_infer_types<T>::value &&
-          cv::detail::valid_infer2_types< typename Net::InArgs
+          ncvslideio::detail::valid_infer2_types< typename Net::InArgs
                                         , std::tuple<Ts...> >::value,
-          std::function<typename Net::ResultL(T, cv::GArray<Ts>...)>
+          std::function<typename Net::ResultL(T, ncvslideio::GArray<Ts>...)>
         >::type;
 };
 
@@ -365,39 +365,39 @@ struct GInferList2 final
 /**
  * @brief G-API object used to collect network inputs
  */
-using GInferInputs = cv::detail::GInferInputsTyped<cv::GMat, cv::GFrame>;
+using GInferInputs = ncvslideio::detail::GInferInputsTyped<ncvslideio::GMat, ncvslideio::GFrame>;
 
 /**
  * @brief G-API object used to collect the list of network inputs
  */
-using GInferListInputs = cv::detail::GInferInputsTyped<cv::GArray<cv::GMat>, cv::GArray<cv::Rect>>;
+using GInferListInputs = ncvslideio::detail::GInferInputsTyped<ncvslideio::GArray<ncvslideio::GMat>, ncvslideio::GArray<ncvslideio::Rect>>;
 
 /**
  * @brief G-API object used to collect network outputs
  */
-using GInferOutputs = cv::detail::GInferOutputsTyped<cv::GMat>;
+using GInferOutputs = ncvslideio::detail::GInferOutputsTyped<ncvslideio::GMat>;
 
 /**
  * @brief G-API object used to collect the list of network outputs
  */
-using GInferListOutputs = cv::detail::GInferOutputsTyped<cv::GArray<cv::GMat>>;
+using GInferListOutputs = ncvslideio::detail::GInferOutputsTyped<ncvslideio::GArray<ncvslideio::GMat>>;
 
 namespace detail {
-void inline unpackBlobs(const cv::GInferInputs::Map& blobs,
-                        std::vector<cv::GArg>& args,
+void inline unpackBlobs(const ncvslideio::GInferInputs::Map& blobs,
+                        std::vector<ncvslideio::GArg>& args,
                         std::vector<std::string>& names,
-                        cv::GKinds& kinds)
+                        ncvslideio::GKinds& kinds)
 {
     for (auto&& p : blobs) {
         names.emplace_back(p.first);
         switch (p.second.index()) {
-            case cv::GInferInputs::StorageT::index_of<cv::GMat>():
-                args.emplace_back(cv::util::get<cv::GMat>(p.second));
-                kinds.emplace_back(cv::detail::OpaqueKind::CV_MAT);
+            case ncvslideio::GInferInputs::StorageT::index_of<ncvslideio::GMat>():
+                args.emplace_back(ncvslideio::util::get<ncvslideio::GMat>(p.second));
+                kinds.emplace_back(ncvslideio::detail::OpaqueKind::CV_MAT);
                 break;
-            case cv::GInferInputs::StorageT::index_of<cv::GFrame>():
-                args.emplace_back(cv::util::get<cv::GFrame>(p.second));
-                kinds.emplace_back(cv::detail::OpaqueKind::CV_UNKNOWN);
+            case ncvslideio::GInferInputs::StorageT::index_of<ncvslideio::GFrame>():
+                args.emplace_back(ncvslideio::util::get<ncvslideio::GFrame>(p.second));
+                kinds.emplace_back(ncvslideio::detail::OpaqueKind::CV_UNKNOWN);
                 break;
             default:
                 GAPI_Error("InternalError");
@@ -411,33 +411,33 @@ struct InferROITraits;
 template <>
 struct InferROITraits<GInferROIBase>
 {
-    using outType = cv::GInferOutputs;
-    using inType  = cv::GOpaque<cv::Rect>;
+    using outType = ncvslideio::GInferOutputs;
+    using inType  = ncvslideio::GOpaque<ncvslideio::Rect>;
 };
 
 template <>
 struct InferROITraits<GInferListBase>
 {
-    using outType = cv::GInferListOutputs;
-    using inType  = cv::GArray<cv::Rect>;
+    using outType = ncvslideio::GInferListOutputs;
+    using inType  = ncvslideio::GArray<ncvslideio::Rect>;
 };
 
 template<typename InferType>
 typename InferROITraits<InferType>::outType
 inferGenericROI(const std::string& tag,
          const typename InferROITraits<InferType>::inType& in,
-         const cv::GInferInputs& inputs)
+         const ncvslideio::GInferInputs& inputs)
 {
-    std::vector<cv::GArg> args;
+    std::vector<ncvslideio::GArg> args;
     std::vector<std::string> names;
-    cv::GKinds kinds;
+    ncvslideio::GKinds kinds;
 
     args.emplace_back(in);
-    kinds.emplace_back(cv::detail::OpaqueKind::CV_RECT);
+    kinds.emplace_back(ncvslideio::detail::OpaqueKind::CV_RECT);
 
     unpackBlobs(inputs.getBlobs(), args, names, kinds);
 
-    auto call = cv::detail::makeCall<InferType>(tag,
+    auto call = ncvslideio::detail::makeCall<InferType>(tag,
                                                 std::move(args),
                                                 std::move(names),
                                                 std::move(kinds));
@@ -446,15 +446,15 @@ inferGenericROI(const std::string& tag,
 }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 // FIXME: Probably the <API> signature makes a function/tuple/function round-trip
 #define G_API_NET(Class, API, Tag)                                      \
-    struct Class final: public cv::GNetworkType<Class, std::function API> { \
+    struct Class final: public ncvslideio::GNetworkType<Class, std::function API> { \
         static constexpr const char * tag() { return Tag; }             \
     }
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /** @brief Calculates response for the specified network (template
@@ -471,7 +471,7 @@ namespace gapi {
  * @sa  G_API_NET()
  */
 template<typename Net, typename T>
-typename Net::Result infer(cv::GOpaque<cv::Rect> roi, T in) {
+typename Net::Result infer(ncvslideio::GOpaque<ncvslideio::Rect> roi, T in) {
     return GInferROI<Net, T>::on(roi, in);
 }
 
@@ -489,7 +489,7 @@ typename Net::Result infer(cv::GOpaque<cv::Rect> roi, T in) {
  * @sa  G_API_NET()
  */
 template<typename Net, typename... Args>
-typename Net::ResultL infer(cv::GArray<cv::Rect> roi, Args&&... args) {
+typename Net::ResultL infer(ncvslideio::GArray<ncvslideio::Rect> roi, Args&&... args) {
     return GInferList<Net, Args...>::on(roi, std::forward<Args>(args)...);
 }
 
@@ -498,12 +498,12 @@ typename Net::ResultL infer(cv::GArray<cv::Rect> roi, Args&&... args) {
  *
  * @tparam A network type defined with G_API_NET() macro.
  * @param image A source image containing regions of interest
- * @param args GArray<> objects of cv::Rect or cv::GMat, one per every
+ * @param args GArray<> objects of ncvslideio::Rect or ncvslideio::GMat, one per every
  * network input:
- * - If a cv::GArray<cv::Rect> is passed, the appropriate
+ * - If a ncvslideio::GArray<ncvslideio::Rect> is passed, the appropriate
  *   regions are taken from `image` and preprocessed to this particular
  *   network input;
- * - If a cv::GArray<cv::GMat> is passed, the underlying data traited
+ * - If a ncvslideio::GArray<ncvslideio::GMat> is passed, the underlying data traited
  *   as tensor (no automatic preprocessing happen).
  * @return a list of objects of return type as defined in G_API_NET().
  *   If a network has multiple return values (defined with a tuple), a tuple of
@@ -512,7 +512,7 @@ typename Net::ResultL infer(cv::GArray<cv::Rect> roi, Args&&... args) {
  */
 
 template<typename Net, typename T, typename... Args>
-typename Net::ResultL infer2(T image, cv::GArray<Args>... args) {
+typename Net::ResultL infer2(T image, ncvslideio::GArray<Args>... args) {
     // FIXME: Declared as "2" because in the current form it steals
     // overloads from the regular infer
     return GInferList2<Net, T, Args...>::on(image, args...);
@@ -550,21 +550,21 @@ struct Generic { };
  * @param inputs networks's inputs
  * @return a GInferOutputs
  */
-template<typename T = Generic> cv::GInferOutputs
-infer(const std::string& tag, const cv::GInferInputs& inputs)
+template<typename T = Generic> ncvslideio::GInferOutputs
+infer(const std::string& tag, const ncvslideio::GInferInputs& inputs)
 {
-    std::vector<cv::GArg> args;
+    std::vector<ncvslideio::GArg> args;
     std::vector<std::string> names;
-    cv::GKinds kinds;
+    ncvslideio::GKinds kinds;
 
-    cv::detail::unpackBlobs(inputs.getBlobs(), args, names, kinds);
+    ncvslideio::detail::unpackBlobs(inputs.getBlobs(), args, names, kinds);
 
-    auto call = cv::detail::makeCall<GInferBase>(tag,
+    auto call = ncvslideio::detail::makeCall<GInferBase>(tag,
                                                  std::move(args),
                                                  std::move(names),
                                                  std::move(kinds));
 
-    return cv::GInferOutputs{std::move(call)};
+    return ncvslideio::GInferOutputs{std::move(call)};
 }
 
 /** @brief Calculates response for the generic network
@@ -575,12 +575,12 @@ infer(const std::string& tag, const cv::GInferInputs& inputs)
  * @param roi a an object describing the region of interest
  *   in the source image. May be calculated in the same graph dynamically.
  * @param inputs networks's inputs
- * @return a cv::GInferOutputs
+ * @return a ncvslideio::GInferOutputs
  */
-template<typename T = Generic> cv::GInferOutputs
-infer(const std::string& tag, const cv::GOpaque<cv::Rect>& roi, const cv::GInferInputs& inputs)
+template<typename T = Generic> ncvslideio::GInferOutputs
+infer(const std::string& tag, const ncvslideio::GOpaque<ncvslideio::Rect>& roi, const ncvslideio::GInferInputs& inputs)
 {
-    return cv::detail::inferGenericROI<GInferROIBase>(tag, roi, inputs);
+    return ncvslideio::detail::inferGenericROI<GInferROIBase>(tag, roi, inputs);
 }
 
 /** @brief Calculates responses for the specified network
@@ -590,12 +590,12 @@ infer(const std::string& tag, const cv::GOpaque<cv::Rect>& roi, const cv::GInfer
  * @param rois a list of rectangles describing regions of interest
  *   in the source image. Usually an output of object detector or tracker.
  * @param inputs networks's inputs
- * @return a cv::GInferListOutputs
+ * @return a ncvslideio::GInferListOutputs
  */
-template<typename T = Generic> cv::GInferListOutputs
-infer(const std::string& tag, const cv::GArray<cv::Rect>& rois, const cv::GInferInputs& inputs)
+template<typename T = Generic> ncvslideio::GInferListOutputs
+infer(const std::string& tag, const ncvslideio::GArray<ncvslideio::Rect>& rois, const ncvslideio::GInferInputs& inputs)
 {
-    return cv::detail::inferGenericROI<GInferListBase>(tag, rois, inputs);
+    return ncvslideio::detail::inferGenericROI<GInferListBase>(tag, rois, inputs);
 }
 
 /** @brief Calculates responses for the specified network
@@ -604,52 +604,52 @@ infer(const std::string& tag, const cv::GArray<cv::Rect>& rois, const cv::GInfer
  * @param tag a network tag
  * @param in a source image containing regions of interest.
  * @param inputs networks's inputs
- * @return a cv::GInferListOutputs
+ * @return a ncvslideio::GInferListOutputs
  */
 template<typename T = Generic, typename Input>
-typename std::enable_if<cv::detail::accepted_infer_types<Input>::value, cv::GInferListOutputs>::type
+typename std::enable_if<ncvslideio::detail::accepted_infer_types<Input>::value, ncvslideio::GInferListOutputs>::type
 infer2(const std::string& tag,
        const Input& in,
-       const cv::GInferListInputs& inputs)
+       const ncvslideio::GInferListInputs& inputs)
 {
-    std::vector<cv::GArg> args;
+    std::vector<ncvslideio::GArg> args;
     std::vector<std::string> names;
-    cv::GKinds kinds;
+    ncvslideio::GKinds kinds;
 
     args.emplace_back(in);
-    auto k = cv::detail::GOpaqueTraits<Input>::kind;
+    auto k = ncvslideio::detail::GOpaqueTraits<Input>::kind;
     kinds.emplace_back(k);
 
     for (auto&& p : inputs.getBlobs()) {
         names.emplace_back(p.first);
         switch (p.second.index()) {
-            case cv::GInferListInputs::StorageT::index_of<cv::GArray<cv::GMat>>():
-                args.emplace_back(cv::util::get<cv::GArray<cv::GMat>>(p.second));
-                kinds.emplace_back(cv::detail::OpaqueKind::CV_MAT);
+            case ncvslideio::GInferListInputs::StorageT::index_of<ncvslideio::GArray<ncvslideio::GMat>>():
+                args.emplace_back(ncvslideio::util::get<ncvslideio::GArray<ncvslideio::GMat>>(p.second));
+                kinds.emplace_back(ncvslideio::detail::OpaqueKind::CV_MAT);
                 break;
-            case cv::GInferListInputs::StorageT::index_of<cv::GArray<cv::Rect>>():
-                args.emplace_back(cv::util::get<cv::GArray<cv::Rect>>(p.second));
-                kinds.emplace_back(cv::detail::OpaqueKind::CV_RECT);
+            case ncvslideio::GInferListInputs::StorageT::index_of<ncvslideio::GArray<ncvslideio::Rect>>():
+                args.emplace_back(ncvslideio::util::get<ncvslideio::GArray<ncvslideio::Rect>>(p.second));
+                kinds.emplace_back(ncvslideio::detail::OpaqueKind::CV_RECT);
                 break;
             default:
                 GAPI_Error("InternalError");
         }
     }
 
-    auto call = cv::detail::makeCall<GInferList2Base>(tag,
+    auto call = ncvslideio::detail::makeCall<GInferList2Base>(tag,
                                                       std::move(args),
                                                       std::move(names),
                                                       std::move(kinds));
 
-    return cv::GInferListOutputs{std::move(call)};
+    return ncvslideio::GInferListOutputs{std::move(call)};
 }
 
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STANDALONE
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 // Note: the below code _is_ part of STANDALONE build,
@@ -669,9 +669,9 @@ struct GAPI_EXPORTS_W_SIMPLE GNetParam {
  */
 /**
  * @brief A container class for network configurations. Similar to
- * GKernelPackage. Use cv::gapi::networks() to construct this object.
+ * GKernelPackage. Use ncvslideio::gapi::networks() to construct this object.
  *
- * @sa cv::gapi::networks
+ * @sa ncvslideio::gapi::networks
  */
 struct GAPI_EXPORTS_W_SIMPLE GNetPackage {
     GAPI_WRAP GNetPackage() = default;
@@ -692,26 +692,26 @@ gapi::GNetParam strip(T&& t) {
                            };
 }
 
-template<> struct CompileArgTag<cv::gapi::GNetPackage> {
+template<> struct CompileArgTag<ncvslideio::gapi::GNetPackage> {
     static const char* tag() { return "gapi.net_package"; }
 };
 
-} // namespace cv::detail
+} // namespace ncvslideio::detail
 
 namespace gapi {
 template<typename... Args>
-cv::gapi::GNetPackage networks(Args&&... args) {
-    return cv::gapi::GNetPackage({ cv::detail::strip(args)... });
+ncvslideio::gapi::GNetPackage networks(Args&&... args) {
+    return ncvslideio::gapi::GNetPackage({ ncvslideio::detail::strip(args)... });
 }
 
-inline cv::gapi::GNetPackage& operator += (      cv::gapi::GNetPackage& lhs,
-                                           const cv::gapi::GNetPackage& rhs) {
+inline ncvslideio::gapi::GNetPackage& operator += (      ncvslideio::gapi::GNetPackage& lhs,
+                                           const ncvslideio::gapi::GNetPackage& rhs) {
     lhs.networks.reserve(lhs.networks.size() + rhs.networks.size());
     lhs.networks.insert(lhs.networks.end(), rhs.networks.begin(), rhs.networks.end());
     return lhs;
 }
 
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_INFER_HPP

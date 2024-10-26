@@ -28,10 +28,10 @@ def draw_flow(img, flow, step=16):
     fx, fy = flow[y,x].T
     lines = np.vstack([x, y, x+fx, y+fy]).T.reshape(-1, 2, 2)
     lines = np.int32(lines + 0.5)
-    vis = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-    cv.polylines(vis, lines, 0, (0, 255, 0))
+    vis = ncvslideio.cvtColor(img, ncvslideio.COLOR_GRAY2BGR)
+    ncvslideio.polylines(vis, lines, 0, (0, 255, 0))
     for (x1, y1), (_x2, _y2) in lines:
-        cv.circle(vis, (x1, y1), 1, (0, 255, 0), -1)
+        ncvslideio.circle(vis, (x1, y1), 1, (0, 255, 0), -1)
     return vis
 
 
@@ -44,7 +44,7 @@ def draw_hsv(flow):
     hsv[...,0] = ang*(180/np.pi/2)
     hsv[...,1] = 255
     hsv[...,2] = np.minimum(v*4, 255)
-    bgr = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
+    bgr = ncvslideio.cvtColor(hsv, ncvslideio.COLOR_HSV2BGR)
     return bgr
 
 
@@ -53,7 +53,7 @@ def warp_flow(img, flow):
     flow = -flow
     flow[:,:,0] += np.arange(w)
     flow[:,:,1] += np.arange(h)[:,np.newaxis]
-    res = cv.remap(img, flow, None, cv.INTER_LINEAR)
+    res = ncvslideio.remap(img, flow, None, ncvslideio.INTER_LINEAR)
     return res
 
 
@@ -67,19 +67,19 @@ def main():
 
     cam = video.create_capture(fn)
     _ret, prev = cam.read()
-    prevgray = cv.cvtColor(prev, cv.COLOR_BGR2GRAY)
+    prevgray = ncvslideio.cvtColor(prev, ncvslideio.COLOR_BGR2GRAY)
     show_hsv = False
     show_glitch = False
     use_spatial_propagation = False
     use_temporal_propagation = True
     cur_glitch = prev.copy()
-    inst = cv.DISOpticalFlow.create(cv.DISOPTICAL_FLOW_PRESET_MEDIUM)
+    inst = ncvslideio.DISOpticalFlow.create(ncvslideio.DISOPTICAL_FLOW_PRESET_MEDIUM)
     inst.setUseSpatialPropagation(use_spatial_propagation)
 
     flow = None
     while True:
         _ret, img = cam.read()
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        gray = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
         if flow is not None and use_temporal_propagation:
             #warp previous flow to get an initial approximation for the current flow:
             flow = inst.calc(prevgray, gray, warp_flow(flow,flow))
@@ -87,14 +87,14 @@ def main():
             flow = inst.calc(prevgray, gray, None)
         prevgray = gray
 
-        cv.imshow('flow', draw_flow(gray, flow))
+        ncvslideio.imshow('flow', draw_flow(gray, flow))
         if show_hsv:
-            cv.imshow('flow HSV', draw_hsv(flow))
+            ncvslideio.imshow('flow HSV', draw_hsv(flow))
         if show_glitch:
             cur_glitch = warp_flow(cur_glitch, flow)
-            cv.imshow('glitch', cur_glitch)
+            ncvslideio.imshow('glitch', cur_glitch)
 
-        ch = 0xFF & cv.waitKey(5)
+        ch = 0xFF & ncvslideio.waitKey(5)
         if ch == 27:
             break
         if ch == ord('1'):
@@ -119,4 +119,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

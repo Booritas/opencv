@@ -17,7 +17,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -401,6 +401,6 @@ private:
 
 //! @}
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking
 
 #endif  // OPENCV_VIDEO_DETAIL_TRACKING_HPP

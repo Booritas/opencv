@@ -177,7 +177,7 @@ public:
         model.setPreferableTarget(target);
 
         // 1. Check common TextDetectionModel API through RotatedRect
-        std::vector<cv::RotatedRect> results;
+        std::vector<ncvslideio::RotatedRect> results;
         model.detectTextRectangles(frame, results);
 
         EXPECT_GT(results.size(), (size_t)0);
@@ -239,7 +239,7 @@ public:
         model.setPreferableBackend(backend);
         model.setPreferableTarget(target);
 
-        std::vector<cv::RotatedRect> results;
+        std::vector<ncvslideio::RotatedRect> results;
         model.detectTextRectangles(frame, results);
 
         EXPECT_EQ(results.size(), (size_t)1);

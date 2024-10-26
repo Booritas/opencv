@@ -10,7 +10,7 @@
 #include "streaming/onevpl/data_provider_dispatcher.hpp"
 #include "streaming/onevpl/cfg_param_device_selector.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -111,7 +111,7 @@ GSource::GSource(std::unique_ptr<Priv>&& impl) :
 
 GSource::~GSource() = default;
 
-bool GSource::pull(cv::gapi::wip::Data& data)
+bool GSource::pull(ncvslideio::gapi::wip::Data& data)
 {
     return m_priv->pull(data);
 }
@@ -123,4 +123,4 @@ GMetaArg GSource::descr_of() const
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

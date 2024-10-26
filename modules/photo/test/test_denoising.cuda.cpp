@@ -57,29 +57,29 @@ namespace opencv_test { namespace {
 
 TEST(CUDA_BruteForceNonLocalMeans, Regression)
 {
-    using cv::cuda::GpuMat;
+    using ncvslideio::cuda::GpuMat;
 
-    cv::Mat bgr  = readImage("../gpu/denoising/lena_noised_gaussian_sigma=20_multi_0.png", cv::IMREAD_COLOR);
+    ncvslideio::Mat bgr  = readImage("../gpu/denoising/lena_noised_gaussian_sigma=20_multi_0.png", ncvslideio::IMREAD_COLOR);
     ASSERT_FALSE(bgr.empty());
-    cv::resize(bgr, bgr, cv::Size(256, 256));
+    ncvslideio::resize(bgr, bgr, ncvslideio::Size(256, 256));
 
-    cv::Mat gray;
-    cv::cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
+    ncvslideio::Mat gray;
+    ncvslideio::cvtColor(bgr, gray, ncvslideio::COLOR_BGR2GRAY);
 
     GpuMat dbgr, dgray;
-    cv::cuda::nonLocalMeans(GpuMat(bgr),  dbgr, 20);
-    cv::cuda::nonLocalMeans(GpuMat(gray), dgray, 20);
+    ncvslideio::cuda::nonLocalMeans(GpuMat(bgr),  dbgr, 20);
+    ncvslideio::cuda::nonLocalMeans(GpuMat(gray), dgray, 20);
 
 #if 0
-    dumpImage("../gpu/denoising/nlm_denoised_lena_bgr.png", cv::Mat(dbgr));
-    dumpImage("../gpu/denoising/nlm_denoised_lena_gray.png", cv::Mat(dgray));
+    dumpImage("../gpu/denoising/nlm_denoised_lena_bgr.png", ncvslideio::Mat(dbgr));
+    dumpImage("../gpu/denoising/nlm_denoised_lena_gray.png", ncvslideio::Mat(dgray));
 #endif
 
-    cv::Mat bgr_gold  = readImage("../gpu/denoising/nlm_denoised_lena_bgr.png", cv::IMREAD_COLOR);
-    cv::Mat gray_gold  = readImage("../gpu/denoising/nlm_denoised_lena_gray.png", cv::IMREAD_GRAYSCALE);
+    ncvslideio::Mat bgr_gold  = readImage("../gpu/denoising/nlm_denoised_lena_bgr.png", ncvslideio::IMREAD_COLOR);
+    ncvslideio::Mat gray_gold  = readImage("../gpu/denoising/nlm_denoised_lena_gray.png", ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(bgr_gold.empty() || gray_gold.empty());
-    cv::resize(bgr_gold, bgr_gold, cv::Size(256, 256));
-    cv::resize(gray_gold, gray_gold, cv::Size(256, 256));
+    ncvslideio::resize(bgr_gold, bgr_gold, ncvslideio::Size(256, 256));
+    ncvslideio::resize(gray_gold, gray_gold, ncvslideio::Size(256, 256));
 
     EXPECT_MAT_NEAR(bgr_gold, dbgr, 1);
     EXPECT_MAT_NEAR(gray_gold, dgray, 1);
@@ -90,26 +90,26 @@ TEST(CUDA_BruteForceNonLocalMeans, Regression)
 
 TEST(CUDA_FastNonLocalMeans, Regression)
 {
-    using cv::cuda::GpuMat;
+    using ncvslideio::cuda::GpuMat;
 
-    cv::Mat bgr  = readImage("../gpu/denoising/lena_noised_gaussian_sigma=20_multi_0.png", cv::IMREAD_COLOR);
+    ncvslideio::Mat bgr  = readImage("../gpu/denoising/lena_noised_gaussian_sigma=20_multi_0.png", ncvslideio::IMREAD_COLOR);
     ASSERT_FALSE(bgr.empty());
 
-    cv::Mat gray;
-    cv::cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
+    ncvslideio::Mat gray;
+    ncvslideio::cvtColor(bgr, gray, ncvslideio::COLOR_BGR2GRAY);
 
     GpuMat dbgr, dgray;
 
-    cv::cuda::fastNlMeansDenoising(GpuMat(gray),  dgray, 20);
-    cv::cuda::fastNlMeansDenoisingColored(GpuMat(bgr),  dbgr, 20, 10);
+    ncvslideio::cuda::fastNlMeansDenoising(GpuMat(gray),  dgray, 20);
+    ncvslideio::cuda::fastNlMeansDenoisingColored(GpuMat(bgr),  dbgr, 20, 10);
 
 #if 0
-    dumpImage("../gpu/denoising/fnlm_denoised_lena_bgr.png", cv::Mat(dbgr));
-    dumpImage("../gpu/denoising/fnlm_denoised_lena_gray.png", cv::Mat(dgray));
+    dumpImage("../gpu/denoising/fnlm_denoised_lena_bgr.png", ncvslideio::Mat(dbgr));
+    dumpImage("../gpu/denoising/fnlm_denoised_lena_gray.png", ncvslideio::Mat(dgray));
 #endif
 
-    cv::Mat bgr_gold  = readImage("../gpu/denoising/fnlm_denoised_lena_bgr.png", cv::IMREAD_COLOR);
-    cv::Mat gray_gold  = readImage("../gpu/denoising/fnlm_denoised_lena_gray.png", cv::IMREAD_GRAYSCALE);
+    ncvslideio::Mat bgr_gold  = readImage("../gpu/denoising/fnlm_denoised_lena_bgr.png", ncvslideio::IMREAD_COLOR);
+    ncvslideio::Mat gray_gold  = readImage("../gpu/denoising/fnlm_denoised_lena_gray.png", ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(bgr_gold.empty() || gray_gold.empty());
 
     EXPECT_MAT_NEAR(bgr_gold, dbgr, 1);

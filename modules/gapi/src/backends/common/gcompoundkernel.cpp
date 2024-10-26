@@ -13,7 +13,7 @@
 
 // FIXME move to backends
 
-cv::detail::GCompoundContext::GCompoundContext(const cv::GArgs& in_args)
+ncvslideio::detail::GCompoundContext::GCompoundContext(const ncvslideio::GArgs& in_args)
 {
     m_args.resize(in_args.size());
     for (const auto it : ade::util::indexed(in_args))
@@ -21,13 +21,13 @@ cv::detail::GCompoundContext::GCompoundContext(const cv::GArgs& in_args)
         const auto& i      = ade::util::index(it);
         const auto& in_arg = ade::util::value(it);
 
-        if (in_arg.kind != cv::detail::ArgKind::GOBJREF)
+        if (in_arg.kind != ncvslideio::detail::ArgKind::GOBJREF)
         {
             m_args[i] = in_arg;
         }
         else
         {
-            const cv::gimpl::RcDesc &ref = in_arg.get<cv::gimpl::RcDesc>();
+            const ncvslideio::gimpl::RcDesc &ref = in_arg.get<ncvslideio::gimpl::RcDesc>();
             switch (ref.shape)
             {
                 case GShape::GMAT   : m_args[i] = GArg(GMat());    break;
@@ -44,8 +44,8 @@ cv::detail::GCompoundContext::GCompoundContext(const cv::GArgs& in_args)
     GAPI_Assert(m_args.size() == in_args.size());
 }
 
-cv::detail::GCompoundKernel::GCompoundKernel(const F& f) : m_f(f)
+ncvslideio::detail::GCompoundKernel::GCompoundKernel(const F& f) : m_f(f)
 {
 }
 
-void cv::detail::GCompoundKernel::apply(cv::detail::GCompoundContext& ctx) { m_f(ctx); }
+void ncvslideio::detail::GCompoundKernel::apply(ncvslideio::detail::GCompoundContext& ctx) { m_f(ctx); }

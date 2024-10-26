@@ -14,7 +14,7 @@ PERF_TEST_P( CreateHanningWindowFixture, CreateHanningWindow, Values(szVGA, sz10
 
     declare.in(dst, WARMUP_RNG).out(dst);
 
-    TEST_CYCLE() cv::createHanningWindow(dst, size, CV_32FC1);
+    TEST_CYCLE() ncvslideio::createHanningWindow(dst, size, CV_32FC1);
 
     SANITY_CHECK(dst, 1e-6, ERROR_RELATIVE);
 }

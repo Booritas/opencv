@@ -25,10 +25,10 @@ TEST_P(MathOperatorMatScalarTest, OperatorAccuracyTest )
 
     // G-API code & corresponding OpenCV code ////////////////////////////////
 
-    cv::GMat in1;
-    cv::GScalar in2;
+    ncvslideio::GMat in1;
+    ncvslideio::GScalar in2;
     auto out = fun_gapi(in1, in2);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, sc), gout(out_mat_gapi), getCompileArgs());
 
@@ -52,10 +52,10 @@ TEST_P(MathOperatorMatMatTest, OperatorAccuracyTest )
 
     // G-API code & corresponding OpenCV code ////////////////////////////////
 
-    cv::GMat in1;
-    cv::GMat in2;
+    ncvslideio::GMat in1;
+    ncvslideio::GMat in2;
     auto out = fun_gapi(in1, in2);
-    cv::GComputation c(GIn(in1, in2), GOut(out));
+    ncvslideio::GComputation c(GIn(in1, in2), GOut(out));
 
     c.apply(gin(in_mat1, in_mat2), gout(out_mat_gapi), getCompileArgs());
 
@@ -71,9 +71,9 @@ TEST_P(MathOperatorMatMatTest, OperatorAccuracyTest )
 TEST_P(NotOperatorTest, OperatorAccuracyTest)
 {
     // G-API code //////////////////////////////////////////////////////////////
-    cv::GMat in;
+    ncvslideio::GMat in;
     auto out = ~in;
-    cv::GComputation c(in, out);
+    ncvslideio::GComputation c(in, out);
 
     c.apply(in_mat1, out_mat_gapi, getCompileArgs());
 
@@ -111,54 +111,54 @@ inline int operator!=(Foo, int) { return 1; }
 
 TEST(CVNamespaceOperatorsTest, OperatorCompilationTest)
 {
-    cv::GScalar sc;
-    cv::GMat mat_in1, mat_in2;
+    ncvslideio::GScalar sc;
+    ncvslideio::GMat mat_in1, mat_in2;
 
-    cv::GMat op_not = ~ mat_in1;
+    ncvslideio::GMat op_not = ~ mat_in1;
 
-    cv::GMat op_mat_mat1  = mat_in1 &  mat_in2;
-    cv::GMat op_mat_mat2  = mat_in1 |  mat_in2;
-    cv::GMat op_mat_mat3  = mat_in1 ^  mat_in2;
-    cv::GMat op_mat_mat4  = mat_in1 +  mat_in2;
-    cv::GMat op_mat_mat5  = mat_in1 -  mat_in2;
-    cv::GMat op_mat_mat6  = mat_in1 /  mat_in2;
-    cv::GMat op_mat_mat7  = mat_in1 >  mat_in2;
-    cv::GMat op_mat_mat8  = mat_in1 >= mat_in2;
-    cv::GMat op_mat_mat9  = mat_in1 <  mat_in2;
-    cv::GMat op_mat_mat10 = mat_in1 <= mat_in2;
-    cv::GMat op_mat_mat11 = mat_in1 == mat_in2;
-    cv::GMat op_mat_mat12 = mat_in1 != mat_in2;
+    ncvslideio::GMat op_mat_mat1  = mat_in1 &  mat_in2;
+    ncvslideio::GMat op_mat_mat2  = mat_in1 |  mat_in2;
+    ncvslideio::GMat op_mat_mat3  = mat_in1 ^  mat_in2;
+    ncvslideio::GMat op_mat_mat4  = mat_in1 +  mat_in2;
+    ncvslideio::GMat op_mat_mat5  = mat_in1 -  mat_in2;
+    ncvslideio::GMat op_mat_mat6  = mat_in1 /  mat_in2;
+    ncvslideio::GMat op_mat_mat7  = mat_in1 >  mat_in2;
+    ncvslideio::GMat op_mat_mat8  = mat_in1 >= mat_in2;
+    ncvslideio::GMat op_mat_mat9  = mat_in1 <  mat_in2;
+    ncvslideio::GMat op_mat_mat10 = mat_in1 <= mat_in2;
+    ncvslideio::GMat op_mat_mat11 = mat_in1 == mat_in2;
+    ncvslideio::GMat op_mat_mat12 = mat_in1 != mat_in2;
 
-    cv::GMat op_mat_sc1  = mat_in1 &  sc;
-    cv::GMat op_mat_sc2  = mat_in1 |  sc;
-    cv::GMat op_mat_sc3  = mat_in1 ^  sc;
-    cv::GMat op_mat_sc4  = mat_in1 +  sc;
-    cv::GMat op_mat_sc5  = mat_in1 -  sc;
-    cv::GMat op_mat_sc6  = mat_in1 *  sc;
-    cv::GMat op_mat_sc7  = mat_in1 /  sc;
-    cv::GMat op_mat_sc8  = mat_in1 >  sc;
-    cv::GMat op_mat_sc9  = mat_in1 >= sc;
-    cv::GMat op_mat_sc10 = mat_in1 <  sc;
-    cv::GMat op_mat_sc11 = mat_in1 <= sc;
-    cv::GMat op_mat_sc12 = mat_in1 == sc;
-    cv::GMat op_mat_sc13 = mat_in1 != sc;
+    ncvslideio::GMat op_mat_sc1  = mat_in1 &  sc;
+    ncvslideio::GMat op_mat_sc2  = mat_in1 |  sc;
+    ncvslideio::GMat op_mat_sc3  = mat_in1 ^  sc;
+    ncvslideio::GMat op_mat_sc4  = mat_in1 +  sc;
+    ncvslideio::GMat op_mat_sc5  = mat_in1 -  sc;
+    ncvslideio::GMat op_mat_sc6  = mat_in1 *  sc;
+    ncvslideio::GMat op_mat_sc7  = mat_in1 /  sc;
+    ncvslideio::GMat op_mat_sc8  = mat_in1 >  sc;
+    ncvslideio::GMat op_mat_sc9  = mat_in1 >= sc;
+    ncvslideio::GMat op_mat_sc10 = mat_in1 <  sc;
+    ncvslideio::GMat op_mat_sc11 = mat_in1 <= sc;
+    ncvslideio::GMat op_mat_sc12 = mat_in1 == sc;
+    ncvslideio::GMat op_mat_sc13 = mat_in1 != sc;
 
-    cv::GMat op_sc_mat1  = sc &  mat_in2;
-    cv::GMat op_sc_mat2  = sc |  mat_in2;
-    cv::GMat op_sc_mat3  = sc ^  mat_in2;
-    cv::GMat op_sc_mat4  = sc +  mat_in2;
-    cv::GMat op_sc_mat5  = sc -  mat_in2;
-    cv::GMat op_sc_mat6  = sc *  mat_in2;
-    cv::GMat op_sc_mat7  = sc /  mat_in2;
-    cv::GMat op_sc_mat8  = sc >  mat_in2;
-    cv::GMat op_sc_mat9  = sc >= mat_in2;
-    cv::GMat op_sc_mat10 = sc <  mat_in2;
-    cv::GMat op_sc_mat11 = sc <= mat_in2;
-    cv::GMat op_sc_mat12 = sc == mat_in2;
-    cv::GMat op_sc_mat13 = sc != mat_in2;
+    ncvslideio::GMat op_sc_mat1  = sc &  mat_in2;
+    ncvslideio::GMat op_sc_mat2  = sc |  mat_in2;
+    ncvslideio::GMat op_sc_mat3  = sc ^  mat_in2;
+    ncvslideio::GMat op_sc_mat4  = sc +  mat_in2;
+    ncvslideio::GMat op_sc_mat5  = sc -  mat_in2;
+    ncvslideio::GMat op_sc_mat6  = sc *  mat_in2;
+    ncvslideio::GMat op_sc_mat7  = sc /  mat_in2;
+    ncvslideio::GMat op_sc_mat8  = sc >  mat_in2;
+    ncvslideio::GMat op_sc_mat9  = sc >= mat_in2;
+    ncvslideio::GMat op_sc_mat10 = sc <  mat_in2;
+    ncvslideio::GMat op_sc_mat11 = sc <= mat_in2;
+    ncvslideio::GMat op_sc_mat12 = sc == mat_in2;
+    ncvslideio::GMat op_sc_mat13 = sc != mat_in2;
 
-    cv::GMat mul_mat_float1 = mat_in1 * 1.0f;
-    cv::GMat mul_mat_float2 = 1.0f * mat_in2;
+    ncvslideio::GMat mul_mat_float1 = mat_in1 * 1.0f;
+    ncvslideio::GMat mul_mat_float2 = 1.0f * mat_in2;
     // No compilation errors expected
 }
 } // for_test

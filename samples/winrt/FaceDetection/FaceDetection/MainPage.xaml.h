@@ -25,8 +25,8 @@ namespace FaceDetection
         void detectBtn_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 
     private:
-        cv::Mat groupFaces;
-        void UpdateImage(const cv::Mat& image);
-        cv::CascadeClassifier face_cascade;
+        ncvslideio::Mat groupFaces;
+        void UpdateImage(const ncvslideio::Mat& image);
+        ncvslideio::CascadeClassifier face_cascade;
     };
 }

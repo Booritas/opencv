@@ -6,7 +6,7 @@
 #include "opencv2/objdetect/graphical_code_detector.hpp"
 #include "graphical_code_detector_impl.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 GraphicalCodeDetector::GraphicalCodeDetector() {}
 

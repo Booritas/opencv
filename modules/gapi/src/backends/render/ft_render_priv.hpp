@@ -15,7 +15,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -29,8 +29,8 @@ class FTTextRender::Priv
 public:
     explicit Priv(const std::string& path);
 
-    cv::Size getTextSize(const std::wstring& text, int fh, int* baseline);
-    void putText(cv::Mat& mat, const std::wstring& text, const cv::Point& org, int fh);
+    ncvslideio::Size getTextSize(const std::wstring& text, int fh, int* baseline);
+    void putText(ncvslideio::Mat& mat, const std::wstring& text, const ncvslideio::Point& org, int fh);
 
     ~Priv();
 
@@ -42,7 +42,7 @@ private:
 } // namespace draw
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_FT_RENDER_PRIV_HPP
 #endif // HAVE_FREETYPE

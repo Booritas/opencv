@@ -20,7 +20,7 @@ class ShortTermImagelessTracker : public Tracker {
     explicit ShortTermImagelessTracker(vas::ot::Tracker::InitParameters init_param);
     virtual ~ShortTermImagelessTracker();
 
-    virtual int32_t TrackObjects(const cv::Mat &mat, const std::vector<Detection> &detections,
+    virtual int32_t TrackObjects(const ncvslideio::Mat &mat, const std::vector<Detection> &detections,
             std::vector<std::shared_ptr<Tracklet>> *tracklets, float delta_t) override;
 
     ShortTermImagelessTracker(const ShortTermImagelessTracker &) = delete;
@@ -30,7 +30,7 @@ class ShortTermImagelessTracker : public Tracker {
     void TrimTrajectories();
 
   private:
-    cv::Size image_sz;
+    ncvslideio::Size image_sz;
 };
 
 }; // namespace ot

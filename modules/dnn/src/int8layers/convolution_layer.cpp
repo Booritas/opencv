@@ -14,7 +14,7 @@
 #include <iostream>
 #include <numeric>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -347,7 +347,7 @@ public:
 
         for (int i = 0; i < numOutput; i++)
         {
-            tvBiasVec[i] += input_zp * (cv::sum(blobs[0].row(i))[0]);
+            tvBiasVec[i] += input_zp * (ncvslideio::sum(blobs[0].row(i))[0]);
         }
 
         // Padding Type
@@ -548,7 +548,7 @@ public:
         {
             // for Conv1d
             if (group != 1)
-                CV_Error( cv::Error::StsNotImplemented, " Grouped Conv1d or Depth-Wise Conv1d are not supported by "
+                CV_Error( ncvslideio::Error::StsNotImplemented, " Grouped Conv1d or Depth-Wise Conv1d are not supported by "
                                                 "TimVX Backend. Please try OpenCV Backend.");
             tvConv = graph->CreateOperation<tim::vx::ops::Conv1d>(
                     tvConvWeightShape[2], tvPadType, (uint32_t)kernel_size[0],
@@ -670,7 +670,7 @@ public:
             {
                 std::vector<float> ovBias(numOutput);
                 for (int i = 0; i < numOutput; ++i) {
-                    ovBias[i] = (biasvec[i] + input_zp * cv::sum(blobs[0].row(i))[0]) * outputMultiplier[i] * output_sc;
+                    ovBias[i] = (biasvec[i] + input_zp * ncvslideio::sum(blobs[0].row(i))[0]) * outputMultiplier[i] * output_sc;
                 }
                 bias = std::make_shared<ov::op::v0::Constant>(ov::element::f32, ov::Shape(shape), ovBias.data());
             }
@@ -683,7 +683,7 @@ public:
     }
 #endif  // HAVE_DNN_NGRAPH
 
-    class ParallelConv : public cv::ParallelLoopBody
+    class ParallelConv : public ncvslideio::ParallelLoopBody
     {
     public:
         enum { BLK_SIZE = 32, BLK_SIZE_CN = 64 };

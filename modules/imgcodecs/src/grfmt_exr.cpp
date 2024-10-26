@@ -80,7 +80,7 @@
 
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 static bool isOpenEXREnabled()
@@ -435,7 +435,7 @@ bool  ExrDecoder::readData( Mat& img )
                     float *fi = (float *)buffer;
                     for( x = 0; x < m_width * img.channels(); x++)
                     {
-                        out[x] = cv::saturate_cast<uchar>(fi[x]);
+                        out[x] = ncvslideio::saturate_cast<uchar>(fi[x]);
                     }
                 }
                 else
@@ -443,7 +443,7 @@ bool  ExrDecoder::readData( Mat& img )
                     unsigned *ui = (unsigned *)buffer;
                     for( x = 0; x < m_width * img.channels(); x++)
                     {
-                        out[x] = cv::saturate_cast<uchar>(ui[x]);
+                        out[x] = ncvslideio::saturate_cast<uchar>(ui[x]);
                     }
                 }
             }

@@ -63,12 +63,12 @@
   Most of the classification and regression algorithms are implemented as C++ classes. As the
   algorithms have different sets of features (like an ability to handle missing measurements or
   categorical input variables), there is a little common ground between the classes. This common
-  ground is defined by the class cv::ml::StatModel that all the other ML classes are derived from.
+  ground is defined by the class ncvslideio::ml::StatModel that all the other ML classes are derived from.
 
   See detailed overview here: @ref ml_intro.
  */
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace ml
@@ -248,7 +248,7 @@ public:
     /** @brief Extract from matrix rows/cols specified by passed indexes.
     @param matrix input matrix (supported types: CV_32S, CV_32F, CV_64F)
     @param idx 1D index vector
-    @param layout specifies to extract rows (cv::ml::ROW_SAMPLES) or to extract columns (cv::ml::COL_SAMPLES)
+    @param layout specifies to extract rows (ncvslideio::ml::ROW_SAMPLES) or to extract columns (ncvslideio::ml::COL_SAMPLES)
      */
     static CV_WRAP Mat getSubMatrix(const Mat& matrix, const Mat& idx, int layout);
 
@@ -372,7 +372,7 @@ public:
 
     @param samples The input samples, floating-point matrix
     @param results The optional output matrix of results.
-    @param flags The optional flags, model-dependent. See cv::ml::StatModel::Flags.
+    @param flags The optional flags, model-dependent. See ncvslideio::ml::StatModel::Flags.
      */
     CV_WRAP virtual float predict( InputArray samples, OutputArray results=noArray(), int flags=0 ) const = 0;
 
@@ -589,18 +589,18 @@ public:
     the larger penalty on misclassification of data from the corresponding class. Default value is
     empty Mat. */
     /** @see setClassWeights */
-    CV_WRAP virtual cv::Mat getClassWeights() const = 0;
+    CV_WRAP virtual ncvslideio::Mat getClassWeights() const = 0;
     /** @copybrief getClassWeights @see getClassWeights */
-    CV_WRAP virtual void setClassWeights(const cv::Mat &val) = 0;
+    CV_WRAP virtual void setClassWeights(const ncvslideio::Mat &val) = 0;
 
     /** Termination criteria of the iterative %SVM training procedure which solves a partial
     case of constrained quadratic optimization problem.
     You can specify tolerance and/or the maximum number of iterations. Default value is
     `TermCriteria( TermCriteria::MAX_ITER + TermCriteria::EPS, 1000, FLT_EPSILON )`; */
     /** @see setTermCriteria */
-    CV_WRAP virtual cv::TermCriteria getTermCriteria() const = 0;
+    CV_WRAP virtual ncvslideio::TermCriteria getTermCriteria() const = 0;
     /** @copybrief getTermCriteria @see getTermCriteria */
-    CV_WRAP virtual void setTermCriteria(const cv::TermCriteria &val) = 0;
+    CV_WRAP virtual void setTermCriteria(const ncvslideio::TermCriteria &val) = 0;
 
     /** Type of a %SVM kernel.
     See SVM::KernelTypes. Default value is SVM::RBF. */
@@ -1148,9 +1148,9 @@ public:
     the second category is equivalent to making 10 mistakes in predicting the first category.
     Default value is empty Mat.*/
     /** @see setPriors */
-    CV_WRAP virtual cv::Mat getPriors() const = 0;
+    CV_WRAP virtual ncvslideio::Mat getPriors() const = 0;
     /** @copybrief getPriors @see getPriors */
-    CV_WRAP virtual void setPriors(const cv::Mat &val) = 0;
+    CV_WRAP virtual void setPriors(const ncvslideio::Mat &val) = 0;
 
     /** @brief The class represents a decision tree node.
      */
@@ -1466,7 +1466,7 @@ public:
     The very first element specifies the number of elements in the input layer.
     The last element - number of elements in the output layer.
     @sa setLayerSizes */
-    CV_WRAP virtual cv::Mat getLayerSizes() const = 0;
+    CV_WRAP virtual ncvslideio::Mat getLayerSizes() const = 0;
 
     /** Termination criteria of the training algorithm.
     You can specify the maximum number of iterations (maxCount) and/or how much the error could
@@ -1782,7 +1782,7 @@ To use SVMSGD algorithm do as follows:
 
 @code
 // Create empty object
-cv::Ptr<SVMSGD> svmsgd = SVMSGD::create();
+ncvslideio::Ptr<SVMSGD> svmsgd = SVMSGD::create();
 
 // Train the Stochastic Gradient Descent SVM
 svmsgd->train(trainData);
@@ -1793,7 +1793,7 @@ svmsgd->predict(samples, responses);
 
 */
 
-class CV_EXPORTS_W SVMSGD : public cv::ml::StatModel
+class CV_EXPORTS_W SVMSGD : public ncvslideio::ml::StatModel
 {
 public:
 
@@ -1881,7 +1881,7 @@ public:
     /** @see setTermCriteria */
     CV_WRAP virtual TermCriteria getTermCriteria() const = 0;
     /** @copybrief getTermCriteria @see getTermCriteria */
-    CV_WRAP virtual void setTermCriteria(const cv::TermCriteria &val) = 0;
+    CV_WRAP virtual void setTermCriteria(const ncvslideio::TermCriteria &val) = 0;
 };
 
 
@@ -1933,14 +1933,14 @@ struct SimulatedAnnealingSolverSystem
 @param coolingRatio temperature step multiplies
 @param iterationsPerStep number of iterations per temperature changing step
 @param lastTemperature optional output for last used temperature
-@param rngEnergy specify custom random numbers generator (cv::theRNG() by default)
+@param rngEnergy specify custom random numbers generator (ncvslideio::theRNG() by default)
 */
 template<class SimulatedAnnealingSolverSystem>
 int simulatedAnnealingSolver(SimulatedAnnealingSolverSystem& solverSystem,
      double initialTemperature, double finalTemperature, double coolingRatio,
      size_t iterationsPerStep,
      CV_OUT double* lastTemperature = NULL,
-     cv::RNG& rngEnergy = cv::theRNG()
+     ncvslideio::RNG& rngEnergy = ncvslideio::theRNG()
 );
 
 //! @} ml

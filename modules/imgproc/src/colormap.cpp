@@ -22,7 +22,7 @@
 #pragma warning( disable: 4305 )  // FIXIT remove this
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 static Mat linspace(float x0, float x1, int n)
@@ -35,12 +35,12 @@ static Mat linspace(float x0, float x1, int n)
 }
 
 //------------------------------------------------------------------------------
-// cv::sortMatrixRowsByIndices
+// ncvslideio::sortMatrixRowsByIndices
 //------------------------------------------------------------------------------
 static void sortMatrixRowsByIndices(InputArray _src, InputArray _indices, OutputArray _dst)
 {
     if(_indices.getMat().type() != CV_32SC1)
-        CV_Error(Error::StsUnsupportedFormat, "cv::sortRowsByIndices only works on integer indices!");
+        CV_Error(Error::StsUnsupportedFormat, "ncvslideio::sortRowsByIndices only works on integer indices!");
     Mat src = _src.getMat();
     std::vector<int> indices = _indices.getMat();
     _dst.create(src.rows, src.cols, src.type());
@@ -64,7 +64,7 @@ static Mat argsort(InputArray _src, bool ascending=true)
 {
     Mat src = _src.getMat();
     if (src.rows != 1 && src.cols != 1)
-        CV_Error(Error::StsBadArg, "cv::argsort only sorts 1D matrices.");
+        CV_Error(Error::StsBadArg, "ncvslideio::argsort only sorts 1D matrices.");
     int flags = SORT_EVERY_ROW | (ascending ? SORT_ASCENDING : SORT_DESCENDING);
     Mat sorted_indices;
     sortIdx(src.reshape(1,1),sorted_indices,flags);
@@ -730,10 +730,10 @@ namespace colormap
         CV_INSTRUMENT_REGION();
 
         if(_lut.total() != 256)
-            CV_Error(Error::StsAssert, "cv::LUT only supports tables of size 256.");
+            CV_Error(Error::StsAssert, "ncvslideio::LUT only supports tables of size 256.");
         Mat src = _src.getMat();
         if(src.type() != CV_8UC1  &&  src.type() != CV_8UC3)
-            CV_Error(Error::StsBadArg, "cv::ColorMap only supports source images of type CV_8UC1 or CV_8UC3");
+            CV_Error(Error::StsBadArg, "ncvslideio::ColorMap only supports source images of type CV_8UC1 or CV_8UC3");
 
         CV_CheckEQ(src.dims, 2, "Not supported");
 
@@ -746,12 +746,12 @@ namespace colormap
         if (src.channels() == 1)
             srcGray = src;
         else
-            cv::cvtColor(src, srcGray, cv::COLOR_BGR2GRAY);//BGR because of historical cv::LUT() usage
+            ncvslideio::cvtColor(src, srcGray, ncvslideio::COLOR_BGR2GRAY);//BGR because of historical ncvslideio::LUT() usage
 
         _dst.create(src.size(), lut_type);
         Mat dstMat = _dst.getMat();
 
-        //we do not use cv::LUT() which requires src.channels() == dst.channels()
+        //we do not use ncvslideio::LUT() which requires src.channels() == dst.channels()
         const int rows = srcGray.rows;
         const int cols = srcGray.cols;
         const int minimalPixelsPerPacket = 1<<12;
@@ -839,9 +839,9 @@ namespace colormap
     void applyColorMap(InputArray src, OutputArray dst, InputArray userColor)
     {
         if (userColor.size() != Size(1,256))
-            CV_Error(Error::StsAssert, "cv::LUT only supports tables of size 256.");
+            CV_Error(Error::StsAssert, "ncvslideio::LUT only supports tables of size 256.");
         if (userColor.type() != CV_8UC1 && userColor.type() != CV_8UC3)
-            CV_Error(Error::StsAssert, "cv::LUT only supports tables CV_8UC1 or CV_8UC3.");
+            CV_Error(Error::StsAssert, "ncvslideio::LUT only supports tables CV_8UC1 or CV_8UC3.");
         colormap::UserColorMap cm(userColor.getMat());
         cm(src, dst);
     }

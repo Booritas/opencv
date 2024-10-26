@@ -7,7 +7,7 @@
 #ifndef OPENCV_GAPI_GIEBACKEND_HPP
 #define OPENCV_GAPI_GIEBACKEND_HPP
 
-// Include anyway - cv::gapi::ie::backend() still needs to be defined
+// Include anyway - ncvslideio::gapi::ie::backend() still needs to be defined
 #include "opencv2/gapi/infer/ie.hpp"
 
 #if defined HAVE_INF_ENGINE && INF_ENGINE_RELEASE < 2023010000
@@ -26,15 +26,15 @@
 
 #include "backends/ie/giebackend/giewrapper.hpp" // wrap::Plugin
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace ie {
 
 struct IECompiled {
     std::vector<InferenceEngine::InferRequest> createInferRequests();
 
-    cv::gapi::ie::detail::ParamDesc     params;
-    cv::gimpl::ie::wrap::Plugin         this_plugin;
+    ncvslideio::gapi::ie::detail::ParamDesc     params;
+    ncvslideio::gimpl::ie::wrap::Plugin         this_plugin;
     InferenceEngine::ExecutableNetwork  this_network;
 };
 

@@ -26,7 +26,7 @@ TEST(NMS, Accuracy)
     const float nms_thresh = .5f;
     const float score_thresh = .01f;
     std::vector<int> indices;
-    cv::dnn::NMSBoxes(bboxes, scores, score_thresh, nms_thresh, indices);
+    ncvslideio::dnn::NMSBoxes(bboxes, scores, score_thresh, nms_thresh, indices);
 
     ASSERT_EQ(ref_indices.size(), indices.size());
 
@@ -56,7 +56,7 @@ TEST(BatchedNMS, Accuracy)
     const float nms_thresh = .5f;
     const float score_thresh = .05f;
     std::vector<int> indices;
-    cv::dnn::NMSBoxesBatched(bboxes, scores, idxs, score_thresh, nms_thresh, indices);
+    ncvslideio::dnn::NMSBoxesBatched(bboxes, scores, idxs, score_thresh, nms_thresh, indices);
 
     ASSERT_EQ(ref_indices.size(), indices.size());
 
@@ -89,7 +89,7 @@ TEST(SoftNMS, Accuracy)
     std::vector<int> indices;
     const size_t top_k = 0;
     const float sigma = 1.; // sigma in TF is being multiplied by 2, so 0.5 should be passed there
-    cv::dnn::softNMSBoxes(bboxes, scores, updated_scores, score_thresh, nms_thresh, indices, top_k, sigma);
+    ncvslideio::dnn::softNMSBoxes(bboxes, scores, updated_scores, score_thresh, nms_thresh, indices, top_k, sigma);
 
     ASSERT_EQ(ref_indices.size(), indices.size());
     for(size_t i = 0; i < indices.size(); i++)

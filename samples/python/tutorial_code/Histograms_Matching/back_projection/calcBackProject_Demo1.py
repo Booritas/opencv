@@ -12,16 +12,16 @@ def Hist_and_Backproj(val):
     ## [initialize]
 
     ## [Get the Histogram and normalize it]
-    hist = cv.calcHist([hue], [0], None, [histSize], ranges, accumulate=False)
-    cv.normalize(hist, hist, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
+    hist = ncvslideio.calcHist([hue], [0], None, [histSize], ranges, accumulate=False)
+    ncvslideio.normalize(hist, hist, alpha=0, beta=255, norm_type=ncvslideio.NORM_MINMAX)
     ## [Get the Histogram and normalize it]
 
     ## [Get Backprojection]
-    backproj = cv.calcBackProject([hue], [0], hist, ranges, scale=1)
+    backproj = ncvslideio.calcBackProject([hue], [0], hist, ranges, scale=1)
     ## [Get Backprojection]
 
     ## [Draw the backproj]
-    cv.imshow('BackProj', backproj)
+    ncvslideio.imshow('BackProj', backproj)
     ## [Draw the backproj]
 
     ## [Draw the histogram]
@@ -31,9 +31,9 @@ def Hist_and_Backproj(val):
     histImg = np.zeros((h, w, 3), dtype=np.uint8)
 
     for i in range(bins):
-        cv.rectangle(histImg, (i*bin_w, h), ( (i+1)*bin_w, h - int(np.round( hist[i]*h/255.0 )) ), (0, 0, 255), cv.FILLED)
+        ncvslideio.rectangle(histImg, (i*bin_w, h), ( (i+1)*bin_w, h - int(np.round( hist[i]*h/255.0 )) ), (0, 0, 255), ncvslideio.FILLED)
 
-    cv.imshow('Histogram', histImg)
+    ncvslideio.imshow('Histogram', histImg)
     ## [Draw the histogram]
 
 ## [Read the image]
@@ -41,14 +41,14 @@ parser = argparse.ArgumentParser(description='Code for Back Projection tutorial.
 parser.add_argument('--input', help='Path to input image.', default='home.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 ## [Read the image]
 
 ## [Transform it to HSV]
-hsv = cv.cvtColor(src, cv.COLOR_BGR2HSV)
+hsv = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2HSV)
 ## [Transform it to HSV]
 
 ## [Use only the Hue value]

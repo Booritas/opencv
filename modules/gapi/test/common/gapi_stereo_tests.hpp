@@ -9,7 +9,7 @@
 #define OPENCV_GAPI_STEREO_TESTS_HPP
 
 
-#include <opencv2/gapi/stereo.hpp> // fore cv::gapi::StereoOutputFormat
+#include <opencv2/gapi/stereo.hpp> // fore ncvslideio::gapi::StereoOutputFormat
 
 #include "gapi_tests_common.hpp"
 #include "gapi_parsers_tests_common.hpp"
@@ -17,7 +17,7 @@
 namespace opencv_test
 {
 
-GAPI_TEST_FIXTURE(TestGAPIStereo, initMatsRandU, FIXTURE_API(cv::gapi::StereoOutputFormat, int, int, double, double, CompareMats), 6,
+GAPI_TEST_FIXTURE(TestGAPIStereo, initMatsRandU, FIXTURE_API(ncvslideio::gapi::StereoOutputFormat, int, int, double, double, CompareMats), 6,
                                                              oF, numDisparities, blockSize, baseline,
                                                              focus, cmpF)
 

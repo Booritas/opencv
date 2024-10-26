@@ -48,16 +48,16 @@
 #include <ostream>
 #include <sstream>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 //Slicing
 
-struct _Range : public cv::Range
+struct _Range : public ncvslideio::Range
 {
-    _Range(const Range &r) : cv::Range(r) {}
-    _Range(int start_, int size_ = 1) : cv::Range(start_, start_ + size_) {}
+    _Range(const Range &r) : ncvslideio::Range(r) {}
+    _Range(int start_, int size_ = 1) : ncvslideio::Range(start_, start_ + size_) {}
 };
 
 static inline Mat slice(const Mat &m, const _Range &r0)

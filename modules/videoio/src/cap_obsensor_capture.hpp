@@ -30,7 +30,7 @@
 
 #if defined(HAVE_OBSENSOR) && !defined(HAVE_OBSENSOR_ORBBEC_SDK)
 
-namespace cv {
+namespace ncvslideio {
 class VideoCapture_obsensor : public IVideoCapture
 {
 public:
@@ -64,6 +64,6 @@ private:
     obsensor::CameraParam camParam_;
     int camParamScale_;
 };
-} // namespace cv::
+} // namespace ncvslideio::
 #endif // HAVE_OBSENSOR
 #endif // OPENCV_VIDEOIO_CAP_OBSENSOR_CAPTURE_HPP

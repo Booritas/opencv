@@ -4,8 +4,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/ml.hpp>
 
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 int main(int, char**)
 {

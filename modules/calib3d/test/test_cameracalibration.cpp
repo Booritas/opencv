@@ -51,7 +51,7 @@ public:
     CV_ProjectPointsTest();
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
@@ -83,7 +83,7 @@ CV_ProjectPointsTest::CV_ProjectPointsTest()
 }
 
 
-int CV_ProjectPointsTest::read_params( const cv::FileStorage& fs )
+int CV_ProjectPointsTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -293,8 +293,8 @@ int CV_CameraCalibrationTest::compare(double* val, double* ref_val, int len,
 void CV_CameraCalibrationTest::run( int start_from )
 {
     int code = cvtest::TS::OK;
-    cv::String            filepath;
-    cv::String            filename;
+    ncvslideio::String            filepath;
+    ncvslideio::String            filename;
 
     std::vector<std::vector<Point2d> >  imagePoints;
     std::vector<std::vector<Point3d> >  objectPoints;
@@ -326,8 +326,8 @@ void CV_CameraCalibrationTest::run( int start_from )
     int progress = 0;
     int values_read = -1;
 
-    filepath = cv::format("%scv/cameracalibration/", ts->get_data_path().c_str() );
-    filename = cv::format("%sdatafiles.txt", filepath.c_str() );
+    filepath = ncvslideio::format("%scv/cameracalibration/", ts->get_data_path().c_str() );
+    filename = ncvslideio::format("%sdatafiles.txt", filepath.c_str() );
     datafile = fopen( filename.c_str(), "r" );
     if( datafile == 0 )
     {
@@ -345,7 +345,7 @@ void CV_CameraCalibrationTest::run( int start_from )
     {
         values_read = fscanf(datafile,"%s",i_dat_file);
         CV_Assert(values_read == 1);
-        filename = cv::format("%s%s", filepath.c_str(), i_dat_file);
+        filename = ncvslideio::format("%s%s", filepath.c_str(), i_dat_file);
         file = fopen(filename.c_str(),"r");
 
         ts->update_context( this, currTest, true );
@@ -634,7 +634,7 @@ void CV_CameraCalibrationTest::run( int start_from )
         //code = compare(rotMatrs[0].val, goodRotMatrs[0].val, 9*numImages, 0.05, "rotation matrices");
         for( i = 0; i < numImages; i++ )
         {
-            if( cv::norm(rotMatrs[i], goodRotMatrs[i], NORM_INF) > 0.05 )
+            if( ncvslideio::norm(rotMatrs[i], goodRotMatrs[i], NORM_INF) > 0.05 )
             {
                 printf("rot mats for frame #%d are very different\n", i);
                 std::cout << "curr:\n" << rotMatrs[i] << std::endl;
@@ -916,7 +916,7 @@ void CV_CalibrationMatrixValuesTest::run(int)
         code = cvtest::TS::FAIL_BAD_ACCURACY;
         goto _exit_;
     }
-    if( cv::norm(principalPoint - goodPrincipalPoint) > FLT_EPSILON ) // Point2d
+    if( ncvslideio::norm(principalPoint - goodPrincipalPoint) > FLT_EPSILON ) // Point2d
     {
         ts->printf( cvtest::TS::LOG, "bad principalPoint\n" );
         code = cvtest::TS::FAIL_BAD_ACCURACY;
@@ -1025,7 +1025,7 @@ void CV_ProjectPointsTest::run(int)
     rvec(0,0) = rng.uniform( rMinVal, rMaxVal );
     rvec(0,1) = rng.uniform( rMinVal, rMaxVal );
     rvec(0,2) = rng.uniform( rMinVal, rMaxVal );
-    rmat = cv::Mat_<float>::zeros(3, 3);
+    rmat = ncvslideio::Mat_<float>::zeros(3, 3);
     cvtest::Rodrigues( rvec, rmat );
 
     tvec(0,0) = rng.uniform( tMinVal, tMaxVal );
@@ -1341,9 +1341,9 @@ void CV_StereoCalibrationTest::run( int )
 
     for(int testcase = 1; testcase <= ntests; testcase++)
     {
-        cv::String filepath;
+        ncvslideio::String filepath;
         char buf[1000];
-        filepath = cv::format("%scv/stereo/case%d/stereo_calib.txt", ts->get_data_path().c_str(), testcase );
+        filepath = ncvslideio::format("%scv/stereo/case%d/stereo_calib.txt", ts->get_data_path().c_str(), testcase );
         f = fopen(filepath.c_str(), "rt");
         Size patternSize;
         vector<string> imglist;
@@ -1366,7 +1366,7 @@ void CV_StereoCalibrationTest::run( int )
                 buf[--len] = '\0';
             if( buf[0] == '#')
                 continue;
-            filepath = cv::format("%scv/stereo/case%d/%s", ts->get_data_path().c_str(), testcase, buf );
+            filepath = ncvslideio::format("%scv/stereo/case%d/%s", ts->get_data_path().c_str(), testcase, buf );
             imglist.push_back(string(filepath));
         }
         fclose(f);
@@ -1472,8 +1472,8 @@ void CV_StereoCalibrationTest::run( int )
                 projectPoints(objpt[i], r1, t1, M1, D1, reprojectedImgPts[0]);
                 projectPoints(objpt[i], r2, t2, M2, D2, reprojectedImgPts[1]);
 
-                viewErr[0] = cv::norm(imgpt1[i], reprojectedImgPts[0], cv::NORM_L2SQR);
-                viewErr[1] = cv::norm(imgpt2[i], reprojectedImgPts[1], cv::NORM_L2SQR);
+                viewErr[0] = ncvslideio::norm(imgpt1[i], reprojectedImgPts[0], ncvslideio::NORM_L2SQR);
+                viewErr[1] = ncvslideio::norm(imgpt2[i], reprojectedImgPts[1], ncvslideio::NORM_L2SQR);
 
                 size_t n = objpt[i].size();
                 totalErr[0] += viewErr[0];
@@ -1811,7 +1811,7 @@ double CV_StereoCalibrationTest_CPP::calibrateStereoCamera( const vector<vector<
     for (size_t i = 0; i < numImgs; i++)
     {
         Mat r9;
-        cv::Rodrigues( rvecs[i], r9 );
+        ncvslideio::Rodrigues( rvecs[i], r9 );
         r9.convertTo(rotationMatrices[i], CV_64F);
         tvecs[i].convertTo(translationVectors[i], CV_64F);
     }
@@ -2037,7 +2037,7 @@ TEST(Calib3d_StereoCalibrate_CPP, regression) { CV_StereoCalibrationTest_CPP tes
 TEST(Calib3d_StereoCalibrate_CPP, extended)
 {
     cvtest::TS* ts = cvtest::TS::ptr();
-    String filepath = cv::format("%scv/stereo/case%d/", ts->get_data_path().c_str(), 1 );
+    String filepath = ncvslideio::format("%scv/stereo/case%d/", ts->get_data_path().c_str(), 1 );
 
     Mat left = imread(filepath+"left01.png");
     Mat right = imread(filepath+"right01.png");
@@ -2196,8 +2196,8 @@ TEST(Calib3d_StereoCalibrate, regression_23305)
                   R1, R2, P1, P2, Q,
                   CALIB_ZERO_DISPARITY, 0, imageSize, &roi1, &roi2);
 
-    EXPECT_EQ(cv::norm(P1, P1_gold), 0.);
-    EXPECT_EQ(cv::norm(P2, P2_gold), 0.);
+    EXPECT_EQ(ncvslideio::norm(P1, P1_gold), 0.);
+    EXPECT_EQ(ncvslideio::norm(P2, P2_gold), 0.);
 }
 
 TEST(Calib3d_Triangulate, accuracy)
@@ -2217,7 +2217,7 @@ TEST(Calib3d_Triangulate, accuracy)
     Mat res_, res;
 
     triangulatePoints(P1, P2, x1, x2, res_);
-    cv::transpose(res_, res_); // TODO cvtest (transpose doesn't support inplace)
+    ncvslideio::transpose(res_, res_); // TODO cvtest (transpose doesn't support inplace)
     convertPointsFromHomogeneous(res_, res);
     res = res.reshape(1, 1);
 
@@ -2257,7 +2257,7 @@ TEST(Calib3d_Triangulate, accuracy)
     Mat res_, res;
 
     triangulatePoints(P1, P2, x1, x2, res_);
-    cv::transpose(res_, res_); // TODO cvtest (transpose doesn't support inplace)
+    ncvslideio::transpose(res_, res_); // TODO cvtest (transpose doesn't support inplace)
     convertPointsFromHomogeneous(res_, res);
     res = res.reshape(1, 1);
 
@@ -2349,7 +2349,7 @@ TEST(CV_RecoverPoseTest, regression_15341)
             {
                 E = findEssentialMat(points1, points2, cameraMatrix, distCoeffs, cameraMatrix2, distCoeffs, RANSAC, 0.999, 1.0, mask);
                 recoverPose(points1, points2, cameraMatrix, distCoeffs, cameraMatrix2, distCoeffs, E2, R, t, RANSAC, 0.999, 1.0, mask);
-                EXPECT_LT(cv::norm(E, E2, NORM_INF), 1e-4) <<
+                EXPECT_LT(ncvslideio::norm(E, E2, NORM_INF), 1e-4) <<
                     "Two big difference between the same essential matrices computed using different functions with different cameras, testcase " << testcase;
                 EXPECT_EQ(0, (int)mask[13]) << "Detecting outliers in function failed with different cameras, testcase " << testcase;
             }
@@ -2357,7 +2357,7 @@ TEST(CV_RecoverPoseTest, regression_15341)
             // Check pose when camera matrices are the same.
             E = findEssentialMat(points1, points2, cameraMatrix, RANSAC, 0.999, 1.0, mask);
             E2 = findEssentialMat(points1, points2, cameraMatrix, zeroDistCoeffs, cameraMatrix, zeroDistCoeffs, RANSAC, 0.999, 1.0, mask);
-            EXPECT_LT(cv::norm(E, E2, NORM_INF), 1e-4) <<
+            EXPECT_LT(ncvslideio::norm(E, E2, NORM_INF), 1e-4) <<
                 "Two big difference between the same essential matrices computed using different functions with same cameras, testcase " << testcase;
             EXPECT_EQ(0, (int)mask[13]) << "Detecting outliers in function findEssentialMat failed with same cameras, testcase " << testcase;
             points2[12] = Point2f(0.0f, 0.0f); // provoke another outlier detection for recover Pose
@@ -2388,7 +2388,7 @@ TEST(CV_RecoverPoseTest, regression_15341)
             {
                 E = findEssentialMat(points1, points2, cameraMatrix, distCoeffs, cameraMatrix2, distCoeffs, RANSAC, 0.999, 1.0, mask);
                 recoverPose(points1, points2, cameraMatrix, distCoeffs, cameraMatrix2, distCoeffs, E2, R, t, RANSAC, 0.999, 1.0, mask);
-                EXPECT_LT(cv::norm(E, E2, NORM_INF), 1e-4) <<
+                EXPECT_LT(ncvslideio::norm(E, E2, NORM_INF), 1e-4) <<
                     "Two big difference between the same essential matrices computed using different functions with different cameras, testcase " << testcase;
                 EXPECT_EQ(0, (int)mask.at<unsigned char>(13)) << "Detecting outliers in function failed with different cameras, testcase " << testcase;
             }
@@ -2396,7 +2396,7 @@ TEST(CV_RecoverPoseTest, regression_15341)
             // Check pose when camera matrices are the same.
             E = findEssentialMat(points1, points2, cameraMatrix, RANSAC, 0.999, 1.0, mask);
             E2 = findEssentialMat(points1, points2, cameraMatrix, zeroDistCoeffs, cameraMatrix, zeroDistCoeffs, RANSAC, 0.999, 1.0, mask);
-            EXPECT_LT(cv::norm(E, E2, NORM_INF), 1e-4) <<
+            EXPECT_LT(ncvslideio::norm(E, E2, NORM_INF), 1e-4) <<
                 "Two big difference between the same essential matrices computed using different functions with same cameras, testcase " << testcase;
             EXPECT_EQ(0, (int)mask.at<unsigned char>(13)) << "Detecting outliers in function findEssentialMat failed with same cameras, testcase " << testcase;
             points2.at<Point2f>(12) = Point2f(0.0f, 0.0f); // provoke an outlier detection

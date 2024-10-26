@@ -86,34 +86,34 @@ class PerfEnvironment: public ::testing::Environment
 public:
     void TearDown()
     {
-        cv::setNumThreads(-1);
+        ncvslideio::setNumThreads(-1);
     }
 };
 
 } // namespace
 
-static void randu(cv::Mat& m)
+static void randu(ncvslideio::Mat& m)
 {
     const int bigValue = 0x00000FFF;
     if (m.depth() < CV_32F)
     {
         int minmax[] = {0, 256};
-        cv::Mat mr = cv::Mat(m.rows, (int)(m.cols * m.elemSize()), CV_8U, m.ptr(), m.step[0]);
-        cv::randu(mr, cv::Mat(1, 1, CV_32S, minmax), cv::Mat(1, 1, CV_32S, minmax + 1));
+        ncvslideio::Mat mr = ncvslideio::Mat(m.rows, (int)(m.cols * m.elemSize()), CV_8U, m.ptr(), m.step[0]);
+        ncvslideio::randu(mr, ncvslideio::Mat(1, 1, CV_32S, minmax), ncvslideio::Mat(1, 1, CV_32S, minmax + 1));
     }
     else if (m.depth() == CV_32F)
     {
         //float minmax[] = {-FLT_MAX, FLT_MAX};
         float minmax[] = {-bigValue, bigValue};
-        cv::Mat mr = m.reshape(1);
-        cv::randu(mr, cv::Mat(1, 1, CV_32F, minmax), cv::Mat(1, 1, CV_32F, minmax + 1));
+        ncvslideio::Mat mr = m.reshape(1);
+        ncvslideio::randu(mr, ncvslideio::Mat(1, 1, CV_32F, minmax), ncvslideio::Mat(1, 1, CV_32F, minmax + 1));
     }
     else
     {
         //double minmax[] = {-DBL_MAX, DBL_MAX};
         double minmax[] = {-bigValue, bigValue};
-        cv::Mat mr = m.reshape(1);
-        cv::randu(mr, cv::Mat(1, 1, CV_64F, minmax), cv::Mat(1, 1, CV_64F, minmax + 1));
+        ncvslideio::Mat mr = m.reshape(1);
+        ncvslideio::randu(mr, ncvslideio::Mat(1, 1, CV_64F, minmax), ncvslideio::Mat(1, 1, CV_64F, minmax + 1));
     }
 }
 
@@ -121,7 +121,7 @@ static void randu(cv::Mat& m)
 *                       inner exception class for early termination
 \*****************************************************************************************/
 
-class PerfEarlyExitException: public cv::Exception {};
+class PerfEarlyExitException: public ncvslideio::Exception {};
 
 /*****************************************************************************************\
 *                                   ::perf::Regression
@@ -133,29 +133,29 @@ Regression& Regression::instance()
     return single;
 }
 
-Regression& Regression::add(TestBase* test, const std::string& name, cv::InputArray array, double eps, ERROR_TYPE err)
+Regression& Regression::add(TestBase* test, const std::string& name, ncvslideio::InputArray array, double eps, ERROR_TYPE err)
 {
     if(test) test->setVerified();
     return instance()(name, array, eps, err);
 }
 
-Regression& Regression::addMoments(TestBase* test, const std::string& name, const cv::Moments& array, double eps, ERROR_TYPE err)
+Regression& Regression::addMoments(TestBase* test, const std::string& name, const ncvslideio::Moments& array, double eps, ERROR_TYPE err)
 {
-    int len = (int)sizeof(cv::Moments) / sizeof(double);
-    cv::Mat m(1, len, CV_64F, (void*)&array);
+    int len = (int)sizeof(ncvslideio::Moments) / sizeof(double);
+    ncvslideio::Mat m(1, len, CV_64F, (void*)&array);
 
     return Regression::add(test, name, m, eps, err);
 }
 
-Regression& Regression::addKeypoints(TestBase* test, const std::string& name, const std::vector<cv::KeyPoint>& array, double eps, ERROR_TYPE err)
+Regression& Regression::addKeypoints(TestBase* test, const std::string& name, const std::vector<ncvslideio::KeyPoint>& array, double eps, ERROR_TYPE err)
 {
     int len = (int)array.size();
-    cv::Mat pt      (len, 1, CV_32FC2, len ? (void*)&array[0].pt : 0,       sizeof(cv::KeyPoint));
-    cv::Mat size    (len, 1, CV_32FC1, len ? (void*)&array[0].size : 0,     sizeof(cv::KeyPoint));
-    cv::Mat angle   (len, 1, CV_32FC1, len ? (void*)&array[0].angle : 0,    sizeof(cv::KeyPoint));
-    cv::Mat response(len, 1, CV_32FC1, len ? (void*)&array[0].response : 0, sizeof(cv::KeyPoint));
-    cv::Mat octave  (len, 1, CV_32SC1, len ? (void*)&array[0].octave : 0,   sizeof(cv::KeyPoint));
-    cv::Mat class_id(len, 1, CV_32SC1, len ? (void*)&array[0].class_id : 0, sizeof(cv::KeyPoint));
+    ncvslideio::Mat pt      (len, 1, CV_32FC2, len ? (void*)&array[0].pt : 0,       sizeof(ncvslideio::KeyPoint));
+    ncvslideio::Mat size    (len, 1, CV_32FC1, len ? (void*)&array[0].size : 0,     sizeof(ncvslideio::KeyPoint));
+    ncvslideio::Mat angle   (len, 1, CV_32FC1, len ? (void*)&array[0].angle : 0,    sizeof(ncvslideio::KeyPoint));
+    ncvslideio::Mat response(len, 1, CV_32FC1, len ? (void*)&array[0].response : 0, sizeof(ncvslideio::KeyPoint));
+    ncvslideio::Mat octave  (len, 1, CV_32SC1, len ? (void*)&array[0].octave : 0,   sizeof(ncvslideio::KeyPoint));
+    ncvslideio::Mat class_id(len, 1, CV_32SC1, len ? (void*)&array[0].class_id : 0, sizeof(ncvslideio::KeyPoint));
 
     return Regression::add(test, name + "-pt",       pt,       eps, ERROR_ABSOLUTE)
                                 (name + "-size",     size,     eps, ERROR_ABSOLUTE)
@@ -165,13 +165,13 @@ Regression& Regression::addKeypoints(TestBase* test, const std::string& name, co
                                 (name + "-class_id", class_id, eps, ERROR_ABSOLUTE);
 }
 
-Regression& Regression::addMatches(TestBase* test, const std::string& name, const std::vector<cv::DMatch>& array, double eps, ERROR_TYPE err)
+Regression& Regression::addMatches(TestBase* test, const std::string& name, const std::vector<ncvslideio::DMatch>& array, double eps, ERROR_TYPE err)
 {
     int len = (int)array.size();
-    cv::Mat queryIdx(len, 1, CV_32SC1, len ? (void*)&array[0].queryIdx : 0, sizeof(cv::DMatch));
-    cv::Mat trainIdx(len, 1, CV_32SC1, len ? (void*)&array[0].trainIdx : 0, sizeof(cv::DMatch));
-    cv::Mat imgIdx  (len, 1, CV_32SC1, len ? (void*)&array[0].imgIdx : 0,   sizeof(cv::DMatch));
-    cv::Mat distance(len, 1, CV_32FC1, len ? (void*)&array[0].distance : 0, sizeof(cv::DMatch));
+    ncvslideio::Mat queryIdx(len, 1, CV_32SC1, len ? (void*)&array[0].queryIdx : 0, sizeof(ncvslideio::DMatch));
+    ncvslideio::Mat trainIdx(len, 1, CV_32SC1, len ? (void*)&array[0].trainIdx : 0, sizeof(ncvslideio::DMatch));
+    ncvslideio::Mat imgIdx  (len, 1, CV_32SC1, len ? (void*)&array[0].imgIdx : 0,   sizeof(ncvslideio::DMatch));
+    ncvslideio::Mat distance(len, 1, CV_32FC1, len ? (void*)&array[0].distance : 0, sizeof(ncvslideio::DMatch));
 
     return Regression::add(test, name + "-queryIdx", queryIdx, DBL_EPSILON, ERROR_ABSOLUTE)
                                 (name + "-trainIdx", trainIdx, DBL_EPSILON, ERROR_ABSOLUTE)
@@ -225,7 +225,7 @@ void Regression::init(const std::string& testSuitName, const std::string& ext)
 
     try
     {
-        if (storageIn.open(storageInPath, cv::FileStorage::READ))
+        if (storageIn.open(storageInPath, ncvslideio::FileStorage::READ))
         {
             rootIn = storageIn.root();
             if (storageInPath.length() > 3 && storageInPath.substr(storageInPath.length()-3) == ".gz")
@@ -233,7 +233,7 @@ void Regression::init(const std::string& testSuitName, const std::string& ext)
             storageOutPath += ext;
         }
     }
-    catch(const cv::Exception&)
+    catch(const ncvslideio::Exception&)
     {
         LOGE("Failed to open sanity data for reading: %s", storageInPath.c_str());
     }
@@ -242,7 +242,7 @@ void Regression::init(const std::string& testSuitName, const std::string& ext)
         storageOutPath = storageInPath;
 }
 
-Regression::Regression() : regRNG(cv::getTickCount())//this rng should be really random
+Regression::Regression() : regRNG(ncvslideio::getTickCount())//this rng should be really random
 {
 }
 
@@ -258,19 +258,19 @@ Regression::~Regression()
     }
 }
 
-cv::FileStorage& Regression::write()
+ncvslideio::FileStorage& Regression::write()
 {
     if (!storageOut.isOpened() && !storageOutPath.empty())
     {
         int mode = (storageIn.isOpened() && storageInPath == storageOutPath)
-                ? cv::FileStorage::APPEND : cv::FileStorage::WRITE;
+                ? ncvslideio::FileStorage::APPEND : ncvslideio::FileStorage::WRITE;
         storageOut.open(storageOutPath, mode);
         if (!storageOut.isOpened())
         {
             LOGE("Could not open \"%s\" file for writing", storageOutPath.c_str());
             storageOutPath.clear();
         }
-        else if (mode == cv::FileStorage::WRITE && !rootIn.empty())
+        else if (mode == ncvslideio::FileStorage::WRITE && !rootIn.empty())
         {
             //TODO: write content of rootIn node into the storageOut
         }
@@ -306,13 +306,13 @@ std::string Regression::getCurrentTestNodeName()
     return nodename;
 }
 
-bool Regression::isVector(cv::InputArray a)
+bool Regression::isVector(ncvslideio::InputArray a)
 {
-    return a.kind() == cv::_InputArray::STD_VECTOR_MAT || a.kind() == cv::_InputArray::STD_VECTOR_VECTOR ||
-           a.kind() == cv::_InputArray::STD_VECTOR_UMAT;
+    return a.kind() == ncvslideio::_InputArray::STD_VECTOR_MAT || a.kind() == ncvslideio::_InputArray::STD_VECTOR_VECTOR ||
+           a.kind() == ncvslideio::_InputArray::STD_VECTOR_UMAT;
 }
 
-double Regression::getElem(cv::Mat& m, int y, int x, int cn)
+double Regression::getElem(ncvslideio::Mat& m, int y, int x, int cn)
 {
     switch (m.depth())
     {
@@ -327,12 +327,12 @@ double Regression::getElem(cv::Mat& m, int y, int x, int cn)
     }
 }
 
-void Regression::write(cv::Mat m)
+void Regression::write(ncvslideio::Mat m)
 {
     if (!m.empty() && m.dims < 2) return;
 
     double min, max;
-    cv::minMaxIdx(m, &min, &max);
+    ncvslideio::minMaxIdx(m, &min, &max);
     write() << "min" << min << "max" << max;
 
     write() << "last" << "{" << "x" << m.size.p[1] - 1 << "y" << m.size.p[0] - 1
@@ -354,7 +354,7 @@ void Regression::write(cv::Mat m)
     write() << "val" << getElem(m, y, x, cn) << "}";
 }
 
-void Regression::verify(cv::FileNode node, cv::Mat actual, double eps, std::string argname, ERROR_TYPE err)
+void Regression::verify(ncvslideio::FileNode node, ncvslideio::Mat actual, double eps, std::string argname, ERROR_TYPE err)
 {
     if (!actual.empty() && actual.dims < 2) return;
 
@@ -365,14 +365,14 @@ void Regression::verify(cv::FileNode node, cv::Mat actual, double eps, std::stri
         eps *= std::max(std::abs(expect_min), std::abs(expect_max));
 
     double actual_min, actual_max;
-    cv::minMaxIdx(actual, &actual_min, &actual_max);
+    ncvslideio::minMaxIdx(actual, &actual_min, &actual_max);
 
     ASSERT_NEAR(expect_min, actual_min, eps)
             << argname << " has unexpected minimal value" << std::endl;
     ASSERT_NEAR(expect_max, actual_max, eps)
             << argname << " has unexpected maximal value" << std::endl;
 
-    cv::FileNode last = node["last"];
+    ncvslideio::FileNode last = node["last"];
     double actual_last = getElem(actual, actual.size.p[0] - 1, actual.size.p[1] - 1, actual.channels() - 1);
     int expect_cols = (int)last["x"] + 1;
     int expect_rows = (int)last["y"] + 1;
@@ -385,7 +385,7 @@ void Regression::verify(cv::FileNode node, cv::Mat actual, double eps, std::stri
     ASSERT_NEAR(expect_last, actual_last, eps)
             << argname << " has unexpected value of the last element" << std::endl;
 
-    cv::FileNode rng1 = node["rng1"];
+    ncvslideio::FileNode rng1 = node["rng1"];
     int x1 = rng1["x"];
     int y1 = rng1["y"];
     int cn1 = rng1["cn"];
@@ -398,7 +398,7 @@ void Regression::verify(cv::FileNode node, cv::Mat actual, double eps, std::stri
     ASSERT_NEAR(expect_rng1, actual_rng1, eps)
             << argname << " has unexpected value of the ["<< x1 << ":" << y1 << ":" << cn1 <<"] element" << std::endl;
 
-    cv::FileNode rng2 = node["rng2"];
+    ncvslideio::FileNode rng2 = node["rng2"];
     int x2 = rng2["x"];
     int y2 = rng2["y"];
     int cn2 = rng2["cn"];
@@ -410,7 +410,7 @@ void Regression::verify(cv::FileNode node, cv::Mat actual, double eps, std::stri
             << argname << " has unexpected value of the ["<< x2 << ":" << y2 << ":" << cn2 <<"] element" << std::endl;
 }
 
-void Regression::write(cv::InputArray array)
+void Regression::write(ncvslideio::InputArray array)
 {
     write() << "kind" << array.kind();
     write() << "type" << array.type();
@@ -421,7 +421,7 @@ void Regression::write(cv::InputArray array)
         write() << "len" << total;
         write() << "idx" << idx;
 
-        cv::Mat m = array.getMat(idx);
+        ncvslideio::Mat m = array.getMat(idx);
 
         if (m.total() * m.channels() < 26) //5x5 or smaller
             write() << "val" << m;
@@ -437,55 +437,55 @@ void Regression::write(cv::InputArray array)
     }
 }
 
-static int countViolations(const cv::Mat& expected, const cv::Mat& actual, const cv::Mat& diff, double eps, double* max_violation = 0, double* max_allowed = 0)
+static int countViolations(const ncvslideio::Mat& expected, const ncvslideio::Mat& actual, const ncvslideio::Mat& diff, double eps, double* max_violation = 0, double* max_allowed = 0)
 {
-    cv::Mat diff64f;
+    ncvslideio::Mat diff64f;
     diff.reshape(1).convertTo(diff64f, CV_64F);
 
-    cv::Mat expected_abs = cv::abs(expected.reshape(1));
-    cv::Mat actual_abs = cv::abs(actual.reshape(1));
-    cv::Mat maximum, mask;
-    cv::max(expected_abs, actual_abs, maximum);
-    cv::multiply(maximum, cv::Vec<double, 1>(eps), maximum, CV_64F);
-    cv::compare(diff64f, maximum, mask, cv::CMP_GT);
+    ncvslideio::Mat expected_abs = ncvslideio::abs(expected.reshape(1));
+    ncvslideio::Mat actual_abs = ncvslideio::abs(actual.reshape(1));
+    ncvslideio::Mat maximum, mask;
+    ncvslideio::max(expected_abs, actual_abs, maximum);
+    ncvslideio::multiply(maximum, ncvslideio::Vec<double, 1>(eps), maximum, CV_64F);
+    ncvslideio::compare(diff64f, maximum, mask, ncvslideio::CMP_GT);
 
-    int v = cv::countNonZero(mask);
+    int v = ncvslideio::countNonZero(mask);
 
     if (v > 0 && max_violation != 0 && max_allowed != 0)
     {
         int loc[10] = {0};
-        cv::minMaxIdx(maximum, 0, max_allowed, 0, loc, mask);
+        ncvslideio::minMaxIdx(maximum, 0, max_allowed, 0, loc, mask);
         *max_violation = diff64f.at<double>(loc[0], loc[1]);
     }
 
     return v;
 }
 
-void Regression::verify(cv::FileNode node, cv::InputArray array, double eps, ERROR_TYPE err)
+void Regression::verify(ncvslideio::FileNode node, ncvslideio::InputArray array, double eps, ERROR_TYPE err)
 {
     int expected_kind = (int)node["kind"];
     int expected_type = (int)node["type"];
     ASSERT_EQ(expected_kind, array.kind()) << "  Argument \"" << node.name() << "\" has unexpected kind";
     ASSERT_EQ(expected_type, array.type()) << "  Argument \"" << node.name() << "\" has unexpected type";
 
-    cv::FileNode valnode = node["val"];
+    ncvslideio::FileNode valnode = node["val"];
     if (isVector(array))
     {
         int expected_length = (int)node["len"];
         ASSERT_EQ(expected_length, (int)array.total()) << "  Vector \"" << node.name() << "\" has unexpected length";
         int idx = node["idx"];
 
-        cv::Mat actual = array.getMat(idx);
+        ncvslideio::Mat actual = array.getMat(idx);
 
         if (valnode.isNone())
         {
             ASSERT_LE((size_t)26, actual.total() * (size_t)actual.channels())
                     << "  \"" << node.name() << "[" <<  idx << "]\" has unexpected number of elements";
-            verify(node, actual, eps, cv::format("%s[%d]", node.name().c_str(), idx), err);
+            verify(node, actual, eps, ncvslideio::format("%s[%d]", node.name().c_str(), idx), err);
         }
         else
         {
-            cv::Mat expected;
+            ncvslideio::Mat expected;
             valnode >> expected;
 
             if(expected.empty())
@@ -498,18 +498,18 @@ void Regression::verify(cv::FileNode node, cv::InputArray array, double eps, ERR
                 ASSERT_EQ(expected.size(), actual.size())
                         << "  " << node.name() << "[" <<  idx<< "] has unexpected size";
 
-                cv::Mat diff;
-                cv::absdiff(expected, actual, diff);
+                ncvslideio::Mat diff;
+                ncvslideio::absdiff(expected, actual, diff);
 
                 if (err == ERROR_ABSOLUTE)
                 {
-                    if (!cv::checkRange(diff, true, 0, 0, eps))
+                    if (!ncvslideio::checkRange(diff, true, 0, 0, eps))
                     {
                         if(expected.total() * expected.channels() < 12)
                             std::cout << " Expected: " << std::endl << expected << std::endl << " Actual:" << std::endl << actual << std::endl;
 
                         double max;
-                        cv::minMaxIdx(diff.reshape(1), 0, &max);
+                        ncvslideio::minMaxIdx(diff.reshape(1), 0, &max);
 
                         FAIL() << "  Absolute difference (=" << max << ") between argument \""
                                << node.name() << "[" <<  idx << "]\" and expected value is greater than " << eps;
@@ -541,9 +541,9 @@ void Regression::verify(cv::FileNode node, cv::InputArray array, double eps, ERR
         }
         else
         {
-            cv::Mat expected;
+            ncvslideio::Mat expected;
             valnode >> expected;
-            cv::Mat actual = array.getMat();
+            ncvslideio::Mat actual = array.getMat();
 
             if(expected.empty())
             {
@@ -555,18 +555,18 @@ void Regression::verify(cv::FileNode node, cv::InputArray array, double eps, ERR
                 ASSERT_EQ(expected.size(), actual.size())
                         << "  Argument \"" << node.name() << "\" has unexpected size";
 
-                cv::Mat diff;
-                cv::absdiff(expected, actual, diff);
+                ncvslideio::Mat diff;
+                ncvslideio::absdiff(expected, actual, diff);
 
                 if (err == ERROR_ABSOLUTE)
                 {
-                    if (!cv::checkRange(diff, true, 0, 0, eps))
+                    if (!ncvslideio::checkRange(diff, true, 0, 0, eps))
                     {
                         if(expected.total() * expected.channels() < 12)
                             std::cout << " Expected: " << std::endl << expected << std::endl << " Actual:" << std::endl << actual << std::endl;
 
                         double max;
-                        cv::minMaxIdx(diff.reshape(1), 0, &max);
+                        ncvslideio::minMaxIdx(diff.reshape(1), 0, &max);
 
                         FAIL() << "  Difference (=" << max << ") between argument1 \"" << node.name()
                                << "\" and expected value is greater than " << eps;
@@ -590,7 +590,7 @@ void Regression::verify(cv::FileNode node, cv::InputArray array, double eps, ERR
     }
 }
 
-Regression& Regression::operator() (const std::string& name, cv::InputArray array, double eps, ERROR_TYPE err)
+Regression& Regression::operator() (const std::string& name, ncvslideio::InputArray array, double eps, ERROR_TYPE err)
 {
     // exit if current test is already failed
     if(::testing::UnitTest::GetInstance()->current_test_info()->result()->Failed()) return *this;
@@ -603,7 +603,7 @@ Regression& Regression::operator() (const std::string& name, cv::InputArray arra
 
     std::string nodename = getCurrentTestNodeName();
 
-    cv::FileNode n = rootIn[nodename];
+    ncvslideio::FileNode n = rootIn[nodename];
     if(n.isNone())
     {
         if(param_write_sanity)
@@ -628,7 +628,7 @@ Regression& Regression::operator() (const std::string& name, cv::InputArray arra
     }
     else
     {
-        cv::FileNode this_arg = n[name];
+        ncvslideio::FileNode this_arg = n[name];
         if (!this_arg.isMap())
             ADD_FAILURE() << "  No regression data for " << name << " argument";
         else
@@ -739,7 +739,7 @@ public:
 };
 
 #ifdef ENABLE_INSTRUMENTATION
-static void printShift(cv::instr::InstrNode *pNode, cv::instr::InstrNode* pRoot)
+static void printShift(ncvslideio::instr::InstrNode *pNode, ncvslideio::instr::InstrNode* pRoot)
 {
     // Print empty line for a big tree nodes
     if(pNode->m_pParent)
@@ -753,8 +753,8 @@ static void printShift(cv::instr::InstrNode *pNode, cv::instr::InstrNode* pRoot)
     }
 
     // Check if parents have more childes
-    std::vector<cv::instr::InstrNode*> cache;
-    cv::instr::InstrNode *pTmpNode = pNode;
+    std::vector<ncvslideio::instr::InstrNode*> cache;
+    ncvslideio::instr::InstrNode *pTmpNode = pNode;
     while(pTmpNode->m_pParent && pTmpNode->m_pParent != pRoot)
     {
         cache.push_back(pTmpNode->m_pParent);
@@ -772,7 +772,7 @@ static void printShift(cv::instr::InstrNode *pNode, cv::instr::InstrNode* pRoot)
     }
 }
 
-static double calcLocalWeight(cv::instr::InstrNode *pNode)
+static double calcLocalWeight(ncvslideio::instr::InstrNode *pNode)
 {
     if(pNode->m_pParent && pNode->m_pParent->m_pParent)
         return ((double)pNode->m_payload.m_ticksTotal*100/pNode->m_pParent->m_payload.m_ticksTotal);
@@ -780,9 +780,9 @@ static double calcLocalWeight(cv::instr::InstrNode *pNode)
         return 100;
 }
 
-static double calcGlobalWeight(cv::instr::InstrNode *pNode)
+static double calcGlobalWeight(ncvslideio::instr::InstrNode *pNode)
 {
-    cv::instr::InstrNode* globNode = pNode;
+    ncvslideio::instr::InstrNode* globNode = pNode;
 
     while(globNode->m_pParent && globNode->m_pParent->m_pParent)
         globNode = globNode->m_pParent;
@@ -790,27 +790,27 @@ static double calcGlobalWeight(cv::instr::InstrNode *pNode)
     return ((double)pNode->m_payload.m_ticksTotal*100/(double)globNode->m_payload.m_ticksTotal);
 }
 
-static void printNodeRec(cv::instr::InstrNode *pNode, cv::instr::InstrNode *pRoot)
+static void printNodeRec(ncvslideio::instr::InstrNode *pNode, ncvslideio::instr::InstrNode *pRoot)
 {
     printf("%s", (pNode->m_payload.m_funName.substr(0, 40) + ((pNode->m_payload.m_funName.size()>40)?"...":"")).c_str());
 
     // Write instrumentation flags
-    if(pNode->m_payload.m_instrType != cv::instr::TYPE_GENERAL || pNode->m_payload.m_implType != cv::instr::IMPL_PLAIN)
+    if(pNode->m_payload.m_instrType != ncvslideio::instr::TYPE_GENERAL || pNode->m_payload.m_implType != ncvslideio::instr::IMPL_PLAIN)
     {
         printf("<");
-        if(pNode->m_payload.m_instrType == cv::instr::TYPE_WRAPPER)
+        if(pNode->m_payload.m_instrType == ncvslideio::instr::TYPE_WRAPPER)
             printf("W");
-        else if(pNode->m_payload.m_instrType == cv::instr::TYPE_FUN)
+        else if(pNode->m_payload.m_instrType == ncvslideio::instr::TYPE_FUN)
             printf("F");
-        else if(pNode->m_payload.m_instrType == cv::instr::TYPE_MARKER)
+        else if(pNode->m_payload.m_instrType == ncvslideio::instr::TYPE_MARKER)
             printf("MARK");
 
-        if(pNode->m_payload.m_instrType != cv::instr::TYPE_GENERAL && pNode->m_payload.m_implType != cv::instr::IMPL_PLAIN)
+        if(pNode->m_payload.m_instrType != ncvslideio::instr::TYPE_GENERAL && pNode->m_payload.m_implType != ncvslideio::instr::IMPL_PLAIN)
             printf("_");
 
-        if(pNode->m_payload.m_implType == cv::instr::IMPL_IPP)
+        if(pNode->m_payload.m_implType == ncvslideio::instr::IMPL_IPP)
             printf("IPP");
-        else if(pNode->m_payload.m_implType == cv::instr::IMPL_OPENCL)
+        else if(pNode->m_payload.m_implType == ncvslideio::instr::IMPL_OPENCL)
             printf("OCL");
 
         printf(">");
@@ -835,7 +835,7 @@ static void printNodeRec(cv::instr::InstrNode *pNode, cv::instr::InstrNode *pRoo
             {
                 if(pNode->m_childs[i-1]->m_payload.m_funName == pNode->m_childs[j]->m_payload.m_funName )
                 {
-                    cv::swap(pNode->m_childs[i], pNode->m_childs[j]);
+                    ncvslideio::swap(pNode->m_childs[i], pNode->m_childs[j]);
                     i++;
                 }
             }
@@ -862,9 +862,9 @@ std::string to_string_with_precision(const T value, const int p = 3)
     return out.str();
 }
 
-static cv::String nodeToString(cv::instr::InstrNode *pNode)
+static ncvslideio::String nodeToString(ncvslideio::instr::InstrNode *pNode)
 {
-    cv::String string;
+    ncvslideio::String string;
     if (pNode->m_payload.m_funName == "ROOT")
         string = pNode->m_payload.m_funName;
     else
@@ -885,7 +885,7 @@ static cv::String nodeToString(cv::instr::InstrNode *pNode)
     return string;
 }
 
-static uint64 getNodeTimeRec(cv::instr::InstrNode *pNode, cv::instr::TYPE type, cv::instr::IMPL impl)
+static uint64 getNodeTimeRec(ncvslideio::instr::InstrNode *pNode, ncvslideio::instr::TYPE type, ncvslideio::instr::IMPL impl)
 {
     uint64 ticks = 0;
 
@@ -901,12 +901,12 @@ static uint64 getNodeTimeRec(cv::instr::InstrNode *pNode, cv::instr::TYPE type, 
     return ticks;
 }
 
-static uint64 getImplTime(cv::instr::IMPL impl)
+static uint64 getImplTime(ncvslideio::instr::IMPL impl)
 {
     uint64 ticks = 0;
-    cv::instr::InstrNode *pRoot = cv::instr::getTrace();
+    ncvslideio::instr::InstrNode *pRoot = ncvslideio::instr::getTrace();
 
-    ticks = getNodeTimeRec(pRoot, cv::instr::TYPE_FUN, impl);
+    ticks = getNodeTimeRec(pRoot, ncvslideio::instr::TYPE_FUN, impl);
 
     return ticks;
 }
@@ -914,7 +914,7 @@ static uint64 getImplTime(cv::instr::IMPL impl)
 static uint64 getTotalTime()
 {
     uint64 ticks = 0;
-    cv::instr::InstrNode *pRoot = cv::instr::getTrace();
+    ncvslideio::instr::InstrNode *pRoot = ncvslideio::instr::getTrace();
 
     for(size_t i = 0; i < pRoot->m_childs.size(); i++)
         ticks += pRoot->m_childs[i]->m_payload.m_ticksTotal;
@@ -922,21 +922,21 @@ static uint64 getTotalTime()
     return ticks;
 }
 
-::cv::String InstumentData::treeToString()
+::ncvslideio::String InstumentData::treeToString()
 {
-    cv::String string = nodeToString(cv::instr::getTrace());
+    ncvslideio::String string = nodeToString(ncvslideio::instr::getTrace());
     return string;
 }
 
 void InstumentData::printTree()
 {
     printf("[ TRACE    ]\n");
-    printNodeRec(cv::instr::getTrace(), cv::instr::getTrace());
+    printNodeRec(ncvslideio::instr::getTrace(), ncvslideio::instr::getTrace());
 #ifdef HAVE_IPP
-    printf("\nIPP weight: %.1f%%", ((double)getImplTime(cv::instr::IMPL_IPP)*100/(double)getTotalTime()));
+    printf("\nIPP weight: %.1f%%", ((double)getImplTime(ncvslideio::instr::IMPL_IPP)*100/(double)getTotalTime()));
 #endif
 #ifdef HAVE_OPENCL
-    printf("\nOPENCL weight: %.1f%%", ((double)getImplTime(cv::instr::IMPL_OPENCL)*100/(double)getTotalTime()));
+    printf("\nOPENCL weight: %.1f%%", ((double)getImplTime(ncvslideio::instr::IMPL_OPENCL)*100/(double)getTotalTime()));
 #endif
     printf("\n[/TRACE    ]\n");
     fflush(stdout);
@@ -1004,7 +1004,7 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
         CV_TEST_TAGS_PARAMS
     ;
 
-    cv::CommandLineParser args(argc, argv, command_line_keys);
+    ncvslideio::CommandLineParser args(argc, argv, command_line_keys);
     if (args.get<bool>("help"))
     {
         args.printMessage();
@@ -1077,19 +1077,19 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
 
 #ifdef CV_COLLECT_IMPL_DATA
     if(param_collect_impl)
-        cv::setUseCollection(1);
+        ncvslideio::setUseCollection(1);
     else
-        cv::setUseCollection(0);
+        ncvslideio::setUseCollection(0);
 #endif
 #ifdef ENABLE_INSTRUMENTATION
     if(param_instrument > 0)
     {
         if(param_instrument == 2)
-            cv::instr::setFlags(cv::instr::getFlags()|cv::instr::FLAGS_EXPAND_SAME_NAMES);
-        cv::instr::setUseInstrumentation(true);
+            ncvslideio::instr::setFlags(ncvslideio::instr::getFlags()|ncvslideio::instr::FLAGS_EXPAND_SAME_NAMES);
+        ncvslideio::instr::setUseInstrumentation(true);
     }
     else
-        cv::instr::setUseInstrumentation(false);
+        ncvslideio::instr::setUseInstrumentation(false);
 #endif
 
 #ifdef HAVE_CUDA
@@ -1107,18 +1107,18 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
 
 #ifdef HAVE_CUDA
 
-    param_cuda_device      = std::max(0, std::min(cv::cuda::getCudaEnabledDeviceCount(), args.get<int>("perf_cuda_device")));
+    param_cuda_device      = std::max(0, std::min(ncvslideio::cuda::getCudaEnabledDeviceCount(), args.get<int>("perf_cuda_device")));
 
     if (param_impl == "cuda")
     {
-        cv::cuda::DeviceInfo info(param_cuda_device);
+        ncvslideio::cuda::DeviceInfo info(param_cuda_device);
         if (!info.isCompatible())
         {
             printf("[----------]\n[ FAILURE  ] \tDevice %s is NOT compatible with current CUDA module build.\n[----------]\n", info.name()), fflush(stdout);
             exit(-1);
         }
 
-        cv::cuda::setDevice(param_cuda_device);
+        ncvslideio::cuda::setDevice(param_cuda_device);
 
         printf("[----------]\n[ GPU INFO ] \tRun test suite on %s GPU.\n[----------]\n", info.name()), fflush(stdout);
     }
@@ -1156,7 +1156,7 @@ void TestBase::Init(const std::vector<std::string> & availableImpls,
         exit(1);
     }
 
-    timeLimitDefault = param_time_limit == 0.0 ? 1 : (int64)(param_time_limit * cv::getTickFrequency());
+    timeLimitDefault = param_time_limit == 0.0 ? 1 : (int64)(param_time_limit * ncvslideio::getTickFrequency());
     iterationsLimitDefault = param_force_samples == 0 ? UINT_MAX : param_force_samples;
 }
 
@@ -1168,7 +1168,7 @@ void TestBase::RecordRunParameters()
 #ifdef HAVE_CUDA
     if (param_impl == "cuda")
     {
-        cv::cuda::DeviceInfo info(param_cuda_device);
+        ncvslideio::cuda::DeviceInfo info(param_cuda_device);
         ::testing::Test::RecordProperty("cv_cuda_gpu", info.name());
     }
 #endif
@@ -1208,18 +1208,18 @@ TestBase::TestBase(): testStrategy(PERF_STRATEGY_DEFAULT), declare(this)
 #endif
 
 
-void TestBase::declareArray(SizeVector& sizes, cv::InputOutputArray a, WarmUpType wtype)
+void TestBase::declareArray(SizeVector& sizes, ncvslideio::InputOutputArray a, WarmUpType wtype)
 {
     if (!a.empty())
     {
-        sizes.push_back(std::pair<int, cv::Size>(getSizeInBytes(a), getSize(a)));
+        sizes.push_back(std::pair<int, ncvslideio::Size>(getSizeInBytes(a), getSize(a)));
         warmup(a, wtype);
     }
-    else if (a.kind() != cv::_InputArray::NONE)
+    else if (a.kind() != ncvslideio::_InputArray::NONE)
         ADD_FAILURE() << "  Uninitialized input/output parameters are not allowed for performance tests";
 }
 
-void TestBase::warmup(cv::InputOutputArray a, WarmUpType wtype)
+void TestBase::warmup(ncvslideio::InputOutputArray a, WarmUpType wtype)
 {
     CV_TRACE_FUNCTION();
     if (a.empty())
@@ -1230,21 +1230,21 @@ void TestBase::warmup(cv::InputOutputArray a, WarmUpType wtype)
         {
             int depth = a.depth();
             if (depth == CV_8U)
-                cv::randu(a, 0, 256);
+                ncvslideio::randu(a, 0, 256);
             else if (depth == CV_8S)
-                cv::randu(a, -128, 128);
+                ncvslideio::randu(a, -128, 128);
             else if (depth == CV_16U)
-                cv::randu(a, 0, 1024);
+                ncvslideio::randu(a, 0, 1024);
             else if (depth == CV_32F || depth == CV_64F || depth == CV_16F)
-                cv::randu(a, -1.0, 1.0);
+                ncvslideio::randu(a, -1.0, 1.0);
             else if (depth == CV_16S || depth == CV_32S)
-                cv::randu(a, -4096, 4096);
+                ncvslideio::randu(a, -4096, 4096);
             else
-                CV_Error(cv::Error::StsUnsupportedFormat, "Unsupported format");
+                CV_Error(ncvslideio::Error::StsUnsupportedFormat, "Unsupported format");
         }
         return;
     }
-    else if (a.kind() != cv::_InputArray::STD_VECTOR_MAT && a.kind() != cv::_InputArray::STD_VECTOR_VECTOR)
+    else if (a.kind() != ncvslideio::_InputArray::STD_VECTOR_MAT && a.kind() != ncvslideio::_InputArray::STD_VECTOR_VECTOR)
         warmup_impl(a.getMat(), wtype);
     else
     {
@@ -1254,11 +1254,11 @@ void TestBase::warmup(cv::InputOutputArray a, WarmUpType wtype)
     }
 }
 
-int TestBase::getSizeInBytes(cv::InputArray a)
+int TestBase::getSizeInBytes(ncvslideio::InputArray a)
 {
     if (a.empty()) return 0;
     int total = (int)a.total();
-    if (a.kind() != cv::_InputArray::STD_VECTOR_MAT && a.kind() != cv::_InputArray::STD_VECTOR_VECTOR)
+    if (a.kind() != ncvslideio::_InputArray::STD_VECTOR_MAT && a.kind() != ncvslideio::_InputArray::STD_VECTOR_VECTOR)
         return total * CV_ELEM_SIZE(a.type());
 
     int size = 0;
@@ -1268,11 +1268,11 @@ int TestBase::getSizeInBytes(cv::InputArray a)
     return size;
 }
 
-cv::Size TestBase::getSize(cv::InputArray a)
+ncvslideio::Size TestBase::getSize(ncvslideio::InputArray a)
 {
-    if (a.kind() != cv::_InputArray::STD_VECTOR_MAT && a.kind() != cv::_InputArray::STD_VECTOR_VECTOR)
+    if (a.kind() != ncvslideio::_InputArray::STD_VECTOR_MAT && a.kind() != ncvslideio::_InputArray::STD_VECTOR_VECTOR)
         return a.size();
-    return cv::Size();
+    return ncvslideio::Size();
 }
 
 PERF_STRATEGY TestBase::getCurrentPerformanceStrategy() const
@@ -1298,7 +1298,7 @@ bool TestBase::next()
         metrics.clear();
     }
 
-    cv::theRNG().state = param_seed; //this rng should generate same numbers for each run
+    ncvslideio::theRNG().state = param_seed; //this rng should generate same numbers for each run
     ++currentIter;
 
     bool has_next = false;
@@ -1318,7 +1318,7 @@ bool TestBase::next()
         else
         {
             CV_Assert(getCurrentPerformanceStrategy() == PERF_STRATEGY_SIMPLE);
-            if (totalTime - lastActivityPrintTime >= cv::getTickFrequency() * 10)
+            if (totalTime - lastActivityPrintTime >= ncvslideio::getTickFrequency() * 10)
             {
                 std::cout << '.' << std::endl;
                 lastActivityPrintTime = totalTime;
@@ -1438,23 +1438,23 @@ bool TestBase::next()
         gettimeofday(&tim, NULL);
         unsigned long long t1 = tim.tv_sec * 1000LLU + (unsigned long long)(tim.tv_usec / 1000.f);
 
-        if (currentIter == 1) RecordProperty("test_start", cv::format("%llu",t1).c_str());
-        if (!has_next) RecordProperty("test_complete", cv::format("%llu",t1).c_str());
+        if (currentIter == 1) RecordProperty("test_start", ncvslideio::format("%llu",t1).c_str());
+        if (!has_next) RecordProperty("test_complete", ncvslideio::format("%llu",t1).c_str());
     }
 #endif
 
     return has_next;
 }
 
-void TestBase::warmup_impl(cv::Mat m, WarmUpType wtype)
+void TestBase::warmup_impl(ncvslideio::Mat m, WarmUpType wtype)
 {
     switch(wtype)
     {
     case WARMUP_READ:
-        cv::sum(m.reshape(1));
+        ncvslideio::sum(m.reshape(1));
         return;
     case WARMUP_WRITE:
-        m.reshape(1).setTo(cv::Scalar::all(0));
+        m.reshape(1).setTo(ncvslideio::Scalar::all(0));
         return;
     case WARMUP_RNG:
         randu(m);
@@ -1485,17 +1485,17 @@ bool TestBase::startTimer()
 #ifdef ENABLE_INSTRUMENTATION
     if(currentIter == 0)
     {
-        cv::instr::setFlags(cv::instr::getFlags()|cv::instr::FLAGS_MAPPING); // enable mapping for the first run
-        cv::instr::resetTrace();
+        ncvslideio::instr::setFlags(ncvslideio::instr::getFlags()|ncvslideio::instr::FLAGS_MAPPING); // enable mapping for the first run
+        ncvslideio::instr::resetTrace();
     }
 #endif
-    lastTime = cv::getTickCount();
+    lastTime = ncvslideio::getTickCount();
     return true; // dummy true for conditional loop
 }
 
 void TestBase::stopTimer()
 {
-    int64 time = cv::getTickCount();
+    int64 time = ncvslideio::getTickCount();
     if (lastTime == 0)
         ADD_FAILURE() << "  stopTimer() is called before startTimer()/next()";
     lastTime = time - lastTime;
@@ -1505,7 +1505,7 @@ void TestBase::stopTimer()
     lastTime = 0;
 
 #ifdef ENABLE_INSTRUMENTATION
-    cv::instr::setFlags(cv::instr::getFlags()&~cv::instr::FLAGS_MAPPING); // disable mapping to decrease overhead for +1 run
+    ncvslideio::instr::setFlags(ncvslideio::instr::getFlags()&~ncvslideio::instr::FLAGS_MAPPING); // disable mapping to decrease overhead for +1 run
 #endif
 }
 
@@ -1517,7 +1517,7 @@ performance_metrics& TestBase::calcMetrics()
 
     metrics.bytesIn = getTotalInputSize();
     metrics.bytesOut = getTotalOutputSize();
-    metrics.frequency = cv::getTickFrequency();
+    metrics.frequency = ncvslideio::getTickFrequency();
     metrics.samples = (unsigned int)times.size();
     metrics.outliers = 0;
 
@@ -1682,21 +1682,21 @@ void TestBase::reportMetrics(bool toJUnitXML)
         RecordProperty("term", m.terminationReason);
         RecordProperty("samples", (int)m.samples);
         RecordProperty("outliers", (int)m.outliers);
-        RecordProperty("frequency", cv::format("%.0f", m.frequency).c_str());
-        RecordProperty("min", cv::format("%.0f", m.min).c_str());
-        RecordProperty("median", cv::format("%.0f", m.median).c_str());
-        RecordProperty("gmean", cv::format("%.0f", m.gmean).c_str());
-        RecordProperty("gstddev", cv::format("%.6f", m.gstddev).c_str());
-        RecordProperty("mean", cv::format("%.0f", m.mean).c_str());
-        RecordProperty("stddev", cv::format("%.0f", m.stddev).c_str());
+        RecordProperty("frequency", ncvslideio::format("%.0f", m.frequency).c_str());
+        RecordProperty("min", ncvslideio::format("%.0f", m.min).c_str());
+        RecordProperty("median", ncvslideio::format("%.0f", m.median).c_str());
+        RecordProperty("gmean", ncvslideio::format("%.0f", m.gmean).c_str());
+        RecordProperty("gstddev", ncvslideio::format("%.6f", m.gstddev).c_str());
+        RecordProperty("mean", ncvslideio::format("%.0f", m.mean).c_str());
+        RecordProperty("stddev", ncvslideio::format("%.0f", m.stddev).c_str());
 #ifdef ENABLE_INSTRUMENTATION
-        if(cv::instr::useInstrumentation())
+        if(ncvslideio::instr::useInstrumentation())
         {
-            cv::String tree = InstumentData::treeToString();
+            ncvslideio::String tree = InstumentData::treeToString();
             RecordProperty("functions_hierarchy", tree.c_str());
-            RecordProperty("total_ipp_weight",    cv::format("%.1f", ((double)getImplTime(cv::instr::IMPL_IPP)*100/(double)getTotalTime())));
-            RecordProperty("total_opencl_weight", cv::format("%.1f", ((double)getImplTime(cv::instr::IMPL_OPENCL)*100/(double)getTotalTime())));
-            cv::instr::resetTrace();
+            RecordProperty("total_ipp_weight",    ncvslideio::format("%.1f", ((double)getImplTime(ncvslideio::instr::IMPL_IPP)*100/(double)getTotalTime())));
+            RecordProperty("total_opencl_weight", ncvslideio::format("%.1f", ((double)getImplTime(ncvslideio::instr::IMPL_OPENCL)*100/(double)getTotalTime())));
+            ncvslideio::instr::resetTrace();
         }
 #endif
 #ifdef CV_COLLECT_IMPL_DATA
@@ -1707,7 +1707,7 @@ void TestBase::reportMetrics(bool toJUnitXML)
             RecordProperty("impl_plain", (int)implConf.plain);
 
             std::string rec_line;
-            std::vector<cv::String> rec;
+            std::vector<ncvslideio::String> rec;
             rec_line.clear();
             rec = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT);
             for(int i=0; i<rec.size();i++ ){rec_line += rec[i].c_str(); rec_line += " ";}
@@ -1763,7 +1763,7 @@ void TestBase::reportMetrics(bool toJUnitXML)
             LOGD("impl_plain =%11d", (int)implConf.plain);
 
             std::string rec_line;
-            std::vector<cv::String> rec;
+            std::vector<ncvslideio::String> rec;
             rec_line.clear();
             rec = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT);
             for(int i=0; i<rec.size();i++ ){rec_line += rec[i].c_str(); rec_line += " ";}
@@ -1800,12 +1800,12 @@ void TestBase::reportMetrics(bool toJUnitXML)
 
 void TestBase::SetUp()
 {
-    cv::theRNG().state = param_seed; // this rng should generate same numbers for each run
+    ncvslideio::theRNG().state = param_seed; // this rng should generate same numbers for each run
 
     if (testThreads >= 0)
-        cv::setNumThreads(testThreads);
+        ncvslideio::setNumThreads(testThreads);
     else
-        cv::setNumThreads(-1);
+        ncvslideio::setNumThreads(-1);
 
 #ifdef __ANDROID__
     if (param_affinity_mask)
@@ -1841,7 +1841,7 @@ void TestBase::TearDown()
             reportMetrics(false);
 
 #ifdef ENABLE_INSTRUMENTATION
-            if(cv::instr::useInstrumentation())
+            if(ncvslideio::instr::useInstrumentation())
                 InstumentData::printTree();
 #endif
             return;
@@ -1855,15 +1855,15 @@ void TestBase::TearDown()
         printf("[ I. FLAGS ] \t");
         if(implConf.ipp_mt)
         {
-            if(implConf.icv) {printf("ICV_MT "); std::vector<cv::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
-            if(implConf.ipp) {printf("IPP_MT "); std::vector<cv::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
+            if(implConf.icv) {printf("ICV_MT "); std::vector<ncvslideio::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
+            if(implConf.ipp) {printf("IPP_MT "); std::vector<ncvslideio::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP|CV_IMPL_MT); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
         }
         else
         {
-            if(implConf.icv) {printf("ICV "); std::vector<cv::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
-            if(implConf.ipp) {printf("IPP "); std::vector<cv::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
+            if(implConf.icv) {printf("ICV "); std::vector<ncvslideio::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
+            if(implConf.ipp) {printf("IPP "); std::vector<ncvslideio::String> fun = implConf.GetCallsForImpl(CV_IMPL_IPP); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
         }
-        if(implConf.ocl) {printf("OCL "); std::vector<cv::String> fun = implConf.GetCallsForImpl(CV_IMPL_OCL); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
+        if(implConf.ocl) {printf("OCL "); std::vector<ncvslideio::String> fun = implConf.GetCallsForImpl(CV_IMPL_OCL); printf("("); for(int i=0; i<fun.size();i++ ){printf("%s ", fun[i].c_str());} printf(") "); }
         if(implConf.plain) printf("PLAIN ");
         if(!(implConf.ipp_mt || implConf.icv || implConf.ipp || implConf.ocl || implConf.plain))
             printf("ERROR ");
@@ -1873,7 +1873,7 @@ void TestBase::TearDown()
 #endif
 
 #ifdef ENABLE_INSTRUMENTATION
-    if(cv::instr::useInstrumentation())
+    if(ncvslideio::instr::useInstrumentation())
         InstumentData::printTree();
 #endif
 
@@ -1955,14 +1955,14 @@ void TestBase::RunPerfTestBody()
         metrics.terminationReason = performance_metrics::TERM_INTERRUPT;
         return;//no additional failure logging
     }
-    catch(const cv::Exception& e)
+    catch(const ncvslideio::Exception& e)
     {
         metrics.terminationReason = performance_metrics::TERM_EXCEPTION;
         #ifdef HAVE_CUDA
-            if (e.code == cv::Error::GpuApiCallError)
-                cv::cuda::resetDevice();
+            if (e.code == ncvslideio::Error::GpuApiCallError)
+                ncvslideio::cuda::resetDevice();
         #endif
-        FAIL() << "Expected: PerfTestBody() doesn't throw an exception.\n  Actual: it throws cv::Exception:\n  " << e.what();
+        FAIL() << "Expected: PerfTestBody() doesn't throw an exception.\n  Actual: it throws ncvslideio::Exception:\n  " << e.what();
     }
     catch(const std::exception& e)
     {
@@ -1993,14 +1993,14 @@ TestBase::_declareHelper& TestBase::_declareHelper::time(double timeLimitSecs)
 {
     test->times.clear();
     test->currentIter = (unsigned int)-1;
-    test->timeLimit = (int64)(timeLimitSecs * cv::getTickFrequency());
+    test->timeLimit = (int64)(timeLimitSecs * ncvslideio::getTickFrequency());
     test->metrics.clear();
     return *this;
 }
 
 TestBase::_declareHelper& TestBase::_declareHelper::tbb_threads(int n)
 {
-    cv::setNumThreads(n);
+    ncvslideio::setNumThreads(n);
     return *this;
 }
 
@@ -2010,14 +2010,14 @@ TestBase::_declareHelper& TestBase::_declareHelper::runs(unsigned int runsNumber
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::in(ncvslideio::InputOutputArray a1, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->inputData, a1, wtype);
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, cv::InputOutputArray a2, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->inputData, a1, wtype);
@@ -2025,7 +2025,7 @@ TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, 
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->inputData, a1, wtype);
@@ -2034,7 +2034,7 @@ TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, 
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, cv::InputOutputArray a4, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::in(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, ncvslideio::InputOutputArray a4, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->inputData, a1, wtype);
@@ -2044,14 +2044,14 @@ TestBase::_declareHelper& TestBase::_declareHelper::in(cv::InputOutputArray a1, 
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::out(ncvslideio::InputOutputArray a1, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->outputData, a1, wtype);
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1, cv::InputOutputArray a2, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->outputData, a1, wtype);
@@ -2059,7 +2059,7 @@ TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1,
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->outputData, a1, wtype);
@@ -2068,7 +2068,7 @@ TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1,
     return *this;
 }
 
-TestBase::_declareHelper& TestBase::_declareHelper::out(cv::InputOutputArray a1, cv::InputOutputArray a2, cv::InputOutputArray a3, cv::InputOutputArray a4, WarmUpType wtype)
+TestBase::_declareHelper& TestBase::_declareHelper::out(ncvslideio::InputOutputArray a1, ncvslideio::InputOutputArray a2, ncvslideio::InputOutputArray a3, ncvslideio::InputOutputArray a4, WarmUpType wtype)
 {
     if (!test->times.empty()) return *this;
     TestBase::declareArray(test->outputData, a1, wtype);
@@ -2095,10 +2095,10 @@ TestBase::_declareHelper::_declareHelper(TestBase* t) : test(t)
 namespace {
 struct KeypointComparator
 {
-    std::vector<cv::KeyPoint>& pts_;
+    std::vector<ncvslideio::KeyPoint>& pts_;
     comparators::KeypointGreater cmp;
 
-    KeypointComparator(std::vector<cv::KeyPoint>& pts) : pts_(pts), cmp() {}
+    KeypointComparator(std::vector<ncvslideio::KeyPoint>& pts) : pts_(pts), cmp() {}
 
     bool operator()(int idx1, int idx2) const
     {
@@ -2107,12 +2107,12 @@ struct KeypointComparator
 };
 }//namespace
 
-void perf::sort(std::vector<cv::KeyPoint>& pts, cv::InputOutputArray descriptors)
+void perf::sort(std::vector<ncvslideio::KeyPoint>& pts, ncvslideio::InputOutputArray descriptors)
 {
-    cv::Mat desc = descriptors.getMat();
+    ncvslideio::Mat desc = descriptors.getMat();
 
     CV_Assert(pts.size() == (size_t)desc.rows);
-    cv::AutoBuffer<int> idxs(desc.rows);
+    ncvslideio::AutoBuffer<int> idxs(desc.rows);
 
     for (int i = 0; i < desc.rows; ++i)
         idxs[i] = i;
@@ -2120,13 +2120,13 @@ void perf::sort(std::vector<cv::KeyPoint>& pts, cv::InputOutputArray descriptors
     comparators::KeypointGreater cmp;
     std::sort(idxs.data(), idxs.data() + desc.rows, [&](int lhs, int rhs){ return cmp(pts[lhs], pts[rhs]); });
 
-    std::vector<cv::KeyPoint> spts(pts.size());
-    cv::Mat sdesc(desc.size(), desc.type());
+    std::vector<ncvslideio::KeyPoint> spts(pts.size());
+    ncvslideio::Mat sdesc(desc.size(), desc.type());
 
     for(int j = 0; j < desc.rows; ++j)
     {
         spts[j] = pts[idxs[j]];
-        cv::Mat row = sdesc.row(j);
+        ncvslideio::Mat row = sdesc.row(j);
         desc.row(idxs[j]).copyTo(row);
     }
 
@@ -2160,9 +2160,9 @@ void PrintTo(const MatType& t, ::std::ostream* os)
 } //namespace perf
 
 /*****************************************************************************************\
-*                                  ::cv::PrintTo
+*                                  ::ncvslideio::PrintTo
 \*****************************************************************************************/
-namespace cv {
+namespace ncvslideio {
 
 void PrintTo(const String& str, ::std::ostream* os)
 {
@@ -2174,4 +2174,4 @@ void PrintTo(const Size& sz, ::std::ostream* os)
     *os << /*"Size:" << */sz.width << "x" << sz.height;
 }
 
-}  // namespace cv
+}  // namespace ncvslideio

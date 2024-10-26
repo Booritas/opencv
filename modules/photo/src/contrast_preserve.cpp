@@ -48,9 +48,9 @@
 #include "contrast_preserve.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
-void cv::decolor(InputArray _src, OutputArray _dst, OutputArray _color_boost)
+void ncvslideio::decolor(InputArray _src, OutputArray _dst, OutputArray _color_boost)
 {
     CV_INSTRUMENT_REGION();
 

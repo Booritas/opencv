@@ -11,8 +11,8 @@
 #include "opencv2/xfeatures2d/cuda.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 static void help()
 {
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+    ncvslideio::cuda::printShortCudaDeviceInfo(ncvslideio::cuda::getDevice());
 
     SURF_CUDA surf;
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     cout << "FOUND " << keypoints2GPU.cols << " keypoints on second image" << endl;
 
     // matching descriptors
-    Ptr<cv::cuda::DescriptorMatcher> matcher = cv::cuda::DescriptorMatcher::createBFMatcher(surf.defaultNorm());
+    Ptr<ncvslideio::cuda::DescriptorMatcher> matcher = ncvslideio::cuda::DescriptorMatcher::createBFMatcher(surf.defaultNorm());
     vector<DMatch> matches;
     matcher->match(descriptors1GPU, descriptors2GPU, matches);
 

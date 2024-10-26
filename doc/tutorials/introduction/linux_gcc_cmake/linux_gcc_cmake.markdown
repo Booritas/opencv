@@ -31,7 +31,7 @@ Let's use a simple program such as DisplayImage.cpp shown below.
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char** argv )
 {

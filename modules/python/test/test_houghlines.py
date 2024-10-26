@@ -16,9 +16,9 @@ from tests_common import NewOpenCVTests
 
 def linesDiff(line1, line2):
 
-    norm1 = cv.norm(line1 - line2, cv.NORM_L2)
+    norm1 = ncvslideio.norm(line1 - line2, ncvslideio.NORM_L2)
     line3 = line1[2:4] + line1[0:2]
-    norm2 = cv.norm(line3 - line2, cv.NORM_L2)
+    norm2 = ncvslideio.norm(line3 - line2, ncvslideio.NORM_L2)
 
     return min(norm1, norm2)
 
@@ -29,9 +29,9 @@ class houghlines_test(NewOpenCVTests):
         fn = "/samples/data/pic1.png"
 
         src = self.get_sample(fn)
-        dst = cv.Canny(src, 50, 200)
+        dst = ncvslideio.Canny(src, 50, 200)
 
-        lines = cv.HoughLinesP(dst, 1, math.pi/180.0, 40, np.array([]), 50, 10)[:,0,:]
+        lines = ncvslideio.HoughLinesP(dst, 1, math.pi/180.0, 40, np.array([]), 50, 10)[:,0,:]
 
         eps = 5
         testLines = [
@@ -64,7 +64,7 @@ class houghlines_test(NewOpenCVTests):
 
         self.assertGreater(float(matches_counter) / len(testLines), .7)
 
-        lines_acc = cv.HoughLinesWithAccumulator(dst, rho=1, theta=np.pi / 180, threshold=150, srn=0, stn=0)
+        lines_acc = ncvslideio.HoughLinesWithAccumulator(dst, rho=1, theta=np.pi / 180, threshold=150, srn=0, stn=0)
         self.assertEqual(lines_acc[0,0,2], 192.0)
         self.assertEqual(lines_acc[1,0,2], 187.0)
 

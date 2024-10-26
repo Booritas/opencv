@@ -28,57 +28,57 @@
 #include "api/gbackend_priv.hpp" // FIXME: Make it part of Backend SDK!
 
 using GPlaidMLModel = ade::TypedGraph
-    < cv::gimpl::PlaidMLUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::PlaidMLUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGPlaidMLModel = ade::ConstTypedGraph
-    < cv::gimpl::PlaidMLUnit
-    , cv::gimpl::Protocol
+    < ncvslideio::gimpl::PlaidMLUnit
+    , ncvslideio::gimpl::Protocol
     >;
 
 namespace
 {
-    class GPlaidMLBackendImpl final: public cv::gapi::GBackend::Priv
+    class GPlaidMLBackendImpl final: public ncvslideio::gapi::GBackend::Priv
     {
         virtual void unpackKernel(ade::Graph            &graph,
                                   const ade::NodeHandle &op_node,
-                                  const cv::GKernelImpl &impl) override
+                                  const ncvslideio::GKernelImpl &impl) override
         {
             GPlaidMLModel gm(graph);
-            auto plaidml_impl = cv::util::any_cast<cv::GPlaidMLKernel>(impl.opaque);
-            gm.metadata(op_node).set(cv::gimpl::PlaidMLUnit{plaidml_impl});
+            auto plaidml_impl = ncvslideio::util::any_cast<ncvslideio::GPlaidMLKernel>(impl.opaque);
+            gm.metadata(op_node).set(ncvslideio::gimpl::PlaidMLUnit{plaidml_impl});
         }
 
         virtual EPtr compile(const ade::Graph& graph,
-                             const cv::GCompileArgs& args,
+                             const ncvslideio::GCompileArgs& args,
                              const std::vector<ade::NodeHandle>& nodes,
-                             const std::vector<cv::gimpl::Data>& ins_data,
-                             const std::vector<cv::gimpl::Data>& outs_data) const override
+                             const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                             const std::vector<ncvslideio::gimpl::Data>& outs_data) const override
         {
-            auto has_config = cv::gapi::getCompileArg<cv::gapi::plaidml::config>(args);
+            auto has_config = ncvslideio::gapi::getCompileArg<ncvslideio::gapi::plaidml::config>(args);
 
             if (!has_config)
             {
-                cv::util::throw_error(std::runtime_error("Config not found!\n"
-                                                         "You must pass cv::gapi::plaidml::config to the graph compile arguments"));
+                ncvslideio::util::throw_error(std::runtime_error("Config not found!\n"
+                                                         "You must pass ncvslideio::gapi::plaidml::config to the graph compile arguments"));
             }
 
             const auto& arg = has_config.value();
-            return EPtr{new cv::gimpl::GPlaidMLExecutable(cv::gimpl::GPlaidMLExecutable::Config{arg.dev_id, arg.trg_id},
+            return EPtr{new ncvslideio::gimpl::GPlaidMLExecutable(ncvslideio::gimpl::GPlaidMLExecutable::Config{arg.dev_id, arg.trg_id},
                                                           graph, nodes, ins_data, outs_data)};
         }
    };
 }
 
-cv::gapi::GBackend cv::gapi::plaidml::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::plaidml::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GPlaidMLBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GPlaidMLBackendImpl>());
     return this_backend;
 }
 
-void cv::gimpl::GPlaidMLExecutable::initBuffers(const std::vector<cv::gimpl::Data>& data,
+void ncvslideio::gimpl::GPlaidMLExecutable::initBuffers(const std::vector<ncvslideio::gimpl::Data>& data,
                                                 std::vector<plaidml::exec::Binding>& bindings)
 {
 
@@ -88,12 +88,12 @@ void cv::gimpl::GPlaidMLExecutable::initBuffers(const std::vector<cv::gimpl::Dat
     for (const auto& d : data)
     {
         GAPI_Assert(d.shape == GShape::GMAT &&
-                    "Now PlaidML backend supports only cv::GMat's");
+                    "Now PlaidML backend supports only ncvslideio::GMat's");
 
-        const auto& desc = cv::util::get<cv::GMatDesc>(d.meta);
+        const auto& desc = ncvslideio::util::get<ncvslideio::GMatDesc>(d.meta);
 
         auto placeholder = plaidml::edsl::Placeholder(
-                           cv::util::plaidml::depth_from_ocv(desc.depth),
+                           ncvslideio::util::plaidml::depth_from_ocv(desc.depth),
                            {desc.size.width, desc.size.height, desc.chan});
 
         const auto& shape = placeholder.shape();
@@ -112,14 +112,14 @@ void cv::gimpl::GPlaidMLExecutable::initBuffers(const std::vector<cv::gimpl::Dat
     }
 }
 
-void cv::gimpl::GPlaidMLExecutable::compile(const std::vector<cv::gimpl::Data>& ins_data,
-                                            const std::vector<cv::gimpl::Data>& outs_data)
+void ncvslideio::gimpl::GPlaidMLExecutable::compile(const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                                            const std::vector<ncvslideio::gimpl::Data>& outs_data)
 {
     initBuffers(ins_data,  input_bindings_);
     initBuffers(outs_data, output_bindings_);
 
     ade::util::transform(outs_data, std::back_inserter(output_ids_),
-                         [](const cv::gimpl::Data& d) { return d.rc; });
+                         [](const ncvslideio::gimpl::Data& d) { return d.rc; });
 
     GConstGPlaidMLModel gcm(m_g);
     for (const auto& nh : m_all_ops)
@@ -174,11 +174,11 @@ void cv::gimpl::GPlaidMLExecutable::compile(const std::vector<cv::gimpl::Data>& 
     exec_ = binder_->compile();
 }
 
-cv::gimpl::GPlaidMLExecutable::GPlaidMLExecutable(cv::gimpl::GPlaidMLExecutable::Config cfg,
+ncvslideio::gimpl::GPlaidMLExecutable::GPlaidMLExecutable(ncvslideio::gimpl::GPlaidMLExecutable::Config cfg,
                                                   const ade::Graph& g,
                                                   const std::vector<ade::NodeHandle>& nodes,
-                                                  const std::vector<cv::gimpl::Data>& ins_data,
-                                                  const std::vector<cv::gimpl::Data>& outs_data)
+                                                  const std::vector<ncvslideio::gimpl::Data>& ins_data,
+                                                  const std::vector<ncvslideio::gimpl::Data>& outs_data)
     : m_cfg(std::move(cfg)), m_g(g), m_gm(m_g)
 {
     auto is_op = [&](ade::NodeHandle nh) {
@@ -190,7 +190,7 @@ cv::gimpl::GPlaidMLExecutable::GPlaidMLExecutable(cv::gimpl::GPlaidMLExecutable:
     compile(ins_data, outs_data);
 }
 
-void cv::gimpl::GPlaidMLExecutable::run(std::vector<InObj>  &&input_objs,
+void ncvslideio::gimpl::GPlaidMLExecutable::run(std::vector<InObj>  &&input_objs,
                                         std::vector<OutObj> &&output_objs)
 {
     for (auto& it : input_objs) bindInArg (it.first, it.second);
@@ -200,7 +200,7 @@ void cv::gimpl::GPlaidMLExecutable::run(std::vector<InObj>  &&input_objs,
     for (auto& it : output_objs) bindOutArg(it.first, it.second);
 }
 
-void cv::gimpl::GPlaidMLExecutable::bindInArg(const RcDesc &rc, const GRunArg  &arg)
+void ncvslideio::gimpl::GPlaidMLExecutable::bindInArg(const RcDesc &rc, const GRunArg  &arg)
 {
     switch (rc.shape)
     {
@@ -212,11 +212,11 @@ void cv::gimpl::GPlaidMLExecutable::bindInArg(const RcDesc &rc, const GRunArg  &
 
         switch (arg.index())
         {
-        case GRunArg::index_of<cv::RMat>():
+        case GRunArg::index_of<ncvslideio::RMat>():
         {
-            auto& rmat = cv::util::get<cv::RMat>(arg);
-            auto  view = rmat.access(cv::RMat::Access::R);
-            auto  mat  = cv::gimpl::asMat(view);
+            auto& rmat = ncvslideio::util::get<ncvslideio::RMat>(arg);
+            auto  view = rmat.access(ncvslideio::RMat::Access::R);
+            auto  mat  = ncvslideio::gimpl::asMat(view);
             binder_->input(it->second).copy_from(mat.data);
         }
         break;
@@ -230,7 +230,7 @@ void cv::gimpl::GPlaidMLExecutable::bindInArg(const RcDesc &rc, const GRunArg  &
     }
 }
 
-void cv::gimpl::GPlaidMLExecutable::bindOutArg(const RcDesc &rc, const GRunArgP  &arg)
+void ncvslideio::gimpl::GPlaidMLExecutable::bindOutArg(const RcDesc &rc, const GRunArgP  &arg)
 {
     switch (rc.shape)
     {
@@ -242,11 +242,11 @@ void cv::gimpl::GPlaidMLExecutable::bindOutArg(const RcDesc &rc, const GRunArgP 
 
         switch (arg.index())
         {
-        case GRunArgP::index_of<cv::RMat*>() :
+        case GRunArgP::index_of<ncvslideio::RMat*>() :
         {
-            auto& rmat = *cv::util::get<cv::RMat*>(arg);
-            auto  view = rmat.access(cv::RMat::Access::W);
-            auto  mat  = cv::gimpl::asMat(view);
+            auto& rmat = *ncvslideio::util::get<ncvslideio::RMat*>(arg);
+            auto  view = rmat.access(ncvslideio::RMat::Access::W);
+            auto  mat  = ncvslideio::gimpl::asMat(view);
             binder_->output(it->second).copy_into(mat.data);
         }
         break;
@@ -260,21 +260,21 @@ void cv::gimpl::GPlaidMLExecutable::bindOutArg(const RcDesc &rc, const GRunArgP 
     }
 }
 
-cv::GArg cv::gimpl::GPlaidMLExecutable::packArg(const GArg &arg)
+ncvslideio::GArg ncvslideio::gimpl::GPlaidMLExecutable::packArg(const GArg &arg)
 {
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-              && arg.kind != cv::detail::ArgKind::GSCALAR
-              && arg.kind != cv::detail::ArgKind::GARRAY
-              && arg.kind != cv::detail::ArgKind::GOPAQUE);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+              && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+              && arg.kind != ncvslideio::detail::ArgKind::GARRAY
+              && arg.kind != ncvslideio::detail::ArgKind::GOPAQUE);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF)
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF)
     {
         // All other cases - pass as-is, with no transformations to GArg contents.
         return arg;
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
     case GShape::GMAT:

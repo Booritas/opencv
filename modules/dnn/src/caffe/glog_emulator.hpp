@@ -46,11 +46,11 @@
 #include <sstream>
 #include <opencv2/core.hpp>
 
-#define CHECK(cond)     for(cv::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, "CHECK", #cond, cond); _logger.exit(); _logger.check()) _logger.stream()
-#define CHECK_EQ(a, b)  for(cv::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, "CHECK", #a"="#b, ((a) == (b))); _logger.exit(); _logger.check()) _logger.stream()
-#define LOG(TYPE)       for(cv::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, #TYPE); _logger.exit(); _logger.check()) _logger.stream()
+#define CHECK(cond)     for(ncvslideio::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, "CHECK", #cond, cond); _logger.exit(); _logger.check()) _logger.stream()
+#define CHECK_EQ(a, b)  for(ncvslideio::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, "CHECK", #a"="#b, ((a) == (b))); _logger.exit(); _logger.check()) _logger.stream()
+#define LOG(TYPE)       for(ncvslideio::dnn::GLogWrapper _logger(__FILE__, CV_Func, __LINE__, #TYPE); _logger.exit(); _logger.check()) _logger.stream()
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -87,7 +87,7 @@ public:
 
         if (cond_str && !cond_status)
         {
-            cv::error(cv::Error::StsError, "FAILED: " + String(cond_str) + ". " + sstream.str(), func, file, line);
+            ncvslideio::error(ncvslideio::Error::StsError, "FAILED: " + String(cond_str) + ". " + sstream.str(), func, file, line);
         }
         else if (!cond_str && strcmp(type, "CHECK"))
         {

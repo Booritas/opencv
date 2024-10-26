@@ -28,14 +28,14 @@ PERF_TEST_P(VideoWriter_Writing, WriteFrame,
   const bool isColor = get<1>(GetParam());
   Mat image = imread(filename, isColor ? IMREAD_COLOR : IMREAD_GRAYSCALE );
 #if defined(HAVE_MSMF) && !defined(HAVE_FFMPEG)
-  const string outfile = cv::tempfile(".wmv");
+  const string outfile = ncvslideio::tempfile(".wmv");
   const int fourcc = VideoWriter::fourcc('W', 'M', 'V', '3');
 #else
-  const string outfile = cv::tempfile(".avi");
+  const string outfile = ncvslideio::tempfile(".avi");
   const int fourcc = VideoWriter::fourcc('X', 'V', 'I', 'D');
 #endif
 
-  VideoWriter writer(outfile, fourcc, 25, cv::Size(image.cols, image.rows), isColor);
+  VideoWriter writer(outfile, fourcc, 25, ncvslideio::Size(image.cols, image.rows), isColor);
   if (!writer.isOpened())
       throw SkipTestException("Video file can not be opened");
 

@@ -74,7 +74,7 @@ static void fast_gemm_pack##N##suffix( int m, int k, const void* A_, \
 #define FAST_GEMM_PACK_f32_8(src, dst) FAST_GEMM_PACK_COPY((src), (dst), 8)
 #define FAST_GEMM_PACK_f32_12(src, dst) FAST_GEMM_PACK_COPY((src), (dst), 12)
 
-namespace cv { namespace dnn { namespace cpu_baseline {
+namespace ncvslideio { namespace dnn { namespace cpu_baseline {
 
 int fastGemmPackBSize(int N, int K);
 
@@ -460,7 +460,7 @@ void fastGemmBatchKernel(size_t batch, const size_t *A_offsets, const size_t *B_
     parallel_for_(Range(0, total), fn, nstripes);
 }
 
-}}} // cv::dnn::cpu_baseline
+}}} // ncvslideio::dnn::cpu_baseline
 
 #undef FAST_GEMM_STORAGE
 #undef FAST_GEMM_MAX_STACKBUF

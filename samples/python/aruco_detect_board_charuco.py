@@ -13,7 +13,7 @@ import sys
 
 
 def read_camera_parameters(filename):
-    fs = cv.FileStorage(cv.samples.findFile(filename, False), cv.FileStorage_READ)
+    fs = ncvslideio.FileStorage(ncvslideio.samples.findFile(filename, False), ncvslideio.FileStorage_READ)
     if fs.isOpened():
         cam_matrix = fs.getNode("camera_matrix").mat()
         dist_coefficients = fs.getNode("distortion_coefficients").mat()
@@ -64,23 +64,23 @@ def main():
     if cam_param != "":
         _, cam_matrix, dist_coefficients = read_camera_parameters(cam_param)
 
-    aruco_dict = cv.aruco.getPredefinedDictionary(dict)
+    aruco_dict = ncvslideio.aruco.getPredefinedDictionary(dict)
     board_size = (width, height)
-    board = cv.aruco.CharucoBoard(board_size, square_len, marker_len, aruco_dict)
-    charuco_detector = cv.aruco.CharucoDetector(board)
+    board = ncvslideio.aruco.CharucoBoard(board_size, square_len, marker_len, aruco_dict)
+    charuco_detector = ncvslideio.aruco.CharucoDetector(board)
 
     image = None
     input_video = None
     wait_time = 10
     if video != "":
-        input_video = cv.VideoCapture(cv.samples.findFileOrKeep(video, False))
+        input_video = ncvslideio.VideoCapture(ncvslideio.samples.findFileOrKeep(video, False))
         image = input_video.retrieve()[1] if input_video.grab() else None
     elif img_path == "":
-        input_video = cv.VideoCapture(camera_id)
+        input_video = ncvslideio.VideoCapture(camera_id)
         image = input_video.retrieve()[1] if input_video.grab() else None
     elif img_path != "":
         wait_time = 0
-        image = cv.imread(cv.samples.findFile(img_path, False))
+        image = ncvslideio.imread(ncvslideio.samples.findFile(img_path, False))
 
     if image is None:
         print("Error: unable to open video/image source")
@@ -90,22 +90,22 @@ def main():
         image_copy = np.copy(image)
         charuco_corners, charuco_ids, marker_corners, marker_ids = charuco_detector.detectBoard(image)
         if not (marker_ids is None) and len(marker_ids) > 0:
-            cv.aruco.drawDetectedMarkers(image_copy, marker_corners)
+            ncvslideio.aruco.drawDetectedMarkers(image_copy, marker_corners)
         if not (charuco_ids is None) and len(charuco_ids) > 0:
-            cv.aruco.drawDetectedCornersCharuco(image_copy, charuco_corners, charuco_ids)
+            ncvslideio.aruco.drawDetectedCornersCharuco(image_copy, charuco_corners, charuco_ids)
             if len(cam_matrix) > 0 and len(charuco_ids) >= 4:
                 try:
                     obj_points, img_points = board.matchImagePoints(charuco_corners, charuco_ids)
-                    flag, rvec, tvec = cv.solvePnP(obj_points, img_points, cam_matrix, dist_coefficients)
+                    flag, rvec, tvec = ncvslideio.solvePnP(obj_points, img_points, cam_matrix, dist_coefficients)
                     if flag:
-                        cv.drawFrameAxes(image_copy, cam_matrix, dist_coefficients, rvec, tvec, .2)
-                except cv.error as error_inst:
+                        ncvslideio.drawFrameAxes(image_copy, cam_matrix, dist_coefficients, rvec, tvec, .2)
+                except ncvslideio.error as error_inst:
                     print("SolvePnP recognize calibration pattern as non-planar pattern. To process this need to use "
                           "minimum 6 points. The planar pattern may be mistaken for non-planar if the pattern is "
                           "deformed or incorrect camera parameters are used.")
                     print(error_inst.err)
-        cv.imshow("out", image_copy)
-        key = cv.waitKey(wait_time)
+        ncvslideio.imshow("out", image_copy)
+        key = ncvslideio.waitKey(wait_time)
         if key == 27:
             break
         image = input_video.retrieve()[1] if input_video is not None and input_video.grab() else None

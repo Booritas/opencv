@@ -27,7 +27,7 @@ def build_filters():
     filters = []
     ksize = 31
     for theta in np.arange(0, np.pi, np.pi / 16):
-        kern = cv.getGaborKernel((ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=cv.CV_32F)
+        kern = ncvslideio.getGaborKernel((ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=ncvslideio.CV_32F)
         kern /= 1.5*kern.sum()
         filters.append(kern)
     return filters
@@ -35,14 +35,14 @@ def build_filters():
 def process(img, filters):
     accum = np.zeros_like(img)
     for kern in filters:
-        fimg = cv.filter2D(img, cv.CV_8UC3, kern)
+        fimg = ncvslideio.filter2D(img, ncvslideio.CV_8UC3, kern)
         np.maximum(accum, fimg, accum)
     return accum
 
 def process_threaded(img, filters, threadn = 8):
     accum = np.zeros_like(img)
     def f(kern):
-        return cv.filter2D(img, cv.CV_8UC3, kern)
+        return ncvslideio.filter2D(img, ncvslideio.CV_8UC3, kern)
     pool = ThreadPool(processes=threadn)
     for fimg in pool.imap_unordered(f, filters):
         np.maximum(accum, fimg, accum)
@@ -57,7 +57,7 @@ def main():
     except:
         img_fn = 'baboon.jpg'
 
-    img = cv.imread(cv.samples.findFile(img_fn))
+    img = ncvslideio.imread(ncvslideio.samples.findFile(img_fn))
     if img is None:
         print('Failed to load image file:', img_fn)
         sys.exit(1)
@@ -70,13 +70,13 @@ def main():
         res2 = process_threaded(img, filters)
 
     print('res1 == res2: ', (res1 == res2).all())
-    cv.imshow('img', img)
-    cv.imshow('result', res2)
-    cv.waitKey()
+    ncvslideio.imshow('img', img)
+    ncvslideio.imshow('result', res2)
+    ncvslideio.waitKey()
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

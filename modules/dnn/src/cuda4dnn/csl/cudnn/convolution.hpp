@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <iterator>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace cudnn {
 
     /** describe convolution filters
      *
@@ -300,7 +300,7 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
             }
 
             if (!found_conv_algorithm)
-                CV_Error (cv::Error::GpuApiCallError, "cuDNN did not return a suitable algorithm for convolution.");
+                CV_Error (ncvslideio::Error::GpuApiCallError, "cuDNN did not return a suitable algorithm for convolution.");
 #else
             CUDA4DNN_CHECK_CUDNN(
                 cudnnGetConvolutionForwardAlgorithm(
@@ -632,6 +632,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
             outputDesc.get(), outputPtr.get()));
     }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::cudnn */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::cudnn */
 
 #endif /* OPENCV_DNN_CUDA4DNN_CSL_CUDNN_CONVOLUTION_HPP */

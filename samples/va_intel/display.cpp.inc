@@ -10,7 +10,7 @@
 #include <va/va.h>
 # include <va/va_drm.h>
 
-#include "opencv2/core.hpp"  // cv::format()
+#include "opencv2/core.hpp"  // ncvslideio::format()
 
 namespace va {
 
@@ -72,7 +72,7 @@ static unsigned readId(const char* devName, const char* idName)
 {
     long int id = 0;
 
-    std::string fileName = cv::format("%s/%s/%s", VA_INTEL_PCI_DIR, devName, idName);
+    std::string fileName = ncvslideio::format("%s/%s/%s", VA_INTEL_PCI_DIR, devName, idName);
 
     FILE* file = fopen(fileName.c_str(), "r");
     if (file)
@@ -101,7 +101,7 @@ static int findAdapter(unsigned desiredVendorId)
             unsigned vendorId = readId(name, "vendor");
             if (vendorId == desiredVendorId)
             {
-                std::string subdirName = cv::format("%s/%s/%s", VA_INTEL_PCI_DIR, name, "drm");
+                std::string subdirName = ncvslideio::format("%s/%s/%s", VA_INTEL_PCI_DIR, name, "drm");
                 Directory subdir(subdirName.c_str());
                 for (int j = 0; j < subdir.count(); ++j)
                 {
@@ -130,7 +130,7 @@ public:
             numbers[1] = adapterIndex;
             for (int i = 0;  i < NUM_NODES;  ++i)
             {
-                paths[i] = cv::format("%s%s%d", VA_INTEL_DRI_DIR, names[i], numbers[i]);
+                paths[i] = ncvslideio::format("%s%s%d", VA_INTEL_DRI_DIR, names[i], numbers[i]);
             }
         }
     ~NodeInfo()

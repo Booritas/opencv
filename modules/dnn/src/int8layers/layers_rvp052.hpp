@@ -6,7 +6,7 @@
 # include <nds_intrinsic.h>
 # define CV_RVP052 1
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 namespace opt_RVP052 {
 

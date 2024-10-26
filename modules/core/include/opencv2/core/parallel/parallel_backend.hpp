@@ -8,7 +8,7 @@
 #include "opencv2/core/cvdef.h"
 #include <memory>
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 #ifndef CV_API_CALL
 #define CV_API_CALL
 #endif

@@ -10,7 +10,7 @@
 #include "opencv2/highgui.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const char* window_name = "Pyramids Demo";
 

@@ -6,7 +6,7 @@
 #include "../precomp.hpp"
 #include "ean8_decoder.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 static constexpr size_t EAN8BITS_NUM = 70;
 static constexpr size_t EAN8DIGIT_NUM = 8;

@@ -10,7 +10,7 @@
 #include "op_vkcom.hpp"
 #include "net_impl.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -38,7 +38,7 @@ void Net::Impl::initVkComBackend()
         {
             ld.backendNodes[DNN_BACKEND_VKCOM] = layer->initVkCom(ld.inputBlobsWrappers, ld.outputBlobsWrappers);
         }
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             CV_LOG_ERROR(NULL, "initVkCom failed, fallback to CPU implementation. " << e.what());
             ld.backendNodes[DNN_BACKEND_VKCOM] = Ptr<BackendNode>();
@@ -233,4 +233,4 @@ bool haveVulkan()
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

@@ -17,7 +17,7 @@
 #include <thread>
 #endif  // HAVE_HALIDE
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -214,7 +214,7 @@ HalideBackendNode::HalideBackendNode(const Ptr<HalideBackendNode>& base,
     funcs.back() = top;
 }
 
-HalideBackendWrapper::HalideBackendWrapper(int targetId, const cv::Mat& m)
+HalideBackendWrapper::HalideBackendWrapper(int targetId, const ncvslideio::Mat& m)
     : BackendWrapper(DNN_BACKEND_HALIDE, targetId)
 {
     managesDevMemory = true;

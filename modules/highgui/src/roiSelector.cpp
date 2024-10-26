@@ -6,7 +6,7 @@
 #include <opencv2/imgproc.hpp>
 #include <algorithm>
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace
 {
@@ -201,19 +201,19 @@ class ROISelector
 };
 }
 
-Rect cv::selectROI(InputArray img, bool showCrosshair, bool fromCenter, bool printNotice)
+Rect ncvslideio::selectROI(InputArray img, bool showCrosshair, bool fromCenter, bool printNotice)
 {
     ROISelector selector;
     return selector.select("ROI selector", img.getMat(), showCrosshair, fromCenter, printNotice);
 }
 
-Rect cv::selectROI(const String& windowName, InputArray img, bool showCrosshair, bool fromCenter, bool printNotice)
+Rect ncvslideio::selectROI(const String& windowName, InputArray img, bool showCrosshair, bool fromCenter, bool printNotice)
 {
     ROISelector selector;
     return selector.select(windowName, img.getMat(), showCrosshair, fromCenter, printNotice);
 }
 
-void cv::selectROIs(const String& windowName, InputArray img,
+void ncvslideio::selectROIs(const String& windowName, InputArray img,
                              std::vector<Rect>& boundingBox, bool showCrosshair, bool fromCenter, bool printNotice)
 {
     ROISelector selector;

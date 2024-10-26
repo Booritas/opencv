@@ -12,57 +12,57 @@
 #include "streaming/onevpl/onevpl_export.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 namespace utils {
 
-cv::MediaFormat fourcc_to_MediaFormat(int value) {
+ncvslideio::MediaFormat fourcc_to_MediaFormat(int value) {
     switch (value)
     {
         case MFX_FOURCC_BGRP:
-            return cv::MediaFormat::BGR;
+            return ncvslideio::MediaFormat::BGR;
         case MFX_FOURCC_NV12:
-            return cv::MediaFormat::NV12;
+            return ncvslideio::MediaFormat::NV12;
         default:
             GAPI_LOG_WARNING(nullptr, "Unsupported FourCC format requested: " << value <<
-                                     ". Cannot cast to cv::MediaFrame");
+                                     ". Cannot cast to ncvslideio::MediaFrame");
             GAPI_Error("Unsupported FOURCC");
 
     }
 }
 
-int MediaFormat_to_fourcc(cv::MediaFormat value) {
+int MediaFormat_to_fourcc(ncvslideio::MediaFormat value) {
     switch (value)
     {
-        case cv::MediaFormat::BGR:
+        case ncvslideio::MediaFormat::BGR:
             return MFX_FOURCC_BGRP;
-        case cv::MediaFormat::NV12:
+        case ncvslideio::MediaFormat::NV12:
             return MFX_FOURCC_NV12;
         default:
-            GAPI_LOG_WARNING(nullptr, "Unsupported cv::MediaFormat format requested: " <<
-                                      static_cast<typename std::underlying_type<cv::MediaFormat>::type>(value) <<
+            GAPI_LOG_WARNING(nullptr, "Unsupported ncvslideio::MediaFormat format requested: " <<
+                                      static_cast<typename std::underlying_type<ncvslideio::MediaFormat>::type>(value) <<
                                      ". Cannot cast to FourCC");
-            GAPI_Error("Unsupported cv::MediaFormat");
+            GAPI_Error("Unsupported ncvslideio::MediaFormat");
     }
 }
-int MediaFormat_to_chroma(cv::MediaFormat value) {
+int MediaFormat_to_chroma(ncvslideio::MediaFormat value) {
     switch (value)
     {
-        case cv::MediaFormat::BGR:
+        case ncvslideio::MediaFormat::BGR:
             return MFX_CHROMAFORMAT_MONOCHROME;
-        case cv::MediaFormat::NV12:
+        case ncvslideio::MediaFormat::NV12:
             return MFX_CHROMAFORMAT_YUV420;
         default:
-            GAPI_LOG_WARNING(nullptr, "Unsupported cv::MediaFormat format requested: " <<
-                                      static_cast<typename std::underlying_type<cv::MediaFormat>::type>(value) <<
+            GAPI_LOG_WARNING(nullptr, "Unsupported ncvslideio::MediaFormat format requested: " <<
+                                      static_cast<typename std::underlying_type<ncvslideio::MediaFormat>::type>(value) <<
                                      ". Cannot cast to ChromaFormateIdc");
-            GAPI_Error("Unsupported cv::MediaFormat");
+            GAPI_Error("Unsupported ncvslideio::MediaFormat");
     }
 }
 
-mfxFrameInfo to_mfxFrameInfo(const cv::GFrameDesc& frame_info) {
+mfxFrameInfo to_mfxFrameInfo(const ncvslideio::GFrameDesc& frame_info) {
     mfxFrameInfo ret {0};
     ret.FourCC        = MediaFormat_to_fourcc(frame_info.fmt);
     ret.ChromaFormat  = MediaFormat_to_chroma(frame_info.fmt);
@@ -78,7 +78,7 @@ mfxFrameInfo to_mfxFrameInfo(const cv::GFrameDesc& frame_info) {
     return ret;
 }
 } // namespace utils
-} // namespace cv
+} // namespace ncvslideio
 } // namespace gapi
 } // namespace wip
 } // namespace onevpl

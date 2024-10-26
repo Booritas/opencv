@@ -52,7 +52,7 @@
 #include <vector>
 #include <iostream>
 
-namespace cv
+namespace ncvslideio
 {
 
 /**

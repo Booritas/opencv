@@ -53,8 +53,8 @@ class camshift_test(NewOpenCVTests):
         while True:
             framesCounter += 1
             self.frame = self.render.getNextFrame()
-            hsv = cv.cvtColor(self.frame, cv.COLOR_BGR2HSV)
-            mask = cv.inRange(hsv, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
+            hsv = ncvslideio.cvtColor(self.frame, ncvslideio.COLOR_BGR2HSV)
+            mask = ncvslideio.inRange(hsv, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
 
             if self.selection:
                 x0, y0, x1, y1 = self.render.getCurrentRect() + 50
@@ -63,17 +63,17 @@ class camshift_test(NewOpenCVTests):
 
                 hsv_roi = hsv[y0:y1, x0:x1]
                 mask_roi = mask[y0:y1, x0:x1]
-                hist = cv.calcHist( [hsv_roi], [0], mask_roi, [16], [0, 180] )
-                cv.normalize(hist, hist, 0, 255, cv.NORM_MINMAX)
+                hist = ncvslideio.calcHist( [hsv_roi], [0], mask_roi, [16], [0, 180] )
+                ncvslideio.normalize(hist, hist, 0, 255, ncvslideio.NORM_MINMAX)
                 self.hist = hist.reshape(-1)
                 self.selection = False
 
             if self.track_window and self.track_window[2] > 0 and self.track_window[3] > 0:
                 self.selection = None
-                prob = cv.calcBackProject([hsv], [0], self.hist, [0, 180], 1)
+                prob = ncvslideio.calcBackProject([hsv], [0], self.hist, [0, 180], 1)
                 prob &= mask
-                term_crit = ( cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1 )
-                _track_box, self.track_window = cv.CamShift(prob, self.track_window, term_crit)
+                term_crit = ( ncvslideio.TERM_CRITERIA_EPS | ncvslideio.TERM_CRITERIA_COUNT, 10, 1 )
+                _track_box, self.track_window = ncvslideio.CamShift(prob, self.track_window, term_crit)
 
             trackingRect = np.array(self.track_window)
             trackingRect[2] += trackingRect[0]

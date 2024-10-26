@@ -47,7 +47,7 @@
 
 #ifdef HAVE_TIFF
 
-namespace cv
+namespace ncvslideio
 {
 
 // native simple TIFF codec
@@ -106,7 +106,7 @@ public:
     ImageDecoder newDecoder() const CV_OVERRIDE;
 
 protected:
-    cv::Ptr<void> m_tif;
+    ncvslideio::Ptr<void> m_tif;
     int normalizeChannelsNumber(int channels) const;
     bool m_hdr;
     size_t m_buf_pos;

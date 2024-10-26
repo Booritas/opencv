@@ -326,12 +326,12 @@ TEST(Variant, Swap_DiffIndex)
 
 TEST(Variant, GetIf)
 {
-    const TestVar cv(42);
+    const TestVar ncvslideio(42);
 
     // Test const& get_if()
-    EXPECT_EQ(nullptr, util::get_if<std::string>(&cv));
-    ASSERT_NE(nullptr, util::get_if<int>(&cv));
-    EXPECT_EQ(42, *util::get_if<int>(&cv));
+    EXPECT_EQ(nullptr, util::get_if<std::string>(&ncvslideio));
+    ASSERT_NE(nullptr, util::get_if<int>(&ncvslideio));
+    EXPECT_EQ(42, *util::get_if<int>(&ncvslideio));
 
     // Test &get_if
     TestVar cv2(std::string("42"));
@@ -342,11 +342,11 @@ TEST(Variant, GetIf)
 
 TEST(Variant, Get)
 {
-    const TestVar cv(42);
+    const TestVar ncvslideio(42);
 
     // Test const& get()
-    EXPECT_EQ(42, util::get<int>(cv));
-    EXPECT_THROW(util::get<std::string>(cv), util::bad_variant_access);
+    EXPECT_EQ(42, util::get<int>(ncvslideio));
+    EXPECT_THROW(util::get<std::string>(ncvslideio), util::bad_variant_access);
 
     // Test &get
     TestVar cv2(std::string("42"));
@@ -356,11 +356,11 @@ TEST(Variant, Get)
 
 TEST(Variant, GetIndexed)
 {
-    const TestVar cv(42);
+    const TestVar ncvslideio(42);
 
     // Test const& get()
-    EXPECT_EQ(42, util::get<0>(cv));
-    EXPECT_THROW(util::get<1>(cv), util::bad_variant_access);
+    EXPECT_EQ(42, util::get<0>(ncvslideio));
+    EXPECT_THROW(util::get<1>(ncvslideio), util::bad_variant_access);
 
     // Test &get
     TestVar cv2(std::string("42"));
@@ -517,7 +517,7 @@ class MyClass
     }
 };
 
-struct MyBoolParamIndexedVisitor : cv::util::static_indexed_visitor<bool, MyBoolParamIndexedVisitor>
+struct MyBoolParamIndexedVisitor : ncvslideio::util::static_indexed_visitor<bool, MyBoolParamIndexedVisitor>
 {
     MyBoolParamIndexedVisitor(std::ostream &output) : out(output) {}
 
@@ -536,7 +536,7 @@ struct MyBoolParamIndexedVisitor : cv::util::static_indexed_visitor<bool, MyBool
     std::ostream &out;
 };
 
-struct MyBoolNoParamNonIndexedVisitor : cv::util::static_indexed_visitor<bool, MyBoolNoParamNonIndexedVisitor>
+struct MyBoolNoParamNonIndexedVisitor : ncvslideio::util::static_indexed_visitor<bool, MyBoolNoParamNonIndexedVisitor>
 {
     MyBoolNoParamNonIndexedVisitor(std::ostream &output) : out(output) {}
 
@@ -550,7 +550,7 @@ struct MyBoolNoParamNonIndexedVisitor : cv::util::static_indexed_visitor<bool, M
 };
 
 
-struct MyVoidNoParamNonIndexedVisitor : cv::util::static_visitor<void, MyVoidNoParamNonIndexedVisitor>
+struct MyVoidNoParamNonIndexedVisitor : ncvslideio::util::static_visitor<void, MyVoidNoParamNonIndexedVisitor>
 {
     MyVoidNoParamNonIndexedVisitor(std::ostream &output) : out(output) {}
 
@@ -564,7 +564,7 @@ struct MyVoidNoParamNonIndexedVisitor : cv::util::static_visitor<void, MyVoidNoP
 };
 
 
-struct MyVoidNoParamIndexedVisitor : cv::util::static_indexed_visitor<void, MyVoidNoParamIndexedVisitor>
+struct MyVoidNoParamIndexedVisitor : ncvslideio::util::static_indexed_visitor<void, MyVoidNoParamIndexedVisitor>
 {
     MyVoidNoParamIndexedVisitor(std::ostream &output) : out(output) {}
 
@@ -580,111 +580,111 @@ struct MyVoidNoParamIndexedVisitor : cv::util::static_indexed_visitor<void, MyVo
 
 TEST(Variant, DynamicVisitor)
 {
-    using V = cv::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
+    using V = ncvslideio::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
     V var{42};
     {
         std::stringstream ss;
         test_validation::MyBoolParamIndexedVisitor visitor(ss);
 
-        EXPECT_TRUE(cv::util::visit(visitor, var, int{42}));
+        EXPECT_TRUE(ncvslideio::util::visit(visitor, var, int{42}));
         EXPECT_EQ(std::string("0:42,"), ss.str());
     }
 
     std::stringstream ss;
     test_validation::MyBoolNoParamNonIndexedVisitor visitor(ss);
 
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("0:42,"), ss.str());
 
     var = double{1.0};
-    EXPECT_TRUE(cv::util::visit(visitor, var));
+    EXPECT_TRUE(ncvslideio::util::visit(visitor, var));
     EXPECT_EQ(std::string("0:42,1:1,"), ss.str());
 
     var = char{'a'};
-    EXPECT_TRUE(cv::util::visit(visitor, var));
+    EXPECT_TRUE(ncvslideio::util::visit(visitor, var));
     EXPECT_EQ(std::string("0:42,1:1,2:a,"), ss.str());
 
     var = float{6.0};
-    EXPECT_TRUE(cv::util::visit(visitor, var));
+    EXPECT_TRUE(ncvslideio::util::visit(visitor, var));
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,"), ss.str());
 
     var = test_validation::MyType{};
-    EXPECT_TRUE(cv::util::visit(visitor, var));
+    EXPECT_TRUE(ncvslideio::util::visit(visitor, var));
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,4:MyType,"), ss.str());
 
     var = test_validation::MyClass{};
-    EXPECT_TRUE(cv::util::visit(visitor, var));
+    EXPECT_TRUE(ncvslideio::util::visit(visitor, var));
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,4:MyType,5:MyClass,"), ss.str());
 }
 
 TEST(Variant, StaticVisitor)
 {
-    using V = cv::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
+    using V = ncvslideio::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
     V var{42};
     std::stringstream ss;
     test_validation::MyVoidNoParamNonIndexedVisitor visitor(ss);
 
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,"), ss.str());
 
     var = double{1.0};
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,1,"), ss.str());
 
     var = char{'a'};
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,1,a,"), ss.str());
 
     var = float{6.0};
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,1,a,6,"), ss.str());
 
     var = test_validation::MyType{};
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,1,a,6,MyType,"), ss.str());
 
     var = test_validation::MyClass{};
-    cv::util::visit(visitor, var);
+    ncvslideio::util::visit(visitor, var);
     EXPECT_EQ(std::string("42,1,a,6,MyType,MyClass,"), ss.str());
 }
 
 TEST(Variant, StaticIndexedVisitor)
 {
-    using V = cv::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
+    using V = ncvslideio::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
     V var{42};
 
     std::stringstream ss;
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor {ss}, var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor {ss}, var);
     EXPECT_EQ(std::string("0:42,"), ss.str());
 
     var = double{1.0};
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
     EXPECT_EQ(std::string("0:42,1:1,"), ss.str());
 
     var = char{'a'};
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
     EXPECT_EQ(std::string("0:42,1:1,2:a,"), ss.str());
 
     var = float{6.0};
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,"), ss.str());
 
     var = test_validation::MyType{};
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,4:MyType,"), ss.str());
 
     var = test_validation::MyClass{};
-    cv::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
+    ncvslideio::util::visit(test_validation::MyVoidNoParamIndexedVisitor (ss), var);
     EXPECT_EQ(std::string("0:42,1:1,2:a,3:6,4:MyType,5:MyClass,"), ss.str());
 }
 
 
 TEST(Variant, LambdaVisitor)
 {
-    using V = cv::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
+    using V = ncvslideio::util::variant<int, double, char, float, test_validation::MyType, test_validation::MyClass>;
     V var{42};
     {
-        cv::util::visit(cv::util::overload_lambdas(
+        ncvslideio::util::visit(ncvslideio::util::overload_lambdas(
                 [](int value) {
                     EXPECT_EQ(42, value);
                 },
@@ -711,7 +711,7 @@ TEST(Variant, LambdaVisitor)
 
     var = 'c';
     {
-        cv::util::visit(cv::util::overload_lambdas(
+        ncvslideio::util::visit(ncvslideio::util::overload_lambdas(
                 [](int) {
                     ADD_FAILURE() << "can't be called for `int`";
                 },

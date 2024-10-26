@@ -18,7 +18,7 @@ CV_EXPORTS @interface MatOfDouble : Mat
 #pragma mark - Constructors
 
 #ifdef __cplusplus
-- (instancetype)initWithNativeMat:(cv::Mat*)nativeMat;
+- (instancetype)initWithNativeMat:(ncvslideio::Mat*)nativeMat;
 #endif
 
 /**

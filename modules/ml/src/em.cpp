@@ -41,7 +41,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace ml
 {
@@ -458,7 +458,7 @@ public:
         CV_Assert(!covsEigenValues.empty());
 
         Mat logWeights;
-        cv::max(weights, DBL_MIN, weights);
+        ncvslideio::max(weights, DBL_MIN, weights);
         log(weights, logWeights);
 
         logWeightDivDet.create(1, nclusters, CV_64FC1);
@@ -854,6 +854,6 @@ Ptr<EM> EM::load(const String& filepath, const String& nodeName)
 }
 
 }
-} // namespace cv
+} // namespace ncvslideio
 
 /* End of file. */

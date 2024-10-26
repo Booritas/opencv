@@ -12,7 +12,7 @@
 #include "caffe_io.hpp"
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 #ifdef HAVE_PROTOBUF
@@ -71,7 +71,7 @@ void shrinkCaffeModel(const String& src, const String& dst, const std::vector<St
 
 void shrinkCaffeModel(const String& src, const String& dst, const std::vector<String>& types)
 {
-    CV_Error(cv::Error::StsNotImplemented, "libprotobuf required to import data from Caffe models");
+    CV_Error(ncvslideio::Error::StsNotImplemented, "libprotobuf required to import data from Caffe models");
 }
 
 #endif  // HAVE_PROTOBUF

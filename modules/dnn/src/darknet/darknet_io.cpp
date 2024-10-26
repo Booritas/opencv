@@ -75,7 +75,7 @@
 
 #include "darknet_io.hpp"
 
-namespace cv {
+namespace ncvslideio {
     namespace dnn {
         namespace darknet {
 
@@ -104,15 +104,15 @@ namespace cv {
                     net(_net), layer_id(0), last_layer(kFirstLayerName)
                 {}
 
-                void setLayerBlobs(int i, std::vector<cv::Mat> blobs)
+                void setLayerBlobs(int i, std::vector<ncvslideio::Mat> blobs)
                 {
-                    cv::dnn::LayerParams &params = net->layers[i].layerParams;
+                    ncvslideio::dnn::LayerParams &params = net->layers[i].layerParams;
                     params.blobs = blobs;
                 }
 
                 void setBatchNorm()
                 {
-                    cv::dnn::LayerParams bn_param;
+                    ncvslideio::dnn::LayerParams bn_param;
 
                     bn_param.name = "BatchNorm-name";
                     bn_param.type = "BatchNorm";
@@ -121,7 +121,7 @@ namespace cv {
                     bn_param.set<float>("eps", 1E-6);	// .000001f in Darknet Yolo
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("bn_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("bn_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = bn_param.type;
                     lp.layerParams = bn_param;
@@ -130,10 +130,10 @@ namespace cv {
                     net->layers.push_back(lp);
                 }
 
-                cv::dnn::LayerParams getParamConvolution(int kernel, int pad,
+                ncvslideio::dnn::LayerParams getParamConvolution(int kernel, int pad,
                     int stride, int filters_num)
                 {
-                    cv::dnn::LayerParams params;
+                    ncvslideio::dnn::LayerParams params;
                     params.name = "Convolution-name";
                     params.type = "Convolution";
 
@@ -151,11 +151,11 @@ namespace cv {
                 void setConvolution(int kernel, int pad, int stride,
                     int filters_num, int channels_num, int groups, int use_batch_normalize)
                 {
-                    cv::dnn::LayerParams conv_param =
+                    ncvslideio::dnn::LayerParams conv_param =
                         getParamConvolution(kernel, pad, stride, filters_num);
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("conv_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("conv_%d", layer_id);
 
                     // use BIAS in any case
                     if (!use_batch_normalize) {
@@ -178,9 +178,9 @@ namespace cv {
                     fused_layer_names.push_back(last_layer);
                 }
 
-                cv::dnn::LayerParams getParamFullyConnected(int output)
+                ncvslideio::dnn::LayerParams getParamFullyConnected(int output)
                 {
-                    cv::dnn::LayerParams params;
+                    ncvslideio::dnn::LayerParams params;
                     params.name = "FullyConnected-name";
                     params.type = "InnerProduct";
 
@@ -192,11 +192,11 @@ namespace cv {
 
                 void setFullyConnected(int output, int use_batch_normalize)
                 {
-                    cv::dnn::LayerParams fullyconnected_param =
+                    ncvslideio::dnn::LayerParams fullyconnected_param =
                         getParamFullyConnected(output);
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("fullyConnected_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("fullyConnected_%d", layer_id);
 
                     // use BIAS in any case
                     if (!use_batch_normalize) {
@@ -219,7 +219,7 @@ namespace cv {
 
                 void setActivation(String type)
                 {
-                    cv::dnn::LayerParams activation_param;
+                    ncvslideio::dnn::LayerParams activation_param;
                     if (type == "relu")
                     {
                         activation_param.type = "ReLU";
@@ -247,10 +247,10 @@ namespace cv {
                     }
                     else
                     {
-                        CV_Error(cv::Error::StsParseError, "Unsupported activation: " + type);
+                        CV_Error(ncvslideio::Error::StsParseError, "Unsupported activation: " + type);
                     }
 
-                    std::string layer_name = cv::format("%s_%d", type.c_str(), layer_id);
+                    std::string layer_name = ncvslideio::format("%s_%d", type.c_str(), layer_id);
 
                     darknet::LayerParameter lp;
                     lp.layer_name = layer_name;
@@ -265,8 +265,8 @@ namespace cv {
 
                 void setMaxpool(int kernel, int pad, int stride)
                 {
-                    cv::dnn::LayerParams maxpool_param;
-                    maxpool_param.set<cv::String>("pool", "max");
+                    ncvslideio::dnn::LayerParams maxpool_param;
+                    maxpool_param.set<ncvslideio::String>("pool", "max");
                     maxpool_param.set<int>("kernel_size", kernel);
                     maxpool_param.set<int>("pad_l", floor((float)pad / 2));
                     maxpool_param.set<int>("pad_r", ceil((float)pad / 2));
@@ -278,7 +278,7 @@ namespace cv {
                     maxpool_param.type = "Pooling";
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("pool_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("pool_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = maxpool_param.type;
                     lp.layerParams = maxpool_param;
@@ -291,14 +291,14 @@ namespace cv {
 
                 void setAvgpool()
                 {
-                    cv::dnn::LayerParams avgpool_param;
-                    avgpool_param.set<cv::String>("pool", "ave");
+                    ncvslideio::dnn::LayerParams avgpool_param;
+                    avgpool_param.set<ncvslideio::String>("pool", "ave");
                     avgpool_param.set<bool>("global_pooling", true);
                     avgpool_param.name = "Pooling-name";
                     avgpool_param.type = "Pooling";
                     darknet::LayerParameter lp;
 
-                    std::string layer_name = cv::format("avgpool_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("avgpool_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = avgpool_param.type;
                     lp.layerParams = avgpool_param;
@@ -311,7 +311,7 @@ namespace cv {
 
                 void setCrop(int crop_height, int crop_width, int inp_height, int inp_width, bool noadjust)
                 {
-                    cv::dnn::LayerParams crop_param;
+                    ncvslideio::dnn::LayerParams crop_param;
                     crop_param.name = "CropLayer-name";
                     std::vector<int> begin = {0, 0, (inp_height - crop_height) / 2, (inp_width - crop_width) / 2};
                     std::vector<int> sizes = {-1, -1, crop_height, crop_width};
@@ -320,7 +320,7 @@ namespace cv {
                     crop_param.type = "Slice";
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("crop_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("crop_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = crop_param.type;
                     lp.layerParams = crop_param;
@@ -331,7 +331,7 @@ namespace cv {
 
                     if (!noadjust)
                     {
-                        cv::dnn::LayerParams params;
+                        ncvslideio::dnn::LayerParams params;
                         params.set("bias_term", true);
                         params.blobs = {
                             Mat(1, 1, CV_32F, Scalar(2)),
@@ -339,7 +339,7 @@ namespace cv {
                         };
 
                         darknet::LayerParameter lp;
-                        std::string layer_name = cv::format("adjust_crop_%d", layer_id);
+                        std::string layer_name = ncvslideio::format("adjust_crop_%d", layer_id);
                         lp.layer_name = layer_name;
                         lp.layer_type = "Scale";
                         lp.layerParams = params;
@@ -353,7 +353,7 @@ namespace cv {
 
                 void setSoftmax()
                 {
-                    cv::dnn::LayerParams softmax_param;
+                    ncvslideio::dnn::LayerParams softmax_param;
                     softmax_param.name = "Softmax-name";
                     softmax_param.type = "Softmax";
                     // set default axis to 1
@@ -361,7 +361,7 @@ namespace cv {
                         softmax_param.set("axis", 1);
                     darknet::LayerParameter lp;
 
-                    std::string layer_name = cv::format("softmax_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("softmax_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = softmax_param.type;
                     lp.layerParams = softmax_param;
@@ -374,14 +374,14 @@ namespace cv {
 
                 void setConcat(int number_of_inputs, int *input_indexes)
                 {
-                    cv::dnn::LayerParams concat_param;
+                    ncvslideio::dnn::LayerParams concat_param;
                     concat_param.name = "Concat-name";
                     concat_param.type = "Concat";
                     concat_param.set<int>("axis", 1);	// channels are in axis = 1
 
                     darknet::LayerParameter lp;
 
-                    std::string layer_name = cv::format("concat_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("concat_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = concat_param.type;
                     lp.layerParams = concat_param;
@@ -397,13 +397,13 @@ namespace cv {
 
                 void setIdentity(int bottom_index)
                 {
-                    cv::dnn::LayerParams identity_param;
+                    ncvslideio::dnn::LayerParams identity_param;
                     identity_param.name = "Identity-name";
                     identity_param.type = "Identity";
 
                     darknet::LayerParameter lp;
 
-                    std::string layer_name = cv::format("identity_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("identity_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = identity_param.type;
                     lp.layerParams = identity_param;
@@ -419,13 +419,13 @@ namespace cv {
                 void setSlice(int input_index, int split_size, int group_id)
                 {
                     int begin[] = {0, split_size * group_id, 0, 0};
-                    cv::dnn::DictValue paramBegin = cv::dnn::DictValue::arrayInt(begin, 4);
+                    ncvslideio::dnn::DictValue paramBegin = ncvslideio::dnn::DictValue::arrayInt(begin, 4);
 
                     int end[] = {INT_MAX, begin[1] + split_size, INT_MAX, INT_MAX};
-                    cv::dnn::DictValue paramEnd = cv::dnn::DictValue::arrayInt(end, 4);
+                    ncvslideio::dnn::DictValue paramEnd = ncvslideio::dnn::DictValue::arrayInt(end, 4);
 
                     darknet::LayerParameter lp;
-                    lp.layer_name = cv::format("slice_%d", layer_id);
+                    lp.layer_name = ncvslideio::format("slice_%d", layer_id);
                     lp.layer_type = "Slice";
                     lp.layerParams.set("begin", paramBegin);
                     lp.layerParams.set("end", paramEnd);
@@ -440,13 +440,13 @@ namespace cv {
 
                 void setReorg(int stride)
                 {
-                    cv::dnn::LayerParams reorg_params;
+                    ncvslideio::dnn::LayerParams reorg_params;
                     reorg_params.name = "Reorg-name";
                     reorg_params.type = "Reorg";
                     reorg_params.set<int>("reorg_stride", stride);
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("reorg_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("reorg_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = reorg_params.type;
                     lp.layerParams = reorg_params;
@@ -461,16 +461,16 @@ namespace cv {
 
                 void setPermute(bool isDarknetLayer = true)
                 {
-                    cv::dnn::LayerParams permute_params;
+                    ncvslideio::dnn::LayerParams permute_params;
                     permute_params.name = "Permute-name";
                     permute_params.type = "Permute";
                     int permute[] = { 0, 2, 3, 1 };
-                    cv::dnn::DictValue paramOrder = cv::dnn::DictValue::arrayInt(permute, 4);
+                    ncvslideio::dnn::DictValue paramOrder = ncvslideio::dnn::DictValue::arrayInt(permute, 4);
 
                     permute_params.set("order", paramOrder);
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("permute_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("permute_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = permute_params.type;
                     lp.layerParams = permute_params;
@@ -487,7 +487,7 @@ namespace cv {
 
                 void setRegion(float thresh, int coords, int classes, int anchors, int classfix, int softmax, int softmax_tree, float *biasData)
                 {
-                    cv::dnn::LayerParams region_param;
+                    ncvslideio::dnn::LayerParams region_param;
                     region_param.name = "Region-name";
                     region_param.type = "Region";
 
@@ -499,7 +499,7 @@ namespace cv {
                     region_param.set<bool>("softmax_tree", softmax_tree);
                     region_param.set<bool>("softmax", softmax);
 
-                    cv::Mat biasData_mat = cv::Mat(1, anchors * 2, CV_32F, biasData).clone();
+                    ncvslideio::Mat biasData_mat = ncvslideio::Mat(1, anchors * 2, CV_32F, biasData).clone();
                     region_param.blobs.push_back(biasData_mat);
 
                     darknet::LayerParameter lp;
@@ -517,7 +517,7 @@ namespace cv {
 
                 void setYolo(int classes, const std::vector<int>& mask, const std::vector<float>& anchors, float thresh, float nms_threshold, float scale_x_y, int new_coords)
                 {
-                    cv::dnn::LayerParams region_param;
+                    ncvslideio::dnn::LayerParams region_param;
                     region_param.name = "Region-name";
                     region_param.type = "Region";
 
@@ -538,11 +538,11 @@ namespace cv {
                         usedAnchors[i * 2 + 1] = anchors[mask[i] * 2 + 1];
                     }
 
-                    cv::Mat biasData_mat = cv::Mat(1, numAnchors * 2, CV_32F, &usedAnchors[0]).clone();
+                    ncvslideio::Mat biasData_mat = ncvslideio::Mat(1, numAnchors * 2, CV_32F, &usedAnchors[0]).clone();
                     region_param.blobs.push_back(biasData_mat);
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("yolo_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("yolo_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = region_param.type;
                     lp.layerParams = region_param;
@@ -557,7 +557,7 @@ namespace cv {
 
                 void setShortcut(int from, float alpha)
                 {
-                    cv::dnn::LayerParams shortcut_param;
+                    ncvslideio::dnn::LayerParams shortcut_param;
                     shortcut_param.name = "Shortcut-name";
                     shortcut_param.type = "Eltwise";
 
@@ -572,7 +572,7 @@ namespace cv {
                     shortcut_param.set<std::string>("output_channels_mode", "input_0_truncate");
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("shortcut_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("shortcut_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = shortcut_param.type;
                     lp.layerParams = shortcut_param;
@@ -587,11 +587,11 @@ namespace cv {
 
                 void setScaleChannels(int from)
                 {
-                    cv::dnn::LayerParams shortcut_param;
+                    ncvslideio::dnn::LayerParams shortcut_param;
                     shortcut_param.type = "Scale";
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("scale_channels_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("scale_channels_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = shortcut_param.type;
                     lp.layerParams = shortcut_param;
@@ -606,7 +606,7 @@ namespace cv {
 
                 void setSAM(int from)
                 {
-                    cv::dnn::LayerParams eltwise_param;
+                    ncvslideio::dnn::LayerParams eltwise_param;
                     eltwise_param.name = "SAM-name";
                     eltwise_param.type = "Eltwise";
 
@@ -614,7 +614,7 @@ namespace cv {
                     eltwise_param.set<std::string>("output_channels_mode", "same");
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("sam_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("sam_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = eltwise_param.type;
                     lp.layerParams = eltwise_param;
@@ -629,7 +629,7 @@ namespace cv {
 
                 void setUpsample(int scaleFactor)
                 {
-                    cv::dnn::LayerParams param;
+                    ncvslideio::dnn::LayerParams param;
                     param.name = "Upsample-name";
                     param.type = "Resize";
 
@@ -637,7 +637,7 @@ namespace cv {
                     param.set<String>("interpolation", "nearest");
 
                     darknet::LayerParameter lp;
-                    std::string layer_name = cv::format("upsample_%d", layer_id);
+                    std::string layer_name = ncvslideio::format("upsample_%d", layer_id);
                     lp.layer_name = layer_name;
                     lp.layer_type = param.type;
                     lp.layerParams = param;
@@ -752,7 +752,7 @@ namespace cv {
                         bool batch_normalize = getParam<int>(layer_params, "batch_normalize", 0) == 1;
                         int flipped = getParam<int>(layer_params, "flipped", 0);
                         if (flipped == 1)
-                            CV_Error(cv::Error::StsNotImplemented, "Transpose the convolutional weights is not implemented");
+                            CV_Error(ncvslideio::Error::StsNotImplemented, "Transpose the convolutional weights is not implemented");
 
                         if (pad)
                             padding = kernel_size / 2;
@@ -957,7 +957,7 @@ namespace cv {
                         setParams.setYolo(classes, mask_vec, anchors_vec, thresh, nms_threshold, scale_x_y, new_coords);
                     }
                     else {
-                        CV_Error(cv::Error::StsParseError, "Unknown layer type: " + layer_type);
+                        CV_Error(ncvslideio::Error::StsParseError, "Unknown layer type: " + layer_type);
                     }
 
                     std::string activation = getParam<std::string>(layer_params, "activation", "linear");
@@ -988,7 +988,7 @@ namespace cv {
                 }
                 bool transpose = (major_ver > 1000) || (minor_ver > 1000);
                 if(transpose)
-                    CV_Error(cv::Error::StsNotImplemented, "Transpose the weights (except for convolutional) is not implemented");
+                    CV_Error(ncvslideio::Error::StsNotImplemented, "Transpose the weights (except for convolutional) is not implemented");
 
                 MatShape tensor_shape(3);
                 tensor_shape[0] = net->channels;
@@ -1011,7 +1011,7 @@ namespace cv {
                         size_t weights_size;
                         int filters;
                         bool use_batch_normalize;
-                        cv::Mat weightsBlob;
+                        ncvslideio::Mat weightsBlob;
                         if(layer_type == "convolutional")
                         {
                             int kernel_size = getParam<int>(layer_params, "size", -1);
@@ -1040,10 +1040,10 @@ namespace cv {
                         }
                         CV_Assert(weightsBlob.isContinuous());
 
-                        cv::Mat meanData_mat(1, filters, CV_32F);	// mean
-                        cv::Mat stdData_mat(1, filters, CV_32F);	// variance
-                        cv::Mat weightsData_mat(1, filters, CV_32F);// scale
-                        cv::Mat biasData_mat(1, filters, CV_32F);	// bias
+                        ncvslideio::Mat meanData_mat(1, filters, CV_32F);	// mean
+                        ncvslideio::Mat stdData_mat(1, filters, CV_32F);	// variance
+                        ncvslideio::Mat weightsData_mat(1, filters, CV_32F);// scale
+                        ncvslideio::Mat biasData_mat(1, filters, CV_32F);	// bias
 
                         ifile.read(reinterpret_cast<char *>(biasData_mat.ptr<float>()), sizeof(float)*filters);
                         if (use_batch_normalize) {
@@ -1054,7 +1054,7 @@ namespace cv {
                         ifile.read(reinterpret_cast<char *>(weightsBlob.ptr<float>()), sizeof(float)*weights_size);
 
                         // set conv/connected weights
-                        std::vector<cv::Mat> layer_blobs;
+                        std::vector<ncvslideio::Mat> layer_blobs;
                         layer_blobs.push_back(weightsBlob);
                         if (!use_batch_normalize) {
                             // use BIAS in any case
@@ -1065,7 +1065,7 @@ namespace cv {
                         // set batch normalize (mean, variance, scale, bias)
                         if (use_batch_normalize) {
                             ++cv_layers_counter;
-                            std::vector<cv::Mat> bn_blobs;
+                            std::vector<ncvslideio::Mat> bn_blobs;
                             bn_blobs.push_back(meanData_mat);
                             bn_blobs.push_back(stdData_mat);
                             bn_blobs.push_back(weightsData_mat);
@@ -1096,14 +1096,14 @@ namespace cv {
         void ReadNetParamsFromCfgStreamOrDie(std::istream &ifile, darknet::NetParameter *net)
         {
             if (!darknet::ReadDarknetFromCfgStream(ifile, net)) {
-                CV_Error(cv::Error::StsParseError, "Failed to parse NetParameter stream");
+                CV_Error(ncvslideio::Error::StsParseError, "Failed to parse NetParameter stream");
             }
         }
 
         void ReadNetParamsFromBinaryStreamOrDie(std::istream &ifile, darknet::NetParameter *net)
         {
             if (!darknet::ReadDarknetFromWeightsStream(ifile, net)) {
-                CV_Error(cv::Error::StsParseError, "Failed to parse NetParameter stream");
+                CV_Error(ncvslideio::Error::StsParseError, "Failed to parse NetParameter stream");
             }
         }
     }

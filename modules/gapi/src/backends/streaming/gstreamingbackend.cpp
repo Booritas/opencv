@@ -25,20 +25,20 @@ namespace {
 struct StreamingCreateFunction
 {
     static const char *name() { return "StreamingCreateFunction";  }
-    cv::gapi::streaming::CreateActorFunction createActorFunction;
+    ncvslideio::gapi::streaming::CreateActorFunction createActorFunction;
 };
 
 using StreamingGraph = ade::TypedGraph
-    < cv::gimpl::Op
+    < ncvslideio::gimpl::Op
     , StreamingCreateFunction
     >;
 
 using ConstStreamingGraph = ade::ConstTypedGraph
-    < cv::gimpl::Op
+    < ncvslideio::gimpl::Op
     , StreamingCreateFunction
     >;
 
-class GStreamingIntrinExecutable final: public cv::gimpl::GIslandExecutable
+class GStreamingIntrinExecutable final: public ncvslideio::gimpl::GIslandExecutable
 {
     virtual void run(std::vector<InObj>  &&,
                      std::vector<OutObj> &&) override {
@@ -51,21 +51,21 @@ class GStreamingIntrinExecutable final: public cv::gimpl::GIslandExecutable
     virtual bool allocatesOutputs() const override { return true; }
     // Return an empty RMat since we will reuse the input.
     // There is no need to allocate and copy 4k image here.
-    virtual cv::RMat allocate(const cv::GMatDesc&) const override { return {}; }
+    virtual ncvslideio::RMat allocate(const ncvslideio::GMatDesc&) const override { return {}; }
 
     virtual bool canReshape() const override { return true; }
-    virtual void reshape(ade::Graph&, const cv::GCompileArgs&) override {
+    virtual void reshape(ade::Graph&, const ncvslideio::GCompileArgs&) override {
         // Do nothing here
     }
 
 public:
     GStreamingIntrinExecutable(const ade::Graph                   &,
-                               const cv::GCompileArgs             &,
+                               const ncvslideio::GCompileArgs             &,
                                const std::vector<ade::NodeHandle> &);
 
     const ade::Graph& m_g;
-    cv::gimpl::GModel::ConstGraph m_gm;
-    cv::gapi::streaming::IActor::Ptr m_actor;
+    ncvslideio::gimpl::GModel::ConstGraph m_gm;
+    ncvslideio::gapi::streaming::IActor::Ptr m_actor;
 };
 
 void GStreamingIntrinExecutable::run(GIslandExecutable::IInput  &in,
@@ -74,19 +74,19 @@ void GStreamingIntrinExecutable::run(GIslandExecutable::IInput  &in,
     m_actor->run(in, out);
 }
 
-class GStreamingBackendImpl final: public cv::gapi::GBackend::Priv
+class GStreamingBackendImpl final: public ncvslideio::gapi::GBackend::Priv
 {
     virtual void unpackKernel(ade::Graph            &graph,
                               const ade::NodeHandle &op_node,
-                              const cv::GKernelImpl &impl) override
+                              const ncvslideio::GKernelImpl &impl) override
     {
         StreamingGraph gm(graph);
-        const auto &kimpl  = cv::util::any_cast<cv::gapi::streaming::GStreamingKernel>(impl.opaque);
+        const auto &kimpl  = ncvslideio::util::any_cast<ncvslideio::gapi::streaming::GStreamingKernel>(impl.opaque);
         gm.metadata(op_node).set(StreamingCreateFunction{kimpl.createActorFunction});
     }
 
     virtual EPtr compile(const ade::Graph &graph,
-                         const cv::GCompileArgs &args,
+                         const ncvslideio::GCompileArgs &args,
                          const std::vector<ade::NodeHandle> &nodes) const override
     {
         return EPtr{new GStreamingIntrinExecutable(graph, args, nodes)};
@@ -97,7 +97,7 @@ class GStreamingBackendImpl final: public cv::gapi::GBackend::Priv
         return true;
     }
 
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &) const override
@@ -107,11 +107,11 @@ class GStreamingBackendImpl final: public cv::gapi::GBackend::Priv
 };
 
 GStreamingIntrinExecutable::GStreamingIntrinExecutable(const ade::Graph& g,
-                                                       const cv::GCompileArgs& args,
+                                                       const ncvslideio::GCompileArgs& args,
                                                        const std::vector<ade::NodeHandle>& nodes)
     : m_g(g), m_gm(m_g)
 {
-    using namespace cv::gimpl;
+    using namespace ncvslideio::gimpl;
     const auto is_op = [this](const ade::NodeHandle &nh)
     {
         return m_gm.metadata(nh).get<NodeType>().t == NodeType::OP;
@@ -126,7 +126,7 @@ GStreamingIntrinExecutable::GStreamingIntrinExecutable(const ade::Graph& g,
     // Ensure this the only op in the graph
     if (std::any_of(it+1, nodes.end(), is_op))
     {
-        cv::util::throw_error
+        ncvslideio::util::throw_error
             (std::logic_error
              ("Internal error: Streaming subgraph has multiple operations"));
     }
@@ -134,57 +134,57 @@ GStreamingIntrinExecutable::GStreamingIntrinExecutable(const ade::Graph& g,
 
 } // anonymous namespace
 
-cv::gapi::GBackend cv::gapi::streaming::backend()
+ncvslideio::gapi::GBackend ncvslideio::gapi::streaming::backend()
 {
-    static cv::gapi::GBackend this_backend(std::make_shared<GStreamingBackendImpl>());
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GStreamingBackendImpl>());
     return this_backend;
 }
 
-struct Copy: public cv::detail::KernelTag
+struct Copy: public ncvslideio::detail::KernelTag
 {
-    using API = cv::gimpl::streaming::GCopy;
+    using API = ncvslideio::gimpl::streaming::GCopy;
 
-    static cv::gapi::GBackend backend() { return cv::gapi::streaming::backend(); }
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::streaming::backend(); }
 
-    class Actor final: public cv::gapi::streaming::IActor
+    class Actor final: public ncvslideio::gapi::streaming::IActor
     {
         public:
-            explicit Actor(const cv::GCompileArgs&) {}
-            virtual void run(cv::gimpl::GIslandExecutable::IInput  &in,
-                             cv::gimpl::GIslandExecutable::IOutput &out) override;
+            explicit Actor(const ncvslideio::GCompileArgs&) {}
+            virtual void run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                             ncvslideio::gimpl::GIslandExecutable::IOutput &out) override;
     };
 
-    static cv::gapi::streaming::IActor::Ptr create(const cv::GCompileArgs& args)
+    static ncvslideio::gapi::streaming::IActor::Ptr create(const ncvslideio::GCompileArgs& args)
     {
-        return cv::gapi::streaming::IActor::Ptr(new Actor(args));
+        return ncvslideio::gapi::streaming::IActor::Ptr(new Actor(args));
     }
 
-    static cv::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
+    static ncvslideio::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
 };
 
-void Copy::Actor::run(cv::gimpl::GIslandExecutable::IInput  &in,
-                      cv::gimpl::GIslandExecutable::IOutput &out)
+void Copy::Actor::run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                      ncvslideio::gimpl::GIslandExecutable::IOutput &out)
 {
     const auto in_msg = in.get();
-    if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg))
+    if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg))
     {
-        out.post(cv::gimpl::EndOfStream{});
+        out.post(ncvslideio::gimpl::EndOfStream{});
         return;
     }
 
-    GAPI_DbgAssert(cv::util::holds_alternative<cv::GRunArgs>(in_msg));
-    const cv::GRunArgs &in_args = cv::util::get<cv::GRunArgs>(in_msg);
+    GAPI_DbgAssert(ncvslideio::util::holds_alternative<ncvslideio::GRunArgs>(in_msg));
+    const ncvslideio::GRunArgs &in_args = ncvslideio::util::get<ncvslideio::GRunArgs>(in_msg);
     GAPI_Assert(in_args.size() == 1u);
 
     const auto& in_arg = in_args[0];
     auto out_arg = out.get(0);
-    using cv::util::get;
+    using ncvslideio::util::get;
     switch (in_arg.index()) {
-    case cv::GRunArg::index_of<cv::RMat>():
-        *get<cv::RMat*>(out_arg) = get<cv::RMat>(in_arg);
+    case ncvslideio::GRunArg::index_of<ncvslideio::RMat>():
+        *get<ncvslideio::RMat*>(out_arg) = get<ncvslideio::RMat>(in_arg);
         break;
-    case cv::GRunArg::index_of<cv::MediaFrame>():
-        *get<cv::MediaFrame*>(out_arg) = get<cv::MediaFrame>(in_arg);
+    case ncvslideio::GRunArg::index_of<ncvslideio::MediaFrame>():
+        *get<ncvslideio::MediaFrame*>(out_arg) = get<ncvslideio::MediaFrame>(in_arg);
         break;
     // FIXME: Add support for remaining types
     default:
@@ -194,32 +194,32 @@ void Copy::Actor::run(cv::gimpl::GIslandExecutable::IInput  &in,
     out.post(std::move(out_arg));
 }
 
-cv::GKernelPackage cv::gimpl::streaming::kernels()
+ncvslideio::GKernelPackage ncvslideio::gimpl::streaming::kernels()
 {
-    return cv::gapi::kernels<Copy>();
+    return ncvslideio::gapi::kernels<Copy>();
 }
 
 #if !defined(GAPI_STANDALONE)
 
-class GAccessorActorBase : public cv::gapi::streaming::IActor {
+class GAccessorActorBase : public ncvslideio::gapi::streaming::IActor {
 public:
-    explicit GAccessorActorBase(const cv::GCompileArgs&) {}
-    virtual void run(cv::gimpl::GIslandExecutable::IInput  &in,
-                     cv::gimpl::GIslandExecutable::IOutput &out) override {
+    explicit GAccessorActorBase(const ncvslideio::GCompileArgs&) {}
+    virtual void run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                     ncvslideio::gimpl::GIslandExecutable::IOutput &out) override {
         const auto in_msg = in.get();
-        if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg))
+        if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg))
         {
-            out.post(cv::gimpl::EndOfStream{});
+            out.post(ncvslideio::gimpl::EndOfStream{});
             return;
         }
 
-        GAPI_Assert(cv::util::holds_alternative<cv::GRunArgs>(in_msg));
-        const cv::GRunArgs &in_args = cv::util::get<cv::GRunArgs>(in_msg);
+        GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GRunArgs>(in_msg));
+        const ncvslideio::GRunArgs &in_args = ncvslideio::util::get<ncvslideio::GRunArgs>(in_msg);
         GAPI_Assert(in_args.size() == 1u);
-        auto frame = cv::util::get<cv::MediaFrame>(in_args[0]);
+        auto frame = ncvslideio::util::get<ncvslideio::MediaFrame>(in_args[0]);
 
-        cv::GRunArgP out_arg = out.get(0);
-        auto& rmat = *cv::util::get<cv::RMat*>(out_arg);
+        ncvslideio::GRunArgP out_arg = out.get(0);
+        auto& rmat = *ncvslideio::util::get<ncvslideio::RMat*>(out_arg);
 
         extractRMat(frame, rmat);
 
@@ -227,246 +227,246 @@ public:
         out.post(std::move(out_arg));
     }
 
-    virtual void extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat) = 0;
+    virtual void extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat) = 0;
 
 protected:
     std::once_flag m_warnFlag;
 };
 
-struct GOCVBGR: public cv::detail::KernelTag
+struct GOCVBGR: public ncvslideio::detail::KernelTag
 {
-    using API = cv::gapi::streaming::GBGR;
-    static cv::gapi::GBackend backend() { return cv::gapi::streaming::backend(); }
+    using API = ncvslideio::gapi::streaming::GBGR;
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::streaming::backend(); }
 
     class Actor final: public GAccessorActorBase
     {
     public:
         using GAccessorActorBase::GAccessorActorBase;
-        virtual void extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat) override;
+        virtual void extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat) override;
     };
 
-    static cv::gapi::streaming::IActor::Ptr create(const cv::GCompileArgs& args)
+    static ncvslideio::gapi::streaming::IActor::Ptr create(const ncvslideio::GCompileArgs& args)
     {
-        return cv::gapi::streaming::IActor::Ptr(new Actor(args));
+        return ncvslideio::gapi::streaming::IActor::Ptr(new Actor(args));
     }
-    static cv::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
+    static ncvslideio::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
 };
 
-void GOCVBGR::Actor::extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat)
+void GOCVBGR::Actor::extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat)
 {
     const auto& desc = frame.desc();
     switch (desc.fmt)
     {
-        case cv::MediaFormat::BGR:
+        case ncvslideio::MediaFormat::BGR:
         {
-            rmat = cv::make_rmat<cv::gimpl::RMatMediaFrameAdapter>(frame,
-            [](const cv::GFrameDesc& d){ return cv::GMatDesc(CV_8U, 3, d.size); },
-            [](const cv::GFrameDesc& d, const cv::MediaFrame::View& v){
-                return cv::Mat(d.size, CV_8UC3, v.ptr[0], v.stride[0]);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatMediaFrameAdapter>(frame,
+            [](const ncvslideio::GFrameDesc& d){ return ncvslideio::GMatDesc(CV_8U, 3, d.size); },
+            [](const ncvslideio::GFrameDesc& d, const ncvslideio::MediaFrame::View& v){
+                return ncvslideio::Mat(d.size, CV_8UC3, v.ptr[0], v.stride[0]);
             });
             break;
         }
-        case cv::MediaFormat::NV12:
+        case ncvslideio::MediaFormat::NV12:
         {
             std::call_once(m_warnFlag,
                 [](){
                     GAPI_LOG_WARNING(NULL, "\nOn-the-fly conversion from NV12 to BGR will happen.\n"
                         "Conversion may cost a lot for images with high resolution.\n"
-                        "To retrieve cv::Mat-s from NV12 cv::MediaFrame for free, you may use "
-                        "cv::gapi::streaming::Y and cv::gapi::streaming::UV accessors.\n");
+                        "To retrieve ncvslideio::Mat-s from NV12 ncvslideio::MediaFrame for free, you may use "
+                        "ncvslideio::gapi::streaming::Y and ncvslideio::gapi::streaming::UV accessors.\n");
                 });
 
-            cv::Mat bgr;
-            auto view = frame.access(cv::MediaFrame::Access::R);
-            cv::Mat y_plane (desc.size,     CV_8UC1, view.ptr[0], view.stride[0]);
-            cv::Mat uv_plane(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
-            cv::cvtColorTwoPlane(y_plane, uv_plane, bgr, cv::COLOR_YUV2BGR_NV12);
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(bgr);
+            ncvslideio::Mat bgr;
+            auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+            ncvslideio::Mat y_plane (desc.size,     CV_8UC1, view.ptr[0], view.stride[0]);
+            ncvslideio::Mat uv_plane(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
+            ncvslideio::cvtColorTwoPlane(y_plane, uv_plane, bgr, ncvslideio::COLOR_YUV2BGR_NV12);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(bgr);
             break;
         }
-        case cv::MediaFormat::GRAY:
+        case ncvslideio::MediaFormat::GRAY:
         {
             std::call_once(m_warnFlag,
                 []() {
                     GAPI_LOG_WARNING(NULL, "\nOn-the-fly conversion from GRAY to BGR will happen.\n"
                         "Conversion may cost a lot for images with high resolution.\n"
-                        "To retrieve cv::Mat from GRAY cv::MediaFrame for free, you may use "
-                        "cv::gapi::streaming::Y.\n");
+                        "To retrieve ncvslideio::Mat from GRAY ncvslideio::MediaFrame for free, you may use "
+                        "ncvslideio::gapi::streaming::Y.\n");
                 });
-            cv::Mat bgr;
-            auto view = frame.access(cv::MediaFrame::Access::R);
-            cv::Mat gray(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
-            cv::cvtColor(gray, bgr, cv::COLOR_GRAY2BGR);
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(bgr);
+            ncvslideio::Mat bgr;
+            auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+            ncvslideio::Mat gray(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+            ncvslideio::cvtColor(gray, bgr, ncvslideio::COLOR_GRAY2BGR);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(bgr);
             break;
         }
 
         default:
-            cv::util::throw_error(
-                    std::logic_error("Unsupported MediaFormat for cv::gapi::streaming::BGR"));
+            ncvslideio::util::throw_error(
+                    std::logic_error("Unsupported MediaFormat for ncvslideio::gapi::streaming::BGR"));
     }
 }
 
-struct GOCVY: public cv::detail::KernelTag
+struct GOCVY: public ncvslideio::detail::KernelTag
 {
-    using API = cv::gapi::streaming::GY;
-    static cv::gapi::GBackend backend() { return cv::gapi::streaming::backend(); }
+    using API = ncvslideio::gapi::streaming::GY;
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::streaming::backend(); }
 
     class Actor final: public GAccessorActorBase
     {
     public:
         using GAccessorActorBase::GAccessorActorBase;
-        virtual void extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat) override;
+        virtual void extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat) override;
     };
 
-    static cv::gapi::streaming::IActor::Ptr create(const cv::GCompileArgs& args)
+    static ncvslideio::gapi::streaming::IActor::Ptr create(const ncvslideio::GCompileArgs& args)
     {
-        return cv::gapi::streaming::IActor::Ptr(new Actor(args));
+        return ncvslideio::gapi::streaming::IActor::Ptr(new Actor(args));
     }
-    static cv::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
+    static ncvslideio::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
 };
 
-void GOCVY::Actor::extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat)
+void GOCVY::Actor::extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat)
 {
     const auto& desc = frame.desc();
     switch (desc.fmt)
     {
-        case cv::MediaFormat::BGR:
+        case ncvslideio::MediaFormat::BGR:
         {
             std::call_once(m_warnFlag,
                 [](){
                     GAPI_LOG_WARNING(NULL, "\nOn-the-fly conversion from BGR to NV12 Y plane will "
                         "happen.\n"
                         "Conversion may cost a lot for images with high resolution.\n"
-                        "To retrieve cv::Mat from BGR cv::MediaFrame for free, you may use "
-                        "cv::gapi::streaming::BGR accessor.\n");
+                        "To retrieve ncvslideio::Mat from BGR ncvslideio::MediaFrame for free, you may use "
+                        "ncvslideio::gapi::streaming::BGR accessor.\n");
                 });
 
-            auto view = frame.access(cv::MediaFrame::Access::R);
-            cv::Mat tmp_bgr(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
-            cv::Mat yuv;
-            cvtColor(tmp_bgr, yuv, cv::COLOR_BGR2YUV_I420);
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(yuv.rowRange(0, desc.size.height));
+            auto view = frame.access(ncvslideio::MediaFrame::Access::R);
+            ncvslideio::Mat tmp_bgr(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
+            ncvslideio::Mat yuv;
+            cvtColor(tmp_bgr, yuv, ncvslideio::COLOR_BGR2YUV_I420);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(yuv.rowRange(0, desc.size.height));
             break;
         }
-        case cv::MediaFormat::NV12:
+        case ncvslideio::MediaFormat::NV12:
         {
-            rmat = cv::make_rmat<cv::gimpl::RMatMediaFrameAdapter>(frame,
-            [](const cv::GFrameDesc& d){ return cv::GMatDesc(CV_8U, 1, d.size); },
-            [](const cv::GFrameDesc& d, const cv::MediaFrame::View& v){
-                return cv::Mat(d.size, CV_8UC1, v.ptr[0], v.stride[0]);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatMediaFrameAdapter>(frame,
+            [](const ncvslideio::GFrameDesc& d){ return ncvslideio::GMatDesc(CV_8U, 1, d.size); },
+            [](const ncvslideio::GFrameDesc& d, const ncvslideio::MediaFrame::View& v){
+                return ncvslideio::Mat(d.size, CV_8UC1, v.ptr[0], v.stride[0]);
             });
             break;
         }
-        case cv::MediaFormat::GRAY:
+        case ncvslideio::MediaFormat::GRAY:
         {
-            rmat = cv::make_rmat<cv::gimpl::RMatMediaFrameAdapter>(frame,
-            [](const cv::GFrameDesc& d) { return cv::GMatDesc(CV_8U, 1, d.size); },
-            [](const cv::GFrameDesc& d, const cv::MediaFrame::View& v) {
-                return cv::Mat(d.size, CV_8UC1, v.ptr[0], v.stride[0]);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatMediaFrameAdapter>(frame,
+            [](const ncvslideio::GFrameDesc& d) { return ncvslideio::GMatDesc(CV_8U, 1, d.size); },
+            [](const ncvslideio::GFrameDesc& d, const ncvslideio::MediaFrame::View& v) {
+                return ncvslideio::Mat(d.size, CV_8UC1, v.ptr[0], v.stride[0]);
             });
             break;
         }
         default:
-            cv::util::throw_error(
-                    std::logic_error("Unsupported MediaFormat for cv::gapi::streaming::Y"));
+            ncvslideio::util::throw_error(
+                    std::logic_error("Unsupported MediaFormat for ncvslideio::gapi::streaming::Y"));
     }
 }
 
-struct GOCVUV: public cv::detail::KernelTag
+struct GOCVUV: public ncvslideio::detail::KernelTag
 {
-    using API = cv::gapi::streaming::GUV;
-    static cv::gapi::GBackend backend() { return cv::gapi::streaming::backend(); }
+    using API = ncvslideio::gapi::streaming::GUV;
+    static ncvslideio::gapi::GBackend backend() { return ncvslideio::gapi::streaming::backend(); }
 
     class Actor final: public GAccessorActorBase
     {
     public:
         using GAccessorActorBase::GAccessorActorBase;
-        virtual void extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat) override;
+        virtual void extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat) override;
     };
 
-    static cv::gapi::streaming::IActor::Ptr create(const cv::GCompileArgs& args)
+    static ncvslideio::gapi::streaming::IActor::Ptr create(const ncvslideio::GCompileArgs& args)
     {
-        return cv::gapi::streaming::IActor::Ptr(new Actor(args));
+        return ncvslideio::gapi::streaming::IActor::Ptr(new Actor(args));
     }
-    static cv::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
+    static ncvslideio::gapi::streaming::GStreamingKernel kernel() { return {&create}; }
 };
 
-void GOCVUV::Actor::extractRMat(const cv::MediaFrame& frame, cv::RMat& rmat)
+void GOCVUV::Actor::extractRMat(const ncvslideio::MediaFrame& frame, ncvslideio::RMat& rmat)
 {
     const auto& desc = frame.desc();
     switch (desc.fmt)
     {
-        case cv::MediaFormat::BGR:
+        case ncvslideio::MediaFormat::BGR:
         {
             std::call_once(m_warnFlag,
                 [](){
                     GAPI_LOG_WARNING(NULL, "\nOn-the-fly conversion from BGR to NV12 UV plane will "
                         "happen.\n"
                         "Conversion may cost a lot for images with high resolution.\n"
-                        "To retrieve cv::Mat from BGR cv::MediaFrame for free, you may use "
-                        "cv::gapi::streaming::BGR accessor.\n");
+                        "To retrieve ncvslideio::Mat from BGR ncvslideio::MediaFrame for free, you may use "
+                        "ncvslideio::gapi::streaming::BGR accessor.\n");
                 });
 
-            auto view = frame.access(cv::MediaFrame::Access::R);
+            auto view = frame.access(ncvslideio::MediaFrame::Access::R);
 
-            cv::Mat tmp_bgr(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
-            cv::Mat yuv;
-            cvtColor(tmp_bgr, yuv, cv::COLOR_BGR2YUV_I420);
+            ncvslideio::Mat tmp_bgr(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
+            ncvslideio::Mat yuv;
+            cvtColor(tmp_bgr, yuv, ncvslideio::COLOR_BGR2YUV_I420);
 
-            cv::Mat uv;
+            ncvslideio::Mat uv;
             std::vector<int> dims = { desc.size.height / 2,
                                         desc.size.width / 2  };
             auto start = desc.size.height;
             auto range_h = desc.size.height / 4;
-            std::vector<cv::Mat> uv_planes = {
+            std::vector<ncvslideio::Mat> uv_planes = {
                 yuv.rowRange(start, start + range_h).reshape(0, dims),
                 yuv.rowRange(start + range_h, start + range_h * 2).reshape(0, dims)
             };
-            cv::merge(uv_planes, uv);
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(uv);
+            ncvslideio::merge(uv_planes, uv);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(uv);
             break;
         }
-        case cv::MediaFormat::NV12:
+        case ncvslideio::MediaFormat::NV12:
         {
-            rmat = cv::make_rmat<cv::gimpl::RMatMediaFrameAdapter>(frame,
-            [](const cv::GFrameDesc& d){ return cv::GMatDesc(CV_8U, 2, d.size / 2); },
-            [](const cv::GFrameDesc& d, const cv::MediaFrame::View& v){
-                return cv::Mat(d.size / 2, CV_8UC2, v.ptr[1], v.stride[1]);
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatMediaFrameAdapter>(frame,
+            [](const ncvslideio::GFrameDesc& d){ return ncvslideio::GMatDesc(CV_8U, 2, d.size / 2); },
+            [](const ncvslideio::GFrameDesc& d, const ncvslideio::MediaFrame::View& v){
+                return ncvslideio::Mat(d.size / 2, CV_8UC2, v.ptr[1], v.stride[1]);
             });
             break;
         }
-        case cv::MediaFormat::GRAY:
+        case ncvslideio::MediaFormat::GRAY:
         {
-            cv::Mat uv(desc.size / 2, CV_8UC2, cv::Scalar::all(127));
-            rmat = cv::make_rmat<cv::gimpl::RMatOnMat>(uv);
+            ncvslideio::Mat uv(desc.size / 2, CV_8UC2, ncvslideio::Scalar::all(127));
+            rmat = ncvslideio::make_rmat<ncvslideio::gimpl::RMatOnMat>(uv);
             break;
         }
         default:
-            cv::util::throw_error(
-                    std::logic_error("Unsupported MediaFormat for cv::gapi::streaming::UV"));
+            ncvslideio::util::throw_error(
+                    std::logic_error("Unsupported MediaFormat for ncvslideio::gapi::streaming::UV"));
     }
 }
 
-cv::GKernelPackage cv::gapi::streaming::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::streaming::kernels()
 {
-    return cv::gapi::kernels<GOCVBGR, GOCVY, GOCVUV>();
+    return ncvslideio::gapi::kernels<GOCVBGR, GOCVY, GOCVUV>();
 }
 
 #else
 
-cv::GKernelPackage cv::gapi::streaming::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::streaming::kernels()
 {
     // Still provide this symbol to avoid linking issues
-    util::throw_error(std::runtime_error("cv::gapi::streaming::kernels() isn't supported in standalone"));
+    util::throw_error(std::runtime_error("ncvslideio::gapi::streaming::kernels() isn't supported in standalone"));
 }
 
 #endif // !defined(GAPI_STANDALONE)
 
-cv::GMat cv::gapi::copy(const cv::GMat& in) {
-    return cv::gimpl::streaming::GCopy::on<cv::GMat>(in);
+ncvslideio::GMat ncvslideio::gapi::copy(const ncvslideio::GMat& in) {
+    return ncvslideio::gimpl::streaming::GCopy::on<ncvslideio::GMat>(in);
 }
 
-cv::GFrame cv::gapi::copy(const cv::GFrame& in) {
-    return cv::gimpl::streaming::GCopy::on<cv::GFrame>(in);
+ncvslideio::GFrame ncvslideio::gapi::copy(const ncvslideio::GFrame& in) {
+    return ncvslideio::gimpl::streaming::GCopy::on<ncvslideio::GFrame>(in);
 }

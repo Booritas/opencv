@@ -8,8 +8,8 @@
 #include "opencv2/highgui.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 enum Method
 {
@@ -19,7 +19,7 @@ enum Method
 
 int main(int argc, const char** argv)
 {
-    cv::CommandLineParser cmd(argc, argv,
+    ncvslideio::CommandLineParser cmd(argc, argv,
         "{ c camera |                    | use camera }"
         "{ f file   | ../data/vtest.avi  | input video file }"
         "{ m method | mog                | method (mog, mog2) }"
@@ -100,7 +100,7 @@ int main(int argc, const char** argv)
             break;
         d_frame.upload(frame);
 
-        int64 start = cv::getTickCount();
+        int64 start = ncvslideio::getTickCount();
 
         //update the model
         switch (m)
@@ -116,7 +116,7 @@ int main(int argc, const char** argv)
             break;
         }
 
-        double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
+        double fps = ncvslideio::getTickFrequency() / (ncvslideio::getTickCount() - start);
         std::cout << "FPS : " << fps << std::endl;
 
         d_fgimg.create(d_frame.size(), d_frame.type());

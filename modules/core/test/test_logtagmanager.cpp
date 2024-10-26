@@ -18,23 +18,23 @@
 namespace opencv_test {
 namespace {
 
-using LogLevel = cv::utils::logging::LogLevel;
-using LogTag = cv::utils::logging::LogTag;
-using LogTagManager = cv::utils::logging::LogTagManager;
+using LogLevel = ncvslideio::utils::logging::LogLevel;
+using LogTag = ncvslideio::utils::logging::LogTag;
+using LogTagManager = ncvslideio::utils::logging::LogTagManager;
 
 // Value to initialize log tag constructors
-static const LogLevel constTestLevelBegin = cv::utils::logging::LOG_LEVEL_SILENT;
+static const LogLevel constTestLevelBegin = ncvslideio::utils::logging::LOG_LEVEL_SILENT;
 
 // Value to be set as part of test (to simulate runtime changes)
-static const LogLevel constTestLevelChanged = cv::utils::logging::LOG_LEVEL_VERBOSE;
+static const LogLevel constTestLevelChanged = ncvslideio::utils::logging::LOG_LEVEL_VERBOSE;
 
 // An alternate value to initialize log tag constructors,
 // for test cases where two distinct initialization values are needed.
-static const LogLevel constTestLevelAltBegin = cv::utils::logging::LOG_LEVEL_FATAL;
+static const LogLevel constTestLevelAltBegin = ncvslideio::utils::logging::LOG_LEVEL_FATAL;
 
 // An alternate value to be set as part of test (to simulate runtime changes),
 // for test cases where two distinct runtime set values are needed.
-static const LogLevel constTestLevelAltChanged = cv::utils::logging::LOG_LEVEL_DEBUG;
+static const LogLevel constTestLevelAltChanged = ncvslideio::utils::logging::LOG_LEVEL_DEBUG;
 
 // Enums for specifying which LogTagManager method to call.
 // Used in parameterized tests.

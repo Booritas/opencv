@@ -77,7 +77,7 @@ inline void log_verbosity(int level)
  */
 struct SavedIndexParams : public IndexParams
 {
-    SavedIndexParams(cv::String filename)
+    SavedIndexParams(ncvslideio::String filename)
     {
         (* this)["algorithm"] = FLANN_INDEX_SAVED;
         (*this)["filename"] = filename;
@@ -85,7 +85,7 @@ struct SavedIndexParams : public IndexParams
 };
 
 template<typename Distance>
-NNIndex<Distance>* load_saved_index(const Matrix<typename Distance::ElementType>& dataset, const cv::String& filename, Distance distance)
+NNIndex<Distance>* load_saved_index(const Matrix<typename Distance::ElementType>& dataset, const ncvslideio::String& filename, Distance distance)
 {
     typedef typename Distance::ElementType ElementType;
 
@@ -97,10 +97,10 @@ NNIndex<Distance>* load_saved_index(const Matrix<typename Distance::ElementType>
 
     IndexHeader header = load_header(fin);
     if (header.data_type != Datatype<ElementType>::type()) {
-        FLANN_THROW(cv::Error::StsError, "Datatype of saved index is different than of the one to be created.");
+        FLANN_THROW(ncvslideio::Error::StsError, "Datatype of saved index is different than of the one to be created.");
     }
     if ((size_t(header.rows) != dataset.rows)||(size_t(header.cols) != dataset.cols)) {
-        FLANN_THROW(cv::Error::StsError, "The index saved belongs to a different dataset");
+        FLANN_THROW(ncvslideio::Error::StsError, "The index saved belongs to a different dataset");
     }
 
     IndexParams params;
@@ -126,7 +126,7 @@ public:
         loaded_ = false;
 
         if (index_type == FLANN_INDEX_SAVED) {
-            nnIndex_ = load_saved_index<Distance>(features, get_param<cv::String>(params,"filename"), distance);
+            nnIndex_ = load_saved_index<Distance>(features, get_param<ncvslideio::String>(params,"filename"), distance);
             loaded_ = true;
         }
         else {
@@ -149,11 +149,11 @@ public:
         }
     }
 
-    void save(cv::String filename)
+    void save(ncvslideio::String filename)
     {
         FILE* fout = fopen(filename.c_str(), "wb");
         if (fout == NULL) {
-            FLANN_THROW(cv::Error::StsError, "Cannot open file");
+            FLANN_THROW(ncvslideio::Error::StsError, "Cannot open file");
         }
         save_header(fout, *nnIndex_);
         saveIndex(fout);

@@ -51,7 +51,7 @@ public:
     The function finds window by name and returns the reference to it. Returns nullptr
     if window with specified name is not found or name argument is null.
     */
-    CvWindow*           findWindowByName(cv::String name);
+    CvWindow*           findWindowByName(ncvslideio::String name);
 
     /** @brief Returns reference to the trackbar(slider) registered within window with a provided name.
 
@@ -60,16 +60,16 @@ public:
     The function returns reference to the trackbar(slider) registered within window with a provided name.
     Returns nullptr if trackbar with specified name is not found or window reference is nullptr.
     */
-    CvTrackbar*         findTrackbarByName(cv::String trackbarName, cv::String windowName);
+    CvTrackbar*         findTrackbarByName(ncvslideio::String trackbarName, ncvslideio::String windowName);
 
-    /** @brief Converts cv::String to Platform::String.
+    /** @brief Converts ncvslideio::String to Platform::String.
 
     @param name String to convert.
 
-    The function converts cv::String to Platform::String.
+    The function converts ncvslideio::String to Platform::String.
     Returns nullptr if conversion fails.
     */
-    Platform::String^   convertString(cv::String name);
+    Platform::String^   convertString(ncvslideio::String name);
 
     /** @brief Creates window if there is no window with this name, otherwise returns existing window.
 
@@ -77,7 +77,7 @@ public:
 
     The function creates window if there is no window with this name, otherwise returns existing window.
     */
-    CvWindow*           namedWindow(cv::String name);
+    CvWindow*           namedWindow(ncvslideio::String name);
 
     /** @brief Shows provided window.
 
@@ -93,7 +93,7 @@ public:
     The function destroys window if there exists window with this name, otherwise does nothing.
     If window being destroyed is the current one, it will be hidden by clearing the window container.
     */
-    void                destroyWindow(cv::String name);
+    void                destroyWindow(ncvslideio::String name);
 
     /** @brief Destroys all windows.
 
@@ -115,7 +115,7 @@ private:
     HighguiBridge(const HighguiBridge &);
     void operator=(HighguiBridge &);
     HighguiBridge() {
-        windowsMap = new std::map<cv::String, CvWindow*>();
+        windowsMap = new std::map<ncvslideio::String, CvWindow*>();
     };
 
     /** @brief Creates window if there is no window with this name.
@@ -124,7 +124,7 @@ private:
 
     The function creates window if there is no window with this name.
     */
-    CvWindow*           createWindow(cv::String name);
+    CvWindow*           createWindow(ncvslideio::String name);
 
     /** @brief Cleans current container contents.
 
@@ -134,7 +134,7 @@ private:
 
     // see https://msdn.microsoft.com/en-US/library/windows/apps/xaml/hh700103.aspx
     // see https://msdn.microsoft.com/ru-ru/library/windows.foundation.collections.aspx
-    std::map<cv::String, CvWindow*>*    windowsMap;
+    std::map<ncvslideio::String, CvWindow*>*    windowsMap;
     CvWindow*                           currentWindow;
 
     // Holds current container/content to manipulate with
@@ -144,7 +144,7 @@ private:
 class CvTrackbar
 {
 public:
-    CvTrackbar(cv::String name, Slider^ slider, CvWindow* parent);
+    CvTrackbar(ncvslideio::String name, Slider^ slider, CvWindow* parent);
     ~CvTrackbar();
 
     double  getPosition();
@@ -159,7 +159,7 @@ public:
     CvTrackbarCallback2 callback;
 
 private:
-    cv::String  name;
+    ncvslideio::String  name;
     Slider^     slider;
     CvWindow*   parent;
 };
@@ -167,21 +167,21 @@ private:
 class CvWindow
 {
 public:
-    CvWindow(cv::String name, int flag = CV_WINDOW_NORMAL);
+    CvWindow(ncvslideio::String name, int flag = CV_WINDOW_NORMAL);
     ~CvWindow();
 
     /** @brief NOTE: prototype.
 
     Should create button if there is no button with this name already.
     */
-    void            createButton(cv::String name);
+    void            createButton(ncvslideio::String name);
 
     /** @brief Creates slider if there is no slider with this name already.
 
     The function creates slider if there is no slider with this name already OR resets
     provided values for the existing one.
     */
-    void            createSlider(cv::String name, int* val, int count, CvTrackbarCallback2 on_notify, void* userdata);
+    void            createSlider(ncvslideio::String name, int* val, int count, CvTrackbarCallback2 on_notify, void* userdata);
 
     /** @brief Updates window image.
 
@@ -198,17 +198,17 @@ public:
     The function returns reference to the trackbar(slider) registered within provided window.
     Returns nullptr if trackbar with specified name is not found or window reference is nullptr.
     */
-    CvTrackbar*     findTrackbarByName(cv::String name);
+    CvTrackbar*     findTrackbarByName(ncvslideio::String name);
     Page^           getPage();
 
 private:
-    cv::String name;
+    ncvslideio::String name;
 
-    // Holds image data in CV format
+    // Holds image data in ncvslideio format
     CvMat* imageData;
 
     // Map of all sliders assigned to this window
-    std::map<cv::String, CvTrackbar*>*  sliderMap;
+    std::map<ncvslideio::String, CvTrackbar*>*  sliderMap;
 
     // Window contents holder
     Page^ page;

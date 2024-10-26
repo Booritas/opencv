@@ -7,7 +7,7 @@
 #include "mathfuncs_core.simd.hpp"
 #include "mathfuncs_core.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 void cartToPolar32f(const float* x, const float* y, float* mag, float* angle, int len, bool angleInDegrees)
 {
@@ -63,7 +63,7 @@ void magnitude32f(const float* x, const float* y, float* mag, int len)
 
     CALL_HAL(magnitude32f, cv_hal_magnitude32f, x, y, mag, len);
     // SSE42 performance issues
-    CV_IPP_RUN(IPP_VERSION_X100 > 201800 || cv::ipp::getIppTopFeatures() != ippCPUID_SSE42, CV_INSTRUMENT_FUN_IPP(ippsMagnitude_32f, x, y, mag, len) >= 0);
+    CV_IPP_RUN(IPP_VERSION_X100 > 201800 || ncvslideio::ipp::getIppTopFeatures() != ippCPUID_SSE42, CV_INSTRUMENT_FUN_IPP(ippsMagnitude_32f, x, y, mag, len) >= 0);
 
     CV_CPU_DISPATCH(magnitude32f, (x, y, mag, len),
         CV_CPU_DISPATCH_MODES_ALL);
@@ -75,7 +75,7 @@ void magnitude64f(const double* x, const double* y, double* mag, int len)
 
     CALL_HAL(magnitude64f, cv_hal_magnitude64f, x, y, mag, len);
     // SSE42 performance issues
-    CV_IPP_RUN(IPP_VERSION_X100 > 201800 || cv::ipp::getIppTopFeatures() != ippCPUID_SSE42, CV_INSTRUMENT_FUN_IPP(ippsMagnitude_64f, x, y, mag, len) >= 0);
+    CV_IPP_RUN(IPP_VERSION_X100 > 201800 || ncvslideio::ipp::getIppTopFeatures() != ippCPUID_SSE42, CV_INSTRUMENT_FUN_IPP(ippsMagnitude_64f, x, y, mag, len) >= 0);
 
     CV_CPU_DISPATCH(magnitude64f, (x, y, mag, len),
         CV_CPU_DISPATCH_MODES_ALL);
@@ -224,10 +224,10 @@ void invSqrt(const double* src, double* dst, int len)
     invSqrt64f(src, dst, len);
 }
 
-}} // namespace cv::hal::
+}} // namespace ncvslideio::hal::
 
-float cv::fastAtan2( float y, float x )
+float ncvslideio::fastAtan2( float y, float x )
 {
-    using namespace cv::hal;
+    using namespace ncvslideio::hal;
     CV_CPU_CALL_BASELINE(fastAtan2, (y, x));
 }

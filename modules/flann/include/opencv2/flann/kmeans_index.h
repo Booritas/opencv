@@ -285,7 +285,7 @@ public:
     }
 
     template<class CentersContainerType>
-    class KMeansDistanceComputer : public cv::ParallelLoopBody
+    class KMeansDistanceComputer : public ncvslideio::ParallelLoopBody
     {
     public:
         KMeansDistanceComputer(Distance _distance, const Matrix<ElementType>& _dataset,
@@ -303,7 +303,7 @@ public:
         {
         }
 
-        void operator()(const cv::Range& range) const CV_OVERRIDE
+        void operator()(const ncvslideio::Range& range) const CV_OVERRIDE
         {
             const int begin = range.start;
             const int end = range.end;
@@ -370,7 +370,7 @@ public:
             chooseCenters = &KMeansIndex::chooseCentersKMeanspp;
         }
         else {
-            FLANN_THROW(cv::Error::StsBadArg, "Unknown algorithm for choosing initial centers.");
+            FLANN_THROW(ncvslideio::Error::StsBadArg, "Unknown algorithm for choosing initial centers.");
         }
         cb_index_ = 0.4f;
 
@@ -442,7 +442,7 @@ public:
     void buildIndex() CV_OVERRIDE
     {
         if (branching_<2) {
-            FLANN_THROW(cv::Error::StsError, "Branching factor must be at least 2");
+            FLANN_THROW(ncvslideio::Error::StsError, "Branching factor must be at least 2");
         }
 
         free_indices();
@@ -528,7 +528,7 @@ public:
         }
         else {
             // Priority queue storing intermediate branches in the best-bin-first search
-            const cv::Ptr<Heap<BranchSt>>& heap = Heap<BranchSt>::getPooledInstance(cv::utils::getThreadID(), (int)size_);
+            const ncvslideio::Ptr<Heap<BranchSt>>& heap = Heap<BranchSt>::getPooledInstance(ncvslideio::utils::getThreadID(), (int)size_);
 
             int checks = 0;
             for (int i=0; i<trees_; ++i) {
@@ -557,7 +557,7 @@ public:
     {
         int numClusters = centers.rows;
         if (numClusters<1) {
-            FLANN_THROW(cv::Error::StsBadArg, "Number of clusters must be at least 1");
+            FLANN_THROW(ncvslideio::Error::StsBadArg, "Number of clusters must be at least 1");
         }
 
         DistanceType variance;
@@ -935,7 +935,7 @@ private:
     void refineClustering(int* indices, int indices_length, int branching, CentersType** centers,
                           std::vector<DistanceType>& radiuses, int* belongs_to, int* count)
     {
-        cv::AutoBuffer<double> dcenters_buf(branching*veclen_);
+        ncvslideio::AutoBuffer<double> dcenters_buf(branching*veclen_);
         Matrix<double> dcenters(dcenters_buf.data(), branching, veclen_);
 
         bool converged = false;
@@ -969,7 +969,7 @@ private:
             // reassign points to clusters
             KMeansDistanceComputer<Matrix<double> > invoker(
                         distance_, dataset_, branching, indices, dcenters, veclen_, new_centroids, sq_dists);
-            parallel_for_(cv::Range(0, (int)indices_length), invoker);
+            parallel_for_(ncvslideio::Range(0, (int)indices_length), invoker);
 
             for (int i=0; i < (int)indices_length; ++i) {
                 DistanceType sq_dist(sq_dists[i]);
@@ -1030,7 +1030,7 @@ private:
 
         const unsigned int accumulator_veclen = static_cast<unsigned int>(
                                                 veclen_*sizeof(ElementType)*BITS_PER_CHAR);
-        cv::AutoBuffer<unsigned int> dcenters_buf(branching*accumulator_veclen);
+        ncvslideio::AutoBuffer<unsigned int> dcenters_buf(branching*accumulator_veclen);
         Matrix<unsigned int> dcenters(dcenters_buf.data(), branching, accumulator_veclen);
 
         bool converged = false;
@@ -1081,7 +1081,7 @@ private:
             // reassign points to clusters
             KMeansDistanceComputer<ElementType**> invoker(
                         distance_, dataset_, branching, indices, centers, veclen_, new_centroids, dists);
-            parallel_for_(cv::Range(0, (int)indices_length), invoker);
+            parallel_for_(ncvslideio::Range(0, (int)indices_length), invoker);
 
             for (int i=0; i < indices_length; ++i) {
                 DistanceType dist(dists[i]);
@@ -1134,7 +1134,7 @@ private:
 
         const unsigned int histos_veclen = static_cast<unsigned int>(
                     veclen_*sizeof(CentersType)*(HISTOS_PER_BASE*BASE_PER_CHAR));
-        cv::AutoBuffer<unsigned int> histos_buf(branching*histos_veclen);
+        ncvslideio::AutoBuffer<unsigned int> histos_buf(branching*histos_veclen);
         Matrix<unsigned int> histos(histos_buf.data(), branching, histos_veclen);
 
         bool converged = false;
@@ -1187,7 +1187,7 @@ private:
             // reassign points to clusters
             KMeansDistanceComputer<ElementType**> invoker(
                         distance_, dataset_, branching, indices, centers, veclen_, new_centroids, dists);
-            parallel_for_(cv::Range(0, (int)indices_length), invoker);
+            parallel_for_(ncvslideio::Range(0, (int)indices_length), invoker);
 
             for (int i=0; i < indices_length; ++i) {
                 DistanceType dist(dists[i]);
@@ -1463,7 +1463,7 @@ private:
             return;
         }
 
-        cv::AutoBuffer<int> centers_idx_buf(branching);
+        ncvslideio::AutoBuffer<int> centers_idx_buf(branching);
         int* centers_idx = centers_idx_buf.data();
         int centers_length;
         (this->*chooseCenters)(branching, indices, indices_length, centers_idx, centers_length);
@@ -1477,7 +1477,7 @@ private:
 
 
         std::vector<DistanceType> radiuses(branching);
-        cv::AutoBuffer<int> count_buf(branching);
+        ncvslideio::AutoBuffer<int> count_buf(branching);
         int* count = count_buf.data();
         for (int i=0; i<branching; ++i) {
             radiuses[i] = 0;
@@ -1485,7 +1485,7 @@ private:
         }
 
         //	assign points to clusters
-        cv::AutoBuffer<int> belongs_to_buf(indices_length);
+        ncvslideio::AutoBuffer<int> belongs_to_buf(indices_length);
         int* belongs_to = belongs_to_buf.data();
         for (int i=0; i<indices_length; ++i) {
             DistanceType sq_dist = distance_(dataset_[indices[i]], dataset_[centers_idx[0]], veclen_);
@@ -1527,7 +1527,7 @@ private:
 
 
     void findNN(KMeansNodePtr node, ResultSet<DistanceType>& result, const ElementType* vec, int& checks, int maxChecks,
-                const cv::Ptr<Heap<BranchSt>>& heap)
+                const ncvslideio::Ptr<Heap<BranchSt>>& heap)
     {
         // Ignore those clusters that are too far away
         {
@@ -1575,7 +1575,7 @@ private:
      *     distances = array with the distances to each child node.
      * Returns:
      */
-    int exploreNodeBranches(KMeansNodePtr node, const ElementType* q, DistanceType* domain_distances, const cv::Ptr<Heap<BranchSt>>& heap)
+    int exploreNodeBranches(KMeansNodePtr node, const ElementType* q, DistanceType* domain_distances, const ncvslideio::Ptr<Heap<BranchSt>>& heap)
     {
 
         int best_index = 0;

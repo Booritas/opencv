@@ -26,7 +26,7 @@
 
 #include "legacy_backend.hpp"  // wrapMat BlobManager OpenCLBackendWrapper
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -291,5 +291,5 @@ struct Net::Impl : public detail::NetImplBase
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 #endif  // __OPENCV_DNN_SRC_NET_IMPL_HPP__

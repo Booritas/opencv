@@ -48,16 +48,16 @@ namespace opencv_test { namespace {
 TEST(Calib3d_Affine3f, accuracy)
 {
     const double eps = 1e-5;
-    cv::Vec3d rvec(0.2, 0.5, 0.3);
-    cv::Affine3d affine(rvec);
+    ncvslideio::Vec3d rvec(0.2, 0.5, 0.3);
+    ncvslideio::Affine3d affine(rvec);
 
-    cv::Mat expected;
-    cv::Rodrigues(rvec, expected);
+    ncvslideio::Mat expected;
+    ncvslideio::Rodrigues(rvec, expected);
 
-    ASSERT_LE(cvtest::norm(cv::Mat(affine.matrix, false).colRange(0, 3).rowRange(0, 3), expected, cv::NORM_L2), eps);
-    ASSERT_LE(cvtest::norm(cv::Mat(affine.linear()), expected, cv::NORM_L2), eps);
+    ASSERT_LE(cvtest::norm(ncvslideio::Mat(affine.matrix, false).colRange(0, 3).rowRange(0, 3), expected, ncvslideio::NORM_L2), eps);
+    ASSERT_LE(cvtest::norm(ncvslideio::Mat(affine.linear()), expected, ncvslideio::NORM_L2), eps);
 
-    cv::Matx33d R = cv::Matx33d::eye();
+    ncvslideio::Matx33d R = ncvslideio::Matx33d::eye();
 
     double angle = 50;
     R.val[0] = R.val[4] = std::cos(CV_PI*angle/180.0);
@@ -65,44 +65,44 @@ TEST(Calib3d_Affine3f, accuracy)
     R.val[1] = -R.val[3];
 
 
-    cv::Affine3d affine1(cv::Mat(cv::Vec3d(0.2, 0.5, 0.3)).reshape(1, 1), cv::Vec3d(4, 5, 6));
-    cv::Affine3d affine2(R, cv::Vec3d(1, 1, 0.4));
+    ncvslideio::Affine3d affine1(ncvslideio::Mat(ncvslideio::Vec3d(0.2, 0.5, 0.3)).reshape(1, 1), ncvslideio::Vec3d(4, 5, 6));
+    ncvslideio::Affine3d affine2(R, ncvslideio::Vec3d(1, 1, 0.4));
 
-    cv::Affine3d result = affine1.inv() * affine2;
+    ncvslideio::Affine3d result = affine1.inv() * affine2;
 
-    expected = cv::Mat(affine1.matrix.inv(cv::DECOMP_SVD)) * cv::Mat(affine2.matrix, false);
+    expected = ncvslideio::Mat(affine1.matrix.inv(ncvslideio::DECOMP_SVD)) * ncvslideio::Mat(affine2.matrix, false);
 
 
-    cv::Mat diff;
-    cv::absdiff(expected, result.matrix, diff);
+    ncvslideio::Mat diff;
+    ncvslideio::absdiff(expected, result.matrix, diff);
 
-    ASSERT_LT(cvtest::norm(diff, cv::NORM_INF), 1e-15);
+    ASSERT_LT(cvtest::norm(diff, ncvslideio::NORM_INF), 1e-15);
 }
 
 TEST(Calib3d_Affine3f, accuracy_rvec)
 {
-    cv::RNG rng;
+    ncvslideio::RNG rng;
     typedef float T;
 
-    cv::Affine3<T>::Vec3 w;
-    cv::Affine3<T>::Mat3 u, vt, R;
+    ncvslideio::Affine3<T>::Vec3 w;
+    ncvslideio::Affine3<T>::Mat3 u, vt, R;
 
     for(int i = 0; i < 100; ++i)
     {
-        rng.fill(R, cv::RNG::UNIFORM, -10, 10, true);
-        cv::SVD::compute(R, w, u, vt, cv::SVD::FULL_UV + cv::SVD::MODIFY_A);
+        rng.fill(R, ncvslideio::RNG::UNIFORM, -10, 10, true);
+        ncvslideio::SVD::compute(R, w, u, vt, ncvslideio::SVD::FULL_UV + ncvslideio::SVD::MODIFY_A);
         R = u * vt;
 
-        //double s = (double)cv::getTickCount();
-        cv::Affine3<T>::Vec3 va = cv::Affine3<T>(R).rvec();
-        //std::cout << "M:" <<(cv::getTickCount() - s)*1000/cv::getTickFrequency() << std::endl;
+        //double s = (double)ncvslideio::getTickCount();
+        ncvslideio::Affine3<T>::Vec3 va = ncvslideio::Affine3<T>(R).rvec();
+        //std::cout << "M:" <<(ncvslideio::getTickCount() - s)*1000/ncvslideio::getTickFrequency() << std::endl;
 
-        cv::Affine3<T>::Vec3 vo;
-        //s = (double)cv::getTickCount();
-        cv::Rodrigues(R, vo);
-        //std::cout << "O:" <<(cv::getTickCount() - s)*1000/cv::getTickFrequency() << std::endl;
+        ncvslideio::Affine3<T>::Vec3 vo;
+        //s = (double)ncvslideio::getTickCount();
+        ncvslideio::Rodrigues(R, vo);
+        //std::cout << "O:" <<(ncvslideio::getTickCount() - s)*1000/ncvslideio::getTickFrequency() << std::endl;
 
-        ASSERT_LT(cvtest::norm(va, vo, cv::NORM_L2), 1e-9);
+        ASSERT_LT(cvtest::norm(va, vo, ncvslideio::NORM_L2), 1e-9);
     }
 }
 

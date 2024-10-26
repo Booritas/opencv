@@ -80,8 +80,8 @@ private:
     Windows::Foundation::Size m_renderResolution;
     OCVFilterType m_algorithm;
     bool m_contentDirty;
-    std::shared_ptr<cv::Mat> m_backFrame;
-    std::shared_ptr<cv::Mat> m_frontFrame;
+    std::shared_ptr<ncvslideio::Mat> m_backFrame;
+    std::shared_ptr<ncvslideio::Mat> m_frontFrame;
     std::mutex m_mutex;
 
     Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;
@@ -90,12 +90,12 @@ private:
     CameraCapturePreviewSink* pCameraCapturePreviewSink;
     CameraCaptureSampleSink* pCameraCaptureSampleSink;
 
-    //void ApplyPreviewFilter(const cv::Mat& image);
-    void ApplyGrayFilter(cv::Mat* mat);
-    void ApplyCannyFilter(cv::Mat* mat);
-    void ApplyBlurFilter(cv::Mat* mat);
-    void ApplyFindFeaturesFilter(cv::Mat* mat);
-    void ApplySepiaFilter(cv::Mat* mat);
+    //void ApplyPreviewFilter(const ncvslideio::Mat& image);
+    void ApplyGrayFilter(ncvslideio::Mat* mat);
+    void ApplyCannyFilter(ncvslideio::Mat* mat);
+    void ApplyBlurFilter(ncvslideio::Mat* mat);
+    void ApplyFindFeaturesFilter(ncvslideio::Mat* mat);
+    void ApplySepiaFilter(ncvslideio::Mat* mat);
 };
 
 class CameraCapturePreviewSink :

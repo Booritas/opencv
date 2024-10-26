@@ -71,7 +71,7 @@ int Core_RotatedRectConstructorTest::prepare_test_case( int test_case_idx )
     {
         b = Point2f( rng.uniform(-MAX_COORD_VAL, MAX_COORD_VAL), rng.uniform(-MAX_COORD_VAL, MAX_COORD_VAL) );
     }
-    while( cv::norm(a - b) <= FLT_EPSILON );
+    while( ncvslideio::norm(a - b) <= FLT_EPSILON );
     Vec2f along(a - b);
     Vec2f perp = Vec2f(-along[1], along[0]);
     double d = (double) rng.uniform(1.0f, 5.0f);
@@ -92,9 +92,9 @@ int Core_RotatedRectConstructorTest::validate_test_results( int )
     int count_match = 0;
     for( int i = 0; i < 4; i++ )
     {
-        if( cv::norm(vertices[i] - a) <= 0.001 ) count_match++;
-        else if( cv::norm(vertices[i] - b) <= 0.001 ) count_match++;
-        else if( cv::norm(vertices[i] - c) <= 0.001 ) count_match++;
+        if( ncvslideio::norm(vertices[i] - a) <= 0.001 ) count_match++;
+        else if( ncvslideio::norm(vertices[i] - b) <= 0.001 ) count_match++;
+        else if( ncvslideio::norm(vertices[i] - c) <= 0.001 ) count_match++;
     }
     if( count_match == 3 )
         return cvtest::TS::OK;

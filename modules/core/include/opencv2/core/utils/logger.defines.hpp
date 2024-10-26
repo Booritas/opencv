@@ -17,7 +17,7 @@
 #define CV_LOG_LEVEL_DEBUG 5           //!< Debug message. Disabled in the "Release" build.
 #define CV_LOG_LEVEL_VERBOSE 6         //!< Verbose (trace) messages. Requires verbosity level. Disabled in the "Release" build.
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 

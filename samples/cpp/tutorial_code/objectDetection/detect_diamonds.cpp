@@ -5,7 +5,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 
 namespace {
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
         // estimate diamond pose
         size_t N = diamondIds.size();
         if(estimatePose && N > 0) {
-            cv::Mat objPoints(4, 1, CV_32FC3);
+            ncvslideio::Mat objPoints(4, 1, CV_32FC3);
             rvecs.resize(N);
             tvecs.resize(N);
             if(!autoScale) {
@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
             //! [draw_diamond_pose_estimation]
             if(estimatePose) {
                 for(size_t i = 0u; i < diamondIds.size(); i++)
-                    cv::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], squareLength*1.1f);
+                    ncvslideio::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], squareLength*1.1f);
             }
             //! [draw_diamond_pose_estimation]
         }

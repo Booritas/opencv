@@ -15,7 +15,7 @@
 #include "contours_common.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 //==============================================================================
 
@@ -181,7 +181,7 @@ static void icvFetchContourEx(Mat& image,
 
     Point pt = res_contour.origin;
 
-    cv::Rect rect(pt.x, pt.y, pt.x, pt.y);
+    ncvslideio::Rect rect(pt.x, pt.y, pt.x, pt.y);
 
     schar s_end = res_contour.isHole ? 0 : 4;
     schar s = s_end;
@@ -625,7 +625,7 @@ bool ContourScanner_::findNext()
 
 //==============================================================================
 
-void cv::findContours(InputArray _image,
+void ncvslideio::findContours(InputArray _image,
                       OutputArrayOfArrays _contours,
                       OutputArray _hierarchy,
                       int mode,
@@ -639,8 +639,8 @@ void cv::findContours(InputArray _image,
     {
         CV_LOG_ONCE_WARNING(NULL,
                             "LINK_RUNS mode has been extracted to separate function: "
-                            "cv::findContoursLinkRuns. "
-                            "Calling through cv::findContours will be removed in future.");
+                            "ncvslideio::findContoursLinkRuns. "
+                            "Calling through ncvslideio::findContours will be removed in future.");
         CV_CheckTrue(!_hierarchy.needed() || mode == RETR_CCOMP,
                      "LINK_RUNS mode supports only simplified hierarchy output (mode=RETR_CCOMP)");
         findContoursLinkRuns(_image, _contours, _hierarchy);
@@ -686,7 +686,7 @@ void cv::findContours(InputArray _image,
     contourTreeToResults(scanner->tree, res_type, _contours, _hierarchy);
 }
 
-void cv::findContours(InputArray _image,
+void ncvslideio::findContours(InputArray _image,
                       OutputArrayOfArrays _contours,
                       int mode,
                       int method,

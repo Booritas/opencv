@@ -4,7 +4,7 @@
 #include <queue>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static const char* stageTypes[] = { CC_BOOST };
 static const char* featureTypes[] = { CC_HAAR, CC_LBP, CC_HOG };
@@ -142,7 +142,7 @@ bool CvCascadeClassifier::train( const string _cascadeDirName,
     double time = (double)getTickCount();
 
     if( _cascadeDirName.empty() || _posFilename.empty() || _negFilename.empty() )
-        CV_Error( cv::Error::StsBadArg, "_cascadeDirName or _bgfileName or _vecFileName is NULL" );
+        CV_Error( ncvslideio::Error::StsBadArg, "_cascadeDirName or _bgfileName or _vecFileName is NULL" );
 
     string dirName;
     if (_cascadeDirName.find_last_of("/\\") == (_cascadeDirName.length() - 1) )
@@ -452,7 +452,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
         //char buf[256];
         CvSeq* weak;
         if ( cascadeParams.featureType != CvFeatureParams::HAAR )
-            CV_Error( cv::Error::StsBadFunc, "old file format is used for Haar-like features only");
+            CV_Error( ncvslideio::Error::StsBadFunc, "old file format is used for Haar-like features only");
         fs << "{:" ICV_HAAR_TYPE_ID;
         fs << ICV_HAAR_SIZE_NAME << "[:" << cascadeParams.winSize.width <<
             cascadeParams.winSize.height << "]";

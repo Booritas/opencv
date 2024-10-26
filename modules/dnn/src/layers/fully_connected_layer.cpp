@@ -54,16 +54,16 @@
 
 #ifdef HAVE_OPENCL
 #include "opencl_kernels_dnn.hpp"
-using namespace cv::dnn::ocl4dnn;
+using namespace ncvslideio::dnn::ocl4dnn;
 #endif
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/matmul.hpp"
 #include "../cuda4dnn/primitives/inner_product.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -395,7 +395,7 @@ public:
                     B_fp32 = B;
                     C_fp32 = C;
                 }
-                cv::gemm(A_fp32, B_fp32, 1, noArray(), 0, C_fp32);
+                ncvslideio::gemm(A_fp32, B_fp32, 1, noArray(), 0, C_fp32);
                 if (use_half)
                 {
                     A_fp32.convertTo(A, CV_16F);
@@ -481,13 +481,13 @@ public:
                 dstMat_fp32 = dstMat;
             }
 
-            cv::gemm(srcMat_fp32, weights, 1, noArray(), 0, dstMat_fp32, GEMM_2_T);
+            ncvslideio::gemm(srcMat_fp32, weights, 1, noArray(), 0, dstMat_fp32, GEMM_2_T);
 
             if (bias)
             {
                 UMat biasOnesMat = UMat::ones(outerSize, 1, umat_blobs[0].type());
                 UMat& biases = umat_blobs[1];
-                cv::gemm(biasOnesMat, biases, 1, dstMat_fp32, 1, dstMat_fp32, 0);
+                ncvslideio::gemm(biasOnesMat, biases, 1, dstMat_fp32, 1, dstMat_fp32, 0);
             }
             if (use_half)
             {
@@ -743,7 +743,7 @@ public:
 
             // set inputs
             // set inputs : x2 (weight)
-            auto op_const_weight = std::make_shared<CannConstOp>(weightsMat.data, weightsMat.type(), shape(weightsMat), cv::format("%s_w", name.c_str()));
+            auto op_const_weight = std::make_shared<CannConstOp>(weightsMat.data, weightsMat.type(), shape(weightsMat), ncvslideio::format("%s_w", name.c_str()));
             op->set_input_x2_by_name(*(op_const_weight->getOp()), "y");
             op->update_input_desc_x2(*(op_const_weight->getTensorDesc()));
         }
@@ -771,7 +771,7 @@ public:
         // set inputs : bias (bias)
         auto bias_mat = bias ? biasMat : Mat::zeros(1, weightsMat.size[0], weightsMat.type());
         std::vector<int> bias_shape{weightsMat.size[0]};
-        auto op_const_bias = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), bias_shape, cv::format("%s_b", name.c_str()));
+        auto op_const_bias = std::make_shared<CannConstOp>(bias_mat.data, bias_mat.type(), bias_shape, ncvslideio::format("%s_b", name.c_str()));
         op->set_input_bias(*(op_const_bias->getOp()));
         op->update_input_desc_bias(*(op_const_bias->getTensorDesc()));
 
@@ -846,7 +846,7 @@ public:
 
                 weightsMat.row(i).convertTo(weightsQuantized.row(i), CV_8S, 1.f/weightsScale);
                 float biasScale = inputScale * weightsScale;
-                biasQuantized.at<int>(i) = cvRound(biasMat.at<float>(i)/biasScale) - inputZp*(cv::sum(weightsQuantized.row(i))[0]);
+                biasQuantized.at<int>(i) = cvRound(biasMat.at<float>(i)/biasScale) - inputZp*(ncvslideio::sum(weightsQuantized.row(i))[0]);
                 outputMultiplier.at<float>(i) = biasScale / outputScale;
             }
         }
@@ -859,7 +859,7 @@ public:
 
             for (int i = 0; i < numOutput; i++)
             {
-                biasQuantized.at<int>(i) = cvRound(biasMat.at<float>(i)/biasScale) - inputZp*(cv::sum(weightsQuantized.row(i))[0]);
+                biasQuantized.at<int>(i) = cvRound(biasMat.at<float>(i)/biasScale) - inputZp*(ncvslideio::sum(weightsQuantized.row(i))[0]);
                 outputMultiplier.at<float>(i) = biasScale / outputScale;
             }
         }

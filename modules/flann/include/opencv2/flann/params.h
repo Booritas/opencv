@@ -41,7 +41,7 @@
 namespace cvflann
 {
 
-typedef std::map<cv::String, any> IndexParams;
+typedef std::map<ncvslideio::String, any> IndexParams;
 
 struct SearchParams : public IndexParams
 {
@@ -72,14 +72,14 @@ struct SearchParams : public IndexParams
 
 
 template<typename T>
-T get_param(const IndexParams& params, const cv::String& name, const T& default_value)
+T get_param(const IndexParams& params, const ncvslideio::String& name, const T& default_value)
 {
     IndexParams::const_iterator it = params.find(name);
     if (it != params.end()) {
         try {
             return it->second.cast<T>();
         } catch (const std::exception& e) {
-            CV_Error_(cv::Error::StsBadArg,
+            CV_Error_(ncvslideio::Error::StsBadArg,
                       ("FLANN '%s' param type mismatch: %s", name.c_str(), e.what()));
         }
     }
@@ -89,19 +89,19 @@ T get_param(const IndexParams& params, const cv::String& name, const T& default_
 }
 
 template<typename T>
-T get_param(const IndexParams& params, const cv::String& name)
+T get_param(const IndexParams& params, const ncvslideio::String& name)
 {
     IndexParams::const_iterator it = params.find(name);
     if (it != params.end()) {
         try {
             return it->second.cast<T>();
         } catch (const std::exception& e) {
-            CV_Error_(cv::Error::StsBadArg,
+            CV_Error_(ncvslideio::Error::StsBadArg,
                       ("FLANN '%s' param type mismatch: %s", name.c_str(), e.what()));
         }
     }
     else {
-        FLANN_THROW(cv::Error::StsBadArg, cv::String("Missing parameter '")+name+cv::String("' in the parameters given"));
+        FLANN_THROW(ncvslideio::Error::StsBadArg, ncvslideio::String("Missing parameter '")+name+ncvslideio::String("' in the parameters given"));
     }
 }
 

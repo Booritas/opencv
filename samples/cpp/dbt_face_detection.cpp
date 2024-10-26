@@ -1,7 +1,7 @@
 #if defined(__linux__) || defined(LINUX) || defined(__APPLE__) || defined(ANDROID) || (defined(_MSC_VER) && _MSC_VER>=1800)
 
 #include <opencv2/imgproc.hpp>  // Gaussian Blur
-#include <opencv2/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
+#include <opencv2/core.hpp>        // Basic OpenCV structures (ncvslideio::Mat, Scalar)
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>  // OpenCV window I/O
 #include <opencv2/features2d.hpp>
@@ -10,21 +10,21 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const string WindowName = "Face Detection example";
 
 class CascadeDetectorAdapter: public DetectionBasedTracker::IDetector
 {
     public:
-        CascadeDetectorAdapter(cv::Ptr<cv::CascadeClassifier> detector):
+        CascadeDetectorAdapter(ncvslideio::Ptr<ncvslideio::CascadeClassifier> detector):
             IDetector(),
             Detector(detector)
         {
             CV_Assert(detector);
         }
 
-        void detect(const cv::Mat &Image, std::vector<cv::Rect> &objects) CV_OVERRIDE
+        void detect(const ncvslideio::Mat &Image, std::vector<ncvslideio::Rect> &objects) CV_OVERRIDE
         {
             Detector->detectMultiScale(Image, objects, scaleFactor, minNeighbours, 0, minObjSize, maxObjSize);
         }
@@ -34,7 +34,7 @@ class CascadeDetectorAdapter: public DetectionBasedTracker::IDetector
 
     private:
         CascadeDetectorAdapter();
-        cv::Ptr<cv::CascadeClassifier> Detector;
+        ncvslideio::Ptr<ncvslideio::CascadeClassifier> Detector;
  };
 
 int main(int , char** )
@@ -50,16 +50,16 @@ int main(int , char** )
     }
 
     std::string cascadeFrontalfilename = samples::findFile("data/lbpcascades/lbpcascade_frontalface.xml");
-    cv::Ptr<cv::CascadeClassifier> cascade = makePtr<cv::CascadeClassifier>(cascadeFrontalfilename);
-    cv::Ptr<DetectionBasedTracker::IDetector> MainDetector = makePtr<CascadeDetectorAdapter>(cascade);
+    ncvslideio::Ptr<ncvslideio::CascadeClassifier> cascade = makePtr<ncvslideio::CascadeClassifier>(cascadeFrontalfilename);
+    ncvslideio::Ptr<DetectionBasedTracker::IDetector> MainDetector = makePtr<CascadeDetectorAdapter>(cascade);
     if ( cascade->empty() )
     {
       printf("Error: Cannot load %s\n", cascadeFrontalfilename.c_str());
       return 2;
     }
 
-    cascade = makePtr<cv::CascadeClassifier>(cascadeFrontalfilename);
-    cv::Ptr<DetectionBasedTracker::IDetector> TrackingDetector = makePtr<CascadeDetectorAdapter>(cascade);
+    cascade = makePtr<ncvslideio::CascadeClassifier>(cascadeFrontalfilename);
+    ncvslideio::Ptr<DetectionBasedTracker::IDetector> TrackingDetector = makePtr<CascadeDetectorAdapter>(cascade);
     if ( cascade->empty() )
     {
       printf("Error: Cannot load %s\n", cascadeFrontalfilename.c_str());

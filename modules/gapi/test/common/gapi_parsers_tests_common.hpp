@@ -16,12 +16,12 @@ namespace opencv_test
 class ParserSSDTest
 {
 public:
-    cv::Mat generateSSDoutput(const cv::Size& in_sz)
+    ncvslideio::Mat generateSSDoutput(const ncvslideio::Size& in_sz)
     {
         constexpr int maxN = 200;
         constexpr int objSize = 7;
         std::vector<int> dims{ 1, 1, maxN, objSize };
-        cv::Mat mat(dims, CV_32FC1);
+        ncvslideio::Mat mat(dims, CV_32FC1);
         auto data = mat.ptr<float>();
 
         for (int i = 0; i < maxN; ++i)
@@ -39,12 +39,12 @@ public:
         return mat;
     }
 
-    void parseSSDref(const cv::Mat& in_ssd_result,
-                     const cv::Size& in_size,
+    void parseSSDref(const ncvslideio::Mat& in_ssd_result,
+                     const ncvslideio::Size& in_size,
                      const float confidence_threshold,
                      const bool alignment_to_square,
                      const bool filter_out_of_bounds,
-                     std::vector<cv::Rect>& out_boxes)
+                     std::vector<ncvslideio::Rect>& out_boxes)
     {
         out_boxes.clear();
         const auto &in_ssd_dims = in_ssd_result.size;
@@ -55,7 +55,7 @@ public:
         CV_Assert(OBJECT_SIZE  == 7); // fixed SSD object size
 
         const float *data = in_ssd_result.ptr<float>();
-        cv::Rect surface({0,0}, in_size), rc;
+        ncvslideio::Rect surface({0,0}, in_size), rc;
         float image_id, confidence;
         int label;
         for (int i = 0; i < MAX_PROPOSALS; ++i)
@@ -89,11 +89,11 @@ public:
         }
     }
 
-    void parseSSDBLref(const cv::Mat& in_ssd_result,
-                       const cv::Size& in_size,
+    void parseSSDBLref(const ncvslideio::Mat& in_ssd_result,
+                       const ncvslideio::Size& in_size,
                        const float confidence_threshold,
                        const int filter_label,
-                       std::vector<cv::Rect>& out_boxes,
+                       std::vector<ncvslideio::Rect>& out_boxes,
                        std::vector<int>& out_labels)
     {
         out_boxes.clear();
@@ -104,7 +104,7 @@ public:
         const int MAX_PROPOSALS = in_ssd_dims[2];
         const int OBJECT_SIZE   = in_ssd_dims[3];
         CV_Assert(OBJECT_SIZE  == 7); // fixed SSD object size
-        cv::Rect surface({0,0}, in_size), rc;
+        ncvslideio::Rect surface({0,0}, in_size), rc;
         float image_id, confidence;
         int label;
         const float *data = in_ssd_result.ptr<float>();
@@ -129,7 +129,7 @@ public:
     }
 
 private:
-    void adjustBoundingBox(cv::Rect& boundingBox)
+    void adjustBoundingBox(ncvslideio::Rect& boundingBox)
     {
         auto w = boundingBox.width;
         auto h = boundingBox.height;
@@ -154,8 +154,8 @@ private:
         }
     }
 
-    std::tuple<cv::Rect, float, float, int> extract(const float* it,
-                                                    const cv::Size& in_size)
+    std::tuple<ncvslideio::Rect, float, float, int> extract(const float* it,
+                                                    const ncvslideio::Size& in_size)
     {
         float image_id   = it[0];
         int   label      = static_cast<int>(it[1]);
@@ -165,7 +165,7 @@ private:
         float rc_right   = it[5];
         float rc_bottom  = it[6];
 
-        cv::Rect rc;  // map relative coordinates to the original image scale
+        ncvslideio::Rect rc;  // map relative coordinates to the original image scale
         rc.x      = static_cast<int>(rc_left   * in_size.width);
         rc.y      = static_cast<int>(rc_top    * in_size.height);
         rc.width  = static_cast<int>(rc_right  * in_size.width)  - rc.x;
@@ -179,13 +179,13 @@ private:
         return theRNG().uniform(start, end);
     }
 
-    cv::Rect generateBox(const cv::Size& in_sz)
+    ncvslideio::Rect generateBox(const ncvslideio::Size& in_sz)
     {
         // Generated rectangle can reside outside of the initial image by border pixels
         constexpr int border = 10;
         constexpr int minW = 16;
         constexpr int minH = 16;
-        cv::Rect box;
+        ncvslideio::Rect box;
         box.width  = randInRange(minW, in_sz.width  + 2*border);
         box.height = randInRange(minH, in_sz.height + 2*border);
         box.x = randInRange(-border, in_sz.width  + border - box.width);
@@ -204,7 +204,7 @@ private:
         float rc_bottom = 0.0f;
     };
 
-    SSDitem generateItem(const int i, const cv::Size& in_sz)
+    SSDitem generateItem(const int i, const ncvslideio::Size& in_sz)
     {
         const auto normalize = [](int v, int range) { return static_cast<float>(v) / range; };
 
@@ -225,7 +225,7 @@ private:
 class ParserYoloTest
 {
 public:
-    cv::Mat generateYoloOutput(const int num_classes, std::pair<bool,int> dims_config = {false, 4})
+    ncvslideio::Mat generateYoloOutput(const int num_classes, std::pair<bool,int> dims_config = {false, 4})
     {
         bool one_dim = false;
         int num_dims = 0;
@@ -241,11 +241,11 @@ public:
             dims[num_dims-2] = 13;
             dims[num_dims-3] = 13;
         }
-        cv::Mat mat(dims, CV_32FC1);
+        ncvslideio::Mat mat(dims, CV_32FC1);
         auto data = mat.ptr<float>();
 
         const size_t range = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int>());
-        cv::RNG& rng = theRNG();
+        ncvslideio::RNG& rng = theRNG();
         for (size_t i = 0; i < range; ++i)
         {
             data[i] = rng.uniform(0.f, 1.f);
@@ -253,13 +253,13 @@ public:
         return mat;
     }
 
-    void parseYoloRef(const cv::Mat&  in_yolo_result,
-                      const cv::Size& in_size,
+    void parseYoloRef(const ncvslideio::Mat&  in_yolo_result,
+                      const ncvslideio::Size& in_size,
                       const float confidence_threshold,
                       const float nms_threshold,
                       const int num_classes,
                       const std::vector<float>& anchors,
-                      std::vector<cv::Rect>& out_boxes,
+                      std::vector<ncvslideio::Rect>& out_boxes,
                       std::vector<int>& out_labels)
     {
         YoloParams params;
@@ -309,7 +309,7 @@ public:
             {
                 if (std::end(out_boxes) ==
                     std::find_if(std::begin(out_boxes), std::end(out_boxes),
-                                 [&d, nms_threshold](const cv::Rect& r)
+                                 [&d, nms_threshold](const ncvslideio::Rect& r)
                                  {
                                      float rectOverlap = 1.f - static_cast<float>(jaccardDistance(r, d.rect));
                                      return rectOverlap > nms_threshold;
@@ -333,10 +333,10 @@ public:
 private:
     struct Detection
     {
-        Detection(const cv::Rect& in_rect, const float in_conf, const int in_label)
+        Detection(const ncvslideio::Rect& in_rect, const float in_conf, const int in_label)
             : rect(in_rect), conf(in_conf), label(in_label)
         {}
-        cv::Rect rect;
+        ncvslideio::Rect rect;
         float    conf = 0.0f;
         int      label = 0;
     };
@@ -385,11 +385,11 @@ private:
          return m_out[class_index];
     }
 
-    cv::Rect toBox(const double x, const double y, const double h, const double w, const cv::Size& in_sz)
+    ncvslideio::Rect toBox(const double x, const double y, const double h, const double w, const ncvslideio::Size& in_sz)
     {
         auto h_scale = in_sz.height;
         auto w_scale = in_sz.width;
-        cv::Rect r;
+        ncvslideio::Rect r;
         r.x = static_cast<int>((x - w / 2) * w_scale);
         r.y = static_cast<int>((y - h / 2) * h_scale);
         r.width = static_cast<int>(w * w_scale);

@@ -37,7 +37,7 @@ std::string keys =
                             "6: CUDA, "
                             "7: CUDA fp16 (half-float preprocess) }";
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace dnn;
 
 std::vector<std::string> classes;
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
         // double t;
         int classId;
         double confidence;
-        cv::TickMeter timeRecorder;
+        ncvslideio::TickMeter timeRecorder;
         timeRecorder.reset();
         Mat prob = net.forward();
         double t1;
@@ -186,8 +186,8 @@ int main(int argc, char** argv)
             Mat softmaxProb;
 
             maxProb = *std::max_element(prob.begin<float>(), prob.end<float>());
-            cv::exp(prob-maxProb, softmaxProb);
-            sum = (float)cv::sum(softmaxProb)[0];
+            ncvslideio::exp(prob-maxProb, softmaxProb);
+            sum = (float)ncvslideio::sum(softmaxProb)[0];
             softmaxProb /= sum;
             Point classIdPoint;
             minMaxLoc(softmaxProb.reshape(1, 1), 0, &confidence, 0, &classIdPoint);

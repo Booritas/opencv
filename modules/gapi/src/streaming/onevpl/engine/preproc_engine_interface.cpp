@@ -23,7 +23,7 @@
 
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 
@@ -38,8 +38,8 @@ std::unique_ptr<onevpl::VPPPreprocDispatcher>
 IPreprocEngine::create_preproc_engine_impl(const onevpl::Device &device,
                                            const onevpl::Context &context) {
     using namespace onevpl;
-    cv::util::suppress_unused_warning(device);
-    cv::util::suppress_unused_warning(context);
+    ncvslideio::util::suppress_unused_warning(device);
+    ncvslideio::util::suppress_unused_warning(context);
     std::unique_ptr<VPPPreprocDispatcher> dispatcher(new VPPPreprocDispatcher);
 #ifdef HAVE_ONEVPL
     bool pp_is_created = false;
@@ -107,4 +107,4 @@ IPreprocEngine::create_preproc_engine_impl<onevpl::VPPPreprocDispatcher,
                                            const onevpl::Context &ctx);
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

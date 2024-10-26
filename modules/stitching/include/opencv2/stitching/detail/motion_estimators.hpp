@@ -48,7 +48,7 @@
 #include "util.hpp"
 #include "camera.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching_rotation
@@ -116,7 +116,7 @@ private:
 This estimator uses pairwise transformations estimated by matcher to estimate
 final transformation for each camera.
 
-@sa cv::detail::HomographyBasedEstimator
+@sa ncvslideio::detail::HomographyBasedEstimator
  */
 class CV_EXPORTS_W AffineBasedEstimator : public Estimator
 {
@@ -368,6 +368,6 @@ void CV_EXPORTS findMaxSpanningTree(
 //! @} stitching_rotation
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_MOTION_ESTIMATORS_HPP

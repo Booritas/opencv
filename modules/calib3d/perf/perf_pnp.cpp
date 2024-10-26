@@ -42,14 +42,14 @@ PERF_TEST_P(PointsNum_Algo, solvePnP,
     //add noise
     Mat noise(1, (int)points2d.size(), CV_32FC2);
     randu(noise, 0, 0.01);
-    cv::add(points2d, noise, points2d);
+    ncvslideio::add(points2d, noise, points2d);
 
     declare.in(points3d, points2d);
     declare.time(100);
 
     TEST_CYCLE_N(1000)
     {
-        cv::solvePnP(points3d, points2d, intrinsics, distortion, rvec, tvec, false, algo);
+        ncvslideio::solvePnP(points3d, points2d, intrinsics, distortion, rvec, tvec, false, algo);
     }
 
     SANITY_CHECK(rvec, 1e-4);
@@ -86,22 +86,22 @@ PERF_TEST_P(PointsNum_Algo, solvePnPSmallPoints,
 
     // normalize Rodrigues vector
     Mat rvec_tmp = Mat::eye(3, 3, CV_32F);
-    cv::Rodrigues(rvec, rvec_tmp);
-    cv::Rodrigues(rvec_tmp, rvec);
+    ncvslideio::Rodrigues(rvec, rvec_tmp);
+    ncvslideio::Rodrigues(rvec_tmp, rvec);
 
-    cv::projectPoints(points3d, rvec, tvec, intrinsics, distortion, points2d);
+    ncvslideio::projectPoints(points3d, rvec, tvec, intrinsics, distortion, points2d);
 
     //add noise
     Mat noise(1, (int)points2d.size(), CV_32FC2);
     randu(noise, -0.001, 0.001);
-    cv::add(points2d, noise, points2d);
+    ncvslideio::add(points2d, noise, points2d);
 
     declare.in(points3d, points2d);
     declare.time(100);
 
     TEST_CYCLE_N(1000)
     {
-        cv::solvePnP(points3d, points2d, intrinsics, distortion, rvec, tvec, false, algo);
+        ncvslideio::solvePnP(points3d, points2d, intrinsics, distortion, rvec, tvec, false, algo);
     }
 
     SANITY_CHECK(rvec, 1e-1);
@@ -122,9 +122,9 @@ PERF_TEST_P(PointsNum, DISABLED_SolvePnPRansac, testing::Values(5, 3*9, 7*13))
     camera_mat.at<float>(2, 0) = 0.f;
     camera_mat.at<float>(2, 1) = 0.f;
 
-    Mat dist_coef(1, 8, CV_32F, cv::Scalar::all(0));
+    Mat dist_coef(1, 8, CV_32F, ncvslideio::Scalar::all(0));
 
-    vector<cv::Point2f> image_vec;
+    vector<ncvslideio::Point2f> image_vec;
 
     Mat rvec_gold(1, 3, CV_32FC1);
     randu(rvec_gold, 0, 1);
@@ -140,7 +140,7 @@ PERF_TEST_P(PointsNum, DISABLED_SolvePnPRansac, testing::Values(5, 3*9, 7*13))
 
     TEST_CYCLE()
     {
-        cv::solvePnPRansac(object, image, camera_mat, dist_coef, rvec, tvec);
+        ncvslideio::solvePnPRansac(object, image, camera_mat, dist_coef, rvec, tvec);
     }
 
     SANITY_CHECK(rvec, 1e-6);

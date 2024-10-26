@@ -6,8 +6,8 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 const Scalar WHITE_COLOR = Scalar(255,255,255);
 const string winName = "points";
@@ -295,7 +295,7 @@ int main()
          << "  key 'r' - to run the ML model;" << endl
          << "  key 'i' - to init (clear) the data." << endl << endl;
 
-    cv::namedWindow( "points", 1 );
+    ncvslideio::namedWindow( "points", 1 );
     img.create( 480, 640, CV_8UC3 );
     imgDst.create( 480, 640, CV_8UC3 );
 

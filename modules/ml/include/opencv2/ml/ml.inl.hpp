@@ -5,7 +5,7 @@
 #ifndef OPENCV_ML_INL_HPP
 #define OPENCV_ML_INL_HPP
 
-namespace cv { namespace ml {
+namespace ncvslideio { namespace ml {
 
 // declared in ml.hpp
 template<class SimulatedAnnealingSolverSystem>
@@ -13,7 +13,7 @@ int simulatedAnnealingSolver(SimulatedAnnealingSolverSystem& solverSystem,
      double initialTemperature, double finalTemperature, double coolingRatio,
      size_t iterationsPerStep,
      CV_OUT double* lastTemperature,
-     cv::RNG& rngEnergy
+     ncvslideio::RNG& rngEnergy
 )
 {
     CV_Assert(finalTemperature > 0);

@@ -183,7 +183,7 @@ int main( int argc, char* argv[] )
         }
     }
 
-    cv::setRNGSeed( rngseed );
+    ncvslideio::setRNGSeed( rngseed );
 
     printf( "Info file name: %s\n", ((infoname == NULL) ?   nullname : infoname ) );
     printf( "Img file name: %s\n",  ((imagename == NULL) ?  nullname : imagename ) );

@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "internal.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 #ifdef HAVE_VULKAN
 
 bool checkFormat(Format fmt)
@@ -51,4 +51,4 @@ int shapeCount(const Shape& shape, int start, int end)
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

@@ -22,36 +22,36 @@ namespace opencv_test
 //Actual GAPI Computation with parameters to run on is mixed into test via CRTP as well.
 
 struct SumOfSum2x2 {
-    cv::GComputation sum_of_sum;
+    ncvslideio::GComputation sum_of_sum;
     SumOfSum2x2() : sum_of_sum([]{
-        cv::GMat in;
-        cv::GScalar out = cv::gapi::sum(in + in);
+        ncvslideio::GMat in;
+        ncvslideio::GScalar out = ncvslideio::gapi::sum(in + in);
         return GComputation{in, out};
     })
     {}
 
-    const cv::Size sz{2, 2};
-    cv::Mat in_mat{sz, CV_8U, cv::Scalar(1)};
-    cv::Scalar out_sc;
+    const ncvslideio::Size sz{2, 2};
+    ncvslideio::Mat in_mat{sz, CV_8U, ncvslideio::Scalar(1)};
+    ncvslideio::Scalar out_sc;
 
-    cv::GCompiled compile(){
+    ncvslideio::GCompiled compile(){
         return sum_of_sum.compile(descr_of(in_mat));
     }
 
-    cv::GComputation& computation(){
+    ncvslideio::GComputation& computation(){
         return sum_of_sum;
     }
 
-    cv::GCompileArgs compile_args(){
+    ncvslideio::GCompileArgs compile_args(){
         return {};
     }
 
-    cv::GRunArgs in_args(){
-        return cv::gin(in_mat);
+    ncvslideio::GRunArgs in_args(){
+        return ncvslideio::gin(in_mat);
     }
 
-    cv::GRunArgsP out_args(){
-        return cv::gout(out_sc);
+    ncvslideio::GRunArgsP out_args(){
+        return ncvslideio::gout(out_sc);
     }
 
     void verify(){
@@ -72,7 +72,7 @@ namespace {
 
     GAPI_OCV_KERNEL(GThrowImpl, GThrow)
     {
-        static void run(const cv::Mat& in, cv::Mat&)
+        static void run(const ncvslideio::Mat& in, ncvslideio::Mat&)
         {
             //this condition is needed to avoid "Unreachable code" warning on windows inside OCVCallHelper
             if (!in.empty())
@@ -87,7 +87,7 @@ namespace {
     struct cancel_struct {
         std::atomic<int> num_tasks_to_spawn;
 
-        cv::gapi::wip::GAsyncContext ctx;
+        ncvslideio::gapi::wip::GAsyncContext ctx;
 
         cancel_struct(int tasks_to_spawn) : num_tasks_to_spawn(tasks_to_spawn) {}
     };
@@ -100,7 +100,7 @@ namespace {
 
     GAPI_OCV_KERNEL(GCancelationAdHocImpl, GCancelationAdHoc)
     {
-        static void run(const cv::Mat& , cancel_struct* cancel_struct_p, cv::Mat&)        {
+        static void run(const ncvslideio::Mat& , cancel_struct* cancel_struct_p, ncvslideio::Mat&)        {
             auto& cancel_struct_ = * cancel_struct_p;
             auto num_tasks_to_spawn =  -- cancel_struct_.num_tasks_to_spawn;
             cancel_struct_.ctx.cancel();
@@ -110,74 +110,74 @@ namespace {
 }
 
 struct ExceptionOnExecution {
-    cv::GComputation throwing_gcomp;
+    ncvslideio::GComputation throwing_gcomp;
     ExceptionOnExecution() : throwing_gcomp([]{
-        cv::GMat in;
+        ncvslideio::GMat in;
         auto gout = GThrow::on(in);
         return GComputation{in, gout};
     })
     {}
 
 
-    const cv::Size sz{2, 2};
-    cv::Mat in_mat{sz, CV_8U, cv::Scalar(1)};
-    cv::Mat out;
+    const ncvslideio::Size sz{2, 2};
+    ncvslideio::Mat in_mat{sz, CV_8U, ncvslideio::Scalar(1)};
+    ncvslideio::Mat out;
 
-    cv::GCompiled compile(){
+    ncvslideio::GCompiled compile(){
         return throwing_gcomp.compile(descr_of(in_mat), compile_args());
     }
 
-    cv::GComputation& computation(){
+    ncvslideio::GComputation& computation(){
         return throwing_gcomp;
     }
 
-    cv::GRunArgs in_args(){
-        return cv::gin(in_mat);
+    ncvslideio::GRunArgs in_args(){
+        return ncvslideio::gin(in_mat);
     }
 
-    cv::GRunArgsP out_args(){
-        return cv::gout(out);
+    ncvslideio::GRunArgsP out_args(){
+        return ncvslideio::gout(out);
     }
 
-    cv::GCompileArgs compile_args(){
-        auto pkg = cv::gapi::kernels<GThrowImpl>();
-        return cv::compile_args(pkg);
+    ncvslideio::GCompileArgs compile_args(){
+        auto pkg = ncvslideio::gapi::kernels<GThrowImpl>();
+        return ncvslideio::compile_args(pkg);
     }
 
 };
 
 struct SelfCanceling {
-    cv::GComputation self_cancel;
+    ncvslideio::GComputation self_cancel;
     SelfCanceling(cancel_struct* cancel_struct_p) : self_cancel([cancel_struct_p]{
-        cv::GMat in;
-        cv::GMat out = GCancelationAdHoc::on(in, cancel_struct_p);
+        ncvslideio::GMat in;
+        ncvslideio::GMat out = GCancelationAdHoc::on(in, cancel_struct_p);
         return GComputation{in, out};
     })
     {}
 
-    const cv::Size sz{2, 2};
-    cv::Mat in_mat{sz, CV_8U, cv::Scalar(1)};
-    cv::Mat out_mat;
+    const ncvslideio::Size sz{2, 2};
+    ncvslideio::Mat in_mat{sz, CV_8U, ncvslideio::Scalar(1)};
+    ncvslideio::Mat out_mat;
 
-    cv::GCompiled compile(){
+    ncvslideio::GCompiled compile(){
         return self_cancel.compile(descr_of(in_mat), compile_args());
     }
 
-    cv::GComputation& computation(){
+    ncvslideio::GComputation& computation(){
         return self_cancel;
     }
 
-    cv::GRunArgs in_args(){
-        return cv::gin(in_mat);
+    ncvslideio::GRunArgs in_args(){
+        return ncvslideio::gin(in_mat);
     }
 
-    cv::GRunArgsP out_args(){
-        return cv::gout(out_mat);
+    ncvslideio::GRunArgsP out_args(){
+        return ncvslideio::gout(out_mat);
     }
 
-    cv::GCompileArgs compile_args(){
-        auto pkg = cv::gapi::kernels<GCancelationAdHocImpl>();
-        return cv::compile_args(pkg);
+    ncvslideio::GCompileArgs compile_args(){
+        auto pkg = ncvslideio::gapi::kernels<GCancelationAdHocImpl>();
+        return ncvslideio::compile_args(pkg);
     }
 };
 
@@ -197,7 +197,7 @@ struct CallBack: crtp_cast<crtp_final_t> {
     std::mutex mtx;
     std::exception_ptr ep;
 
-    std::condition_variable cv;
+    std::condition_variable ncvslideio;
 
     std::function<void(std::exception_ptr)> callback(){
         return [&](std::exception_ptr ep_){
@@ -205,7 +205,7 @@ struct CallBack: crtp_cast<crtp_final_t> {
             callback_called = true;
             mtx.lock();
             mtx.unlock();
-            cv.notify_one();
+            ncvslideio.notify_one();
         };
     }
 
@@ -215,14 +215,14 @@ struct CallBack: crtp_cast<crtp_final_t> {
     }
 
     template<typename... Args >
-    void start_async(cv::gapi::wip::GAsyncContext& ctx, Args&&... args){
+    void start_async(ncvslideio::gapi::wip::GAsyncContext& ctx, Args&&... args){
         this->crtp_cast_(this)->async(ctx, callback(), std::forward<Args>(args)...);
     }
 
     void wait_for_result()
     {
         std::unique_lock<std::mutex> lck{mtx};
-        cv.wait(lck,[&]{return callback_called == true;});
+        ncvslideio.wait(lck,[&]{return callback_called == true;});
         if (ep)
         {
             std::rethrow_exception(ep);
@@ -251,17 +251,17 @@ template<typename crtp_final_t>
 struct AsyncCompiled  : crtp_cast<crtp_final_t>{
 
     template<typename... Args>
-    auto async(Args&&... args) -> decltype(cv::gapi::wip::async(std::declval<cv::GCompiled&>(), std::forward<Args>(args)...)){
+    auto async(Args&&... args) -> decltype(ncvslideio::gapi::wip::async(std::declval<ncvslideio::GCompiled&>(), std::forward<Args>(args)...)){
         auto gcmpld = this->crtp_cast_(this)->compile();
-        return cv::gapi::wip::async(gcmpld, std::forward<Args>(args)...);
+        return ncvslideio::gapi::wip::async(gcmpld, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
-    auto async(cv::gapi::wip::GAsyncContext& ctx, Args&&... args) ->
-        decltype(cv::gapi::wip::async(std::declval<cv::GCompiled&>(), std::forward<Args>(args)..., std::declval<cv::gapi::wip::GAsyncContext&>()))
+    auto async(ncvslideio::gapi::wip::GAsyncContext& ctx, Args&&... args) ->
+        decltype(ncvslideio::gapi::wip::async(std::declval<ncvslideio::GCompiled&>(), std::forward<Args>(args)..., std::declval<ncvslideio::gapi::wip::GAsyncContext&>()))
     {
         auto gcmpld = this->crtp_cast_(this)->compile();
-        return cv::gapi::wip::async(gcmpld, std::forward<Args>(args)..., ctx);
+        return ncvslideio::gapi::wip::async(gcmpld, std::forward<Args>(args)..., ctx);
     }
 };
 
@@ -271,18 +271,18 @@ struct AsyncApply : crtp_cast<crtp_final_t> {
 
     template<typename... Args>
     auto async(Args&&... args) ->
-         decltype(cv::gapi::wip::async_apply(std::declval<cv::GComputation&>(), std::forward<Args>(args)..., std::declval<cv::GCompileArgs>()))
+         decltype(ncvslideio::gapi::wip::async_apply(std::declval<ncvslideio::GComputation&>(), std::forward<Args>(args)..., std::declval<ncvslideio::GCompileArgs>()))
     {
-        return cv::gapi::wip::async_apply(
+        return ncvslideio::gapi::wip::async_apply(
                 this->crtp_cast_(this)->computation(), std::forward<Args>(args)..., this->crtp_cast_(this)->compile_args()
         );
     }
 
     template<typename... Args>
-    auto async(cv::gapi::wip::GAsyncContext& ctx, Args&&... args) ->
-         decltype(cv::gapi::wip::async_apply(std::declval<cv::GComputation&>(), std::forward<Args>(args)... , std::declval<cv::GCompileArgs>(), std::declval<cv::gapi::wip::GAsyncContext&>()))
+    auto async(ncvslideio::gapi::wip::GAsyncContext& ctx, Args&&... args) ->
+         decltype(ncvslideio::gapi::wip::async_apply(std::declval<ncvslideio::GComputation&>(), std::forward<Args>(args)... , std::declval<ncvslideio::GCompileArgs>(), std::declval<ncvslideio::gapi::wip::GAsyncContext&>()))
     {
-        return cv::gapi::wip::async_apply(
+        return ncvslideio::gapi::wip::async_apply(
                 this->crtp_cast_(this)->computation(), std::forward<Args>(args)..., this->crtp_cast_(this)->compile_args(), ctx
         );
     }
@@ -379,7 +379,7 @@ TYPED_TEST_P(cancel, basic)
     for (auto&& r : requests){
         try {
             r.wait_for_result();
-        }catch (cv::gapi::wip::GAsyncCanceled&){
+        }catch (ncvslideio::gapi::wip::GAsyncCanceled&){
             ++canceled;
         }
     }
@@ -393,10 +393,10 @@ namespace {
         for (auto&& arg : args){
             //FIXME: replace this switch with use of visit() on variant, when it will be available
             switch (arg.index()){
-                case GRunArgP::index_of<cv::UMat*>()                :   result.emplace_back(*util::get<cv::UMat*>(arg));    break;
-                case GRunArgP::index_of<cv::Mat*>()                 :   result.emplace_back(*util::get<cv::Mat*>(arg));     break;
-                case GRunArgP::index_of<cv::Scalar*>()              :   result.emplace_back(*util::get<cv::Scalar*>           (arg));   break;
-                case GRunArgP::index_of<cv::detail::VectorRef>()    :   result.emplace_back(util::get<cv::detail::VectorRef>  (arg));   break;
+                case GRunArgP::index_of<ncvslideio::UMat*>()                :   result.emplace_back(*util::get<ncvslideio::UMat*>(arg));    break;
+                case GRunArgP::index_of<ncvslideio::Mat*>()                 :   result.emplace_back(*util::get<ncvslideio::Mat*>(arg));     break;
+                case GRunArgP::index_of<ncvslideio::Scalar*>()              :   result.emplace_back(*util::get<ncvslideio::Scalar*>           (arg));   break;
+                case GRunArgP::index_of<ncvslideio::detail::VectorRef>()    :   result.emplace_back(util::get<ncvslideio::detail::VectorRef>  (arg));   break;
                 default : ;
             }
         }
@@ -407,10 +407,10 @@ namespace {
         GRunArgsP result; result.reserve(args.size());
         for (auto&& arg : args){
             switch (arg.index()){
-                case GRunArg::index_of<cv::Mat>()                 :   result.emplace_back(&util::get<cv::Mat>(arg));     break;
-                case GRunArg::index_of<cv::UMat>()                :   result.emplace_back(&util::get<cv::UMat>(arg));    break;
-                case GRunArg::index_of<cv::Scalar>()              :   result.emplace_back(&util::get<cv::Scalar>           (arg));   break;
-                case GRunArg::index_of<cv::detail::VectorRef>()   :   result.emplace_back(util::get<cv::detail::VectorRef> (arg));   break;
+                case GRunArg::index_of<ncvslideio::Mat>()                 :   result.emplace_back(&util::get<ncvslideio::Mat>(arg));     break;
+                case GRunArg::index_of<ncvslideio::UMat>()                :   result.emplace_back(&util::get<ncvslideio::UMat>(arg));    break;
+                case GRunArg::index_of<ncvslideio::Scalar>()              :   result.emplace_back(&util::get<ncvslideio::Scalar>           (arg));   break;
+                case GRunArg::index_of<ncvslideio::detail::VectorRef>()   :   result.emplace_back(util::get<ncvslideio::detail::VectorRef> (arg));   break;
                 default : ;
             }
         }
@@ -438,7 +438,7 @@ TYPED_TEST_P(output_args_lifetime, callback){
         //As output arguments are __captured by reference__  calling code
         //__must__ ensure they live long enough to complete asynchronous activity.
         //(i.e. live at least until callback is called)
-        auto out_args_ptr =  std::make_shared<cv::GRunArgs>(deep_copy_out_args(r.out_args()));
+        auto out_args_ptr =  std::make_shared<ncvslideio::GRunArgs>(deep_copy_out_args(r.out_args()));
 
         //Extend lifetime of out_args_ptr content by capturing it into a callback
         auto cb =  [&active_requests, out_args_ptr](std::exception_ptr ){
@@ -460,7 +460,7 @@ TYPED_TEST_P(output_args_lifetime, callback){
 TYPED_TEST_P(output_args_lifetime, future){
 
     std::vector<std::future<void>>                      fs(this->num_of_requests);
-    std::vector<std::shared_ptr<cv::GRunArgs>>    out_ptrs(this->num_of_requests);
+    std::vector<std::shared_ptr<ncvslideio::GRunArgs>>    out_ptrs(this->num_of_requests);
 
     for (int i=0; i<this->num_of_requests; i++)
     {
@@ -469,7 +469,7 @@ TYPED_TEST_P(output_args_lifetime, future){
         //As output arguments are __captured by reference__  calling code
         //__must__ ensure they live long enough to complete asynchronous activity.
         //(i.e. live at least until future.get()/wait() is returned)
-        auto out_args_ptr =  std::make_shared<cv::GRunArgs>(deep_copy_out_args(r.out_args()));
+        auto out_args_ptr =  std::make_shared<ncvslideio::GRunArgs>(deep_copy_out_args(r.out_args()));
 
         //Extend lifetime of out_args_ptr content
         out_ptrs[i] = out_args_ptr;

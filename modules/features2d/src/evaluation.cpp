@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include <limits>
 
-using namespace cv;
+using namespace ncvslideio;
 
 template<typename _Tp> static int solveQuadratic(_Tp a, _Tp b, _Tp c, _Tp& x1, _Tp& x2)
 {
@@ -457,7 +457,7 @@ static void calculateRepeatability( const Mat& img1, const Mat& img2, const Mat&
     }
 }
 
-void cv::evaluateFeatureDetector( const Mat& img1, const Mat& img2, const Mat& H1to2,
+void ncvslideio::evaluateFeatureDetector( const Mat& img1, const Mat& img2, const Mat& H1to2,
                               std::vector<KeyPoint>* _keypoints1, std::vector<KeyPoint>* _keypoints2,
                               float& repeatability, int& correspCount,
                               const Ptr<FeatureDetector>& _fdetector )
@@ -496,7 +496,7 @@ static inline float precision( int correctMatchCount, int falseMatchCount )
     return correctMatchCount + falseMatchCount ? (float)correctMatchCount / (float)(correctMatchCount + falseMatchCount) : -1;
 }
 
-void cv::computeRecallPrecisionCurve( const std::vector<std::vector<DMatch> >& matches1to2,
+void ncvslideio::computeRecallPrecisionCurve( const std::vector<std::vector<DMatch> >& matches1to2,
                                       const std::vector<std::vector<uchar> >& correctMatches1to2Mask,
                                       std::vector<Point2f>& recallPrecisionCurve )
 {
@@ -534,7 +534,7 @@ void cv::computeRecallPrecisionCurve( const std::vector<std::vector<DMatch> >& m
     }
 }
 
-float cv::getRecall( const std::vector<Point2f>& recallPrecisionCurve, float l_precision )
+float ncvslideio::getRecall( const std::vector<Point2f>& recallPrecisionCurve, float l_precision )
 {
     CV_INSTRUMENT_REGION();
 
@@ -548,7 +548,7 @@ float cv::getRecall( const std::vector<Point2f>& recallPrecisionCurve, float l_p
     return recall;
 }
 
-int cv::getNearestPoint( const std::vector<Point2f>& recallPrecisionCurve, float l_precision )
+int ncvslideio::getNearestPoint( const std::vector<Point2f>& recallPrecisionCurve, float l_precision )
 {
     CV_INSTRUMENT_REGION();
 

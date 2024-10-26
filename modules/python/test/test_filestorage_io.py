@@ -16,7 +16,7 @@ class MyData:
         self.name = 'mydata1234'
 
     def write(self, fs, name):
-        fs.startWriteStruct(name, cv.FileNode_MAP|cv.FileNode_FLOW)
+        fs.startWriteStruct(name, ncvslideio.FileNode_MAP|ncvslideio.FileNode_FLOW)
         fs.write('A', self.A)
         fs.write('X', self.X)
         fs.write('name', self.name)
@@ -37,19 +37,19 @@ class filestorage_io_test(NewOpenCVTests):
     T0 = np.zeros((3,1))
 
     def write_data(self, fname):
-        fs = cv.FileStorage(fname, cv.FileStorage_WRITE)
+        fs = ncvslideio.FileStorage(fname, ncvslideio.FileStorage_WRITE)
         R = self.R0
         T = self.T0
         m = MyData()
 
         fs.write('iterationNr', 100)
 
-        fs.startWriteStruct('strings', cv.FileNode_SEQ)
+        fs.startWriteStruct('strings', ncvslideio.FileNode_SEQ)
         for elem in self.strings_data:
             fs.write('', elem)
         fs.endWriteStruct()
 
-        fs.startWriteStruct('Mapping', cv.FileNode_MAP)
+        fs.startWriteStruct('Mapping', ncvslideio.FileNode_MAP)
         fs.write('One', 1)
         fs.write('Two', 2)
         fs.endWriteStruct()
@@ -61,7 +61,7 @@ class filestorage_io_test(NewOpenCVTests):
         fs.release()
 
     def read_data_and_check(self, fname):
-        fs = cv.FileStorage(fname, cv.FileStorage_READ)
+        fs = ncvslideio.FileStorage(fname, ncvslideio.FileStorage_READ)
 
         n = fs.getNode('iterationNr')
         itNr = int(n.real())
@@ -81,8 +81,8 @@ class filestorage_io_test(NewOpenCVTests):
         R = fs.getNode('R_MAT').mat()
         T = fs.getNode('T_MAT').mat()
 
-        self.assertEqual(cv.norm(R, self.R0, cv.NORM_INF), 0)
-        self.assertEqual(cv.norm(T, self.T0, cv.NORM_INF), 0)
+        self.assertEqual(ncvslideio.norm(R, self.R0, ncvslideio.NORM_INF), 0)
+        self.assertEqual(ncvslideio.norm(T, self.T0, ncvslideio.NORM_INF), 0)
 
         m0 = MyData()
         m = MyData()
@@ -174,7 +174,7 @@ class filestorage_io_test(NewOpenCVTests):
         return base64.b64decode(encoded)[24:]
 
     def write_base64_json(self, fname):
-        fs = cv.FileStorage(fname, cv.FileStorage_WRITE_BASE64)
+        fs = ncvslideio.FileStorage(fname, ncvslideio.FileStorage_WRITE_BASE64)
 
         mats = {'normal_2d_mat': self.get_normal_2d_mat(),
                 'normal_nd_mat': self.get_normal_nd_mat(),

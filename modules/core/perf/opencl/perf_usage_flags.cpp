@@ -12,7 +12,7 @@
 namespace opencv_test {
 namespace ocl {
 
-typedef TestBaseWithParam<tuple<cv::Size, UMatUsageFlags, UMatUsageFlags, UMatUsageFlags>> SizeUsageFlagsFixture;
+typedef TestBaseWithParam<tuple<ncvslideio::Size, UMatUsageFlags, UMatUsageFlags, UMatUsageFlags>> SizeUsageFlagsFixture;
 
 OCL_PERF_TEST_P(SizeUsageFlagsFixture, UsageFlags_AllocMem,
     ::testing::Combine(
@@ -33,13 +33,13 @@ OCL_PERF_TEST_P(SizeUsageFlagsFixture, UsageFlags_AllocMem,
     {
         UMat dst(dstAllocMem);
 
-        cv::add(src, Scalar::all(1), dst);
+        ncvslideio::add(src, Scalar::all(1), dst);
         {
             Mat canvas = dst.getMat(ACCESS_RW);
-            cv::putText(canvas, "Test", Point(20, 20), FONT_HERSHEY_PLAIN, 1, Scalar::all(255));
+            ncvslideio::putText(canvas, "Test", Point(20, 20), FONT_HERSHEY_PLAIN, 1, Scalar::all(255));
         }
         UMat final(finalAllocMem);
-        cv::subtract(dst, Scalar::all(1), final);
+        ncvslideio::subtract(dst, Scalar::all(1), final);
     }
 
     SANITY_CHECK_NOTHING();

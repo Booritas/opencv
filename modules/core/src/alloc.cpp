@@ -66,18 +66,18 @@
 #include <map>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 static void* OutOfMemoryError(size_t size)
 {
-    CV_Error_(cv::Error::StsNoMem, ("Failed to allocate %llu bytes", (unsigned long long)size));
+    CV_Error_(ncvslideio::Error::StsNoMem, ("Failed to allocate %llu bytes", (unsigned long long)size));
 }
 
-CV_EXPORTS cv::utils::AllocatorStatisticsInterface& getAllocatorStatistics();
+CV_EXPORTS ncvslideio::utils::AllocatorStatisticsInterface& getAllocatorStatistics();
 
-static cv::utils::AllocatorStatistics allocator_stats;
+static ncvslideio::utils::AllocatorStatistics allocator_stats;
 
-cv::utils::AllocatorStatisticsInterface& getAllocatorStatistics()
+ncvslideio::utils::AllocatorStatisticsInterface& getAllocatorStatistics()
 {
     return allocator_stats;
 }
@@ -96,7 +96,7 @@ static bool readMemoryAlignmentParameter()
         value = false;
     }
 #endif
-    value = cv::utils::getConfigurationParameterBool("OPENCV_ENABLE_MEMALIGN", value);  // should not call fastMalloc() internally
+    value = ncvslideio::utils::getConfigurationParameterBool("OPENCV_ENABLE_MEMALIGN", value);  // should not call fastMalloc() internally
     // TODO add checks for valgrind, ASAN if value == false
     return value;
 }
@@ -211,7 +211,7 @@ void* fastMalloc(size_t size)
     void* res = fastMalloc_(size);
     if (res && size >= OPENCV_ALLOC_STATISTICS_LIMIT)
     {
-        cv::AutoLock lock(getAllocationStatisticsMutex());
+        ncvslideio::AutoLock lock(getAllocationStatisticsMutex());
         allocated_buffers.insert(std::make_pair(res, size));
         allocator_stats.onAllocate(size);
     }
@@ -221,7 +221,7 @@ void* fastMalloc(size_t size)
 void fastFree(void* ptr)
 {
     {
-        cv::AutoLock lock(getAllocationStatisticsMutex());
+        ncvslideio::AutoLock lock(getAllocationStatisticsMutex());
         std::map<void*, size_t>::iterator i = allocated_buffers.find(ptr);
         if (i != allocated_buffers.end())
         {
@@ -239,12 +239,12 @@ void fastFree(void* ptr)
 
 CV_IMPL void* cvAlloc( size_t size )
 {
-    return cv::fastMalloc( size );
+    return ncvslideio::fastMalloc( size );
 }
 
 CV_IMPL void cvFree_( void* ptr )
 {
-    cv::fastFree( ptr );
+    ncvslideio::fastFree( ptr );
 }
 
 /* End of file. */

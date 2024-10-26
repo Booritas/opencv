@@ -10,8 +10,8 @@
 
 namespace
 {
-#define CORE_FLUID [] () { return cv::compile_args(cv::gapi::use_only{cv::gapi::core::fluid::kernels()}); }
-    const std::vector <cv::Size> in_sizes{ cv::Size(1280, 720), cv::Size(128, 128) };
+#define CORE_FLUID [] () { return ncvslideio::compile_args(ncvslideio::gapi::use_only{ncvslideio::gapi::core::fluid::kernels()}); }
+    const std::vector <ncvslideio::Size> in_sizes{ ncvslideio::Size(1280, 720), ncvslideio::Size(128, 128) };
 }  // anonymous namespace
 
 namespace opencv_test
@@ -27,10 +27,10 @@ INSTANTIATE_TEST_CASE_P(MathOpTestFluid, MathOpTest,
                                 Values(1.0),
                                 testing::Bool()));
 
-// FIXME: Accuracy test for SUB math operation fails on FullHD and HD CV_16SC1 input cv::Mat,
-//        double-presicion input cv::Scalar and CV_32FC1 output cv::Mat on Mac.
-//        Accuracy test for ADD math operation fails on HD CV_16SC1 input cv::Mat,
-//        double-presicion input cv::Scalar and CV_32FC1 output cv::Mat on Mac.
+// FIXME: Accuracy test for SUB math operation fails on FullHD and HD CV_16SC1 input ncvslideio::Mat,
+//        double-presicion input ncvslideio::Scalar and CV_32FC1 output ncvslideio::Mat on Mac.
+//        Accuracy test for ADD math operation fails on HD CV_16SC1 input ncvslideio::Mat,
+//        double-presicion input ncvslideio::Scalar and CV_32FC1 output ncvslideio::Mat on Mac.
 //        As failures are sporadic, disabling all instantiation cases for SUB and ADD.
 //        Github ticket: https://github.com/opencv/opencv/issues/18373.
 INSTANTIATE_TEST_CASE_P(DISABLED_MathOpTestFluid, MathOpTest,
@@ -43,8 +43,8 @@ INSTANTIATE_TEST_CASE_P(DISABLED_MathOpTestFluid, MathOpTest,
                                 Values(1.0),
                                 testing::Bool()));
 
-// FIXME: Accuracy test for SUB math operation fails on CV_16SC1 input cv::Mat, double-presicion
-//        input cv::Scalar and CV_32FC1 output cv::Mat on Mac.
+// FIXME: Accuracy test for SUB math operation fails on CV_16SC1 input ncvslideio::Mat, double-presicion
+//        input ncvslideio::Scalar and CV_32FC1 output ncvslideio::Mat on Mac.
 //        As failures are sporadic, disabling all instantiation cases for SUB operation.
 //        Github ticket: https://github.com/opencv/opencv/issues/18373.
 INSTANTIATE_TEST_CASE_P(DISABLED_SubTestFluid, MathOpTest,
@@ -237,7 +237,7 @@ INSTANTIATE_TEST_CASE_P(DISABLED_CropTestFluid, CropTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_FLUID),
-                                Values(cv::Rect(10, 8, 20, 35), cv::Rect(4, 10, 37, 50))));
+                                Values(ncvslideio::Rect(10, 8, 20, 35), ncvslideio::Rect(4, 10, 37, 50))));
 
 INSTANTIATE_TEST_CASE_P(SelectTestFluid, SelectTest,
                         Combine(Values(CV_8UC3, CV_8UC1, CV_16UC1, CV_16SC1),
@@ -275,19 +275,19 @@ INSTANTIATE_TEST_CASE_P(ThresholdTestFluid, ThresholdTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_FLUID),
-                                Values(cv::THRESH_BINARY, cv::THRESH_BINARY_INV,
-                                       cv::THRESH_TRUNC,
-                                       cv::THRESH_TOZERO, cv::THRESH_TOZERO_INV),
-                                Values(cv::Scalar(0, 0, 0, 0),
-                                       cv::Scalar(100, 100, 100, 100),
-                                       cv::Scalar(255, 255, 255, 255))));
+                                Values(ncvslideio::THRESH_BINARY, ncvslideio::THRESH_BINARY_INV,
+                                       ncvslideio::THRESH_TRUNC,
+                                       ncvslideio::THRESH_TOZERO, ncvslideio::THRESH_TOZERO_INV),
+                                Values(ncvslideio::Scalar(0, 0, 0, 0),
+                                       ncvslideio::Scalar(100, 100, 100, 100),
+                                       ncvslideio::Scalar(255, 255, 255, 255))));
 
 INSTANTIATE_TEST_CASE_P(DISABLED_ThresholdTestFluid, ThresholdOTTest,
                         Combine(Values(CV_8UC1),
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_FLUID),
-                                Values(cv::THRESH_OTSU, cv::THRESH_TRIANGLE)));
+                                Values(ncvslideio::THRESH_OTSU, ncvslideio::THRESH_TRIANGLE)));
 
 INSTANTIATE_TEST_CASE_P(InRangeTestFluid, InRangeTest,
                         Combine(Values(CV_8UC3, CV_8UC1, CV_16UC1, CV_16SC1, CV_32FC1),
@@ -297,22 +297,22 @@ INSTANTIATE_TEST_CASE_P(InRangeTestFluid, InRangeTest,
 
 INSTANTIATE_TEST_CASE_P(BackendOutputAllocationTestFluid, BackendOutputAllocationTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_FLUID)));
 
 INSTANTIATE_TEST_CASE_P(BackendOutputAllocationLargeSizeWithCorrectSubmatrixTestFluid,
                         BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_FLUID)));
 
 INSTANTIATE_TEST_CASE_P(ReInitOutTestFluid, ReInitOutTest,
                         Combine(Values(CV_8UC3, CV_16SC4, CV_32FC1),
-                                Values(cv::Size(640, 480)),
+                                Values(ncvslideio::Size(640, 480)),
                                 Values(-1),
                                 Values(CORE_FLUID),
-                                Values(cv::Size(640, 400),
-                                       cv::Size(10, 480))));
+                                Values(ncvslideio::Size(640, 400),
+                                       ncvslideio::Size(10, 480))));
 }

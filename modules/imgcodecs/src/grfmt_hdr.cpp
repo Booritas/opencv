@@ -46,7 +46,7 @@
 
 #ifdef HAVE_IMGCODEC_HDR
 
-namespace cv
+namespace ncvslideio
 {
 
 HdrDecoder::HdrDecoder()
@@ -109,7 +109,7 @@ bool HdrDecoder::readData(Mat& _img)
         case 3:
         // TODO, try to modify RGBE_ReadPixels_RLE to load rgb data directly.
         if (m_use_rgb)
-            cv::cvtColor(img, _img, cv::COLOR_BGR2RGB);
+            ncvslideio::cvtColor(img, _img, ncvslideio::COLOR_BGR2RGB);
         else
             img.copyTo(_img);
         break;

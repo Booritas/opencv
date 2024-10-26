@@ -12,7 +12,7 @@
 *                                    LUT Transform                                       *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename T> static void
@@ -163,7 +163,7 @@ public:
         *ok = true;
     }
 
-    void operator()( const cv::Range& range ) const
+    void operator()( const ncvslideio::Range& range ) const
     {
         if (!*ok)
             return;
@@ -245,7 +245,7 @@ public:
         lutTable[0] = NULL;
     }
 
-    void operator()( const cv::Range& range ) const
+    void operator()( const ncvslideio::Range& range ) const
     {
         if (!*ok)
             return;
@@ -333,7 +333,7 @@ public:
         *ok = (func != NULL);
     }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_Assert(*ok);
 
@@ -359,9 +359,9 @@ private:
     LUTParallelBody& operator=(const LUTParallelBody&);
 };
 
-} // cv::
+} // ncvslideio::
 
-void cv::LUT( InputArray _src, InputArray _lut, OutputArray _dst )
+void ncvslideio::LUT( InputArray _src, InputArray _lut, OutputArray _dst )
 {
     CV_INSTRUMENT_REGION();
 

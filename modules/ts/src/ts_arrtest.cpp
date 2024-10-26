@@ -80,7 +80,7 @@ void ArrayTest::clear()
 }
 
 
-int ArrayTest::read_params( const cv::FileStorage& fs )
+int ArrayTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = BaseTest::read_params( fs );
     if( code < 0 )
@@ -215,7 +215,7 @@ int ArrayTest::prepare_test_case( int test_case_idx )
         for( j = 0; j < sizei; j++ )
         {
             CvArr* arr = test_array[i][j];
-            test_mat[i][j] = cv::cvarrToMat(arr);
+            test_mat[i][j] = ncvslideio::cvarrToMat(arr);
             if( !test_mat[i][j].empty() )
                 fill_array( test_case_idx, (int)i, (int)j, test_mat[i][j] );
         }

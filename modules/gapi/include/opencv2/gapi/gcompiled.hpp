@@ -14,7 +14,7 @@
 #include <opencv2/gapi/own/assert.hpp>
 #include <opencv2/gapi/garg.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 // This class represents a compiled computation.
 // In theory (and ideally), it can be used w/o the rest of APIs.
@@ -37,7 +37,7 @@ namespace cv {
  * some exceptions.
  *
  * This class represents a product of graph compilation (calling
- * cv::GComputation::compile()). Objects of this class actually do
+ * ncvslideio::GComputation::compile()). Objects of this class actually do
  * data processing, and graph execution is incapsulated into objects
  * of this class. Execution model itself depends on kernels and
  * backends which were using during the compilation, see @ref
@@ -58,7 +58,7 @@ namespace cv {
  * (not on the process stack).
  *
  * At the same time, two different GCompiled objects produced from the
- * single cv::GComputation are completely independent and can be used
+ * single ncvslideio::GComputation are completely independent and can be used
  * concurrently.
  *
  * @sa GStreamingCompiled
@@ -81,17 +81,17 @@ public:
      * @param outs vector of outputs to produce.
      *
      * Input/output vectors must have the same number of elements as
-     * defined in the cv::GComputation protocol (at the moment of its
+     * defined in the ncvslideio::GComputation protocol (at the moment of its
      * construction). Shapes of elements also must conform to protocol
-     * (e.g. cv::Mat needs to be passed where cv::GMat has been
+     * (e.g. ncvslideio::Mat needs to be passed where ncvslideio::GMat has been
      * declared as input, and so on). Run-time exception is generated
      * otherwise.
      *
-     * Objects in output vector may remain empty (like cv::Mat) --
+     * Objects in output vector may remain empty (like ncvslideio::Mat) --
      * G-API will automatically initialize output objects to proper formats.
      *
      * @note Don't construct GRunArgs/GRunArgsP objects manually, use
-     * cv::gin()/cv::gout() wrappers instead.
+     * ncvslideio::gin()/ncvslideio::gout() wrappers instead.
      */
     void operator() (GRunArgs &&ins, GRunArgsP &&outs);          // Generic arg-to-arg
 #if !defined(GAPI_STANDALONE)
@@ -100,59 +100,59 @@ public:
      * @brief Execute an unary computation
      *
      * @overload
-     * @param in input cv::Mat for unary computation
-     * @param out output cv::Mat for unary computation
+     * @param in input ncvslideio::Mat for unary computation
+     * @param out output ncvslideio::Mat for unary computation
      * process.
      */
-    void operator() (cv::Mat in, cv::Mat &out);                  // Unary overload
+    void operator() (ncvslideio::Mat in, ncvslideio::Mat &out);                  // Unary overload
 
     /**
      * @brief Execute an unary computation
      *
      * @overload
-     * @param in input cv::Mat for unary computation
-     * @param out output cv::Scalar for unary computation
+     * @param in input ncvslideio::Mat for unary computation
+     * @param out output ncvslideio::Scalar for unary computation
      * process.
      */
-    void operator() (cv::Mat in, cv::Scalar &out);               // Unary overload (scalar)
+    void operator() (ncvslideio::Mat in, ncvslideio::Scalar &out);               // Unary overload (scalar)
 
     /**
      * @brief Execute a binary computation
      *
      * @overload
-     * @param in1 first input cv::Mat for binary computation
-     * @param in2 second input cv::Mat for binary computation
-     * @param out output cv::Mat for binary computation
+     * @param in1 first input ncvslideio::Mat for binary computation
+     * @param in2 second input ncvslideio::Mat for binary computation
+     * @param out output ncvslideio::Mat for binary computation
      * process.
      */
-    void operator() (cv::Mat in1, cv::Mat in2, cv::Mat &out);    // Binary overload
+    void operator() (ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Mat &out);    // Binary overload
 
     /**
      * @brief Execute an binary computation
      *
      * @overload
-     * @param in1 first input cv::Mat for binary computation
-     * @param in2 second input cv::Mat for binary computation
-     * @param out output cv::Scalar for binary computation
+     * @param in1 first input ncvslideio::Mat for binary computation
+     * @param in2 second input ncvslideio::Mat for binary computation
+     * @param out output ncvslideio::Scalar for binary computation
      * process.
      */
-    void operator() (cv::Mat in1, cv::Mat in2, cv::Scalar &out); // Binary overload (scalar)
+    void operator() (ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Scalar &out); // Binary overload (scalar)
 
     /**
      * @brief Execute a computation with arbitrary number of
      * inputs/outputs.
      *
      * @overload
-     * @param ins vector of input cv::Mat objects to process by the
+     * @param ins vector of input ncvslideio::Mat objects to process by the
      * computation.
-     * @param outs vector of output cv::Mat objects to produce by the
+     * @param outs vector of output ncvslideio::Mat objects to produce by the
      * computation.
      *
      * Numbers of elements in ins/outs vectors must match numbers of
      * inputs/outputs which were used to define the source GComputation.
      */
-    void operator() (const std::vector<cv::Mat> &ins,            // Compatibility overload
-                     const std::vector<cv::Mat> &outs);
+    void operator() (const std::vector<ncvslideio::Mat> &ins,            // Compatibility overload
+                     const std::vector<ncvslideio::Mat> &outs);
 #endif  // !defined(GAPI_STANDALONE)
     /// @private
     Priv& priv();
@@ -168,7 +168,7 @@ public:
      * @brief Vector of metadata this graph was compiled for.
      *
      * @return Unless _reshape_ is not supported, return value is the
-     * same vector which was passed to cv::GComputation::compile() to
+     * same vector which was passed to ncvslideio::GComputation::compile() to
      * produce this compiled object. Otherwise, it is the latest
      * metadata vector passed to reshape() (if that call was
      * successful).
@@ -183,7 +183,7 @@ public:
      * operations which form this computation.
      *
      * @note GCompiled objects produced from the same
-     * cv::GComputiation graph with different input metas may return
+     * ncvslideio::GComputiation graph with different input metas may return
      * different values in this vector.
      */
     const GMetaArgs& outMetas() const;

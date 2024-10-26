@@ -18,8 +18,8 @@
 #include "opencv2/cudastereo.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 ///////////////////////////////////////////////////////////
 // Thread

@@ -11,7 +11,7 @@
 #define LOG_TAG "org.opencv.android.Utils"
 #include "common.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 extern "C" {
 
@@ -52,9 +52,9 @@ JNIEXPORT void JNICALL Java_org_opencv_android_Utils_nBitmapToMat2
             }
             AndroidBitmap_unlockPixels(env, bitmap);
             return;
-        } catch(const cv::Exception& e) {
+        } catch(const ncvslideio::Exception& e) {
             AndroidBitmap_unlockPixels(env, bitmap);
-            LOGE("nBitmapToMat caught cv::Exception: %s", e.what());
+            LOGE("nBitmapToMat caught ncvslideio::Exception: %s", e.what());
             jclass je = env->FindClass("org/opencv/core/CvException");
             if(!je) je = env->FindClass("java/lang/Exception");
             env->ThrowNew(je, e.what());
@@ -134,9 +134,9 @@ JNIEXPORT void JNICALL Java_org_opencv_android_Utils_nMatToBitmap2
             }
             AndroidBitmap_unlockPixels(env, bitmap);
             return;
-        } catch(const cv::Exception& e) {
+        } catch(const ncvslideio::Exception& e) {
             AndroidBitmap_unlockPixels(env, bitmap);
-            LOGE("nMatToBitmap caught cv::Exception: %s", e.what());
+            LOGE("nMatToBitmap caught ncvslideio::Exception: %s", e.what());
             jclass je = env->FindClass("org/opencv/core/CvException");
             if(!je) je = env->FindClass("java/lang/Exception");
             env->ThrowNew(je, e.what());

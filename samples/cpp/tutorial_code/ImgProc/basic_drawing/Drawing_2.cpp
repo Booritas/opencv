@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 /// Global Variables
 const int NUMBER = 100;

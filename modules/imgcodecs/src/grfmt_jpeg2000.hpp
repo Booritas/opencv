@@ -47,7 +47,7 @@
 
 #include "grfmt_base.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class Jpeg2KDecoder CV_FINAL : public BaseImageDecoder

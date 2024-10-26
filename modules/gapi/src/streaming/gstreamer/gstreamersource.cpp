@@ -23,7 +23,7 @@
 #include <gst/video/video-frame.h>
 #endif // HAVE_GSTREAMER
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -81,12 +81,12 @@ GStreamerSource::Priv::Priv(std::shared_ptr<GStreamerPipelineFacade> pipeline,
     configureAppsink();
 }
 
-bool GStreamerSource::Priv::pull(cv::gapi::wip::Data& data)
+bool GStreamerSource::Priv::pull(ncvslideio::gapi::wip::Data& data)
 {
     bool result = false;
     switch(m_outputType) {
         case GStreamerSource::OutputType::FRAME: {
-            cv::MediaFrame frame;
+            ncvslideio::MediaFrame frame;
             result = retrieveFrame(frame);
             if (result) {
                 data = frame;
@@ -94,7 +94,7 @@ bool GStreamerSource::Priv::pull(cv::gapi::wip::Data& data)
             break;
         }
         case GStreamerSource::OutputType::MAT: {
-            cv::Mat mat;
+            ncvslideio::Mat mat;
             result = retrieveFrame(mat);
             if (result) {
                 data = mat;
@@ -104,8 +104,8 @@ bool GStreamerSource::Priv::pull(cv::gapi::wip::Data& data)
     }
 
     if (result) {
-        data.meta[cv::gapi::streaming::meta_tag::timestamp] = computeTimestamp();
-        data.meta[cv::gapi::streaming::meta_tag::seq_id]    = m_frameId++;
+        data.meta[ncvslideio::gapi::streaming::meta_tag::timestamp] = computeTimestamp();
+        data.meta[ncvslideio::gapi::streaming::meta_tag::seq_id]    = m_frameId++;
     }
 
     return result;
@@ -143,7 +143,7 @@ void GStreamerSource::Priv::configureAppsink() {
     GStreamerPtr<GstPad> appsinkPad(gst_element_get_static_pad(m_appsink, "sink"));
     GStreamerPtr<GstCaps> peerCaps(gst_pad_peer_query_caps(appsinkPad, NULL));
     if (!gst_caps_can_intersect(peerCaps, gstCaps)) {
-        cv::util::throw_error(
+        ncvslideio::util::throw_error(
             std::logic_error("appsink element can only consume video-frame in NV12 or GRAY8 format in "
                              "GStreamerSource"));
     }
@@ -182,12 +182,12 @@ void GStreamerSource::Priv::prepareVideoMeta()
         if (!gst_structure_get_int(structure, "width", &width) ||
             !gst_structure_get_int(structure, "height", &height))
         {
-            cv::util::throw_error(std::logic_error("Cannot query video width/height."));
+            ncvslideio::util::throw_error(std::logic_error("Cannot query video width/height."));
         }
 
         // Fill GstVideoInfo structure to work further with GstVideoFrame class.
         if (!gst_video_info_from_caps(&m_videoInfo, prerollCaps)) {
-            cv::util::throw_error(std::logic_error("preroll sample has invalid caps."));
+            ncvslideio::util::throw_error(std::logic_error("preroll sample has invalid caps."));
         }
         m_type = GST_VIDEO_INFO_FORMAT(&m_videoInfo);
         switch(m_outputType) {
@@ -195,12 +195,12 @@ void GStreamerSource::Priv::prepareVideoMeta()
                 // Construct metadata for media frame.
                 switch (m_type) {
                     case GST_VIDEO_FORMAT_NV12: {
-                        m_mediaFrameMeta = GFrameDesc{ cv::MediaFormat::NV12, cv::Size(width, height) };
+                        m_mediaFrameMeta = GFrameDesc{ ncvslideio::MediaFormat::NV12, ncvslideio::Size(width, height) };
                         GAPI_Assert(GST_VIDEO_INFO_N_PLANES(&m_videoInfo) == 2);
                         break;
                     }
                     case GST_VIDEO_FORMAT_GRAY8: {
-                        m_mediaFrameMeta = GFrameDesc{ cv::MediaFormat::GRAY, cv::Size(width, height) };
+                        m_mediaFrameMeta = GFrameDesc{ ncvslideio::MediaFormat::GRAY, ncvslideio::Size(width, height) };
                         GAPI_Assert(GST_VIDEO_INFO_N_PLANES(&m_videoInfo) == 1);
                         break;
                     }
@@ -212,7 +212,7 @@ void GStreamerSource::Priv::prepareVideoMeta()
             }
             case GStreamerSource::OutputType::MAT: {
                 // Construct metadata for BGR mat.
-                m_matMeta = GMatDesc { CV_8U, 3, cv::Size(width, height), false };
+                m_matMeta = GMatDesc { CV_8U, 3, ncvslideio::Size(width, height), false };
                 break;
             }
         }
@@ -268,7 +268,7 @@ bool GStreamerSource::Priv::pullBuffer()
     return true;
 }
 
-bool GStreamerSource::Priv::retrieveFrame(cv::Mat& data)
+bool GStreamerSource::Priv::retrieveFrame(ncvslideio::Mat& data)
 {
     // Prepare metadata if it isn't prepared yet.
     prepareVideoMeta();
@@ -289,31 +289,31 @@ bool GStreamerSource::Priv::retrieveFrame(cv::Mat& data)
             case GST_VIDEO_FORMAT_NV12: {
                 // m_matMeta holds width and height for 8U BGR frame, but actual
                 // frame m_buffer we request from GStreamer pipeline has 8U NV12 format.
-                // Constructing y and uv cv::Mat-s from such a m_buffer:
+                // Constructing y and uv ncvslideio::Mat-s from such a m_buffer:
                 GAPI_Assert((uint8_t*)GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 1) ==
                     (uint8_t*)GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 0) +
                     GST_VIDEO_FRAME_PLANE_OFFSET(&videoFrame, 1));
                 GAPI_Assert(GST_VIDEO_INFO_N_PLANES(&m_videoInfo) == 2);
 
-                cv::Mat y(m_matMeta.size, CV_8UC1,
+                ncvslideio::Mat y(m_matMeta.size, CV_8UC1,
                     (uint8_t*)GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 0) +
                     GST_VIDEO_FRAME_PLANE_OFFSET(&videoFrame, 0),
                     GST_VIDEO_FRAME_PLANE_STRIDE(&videoFrame, 0));
-                cv::Mat uv(m_matMeta.size / 2, CV_8UC2,
+                ncvslideio::Mat uv(m_matMeta.size / 2, CV_8UC2,
                     (uint8_t*)GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 0) +
                     GST_VIDEO_FRAME_PLANE_OFFSET(&videoFrame, 1),
                     GST_VIDEO_FRAME_PLANE_STRIDE(&videoFrame, 1));
 
-                cv::cvtColorTwoPlane(y, uv, data, cv::COLOR_YUV2BGR_NV12);
+                ncvslideio::cvtColorTwoPlane(y, uv, data, ncvslideio::COLOR_YUV2BGR_NV12);
                 break;
             }
             case GST_VIDEO_FORMAT_GRAY8: {
                 GAPI_Assert(GST_VIDEO_INFO_N_PLANES(&m_videoInfo) == 1);
-                cv::Mat y(m_matMeta.size, CV_8UC1,
+                ncvslideio::Mat y(m_matMeta.size, CV_8UC1,
                     (uint8_t*)GST_VIDEO_FRAME_PLANE_DATA(&videoFrame, 0) +
                     GST_VIDEO_FRAME_PLANE_OFFSET(&videoFrame, 0),
                     GST_VIDEO_FRAME_PLANE_STRIDE(&videoFrame, 0));
-                cv::cvtColor(y, data, cv::COLOR_GRAY2BGR);
+                ncvslideio::cvtColor(y, data, ncvslideio::COLOR_GRAY2BGR);
                 break;
             }
             default: {
@@ -324,14 +324,14 @@ bool GStreamerSource::Priv::retrieveFrame(cv::Mat& data)
     catch (...)
     {
         gst_video_frame_unmap(&videoFrame);
-        cv::util::throw_error(std::runtime_error("NV12 or GRAY8 buffer conversion to BGR is failed!"));
+        ncvslideio::util::throw_error(std::runtime_error("NV12 or GRAY8 buffer conversion to BGR is failed!"));
     }
     gst_video_frame_unmap(&videoFrame);
 
     return true;
 }
 
-bool GStreamerSource::Priv::retrieveFrame(cv::MediaFrame& data)
+bool GStreamerSource::Priv::retrieveFrame(ncvslideio::MediaFrame& data)
 {
     // Prepare metadata if it isn't prepared yet.
     prepareVideoMeta();
@@ -342,7 +342,7 @@ bool GStreamerSource::Priv::retrieveFrame(cv::MediaFrame& data)
         return false;
     }
 
-    data = cv::MediaFrame::Create<GStreamerMediaAdapter>(m_mediaFrameMeta, &m_videoInfo,
+    data = ncvslideio::MediaFrame::Create<GStreamerMediaAdapter>(m_mediaFrameMeta, &m_videoInfo,
                                                          m_buffer);
 
     return true;
@@ -363,7 +363,7 @@ GStreamerSource::Priv::Priv(std::shared_ptr<GStreamerPipelineFacade>, const std:
     GAPI_Error("Built without GStreamer support!");
 }
 
-bool GStreamerSource::Priv::pull(cv::gapi::wip::Data&)
+bool GStreamerSource::Priv::pull(ncvslideio::gapi::wip::Data&)
 {
     // No need an assert here. Constructor have already got assert.
     return false;
@@ -391,7 +391,7 @@ GStreamerSource::GStreamerSource(std::shared_ptr<GStreamerPipelineFacade> pipeli
                                  const GStreamerSource::OutputType outputType):
     m_priv(new Priv(pipeline, appsinkName, outputType)) { }
 
-bool GStreamerSource::pull(cv::gapi::wip::Data& data)
+bool GStreamerSource::pull(ncvslideio::gapi::wip::Data& data)
 {
     return m_priv->pull(data);
 }
@@ -411,4 +411,4 @@ GStreamerSource::GStreamerSource(std::unique_ptr<Priv> priv):
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

@@ -9,7 +9,7 @@
 #include "streaming/onevpl/utils.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -56,5 +56,5 @@ void EngineSession::request_free_surface(mfxSession session,
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

@@ -55,7 +55,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     template <typename Ptr2D> struct PointFilter
     {
@@ -286,7 +286,7 @@ namespace cv { namespace cuda { namespace device
         float scale_x, scale_y;
         int width, haight;
     };
-}}} // namespace cv { namespace cuda { namespace cudev
+}}} // namespace ncvslideio { namespace cuda { namespace cudev
 
 //! @endcond
 

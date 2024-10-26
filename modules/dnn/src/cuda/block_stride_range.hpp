@@ -10,7 +10,7 @@
 
 #include <cuda_runtime.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
 template <int dim, int BLOCK_SIZE = 0, class index_type = device::index_type, class size_type = device::size_type>
 class block_stride_range_generic {
@@ -66,6 +66,6 @@ using block_stride_range_z = block_stride_range_generic<2>;
 template <size_type BLOCK_SIZE = 0>
 using block_stride_range = block_stride_range_generic<0, BLOCK_SIZE>;
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_BLOCK_STRIDE_RANGE_HPP */

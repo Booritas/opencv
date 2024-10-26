@@ -6,7 +6,7 @@
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 struct GraphicalCodeDetector::Impl {
     virtual ~Impl() {}

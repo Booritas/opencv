@@ -14,7 +14,7 @@ const std::string keys =
     "{ output  | output.h265  | Path to the output .h265 video file }";
 
 int main(int argc, char *argv[]) {
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     if (cmd.has("help")) {
         cmd.printMessage();
         return 0;
@@ -22,18 +22,18 @@ int main(int argc, char *argv[]) {
 
     const std::string output_name = cmd.get<std::string>("output");
 
-    cv::gapi::oak::EncoderConfig cfg;
-    cfg.profile = cv::gapi::oak::EncoderConfig::Profile::H265_MAIN;
+    ncvslideio::gapi::oak::EncoderConfig cfg;
+    cfg.profile = ncvslideio::gapi::oak::EncoderConfig::Profile::H265_MAIN;
 
-    cv::GFrame in;
-    cv::GArray<uint8_t> encoded = cv::gapi::oak::encode(in, cfg);
+    ncvslideio::GFrame in;
+    ncvslideio::GArray<uint8_t> encoded = ncvslideio::gapi::oak::encode(in, cfg);
 
-    auto args = cv::compile_args(cv::gapi::oak::ColorCameraParams{}, cv::gapi::oak::kernels());
+    auto args = ncvslideio::compile_args(ncvslideio::gapi::oak::ColorCameraParams{}, ncvslideio::gapi::oak::kernels());
 
-    auto pipeline = cv::GComputation(cv::GIn(in), cv::GOut(encoded)).compileStreaming(std::move(args));
+    auto pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(encoded)).compileStreaming(std::move(args));
 
     // Graph execution /////////////////////////////////////////////////////////
-    pipeline.setSource(cv::gapi::wip::make_src<cv::gapi::oak::ColorCamera>());
+    pipeline.setSource(ncvslideio::gapi::wip::make_src<ncvslideio::gapi::oak::ColorCamera>());
     pipeline.start();
 
     std::vector<uint8_t> out_h265_data;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     uint32_t frames = 300;
     uint32_t pulled = 0;
 
-    while (pipeline.pull(cv::gout(out_h265_data))) {
+    while (pipeline.pull(ncvslideio::gout(out_h265_data))) {
         if (out_h265_file.is_open()) {
             out_h265_file.write(reinterpret_cast<const char*>(out_h265_data.data()),
                                                               out_h265_data.size());

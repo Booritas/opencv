@@ -11,11 +11,11 @@
 #include <opencv2/gapi/gscalar.hpp>
 #include <opencv2/gapi/gkernel.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /**
- * The enum specified format of result that you get from @ref cv::gapi::stereo.
+ * The enum specified format of result that you get from @ref ncvslideio::gapi::stereo.
  */
 enum class StereoOutputFormat {
     DEPTH_FLOAT16, ///< Floating point 16 bit value, CV_16FC1.
@@ -80,6 +80,6 @@ GAPI_EXPORTS GMat stereo(const GMat& left,
                          const GMat& right,
                          const StereoOutputFormat of = StereoOutputFormat::DEPTH_FLOAT32);
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STEREO_HPP

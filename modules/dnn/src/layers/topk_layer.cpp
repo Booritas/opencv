@@ -7,7 +7,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 namespace {
 
@@ -225,4 +225,4 @@ Ptr<TopKLayer> TopKLayer::create(const LayerParams& params)
     return makePtr<TopKLayerImpl>(params);
 }
 
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

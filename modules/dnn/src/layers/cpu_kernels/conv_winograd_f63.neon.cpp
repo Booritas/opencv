@@ -6,7 +6,7 @@
 #include "convolution.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 // NEON code work around.

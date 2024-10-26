@@ -93,8 +93,8 @@ OCL_TEST_P(MedianFilter, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::medianBlur(src_roi, dst_roi, ksize));
-        OCL_ON(cv::medianBlur(usrc_roi, udst_roi, ksize));
+        OCL_OFF(ncvslideio::medianBlur(src_roi, dst_roi, ksize));
+        OCL_ON(ncvslideio::medianBlur(usrc_roi, udst_roi, ksize));
 
         Near(0);
     }

@@ -5,7 +5,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(const char** argv)
 {
@@ -40,7 +40,7 @@ int main( int argc, const char** argv )
 
     CascadeClassifier cascade, nestedCascade;
     double scale;
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{help h||}{scale|1|}"
         "{cascade|data/haarcascades/haarcascade_frontalface_alt.xml|}"
         "{smile-cascade|data/haarcascades/haarcascade_smile.xml|}"

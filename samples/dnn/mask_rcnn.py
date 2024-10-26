@@ -43,16 +43,16 @@ def showLegend(classes):
         for i in range(len(classes)):
             block = legend[i * blockHeight:(i + 1) * blockHeight]
             block[:,:] = colors[i]
-            cv.putText(block, classes[i], (0, blockHeight//2), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+            ncvslideio.putText(block, classes[i], (0, blockHeight//2), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 
-        cv.namedWindow('Legend', cv.WINDOW_NORMAL)
-        cv.imshow('Legend', legend)
+        ncvslideio.namedWindow('Legend', ncvslideio.WINDOW_NORMAL)
+        ncvslideio.imshow('Legend', legend)
         classes = None
 
 
 def drawBox(frame, classId, conf, left, top, right, bottom):
     # Draw a bounding box.
-    cv.rectangle(frame, (left, top), (right, bottom), (0, 255, 0))
+    ncvslideio.rectangle(frame, (left, top), (right, bottom), (0, 255, 0))
 
     label = '%.2f' % conf
 
@@ -61,32 +61,32 @@ def drawBox(frame, classId, conf, left, top, right, bottom):
         assert(classId < len(classes))
         label = '%s: %s' % (classes[classId], label)
 
-    labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+    labelSize, baseLine = ncvslideio.getTextSize(label, ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, 1)
     top = max(top, labelSize[1])
-    cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine), (255, 255, 255), cv.FILLED)
-    cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    ncvslideio.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine), (255, 255, 255), ncvslideio.FILLED)
+    ncvslideio.putText(frame, label, (left, top), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
 
 # Load a network
-net = cv.dnn.readNet(cv.samples.findFile(args.model), cv.samples.findFile(args.config))
-net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
+net = ncvslideio.dnn.readNet(ncvslideio.samples.findFile(args.model), ncvslideio.samples.findFile(args.config))
+net.setPreferableBackend(ncvslideio.dnn.DNN_BACKEND_OPENCV)
 
 winName = 'Mask-RCNN in OpenCV'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+cv.namedWindow(winName, ncvslideio.WINDOW_NORMAL)
 
-cap = cv.VideoCapture(cv.samples.findFileOrKeep(args.input) if args.input else 0)
+cap = ncvslideio.VideoCapture(ncvslideio.samples.findFileOrKeep(args.input) if args.input else 0)
 legend = None
-while cv.waitKey(1) < 0:
+while ncvslideio.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
-        cv.waitKey()
+        ncvslideio.waitKey()
         break
 
     frameH = frame.shape[0]
     frameW = frame.shape[1]
 
     # Create a 4D blob from a frame.
-    blob = cv.dnn.blobFromImage(frame, size=(args.width, args.height), swapRB=True, crop=False)
+    blob = ncvslideio.dnn.blobFromImage(frame, size=(args.width, args.height), swapRB=True, crop=False)
 
     # Run a model
     net.setInput(blob)
@@ -124,7 +124,7 @@ while cv.waitKey(1) < 0:
             boxesToDraw.append([frame, classId, score, left, top, right, bottom])
 
             classMask = mask[classId]
-            classMask = cv.resize(classMask, (right - left + 1, bottom - top + 1))
+            classMask = ncvslideio.resize(classMask, (right - left + 1, bottom - top + 1))
             mask = (classMask > 0.5)
 
             roi = frame[top:bottom+1, left:right+1][mask]
@@ -135,9 +135,9 @@ while cv.waitKey(1) < 0:
 
     # Put efficiency information.
     t, _ = net.getPerfProfile()
-    label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
-    cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+    label = 'Inference time: %.2f ms' % (t * 1000.0 / ncvslideio.getTickFrequency())
+    ncvslideio.putText(frame, label, (0, 15), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
     showLegend(classes)
 
-    cv.imshow(winName, frame)
+    ncvslideio.imshow(winName, frame)

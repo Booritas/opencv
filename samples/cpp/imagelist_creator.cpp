@@ -11,7 +11,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** av)
 {
@@ -23,7 +23,7 @@ static void help(char** av)
 
 int main(int ac, char** av)
 {
-  cv::CommandLineParser parser(ac, av, "{help h||}{@output||}");
+  ncvslideio::CommandLineParser parser(ac, av, "{help h||}{@output||}");
   if (parser.has("help"))
   {
     help(av);

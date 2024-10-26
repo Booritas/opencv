@@ -20,7 +20,7 @@
 
 #include "api/gnode.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 enum class GNode::NodeShape: unsigned int
 {

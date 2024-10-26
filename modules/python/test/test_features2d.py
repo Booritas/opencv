@@ -9,9 +9,9 @@ from tests_common import NewOpenCVTests
 class Features2D_Tests(NewOpenCVTests):
 
     def test_issue_13406(self):
-        self.assertEqual(True, hasattr(cv, 'drawKeypoints'))
-        self.assertEqual(True, hasattr(cv, 'DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS'))
-        self.assertEqual(True, hasattr(cv, 'DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS'))
+        self.assertEqual(True, hasattr(ncvslideio, 'drawKeypoints'))
+        self.assertEqual(True, hasattr(ncvslideio, 'DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS'))
+        self.assertEqual(True, hasattr(ncvslideio, 'DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS'))
 
 
 if __name__ == '__main__':

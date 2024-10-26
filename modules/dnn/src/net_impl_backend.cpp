@@ -14,7 +14,7 @@
 #include "cuda4dnn/init.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -161,7 +161,7 @@ void Net::Impl::initBackend(const std::vector<LayerPin>& blobsToKeep_)
     }
     else
     {
-        CV_Error(Error::StsNotImplemented, cv::format("Unknown backend identifier: %d", preferableBackend));
+        CV_Error(Error::StsNotImplemented, ncvslideio::format("Unknown backend identifier: %d", preferableBackend));
     }
 }
 
@@ -278,4 +278,4 @@ void Net::Impl::setPreferableTarget(int targetId)
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

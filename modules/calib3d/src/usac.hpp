@@ -5,7 +5,7 @@
 #ifndef OPENCV_USAC_USAC_HPP
 #define OPENCV_USAC_USAC_HPP
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 enum EstimationMethod { HOMOGRAPHY=0, FUNDAMENTAL=1, FUNDAMENTAL8=2, ESSENTIAL=3, AFFINE=4, P3P=5, P6P=6};
 enum VerificationMethod { NULL_VERIFIER=0, SPRT_VERIFIER=1, ASPRT=2 };
 enum ErrorMetric {DIST_TO_LINE=0, SAMPSON_ERR=1, SGD_ERR=2, SYMM_REPR_ERR=3, FORW_REPR_ERR=4, RERPOJ=5};
@@ -136,7 +136,7 @@ public:
 class TrifocalTensorMinimalSolver : public MinimalSolver {
 public:
     static Ptr<TrifocalTensorMinimalSolver> create(const Mat &points_);
-    virtual void getFundamentalMatricesFromTensor (const cv::Mat &tensor, cv::Mat &F21, cv::Mat &F31) = 0;
+    virtual void getFundamentalMatricesFromTensor (const ncvslideio::Mat &tensor, ncvslideio::Mat &F21, ncvslideio::Mat &F31) = 0;
 };
 
 //////////////////////////////////////// NON MINIMAL SOLVER ///////////////////////////////////////
@@ -176,7 +176,7 @@ public:
 //-------------------------- ESSENTIAL MATRIX -----------------------
 class EssentialNonMinimalSolverViaF : public NonMinimalSolver {
 public:
-    static Ptr<EssentialNonMinimalSolverViaF> create(const Mat &points_, const cv::Mat &K1, const Mat &K2);
+    static Ptr<EssentialNonMinimalSolverViaF> create(const Mat &points_, const ncvslideio::Mat &K1, const Mat &K2);
 };
 
 class EssentialNonMinimalSolverViaT : public NonMinimalSolver {
@@ -376,7 +376,7 @@ class FundamentalDegeneracy : public EpipolarGeometryDegeneracy {
 public:
     virtual void setPrincipalPoint (double px_, double py_) = 0;
     virtual void setPrincipalPoint (double px_, double py_, double px2_, double py2_) = 0;
-    virtual bool verifyFundamental (const Mat &F_best, const Score &F_score, const std::vector<bool> &inliers_mask, cv::Mat &F_new, Score &new_score) = 0;
+    virtual bool verifyFundamental (const Mat &F_best, const Score &F_score, const std::vector<bool> &inliers_mask, ncvslideio::Mat &F_new, Score &new_score) = 0;
     static Ptr<FundamentalDegeneracy> create (int state, const Ptr<Quality> &quality_,
         const Mat &points_, int sample_size_, int max_iters_plane_and_parallax,
         double homography_threshold, double f_inlier_thr_sqr, const Mat true_K1=Mat(), const Mat true_K2=Mat());
@@ -645,10 +645,10 @@ namespace Utils {
     void triangulatePoints (const Mat &E, const Mat &points1, const Mat &points2,  Mat &corr_points1, Mat &corr_points2,
                const Mat &K1, const Mat &K2, Mat &points3D, Mat &R, Mat &t, const std::vector<bool> &good_point_mask);
     int triangulatePointsRt (const Mat &points, Mat &points3D, const Mat &K1_, const Mat &K2_,
-        const cv::Mat &R, const cv::Mat &t_vec, std::vector<bool> &good_mask, std::vector<double> &depths1, std::vector<double> &depths2);
+        const ncvslideio::Mat &R, const ncvslideio::Mat &t_vec, std::vector<bool> &good_mask, std::vector<double> &depths1, std::vector<double> &depths2);
     int decomposeHomography (const Matx33d &Hnorm, std::vector<Matx33d> &R, std::vector<Vec3d> &t);
     double getPoissonCDF (double lambda, int tentative_inliers);
-    void getClosePoints (const cv::Mat &points, std::vector<std::vector<int>> &close_points, float close_thr_sqr);
+    void getClosePoints (const ncvslideio::Mat &points, std::vector<std::vector<int>> &close_points, float close_thr_sqr);
     Vec3d getLeftEpipole (const Mat &F);
     Vec3d getRightEpipole (const Mat &F);
     int removeClosePoints (const Mat &points, Mat &new_points, float thr);
@@ -814,8 +814,8 @@ public:
 
 /////////////////////////////////// POSE LIB ////////////////////////////////////////
 struct CameraPose {
-    cv::Matx33d R;
-    cv::Vec3d t;
+    ncvslideio::Matx33d R;
+    ncvslideio::Vec3d t;
     double alpha = 1.0; // either focal length or scale
 };
 typedef std::vector<CameraPose> CameraPoseVector;
@@ -831,11 +831,11 @@ struct BundleOptions {
     double initial_lambda = 1e-3;
 };
 
-bool satisfyCheirality (const cv::Matx33d& R, const cv::Vec3d &t, const cv::Vec3d &x1, const cv::Vec3d &x2);
+bool satisfyCheirality (const ncvslideio::Matx33d& R, const ncvslideio::Vec3d &t, const ncvslideio::Vec3d &x1, const ncvslideio::Vec3d &x2);
 
 // Relative pose refinement. Minimizes Sampson error error. Assumes identity intrinsics (calibrated camera)
 // Returns number of iterations.
-int refine_relpose(const cv::Mat &correspondences_,
+int refine_relpose(const ncvslideio::Mat &correspondences_,
                    const std::vector<int> &sample_,
                    const int sample_size_,
                    CameraPose *pose,

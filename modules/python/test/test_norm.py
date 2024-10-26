@@ -65,26 +65,26 @@ def norm_hamming2(x, y=None):
 
 
 norm_type_under_test = {
-    cv.NORM_INF: norm_inf,
-    cv.NORM_L1: norm_l1,
-    cv.NORM_L2: norm_l2,
-    cv.NORM_L2SQR: norm_l2sqr,
-    cv.NORM_HAMMING: norm_hamming,
-    cv.NORM_HAMMING2: norm_hamming2
+    ncvslideio.NORM_INF: norm_inf,
+    ncvslideio.NORM_L1: norm_l1,
+    ncvslideio.NORM_L2: norm_l2,
+    ncvslideio.NORM_L2SQR: norm_l2sqr,
+    ncvslideio.NORM_HAMMING: norm_hamming,
+    ncvslideio.NORM_HAMMING2: norm_hamming2
 }
 
 norm_name = {
-    cv.NORM_INF: 'inf',
-    cv.NORM_L1: 'L1',
-    cv.NORM_L2: 'L2',
-    cv.NORM_L2SQR: 'L2SQR',
-    cv.NORM_HAMMING: 'Hamming',
-    cv.NORM_HAMMING2: 'Hamming2'
+    ncvslideio.NORM_INF: 'inf',
+    ncvslideio.NORM_L1: 'L1',
+    ncvslideio.NORM_L2: 'L2',
+    ncvslideio.NORM_L2SQR: 'L2SQR',
+    ncvslideio.NORM_HAMMING: 'Hamming',
+    ncvslideio.NORM_HAMMING2: 'Hamming2'
 }
 
 
 def get_element_types(norm_type):
-    if norm_type in (cv.NORM_HAMMING, cv.NORM_HAMMING2):
+    if norm_type in (ncvslideio.NORM_HAMMING, ncvslideio.NORM_HAMMING2):
         return (np.uint8,)
     else:
         return (np.uint8, np.int8, np.uint16, np.int16, np.int32, np.float32,
@@ -110,7 +110,7 @@ class norm_test(NewOpenCVTests):
             for shape, element_type in product(shapes, element_types):
                 array = generate_vector(shape, element_type)
                 expected = norm(array)
-                actual = cv.norm(array, norm_type)
+                actual = ncvslideio.norm(array, norm_type)
                 self.assertAlmostEqual(
                     expected, actual, places=2,
                     msg='Array {0} of {1} and norm {2}'.format(
@@ -126,7 +126,7 @@ class norm_test(NewOpenCVTests):
                 first = generate_vector(shape, element_type)
                 second = generate_vector(shape, element_type)
                 expected = norm(first, second)
-                actual = cv.norm(first, second, norm_type)
+                actual = ncvslideio.norm(first, second, norm_type)
                 self.assertAlmostEqual(
                     expected, actual, places=2,
                     msg='Arrays {0} {1} of type {2} and norm {3}'.format(
@@ -136,12 +136,12 @@ class norm_test(NewOpenCVTests):
                 )
 
     def test_norm_fails_for_wrong_type(self):
-        for norm_type in (cv.NORM_HAMMING, cv.NORM_HAMMING2):
+        for norm_type in (ncvslideio.NORM_HAMMING, ncvslideio.NORM_HAMMING2):
             with self.assertRaises(Exception,
                                    msg='Type is not checked {0}'.format(
                                        norm_name[norm_type]
                                    )):
-                cv.norm(np.array([1, 2], dtype=np.int32), norm_type)
+                ncvslideio.norm(np.array([1, 2], dtype=np.int32), norm_type)
 
     def test_norm_fails_for_array_and_scalar(self):
         for norm_type in norm_type_under_test:
@@ -149,7 +149,7 @@ class norm_test(NewOpenCVTests):
                                    msg='Exception is not thrown for {0}'.format(
                                        norm_name[norm_type]
                                    )):
-                cv.norm(np.array([1, 2], dtype=np.uint8), 123, norm_type)
+                ncvslideio.norm(np.array([1, 2], dtype=np.uint8), 123, norm_type)
 
     def test_norm_fails_for_scalar_and_array(self):
         for norm_type in norm_type_under_test:
@@ -157,7 +157,7 @@ class norm_test(NewOpenCVTests):
                                    msg='Exception is not thrown for {0}'.format(
                                        norm_name[norm_type]
                                    )):
-                cv.norm(4, np.array([1, 2], dtype=np.uint8), norm_type)
+                ncvslideio.norm(4, np.array([1, 2], dtype=np.uint8), norm_type)
 
     def test_norm_fails_for_array_and_norm_type_as_scalar(self):
         for norm_type in norm_type_under_test:
@@ -165,7 +165,7 @@ class norm_test(NewOpenCVTests):
                                    msg='Exception is not thrown for {0}'.format(
                                        norm_name[norm_type]
                                    )):
-                cv.norm(np.array([3, 4, 5], dtype=np.uint8),
+                ncvslideio.norm(np.array([3, 4, 5], dtype=np.uint8),
                         norm_type, normType=norm_type)
 
 

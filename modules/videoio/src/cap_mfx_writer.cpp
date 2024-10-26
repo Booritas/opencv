@@ -9,7 +9,7 @@
 #include "cap_interface.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static float estimateBitrate(int codecId, size_t pixelNum, float fps)
 {
@@ -206,12 +206,12 @@ bool VideoWriter_IntelMFX::isOpened() const
     return good;
 }
 
-void VideoWriter_IntelMFX::write(cv::InputArray input)
+void VideoWriter_IntelMFX::write(ncvslideio::InputArray input)
 {
     write_one(input);
 }
 
-bool VideoWriter_IntelMFX::write_one(cv::InputArray bgr)
+bool VideoWriter_IntelMFX::write_one(ncvslideio::InputArray bgr)
 {
     mfxStatus res;
     mfxFrameSurface1 *workSurface = 0;
@@ -288,7 +288,7 @@ bool VideoWriter_IntelMFX::write_one(cv::InputArray bgr)
     }
 }
 
-Ptr<IVideoWriter> cv::create_MFX_writer(const std::string& filename, int _fourcc, double fps,
+Ptr<IVideoWriter> ncvslideio::create_MFX_writer(const std::string& filename, int _fourcc, double fps,
                                         const Size& frameSize, const VideoWriterParameters& params)
 {
     if (codecIdByFourCC(_fourcc) > 0)

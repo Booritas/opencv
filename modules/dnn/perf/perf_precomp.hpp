@@ -8,7 +8,7 @@
 
 namespace opencv_test {
 using namespace perf;
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 } // namespace
 
 #endif

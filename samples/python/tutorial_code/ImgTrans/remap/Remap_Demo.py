@@ -36,7 +36,7 @@ parser.add_argument('--input', help='Path to input image.', default='chicky_512.
 args = parser.parse_args()
 
 ## [Load]
-src = cv.imread(cv.samples.findFile(args.input), cv.IMREAD_COLOR)
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input), ncvslideio.IMREAD_COLOR)
 if src is None:
     print('Could not open or find the image: ', args.input)
     exit(0)
@@ -57,9 +57,9 @@ ind = 0
 while True:
     update_map(ind, map_x, map_y)
     ind = (ind + 1) % 4
-    dst = cv.remap(src, map_x, map_y, cv.INTER_LINEAR)
-    cv.imshow(window_name, dst)
-    c = cv.waitKey(1000)
+    dst = ncvslideio.remap(src, map_x, map_y, ncvslideio.INTER_LINEAR)
+    ncvslideio.imshow(window_name, dst)
+    c = ncvslideio.waitKey(1000)
     if c == 27:
         break
 ## [Loop]

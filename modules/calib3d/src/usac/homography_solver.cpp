@@ -8,7 +8,7 @@
 #include <Eigen/Eigen>
 #endif
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class HomographyMinimalSolver4ptsImpl : public HomographyMinimalSolver4pts {
 private:
     Mat points_mat;
@@ -67,7 +67,7 @@ public:
             }
         } else {
             Mat U, Vt, D;
-            cv::Matx<double, 8, 9> A_svd(&A[0]);
+            ncvslideio::Matx<double, 8, 9> A_svd(&A[0]);
             SVD::compute(A_svd, D, U, Vt, SVD::FULL_UV+SVD::MODIFY_A);
             models = std::vector<Mat> { Vt.row(Vt.rows-1).reshape(0, 3) };
         }

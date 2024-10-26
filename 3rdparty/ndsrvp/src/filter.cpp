@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/hal/interface.h"
 #include "cvutils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -318,4 +318,4 @@ int filterFree(cvhalFilter2D *context) {
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio

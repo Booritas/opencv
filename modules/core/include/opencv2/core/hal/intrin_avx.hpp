@@ -9,7 +9,7 @@
 #define CV_SIMD256_64F 1
 #define CV_SIMD256_FP16 0  // no native operations with FP16 type. Only load/store from float32x8 are available (if CV_FP16 == 1)
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @cond IGNORED
@@ -3184,6 +3184,6 @@ CV_CPU_OPTIMIZATION_HAL_NAMESPACE_END
 
 //! @endcond
 
-} // cv::
+} // ncvslideio::
 
 #endif // OPENCV_HAL_INTRIN_AVX_HPP

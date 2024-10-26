@@ -72,7 +72,7 @@ OCL_PERF_TEST_P(BlurFixture, Blur,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::blur(src, dst, Size(ksize, ksize), Point(-1, -1), bordertype);
+    OCL_TEST_CYCLE() ncvslideio::blur(src, dst, Size(ksize, ksize), Point(-1, -1), bordertype);
 
     SANITY_CHECK(dst, eps);
 }
@@ -97,7 +97,7 @@ OCL_PERF_TEST_P(SqrBoxFilterFixture, SqrBoxFilter,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::sqrBoxFilter(src, dst, ddepth, ksize, Point(-1, -1), false);
+    OCL_TEST_CYCLE() ncvslideio::sqrBoxFilter(src, dst, ddepth, ksize, Point(-1, -1), false);
 
     SANITY_CHECK(dst, eps);
 }
@@ -119,7 +119,7 @@ OCL_PERF_TEST_P(LaplacianFixture, Laplacian,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::Laplacian(src, dst, -1, ksize, 1);
+    OCL_TEST_CYCLE() ncvslideio::Laplacian(src, dst, -1, ksize, 1);
 
     SANITY_CHECK(dst, eps);
 }
@@ -141,7 +141,7 @@ OCL_PERF_TEST_P(ErodeFixture, Erode,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst).in(ker);
 
-    OCL_TEST_CYCLE() cv::erode(src, dst, ker);
+    OCL_TEST_CYCLE() ncvslideio::erode(src, dst, ker);
 
     SANITY_CHECK(dst);
 }
@@ -163,7 +163,7 @@ OCL_PERF_TEST_P(DilateFixture, Dilate,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst).in(ker);
 
-    OCL_TEST_CYCLE() cv::dilate(src, dst, ker);
+    OCL_TEST_CYCLE() ncvslideio::dilate(src, dst, ker);
 
     SANITY_CHECK(dst);
 }
@@ -188,7 +188,7 @@ OCL_PERF_TEST_P(MorphologyExFixture, MorphologyEx,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst).in(ker);
 
-    OCL_TEST_CYCLE() cv::morphologyEx(src, dst, op, ker);
+    OCL_TEST_CYCLE() ncvslideio::morphologyEx(src, dst, op, ker);
 
     SANITY_CHECK(dst);
 }
@@ -209,7 +209,7 @@ OCL_PERF_TEST_P(SobelFixture, Sobel,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::Sobel(src, dst, -1, dx, dy);
+    OCL_TEST_CYCLE() ncvslideio::Sobel(src, dst, -1, dx, dy);
 
     SANITY_CHECK(dst, 1e-6);
 }
@@ -231,7 +231,7 @@ OCL_PERF_TEST_P(ScharrFixture, Scharr,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::Scharr(src, dst, -1, dx, dy);
+    OCL_TEST_CYCLE() ncvslideio::Scharr(src, dst, -1, dx, dy);
 
     SANITY_CHECK(dst, eps);
 }
@@ -251,7 +251,7 @@ PERF_TEST_P_(OCL_GaussianBlurFixture, GaussianBlur)
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::GaussianBlur(src, dst, Size(ksize, ksize), 1, 1, cv::BORDER_CONSTANT);
+    OCL_TEST_CYCLE() ncvslideio::GaussianBlur(src, dst, Size(ksize, ksize), 1, 1, ncvslideio::BORDER_CONSTANT);
 
     SANITY_CHECK_NOTHING();
 }
@@ -308,7 +308,7 @@ OCL_PERF_TEST_P(Filter2DFixture, Filter2D,
     declare.in(src, WARMUP_RNG).in(kernel).out(dst);
     randu(kernel, -3.0, 3.0);
 
-    OCL_TEST_CYCLE() cv::filter2D(src, dst, -1, kernel);
+    OCL_TEST_CYCLE() ncvslideio::filter2D(src, dst, -1, kernel);
 
     SANITY_CHECK(dst, eps);
 }
@@ -333,7 +333,7 @@ PERF_TEST_P_(OCL_SepFilter2D, SepFilter2D)
     Mat kernelY(1, ksize, CV_32FC1);
     randu(kernelY, -3.0, 3.0);
 
-    OCL_TEST_CYCLE() cv::sepFilter2D(src, dst, -1, kernelX, kernelY, cv::Point(-1, -1), 1.0f, cv::BORDER_CONSTANT);
+    OCL_TEST_CYCLE() ncvslideio::sepFilter2D(src, dst, -1, kernelX, kernelY, ncvslideio::Point(-1, -1), 1.0f, ncvslideio::BORDER_CONSTANT);
 
     SANITY_CHECK_NOTHING();
 }
@@ -356,7 +356,7 @@ PERF_TEST_P_(OCL_SepFilter2D, SepFilter2D_BitExact)
     randu(kernelY, -16.0, 16.0);
     kernelY.convertTo(kernelY, CV_32FC1, 1/16.0f, 0);
 
-    OCL_TEST_CYCLE() cv::sepFilter2D(src, dst, -1, kernelX, kernelY, cv::Point(-1, -1), 1.0f, cv::BORDER_CONSTANT);
+    OCL_TEST_CYCLE() ncvslideio::sepFilter2D(src, dst, -1, kernelX, kernelY, ncvslideio::Point(-1, -1), 1.0f, ncvslideio::BORDER_CONSTANT);
 
     SANITY_CHECK_NOTHING();
 }
@@ -384,7 +384,7 @@ OCL_PERF_TEST_P(BilateralFixture, Bilateral, OCL_TEST_SIZES)
     UMat src(srcSize, CV_8UC1), dst(srcSize, CV_8UC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::bilateralFilter(src, dst, d, sigmacolor, sigmaspace);
+    OCL_TEST_CYCLE() ncvslideio::bilateralFilter(src, dst, d, sigmacolor, sigmaspace);
 
     SANITY_CHECK(dst);
 }
@@ -405,7 +405,7 @@ OCL_PERF_TEST_P(MedianBlurFixture, Bilateral, ::testing::Combine(OCL_TEST_SIZES,
     UMat src(srcSize, CV_8UC1), dst(srcSize, CV_8UC1);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::medianBlur(src, dst, ksize);
+    OCL_TEST_CYCLE() ncvslideio::medianBlur(src, dst, ksize);
 
     SANITY_CHECK(dst);
 }

@@ -6,7 +6,7 @@
 
 #include "opencv2/objdetect/aruco_detector.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 //! @addtogroup objdetect_aruco
@@ -63,7 +63,7 @@ public:
      * @param charucoCorners interpolated chessboard corners.
      * @param charucoIds interpolated chessboard corners identifiers.
      * @param markerCorners vector of already detected markers corners. For each marker, its four
-     * corners are provided, (e.g std::vector<std::vector<cv::Point2f> > ). For N detected markers, the
+     * corners are provided, (e.g std::vector<std::vector<ncvslideio::Point2f> > ). For N detected markers, the
      * dimensions of this array should be Nx4. The order of the corners should be clockwise.
      * If markerCorners and markerCorners are empty, the function detect aruco markers and ids.
      * @param markerIds list of identifiers for each marker in corners.
@@ -78,7 +78,7 @@ public:
      * Only visible corners are returned. For each corner, its corresponding identifier is also returned in charucoIds.
      * @sa findChessboardCorners
      * @note After OpenCV 4.6.0, there was an incompatible change in the ChArUco pattern generation algorithm for even row counts.
-     * Use cv::aruco::CharucoBoard::setLegacyPattern() to ensure compatibility with patterns created using OpenCV versions prior to 4.6.0.
+     * Use ncvslideio::aruco::CharucoBoard::setLegacyPattern() to ensure compatibility with patterns created using OpenCV versions prior to 4.6.0.
      * For more information, see the issue: https://github.com/opencv/opencv/issues/23152
      */
     CV_WRAP void detectBoard(InputArray image, OutputArray charucoCorners, OutputArray charucoIds,
@@ -91,7 +91,7 @@ public:
      * @param image input image necessary for corner subpixel.
      * @param diamondCorners output list of detected diamond corners (4 corners per diamond). The order
      * is the same than in marker corners: top left, top right, bottom right and bottom left. Similar
-     * format than the corners returned by detectMarkers (e.g std::vector<std::vector<cv::Point2f> > ).
+     * format than the corners returned by detectMarkers (e.g std::vector<std::vector<ncvslideio::Point2f> > ).
      * @param diamondIds ids of the diamonds in diamondCorners. The id of each diamond is in fact of
      * type Vec4i, so each diamond has 4 ids, which are the ids of the aruco markers composing the
      * diamond.
@@ -133,7 +133,7 @@ CV_EXPORTS_W void drawDetectedCornersCharuco(InputOutputArray image, InputArray 
  * @param image input/output image. It must have 1 or 3 channels. The number of channels is not
  * altered.
  * @param diamondCorners positions of diamond corners in the same format returned by
- * detectCharucoDiamond(). (e.g std::vector<std::vector<cv::Point2f> > ). For N detected markers,
+ * detectCharucoDiamond(). (e.g std::vector<std::vector<ncvslideio::Point2f> > ). For N detected markers,
  * the dimensions of this array should be Nx4. The order of the corners should be clockwise.
  * @param diamondIds vector of identifiers for diamonds in diamondCorners, in the same format
  * returned by detectCharucoDiamond() (e.g. std::vector<Vec4i>).

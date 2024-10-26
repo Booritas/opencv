@@ -15,7 +15,7 @@
 #include "streaming/onevpl/utils.hpp"
 
 #include "logger.hpp"
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -54,8 +54,8 @@ Data::Meta LegacyDecodeSession::generate_frame_meta() {
     const auto dur = std::chrono::duration_cast<std::chrono::microseconds>
                 (now.time_since_epoch());
     Data::Meta meta {
-                        {cv::gapi::streaming::meta_tag::timestamp, int64_t{dur.count()} },
-                        {cv::gapi::streaming::meta_tag::seq_id, int64_t{decoded_frames_count++}}
+                        {ncvslideio::gapi::streaming::meta_tag::timestamp, int64_t{dur.count()} },
+                        {ncvslideio::gapi::streaming::meta_tag::seq_id, int64_t{decoded_frames_count++}}
                     };
     return meta;
 }
@@ -71,5 +71,5 @@ IDataProvider::mfx_bitstream *LegacyDecodeSession::get_mfx_bitstream_ptr() {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

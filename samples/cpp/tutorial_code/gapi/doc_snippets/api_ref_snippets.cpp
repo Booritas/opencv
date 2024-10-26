@@ -16,45 +16,45 @@
 static void gscalar_example()
 {
     //! [gscalar_implicit]
-    cv::GMat a;
-    cv::GMat b = a + 1;
+    ncvslideio::GMat a;
+    ncvslideio::GMat b = a + 1;
     //! [gscalar_implicit]
 }
 
 static void typed_example()
 {
-    const cv::Size sz(32, 32);
-    cv::Mat
+    const ncvslideio::Size sz(32, 32);
+    ncvslideio::Mat
         in_mat1        (sz, CV_8UC1),
         in_mat2        (sz, CV_8UC1),
         out_mat_untyped(sz, CV_8UC1),
         out_mat_typed1 (sz, CV_8UC1),
         out_mat_typed2 (sz, CV_8UC1);
-    cv::randu(in_mat1, cv::Scalar::all(0), cv::Scalar::all(255));
-    cv::randu(in_mat2, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::randu(in_mat1, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
+    ncvslideio::randu(in_mat2, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
 
     //! [Untyped_Example]
     // Untyped G-API ///////////////////////////////////////////////////////////
-    cv::GComputation cvtU([]()
+    ncvslideio::GComputation cvtU([]()
     {
-        cv::GMat in1, in2;
-        cv::GMat out = cv::gapi::add(in1, in2);
-        return cv::GComputation({in1, in2}, {out});
+        ncvslideio::GMat in1, in2;
+        ncvslideio::GMat out = ncvslideio::gapi::add(in1, in2);
+        return ncvslideio::GComputation({in1, in2}, {out});
     });
-    std::vector<cv::Mat> u_ins  = {in_mat1, in_mat2};
-    std::vector<cv::Mat> u_outs = {out_mat_untyped};
+    std::vector<ncvslideio::Mat> u_ins  = {in_mat1, in_mat2};
+    std::vector<ncvslideio::Mat> u_outs = {out_mat_untyped};
     cvtU.apply(u_ins, u_outs);
     //! [Untyped_Example]
 
     //! [Typed_Example]
     // Typed G-API /////////////////////////////////////////////////////////////
-    cv::GComputationT<cv::GMat (cv::GMat, cv::GMat)> cvtT([](cv::GMat m1, cv::GMat m2)
+    ncvslideio::GComputationT<ncvslideio::GMat (ncvslideio::GMat, ncvslideio::GMat)> cvtT([](ncvslideio::GMat m1, ncvslideio::GMat m2)
     {
         return m1+m2;
     });
     cvtT.apply(in_mat1, in_mat2, out_mat_typed1);
 
-    auto cvtTC =  cvtT.compile(cv::descr_of(in_mat1), cv::descr_of(in_mat2));
+    auto cvtTC =  cvtT.compile(ncvslideio::descr_of(in_mat1), ncvslideio::descr_of(in_mat2));
     cvtTC(in_mat1, in_mat2, out_mat_typed2);
     //! [Typed_Example]
 }
@@ -62,28 +62,28 @@ static void typed_example()
 static void bind_serialization_example()
 {
     // ! [bind after deserialization]
-    cv::GCompiled compd;
+    ncvslideio::GCompiled compd;
     std::vector<char> bytes;
-    auto graph = cv::gapi::deserialize<cv::GComputation>(bytes);
-    auto meta = cv::gapi::deserialize<cv::GMetaArgs>(bytes);
+    auto graph = ncvslideio::gapi::deserialize<ncvslideio::GComputation>(bytes);
+    auto meta = ncvslideio::gapi::deserialize<ncvslideio::GMetaArgs>(bytes);
 
-    compd = graph.compile(std::move(meta), cv::compile_args());
-    auto in_args  = cv::gapi::deserialize<cv::GRunArgs>(bytes);
-    auto out_args = cv::gapi::deserialize<cv::GRunArgs>(bytes);
-    compd(std::move(in_args), cv::gapi::bind(out_args));
+    compd = graph.compile(std::move(meta), ncvslideio::compile_args());
+    auto in_args  = ncvslideio::gapi::deserialize<ncvslideio::GRunArgs>(bytes);
+    auto out_args = ncvslideio::gapi::deserialize<ncvslideio::GRunArgs>(bytes);
+    compd(std::move(in_args), ncvslideio::gapi::bind(out_args));
     // ! [bind after deserialization]
 }
 
 static void bind_deserialization_example()
 {
     // ! [bind before serialization]
-    std::vector<cv::GRunArgP> graph_outs;
-    cv::GRunArgs out_args;
+    std::vector<ncvslideio::GRunArgP> graph_outs;
+    ncvslideio::GRunArgs out_args;
 
     for (auto &&out : graph_outs) {
-        out_args.emplace_back(cv::gapi::bind(out));
+        out_args.emplace_back(ncvslideio::gapi::bind(out));
     }
-    const auto sargsout = cv::gapi::serialize(out_args);
+    const auto sargsout = ncvslideio::gapi::serialize(out_args);
     // ! [bind before serialization]
 }
 
@@ -106,7 +106,7 @@ struct SimpleCustomType2 {
 };
 
 // ! [S11N usage]
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace s11n {
 namespace detail {
@@ -134,10 +134,10 @@ template<> struct S11N<SimpleCustomType2> {
 } // namespace detail
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 // ! [S11N usage]
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 template<> struct CompileArgTag<SimpleCustomType> {
     static const char* tag() {
@@ -151,7 +151,7 @@ template<> struct CompileArgTag<SimpleCustomType2> {
     }
 };
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 static void s11n_example()
 {
@@ -159,83 +159,83 @@ static void s11n_example()
     SimpleCustomType2 customVar2 { 1248, "World", {1280, 720, 640, 480},
                                    { {5, 32434142342}, {7, 34242432} } };
 
-    std::vector<char> sArgs = cv::gapi::serialize(
-        cv::compile_args(customVar1, customVar2));
+    std::vector<char> sArgs = ncvslideio::gapi::serialize(
+        ncvslideio::compile_args(customVar1, customVar2));
 
-    cv::GCompileArgs dArgs = cv::gapi::deserialize<cv::GCompileArgs,
+    ncvslideio::GCompileArgs dArgs = ncvslideio::gapi::deserialize<ncvslideio::GCompileArgs,
                                                    SimpleCustomType,
                                                    SimpleCustomType2>(sArgs);
 
-    SimpleCustomType  dCustomVar1 = cv::gapi::getCompileArg<SimpleCustomType>(dArgs).value();
-    SimpleCustomType2 dCustomVar2 = cv::gapi::getCompileArg<SimpleCustomType2>(dArgs).value();
+    SimpleCustomType  dCustomVar1 = ncvslideio::gapi::getCompileArg<SimpleCustomType>(dArgs).value();
+    SimpleCustomType2 dCustomVar2 = ncvslideio::gapi::getCompileArg<SimpleCustomType2>(dArgs).value();
 
     (void) dCustomVar1;
     (void) dCustomVar2;
 }
 
-G_TYPED_KERNEL(IAdd, <cv::GMat(cv::GMat)>, "test.custom.add") {
-    static cv::GMatDesc outMeta(const cv::GMatDesc &in) { return in; }
+G_TYPED_KERNEL(IAdd, <ncvslideio::GMat(ncvslideio::GMat)>, "test.custom.add") {
+    static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in) { return in; }
 };
-G_TYPED_KERNEL(IFilter2D, <cv::GMat(cv::GMat)>, "test.custom.filter2d") {
-    static cv::GMatDesc outMeta(const cv::GMatDesc &in) { return in; }
+G_TYPED_KERNEL(IFilter2D, <ncvslideio::GMat(ncvslideio::GMat)>, "test.custom.filter2d") {
+    static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in) { return in; }
 };
-G_TYPED_KERNEL(IRGB2YUV, <cv::GMat(cv::GMat)>, "test.custom.add") {
-    static cv::GMatDesc outMeta(const cv::GMatDesc &in) { return in; }
+G_TYPED_KERNEL(IRGB2YUV, <ncvslideio::GMat(ncvslideio::GMat)>, "test.custom.add") {
+    static ncvslideio::GMatDesc outMeta(const ncvslideio::GMatDesc &in) { return in; }
 };
-GAPI_OCV_KERNEL(CustomAdd,      IAdd)      { static void run(cv::Mat, cv::Mat &) {} };
-GAPI_OCV_KERNEL(CustomFilter2D, IFilter2D) { static void run(cv::Mat, cv::Mat &) {} };
-GAPI_OCV_KERNEL(CustomRGB2YUV,  IRGB2YUV)  { static void run(cv::Mat, cv::Mat &) {} };
+GAPI_OCV_KERNEL(CustomAdd,      IAdd)      { static void run(ncvslideio::Mat, ncvslideio::Mat &) {} };
+GAPI_OCV_KERNEL(CustomFilter2D, IFilter2D) { static void run(ncvslideio::Mat, ncvslideio::Mat &) {} };
+GAPI_OCV_KERNEL(CustomRGB2YUV,  IRGB2YUV)  { static void run(ncvslideio::Mat, ncvslideio::Mat &) {} };
 
 int main(int argc, char *argv[])
 {
     if (argc < 3)
         return -1;
 
-    cv::Mat input = cv::imread(argv[1]);
-    cv::Mat output;
+    ncvslideio::Mat input = ncvslideio::imread(argv[1]);
+    ncvslideio::Mat output;
 
     {
     //! [graph_def]
-    cv::GMat in;
-    cv::GMat gx = cv::gapi::Sobel(in, CV_32F, 1, 0);
-    cv::GMat gy = cv::gapi::Sobel(in, CV_32F, 0, 1);
-    cv::GMat g  = cv::gapi::sqrt(cv::gapi::mul(gx, gx) + cv::gapi::mul(gy, gy));
-    cv::GMat out = cv::gapi::convertTo(g, CV_8U);
+    ncvslideio::GMat in;
+    ncvslideio::GMat gx = ncvslideio::gapi::Sobel(in, CV_32F, 1, 0);
+    ncvslideio::GMat gy = ncvslideio::gapi::Sobel(in, CV_32F, 0, 1);
+    ncvslideio::GMat g  = ncvslideio::gapi::sqrt(ncvslideio::gapi::mul(gx, gx) + ncvslideio::gapi::mul(gy, gy));
+    ncvslideio::GMat out = ncvslideio::gapi::convertTo(g, CV_8U);
     //! [graph_def]
 
     //! [graph_decl_apply]
     //! [graph_cap_full]
-    cv::GComputation sobelEdge(cv::GIn(in), cv::GOut(out));
+    ncvslideio::GComputation sobelEdge(ncvslideio::GIn(in), ncvslideio::GOut(out));
     //! [graph_cap_full]
     sobelEdge.apply(input, output);
     //! [graph_decl_apply]
 
     //! [apply_with_param]
-    cv::GKernelPackage kernels = cv::gapi::combine
-        (cv::gapi::core::fluid::kernels(),
-         cv::gapi::imgproc::fluid::kernels());
-    sobelEdge.apply(input, output, cv::compile_args(kernels));
+    ncvslideio::GKernelPackage kernels = ncvslideio::gapi::combine
+        (ncvslideio::gapi::core::fluid::kernels(),
+         ncvslideio::gapi::imgproc::fluid::kernels());
+    sobelEdge.apply(input, output, ncvslideio::compile_args(kernels));
     //! [apply_with_param]
 
     //! [graph_cap_sub]
-    cv::GComputation sobelEdgeSub(cv::GIn(gx, gy), cv::GOut(out));
+    ncvslideio::GComputation sobelEdgeSub(ncvslideio::GIn(gx, gy), ncvslideio::GOut(out));
     //! [graph_cap_sub]
     }
     //! [graph_gen]
-    cv::GComputation sobelEdgeGen([](){
-            cv::GMat in;
-            cv::GMat gx = cv::gapi::Sobel(in, CV_32F, 1, 0);
-            cv::GMat gy = cv::gapi::Sobel(in, CV_32F, 0, 1);
-            cv::GMat g  = cv::gapi::sqrt(cv::gapi::mul(gx, gx) + cv::gapi::mul(gy, gy));
-            cv::GMat out = cv::gapi::convertTo(g, CV_8U);
-            return cv::GComputation(in, out);
+    ncvslideio::GComputation sobelEdgeGen([](){
+            ncvslideio::GMat in;
+            ncvslideio::GMat gx = ncvslideio::gapi::Sobel(in, CV_32F, 1, 0);
+            ncvslideio::GMat gy = ncvslideio::gapi::Sobel(in, CV_32F, 0, 1);
+            ncvslideio::GMat g  = ncvslideio::gapi::sqrt(ncvslideio::gapi::mul(gx, gx) + ncvslideio::gapi::mul(gy, gy));
+            ncvslideio::GMat out = ncvslideio::gapi::convertTo(g, CV_8U);
+            return ncvslideio::GComputation(in, out);
         });
     //! [graph_gen]
 
-    cv::imwrite(argv[2], output);
+    ncvslideio::imwrite(argv[2], output);
 
     //! [kernels_snippet]
-    cv::GKernelPackage pkg = cv::gapi::kernels
+    ncvslideio::GKernelPackage pkg = ncvslideio::gapi::kernels
         < CustomAdd
         , CustomFilter2D
         , CustomRGB2YUV

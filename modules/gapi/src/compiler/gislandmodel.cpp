@@ -23,7 +23,7 @@
 
 #include "logger.hpp"    // GAPI_LOG
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 GIsland::GIsland(const gapi::GBackend &bknd,
                  ade::NodeHandle op,
@@ -227,24 +227,24 @@ ade::NodeHandle GIslandModel::mkIslandNode(Graph &g, const gapi::GBackend& bknd,
 ade::NodeHandle GIslandModel::mkIslandNode(Graph &g, std::shared_ptr<GIsland>&& isl)
 {
     ade::NodeHandle nh = g.createNode();
-    g.metadata(nh).set(cv::gimpl::NodeKind{cv::gimpl::NodeKind::ISLAND});
-    g.metadata(nh).set<cv::gimpl::FusedIsland>({std::move(isl)});
+    g.metadata(nh).set(ncvslideio::gimpl::NodeKind{ncvslideio::gimpl::NodeKind::ISLAND});
+    g.metadata(nh).set<ncvslideio::gimpl::FusedIsland>({std::move(isl)});
     return nh;
 }
 
 ade::NodeHandle GIslandModel::mkEmitNode(Graph &g, std::size_t in_idx)
 {
     ade::NodeHandle nh = g.createNode();
-    g.metadata(nh).set(cv::gimpl::NodeKind{cv::gimpl::NodeKind::EMIT});
-    g.metadata(nh).set(cv::gimpl::Emitter{in_idx, {}});
+    g.metadata(nh).set(ncvslideio::gimpl::NodeKind{ncvslideio::gimpl::NodeKind::EMIT});
+    g.metadata(nh).set(ncvslideio::gimpl::Emitter{in_idx, {}});
     return nh;
 }
 
 ade::NodeHandle GIslandModel::mkSinkNode(Graph &g, std::size_t out_idx)
 {
     ade::NodeHandle nh = g.createNode();
-    g.metadata(nh).set(cv::gimpl::NodeKind{cv::gimpl::NodeKind::SINK});
-    g.metadata(nh).set(cv::gimpl::Sink{out_idx});
+    g.metadata(nh).set(ncvslideio::gimpl::NodeKind{ncvslideio::gimpl::NodeKind::SINK});
+    g.metadata(nh).set(ncvslideio::gimpl::Sink{out_idx});
     return nh;
 }
 
@@ -285,10 +285,10 @@ void GIslandModel::compileIslands(Graph &g, const ade::Graph &orig_g, const GCom
                 return data;
             };
 
-            std::vector<cv::gimpl::Data> ins_data;
+            std::vector<ncvslideio::gimpl::Data> ins_data;
             ade::util::transform(nh->inNodes(), std::back_inserter(ins_data), nodes_to_data);
 
-            std::vector<cv::gimpl::Data> outs_data;
+            std::vector<ncvslideio::gimpl::Data> outs_data;
             ade::util::transform(nh->outNodes(), std::back_inserter(outs_data), nodes_to_data);
 
             auto island_obj = g.metadata(nh).get<FusedIsland>().object;
@@ -393,13 +393,13 @@ void GIslandExecutable::run(GIslandExecutable::IInput &in, GIslandExecutable::IO
     const auto &in_desc  = in.desc();
     const auto &out_desc = out.desc();
     const auto  in_msg   = in.get();
-    if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg))
+    if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg))
     {
-        out.post(cv::gimpl::EndOfStream{});
+        out.post(ncvslideio::gimpl::EndOfStream{});
         return;
     }
-    GAPI_Assert(cv::util::holds_alternative<cv::GRunArgs>(in_msg));
-    const auto in_vector = cv::util::get<cv::GRunArgs>(in_msg);
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GRunArgs>(in_msg));
+    const auto in_vector = ncvslideio::util::get<ncvslideio::GRunArgs>(in_msg);
     in_objs.reserve(in_desc.size());
     out_objs.reserve(out_desc.size());
     for (auto &&it: ade::util::zip(ade::util::toRange(in_desc),
@@ -433,7 +433,7 @@ void GIslandExecutable::run(GIslandExecutable::IInput &in, GIslandExecutable::IO
     //   also for the majority of old-fashioned (synchronous) backends
     // Cons: backends implementing the asynchronous run(IInput,IOutput)
     //   won't get it out of the box
-    cv::GRunArg::Meta stub_meta;
+    ncvslideio::GRunArg::Meta stub_meta;
     for (auto &&in_arg : in_vector)
     {
         stub_meta.insert(in_arg.meta.begin(), in_arg.meta.end());
@@ -447,5 +447,5 @@ void GIslandExecutable::run(GIslandExecutable::IInput &in, GIslandExecutable::IO
     }
 }
 
-} // namespace cv
+} // namespace ncvslideio
 } // namespace gimpl

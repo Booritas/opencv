@@ -20,8 +20,8 @@
 #include "opencv2/highgui.hpp"
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 const int win_width = 800;
 const int win_height = 640;

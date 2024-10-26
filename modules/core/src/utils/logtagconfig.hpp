@@ -10,7 +10,7 @@
 #include <string>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace logging {
 

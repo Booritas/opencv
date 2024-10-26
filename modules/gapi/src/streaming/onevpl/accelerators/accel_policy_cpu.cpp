@@ -18,7 +18,7 @@
     #include <windows.h>
     #include <sysinfoapi.h>
 #endif
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -276,7 +276,7 @@ size_t VPLCPUAccelerationPolicy::get_surface_count(pool_key_t key) const {
     return pool_it->second.total_size();
 }
 
-cv::MediaFrame::AdapterPtr VPLCPUAccelerationPolicy::create_frame_adapter(pool_key_t key,
+ncvslideio::MediaFrame::AdapterPtr VPLCPUAccelerationPolicy::create_frame_adapter(pool_key_t key,
                                                                           const FrameConstructorArgs &params) {
     auto pool_it = pool_table.find(key);
     if (pool_it == pool_table.end()) {
@@ -288,11 +288,11 @@ cv::MediaFrame::AdapterPtr VPLCPUAccelerationPolicy::create_frame_adapter(pool_k
     }
 
     pool_t& requested_pool = pool_it->second;
-    return cv::MediaFrame::AdapterPtr{new VPLMediaFrameCPUAdapter(requested_pool.find_by_handle(params.assoc_surface),
+    return ncvslideio::MediaFrame::AdapterPtr{new VPLMediaFrameCPUAdapter(requested_pool.find_by_handle(params.assoc_surface),
                                                                   params.assoc_handle)};
 }
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

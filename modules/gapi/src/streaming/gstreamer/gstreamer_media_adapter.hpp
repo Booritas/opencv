@@ -20,27 +20,27 @@
 #include <gst/gstbuffer.h>
 #include <gst/video/video-frame.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
 
-class GStreamerMediaAdapter : public cv::MediaFrame::IAdapter {
+class GStreamerMediaAdapter : public ncvslideio::MediaFrame::IAdapter {
 public:
-    explicit GStreamerMediaAdapter(const cv::GFrameDesc& frameDesc,
+    explicit GStreamerMediaAdapter(const ncvslideio::GFrameDesc& frameDesc,
                                    GstVideoInfo* videoInfo,
                                    GstBuffer* buffer);
 
     ~GStreamerMediaAdapter() override;
 
-    virtual cv::GFrameDesc meta() const override;
+    virtual ncvslideio::GFrameDesc meta() const override;
 
-    cv::MediaFrame::View access(cv::MediaFrame::Access access) override;
+    ncvslideio::MediaFrame::View access(ncvslideio::MediaFrame::Access access) override;
 
-    cv::util::any blobParams() const override;
+    ncvslideio::util::any blobParams() const override;
 
 protected:
-    cv::GFrameDesc m_frameDesc;
+    ncvslideio::GFrameDesc m_frameDesc;
 
     GStreamerPtr<GstVideoInfo> m_videoInfo;
     GStreamerPtr<GstBuffer> m_buffer;
@@ -58,6 +58,6 @@ protected:
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMER_MEDIA_ADAPTER_HPP

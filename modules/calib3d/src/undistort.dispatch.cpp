@@ -49,7 +49,7 @@
 #include "undistort.simd.hpp"
 #include "undistort.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv
+namespace ncvslideio
 {
 
 Mat getDefaultNewCameraMatrix( InputArray _cameraMatrix, Size imgsize,
@@ -219,7 +219,7 @@ void initInverseRectificationMap( InputArray _cameraMatrix, InputArray _distCoef
     }
 
     // Validate distortion vector size
-    CV_Assert(  distCoeffs.empty() || // Empty allows cv::undistortPoints to skip distortion
+    CV_Assert(  distCoeffs.empty() || // Empty allows ncvslideio::undistortPoints to skip distortion
                 distCoeffs.size() == Size(1, 4) || distCoeffs.size() == Size(4, 1) ||
                 distCoeffs.size() == Size(1, 5) || distCoeffs.size() == Size(5, 1) ||
                 distCoeffs.size() == Size(1, 8) || distCoeffs.size() == Size(8, 1) ||
@@ -227,30 +227,30 @@ void initInverseRectificationMap( InputArray _cameraMatrix, InputArray _distCoef
                 distCoeffs.size() == Size(1, 14) || distCoeffs.size() == Size(14, 1));
 
     // Create objectPoints
-    std::vector<cv::Point2i> p2i_objPoints;
-    std::vector<cv::Point2f> p2f_objPoints;
+    std::vector<ncvslideio::Point2i> p2i_objPoints;
+    std::vector<ncvslideio::Point2f> p2f_objPoints;
     for (int r = 0; r < size.height; r++)
     {
         for (int c = 0; c < size.width; c++)
         {
-            p2i_objPoints.push_back(cv::Point2i(c, r));
-            p2f_objPoints.push_back(cv::Point2f(static_cast<float>(c), static_cast<float>(r)));
+            p2i_objPoints.push_back(ncvslideio::Point2i(c, r));
+            p2f_objPoints.push_back(ncvslideio::Point2f(static_cast<float>(c), static_cast<float>(r)));
         }
     }
 
     // Undistort
-    std::vector<cv::Point2f> p2f_objPoints_undistorted;
+    std::vector<ncvslideio::Point2f> p2f_objPoints_undistorted;
     undistortPoints(
         p2f_objPoints,
         p2f_objPoints_undistorted,
         A,
         distCoeffs,
-        cv::Mat::eye(cv::Size(3, 3), CV_64FC1), // R
-        cv::Mat::eye(cv::Size(3, 3), CV_64FC1) // P = New K
+        ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_64FC1), // R
+        ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_64FC1) // P = New K
     );
 
     // Rectify
-    std::vector<cv::Point2f> p2f_sourcePoints_pinHole;
+    std::vector<ncvslideio::Point2f> p2f_sourcePoints_pinHole;
     perspectiveTransform(
         p2f_objPoints_undistorted,
         p2f_sourcePoints_pinHole,
@@ -258,13 +258,13 @@ void initInverseRectificationMap( InputArray _cameraMatrix, InputArray _distCoef
     );
 
     // Project points back to camera coordinates.
-    std::vector<cv::Point2f> p2f_sourcePoints;
+    std::vector<ncvslideio::Point2f> p2f_sourcePoints;
     undistortPoints(
         p2f_sourcePoints_pinHole,
         p2f_sourcePoints,
-        cv::Mat::eye(cv::Size(3, 3), CV_32FC1), // K
-        cv::Mat::zeros(cv::Size(1, 4), CV_32FC1), // Distortion
-        cv::Mat::eye(cv::Size(3, 3), CV_32FC1), // R
+        ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_32FC1), // K
+        ncvslideio::Mat::zeros(ncvslideio::Size(1, 4), CV_32FC1), // Distortion
+        ncvslideio::Mat::eye(ncvslideio::Size(3, 3), CV_32FC1), // R
         Ar // New K
     );
 
@@ -337,26 +337,26 @@ void undistort( InputArray _src, OutputArray _dst, InputArray _cameraMatrix,
 CV_IMPL void
 cvUndistort2( const CvArr* srcarr, CvArr* dstarr, const CvMat* Aarr, const CvMat* dist_coeffs, const CvMat* newAarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), dst0 = dst;
-    cv::Mat A = cv::cvarrToMat(Aarr), distCoeffs = cv::cvarrToMat(dist_coeffs), newA;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), dst0 = dst;
+    ncvslideio::Mat A = ncvslideio::cvarrToMat(Aarr), distCoeffs = ncvslideio::cvarrToMat(dist_coeffs), newA;
     if( newAarr )
-        newA = cv::cvarrToMat(newAarr);
+        newA = ncvslideio::cvarrToMat(newAarr);
 
     CV_Assert( src.size() == dst.size() && src.type() == dst.type() );
-    cv::undistort( src, dst, A, distCoeffs, newA );
+    ncvslideio::undistort( src, dst, A, distCoeffs, newA );
 }
 
 
 CV_IMPL void cvInitUndistortMap( const CvMat* Aarr, const CvMat* dist_coeffs,
                                  CvArr* mapxarr, CvArr* mapyarr )
 {
-    cv::Mat A = cv::cvarrToMat(Aarr), distCoeffs = cv::cvarrToMat(dist_coeffs);
-    cv::Mat mapx = cv::cvarrToMat(mapxarr), mapy, mapx0 = mapx, mapy0;
+    ncvslideio::Mat A = ncvslideio::cvarrToMat(Aarr), distCoeffs = ncvslideio::cvarrToMat(dist_coeffs);
+    ncvslideio::Mat mapx = ncvslideio::cvarrToMat(mapxarr), mapy, mapx0 = mapx, mapy0;
 
     if( mapyarr )
-        mapy0 = mapy = cv::cvarrToMat(mapyarr);
+        mapy0 = mapy = ncvslideio::cvarrToMat(mapyarr);
 
-    cv::initUndistortRectifyMap( A, distCoeffs, cv::Mat(), A,
+    ncvslideio::initUndistortRectifyMap( A, distCoeffs, ncvslideio::Mat(), A,
                                  mapx.size(), mapx.type(), mapx, mapy );
     CV_Assert( mapx0.data == mapx.data && mapy0.data == mapy.data );
 }
@@ -365,33 +365,33 @@ void
 cvInitUndistortRectifyMap( const CvMat* Aarr, const CvMat* dist_coeffs,
     const CvMat *Rarr, const CvMat* ArArr, CvArr* mapxarr, CvArr* mapyarr )
 {
-    cv::Mat A = cv::cvarrToMat(Aarr), distCoeffs, R, Ar;
-    cv::Mat mapx = cv::cvarrToMat(mapxarr), mapy, mapx0 = mapx, mapy0;
+    ncvslideio::Mat A = ncvslideio::cvarrToMat(Aarr), distCoeffs, R, Ar;
+    ncvslideio::Mat mapx = ncvslideio::cvarrToMat(mapxarr), mapy, mapx0 = mapx, mapy0;
 
     if( mapyarr )
-        mapy0 = mapy = cv::cvarrToMat(mapyarr);
+        mapy0 = mapy = ncvslideio::cvarrToMat(mapyarr);
 
     if( dist_coeffs )
-        distCoeffs = cv::cvarrToMat(dist_coeffs);
+        distCoeffs = ncvslideio::cvarrToMat(dist_coeffs);
     if( Rarr )
-        R = cv::cvarrToMat(Rarr);
+        R = ncvslideio::cvarrToMat(Rarr);
     if( ArArr )
-        Ar = cv::cvarrToMat(ArArr);
+        Ar = ncvslideio::cvarrToMat(ArArr);
 
-    cv::initUndistortRectifyMap( A, distCoeffs, R, Ar, mapx.size(), mapx.type(), mapx, mapy );
+    ncvslideio::initUndistortRectifyMap( A, distCoeffs, R, Ar, mapx.size(), mapx.type(), mapx, mapy );
     CV_Assert( mapx0.data == mapx.data && mapy0.data == mapy.data );
 }
 
 static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvMat* _cameraMatrix,
                    const CvMat* _distCoeffs,
-                   const CvMat* matR, const CvMat* matP, cv::TermCriteria criteria)
+                   const CvMat* matR, const CvMat* matP, ncvslideio::TermCriteria criteria)
 {
     CV_Assert(criteria.isValid());
     double A[3][3], RR[3][3], k[14]={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     CvMat matA=cvMat(3, 3, CV_64F, A), _Dk;
     CvMat _RR=cvMat(3, 3, CV_64F, RR);
-    cv::Matx33d invMatTilt = cv::Matx33d::eye();
-    cv::Matx33d matTilt = cv::Matx33d::eye();
+    ncvslideio::Matx33d invMatTilt = ncvslideio::Matx33d::eye();
+    ncvslideio::Matx33d matTilt = ncvslideio::Matx33d::eye();
 
     CV_Assert( CV_IS_MAT(_src) && CV_IS_MAT(_dst) &&
         (_src->rows == 1 || _src->cols == 1) &&
@@ -422,8 +422,8 @@ static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvM
         cvConvert( _distCoeffs, &_Dk );
         if (k[12] != 0 || k[13] != 0)
         {
-            cv::detail::computeTiltProjectionMatrix<double>(k[12], k[13], NULL, NULL, NULL, &invMatTilt);
-            cv::detail::computeTiltProjectionMatrix<double>(k[12], k[13], &matTilt, NULL, NULL);
+            ncvslideio::detail::computeTiltProjectionMatrix<double>(k[12], k[13], NULL, NULL, NULL, &invMatTilt);
+            ncvslideio::detail::computeTiltProjectionMatrix<double>(k[12], k[13], &matTilt, NULL, NULL);
         }
     }
 
@@ -480,7 +480,7 @@ static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvM
 
         if( _distCoeffs ) {
             // compensate tilt distortion
-            cv::Vec3d vecUntilt = invMatTilt * cv::Vec3d(x, y, 1);
+            ncvslideio::Vec3d vecUntilt = invMatTilt * ncvslideio::Vec3d(x, y, 1);
             double invProj = vecUntilt(2) ? 1./vecUntilt(2) : 1;
             x0 = x = invProj * vecUntilt(0);
             y0 = y = invProj * vecUntilt(1);
@@ -490,9 +490,9 @@ static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvM
 
             for( int j = 0; ; j++ )
             {
-                if ((criteria.type & cv::TermCriteria::COUNT) && j >= criteria.maxCount)
+                if ((criteria.type & ncvslideio::TermCriteria::COUNT) && j >= criteria.maxCount)
                     break;
-                if ((criteria.type & cv::TermCriteria::EPS) && error < criteria.epsilon)
+                if ((criteria.type & ncvslideio::TermCriteria::EPS) && error < criteria.epsilon)
                     break;
                 double r2 = x*x + y*y;
                 double icdist = (1 + ((k[7]*r2 + k[6])*r2 + k[5])*r2)/(1 + ((k[4]*r2 + k[1])*r2 + k[0])*r2);
@@ -507,11 +507,11 @@ static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvM
                 x = (x0 - deltaX)*icdist;
                 y = (y0 - deltaY)*icdist;
 
-                if(criteria.type & cv::TermCriteria::EPS)
+                if(criteria.type & ncvslideio::TermCriteria::EPS)
                 {
                     double r4, r6, a1, a2, a3, cdist, icdist2;
                     double xd, yd, xd0, yd0;
-                    cv::Vec3d vecTilt;
+                    ncvslideio::Vec3d vecTilt;
 
                     r2 = x*x + y*y;
                     r4 = r2*r2;
@@ -524,7 +524,7 @@ static void cvUndistortPointsInternal( const CvMat* _src, CvMat* _dst, const CvM
                     xd0 = x*cdist*icdist2 + k[2]*a1 + k[3]*a2 + k[8]*r2+k[9]*r4;
                     yd0 = y*cdist*icdist2 + k[2]*a3 + k[3]*a1 + k[10]*r2+k[11]*r4;
 
-                    vecTilt = matTilt*cv::Vec3d(xd0, yd0, 1);
+                    vecTilt = matTilt*ncvslideio::Vec3d(xd0, yd0, 1);
                     invProj = vecTilt(2) ? 1./vecTilt(2) : 1;
                     xd = invProj * vecTilt(0);
                     yd = invProj * vecTilt(1);
@@ -561,10 +561,10 @@ void cvUndistortPoints(const CvMat* _src, CvMat* _dst, const CvMat* _cameraMatri
                        const CvMat* matR, const CvMat* matP)
 {
     cvUndistortPointsInternal(_src, _dst, _cameraMatrix, _distCoeffs, matR, matP,
-                              cv::TermCriteria(cv::TermCriteria::COUNT, 5, 0.01));
+                              ncvslideio::TermCriteria(ncvslideio::TermCriteria::COUNT, 5, 0.01));
 }
 
-namespace cv {
+namespace ncvslideio {
 
 void undistortPoints(InputArray _src, OutputArray _dst,
                      InputArray _cameraMatrix,
@@ -724,8 +724,8 @@ float initWideAngleProjMap(InputArray _cameraMatrix0, InputArray _distCoeffs0,
     Mat mapxy(dsize, CV_32FC2);
     double k1 = k[0], k2 = k[1], k3 = k[2], p1 = k[3], p2 = k[4], k4 = k[5], k5 = k[6], k6 = k[7], s1 = k[8], s2 = k[9], s3 = k[10], s4 = k[11];
     double fx = cameraMatrix.at<double>(0,0), fy = cameraMatrix.at<double>(1,1), cx = scenter.x, cy = scenter.y;
-    cv::Matx33d matTilt;
-    cv::detail::computeTiltProjectionMatrix(k[12], k[13], &matTilt);
+    ncvslideio::Matx33d matTilt;
+    ncvslideio::detail::computeTiltProjectionMatrix(k[12], k[13], &matTilt);
 
     for( int y = 0; y < dsize.height; y++ )
     {
@@ -744,7 +744,7 @@ float initWideAngleProjMap(InputArray _cameraMatrix0, InputArray _distCoeffs0,
             double kr = 1 + ((k3*r2 + k2)*r2 + k1)*r2/(1 + ((k6*r2 + k5)*r2 + k4)*r2);
             double xd = (q.x*kr + p1*_2xy + p2*(r2 + 2*x2) + s1*r2+ s2*r2*r2);
             double yd = (q.y*kr + p1*(r2 + 2*y2) + p2*_2xy + s3*r2+ s4*r2*r2);
-            cv::Vec3d vecTilt = matTilt*cv::Vec3d(xd, yd, 1);
+            ncvslideio::Vec3d vecTilt = matTilt*ncvslideio::Vec3d(xd, yd, 1);
             double invProj = vecTilt(2) ? 1./vecTilt(2) : 1;
             double u = fx*invProj*vecTilt(0) + cx;
             double v = fy*invProj*vecTilt(1) + cy;

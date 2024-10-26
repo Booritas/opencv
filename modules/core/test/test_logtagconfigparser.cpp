@@ -14,17 +14,17 @@
 #include "../src/utils/logtagconfigparser.cpp"
 #endif
 
-using cv::utils::logging::LogTagConfigParser;
+using ncvslideio::utils::logging::LogTagConfigParser;
 
 namespace opencv_test {
 namespace {
 
-typedef testing::TestWithParam<tuple<std::string, cv::utils::logging::LogLevel>> GlobalShouldSucceedTests;
+typedef testing::TestWithParam<tuple<std::string, ncvslideio::utils::logging::LogLevel>> GlobalShouldSucceedTests;
 
 TEST_P(GlobalShouldSucceedTests, globalCases)
 {
     const std::string input = get<0>(GetParam());
-    const cv::utils::logging::LogLevel expectedLevel = get<1>(GetParam());
+    const ncvslideio::utils::logging::LogLevel expectedLevel = get<1>(GetParam());
     LogTagConfigParser parser;
     parser.parse(input);
     EXPECT_FALSE(parser.hasMalformed());
@@ -39,26 +39,26 @@ TEST_P(GlobalShouldSucceedTests, globalCases)
 INSTANTIATE_TEST_CASE_P(Core_LogTagConfigParser, GlobalShouldSucceedTests,
     testing::Values(
         // Following test cases omit the name part
-        std::make_tuple("S", cv::utils::logging::LOG_LEVEL_SILENT),
-        std::make_tuple("SILENT", cv::utils::logging::LOG_LEVEL_SILENT),
-        std::make_tuple("F", cv::utils::logging::LOG_LEVEL_FATAL),
-        std::make_tuple("FATAL", cv::utils::logging::LOG_LEVEL_FATAL),
-        std::make_tuple("E", cv::utils::logging::LOG_LEVEL_ERROR),
-        std::make_tuple("ERROR", cv::utils::logging::LOG_LEVEL_ERROR),
-        std::make_tuple("W", cv::utils::logging::LOG_LEVEL_WARNING),
-        std::make_tuple("WARN", cv::utils::logging::LOG_LEVEL_WARNING),
-        std::make_tuple("WARNING", cv::utils::logging::LOG_LEVEL_WARNING),
-        std::make_tuple("I", cv::utils::logging::LOG_LEVEL_INFO),
-        std::make_tuple("INFO", cv::utils::logging::LOG_LEVEL_INFO),
-        std::make_tuple("D", cv::utils::logging::LOG_LEVEL_DEBUG),
-        std::make_tuple("DEBUG", cv::utils::logging::LOG_LEVEL_DEBUG),
-        std::make_tuple("V", cv::utils::logging::LOG_LEVEL_VERBOSE),
-        std::make_tuple("VERBOSE", cv::utils::logging::LOG_LEVEL_VERBOSE),
+        std::make_tuple("S", ncvslideio::utils::logging::LOG_LEVEL_SILENT),
+        std::make_tuple("SILENT", ncvslideio::utils::logging::LOG_LEVEL_SILENT),
+        std::make_tuple("F", ncvslideio::utils::logging::LOG_LEVEL_FATAL),
+        std::make_tuple("FATAL", ncvslideio::utils::logging::LOG_LEVEL_FATAL),
+        std::make_tuple("E", ncvslideio::utils::logging::LOG_LEVEL_ERROR),
+        std::make_tuple("ERROR", ncvslideio::utils::logging::LOG_LEVEL_ERROR),
+        std::make_tuple("W", ncvslideio::utils::logging::LOG_LEVEL_WARNING),
+        std::make_tuple("WARN", ncvslideio::utils::logging::LOG_LEVEL_WARNING),
+        std::make_tuple("WARNING", ncvslideio::utils::logging::LOG_LEVEL_WARNING),
+        std::make_tuple("I", ncvslideio::utils::logging::LOG_LEVEL_INFO),
+        std::make_tuple("INFO", ncvslideio::utils::logging::LOG_LEVEL_INFO),
+        std::make_tuple("D", ncvslideio::utils::logging::LOG_LEVEL_DEBUG),
+        std::make_tuple("DEBUG", ncvslideio::utils::logging::LOG_LEVEL_DEBUG),
+        std::make_tuple("V", ncvslideio::utils::logging::LOG_LEVEL_VERBOSE),
+        std::make_tuple("VERBOSE", ncvslideio::utils::logging::LOG_LEVEL_VERBOSE),
         // Following test cases uses a single asterisk as name
-        std::make_tuple("*:S", cv::utils::logging::LOG_LEVEL_SILENT),
-        std::make_tuple("*:SILENT", cv::utils::logging::LOG_LEVEL_SILENT),
-        std::make_tuple("*:V", cv::utils::logging::LOG_LEVEL_VERBOSE),
-        std::make_tuple("*:VERBOSE", cv::utils::logging::LOG_LEVEL_VERBOSE)
+        std::make_tuple("*:S", ncvslideio::utils::logging::LOG_LEVEL_SILENT),
+        std::make_tuple("*:SILENT", ncvslideio::utils::logging::LOG_LEVEL_SILENT),
+        std::make_tuple("*:V", ncvslideio::utils::logging::LOG_LEVEL_VERBOSE),
+        std::make_tuple("*:VERBOSE", ncvslideio::utils::logging::LOG_LEVEL_VERBOSE)
     )
 );
 
@@ -72,8 +72,8 @@ typedef testing::TestWithParam<tuple<std::string, std::string>> GlobalShouldSucc
 
 TEST_P(GlobalShouldSucceedPairedTests, globalNameHandling)
 {
-    const auto firstExpected = cv::utils::logging::LOG_LEVEL_SILENT;
-    const auto secondExpected = cv::utils::logging::LOG_LEVEL_VERBOSE;
+    const auto firstExpected = ncvslideio::utils::logging::LOG_LEVEL_SILENT;
+    const auto secondExpected = ncvslideio::utils::logging::LOG_LEVEL_VERBOSE;
     //
     const std::string firstInput = get<0>(GetParam());
     LogTagConfigParser firstParser;
@@ -84,7 +84,7 @@ TEST_P(GlobalShouldSucceedPairedTests, globalNameHandling)
     ASSERT_EQ(firstParser.getFullNameConfigs().size(), 0u) << "Specifying global log level should not emit full names";
     ASSERT_EQ(firstParser.getFirstPartConfigs().size(), 0u) << "Specifying global log level should not emit first name part result";
     ASSERT_EQ(firstParser.getAnyPartConfigs().size(), 0u) << "Specifying global log level should not emit any name part result";
-    const cv::utils::logging::LogLevel firstActual = firstParser.getGlobalConfig().level;
+    const ncvslideio::utils::logging::LogLevel firstActual = firstParser.getGlobalConfig().level;
     //
     const std::string secondInput = get<1>(GetParam());
     LogTagConfigParser secondParser;
@@ -95,7 +95,7 @@ TEST_P(GlobalShouldSucceedPairedTests, globalNameHandling)
     ASSERT_EQ(secondParser.getFullNameConfigs().size(), 0u) << "Specifying global log level should not emit full names";
     ASSERT_EQ(secondParser.getFirstPartConfigs().size(), 0u) << "Specifying global log level should not emit first name part result";
     ASSERT_EQ(secondParser.getAnyPartConfigs().size(), 0u) << "Specifying global log level should not emit any name part result";
-    const cv::utils::logging::LogLevel secondActual = secondParser.getGlobalConfig().level;
+    const ncvslideio::utils::logging::LogLevel secondActual = secondParser.getGlobalConfig().level;
     //
     EXPECT_EQ(firstActual, firstExpected);
     EXPECT_EQ(secondActual, secondExpected);

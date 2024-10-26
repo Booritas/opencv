@@ -33,7 +33,7 @@
 #include <opencv2/highgui.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 const char * windowOriginal = "Captured preview";
 const int FOCUS_STEP = 1024;
@@ -246,7 +246,7 @@ static void showHelp(const char * pName, bool welcomeMsg)
 
 static bool parseArguments(int argc, char ** argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{h help ||}{o||}{f||}{m||}{d|0|}{v||}{@device|Nikon|}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{h help ||}{o||}{f||}{m||}{d|0|}{v||}{@device|Nikon|}");
     if (parser.has("help"))
         return false;
     GlobalArgs.breakLimit = DEFAULT_BREAK_LIMIT;

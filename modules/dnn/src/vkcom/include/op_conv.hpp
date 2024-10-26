@@ -11,7 +11,7 @@
 #include "vkcom.hpp"
 #include "op_base.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -72,6 +72,6 @@ private:
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #endif // OPENCV_DNN_VKCOM_OP_CONV_HPP

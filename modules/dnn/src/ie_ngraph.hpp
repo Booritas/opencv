@@ -25,7 +25,7 @@
 
 #endif  // HAVE_DNN_NGRAPH
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 #ifdef HAVE_DNN_NGRAPH
 
@@ -45,9 +45,9 @@ public:
     void forward(const std::vector<Ptr<BackendWrapper> >& outBlobsWrappers, bool isAsync);
 
     void initPlugin(std::shared_ptr<ov::Model>& net);
-    ov::ParameterVector setInputs(const std::vector<cv::Mat>& inputs, const std::vector<std::string>& names);
+    ov::ParameterVector setInputs(const std::vector<ncvslideio::Mat>& inputs, const std::vector<std::string>& names);
 
-    void addBlobs(const std::vector<cv::Ptr<BackendWrapper> >& ptrs);
+    void addBlobs(const std::vector<ncvslideio::Ptr<BackendWrapper> >& ptrs);
 
     void createNet(Target targetId);
 
@@ -71,7 +71,7 @@ public:
         void makePromises(const std::vector<Ptr<BackendWrapper> >& outs);
 
         ov::InferRequest req;
-        std::vector<cv::AsyncPromise> outProms;
+        std::vector<ncvslideio::AsyncPromise> outProms;
         std::vector<std::string> outsNames;
         bool isReady;
     };
@@ -145,7 +145,7 @@ ov::Output<ov::Node> ngraphDequantize(ov::Output<ov::Node> input, float input_sc
 
 #endif  // HAVE_DNN_NGRAPH
 
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn
 
 
 #endif  // __OPENCV_DNN_IE_NGRAPH_HPP__

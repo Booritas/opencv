@@ -41,7 +41,7 @@
 //M*/
 #include "precomp.hpp"
 
-void cv::cornerSubPix( InputArray _image, InputOutputArray _corners,
+void ncvslideio::cornerSubPix( InputArray _image, InputOutputArray _corners,
                        Size win, Size zeroZone, TermCriteria criteria )
 {
     CV_INSTRUMENT_REGION();
@@ -53,7 +53,7 @@ void cv::cornerSubPix( InputArray _image, InputOutputArray _corners,
     double eps = (criteria.type & TermCriteria::EPS) ? MAX(criteria.epsilon, 0.) : 0;
     eps *= eps; // use square of error in comparison operations
 
-    cv::Mat src = _image.getMat(), cornersmat = _corners.getMat();
+    ncvslideio::Mat src = _image.getMat(), cornersmat = _corners.getMat();
     int count = cornersmat.checkVector(2, CV_32F);
     CV_Assert( count >= 0 );
     Point2f* corners = cornersmat.ptr<Point2f>();
@@ -166,8 +166,8 @@ cvFindCornerSubPix( const void* srcarr, CvPoint2D32f* _corners,
     if(!_corners || count <= 0)
         return;
 
-    cv::Mat src = cv::cvarrToMat(srcarr), corners(count, 1, CV_32FC2, _corners);
-    cv::cornerSubPix(src, corners, win, zeroZone, criteria);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), corners(count, 1, CV_32FC2, _corners);
+    ncvslideio::cornerSubPix(src, corners, win, zeroZone, criteria);
 }
 
 /* End of file. */

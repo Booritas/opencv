@@ -1,7 +1,7 @@
 Color conversions {#imgproc_color_conversions}
 =================
 
-See cv::cvtColor and cv::ColorConversionCodes
+See ncvslideio::cvtColor and ncvslideio::ColorConversionCodes
 
 @todo document other conversion modes
 
@@ -16,10 +16,10 @@ and
 \f[\text{Gray to RGB[A]:} \quad R  \leftarrow Y, G  \leftarrow Y, B  \leftarrow Y, A  \leftarrow \max (ChannelRange)\f]
 The conversion from a RGB image to gray is done with:
 @code
-    cvtColor(src, bwsrc, cv::COLOR_RGB2GRAY);
+    cvtColor(src, bwsrc, ncvslideio::COLOR_RGB2GRAY);
 @endcode
-More advanced channel reordering can also be done with cv::mixChannels.
-@see cv::COLOR_BGR2GRAY, cv::COLOR_RGB2GRAY, cv::COLOR_GRAY2BGR, cv::COLOR_GRAY2RGB
+More advanced channel reordering can also be done with ncvslideio::mixChannels.
+@see ncvslideio::COLOR_BGR2GRAY, ncvslideio::COLOR_RGB2GRAY, ncvslideio::COLOR_GRAY2BGR, ncvslideio::COLOR_GRAY2RGB
 
 @anchor color_convert_rgb_xyz
 RGB <-> CIE XYZ.Rec 709 with D65 white point
@@ -34,7 +34,7 @@ RGB <-> CIE XYZ.Rec 709 with D65 white point
   \end{bmatrix}\f]
 \f$X\f$, \f$Y\f$ and \f$Z\f$ cover the whole value range (in case of floating-point images, \f$Z\f$ may exceed 1).
 
-@see cv::COLOR_BGR2XYZ, cv::COLOR_RGB2XYZ, cv::COLOR_XYZ2BGR, cv::COLOR_XYZ2RGB
+@see ncvslideio::COLOR_BGR2XYZ, ncvslideio::COLOR_RGB2XYZ, ncvslideio::COLOR_XYZ2BGR, ncvslideio::COLOR_XYZ2RGB
 
 @anchor color_convert_rgb_ycrcb
 RGB <-> YCrCb JPEG (or YCC)
@@ -48,7 +48,7 @@ RGB <-> YCrCb JPEG (or YCC)
 where
 \f[delta =  \left \{ \begin{array}{l l} 128 &  \mbox{for 8-bit images} \\ 32768 &  \mbox{for 16-bit images} \\ 0.5 &  \mbox{for floating-point images} \end{array} \right .\f]
 Y, Cr, and Cb cover the whole value range.
-@see cv::COLOR_BGR2YCrCb, cv::COLOR_RGB2YCrCb, cv::COLOR_YCrCb2BGR, cv::COLOR_YCrCb2RGB
+@see ncvslideio::COLOR_BGR2YCrCb, ncvslideio::COLOR_RGB2YCrCb, ncvslideio::COLOR_YCrCb2BGR, ncvslideio::COLOR_YCrCb2RGB
 
 @anchor color_convert_rgb_yuv_42x
 RGB <-> YUV with subsampling
@@ -79,7 +79,7 @@ RGB to YUV 4:2:2 is converted using 14-bit fixed-point arithmetics while other c
 \f[U \leftarrow -0.148 \cdot R_{avg} - 0.291 \cdot G_{avg} + 0.439 \cdot B_{avg} + 128 \f]
 \f[V \leftarrow  0.439 \cdot R_{avg} - 0.368 \cdot G_{avg} - 0.071 \cdot B_{avg} + 128 \f]
 
-@see cv::COLOR_YUV2RGB_NV12, cv::COLOR_YUV2RGBA_YUY2, cv::COLOR_BGR2YUV_YV12 and similar ones
+@see ncvslideio::COLOR_YUV2RGB_NV12, ncvslideio::COLOR_YUV2RGBA_YUY2, ncvslideio::COLOR_BGR2YUV_YV12 and similar ones
 
 @anchor color_convert_rgb_hsv
 RGB <-> HSV
@@ -101,7 +101,7 @@ The values are then converted to the destination data type:
 - 16-bit images: (currently not supported) \f$V \leftarrow 65535 V, S \leftarrow 65535 S, H \leftarrow H\f$
 - 32-bit images: H, S, and V are left as is
 
-@see cv::COLOR_BGR2HSV, cv::COLOR_RGB2HSV, cv::COLOR_HSV2BGR, cv::COLOR_HSV2RGB
+@see ncvslideio::COLOR_BGR2HSV, ncvslideio::COLOR_RGB2HSV, ncvslideio::COLOR_HSV2BGR, ncvslideio::COLOR_HSV2RGB
 
 @anchor color_convert_rgb_hls
 RGB <-> HLS
@@ -126,7 +126,7 @@ The values are then converted to the destination data type:
 - 16-bit images: (currently not supported)  \f$V \leftarrow 65535 \cdot V, S \leftarrow 65535 \cdot S, H \leftarrow H\f$
 - 32-bit images: H, S, V are left as is
 
-@see cv::COLOR_BGR2HLS, cv::COLOR_RGB2HLS, cv::COLOR_HLS2BGR, cv::COLOR_HLS2RGB
+@see ncvslideio::COLOR_BGR2HLS, ncvslideio::COLOR_RGB2HLS, ncvslideio::COLOR_HLS2BGR, ncvslideio::COLOR_HLS2RGB
 
 @anchor color_convert_rgb_lab
 RGB <-> CIE L\*a\*b\*
@@ -151,7 +151,7 @@ are then converted to the destination data type:
 - 16-bit images:  (currently not supported)
 - 32-bit images:  L, a, and b are left as is
 
-@see cv::COLOR_BGR2Lab, cv::COLOR_RGB2Lab, cv::COLOR_Lab2BGR, cv::COLOR_Lab2RGB
+@see ncvslideio::COLOR_BGR2Lab, ncvslideio::COLOR_RGB2Lab, ncvslideio::COLOR_Lab2BGR, ncvslideio::COLOR_Lab2RGB
 
 @anchor color_convert_rgb_luv
 RGB <-> CIE L\*u\*v\*
@@ -178,7 +178,7 @@ Note that when converting integer Luv images to RGB the intermediate X, Y and Z 
 The above formulae for converting RGB to/from various color spaces have been taken from multiple
 sources on the web, primarily from the Charles Poynton site <http://www.poynton.com/ColorFAQ.html>
 
-@see cv::COLOR_BGR2Luv, cv::COLOR_RGB2Luv, cv::COLOR_Luv2BGR, cv::COLOR_Luv2RGB
+@see ncvslideio::COLOR_BGR2Luv, ncvslideio::COLOR_RGB2Luv, ncvslideio::COLOR_Luv2BGR, ncvslideio::COLOR_Luv2RGB
 
 @anchor color_convert_bayer
 Bayer -> RGB
@@ -202,5 +202,5 @@ the conversion constants CV_Bayer \f$C_1 C_2\f$ 2BGR and CV_Bayer \f$C_1 C_2\f$ 
 particular pattern type. These are components from the second row, second and third columns,
 respectively. For example, the above pattern has a very popular "BG" type.
 
-@see cv::COLOR_BayerRGGB2BGR, cv::COLOR_BayerGRBG2BGR, cv::COLOR_BayerBGGR2BGR, cv::COLOR_BayerGBRG2BGR, cv::COLOR_BayerRGGB2RGB, cv::COLOR_BayerGRBG2RGB, cv::COLOR_BayerBGGR2RGB, cv::COLOR_BayerGBRG2RGB
-cv::COLOR_BayerBG2BGR, cv::COLOR_BayerGB2BGR, cv::COLOR_BayerRG2BGR, cv::COLOR_BayerGR2BGR, cv::COLOR_BayerBG2RGB, cv::COLOR_BayerGB2RGB, cv::COLOR_BayerRG2RGB, cv::COLOR_BayerGR2RGB
+@see ncvslideio::COLOR_BayerRGGB2BGR, ncvslideio::COLOR_BayerGRBG2BGR, ncvslideio::COLOR_BayerBGGR2BGR, ncvslideio::COLOR_BayerGBRG2BGR, ncvslideio::COLOR_BayerRGGB2RGB, ncvslideio::COLOR_BayerGRBG2RGB, ncvslideio::COLOR_BayerBGGR2RGB, ncvslideio::COLOR_BayerGBRG2RGB
+cv::COLOR_BayerBG2BGR, ncvslideio::COLOR_BayerGB2BGR, ncvslideio::COLOR_BayerRG2BGR, ncvslideio::COLOR_BayerGR2BGR, ncvslideio::COLOR_BayerBG2RGB, ncvslideio::COLOR_BayerGB2RGB, ncvslideio::COLOR_BayerRG2RGB, ncvslideio::COLOR_BayerGR2RGB

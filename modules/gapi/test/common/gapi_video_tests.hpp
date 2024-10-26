@@ -17,18 +17,18 @@ GAPI_TEST_FIXTURE_SPEC_PARAMS(BuildOptFlowPyramidTest,
                               derivBorder, tryReuseInputImage)
 
 GAPI_TEST_FIXTURE_SPEC_PARAMS(OptFlowLKTest, FIXTURE_API(std::string,int,tuple<int,int>,int,
-                                                         cv::TermCriteria),
+                                                         ncvslideio::TermCriteria),
                               5, fileNamePattern, channels, pointsNum, winSize, criteria)
 
 GAPI_TEST_FIXTURE_SPEC_PARAMS(OptFlowLKTestForPyr, FIXTURE_API(std::string,int,tuple<int,int>,int,
-                                                               cv::TermCriteria,bool),
+                                                               ncvslideio::TermCriteria,bool),
                               6, fileNamePattern, channels, pointsNum, winSize, criteria,withDeriv)
 
 GAPI_TEST_FIXTURE_SPEC_PARAMS(BuildPyr_CalcOptFlow_PipelineTest,
                               FIXTURE_API(std::string,int,int,bool), 4,
                               fileNamePattern, winSize, maxLevel, withDerivatives)
 
-GAPI_TEST_FIXTURE_SPEC_PARAMS(BackgroundSubtractorTest, FIXTURE_API(tuple<cv::gapi::video::BackgroundSubtractorType,double>,
+GAPI_TEST_FIXTURE_SPEC_PARAMS(BackgroundSubtractorTest, FIXTURE_API(tuple<ncvslideio::gapi::video::BackgroundSubtractorType,double>,
                                                                     int, bool, double, std::string, std::size_t),
                               6, typeAndThreshold, histLength, detectShadows, learningRate, filePath, testNumFrames)
 

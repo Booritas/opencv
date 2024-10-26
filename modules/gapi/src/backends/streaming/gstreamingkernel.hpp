@@ -10,23 +10,23 @@
 
 #include "compiler/gislandmodel.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace streaming {
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 class IActor {
 public:
     using Ptr = std::shared_ptr<IActor>;
 
-    virtual void run(cv::gimpl::GIslandExecutable::IInput  &in,
-                     cv::gimpl::GIslandExecutable::IOutput &out) = 0;
+    virtual void run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                     ncvslideio::gimpl::GIslandExecutable::IOutput &out) = 0;
 
     virtual ~IActor() = default;
 };
 
-using CreateActorFunction = std::function<IActor::Ptr(const cv::GCompileArgs&)>;
+using CreateActorFunction = std::function<IActor::Ptr(const ncvslideio::GCompileArgs&)>;
 struct GStreamingKernel
 {
     CreateActorFunction createActorFunction;
@@ -34,6 +34,6 @@ struct GStreamingKernel
 
 } // namespace streaming
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMINGKERNEL_HPP

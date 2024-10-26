@@ -23,18 +23,18 @@ def main():
     except IndexError:
         fn = 'pic1.png'
 
-    src = cv.imread(cv.samples.findFile(fn))
-    dst = cv.Canny(src, 50, 200)
-    cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
+    src = ncvslideio.imread(ncvslideio.samples.findFile(fn))
+    dst = ncvslideio.Canny(src, 50, 200)
+    cdst = ncvslideio.cvtColor(dst, ncvslideio.COLOR_GRAY2BGR)
 
     if True: # HoughLinesP
-        lines = cv.HoughLinesP(dst, 1, math.pi/180.0, 40, np.array([]), 50, 10)
+        lines = ncvslideio.HoughLinesP(dst, 1, math.pi/180.0, 40, np.array([]), 50, 10)
         a, b, _c = lines.shape
         for i in range(a):
-            cv.line(cdst, (lines[i][0][0], lines[i][0][1]), (lines[i][0][2], lines[i][0][3]), (0, 0, 255), 3, cv.LINE_AA)
+            ncvslideio.line(cdst, (lines[i][0][0], lines[i][0][1]), (lines[i][0][2], lines[i][0][3]), (0, 0, 255), 3, ncvslideio.LINE_AA)
 
     else:    # HoughLines
-        lines = cv.HoughLines(dst, 1, math.pi/180.0, 50, np.array([]), 0, 0)
+        lines = ncvslideio.HoughLines(dst, 1, math.pi/180.0, 50, np.array([]), 0, 0)
         if lines is not None:
             a, b, _c = lines.shape
             for i in range(a):
@@ -45,16 +45,16 @@ def main():
                 x0, y0 = a*rho, b*rho
                 pt1 = ( int(x0+1000*(-b)), int(y0+1000*(a)) )
                 pt2 = ( int(x0-1000*(-b)), int(y0-1000*(a)) )
-                cv.line(cdst, pt1, pt2, (0, 0, 255), 3, cv.LINE_AA)
+                ncvslideio.line(cdst, pt1, pt2, (0, 0, 255), 3, ncvslideio.LINE_AA)
 
-    cv.imshow("detected lines", cdst)
+    ncvslideio.imshow("detected lines", cdst)
 
-    cv.imshow("source", src)
-    cv.waitKey(0)
+    ncvslideio.imshow("source", src)
+    ncvslideio.waitKey(0)
     print('Done')
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

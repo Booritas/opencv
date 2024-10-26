@@ -12,7 +12,7 @@
 #include "../../precomp.hpp"
 #include "softmax.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 void softmax(Mat &dst, const Mat &src, int axis, int axisBias, int axisStep){
     CV_Assert(src.type() == CV_32F);
@@ -118,4 +118,4 @@ void logSoftmax(Mat &dst, const Mat &src, int axis) {
     log(dst, dst);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

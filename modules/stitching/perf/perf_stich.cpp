@@ -236,8 +236,8 @@ PERF_TEST_P(stitchDatasets, affine, testing::Combine(AFFINE_DATASETS, TEST_DETEC
         Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::SCANS);
         stitcher->setFeaturesFinder(featuresFinder);
 
-        if (cv::ocl::useOpenCL())
-            cv::theRNG() = cv::RNG(12345); // prevent fails of Windows OpenCL builds (see #8294)
+        if (ncvslideio::ocl::useOpenCL())
+            ncvslideio::theRNG() = ncvslideio::RNG(12345); // prevent fails of Windows OpenCL builds (see #8294)
 
         startTimer();
         stitcher->stitch(imgs, pano);

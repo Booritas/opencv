@@ -40,7 +40,7 @@ Mat rotateImage(const Mat& srcImage, const Mat& srcMask, float angle, Mat& dstIm
 
 float calcCirclesIntersectArea(const Point2f& p0, float r0, const Point2f& p1, float r1)
 {
-    float c = static_cast<float>(cv::norm(p0 - p1)), sqr_c = c * c;
+    float c = static_cast<float>(ncvslideio::norm(p0 - p1)), sqr_c = c * c;
 
     float sqr_r0 = r0 * r0;
     float sqr_r1 = r1 * r1;

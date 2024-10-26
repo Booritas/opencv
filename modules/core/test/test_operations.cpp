@@ -108,8 +108,8 @@ CV_OperationsTest::~CV_OperationsTest() {}
 
 template<typename _Tp> void CV_OperationsTest::TestType(Size sz, _Tp value)
 {
-    cv::Mat_<_Tp> m(sz);
-    CV_Assert(m.cols == sz.width && m.rows == sz.height && m.depth() == cv::traits::Depth<_Tp>::value &&
+    ncvslideio::Mat_<_Tp> m(sz);
+    CV_Assert(m.cols == sz.width && m.rows == sz.height && m.depth() == ncvslideio::traits::Depth<_Tp>::value &&
               m.channels() == DataType<_Tp>::channels &&
               m.elemSize() == sizeof(_Tp) && m.step == m.elemSize()*m.cols);
     for( int y = 0; y < sz.height; y++ )
@@ -138,16 +138,16 @@ bool CV_OperationsTest::TestMat()
         res = Mat(Mat(2 * rot_2x3) * res - shi_2x1) + shift;
 
         Mat tmp, res2;
-        cv::add(one_3x1, shi_3x1, tmp);
-        cv::add(tmp, shi_3x1, tmp);
-        cv::add(tmp, shi_3x1, tmp);
-        cv::gemm(rot_2x3, tmp, 2, shi_2x1, -1, res2, 0);
-        cv::add(res2, Mat(2, 1, CV_32F, shift), res2);
+        ncvslideio::add(one_3x1, shi_3x1, tmp);
+        ncvslideio::add(tmp, shi_3x1, tmp);
+        ncvslideio::add(tmp, shi_3x1, tmp);
+        ncvslideio::gemm(rot_2x3, tmp, 2, shi_2x1, -1, res2, 0);
+        ncvslideio::add(res2, Mat(2, 1, CV_32F, shift), res2);
 
         CHECK_DIFF(res, res2);
 
         Mat mat4x4(4, 4, CV_32F);
-        cv::randu(mat4x4, Scalar(0), Scalar(10));
+        ncvslideio::randu(mat4x4, Scalar(0), Scalar(10));
 
         Mat roi1 = mat4x4(Rect(Point(1, 1), Size(2, 2)));
         Mat roi2 = mat4x4(Range(1, 3), Range(1, 3));
@@ -512,19 +512,19 @@ bool CV_OperationsTest::TestTemplateMat()
         Mat_<float> resS = rot_2x3 * one_3x1;
 
         Mat_<float> tmp, res2, resS2;
-        cv::add(one_3x1, shi_3x1, tmp);
-        cv::add(tmp, shi_3x1, tmp);
-        cv::add(tmp, shi_3x1, tmp);
-        cv::gemm(rot_2x3, tmp, 2, shi_2x1, -1, res2, 0);
-        cv::add(res2, Mat(2, 1, CV_32F, shift), res2);
+        ncvslideio::add(one_3x1, shi_3x1, tmp);
+        ncvslideio::add(tmp, shi_3x1, tmp);
+        ncvslideio::add(tmp, shi_3x1, tmp);
+        ncvslideio::gemm(rot_2x3, tmp, 2, shi_2x1, -1, res2, 0);
+        ncvslideio::add(res2, Mat(2, 1, CV_32F, shift), res2);
 
-        cv::gemm(rot_2x3, one_3x1, 1, shi_2x1, 0, resS2, 0);
+        ncvslideio::gemm(rot_2x3, one_3x1, 1, shi_2x1, 0, resS2, 0);
         CHECK_DIFF(res, res2);
         CHECK_DIFF(resS, resS2);
 
 
         Mat_<float> mat4x4(4, 4);
-        cv::randu(mat4x4, Scalar(0), Scalar(10));
+        ncvslideio::randu(mat4x4, Scalar(0), Scalar(10));
 
         Mat_<float> roi1 = mat4x4(Rect(Point(1, 1), Size(2, 2)));
         Mat_<float> roi2 = mat4x4(Range(1, 3), Range(1, 3));
@@ -698,22 +698,22 @@ bool CV_OperationsTest::TestTemplateMat()
         Mat_<uchar> rect(eye, Rect(0, 0, 1, 1));
         if (rect.cols != 1 || rect.rows != 1 || rect(0,0) != uchar_data[0]) throw test_excep();
 
-        //cv::Mat_<_Tp>::adjustROI(int,int,int,int)
-        //cv::Mat_<_Tp>::cross(const Mat_&) const
-        //cv::Mat_<_Tp>::Mat_(const vector<_Tp>&,bool)
-        //cv::Mat_<_Tp>::Mat_(int,int,_Tp*,size_t)
-        //cv::Mat_<_Tp>::Mat_(int,int,const _Tp&)
-        //cv::Mat_<_Tp>::Mat_(Size,const _Tp&)
-        //cv::Mat_<_Tp>::mul(const Mat_<_Tp>&,double) const
-        //cv::Mat_<_Tp>::mul(const MatExpr_<MatExpr_Op2_<Mat_<_Tp>,double,Mat_<_Tp>,MatOp_DivRS_<Mat> >,Mat_<_Tp> >&,double) const
-        //cv::Mat_<_Tp>::mul(const MatExpr_<MatExpr_Op2_<Mat_<_Tp>,double,Mat_<_Tp>,MatOp_Scale_<Mat> >,Mat_<_Tp> >&,double) const
-        //cv::Mat_<_Tp>::operator Mat_<T2>() const
-        //cv::Mat_<_Tp>::operator MatExpr_<Mat_<_Tp>,Mat_<_Tp> >() const
-        //cv::Mat_<_Tp>::operator()(const Range&,const Range&) const
-        //cv::Mat_<_Tp>::operator()(const Rect&) const
+        //ncvslideio::Mat_<_Tp>::adjustROI(int,int,int,int)
+        //ncvslideio::Mat_<_Tp>::cross(const Mat_&) const
+        //ncvslideio::Mat_<_Tp>::Mat_(const vector<_Tp>&,bool)
+        //ncvslideio::Mat_<_Tp>::Mat_(int,int,_Tp*,size_t)
+        //ncvslideio::Mat_<_Tp>::Mat_(int,int,const _Tp&)
+        //ncvslideio::Mat_<_Tp>::Mat_(Size,const _Tp&)
+        //ncvslideio::Mat_<_Tp>::mul(const Mat_<_Tp>&,double) const
+        //ncvslideio::Mat_<_Tp>::mul(const MatExpr_<MatExpr_Op2_<Mat_<_Tp>,double,Mat_<_Tp>,MatOp_DivRS_<Mat> >,Mat_<_Tp> >&,double) const
+        //ncvslideio::Mat_<_Tp>::mul(const MatExpr_<MatExpr_Op2_<Mat_<_Tp>,double,Mat_<_Tp>,MatOp_Scale_<Mat> >,Mat_<_Tp> >&,double) const
+        //ncvslideio::Mat_<_Tp>::operator Mat_<T2>() const
+        //ncvslideio::Mat_<_Tp>::operator MatExpr_<Mat_<_Tp>,Mat_<_Tp> >() const
+        //ncvslideio::Mat_<_Tp>::operator()(const Range&,const Range&) const
+        //ncvslideio::Mat_<_Tp>::operator()(const Rect&) const
 
-        //cv::Mat_<_Tp>::operator=(const MatExpr_Base&)
-        //cv::Mat_<_Tp>::operator[](int) const
+        //ncvslideio::Mat_<_Tp>::operator=(const MatExpr_Base&)
+        //ncvslideio::Mat_<_Tp>::operator[](int) const
 
 
         ///////////////////////////////
@@ -798,14 +798,14 @@ bool CV_OperationsTest::TestTemplateMat()
 
         Size size(2, 5);
         TestType<float>(size, 1.f);
-        cv::Vec3f val1(1.f);
-        TestType<cv::Vec3f>(size, val1);
-        cv::Matx31f val2(1.f);
-        TestType<cv::Matx31f>(size, val2);
-        cv::Matx41f val3(1.f);
-        TestType<cv::Matx41f>(size, val3);
-        cv::Matx32f val4(1.f);
-        TestType<cv::Matx32f>(size, val4);
+        ncvslideio::Vec3f val1(1.f);
+        TestType<ncvslideio::Vec3f>(size, val1);
+        ncvslideio::Matx31f val2(1.f);
+        TestType<ncvslideio::Matx31f>(size, val2);
+        ncvslideio::Matx41f val3(1.f);
+        TestType<ncvslideio::Matx41f>(size, val3);
+        ncvslideio::Matx32f val4(1.f);
+        TestType<ncvslideio::Matx32f>(size, val4);
     }
     catch (const test_excep& e)
     {
@@ -819,7 +819,7 @@ bool CV_OperationsTest::TestTemplateMat()
 bool CV_OperationsTest::TestMatND()
 {
     int sizes[] = { 3, 3, 3};
-    cv::MatND nd(3, sizes, CV_32F);
+    ncvslideio::MatND nd(3, sizes, CV_32F);
 
     return true;
 }
@@ -920,18 +920,18 @@ bool CV_OperationsTest::TestMatMatxCastSum()
         res = mat + 1;
         CHECK_DIFF_FLT(res, ref3);
 
-        cv::add(mat, tst1, res);
+        ncvslideio::add(mat, tst1, res);
         CHECK_DIFF_FLT(res, ref1);
-        cv::add(mat, tst2, res);
+        ncvslideio::add(mat, tst2, res);
         CHECK_DIFF_FLT(res, ref2);
-        cv::add(mat, tst3, res);
+        ncvslideio::add(mat, tst3, res);
         CHECK_DIFF_FLT(res, ref1);
-        cv::add(mat, tst4, res);
+        ncvslideio::add(mat, tst4, res);
         CHECK_DIFF_FLT(res, ref2);
 
-        cv::add(mat, tst5, res);
+        ncvslideio::add(mat, tst5, res);
         CHECK_DIFF_FLT(res, ref3);
-        cv::add(mat, 1, res);
+        ncvslideio::add(mat, 1, res);
         CHECK_DIFF_FLT(res, ref3);
 
         res = mat.clone(); res += tst1;
@@ -1028,22 +1028,22 @@ bool CV_OperationsTest::TestVec()
 {
     try
     {
-        cv::Mat hsvImage_f(5, 5, CV_32FC3), hsvImage_b(5, 5, CV_8UC3);
+        ncvslideio::Mat hsvImage_f(5, 5, CV_32FC3), hsvImage_b(5, 5, CV_8UC3);
         int i = 0,j = 0;
-        cv::Vec3f a;
+        ncvslideio::Vec3f a;
 
         //these compile
-        cv::Vec3b b = a;
-        hsvImage_f.at<cv::Vec3f>(i,j) = cv::Vec3f((float)i,0,1);
-        hsvImage_b.at<cv::Vec3b>(i,j) = cv::Vec3b(cv::Vec3f((float)i,0,1));
+        ncvslideio::Vec3b b = a;
+        hsvImage_f.at<ncvslideio::Vec3f>(i,j) = ncvslideio::Vec3f((float)i,0,1);
+        hsvImage_b.at<ncvslideio::Vec3b>(i,j) = ncvslideio::Vec3b(ncvslideio::Vec3f((float)i,0,1));
 
         //these don't
-        b = cv::Vec3f(1,0,0);
-        cv::Vec3b c;
-        c = cv::Vec3f(0,0,1);
-        hsvImage_b.at<cv::Vec3b>(i,j) = cv::Vec3f((float)i,0,1);
-        hsvImage_b.at<cv::Vec3b>(i,j) = a;
-        hsvImage_b.at<cv::Vec3b>(i,j) = cv::Vec3f(1,2,3);
+        b = ncvslideio::Vec3f(1,0,0);
+        ncvslideio::Vec3b c;
+        c = ncvslideio::Vec3f(0,0,1);
+        hsvImage_b.at<ncvslideio::Vec3b>(i,j) = ncvslideio::Vec3f((float)i,0,1);
+        hsvImage_b.at<ncvslideio::Vec3b>(i,j) = a;
+        hsvImage_b.at<ncvslideio::Vec3b>(i,j) = ncvslideio::Vec3f(1,2,3);
     }
     catch(const test_excep&)
     {
@@ -1111,17 +1111,17 @@ bool CV_OperationsTest::operations1()
         Mat A(1, 32, CV_32F), B;
         for( int i = 0; i < A.cols; i++ )
             A.at<float>(i) = (float)(i <= 12 ? i : 24 - i);
-        cv::transpose(A, B);
+        ncvslideio::transpose(A, B);
 
         int minidx[2] = {0, 0}, maxidx[2] = {0, 0};
         double minval = 0, maxval = 0;
-        cv::minMaxIdx(A, &minval, &maxval, minidx, maxidx);
+        ncvslideio::minMaxIdx(A, &minval, &maxval, minidx, maxidx);
 
         if( !(minidx[0] == 0 && minidx[1] == 31 && maxidx[0] == 0 && maxidx[1] == 12 &&
                   minval == -7 && maxval == 12))
             throw test_excep();
 
-        cv::minMaxIdx(B, &minval, &maxval, minidx, maxidx);
+        ncvslideio::minMaxIdx(B, &minval, &maxval, minidx, maxidx);
 
         if( !(minidx[0] == 31 && minidx[1] == 0 && maxidx[0] == 12 && maxidx[1] == 0 &&
               minval == -7 && maxval == 12))
@@ -1129,13 +1129,13 @@ bool CV_OperationsTest::operations1()
 
         Matx33f b(1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f);
         Mat c;
-        cv::add(Mat::zeros(3, 3, CV_32F), b, c);
+        ncvslideio::add(Mat::zeros(3, 3, CV_32F), b, c);
         CV_Assert( cvtest::norm(b, c, CV_C) == 0 );
 
-        cv::add(Mat::zeros(3, 3, CV_64F), b, c, noArray(), c.type());
+        ncvslideio::add(Mat::zeros(3, 3, CV_64F), b, c, noArray(), c.type());
         CV_Assert( cvtest::norm(b, c, CV_C) == 0 );
 
-        cv::add(Mat::zeros(6, 1, CV_64F), 1, c, noArray(), c.type());
+        ncvslideio::add(Mat::zeros(6, 1, CV_64F), 1, c, noArray(), c.type());
         CV_Assert( cvtest::norm(Matx61f(1.f, 1.f, 1.f, 1.f, 1.f, 1.f), c, CV_C) == 0 );
 
         vector<Point2f> pt2d(3);
@@ -1148,7 +1148,7 @@ bool CV_OperationsTest::operations1()
                 0.9058f, 0.0975f, 0.9649f, 0.4854f,
                 0.1270f, 0.2785f, 0.1576f, 0.8003f,
                 0.9134f, 0.5469f, 0.9706f, 0.1419f);
-        double d = cv::determinant(m44);
+        double d = ncvslideio::determinant(m44);
         CV_Assert( fabs(d - (-0.0262)) <= 0.001 );
 
         Cv32suf z;
@@ -1369,7 +1369,7 @@ TEST(Core_SparseMat, iterations) { CV_SparseMatTest test; test.safe_run(); }
 TEST(MatTestRoi, adjustRoiOverflow)
 {
     Mat m(15, 10, CV_32S);
-    Mat roi(m, cv::Range(2, 10), cv::Range(3,6));
+    Mat roi(m, ncvslideio::Range(2, 10), ncvslideio::Range(3,6));
     int rowsInROI = roi.rows;
     roi.adjustROI(1, 0, 0, 0);
 
@@ -1383,7 +1383,7 @@ TEST(MatTestRoi, adjustRoiOverflow)
 TEST(MatTestRoi, adjustRoiUndefinedBehavior)
 {
     Mat m(6, 6, CV_8U);
-    Mat roi(m, cv::Range(2, 4), cv::Range(2, 4));
+    Mat roi(m, ncvslideio::Range(2, 4), ncvslideio::Range(2, 4));
     // This could trigger a (negative int)*size_t when updating data,
     // which is undefined behavior.
     roi.adjustROI(2, 2, 2, 2);
@@ -1426,10 +1426,10 @@ PARAM_TEST_CASE(sortIdx, MatDepth, SortRowCol, SortOrder, Size, bool)
     }
 
     template<typename T>
-    void check_(const cv::Mat& values_, const cv::Mat_<int>& idx_)
+    void check_(const ncvslideio::Mat& values_, const ncvslideio::Mat_<int>& idx_)
     {
-        cv::Mat_<T>& values = (cv::Mat_<T>&)values_;
-        cv::Mat_<int>& idx = (cv::Mat_<int>&)idx_;
+        ncvslideio::Mat_<T>& values = (ncvslideio::Mat_<T>&)values_;
+        ncvslideio::Mat_<int>& idx = (ncvslideio::Mat_<int>&)idx_;
         size_t N = values.total();
         std::vector<bool> processed(N, false);
         int prevIdx = idx(0);
@@ -1459,7 +1459,7 @@ PARAM_TEST_CASE(sortIdx, MatDepth, SortRowCol, SortOrder, Size, bool)
         Mat values_row((int)N, 1, type), idx_row((int)N, 1, CV_32S);
         for (size_t i = 0; i < N; i++)
         {
-            SCOPED_TRACE(cv::format("row/col=%d", (int)i));
+            SCOPED_TRACE(ncvslideio::format("row/col=%d", (int)i));
             if (isColumn)
             {
                 src_roi.col((int)i).copyTo(values_row);
@@ -1490,7 +1490,7 @@ TEST_P(sortIdx, simple)
     {
         generateTestData();
 
-        cv::sortIdx(src_roi, dst_roi, flags);
+        ncvslideio::sortIdx(src_roi, dst_roi, flags);
         validate();
     }
 }
@@ -1506,19 +1506,19 @@ INSTANTIATE_TEST_CASE_P(Core, sortIdx, Combine(
 
 TEST(Core_sortIdx, regression_8941)
 {
-    cv::Mat src = (cv::Mat_<int>(3, 3) <<
+    ncvslideio::Mat src = (ncvslideio::Mat_<int>(3, 3) <<
         1, 2, 3,
         0, 9, 5,
         8, 1, 6
     );
-    cv::Mat expected = (cv::Mat_<int>(3, 1) <<
+    ncvslideio::Mat expected = (ncvslideio::Mat_<int>(3, 1) <<
         1,
         0,
         2
     );
 
-    cv::Mat result;
-    cv::sortIdx(src.col(0), result, CV_SORT_EVERY_COLUMN | CV_SORT_ASCENDING);
+    ncvslideio::Mat result;
+    ncvslideio::sortIdx(src.col(0), result, CV_SORT_EVERY_COLUMN | CV_SORT_ASCENDING);
 #if 0
     std::cout << src.col(0) << std::endl;
     std::cout << result << std::endl;
@@ -1552,13 +1552,13 @@ TEST(Core_Mat, augmentation_operations_9688)
 //results.
 TEST(Core_MatExpr, empty_check_15760)
 {
-    EXPECT_THROW(Mat c = min(Mat(), Mat()), cv::Exception);
-    EXPECT_THROW(Mat c = abs(Mat()), cv::Exception);
-    EXPECT_THROW(Mat c = min(Mat(), Mat()), cv::Exception);
-    EXPECT_THROW(Mat c = Mat() | Mat(), cv::Exception);
-    EXPECT_THROW(Mat c = Mat() + Mat(), cv::Exception);
-    EXPECT_THROW(Mat c = Mat().t(), cv::Exception);
-    EXPECT_THROW(Mat c = Mat().cross(Mat()), cv::Exception);
+    EXPECT_THROW(Mat c = min(Mat(), Mat()), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = abs(Mat()), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = min(Mat(), Mat()), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = Mat() | Mat(), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = Mat() + Mat(), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = Mat().t(), ncvslideio::Exception);
+    EXPECT_THROW(Mat c = Mat().cross(Mat()), ncvslideio::Exception);
 }
 
 TEST(Core_Arithm, scalar_handling_19599)  // https://github.com/opencv/opencv/issues/19599 (OpenCV 4.x+ only)
@@ -1566,7 +1566,7 @@ TEST(Core_Arithm, scalar_handling_19599)  // https://github.com/opencv/opencv/is
     Mat a(1, 1, CV_32F, Scalar::all(1));
     Mat b(4, 1, CV_64F, Scalar::all(1));  // MatExpr may convert Scalar to Mat
     Mat c;
-    EXPECT_NO_THROW(cv::multiply(a, b, c));
+    EXPECT_NO_THROW(ncvslideio::multiply(a, b, c));
     EXPECT_EQ(1, c.cols);
     EXPECT_EQ(1, c.rows);
 }
@@ -1588,7 +1588,7 @@ TEST_P(Core_Arith_Regression24163, test_for_ties_to_even)
         &&
         ( (matDepth != CV_8S) && (matDepth != CV_16S) && (matDepth != CV_32S) ) )
     {
-        throw SkipTestException( cv::format("Test is skipped(matDepth is not signed, alpha = %d, beta = %d)", alpha, beta) );
+        throw SkipTestException( ncvslideio::format("Test is skipped(matDepth is not signed, alpha = %d, beta = %d)", alpha, beta) );
     }
 
     const int matType = CV_MAKE_TYPE(matDepth, 1);

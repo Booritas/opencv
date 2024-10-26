@@ -48,7 +48,7 @@
 
 #include "opencv2/opencv_modules.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching_match
@@ -138,7 +138,7 @@ public:
     @sa detail::MatchesInfo
     */
     CV_WRAP_AS(apply2) void operator ()(const std::vector<ImageFeatures> &features, CV_OUT std::vector<MatchesInfo> &pairwise_matches,
-                                        const cv::UMat &mask = cv::UMat()) { match(features, pairwise_matches, mask); }
+                                        const ncvslideio::UMat &mask = ncvslideio::UMat()) { match(features, pairwise_matches, mask); }
 
     /** @return True, if it's possible to use the same matcher instance in parallel, false otherwise
     */
@@ -169,7 +169,7 @@ protected:
     @param mask (optional) mask indicating which image pairs should be matched
      */
     virtual void match(const std::vector<ImageFeatures> &features, std::vector<MatchesInfo> &pairwise_matches,
-                       const cv::UMat &mask = cv::UMat());
+                       const ncvslideio::UMat &mask = ncvslideio::UMat());
 
     bool is_thread_safe_;
 };
@@ -219,19 +219,19 @@ protected:
     // indicate that we do not want to hide the base class match method with a different signature
     using BestOf2NearestMatcher::match;
     void match(const std::vector<ImageFeatures> &features, std::vector<MatchesInfo> &pairwise_matches,
-               const cv::UMat &mask = cv::UMat()) CV_OVERRIDE;
+               const ncvslideio::UMat &mask = ncvslideio::UMat()) CV_OVERRIDE;
 
     int range_width_;
 };
 
-/** @brief Features matcher similar to cv::detail::BestOf2NearestMatcher which
+/** @brief Features matcher similar to ncvslideio::detail::BestOf2NearestMatcher which
 finds two best matches for each feature and leaves the best one only if the
 ratio between descriptor distances is greater than the threshold match_conf.
 
-Unlike cv::detail::BestOf2NearestMatcher this matcher uses affine
+Unlike ncvslideio::detail::BestOf2NearestMatcher this matcher uses affine
 transformation (affine transformation estimate will be placed in matches_info).
 
-@sa cv::detail::FeaturesMatcher cv::detail::BestOf2NearestMatcher
+@sa ncvslideio::detail::FeaturesMatcher ncvslideio::detail::BestOf2NearestMatcher
  */
 class CV_EXPORTS_W AffineBestOf2NearestMatcher : public BestOf2NearestMatcher
 {
@@ -246,7 +246,7 @@ public:
     @param num_matches_thresh1 Minimum number of matches required for the 2D affine transform
     estimation used in the inliers classification step
 
-    @sa cv::estimateAffine2D cv::estimateAffinePartial2D
+    @sa ncvslideio::estimateAffine2D ncvslideio::estimateAffinePartial2D
      */
     CV_WRAP AffineBestOf2NearestMatcher(bool full_affine = false, bool try_use_gpu = false,
                                 float match_conf = 0.3f, int num_matches_thresh1 = 6) :
@@ -262,6 +262,6 @@ protected:
 //! @} stitching_match
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_MATCHERS_HPP

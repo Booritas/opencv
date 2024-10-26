@@ -21,79 +21,79 @@ try:
             data = np.random.random([10, 10, 3])
 
             #print(np.ndarray.__dictoffset__)  # 0
-            #print(cv.Mat.__dictoffset__)  # 88 (> 0)
-            #print(cv.Mat)  # <class cv2.Mat>
-            #print(cv.Mat.__base__)  # <class 'numpy.ndarray'>
+            #print(ncvslideio.Mat.__dictoffset__)  # 88 (> 0)
+            #print(ncvslideio.Mat)  # <class cv2.Mat>
+            #print(ncvslideio.Mat.__base__)  # <class 'numpy.ndarray'>
 
-            mat_data0 = cv.Mat(data)
-            assert isinstance(mat_data0, cv.Mat)
+            mat_data0 = ncvslideio.Mat(data)
+            assert isinstance(mat_data0, ncvslideio.Mat)
             assert isinstance(mat_data0, np.ndarray)
             self.assertEqual(mat_data0.wrap_channels, False)
-            res0 = cv.utils.dumpInputArray(mat_data0)
+            res0 = ncvslideio.utils.dumpInputArray(mat_data0)
             self.assertEqual(res0, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=300 dims(-1)=3 size(-1)=[10 10 3] type(-1)=CV_64FC1")
 
-            mat_data1 = cv.Mat(data, wrap_channels=True)
-            assert isinstance(mat_data1, cv.Mat)
+            mat_data1 = ncvslideio.Mat(data, wrap_channels=True)
+            assert isinstance(mat_data1, ncvslideio.Mat)
             assert isinstance(mat_data1, np.ndarray)
             self.assertEqual(mat_data1.wrap_channels, True)
-            res1 = cv.utils.dumpInputArray(mat_data1)
+            res1 = ncvslideio.utils.dumpInputArray(mat_data1)
             self.assertEqual(res1, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=100 dims(-1)=2 size(-1)=10x10 type(-1)=CV_64FC3")
 
-            mat_data2 = cv.Mat(mat_data1)
-            assert isinstance(mat_data2, cv.Mat)
+            mat_data2 = ncvslideio.Mat(mat_data1)
+            assert isinstance(mat_data2, ncvslideio.Mat)
             assert isinstance(mat_data2, np.ndarray)
             self.assertEqual(mat_data2.wrap_channels, True)  # fail if __array_finalize__ doesn't work
-            res2 = cv.utils.dumpInputArray(mat_data2)
+            res2 = ncvslideio.utils.dumpInputArray(mat_data2)
             self.assertEqual(res2, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=100 dims(-1)=2 size(-1)=10x10 type(-1)=CV_64FC3")
 
 
         def test_mat_construct_4d(self):
             data = np.random.random([5, 10, 10, 3])
 
-            mat_data0 = cv.Mat(data)
-            assert isinstance(mat_data0, cv.Mat)
+            mat_data0 = ncvslideio.Mat(data)
+            assert isinstance(mat_data0, ncvslideio.Mat)
             assert isinstance(mat_data0, np.ndarray)
             self.assertEqual(mat_data0.wrap_channels, False)
-            res0 = cv.utils.dumpInputArray(mat_data0)
+            res0 = ncvslideio.utils.dumpInputArray(mat_data0)
             self.assertEqual(res0, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=1500 dims(-1)=4 size(-1)=[5 10 10 3] type(-1)=CV_64FC1")
 
-            mat_data1 = cv.Mat(data, wrap_channels=True)
-            assert isinstance(mat_data1, cv.Mat)
+            mat_data1 = ncvslideio.Mat(data, wrap_channels=True)
+            assert isinstance(mat_data1, ncvslideio.Mat)
             assert isinstance(mat_data1, np.ndarray)
             self.assertEqual(mat_data1.wrap_channels, True)
-            res1 = cv.utils.dumpInputArray(mat_data1)
+            res1 = ncvslideio.utils.dumpInputArray(mat_data1)
             self.assertEqual(res1, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=500 dims(-1)=3 size(-1)=[5 10 10] type(-1)=CV_64FC3")
 
-            mat_data2 = cv.Mat(mat_data1)
-            assert isinstance(mat_data2, cv.Mat)
+            mat_data2 = ncvslideio.Mat(mat_data1)
+            assert isinstance(mat_data2, ncvslideio.Mat)
             assert isinstance(mat_data2, np.ndarray)
             self.assertEqual(mat_data2.wrap_channels, True)  # __array_finalize__ doesn't work
-            res2 = cv.utils.dumpInputArray(mat_data2)
+            res2 = ncvslideio.utils.dumpInputArray(mat_data2)
             self.assertEqual(res2, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=500 dims(-1)=3 size(-1)=[5 10 10] type(-1)=CV_64FC3")
 
 
         def test_mat_wrap_channels_fail(self):
             data = np.random.random([2, 3, 4, 520])
 
-            mat_data0 = cv.Mat(data)
-            assert isinstance(mat_data0, cv.Mat)
+            mat_data0 = ncvslideio.Mat(data)
+            assert isinstance(mat_data0, ncvslideio.Mat)
             assert isinstance(mat_data0, np.ndarray)
             self.assertEqual(mat_data0.wrap_channels, False)
-            res0 = cv.utils.dumpInputArray(mat_data0)
+            res0 = ncvslideio.utils.dumpInputArray(mat_data0)
             self.assertEqual(res0, "InputArray: empty()=false kind=0x00010000 flags=0x01010000 total(-1)=12480 dims(-1)=4 size(-1)=[2 3 4 520] type(-1)=CV_64FC1")
 
-            with self.assertRaises(cv.error):
-                mat_data1 = cv.Mat(data, wrap_channels=True)  # argument unable to wrap channels, too high (520 > CV_CN_MAX=512)
-                res1 = cv.utils.dumpInputArray(mat_data1)
+            with self.assertRaises(ncvslideio.error):
+                mat_data1 = ncvslideio.Mat(data, wrap_channels=True)  # argument unable to wrap channels, too high (520 > CV_CN_MAX=512)
+                res1 = ncvslideio.utils.dumpInputArray(mat_data1)
                 print(mat_data1.__dict__)
                 print(res1)
 
 
         def test_ufuncs(self):
             data = np.arange(10)
-            mat_data = cv.Mat(data)
+            mat_data = ncvslideio.Mat(data)
             mat_data2 = 2 * mat_data
-            self.assertEqual(type(mat_data2), cv.Mat)
+            self.assertEqual(type(mat_data2), ncvslideio.Mat)
             np.testing.assert_equal(2 * data, 2 * mat_data)
 
 
@@ -102,8 +102,8 @@ try:
             # Behavior may be changed in the future
 
             data = np.ones((10, 10, 3))
-            mat_wrapped = cv.Mat(data, wrap_channels=True)
-            mat_simple = cv.Mat(data)
+            mat_wrapped = ncvslideio.Mat(data, wrap_channels=True)
+            mat_simple = ncvslideio.Mat(data)
             np.testing.assert_equal(mat_wrapped, mat_simple)  # ???: wrap_channels is not checked for now
             np.testing.assert_equal(data, mat_simple)
             np.testing.assert_equal(data, mat_wrapped)

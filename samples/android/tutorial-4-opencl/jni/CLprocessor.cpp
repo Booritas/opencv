@@ -128,8 +128,8 @@ int initCL()
         theProgI2I = cl::Program(theContext, src);
         theProgI2I.build(devs);
 
-        cv::ocl::attachContext(p.getInfo<CL_PLATFORM_NAME>(), p(), theContext(), devs[0]());
-        if( cv::ocl::useOpenCL() )
+        ncvslideio::ocl::attachContext(p.getInfo<CL_PLATFORM_NAME>(), p(), theContext(), devs[0]());
+        if( ncvslideio::ocl::useOpenCL() )
             LOGD("OpenCV+OpenCL works OK!");
         else
             LOGE("Can't init OpenCV with OpenCL TAPI");
@@ -216,16 +216,16 @@ void procOCL_OCV(int texIn, int texOut, int w, int h)
     std::vector < cl::Memory > images(1, imgIn);
     theQueue.enqueueAcquireGLObjects(&images);
     theQueue.finish();
-    cv::UMat uIn, uOut, uTmp;
-    cv::ocl::convertFromImage(imgIn(), uIn);
+    ncvslideio::UMat uIn, uOut, uTmp;
+    ncvslideio::ocl::convertFromImage(imgIn(), uIn);
     LOGD("loading texture data to OpenCV UMat costs %d ms", getTimeInterval(t));
     theQueue.enqueueReleaseGLObjects(&images);
 
     t = getTimeMs();
-    //cv::blur(uIn, uOut, cv::Size(5, 5));
-    cv::Laplacian(uIn, uTmp, CV_8U);
-    cv:multiply(uTmp, 10, uOut);
-    cv::ocl::finish();
+    //ncvslideio::blur(uIn, uOut, ncvslideio::Size(5, 5));
+    ncvslideio::Laplacian(uIn, uTmp, CV_8U);
+    ncvslideio:multiply(uTmp, 10, uOut);
+    ncvslideio::ocl::finish();
     LOGD("OpenCV processing costs %d ms", getTimeInterval(t));
 
     t = getTimeMs();
@@ -233,14 +233,14 @@ void procOCL_OCV(int texIn, int texOut, int w, int h)
     images.clear();
     images.push_back(imgOut);
     theQueue.enqueueAcquireGLObjects(&images);
-    cl_mem clBuffer = (cl_mem)uOut.handle(cv::ACCESS_READ);
-    cl_command_queue q = (cl_command_queue)cv::ocl::Queue::getDefault().ptr();
+    cl_mem clBuffer = (cl_mem)uOut.handle(ncvslideio::ACCESS_READ);
+    cl_command_queue q = (cl_command_queue)ncvslideio::ocl::Queue::getDefault().ptr();
     size_t offset = 0;
     size_t origin[3] = { 0, 0, 0 };
     size_t region[3] = { (size_t)w, (size_t)h, 1 };
     CV_Assert(clEnqueueCopyBufferToImage (q, clBuffer, imgOut(), offset, origin, region, 0, NULL, NULL) == CL_SUCCESS);
     theQueue.enqueueReleaseGLObjects(&images);
-    cv::ocl::finish();
+    ncvslideio::ocl::finish();
     LOGD("uploading results to texture costs %d ms", getTimeInterval(t));
 //![process_tapi]
 }
@@ -261,7 +261,7 @@ void drawFrameProcCPU(int w, int h, int texOut)
     int64_t t;
 
     // let's modify pixels in FBO texture in C++ code (on CPU)
-    static cv::Mat m;
+    static ncvslideio::Mat m;
     m.create(h, w, CV_8UC4);
 
     // read
@@ -272,7 +272,7 @@ void drawFrameProcCPU(int w, int h, int texOut)
 
    // modify
     t = getTimeMs();
-    cv::Laplacian(m, m, CV_8U);
+    ncvslideio::Laplacian(m, m, CV_8U);
     m *= 10;
     LOGD("Laplacian() costs %d ms", getTimeInterval(t));
 

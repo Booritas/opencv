@@ -64,7 +64,7 @@
 /* log(2*PI) */
 #define CV_LOG2PI (1.8378770664093454835606594728112)
 
-namespace cv
+namespace ncvslideio
 {
 namespace ml
 {
@@ -131,13 +131,13 @@ namespace ml
         inline void setMaxCategories(int val)
         {
             if( val < 2 )
-                CV_Error( cv::Error::StsOutOfRange, "max_categories should be >= 2" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "max_categories should be >= 2" );
             maxCategories = std::min(val, 15 );
         }
         inline void setMaxDepth(int val)
         {
             if( val < 0 )
-                CV_Error( cv::Error::StsOutOfRange, "max_depth should be >= 0" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "max_depth should be >= 0" );
             maxDepth = std::min( val, 25 );
         }
         inline void setMinSampleCount(int val)
@@ -147,11 +147,11 @@ namespace ml
         inline void setCVFolds(int val)
         {
             if( val < 0 )
-                CV_Error( cv::Error::StsOutOfRange,
+                CV_Error( ncvslideio::Error::StsOutOfRange,
                           "params.CVFolds should be =0 (the tree is not pruned) "
                           "or n>0 (tree is pruned using n-fold cross-validation)" );
             if(val > 1)
-                CV_Error( cv::Error::StsNotImplemented,
+                CV_Error( ncvslideio::Error::StsNotImplemented,
                           "tree pruning using cross-validation is not implemented."
                           "Set CVFolds to 1");
 
@@ -162,7 +162,7 @@ namespace ml
         inline void setRegressionAccuracy(float val)
         {
             if( val < 0 )
-                CV_Error( cv::Error::StsOutOfRange, "params.regression_accuracy should be >= 0" );
+                CV_Error( ncvslideio::Error::StsOutOfRange, "params.regression_accuracy should be >= 0" );
             regressionAccuracy = val;
         }
 
@@ -178,8 +178,8 @@ namespace ml
         inline void setUse1SERule(bool val) { use1SERule = val; }
         inline bool getTruncatePrunedTree() const { return truncatePrunedTree; }
         inline void setTruncatePrunedTree(bool val) { truncatePrunedTree = val; }
-        inline cv::Mat getPriors() const { return priors; }
-        inline void setPriors(const cv::Mat& val) { priors = val; }
+        inline ncvslideio::Mat getPriors() const { return priors; }
+        inline void setPriors(const ncvslideio::Mat& val) { priors = val; }
 
         public:
         bool  useSurrogates;
@@ -300,8 +300,8 @@ namespace ml
         inline void setTruncatePrunedTree(bool val) CV_OVERRIDE { params.setTruncatePrunedTree(val); }
         inline float getRegressionAccuracy() const CV_OVERRIDE { return params.getRegressionAccuracy(); }
         inline void setRegressionAccuracy(float val) CV_OVERRIDE { params.setRegressionAccuracy(val); }
-        inline cv::Mat getPriors() const CV_OVERRIDE { return params.getPriors(); }
-        inline void setPriors(const cv::Mat& val) CV_OVERRIDE { params.setPriors(val); }
+        inline ncvslideio::Mat getPriors() const CV_OVERRIDE { return params.getPriors(); }
+        inline void setPriors(const ncvslideio::Mat& val) CV_OVERRIDE { params.setPriors(val); }
 
         DTreesImpl();
         virtual ~DTreesImpl() CV_OVERRIDE;

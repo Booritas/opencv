@@ -21,15 +21,15 @@ class ObjectsAssociator {
   public:
     std::pair<std::vector<bool>, std::vector<int32_t>>
     Associate(const std::vector<Detection> &detections, const std::vector<std::shared_ptr<Tracklet>> &tracklets,
-              const std::vector<cv::Mat> *detection_rgb_features = nullptr);
+              const std::vector<ncvslideio::Mat> *detection_rgb_features = nullptr);
 
   private:
     std::vector<std::vector<float>> ComputeRgbDistance(const std::vector<Detection> &detections,
                                                        const std::vector<std::shared_ptr<Tracklet>> &tracklets,
-                                                       const std::vector<cv::Mat> *detection_rgb_features);
+                                                       const std::vector<ncvslideio::Mat> *detection_rgb_features);
 
-    static float NormalizedCenterDistance(const cv::Rect2f &r1, const cv::Rect2f &r2);
-    static float NormalizedShapeDistance(const cv::Rect2f &r1, const cv::Rect2f &r2);
+    static float NormalizedCenterDistance(const ncvslideio::Rect2f &r1, const ncvslideio::Rect2f &r2);
+    static float NormalizedShapeDistance(const ncvslideio::Rect2f &r1, const ncvslideio::Rect2f &r2);
 
   private:
     bool tracking_per_class_;

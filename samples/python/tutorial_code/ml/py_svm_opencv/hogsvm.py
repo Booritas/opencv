@@ -7,24 +7,24 @@ SZ=20
 bin_n = 16 # Number of bins
 
 
-affine_flags = cv.WARP_INVERSE_MAP|cv.INTER_LINEAR
+affine_flags = ncvslideio.WARP_INVERSE_MAP|ncvslideio.INTER_LINEAR
 
 ## [deskew]
 def deskew(img):
-    m = cv.moments(img)
+    m = ncvslideio.moments(img)
     if abs(m['mu02']) < 1e-2:
         return img.copy()
     skew = m['mu11']/m['mu02']
     M = np.float32([[1, skew, -0.5*SZ*skew], [0, 1, 0]])
-    img = cv.warpAffine(img,M,(SZ, SZ),flags=affine_flags)
+    img = ncvslideio.warpAffine(img,M,(SZ, SZ),flags=affine_flags)
     return img
 ## [deskew]
 
 ## [hog]
 def hog(img):
-    gx = cv.Sobel(img, cv.CV_32F, 1, 0)
-    gy = cv.Sobel(img, cv.CV_32F, 0, 1)
-    mag, ang = cv.cartToPolar(gx, gy)
+    gx = ncvslideio.Sobel(img, ncvslideio.CV_32F, 1, 0)
+    gy = ncvslideio.Sobel(img, ncvslideio.CV_32F, 0, 1)
+    mag, ang = ncvslideio.cartToPolar(gx, gy)
     bins = np.int32(bin_n*ang/(2*np.pi))    # quantizing binvalues in (0...16)
     bin_cells = bins[:10,:10], bins[10:,:10], bins[:10,10:], bins[10:,10:]
     mag_cells = mag[:10,:10], mag[10:,:10], mag[:10,10:], mag[10:,10:]
@@ -33,7 +33,7 @@ def hog(img):
     return hist
 ## [hog]
 
-img = cv.imread(cv.samples.findFile('digits.png'),0)
+img = ncvslideio.imread(ncvslideio.samples.findFile('digits.png'),0)
 if img is None:
     raise Exception("we need the digits.png image from samples/data here !")
 
@@ -51,13 +51,13 @@ hogdata = [list(map(hog,row)) for row in deskewed]
 trainData = np.float32(hogdata).reshape(-1,64)
 responses = np.repeat(np.arange(10),250)[:,np.newaxis]
 
-svm = cv.ml.SVM_create()
-svm.setKernel(cv.ml.SVM_LINEAR)
-svm.setType(cv.ml.SVM_C_SVC)
+svm = ncvslideio.ml.SVM_create()
+svm.setKernel(ncvslideio.ml.SVM_LINEAR)
+svm.setType(ncvslideio.ml.SVM_C_SVC)
 svm.setC(2.67)
 svm.setGamma(5.383)
 
-svm.train(trainData, cv.ml.ROW_SAMPLE, responses)
+svm.train(trainData, ncvslideio.ml.ROW_SAMPLE, responses)
 svm.save('svm_data.dat')
 
 ######     Now testing      ########################

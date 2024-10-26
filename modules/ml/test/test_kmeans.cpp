@@ -41,7 +41,7 @@ TEST(ML_KMeans, accuracy)
         float err = 1000;
         Mat bestLabels;
         labels.copyTo( bestLabels );
-        RNG &rng = cv::theRNG();
+        RNG &rng = ncvslideio::theRNG();
         for( int i = 0; i < 0.5f * pointsCount; i++ )
         bestLabels.at<int>( rng.next() % pointsCount, 0 ) = rng.next() % 3;
         kmeans( data, 3, bestLabels, termCriteria, 0, KMEANS_USE_INITIAL_LABELS, noArray() );

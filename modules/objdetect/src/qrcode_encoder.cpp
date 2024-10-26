@@ -8,7 +8,7 @@
 #include "qrcode_encoder_table.inl.hpp"
 #include "graphical_code_detector_impl.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 using std::vector;
 
@@ -1284,7 +1284,7 @@ void QRCodeEncoderImpl::generatingProcess(const std::string& input, Mat& final_r
 void QRCodeEncoderImpl::encode(const String& input, OutputArray output)
 {
     if (output.kind() != _InputArray::MAT)
-        CV_Error(Error::StsBadArg, "Output should be cv::Mat");
+        CV_Error(Error::StsBadArg, "Output should be ncvslideio::Mat");
     CV_Check((int)mode_type, mode_type != MODE_STRUCTURED_APPEND, "For structured append mode please call encodeStructuredAppend() method");
     CV_Check(struct_num, struct_num == 1, "For structured append mode please call encodeStructuredAppend() method");
     generateQR(input);
@@ -1296,7 +1296,7 @@ void QRCodeEncoderImpl::encode(const String& input, OutputArray output)
 void QRCodeEncoderImpl::encodeStructuredAppend(const String& input, OutputArrayOfArrays output)
 {
     if (output.kind() != _InputArray::STD_VECTOR_MAT)
-        CV_Error(Error::StsBadArg, "Output should be vector of cv::Mat");
+        CV_Error(Error::StsBadArg, "Output should be vector of ncvslideio::Mat");
     mode_type = MODE_STRUCTURED_APPEND;
     generateQR(input);
     CV_Assert(!final_qrcodes.empty());
@@ -1378,7 +1378,7 @@ bool QRCodeDecoderImpl::decode(const Mat& _straight, String& decoded_info) {
     Mat straight = ~_straight;  // Invert modules
     bool decoded = run(straight, decoded_info);
     if (!decoded) {
-        cv::transpose(straight, straight);
+        ncvslideio::transpose(straight, straight);
         decoded = run(straight, decoded_info);
     }
     return decoded;
@@ -1388,7 +1388,7 @@ bool QRCodeDecoderImpl::decode(const Mat& _straight, String& decoded_info) {
 bool QRCodeDecoderImpl::correctFormatInfo(uint16_t& format_info) {
     static const uint16_t mask_pattern = 0b101010000010010;
 
-    cv::Hamming hd;
+    ncvslideio::Hamming hd;
     for (int i = 0; i < 32; ++i) {
         // Compute Hamming distance
         int distance = hd(reinterpret_cast<const unsigned char*>(&formatInfoLUT[i]),

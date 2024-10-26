@@ -41,7 +41,7 @@
 
 #include "seamless_cloning.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 
@@ -273,7 +273,7 @@ void Cloning::scalarProduct(Mat mat, float r, float g, float b)
     merge(channels,mat);
 }
 
-void Cloning::arrayProduct(const cv::Mat& lhs, const cv::Mat& rhs, cv::Mat& result) const
+void Cloning::arrayProduct(const ncvslideio::Mat& lhs, const ncvslideio::Mat& rhs, ncvslideio::Mat& result) const
 {
     vector <Mat> lhs_channels;
     vector <Mat> result_channels;

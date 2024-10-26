@@ -5,7 +5,7 @@
 #include "precomp.hpp"
 #include "opencv2/calib3d.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 static Mat homogeneousInverse(const Mat& T)
 {
@@ -312,8 +312,8 @@ static void calibrateHandEyeTsai(const std::vector<Mat>& Hg, const std::vector<M
             //   equation 12, and the remaining 112 all had Pcij or Pgij with norms greater than 1.7. Although errors
             //   from small rotations were not observed, it is known that these motions are less informative (see
             //   section II.B.3, and figure 6).
-            double Pgij_norm = cv::norm(Pgij);
-            double Pcij_norm = cv::norm(Pcij);
+            double Pgij_norm = ncvslideio::norm(Pgij);
+            double Pcij_norm = ncvslideio::norm(Pcij);
             if (Pgij_norm < 0.3 || Pcij_norm < 0.3 || Pgij_norm > 1.7 || Pcij_norm > 1.7) {
                 continue;
             }
@@ -754,7 +754,7 @@ void calibrateHandEye(InputArrayOfArrays R_gripper2base, InputArrayOfArrays t_gr
             R_gripper2base_[i].convertTo(R, CV_64F);
         else
         {
-            cv::Mat R_temp;
+            ncvslideio::Mat R_temp;
             Rodrigues(R_gripper2base_[i], R_temp);
             R_temp.convertTo(R, CV_64F);
         }
@@ -776,7 +776,7 @@ void calibrateHandEye(InputArrayOfArrays R_gripper2base, InputArrayOfArrays t_gr
             R_target2cam_[i].convertTo(R, CV_64F);
         else
         {
-            cv::Mat R_temp;
+            ncvslideio::Mat R_temp;
             Rodrigues(R_target2cam_[i], R_temp);
             R_temp.convertTo(R, CV_64F);
         }
@@ -959,7 +959,7 @@ void calibrateRobotWorldHandEye(InputArrayOfArrays R_world2cam, InputArrayOfArra
             }
             else
             {
-                cv::Mat R_temp;
+                ncvslideio::Mat R_temp;
                 Rodrigues(rot, R_temp);
                 R_temp.convertTo(R, CV_64F);
                 R_base2gripper_.push_back(R);
@@ -979,7 +979,7 @@ void calibrateRobotWorldHandEye(InputArrayOfArrays R_world2cam, InputArrayOfArra
             }
             else
             {
-                cv::Mat R_temp;
+                ncvslideio::Mat R_temp;
                 Rodrigues(rot, R_temp);
                 R_temp.convertTo(R, CV_64F);
                 R_world2cam_.push_back(R);

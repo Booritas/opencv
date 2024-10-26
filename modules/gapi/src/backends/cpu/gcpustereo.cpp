@@ -18,51 +18,51 @@
 struct GAPI_EXPORTS StereoSetup {
     double baseline;
     double focus;
-    cv::Ptr<cv::StereoBM> stereoBM;
+    ncvslideio::Ptr<ncvslideio::StereoBM> stereoBM;
 };
 
 namespace {
-cv::Mat calcDepth(const cv::Mat &left, const cv::Mat &right,
+ncvslideio::Mat calcDepth(const ncvslideio::Mat &left, const ncvslideio::Mat &right,
                   const StereoSetup &ss) {
     constexpr int DISPARITY_SHIFT_16S = 4;
-    cv::Mat disp;
+    ncvslideio::Mat disp;
     ss.stereoBM->compute(left, right, disp);
     disp.convertTo(disp, CV_32FC1, 1./(1 << DISPARITY_SHIFT_16S), 0);
     return (ss.focus * ss.baseline) / disp;
 }
 } // anonymous namespace
 
-GAPI_OCV_KERNEL_ST(GCPUStereo, cv::gapi::calib3d::GStereo, StereoSetup)
+GAPI_OCV_KERNEL_ST(GCPUStereo, ncvslideio::gapi::calib3d::GStereo, StereoSetup)
 {
-    static void setup(const cv::GMatDesc&, const cv::GMatDesc&,
-                      const cv::gapi::StereoOutputFormat,
+    static void setup(const ncvslideio::GMatDesc&, const ncvslideio::GMatDesc&,
+                      const ncvslideio::gapi::StereoOutputFormat,
                       std::shared_ptr<StereoSetup> &stereoSetup,
-                      const cv::GCompileArgs &compileArgs) {
-        auto stereoInit = cv::gapi::getCompileArg<cv::gapi::calib3d::cpu::StereoInitParam>(compileArgs)
-            .value_or(cv::gapi::calib3d::cpu::StereoInitParam{});
+                      const ncvslideio::GCompileArgs &compileArgs) {
+        auto stereoInit = ncvslideio::gapi::getCompileArg<ncvslideio::gapi::calib3d::cpu::StereoInitParam>(compileArgs)
+            .value_or(ncvslideio::gapi::calib3d::cpu::StereoInitParam{});
 
         StereoSetup ss{stereoInit.baseline,
                        stereoInit.focus,
-                       cv::StereoBM::create(stereoInit.numDisparities,
+                       ncvslideio::StereoBM::create(stereoInit.numDisparities,
                        stereoInit.blockSize)};
         stereoSetup = std::make_shared<StereoSetup>(ss);
     }
-    static void run(const cv::Mat& left,
-                    const cv::Mat& right,
-                    const cv::gapi::StereoOutputFormat oF,
-                    cv::Mat& out_mat,
+    static void run(const ncvslideio::Mat& left,
+                    const ncvslideio::Mat& right,
+                    const ncvslideio::gapi::StereoOutputFormat oF,
+                    ncvslideio::Mat& out_mat,
                     const StereoSetup &stereoSetup) {
         switch(oF){
-            case cv::gapi::StereoOutputFormat::DEPTH_FLOAT16:
+            case ncvslideio::gapi::StereoOutputFormat::DEPTH_FLOAT16:
                 calcDepth(left, right, stereoSetup).convertTo(out_mat, CV_16FC1);
                 break;
-            case cv::gapi::StereoOutputFormat::DEPTH_FLOAT32:
+            case ncvslideio::gapi::StereoOutputFormat::DEPTH_FLOAT32:
                 calcDepth(left, right, stereoSetup).copyTo(out_mat);
                 break;
-            case cv::gapi::StereoOutputFormat::DISPARITY_FIXED16_12_4:
+            case ncvslideio::gapi::StereoOutputFormat::DISPARITY_FIXED16_12_4:
                 stereoSetup.stereoBM->compute(left, right, out_mat);
                 break;
-            case cv::gapi::StereoOutputFormat::DISPARITY_FIXED16_11_5:
+            case ncvslideio::gapi::StereoOutputFormat::DISPARITY_FIXED16_11_5:
                 GAPI_Error("This case may be supported in future.");
             default:
                 GAPI_Error("Unknown output format!");
@@ -70,14 +70,14 @@ GAPI_OCV_KERNEL_ST(GCPUStereo, cv::gapi::calib3d::GStereo, StereoSetup)
     }
 };
 
-cv::GKernelPackage cv::gapi::calib3d::cpu::kernels() {
-    static auto pkg = cv::gapi::kernels<GCPUStereo>();
+ncvslideio::GKernelPackage ncvslideio::gapi::calib3d::cpu::kernels() {
+    static auto pkg = ncvslideio::gapi::kernels<GCPUStereo>();
     return pkg;
 }
 
 #else
 
-cv::GKernelPackage cv::gapi::calib3d::cpu::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::calib3d::cpu::kernels()
 {
     return GKernelPackage();
 }

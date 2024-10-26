@@ -160,7 +160,7 @@ class Mat:
 
 
 class MatPrinter:
-    """Print a cv::Mat"""
+    """Print a ncvslideio::Mat"""
 
     def __init__(self, mat):
         self.mat = mat
@@ -184,8 +184,8 @@ class MatPrinter:
             v = m[k]
             yield k, v
 
-        # TODO: add an enum in interface.h with all cv::Mat element types and use that instead
-        # yield 'test', gdb.parse_and_eval(f'(cv::MatTypes)0')
+        # TODO: add an enum in interface.h with all ncvslideio::Mat element types and use that instead
+        # yield 'test', gdb.parse_and_eval(f'(ncvslideio::MatTypes)0')
 
     def children(self):  # TODO: hide real members under new child somehow
         yield from self.views()
@@ -215,7 +215,7 @@ def mat_printer(val):
     if typename is None:
         return None
 
-    if str(typename) == 'cv::Mat':
+    if str(typename) == 'ncvslideio::Mat':
         return MatPrinter(val)
 
 

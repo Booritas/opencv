@@ -19,14 +19,14 @@
 
 namespace {
 
-class GraphMetaExecutable final: public cv::gimpl::GIslandExecutable {
+class GraphMetaExecutable final: public ncvslideio::gimpl::GIslandExecutable {
     std::string m_meta_tag;
 
 public:
     GraphMetaExecutable(const ade::Graph& g,
                         const std::vector<ade::NodeHandle>& nodes);
     bool canReshape() const override;
-    void reshape(ade::Graph&, const cv::GCompileArgs&) override;
+    void reshape(ade::Graph&, const ncvslideio::GCompileArgs&) override;
 
     void run(std::vector<InObj> &&input_objs,
              std::vector<OutObj> &&output_objs) override;
@@ -35,7 +35,7 @@ public:
 bool GraphMetaExecutable::canReshape() const {
     return true;
 }
-void GraphMetaExecutable::reshape(ade::Graph&, const cv::GCompileArgs&) {
+void GraphMetaExecutable::reshape(ade::Graph&, const ncvslideio::GCompileArgs&) {
     // do nothing here
 }
 
@@ -44,9 +44,9 @@ GraphMetaExecutable::GraphMetaExecutable(const ade::Graph& g,
     // There may be only one node in the graph
     GAPI_Assert(nodes.size() == 1u);
 
-    cv::gimpl::GModel::ConstGraph cg(g);
-    const auto &op = cg.metadata(nodes[0]).get<cv::gimpl::Op>();
-    GAPI_Assert(op.k.name == cv::gapi::streaming::detail::GMeta::id());
+    ncvslideio::gimpl::GModel::ConstGraph cg(g);
+    const auto &op = cg.metadata(nodes[0]).get<ncvslideio::gimpl::Op>();
+    GAPI_Assert(op.k.name == ncvslideio::gapi::streaming::detail::GMeta::id());
     m_meta_tag = op.k.tag;
 }
 
@@ -55,12 +55,12 @@ void GraphMetaExecutable::run(std::vector<InObj>  &&input_objs,
     GAPI_Assert(input_objs.size() == 1u);
     GAPI_Assert(output_objs.size() == 1u);
 
-    const cv::GRunArg in_arg = input_objs[0].second;
-    cv::GRunArgP out_arg = output_objs[0].second;
+    const ncvslideio::GRunArg in_arg = input_objs[0].second;
+    ncvslideio::GRunArgP out_arg = output_objs[0].second;
 
     auto it = in_arg.meta.find(m_meta_tag);
     if (it == in_arg.meta.end()) {
-        cv::util::throw_error
+        ncvslideio::util::throw_error
             (std::logic_error("Run-time meta "
                               + m_meta_tag
                               + " is not found in object "
@@ -68,21 +68,21 @@ void GraphMetaExecutable::run(std::vector<InObj>  &&input_objs,
                               + "/"
                               + std::to_string(input_objs[0].first.id)));
     }
-    cv::util::get<cv::detail::OpaqueRef>(out_arg) = it->second;
+    ncvslideio::util::get<ncvslideio::detail::OpaqueRef>(out_arg) = it->second;
 }
 
-class GGraphMetaBackendImpl final: public cv::gapi::GBackend::Priv {
+class GGraphMetaBackendImpl final: public ncvslideio::gapi::GBackend::Priv {
     virtual void unpackKernel(ade::Graph            &,
                               const ade::NodeHandle &,
-                              const cv::GKernelImpl &) override {
+                              const ncvslideio::GKernelImpl &) override {
         // Do nothing here
     }
 
     virtual EPtr compile(const ade::Graph& graph,
-                         const cv::GCompileArgs&,
+                         const ncvslideio::GCompileArgs&,
                          const std::vector<ade::NodeHandle>& nodes,
-                         const std::vector<cv::gimpl::Data>&,
-                         const std::vector<cv::gimpl::Data>&) const override {
+                         const std::vector<ncvslideio::gimpl::Data>&,
+                         const std::vector<ncvslideio::gimpl::Data>&) const override {
         return EPtr{new GraphMetaExecutable(graph, nodes)};
     }
 
@@ -91,7 +91,7 @@ class GGraphMetaBackendImpl final: public cv::gapi::GBackend::Priv {
         return true;
     }
 
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &) const override
@@ -100,19 +100,19 @@ class GGraphMetaBackendImpl final: public cv::gapi::GBackend::Priv {
     }
 };
 
-cv::gapi::GBackend graph_meta_backend() {
-    static cv::gapi::GBackend this_backend(std::make_shared<GGraphMetaBackendImpl>());
+ncvslideio::gapi::GBackend graph_meta_backend() {
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GGraphMetaBackendImpl>());
     return this_backend;
 }
 
-struct InGraphMetaKernel final: public cv::detail::KernelTag {
-    using API = cv::gapi::streaming::detail::GMeta;
-    static cv::gapi::GBackend backend() { return graph_meta_backend(); }
+struct InGraphMetaKernel final: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::gapi::streaming::detail::GMeta;
+    static ncvslideio::gapi::GBackend backend() { return graph_meta_backend(); }
     static int                kernel()  { return 42; }
 };
 
 } // anonymous namespace
 
-cv::GKernelPackage cv::gimpl::meta::kernels() {
-    return cv::gapi::kernels<InGraphMetaKernel>();
+ncvslideio::GKernelPackage ncvslideio::gimpl::meta::kernels() {
+    return ncvslideio::gapi::kernels<InGraphMetaKernel>();
 }

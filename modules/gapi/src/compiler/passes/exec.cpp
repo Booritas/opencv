@@ -41,7 +41,7 @@
 // FIXME: make it user-configurable run-time option
 // #define DEBUG_MERGE
 
-namespace cv
+namespace ncvslideio
 {
 namespace gimpl
 {
@@ -486,11 +486,11 @@ namespace
         auto rhs_obj = m_gim.metadata(m_cons).get<FusedIsland>().object;
         GAPI_Assert(   ( lhs_obj->is_user_specified() &&  rhs_obj->is_user_specified())
                     || (!lhs_obj->is_user_specified() && !rhs_obj->is_user_specified()));
-        cv::util::optional<std::string> maybe_user_tag;
+        ncvslideio::util::optional<std::string> maybe_user_tag;
         if (lhs_obj->is_user_specified() && rhs_obj->is_user_specified())
         {
             GAPI_Assert(lhs_obj->name() == rhs_obj->name());
-            maybe_user_tag = cv::util::make_optional(lhs_obj->name());
+            maybe_user_tag = ncvslideio::util::make_optional(lhs_obj->name());
         }
 
         // A: Create a new Island and add it to the graph
@@ -728,4 +728,4 @@ void passes::topoSortIslands(ade::passes::PassContext &ctx)
     auto pass_ctx = ade::passes::PassContext{*gptr};
     ade::passes::TopologicalSort{}(pass_ctx);
 }
-}} // namespace cv::gimpl
+}} // namespace ncvslideio::gimpl

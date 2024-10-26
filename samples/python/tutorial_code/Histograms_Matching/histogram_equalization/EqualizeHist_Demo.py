@@ -7,18 +7,18 @@ parser = argparse.ArgumentParser(description='Code for Histogram Equalization tu
 parser.add_argument('--input', help='Path to input image.', default='lena.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 ## [Load image]
 
 ## [Convert to grayscale]
-src = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+src = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
 ## [Convert to grayscale]
 
 ## [Apply Histogram Equalization]
-dst = cv.equalizeHist(src)
+dst = ncvslideio.equalizeHist(src)
 ## [Apply Histogram Equalization]
 
 ## [Display results]

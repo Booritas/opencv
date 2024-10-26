@@ -31,7 +31,7 @@
 
 #endif // !defined(BUILD_PLUGIN)
 
-typedef cv::parallel::ParallelForAPI* CvPluginParallelBackendAPI;
+typedef ncvslideio::parallel::ParallelForAPI* CvPluginParallelBackendAPI;
 
 struct OpenCV_Core_Parallel_Plugin_API_v0_0_api_entries
 {

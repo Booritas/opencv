@@ -49,20 +49,20 @@ def visualize(image, result, save_dir=None, weight=0.6):
     color_map = [color_map[i:i + 3] for i in range(0, len(color_map), 3)]
     color_map = np.array(color_map).astype("uint8")
     # Use OpenCV LUT for color mapping
-    c1 = cv.LUT(result, color_map[:, 0])
-    c2 = cv.LUT(result, color_map[:, 1])
-    c3 = cv.LUT(result, color_map[:, 2])
+    c1 = ncvslideio.LUT(result, color_map[:, 0])
+    c2 = ncvslideio.LUT(result, color_map[:, 1])
+    c3 = ncvslideio.LUT(result, color_map[:, 2])
     pseudo_img = np.dstack((c1, c2, c3))
 
-    im = cv.imread(image)
-    vis_result = cv.addWeighted(im, weight, pseudo_img, 1 - weight, 0)
+    im = ncvslideio.imread(image)
+    vis_result = ncvslideio.addWeighted(im, weight, pseudo_img, 1 - weight, 0)
 
     if save_dir is not None:
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         image_name = os.path.split(image)[-1]
         out_path = os.path.join(save_dir, image_name)
-        cv.imwrite(out_path, vis_result)
+        ncvslideio.imwrite(out_path, vis_result)
     else:
         return vis_result
 
@@ -87,20 +87,20 @@ def preprocess(image_path):
 
 if __name__ == '__main__':
     img_path = "../../../../data/messi5.jpg"
-    # load PPSeg Model use cv.dnn
-    net = cv.dnn.readNetFromONNX('humanseg_hrnet18_tiny.onnx')
+    # load PPSeg Model use ncvslideio.dnn
+    net = ncvslideio.dnn.readNetFromONNX('humanseg_hrnet18_tiny.onnx')
     # read and preprocess image file
     im = preprocess(img_path)
     # inference
     net.setInput(im)
     result = net.forward(['save_infer_model/scale_0.tmp_1'])
     # post process
-    image = cv.imread(img_path)
+    image = ncvslideio.imread(img_path)
     r, c, _ = image.shape
     result = np.argmax(result[0], axis=1).astype(np.uint8)
-    result = cv.resize(result[0, :, :],
+    result = ncvslideio.resize(result[0, :, :],
                        dsize=(c, r),
-                       interpolation=cv.INTER_NEAREST)
+                       interpolation=ncvslideio.INTER_NEAREST)
 
     print("grid_image.shape is: ", result.shape)
     folder_path = "data"
@@ -108,5 +108,5 @@ if __name__ == '__main__':
         os.makedirs(folder_path)
     file_path = os.path.join(folder_path, '%s.jpg' % "result_test_human")
     result_color = visualize(img_path, result)
-    cv.imwrite(file_path, result_color)
+    ncvslideio.imwrite(file_path, result_color)
     print('%s saved' % file_path)

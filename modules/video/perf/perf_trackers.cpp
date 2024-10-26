@@ -35,7 +35,7 @@ void Tracking::runTrackingTest(const Ptr<Tracker>& tracker, const TrackingParams
     //int endFrame = startFrame + N;
     Rect boundingBox = get<2>(params);
 
-    string videoPath = findDataFile(std::string("cv/tracking/") + video);
+    string videoPath = findDataFile(std::string("ncvslideio/tracking/") + video);
 
     VideoCapture c;
     c.open(videoPath);

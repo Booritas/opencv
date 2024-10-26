@@ -29,7 +29,7 @@ void randomFillCategories(const string & filename, Mat & input)
             int size = catCount.at<int>(0, countOffset);
             for (int row = 0; row < input.rows; ++row)
             {
-                int randomChosenIndex = offset + ((uint)cv::theRNG()) % size;
+                int randomChosenIndex = offset + ((uint)ncvslideio::theRNG()) % size;
                 int value = catMap.at<int>(0, randomChosenIndex);
                 input.at<float>(row, var) = (float)value;
             }
@@ -69,7 +69,7 @@ TEST_P(ML_Legacy_Params, legacy_load)
     ASSERT_TRUE(model);
 
     Mat input = Mat(isTree ? 10 : 1, model->getVarCount(), CV_32F);
-    cv::theRNG().fill(input, RNG::UNIFORM, 0, 40);
+    ncvslideio::theRNG().fill(input, RNG::UNIFORM, 0, 40);
 
     if (isTree)
         randomFillCategories(filename, input);
@@ -98,7 +98,7 @@ INSTANTIATE_TEST_CASE_P(/**/, ML_Legacy_Params, testing::ValuesIn(param_list));
 
 /*TEST(ML_SVM, throw_exception_when_save_untrained_model)
 {
-    Ptr<cv::ml::SVM> svm;
+    Ptr<ncvslideio::ml::SVM> svm;
     string filename = tempfile("svm.xml");
     ASSERT_THROW(svm.save(filename.c_str()), Exception);
     remove(filename.c_str());

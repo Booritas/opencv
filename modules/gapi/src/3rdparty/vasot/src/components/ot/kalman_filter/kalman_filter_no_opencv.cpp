@@ -20,7 +20,7 @@ const float kDefaultDeltaT = 0.033f;
 const int32_t kDefaultErrCovFactor = 1;
 
 // lower noise = slowly changed
-KalmanFilterNoOpencv::KalmanFilterNoOpencv(const cv::Rect2f &initial_rect) : delta_t_(kDefaultDeltaT) {
+KalmanFilterNoOpencv::KalmanFilterNoOpencv(const ncvslideio::Rect2f &initial_rect) : delta_t_(kDefaultDeltaT) {
     int32_t left = static_cast<int32_t>(initial_rect.x);
     int32_t right = static_cast<int32_t>(initial_rect.x + initial_rect.width);
     int32_t top = static_cast<int32_t>(initial_rect.y);
@@ -49,7 +49,7 @@ KalmanFilterNoOpencv::KalmanFilterNoOpencv(const cv::Rect2f &initial_rect) : del
     kfRY.Q[0][0] = size_cov;
 }
 
-cv::Rect2f KalmanFilterNoOpencv::Predict(float delta_tf) {
+ncvslideio::Rect2f KalmanFilterNoOpencv::Predict(float delta_tf) {
     delta_t_ = delta_tf;
 
     kalmanfilter1d32i_predict_phase(&kfX, delta_tf);
@@ -68,11 +68,11 @@ cv::Rect2f KalmanFilterNoOpencv::Predict(float delta_tf) {
     auto height = 2 * ry;
 
     // printf(" - In Predict: result (%d, %d  %dx%d)\n", pre_x, pre_y, width, height);
-    return cv::Rect2f(float(pre_x), float(pre_y),
+    return ncvslideio::Rect2f(float(pre_x), float(pre_y),
                       float(width), float(height));
 }
 
-cv::Rect2f KalmanFilterNoOpencv::Correct(const cv::Rect2f &measured_region) {
+ncvslideio::Rect2f KalmanFilterNoOpencv::Correct(const ncvslideio::Rect2f &measured_region) {
     int32_t pX = static_cast<int32_t>(measured_region.x + (measured_region.x + measured_region.width))
                  << (KALMAN_FILTER_NSHIFT - 1);
     int32_t pY = static_cast<int32_t>(measured_region.y + (measured_region.y + measured_region.height))
@@ -126,7 +126,7 @@ cv::Rect2f KalmanFilterNoOpencv::Correct(const cv::Rect2f &measured_region) {
     auto height = (cRY >> (KALMAN_FILTER_NSHIFT - 1));
 
     // printf(" - In Correct: result (%d, %d  %dx%d)\n", x, y, width, height);
-    return cv::Rect2f(float(x), float(y),
+    return ncvslideio::Rect2f(float(x), float(y),
                       float(width), float(height));
 }
 

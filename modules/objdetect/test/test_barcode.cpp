@@ -137,7 +137,7 @@ TEST(BarcodeDetector_base, invalid)
 {
     auto bardet = barcode::BarcodeDetector();
     std::vector<Point> corners;
-    vector<cv::String> decoded_info;
+    vector<ncvslideio::String> decoded_info;
     Mat zero_image = Mat::zeros(256, 256, CV_8UC1);
     EXPECT_FALSE(bardet.detectMulti(zero_image, corners));
     corners = std::vector<Point>(4);

@@ -145,7 +145,7 @@ class SiamRPNTracker:
                        int(context_xmin):int(context_xmax + 1), :]
 
         if not np.array_equal(model_sz, original_sz):
-            im_patch = cv.resize(im_patch, (model_sz, model_sz))
+            im_patch = ncvslideio.resize(im_patch, (model_sz, model_sz))
         im_patch = im_patch.transpose(2, 0, 1)
         im_patch = im_patch[np.newaxis, :, :, :]
         im_patch = im_patch.astype(np.float32)
@@ -315,7 +315,7 @@ def get_frames(video_name):
     Return:
         Frame
     """
-    cap = cv.VideoCapture(video_name if video_name else 0)
+    cap = ncvslideio.VideoCapture(video_name if video_name else 0)
     while True:
         ret, frame = cap.read()
         if ret:
@@ -327,11 +327,11 @@ def main():
     """ Sample SiamRPN Tracker
     """
     # Computation backends supported by layers
-    backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-                cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
+    backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+                ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
     # Target Devices for computation
-    targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD,
-               cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+    targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD,
+               ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
     parser = argparse.ArgumentParser(description='Use this script to run SiamRPN++ Visual Tracker',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -339,7 +339,7 @@ def main():
     parser.add_argument('--target_net', type=str, default='target_net.onnx', help='Path to part of SiamRPN++ ran on target frame.')
     parser.add_argument('--search_net', type=str, default='search_net.onnx', help='Path to part of SiamRPN++ ran on search frame.')
     parser.add_argument('--rpn_head', type=str, default='rpn_head.onnx', help='Path to RPN Head ONNX model.')
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                         help="Select a computation backend: "
                         "%d: automatically (by default), "
                         "%d: Halide, "
@@ -347,7 +347,7 @@ def main():
                         "%d: OpenCV Implementation, "
                         "%d: VKCOM, "
                         "%d: CUDA" % backends)
-    parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                         help='Select a target device: '
                         '%d: CPU target (by default), '
                         '%d: OpenCL, '
@@ -368,24 +368,24 @@ def main():
         raise OSError("RPN Head Net does not exist")
 
     #Load the Networks
-    target_net = cv.dnn.readNetFromONNX(args.target_net)
+    target_net = ncvslideio.dnn.readNetFromONNX(args.target_net)
     target_net.setPreferableBackend(args.backend)
     target_net.setPreferableTarget(args.target)
-    search_net = cv.dnn.readNetFromONNX(args.search_net)
+    search_net = ncvslideio.dnn.readNetFromONNX(args.search_net)
     search_net.setPreferableBackend(args.backend)
     search_net.setPreferableTarget(args.target)
-    rpn_head = cv.dnn.readNetFromONNX(args.rpn_head)
+    rpn_head = ncvslideio.dnn.readNetFromONNX(args.rpn_head)
     rpn_head.setPreferableBackend(args.backend)
     rpn_head.setPreferableTarget(args.target)
     model = ModelBuilder(target_net, search_net, rpn_head)
     tracker = SiamRPNTracker(model)
 
     first_frame = True
-    cv.namedWindow('SiamRPN++ Tracker', cv.WINDOW_AUTOSIZE)
+    ncvslideio.namedWindow('SiamRPN++ Tracker', ncvslideio.WINDOW_AUTOSIZE)
     for frame in get_frames(args.input_video):
         if first_frame:
             try:
-                init_rect = cv.selectROI('SiamRPN++ Tracker', frame, False, False)
+                init_rect = ncvslideio.selectROI('SiamRPN++ Tracker', frame, False, False)
             except:
                 exit()
             tracker.init(frame, init_rect)
@@ -394,9 +394,9 @@ def main():
             outputs = tracker.track(frame)
             bbox = list(map(int, outputs['bbox']))
             x,y,w,h = bbox
-            cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 3)
-        cv.imshow('SiamRPN++ Tracker', frame)
-        key = cv.waitKey(1)
+            ncvslideio.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 3)
+        ncvslideio.imshow('SiamRPN++ Tracker', frame)
+        key = ncvslideio.waitKey(1)
         if key == ord("q"):
             break
 

@@ -45,10 +45,10 @@ import numpy as np
 import cv2 as cv
 
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-            cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD,
-           cv.dnn.DNN_TARGET_HDDL, cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+            ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD,
+           ncvslideio.dnn.DNN_TARGET_HDDL, ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 
 def preprocess(image):
@@ -57,7 +57,7 @@ def preprocess(image):
     :param image: input image
     """
     image_rev = np.flip(image, axis=1)
-    input = cv.dnn.blobFromImages([image, image_rev], mean=(104.00698793, 116.66876762, 122.67891434))
+    input = ncvslideio.dnn.blobFromImages([image, image_rev], mean=(104.00698793, 116.66876762, 122.67891434))
     return input
 
 
@@ -68,7 +68,7 @@ def run_net(input, model_path, backend, target):
     :param backend: computation backend
     :param target: computation device
     """
-    net = cv.dnn.readNet(model_path)
+    net = ncvslideio.dnn.readNet(model_path)
     net.setPreferableBackend(backend)
     net.setPreferableTarget(target)
     net.setInput(input)
@@ -107,8 +107,8 @@ def postprocess(out, input_shape):
     head_output = head_output.squeeze(0)
     tail_output = tail_output.squeeze(0)
 
-    head_output = np.stack([cv.resize(img, dsize=input_shape) for img in head_output[:, ...]])
-    tail_output = np.stack([cv.resize(img, dsize=input_shape) for img in tail_output[:, ...]])
+    head_output = np.stack([ncvslideio.resize(img, dsize=input_shape) for img in head_output[:, ...]])
+    tail_output = np.stack([ncvslideio.resize(img, dsize=input_shape) for img in tail_output[:, ...]])
 
     tail_list = np.split(tail_output, indices_or_sections=list(range(1, 20)), axis=0)
     tail_list = [arr.squeeze(0) for arr in tail_list]
@@ -135,11 +135,11 @@ def decode_labels(gray_image):
 
     segm = np.stack([colors[idx] for idx in gray_image.flatten()])
     segm = segm.reshape(height, width, 3).astype(np.uint8)
-    segm = cv.cvtColor(segm, cv.COLOR_BGR2RGB)
+    segm = ncvslideio.cvtColor(segm, ncvslideio.COLOR_BGR2RGB)
     return segm
 
 
-def parse_human(image, model_path, backend=cv.dnn.DNN_BACKEND_OPENCV, target=cv.dnn.DNN_TARGET_CPU):
+def parse_human(image, model_path, backend=ncvslideio.dnn.DNN_BACKEND_OPENCV, target=ncvslideio.dnn.DNN_TARGET_CPU):
     """
     Prepare input for execution, run net and postprocess output to parse human.
     :param image: input image
@@ -160,14 +160,14 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--input', '-i', required=True, help='Path to input image.')
     parser.add_argument('--model', '-m', default='lip_jppnet_384.pb', help='Path to pb model.')
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                         help="Choose one of computation backends: "
                              "%d: automatically (by default), "
                              "%d: Intel's Deep Learning Inference Engine (https://software.intel.com/openvino-toolkit), "
                              "%d: OpenCV implementation, "
                              "%d: VKCOM, "
                              "%d: CUDA"% backends)
-    parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                         help='Choose one of target computation devices: '
                              '%d: CPU target (by default), '
                              '%d: OpenCL, '
@@ -182,9 +182,9 @@ if __name__ == '__main__':
     if not os.path.isfile(args.model):
         raise OSError("Model not exist")
 
-    image = cv.imread(args.input)
+    image = ncvslideio.imread(args.input)
     output = parse_human(image, args.model, args.backend, args.target)
     winName = 'Deep learning human parsing in OpenCV'
-    cv.namedWindow(winName, cv.WINDOW_AUTOSIZE)
-    cv.imshow(winName, output)
-    cv.waitKey()
+    ncvslideio.namedWindow(winName, ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.imshow(winName, output)
+    ncvslideio.waitKey()

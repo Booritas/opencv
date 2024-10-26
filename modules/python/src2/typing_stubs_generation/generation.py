@@ -56,7 +56,7 @@ def generate_typing_stubs(root: NamespaceNode, output_path: Path):
     # not expressed in their API e.g. optionality of mutually exclusive arguments
     # without default values:
     # ```cxx
-    # cv::resize(cv::InputArray src, cv::OutputArray dst, cv::Size dsize,
+    # ncvslideio::resize(ncvslideio::InputArray src, ncvslideio::OutputArray dst, ncvslideio::Size dsize,
     #       double fx = 0.0, double fy = 0.0, int interpolation);
     # ```
     # should accept `None` as `dsize`:
@@ -69,7 +69,7 @@ def generate_typing_stubs(root: NamespaceNode, output_path: Path):
     # scope and gradually expanded.
     # Example:
     #   ```cpp
-    #   namespace cv {
+    #   namespace ncvslideio {
     #   enum AlgorithmType {
     #       // ...
     #   };
@@ -78,13 +78,13 @@ def generate_typing_stubs(root: NamespaceNode, output_path: Path):
     #       static Ptr<Algorithm> create(AlgorithmType alg_type);
     #   };
     #   } // namespace detail
-    #   } // namespace cv
+    #   } // namespace ncvslideio
     #   ```
     # To resolve `alg_type` argument of function `create` having `AlgorithmType`
     # type from above example the following steps are done:
-    #    1. Try to resolve against `cv::detail::Algorithm` - fail
-    #    2. Try to resolve against `cv::detail` - fail
-    #    3. Try to resolve against `cv` - success
+    #    1. Try to resolve against `ncvslideio::detail::Algorithm` - fail
+    #    2. Try to resolve against `ncvslideio::detail` - fail
+    #    3. Try to resolve against `ncvslideio` - success
     # The whole process should fail !only! when all possible scopes are
     # checked and at least 1 node is still unresolved.
     root.resolve_type_nodes()
@@ -493,7 +493,7 @@ def _generate_enums_from_classes_tree(class_node: ClassNode,
 
     Example:
     ```cpp
-    namespace cv {
+    namespace ncvslideio {
     struct TermCriteria {
         enum Type {
             COUNT = 1,
@@ -501,9 +501,9 @@ def _generate_enums_from_classes_tree(class_node: ClassNode,
             EPS = 2
         };
     };
-    }  // namespace cv
+    }  // namespace ncvslideio
     ```
-    is exported to `__init__.pyi` of `cv` module as as
+    is exported to `__init__.pyi` of `ncvslideio` module as as
     ```python
     TermCriteria_COUNT: int
     TermCriteria_MAX_ITER: int

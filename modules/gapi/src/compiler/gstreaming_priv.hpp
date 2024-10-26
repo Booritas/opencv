@@ -11,7 +11,7 @@
 #include <memory> // unique_ptr
 #include "executor/gabstractstreamingexecutor.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace gimpl
 {
@@ -26,7 +26,7 @@ class GAPI_EXPORTS GStreamingCompiled::Priv
 {
     GMetaArgs  m_metas;    // passed by user
     GMetaArgs  m_outMetas; // inferred by compiler
-    std::unique_ptr<cv::gimpl::GAbstractStreamingExecutor> m_exec;
+    std::unique_ptr<ncvslideio::gimpl::GAbstractStreamingExecutor> m_exec;
 
     // NB: Used by python wrapper to clarify input/output types
     GTypesInfo m_out_info;
@@ -35,8 +35,8 @@ class GAPI_EXPORTS GStreamingCompiled::Priv
 public:
     void setup(const GMetaArgs &metaArgs,
                const GMetaArgs &outMetas,
-               std::unique_ptr<cv::gimpl::GAbstractStreamingExecutor> &&pE);
-    void setup(std::unique_ptr<cv::gimpl::GAbstractStreamingExecutor> &&pE);
+               std::unique_ptr<ncvslideio::gimpl::GAbstractStreamingExecutor> &&pE);
+    void setup(std::unique_ptr<ncvslideio::gimpl::GAbstractStreamingExecutor> &&pE);
     bool isEmpty() const;
 
     const GMetaArgs& metas() const;
@@ -44,10 +44,10 @@ public:
 
     void setSource(GRunArgs &&args);
     void start();
-    bool pull(cv::GRunArgsP &&outs);
-    bool pull(cv::GOptRunArgsP &&outs);
-    std::tuple<bool, cv::util::variant<cv::GRunArgs, cv::GOptRunArgs>> pull();
-    bool try_pull(cv::GRunArgsP &&outs);
+    bool pull(ncvslideio::GRunArgsP &&outs);
+    bool pull(ncvslideio::GOptRunArgsP &&outs);
+    std::tuple<bool, ncvslideio::util::variant<ncvslideio::GRunArgs, ncvslideio::GOptRunArgs>> pull();
+    bool try_pull(ncvslideio::GRunArgsP &&outs);
     void stop();
 
     bool running() const;
@@ -59,6 +59,6 @@ public:
     const GTypesInfo& inInfo() const { return m_in_info; }
 };
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMING_COMPILED_PRIV_HPP

@@ -11,7 +11,7 @@
 namespace opencv_test
 {
 
-cv::Scalar cvtBGRToYUVC(const cv::Scalar& bgr)
+ncvslideio::Scalar cvtBGRToYUVC(const ncvslideio::Scalar& bgr)
 {
     double y = bgr[2] *  0.299000 + bgr[1] *  0.587000 + bgr[0] *  0.114000;
     double u = bgr[2] * -0.168736 + bgr[1] * -0.331264 + bgr[0] *  0.500000 + 128;
@@ -19,12 +19,12 @@ cv::Scalar cvtBGRToYUVC(const cv::Scalar& bgr)
     return {y, u, v};
 }
 
-void drawMosaicRef(const cv::Mat& mat, const cv::Rect &rect, int cellSz)
+void drawMosaicRef(const ncvslideio::Mat& mat, const ncvslideio::Rect &rect, int cellSz)
 {
-    cv::Rect mat_rect(0, 0, mat.cols, mat.rows);
+    ncvslideio::Rect mat_rect(0, 0, mat.cols, mat.rows);
     auto intersection = mat_rect & rect;
 
-    cv::Mat msc_roi = mat(intersection);
+    ncvslideio::Mat msc_roi = mat(intersection);
 
     bool has_crop_x = false;
     bool has_crop_y = false;
@@ -44,18 +44,18 @@ void drawMosaicRef(const cv::Mat& mat, const cv::Rect &rect, int cellSz)
         rows -= msc_roi.rows % cellSz;
     }
 
-    cv::Mat cell_roi;
+    ncvslideio::Mat cell_roi;
     for(int i = 0; i < rows; i += cellSz )
     {
         for(int j = 0; j < cols; j += cellSz)
         {
-            cell_roi = msc_roi(cv::Rect(j, i, cellSz, cellSz));
-            cell_roi = cv::mean(cell_roi);
+            cell_roi = msc_roi(ncvslideio::Rect(j, i, cellSz, cellSz));
+            cell_roi = ncvslideio::mean(cell_roi);
         }
         if (has_crop_x)
         {
-            cell_roi = msc_roi(cv::Rect(cols, i, msc_roi.cols - cols, cellSz));
-            cell_roi = cv::mean(cell_roi);
+            cell_roi = msc_roi(ncvslideio::Rect(cols, i, msc_roi.cols - cols, cellSz));
+            cell_roi = ncvslideio::mean(cell_roi);
         }
     }
 
@@ -63,32 +63,32 @@ void drawMosaicRef(const cv::Mat& mat, const cv::Rect &rect, int cellSz)
     {
         for(int j = 0; j < cols; j += cellSz)
         {
-            cell_roi = msc_roi(cv::Rect(j, rows, cellSz, msc_roi.rows - rows));
-            cell_roi = cv::mean(cell_roi);
+            cell_roi = msc_roi(ncvslideio::Rect(j, rows, cellSz, msc_roi.rows - rows));
+            cell_roi = ncvslideio::mean(cell_roi);
         }
         if (has_crop_x)
         {
-            cell_roi = msc_roi(cv::Rect(cols, rows, msc_roi.cols - cols, msc_roi.rows - rows));
-            cell_roi = cv::mean(cell_roi);
+            cell_roi = msc_roi(ncvslideio::Rect(cols, rows, msc_roi.cols - cols, msc_roi.rows - rows));
+            cell_roi = ncvslideio::mean(cell_roi);
         }
     }
 }
 
-void blendImageRef(cv::Mat& mat, const cv::Point& org, const cv::Mat& img, const cv::Mat& alpha)
+void blendImageRef(ncvslideio::Mat& mat, const ncvslideio::Point& org, const ncvslideio::Mat& img, const ncvslideio::Mat& alpha)
 {
-    auto roi = mat(cv::Rect(org, img.size()));
-    cv::Mat img32f_w;
-    cv::merge(std::vector<cv::Mat>(3, alpha), img32f_w);
+    auto roi = mat(ncvslideio::Rect(org, img.size()));
+    ncvslideio::Mat img32f_w;
+    ncvslideio::merge(std::vector<ncvslideio::Mat>(3, alpha), img32f_w);
 
-    cv::Mat roi32f_w(roi.size(), CV_32FC3, cv::Scalar::all(1.0));
+    ncvslideio::Mat roi32f_w(roi.size(), CV_32FC3, ncvslideio::Scalar::all(1.0));
     roi32f_w -= img32f_w;
 
-    cv::Mat img32f, roi32f;
+    ncvslideio::Mat img32f, roi32f;
     img.convertTo(img32f, CV_32F, 1.0/255);
     roi.convertTo(roi32f, CV_32F, 1.0/255);
 
-    cv::multiply(img32f, img32f_w, img32f);
-    cv::multiply(roi32f, roi32f_w, roi32f);
+    ncvslideio::multiply(img32f, img32f_w, img32f);
+    ncvslideio::multiply(roi32f, roi32f_w, roi32f);
     roi32f += img32f;
 
     roi32f.convertTo(roi, CV_8U, 255.0);

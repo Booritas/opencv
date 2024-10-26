@@ -7,7 +7,7 @@
 
 //! @cond IGNORED
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 template<template<typename> class Functor, typename... Args>
@@ -38,7 +38,7 @@ static inline void depthDispatch(const int depth, Args&&... args)
             break;
         case CV_16F:
         default:
-            CV_Error(cv::Error::BadDepth, "Unsupported matrix type.");
+            CV_Error(ncvslideio::Error::BadDepth, "Unsupported matrix type.");
     };
 }
 

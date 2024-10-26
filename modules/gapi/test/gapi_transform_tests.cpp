@@ -17,25 +17,25 @@ namespace opencv_test
 
 namespace
 {
-using GMat = cv::GMat;
+using GMat = ncvslideio::GMat;
 using GMat2 = std::tuple<GMat, GMat>;
 using GMat3 = std::tuple<GMat, GMat, GMat>;
-using GScalar = cv::GScalar;
-template <typename T> using GArray = cv::GArray<T>;
-template <typename T> using GOpaque = cv::GOpaque<T>;
+using GScalar = ncvslideio::GScalar;
+template <typename T> using GArray = ncvslideio::GArray<T>;
+template <typename T> using GOpaque = ncvslideio::GOpaque<T>;
 
 using ArrayT = int;
 using WrongArrayT = char;
 
 struct CustomType{
-    cv::Mat mat;
+    ncvslideio::Mat mat;
     int i;
     void *v;
     CustomType* next;
 };
 
 struct AnotherCustomType{
-    cv::Mat mat;
+    ncvslideio::Mat mat;
     int i;
     void *v;
 };
@@ -143,7 +143,7 @@ GAPI_TRANSFORM(gmat_gsc_gopaque_in_gmat2_out, <GMat2(GMat, GScalar, GOpaque<Opaq
 
 TEST(KernelPackageTransform, CreatePackage)
 {
-    auto pkg = cv::gapi::kernels
+    auto pkg = ncvslideio::gapi::kernels
         < gmat_in_gmat_out
         , gmat2_in_gmat_out
         , gmat2_in_gmat3_out
@@ -168,7 +168,7 @@ TEST(KernelPackageTransform, CreatePackage)
 
 TEST(KernelPackageTransform, Include)
 {
-    cv::GKernelPackage pkg;
+    ncvslideio::GKernelPackage pkg;
     pkg.include<gmat_in_gmat_out>();
     pkg.include<gmat2_in_gmat_out>();
     pkg.include<gmat2_in_gmat3_out>();
@@ -178,9 +178,9 @@ TEST(KernelPackageTransform, Include)
 
 TEST(KernelPackageTransform, Combine)
 {
-    auto pkg1 = cv::gapi::kernels<gmat_in_gmat_out>();
-    auto pkg2 = cv::gapi::kernels<gmat2_in_gmat_out>();
-    auto pkg_comb = cv::gapi::combine(pkg1, pkg2);
+    auto pkg1 = ncvslideio::gapi::kernels<gmat_in_gmat_out>();
+    auto pkg2 = ncvslideio::gapi::kernels<gmat2_in_gmat_out>();
+    auto pkg_comb = ncvslideio::gapi::combine(pkg1, pkg2);
     auto tr = pkg_comb.get_transformations();
     EXPECT_EQ(2u, tr.size());
 }
@@ -188,8 +188,8 @@ TEST(KernelPackageTransform, Combine)
 namespace
 {
     template <typename T>
-    inline bool ProtoContainsT(const cv::GProtoArg &arg) {
-        return cv::GProtoArg::index_of<T>() == arg.index();
+    inline bool ProtoContainsT(const ncvslideio::GProtoArg &arg) {
+        return ncvslideio::GProtoArg::index_of<T>() == arg.index();
     }
 } // anonymous namespace
 
@@ -197,16 +197,16 @@ TEST(KernelPackageTransform, gmat_gsc_garray_in_gmat2_out)
 {
     auto tr = gmat_gsc_garray_in_gmat2_out::transformation();
 
-    auto check = [](const cv::GComputation &comp){
-        const auto &p = cv::util::get<cv::GComputation::Priv::Expr>(comp.priv().m_shape);
+    auto check = [](const ncvslideio::GComputation &comp){
+        const auto &p = ncvslideio::util::get<ncvslideio::GComputation::Priv::Expr>(comp.priv().m_shape);
         EXPECT_EQ(3u, p.m_ins.size());
         EXPECT_EQ(2u, p.m_outs.size());
 
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_ins[0]));
         EXPECT_TRUE(ProtoContainsT<GScalar>(p.m_ins[1]));
-        EXPECT_TRUE(ProtoContainsT<cv::detail::GArrayU>(p.m_ins[2]));
-        EXPECT_TRUE(cv::util::get<cv::detail::GArrayU>(p.m_ins[2]).holds<ArrayT>());
-        EXPECT_FALSE(cv::util::get<cv::detail::GArrayU>(p.m_ins[2]).holds<WrongArrayT>());
+        EXPECT_TRUE(ProtoContainsT<ncvslideio::detail::GArrayU>(p.m_ins[2]));
+        EXPECT_TRUE(ncvslideio::util::get<ncvslideio::detail::GArrayU>(p.m_ins[2]).holds<ArrayT>());
+        EXPECT_FALSE(ncvslideio::util::get<ncvslideio::detail::GArrayU>(p.m_ins[2]).holds<WrongArrayT>());
 
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_outs[0]));
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_outs[1]));
@@ -220,16 +220,16 @@ TEST(KernelPackageTransform, gmat_gsc_gopaque_in_gmat2_out)
 {
     auto tr = gmat_gsc_gopaque_in_gmat2_out::transformation();
 
-    auto check = [](const cv::GComputation &comp){
-        const auto &p = cv::util::get<cv::GComputation::Priv::Expr>(comp.priv().m_shape);
+    auto check = [](const ncvslideio::GComputation &comp){
+        const auto &p = ncvslideio::util::get<ncvslideio::GComputation::Priv::Expr>(comp.priv().m_shape);
         EXPECT_EQ(3u, p.m_ins.size());
         EXPECT_EQ(2u, p.m_outs.size());
 
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_ins[0]));
         EXPECT_TRUE(ProtoContainsT<GScalar>(p.m_ins[1]));
-        EXPECT_TRUE(ProtoContainsT<cv::detail::GOpaqueU>(p.m_ins[2]));
-        EXPECT_TRUE(cv::util::get<cv::detail::GOpaqueU>(p.m_ins[2]).holds<OpaqueT>());
-        EXPECT_FALSE(cv::util::get<cv::detail::GOpaqueU>(p.m_ins[2]).holds<WrongOpaqueT>());
+        EXPECT_TRUE(ProtoContainsT<ncvslideio::detail::GOpaqueU>(p.m_ins[2]));
+        EXPECT_TRUE(ncvslideio::util::get<ncvslideio::detail::GOpaqueU>(p.m_ins[2]).holds<OpaqueT>());
+        EXPECT_FALSE(ncvslideio::util::get<ncvslideio::detail::GOpaqueU>(p.m_ins[2]).holds<WrongOpaqueT>());
 
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_outs[0]));
         EXPECT_TRUE(ProtoContainsT<GMat>(p.m_outs[1]));
@@ -242,35 +242,35 @@ TEST(KernelPackageTransform, gmat_gsc_gopaque_in_gmat2_out)
 namespace
 {
     template<typename ArgT>
-    typename std::enable_if<(cv::detail::GTypeTraits<ArgT>::kind == cv::detail::ArgKind::GARRAY), void>::type
-    arg_check(const cv::GProtoArg &arg)
+    typename std::enable_if<(ncvslideio::detail::GTypeTraits<ArgT>::kind == ncvslideio::detail::ArgKind::GARRAY), void>::type
+    arg_check(const ncvslideio::GProtoArg &arg)
     {
-        EXPECT_TRUE(ProtoContainsT<cv::detail::GArrayU>(arg));
-        EXPECT_TRUE(cv::util::get<cv::detail::GArrayU>(arg).holds<ArrayT>());
-        EXPECT_FALSE(cv::util::get<cv::detail::GArrayU>(arg).holds<WrongArrayT>());
+        EXPECT_TRUE(ProtoContainsT<ncvslideio::detail::GArrayU>(arg));
+        EXPECT_TRUE(ncvslideio::util::get<ncvslideio::detail::GArrayU>(arg).holds<ArrayT>());
+        EXPECT_FALSE(ncvslideio::util::get<ncvslideio::detail::GArrayU>(arg).holds<WrongArrayT>());
     }
 
     template<typename ArgT>
-    typename std::enable_if<(cv::detail::GTypeTraits<ArgT>::kind == cv::detail::ArgKind::GOPAQUE), void>::type
-    arg_check(const cv::GProtoArg &arg)
+    typename std::enable_if<(ncvslideio::detail::GTypeTraits<ArgT>::kind == ncvslideio::detail::ArgKind::GOPAQUE), void>::type
+    arg_check(const ncvslideio::GProtoArg &arg)
     {
-        EXPECT_TRUE(ProtoContainsT<cv::detail::GOpaqueU>(arg));
-        EXPECT_TRUE(cv::util::get<cv::detail::GOpaqueU>(arg).holds<OpaqueT>());
-        EXPECT_FALSE(cv::util::get<cv::detail::GOpaqueU>(arg).holds<WrongOpaqueT>());
+        EXPECT_TRUE(ProtoContainsT<ncvslideio::detail::GOpaqueU>(arg));
+        EXPECT_TRUE(ncvslideio::util::get<ncvslideio::detail::GOpaqueU>(arg).holds<OpaqueT>());
+        EXPECT_FALSE(ncvslideio::util::get<ncvslideio::detail::GOpaqueU>(arg).holds<WrongOpaqueT>());
     }
 
     template<typename ArgT>
-    typename std::enable_if<(cv::detail::GTypeTraits<ArgT>::kind != cv::detail::ArgKind::GARRAY &&
-                             cv::detail::GTypeTraits<ArgT>::kind != cv::detail::ArgKind::GOPAQUE), void>::type
-    arg_check(const cv::GProtoArg &arg)
+    typename std::enable_if<(ncvslideio::detail::GTypeTraits<ArgT>::kind != ncvslideio::detail::ArgKind::GARRAY &&
+                             ncvslideio::detail::GTypeTraits<ArgT>::kind != ncvslideio::detail::ArgKind::GOPAQUE), void>::type
+    arg_check(const ncvslideio::GProtoArg &arg)
     {
         EXPECT_TRUE(ProtoContainsT<ArgT>(arg));
     }
 
     template<typename InType, typename OutType>
-    void args_check(const cv::GComputation &comp)
+    void args_check(const ncvslideio::GComputation &comp)
     {
-        const auto &p = cv::util::get<cv::GComputation::Priv::Expr>(comp.priv().m_shape);
+        const auto &p = ncvslideio::util::get<ncvslideio::GComputation::Priv::Expr>(comp.priv().m_shape);
         EXPECT_EQ(1u, p.m_ins.size());
         EXPECT_EQ(1u, p.m_outs.size());
         arg_check<InType>(p.m_ins[0]);

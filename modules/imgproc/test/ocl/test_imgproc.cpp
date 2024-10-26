@@ -163,8 +163,8 @@ OCL_TEST_P(CopyMakeBorder, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::copyMakeBorder(src_roi, dst_roi, border.top, border.bot, border.lef, border.rig, borderType, val));
-        OCL_ON(cv::copyMakeBorder(usrc_roi, udst_roi, border.top, border.bot, border.lef, border.rig, borderType, val));
+        OCL_OFF(ncvslideio::copyMakeBorder(src_roi, dst_roi, border.top, border.bot, border.lef, border.rig, borderType, val));
+        OCL_ON(ncvslideio::copyMakeBorder(usrc_roi, udst_roi, border.top, border.bot, border.lef, border.rig, borderType, val));
 
         Near();
     }
@@ -180,8 +180,8 @@ OCL_TEST_P(EqualizeHist, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::equalizeHist(src_roi, dst_roi));
-        OCL_ON(cv::equalizeHist(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::equalizeHist(src_roi, dst_roi));
+        OCL_ON(ncvslideio::equalizeHist(usrc_roi, udst_roi));
 
         Near(1);
     }
@@ -231,8 +231,8 @@ OCL_TEST_P(CornerMinEigenVal, Mat)
 
         int apertureSize = 3;
 
-        OCL_OFF(cv::cornerMinEigenVal(src_roi, dst_roi, blockSize, apertureSize, borderType));
-        OCL_ON(cv::cornerMinEigenVal(usrc_roi, udst_roi, blockSize, apertureSize, borderType));
+        OCL_OFF(ncvslideio::cornerMinEigenVal(src_roi, dst_roi, blockSize, apertureSize, borderType));
+        OCL_ON(ncvslideio::cornerMinEigenVal(usrc_roi, udst_roi, blockSize, apertureSize, borderType));
 
         // The corner kernel uses native_sqrt() which has implementation defined accuracy.
         // If we're using a CL implementation that isn't intel, test with relaxed accuracy.
@@ -256,8 +256,8 @@ OCL_TEST_P(CornerHarris, Mat)
         int apertureSize = 3;
         double k = randomDouble(0.01, 0.9);
 
-        OCL_OFF(cv::cornerHarris(src_roi, dst_roi, blockSize, apertureSize, k, borderType));
-        OCL_ON(cv::cornerHarris(usrc_roi, udst_roi, blockSize, apertureSize, k, borderType));
+        OCL_OFF(ncvslideio::cornerHarris(src_roi, dst_roi, blockSize, apertureSize, k, borderType));
+        OCL_ON(ncvslideio::cornerHarris(usrc_roi, udst_roi, blockSize, apertureSize, k, borderType));
 
         Near(1e-6, true);
     }
@@ -275,8 +275,8 @@ OCL_TEST_P(PreCornerDetect, Mat)
 
         const int apertureSize = blockSize;
 
-        OCL_OFF(cv::preCornerDetect(src_roi, dst_roi, apertureSize, borderType));
-        OCL_ON(cv::preCornerDetect(usrc_roi, udst_roi, apertureSize, borderType));
+        OCL_OFF(ncvslideio::preCornerDetect(src_roi, dst_roi, apertureSize, borderType));
+        OCL_ON(ncvslideio::preCornerDetect(usrc_roi, udst_roi, apertureSize, borderType));
 
         Near(1e-6, true);
     }
@@ -334,8 +334,8 @@ OCL_TEST_P(Integral, Mat1)
     {
         random_roi();
 
-        OCL_OFF(cv::integral(src_roi, dst_roi, sdepth));
-        OCL_ON(cv::integral(usrc_roi, udst_roi, sdepth));
+        OCL_OFF(ncvslideio::integral(src_roi, dst_roi, sdepth));
+        OCL_ON(ncvslideio::integral(usrc_roi, udst_roi, sdepth));
 
         Near();
     }
@@ -347,8 +347,8 @@ OCL_TEST_P(Integral, Mat2)
     {
         random_roi();
 
-        OCL_OFF(cv::integral(src_roi, dst_roi, dst2_roi, sdepth, sqdepth));
-        OCL_ON(cv::integral(usrc_roi, udst_roi, udst2_roi, sdepth, sqdepth));
+        OCL_OFF(ncvslideio::integral(src_roi, dst_roi, dst2_roi, sdepth, sqdepth));
+        OCL_ON(ncvslideio::integral(usrc_roi, udst_roi, udst2_roi, sdepth, sqdepth));
 
         Near();
         sqdepth == CV_32F ? Near2(1e-6, true) : Near2();
@@ -379,8 +379,8 @@ OCL_TEST_P(Threshold, Mat)
         double maxVal = randomDouble(20.0, 127.0);
         double thresh = randomDouble(0.0, maxVal);
 
-        OCL_OFF(cv::threshold(src_roi, dst_roi, thresh, maxVal, thresholdType));
-        OCL_ON(cv::threshold(usrc_roi, udst_roi, thresh, maxVal, thresholdType));
+        OCL_OFF(ncvslideio::threshold(src_roi, dst_roi, thresh, maxVal, thresholdType));
+        OCL_ON(ncvslideio::threshold(usrc_roi, udst_roi, thresh, maxVal, thresholdType));
 
         Near(1);
     }
@@ -429,7 +429,7 @@ OCL_TEST_P(CLAHETest, Accuracy)
     {
         random_roi();
 
-        Ptr<CLAHE> clahe = cv::createCLAHE(clipLimit, gridSize);
+        Ptr<CLAHE> clahe = ncvslideio::createCLAHE(clipLimit, gridSize);
 
         OCL_OFF(clahe->apply(src_roi, dst_roi));
         OCL_ON(clahe->apply(usrc_roi, udst_roi));

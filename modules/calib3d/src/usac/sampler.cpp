@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 /*
 * Uniform Sampler:
 * Choose uniformly m (sample size) points from N (points size).
@@ -300,7 +300,7 @@ public:
     }
 
     void setNewPointsSize (int /*points_size_*/) override {
-        CV_Error(cv::Error::StsError, "Changing points size in PROSAC requires to change also "
+        CV_Error(ncvslideio::Error::StsError, "Changing points size in PROSAC requires to change also "
                     "termination criteria! Use PROSAC simpler version");
     }
 };
@@ -455,7 +455,7 @@ public:
     }
 
     void setNewPointsSize (int /*points_size_*/) override {
-        CV_Error(cv::Error::StsError, "Changing points size requires changing neighborhood graph! "
+        CV_Error(ncvslideio::Error::StsError, "Changing points size requires changing neighborhood graph! "
                     "You must reinitialize P-NAPSAC!");
     }
 };
@@ -523,7 +523,7 @@ public:
     }
 
     void setNewPointsSize (int /*points_size_*/) override {
-        CV_Error(cv::Error::StsError, "Changing points size requires changing neighborhood graph!"
+        CV_Error(ncvslideio::Error::StsError, "Changing points size requires changing neighborhood graph!"
                     " You must reinitialize NAPSAC!");
     }
 };

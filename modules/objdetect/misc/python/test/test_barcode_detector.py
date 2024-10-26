@@ -13,17 +13,17 @@ from tests_common import NewOpenCVTests
 class barcode_detector_test(NewOpenCVTests):
 
     def test_detect(self):
-        img = cv.imread(os.path.join(self.extraTestDataPath, 'cv/barcode/multiple/4_barcodes.jpg'))
+        img = ncvslideio.imread(os.path.join(self.extraTestDataPath, 'ncvslideio/barcode/multiple/4_barcodes.jpg'))
         self.assertFalse(img is None)
-        detector = cv.barcode_BarcodeDetector()
+        detector = ncvslideio.barcode_BarcodeDetector()
         retval, corners = detector.detect(img)
         self.assertTrue(retval)
         self.assertEqual(corners.shape, (4, 4, 2))
 
     def test_detect_and_decode(self):
-        img = cv.imread(os.path.join(self.extraTestDataPath, 'cv/barcode/single/book.jpg'))
+        img = ncvslideio.imread(os.path.join(self.extraTestDataPath, 'ncvslideio/barcode/single/book.jpg'))
         self.assertFalse(img is None)
-        detector = cv.barcode_BarcodeDetector()
+        detector = ncvslideio.barcode_BarcodeDetector()
         retval, decoded_info, decoded_type, corners = detector.detectAndDecodeWithType(img)
         self.assertTrue(retval)
         self.assertTrue(len(decoded_info) > 0)

@@ -9,7 +9,7 @@ USAGE:
 #include <iostream>
 
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace dnn;
 
 

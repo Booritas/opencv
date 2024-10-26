@@ -10,14 +10,14 @@ import cv2 as cv
 def main(argv):
     ## [variables]
     # First we declare the variables we are going to use
-    borderType = cv.BORDER_CONSTANT
+    borderType = ncvslideio.BORDER_CONSTANT
     window_name = "copyMakeBorder Demo"
     ## [variables]
     ## [load]
     imageName = argv[0] if len(argv) > 0 else 'lena.jpg'
 
     # Loads an image
-    src = cv.imread(cv.samples.findFile(imageName), cv.IMREAD_COLOR)
+    src = ncvslideio.imread(ncvslideio.samples.findFile(imageName), ncvslideio.IMREAD_COLOR)
 
     # Check if image is loaded fine
     if src is None:
@@ -33,7 +33,7 @@ def main(argv):
            ' ** Press \'r\' to set the border to be replicated \n'
            ' ** Press \'ESC\' to exit the program ')
     ## [create_window]
-    cv.namedWindow(window_name, cv.WINDOW_AUTOSIZE)
+    ncvslideio.namedWindow(window_name, ncvslideio.WINDOW_AUTOSIZE)
     ## [create_window]
     ## [init_arguments]
     # Initialize arguments for the filter
@@ -47,20 +47,20 @@ def main(argv):
         value = [randint(0, 255), randint(0, 255), randint(0, 255)]
         ## [update_value]
         ## [copymakeborder]
-        dst = cv.copyMakeBorder(src, top, bottom, left, right, borderType, None, value)
+        dst = ncvslideio.copyMakeBorder(src, top, bottom, left, right, borderType, None, value)
         ## [copymakeborder]
         ## [display]
-        cv.imshow(window_name, dst)
+        ncvslideio.imshow(window_name, dst)
         ## [display]
         ## [check_keypress]
-        c = cv.waitKey(500)
+        c = ncvslideio.waitKey(500)
 
         if c == 27:
             break
         elif c == 99: # 99 = ord('c')
-            borderType = cv.BORDER_CONSTANT
+            borderType = ncvslideio.BORDER_CONSTANT
         elif c == 114: # 114 = ord('r')
-            borderType = cv.BORDER_REPLICATE
+            borderType = ncvslideio.BORDER_REPLICATE
         ## [check_keypress]
     return 0
 

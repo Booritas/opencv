@@ -18,9 +18,9 @@
 #include "opencv2/gapi/infer/ie.hpp"
 
 namespace IE = InferenceEngine;
-using GIEParam = cv::gapi::ie::detail::ParamDesc;
+using GIEParam = ncvslideio::gapi::ie::detail::ParamDesc;
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace ie {
 namespace wrap {

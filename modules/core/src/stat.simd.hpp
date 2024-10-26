@@ -4,7 +4,7 @@
 
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 extern const uchar popCountTable[256];
 
@@ -118,4 +118,4 @@ int normHamming(const uchar* a, const uchar* b, int n)
 #endif // CV_CPU_OPTIMIZATION_DECLARATIONS_ONLY
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-}} //cv::hal
+}} //ncvslideio::hal

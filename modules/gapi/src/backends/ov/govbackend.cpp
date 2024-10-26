@@ -7,7 +7,7 @@
 #include "precomp.hpp"
 
 // needs to be included regardless if IE is present or not
-// (cv::gapi::ov::backend() is still there and is defined always)
+// (ncvslideio::gapi::ov::backend() is still there and is defined always)
 #include "backends/ov/govbackend.hpp"
 
 #if defined HAVE_INF_ENGINE && INF_ENGINE_RELEASE >= 2022010000
@@ -25,7 +25,7 @@
 template<typename T> using QueueClass = tbb::concurrent_bounded_queue<T>;
 #else
 #  include "executor/conc_queue.hpp"
-template<typename T> using QueueClass = cv::gapi::own::concurrent_bounded_queue<T>;
+template<typename T> using QueueClass = ncvslideio::gapi::own::concurrent_bounded_queue<T>;
 #endif // TBB
 
 #include "utils/itt.hpp"
@@ -36,7 +36,7 @@ template<typename T> using QueueClass = cv::gapi::own::concurrent_bounded_queue<
 
 #include <fstream>
 
-using ParamDesc = cv::gapi::ov::detail::ParamDesc;
+using ParamDesc = ncvslideio::gapi::ov::detail::ParamDesc;
 
 // NB: Some of OV plugins fail during ov::Core destroying in specific cases.
 // Solution is allocate ov::Core in heap and doesn't destroy it, which cause
@@ -53,7 +53,7 @@ static ov::Core create_OV_Core_instance() {
     return core;
 }
 
-ov::Core cv::gapi::ov::wrap::getCore() {
+ov::Core ncvslideio::gapi::ov::wrap::getCore() {
     // NB: to make happy memory leak tools use:
     // - OPENCV_GAPI_INFERENCE_ENGINE_CORE_LIFETIME_WORKAROUND=0
     static bool param_GAPI_INFERENCE_ENGINE_CORE_LIFETIME_WORKAROUND =
@@ -96,9 +96,9 @@ static ov::element::Type toOV(int depth) {
 static ov::preprocess::ResizeAlgorithm toOVInterp(int interpolation) {
     namespace pp = ov::preprocess;
     switch (interpolation) {
-        case cv::INTER_LINEAR:  return pp::ResizeAlgorithm::RESIZE_LINEAR;
-        case cv::INTER_NEAREST: return pp::ResizeAlgorithm::RESIZE_NEAREST;
-        case cv::INTER_CUBIC:   return pp::ResizeAlgorithm::RESIZE_CUBIC;
+        case ncvslideio::INTER_LINEAR:  return pp::ResizeAlgorithm::RESIZE_LINEAR;
+        case ncvslideio::INTER_NEAREST: return pp::ResizeAlgorithm::RESIZE_NEAREST;
+        case ncvslideio::INTER_CUBIC:   return pp::ResizeAlgorithm::RESIZE_CUBIC;
         default: GAPI_Error("OV Backend: Unsupported resize algorithm");
     }
     // Unreachable code
@@ -126,22 +126,22 @@ static int toCV(const ov::element::Type &type) {
     return -1;
 }
 
-static void copyFromOV(const ov::Tensor &tensor, cv::Mat &mat) {
+static void copyFromOV(const ov::Tensor &tensor, ncvslideio::Mat &mat) {
     const auto total = mat.total() * mat.channels();
     if (toCV(tensor.get_element_type()) != mat.depth() ||
         tensor.get_size()               != total) {
         std::stringstream ss;
-        ss << "Failed to copy data from ov::Tensor to cv::Mat."
+        ss << "Failed to copy data from ov::Tensor to ncvslideio::Mat."
            << " Data type or number of elements mismatch."
-           << " cv::Mat: " << cv::descr_of(mat) << " and"
+           << " ncvslideio::Mat: " << ncvslideio::descr_of(mat) << " and"
            << " ov::Tensor: " << tensor.get_element_type() << " "
            << tensor.get_shape();
-        cv::util::throw_error(std::logic_error(ss.str()));
+        ncvslideio::util::throw_error(std::logic_error(ss.str()));
     }
 
     if (tensor.get_element_type() == ov::element::i64) {
-        GAPI_LOG_WARNING(NULL, "INT64 isn't supported for cv::Mat. Conversion to INT32 is used.");
-        cv::gimpl::convertInt64ToInt32(tensor.data<int64_t>(),
+        GAPI_LOG_WARNING(NULL, "INT64 isn't supported for ncvslideio::Mat. Conversion to INT32 is used.");
+        ncvslideio::gimpl::convertInt64ToInt32(tensor.data<int64_t>(),
                                        mat.ptr<int>(),
                                        total);
     } else {
@@ -151,22 +151,22 @@ static void copyFromOV(const ov::Tensor &tensor, cv::Mat &mat) {
     }
 }
 
-static cv::Mat wrapOV(const cv::MediaFrame::View& view,
-               const cv::GFrameDesc& desc) {
-    cv::Mat out;
+static ncvslideio::Mat wrapOV(const ncvslideio::MediaFrame::View& view,
+               const ncvslideio::GFrameDesc& desc) {
+    ncvslideio::Mat out;
     switch (desc.fmt) {
-        case cv::MediaFormat::BGR: {
-            out = cv::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
+        case ncvslideio::MediaFormat::BGR: {
+            out = ncvslideio::Mat(desc.size, CV_8UC3, view.ptr[0], view.stride[0]);
             return out;
         }
-        case cv::MediaFormat::NV12: {
-            auto y_plane  = cv::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
-            auto uv_plane = cv::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
-            cvtColorTwoPlane(y_plane, uv_plane, out, cv::COLOR_YUV2BGR_NV12);
+        case ncvslideio::MediaFormat::NV12: {
+            auto y_plane  = ncvslideio::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+            auto uv_plane = ncvslideio::Mat(desc.size / 2, CV_8UC2, view.ptr[1], view.stride[1]);
+            cvtColorTwoPlane(y_plane, uv_plane, out, ncvslideio::COLOR_YUV2BGR_NV12);
             return out;
         }
-        case cv::MediaFormat::GRAY: {
-            out = cv::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
+        case ncvslideio::MediaFormat::GRAY: {
+            out = ncvslideio::Mat(desc.size, CV_8UC1, view.ptr[0], view.stride[0]);
             return out;
         }
         default:
@@ -175,23 +175,23 @@ static cv::Mat wrapOV(const cv::MediaFrame::View& view,
     return out;
 }
 
-static void copyToOV(const cv::Mat &mat, ov::Tensor &tensor) {
+static void copyToOV(const ncvslideio::Mat &mat, ov::Tensor &tensor) {
     // TODO: Ideally there should be check that mat and tensor
     // dimensions are compatible.
     const auto total = mat.total() * mat.channels();
     if (toCV(tensor.get_element_type()) != mat.depth() ||
         tensor.get_size()               != total) {
         std::stringstream ss;
-        ss << "Failed to copy data from cv::Mat to ov::Tensor."
+        ss << "Failed to copy data from ncvslideio::Mat to ov::Tensor."
            << " Data type or number of elements mismatch."
            << " ov::Tensor: " << tensor.get_element_type() << " "
            << tensor.get_shape() << " and"
-           << " cv::Mat: " << cv::descr_of(mat);
-        cv::util::throw_error(std::logic_error(ss.str()));
+           << " ncvslideio::Mat: " << ncvslideio::descr_of(mat);
+        ncvslideio::util::throw_error(std::logic_error(ss.str()));
     }
 
     if (tensor.get_element_type() == ov::element::i64) {
-        cv::gimpl::convertInt32ToInt64(mat.ptr<int>(),
+        ncvslideio::gimpl::convertInt32ToInt64(mat.ptr<int>(),
                                        tensor.data<int64_t>(),
                                        total);
     } else {
@@ -201,25 +201,25 @@ static void copyToOV(const cv::Mat &mat, ov::Tensor &tensor) {
     }
 }
 
-static void copyToOV(const cv::MediaFrame &frame, ov::Tensor &tensor) {
-    const auto view = cv::MediaFrame::View(frame.access(cv::MediaFrame::Access::R));
+static void copyToOV(const ncvslideio::MediaFrame &frame, ov::Tensor &tensor) {
+    const auto view = ncvslideio::MediaFrame::View(frame.access(ncvslideio::MediaFrame::Access::R));
     auto matFromFrame = wrapOV(view, frame.desc());
     copyToOV(matFromFrame, tensor);
 }
 
-std::vector<int> cv::gapi::ov::util::to_ocv(const ::ov::Shape &shape) {
+std::vector<int> ncvslideio::gapi::ov::util::to_ocv(const ::ov::Shape &shape) {
     return toCV(shape);
 }
 
-int cv::gapi::ov::util::to_ocv(const ::ov::element::Type &type) {
+int ncvslideio::gapi::ov::util::to_ocv(const ::ov::element::Type &type) {
     return toCV(type);
 }
 
-void cv::gapi::ov::util::to_ov(const cv::Mat &mat, ::ov::Tensor &tensor) {
+void ncvslideio::gapi::ov::util::to_ov(const ncvslideio::Mat &mat, ::ov::Tensor &tensor) {
     copyToOV(mat, tensor);
 }
 
-void cv::gapi::ov::util::to_ocv(const ::ov::Tensor &tensor, cv::Mat &mat) {
+void ncvslideio::gapi::ov::util::to_ocv(const ::ov::Tensor &tensor, ncvslideio::Mat &mat) {
     copyFromOV(tensor, mat);
 }
 
@@ -230,9 +230,9 @@ struct OVUnit {
         : params(pd) {
 
         // FIXME: Can this logic be encapsulated to prevent checking every time?
-        if (cv::util::holds_alternative<ParamDesc::Model>(params.kind)) {
-            const auto desc = cv::util::get<ParamDesc::Model>(params.kind);
-            model = cv::gapi::ov::wrap::getCore()
+        if (ncvslideio::util::holds_alternative<ParamDesc::Model>(params.kind)) {
+            const auto desc = ncvslideio::util::get<ParamDesc::Model>(params.kind);
+            model = ncvslideio::gapi::ov::wrap::getCore()
                 .read_model(desc.model_path, desc.bin_path);
             GAPI_Assert(model);
 
@@ -244,11 +244,11 @@ struct OVUnit {
             }
 
         } else {
-            GAPI_Assert(cv::util::holds_alternative<ParamDesc::CompiledModel>(params.kind));
-            std::ifstream file(cv::util::get<ParamDesc::CompiledModel>(params.kind).blob_path,
+            GAPI_Assert(ncvslideio::util::holds_alternative<ParamDesc::CompiledModel>(params.kind));
+            std::ifstream file(ncvslideio::util::get<ParamDesc::CompiledModel>(params.kind).blob_path,
                                std::ios_base::in | std::ios_base::binary);
             GAPI_Assert(file.is_open());
-            compiled_model = cv::gapi::ov::wrap::getCore()
+            compiled_model = ncvslideio::gapi::ov::wrap::getCore()
                 .import_model(file, params.device, toOV(params.config));
 
             if (params.num_in == 1u && params.input_names.empty()) {
@@ -260,15 +260,15 @@ struct OVUnit {
         }
     };
 
-    cv::gimpl::ov::OVCompiled compile() {
-        if (cv::util::holds_alternative<ParamDesc::Model>(params.kind)) {
-            compiled_model = cv::gapi::ov::wrap::getCore()
+    ncvslideio::gimpl::ov::OVCompiled compile() {
+        if (ncvslideio::util::holds_alternative<ParamDesc::Model>(params.kind)) {
+            compiled_model = ncvslideio::gapi::ov::wrap::getCore()
                 .compile_model(model, params.device, toOV(params.config));
         }
         return {compiled_model};
     }
 
-    cv::gapi::ov::detail::ParamDesc params;
+    ncvslideio::gapi::ov::detail::ParamDesc params;
     std::shared_ptr<ov::Model> model;
     ov::CompiledModel compiled_model;
 };
@@ -277,15 +277,15 @@ class OVCallContext
 {
 public:
     OVCallContext(const OVUnit                                      &  unit,
-                  cv::gimpl::GIslandExecutable::IOutput             &  output,
-                  const cv::GArgs                                   &  args,
-                  const std::vector<cv::gimpl::RcDesc>              &  outs,
-                  cv::GRunArg::Meta                                 && meta,
-                  std::vector<cv::gimpl::GIslandExecutable::InObj>  && input_objs,
-                  std::vector<cv::gimpl::GIslandExecutable::OutObj> && output_objs,
-                  const cv::gimpl::ov::Options                      &  options);
+                  ncvslideio::gimpl::GIslandExecutable::IOutput             &  output,
+                  const ncvslideio::GArgs                                   &  args,
+                  const std::vector<ncvslideio::gimpl::RcDesc>              &  outs,
+                  ncvslideio::GRunArg::Meta                                 && meta,
+                  std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  && input_objs,
+                  std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> && output_objs,
+                  const ncvslideio::gimpl::ov::Options                      &  options);
 
-    const cv::GArgs& inArgs() const;
+    const ncvslideio::GArgs& inArgs() const;
 
     // Generic accessor API
     template<typename T>
@@ -299,61 +299,61 @@ public:
     }
 
     // Syntax sugar
-          cv::GShape      inShape (std::size_t input) const;
-    const cv::Mat&        inMat   (std::size_t input) const;
-    const cv::MediaFrame& inFrame (std::size_t input) const;
+          ncvslideio::GShape      inShape (std::size_t input) const;
+    const ncvslideio::Mat&        inMat   (std::size_t input) const;
+    const ncvslideio::MediaFrame& inFrame (std::size_t input) const;
 
-    cv::GRunArgP output (std::size_t idx);
-    cv::Mat&     outMatR(std::size_t idx);
+    ncvslideio::GRunArgP output (std::size_t idx);
+    ncvslideio::Mat&     outMatR(std::size_t idx);
 
     const OVUnit                          &uu;
-    cv::gimpl::GIslandExecutable::IOutput &out;
+    ncvslideio::gimpl::GIslandExecutable::IOutput &out;
 
     // To store exception appeared in callback.
     std::exception_ptr eptr;
 
-    const cv::GRunArg::Meta& getMeta() { return m_meta; };
+    const ncvslideio::GRunArg::Meta& getMeta() { return m_meta; };
 
-    const cv::gimpl::ov::Options& getOptions() const { return m_options; };
+    const ncvslideio::gimpl::ov::Options& getOptions() const { return m_options; };
 
 private:
-    cv::detail::VectorRef& outVecRef(std::size_t idx);
+    ncvslideio::detail::VectorRef& outVecRef(std::size_t idx);
 
-    cv::GArg packArg(const cv::GArg &arg);
+    ncvslideio::GArg packArg(const ncvslideio::GArg &arg);
 
     // To propagate accumulated meta from all inputs to output.
-    cv::GRunArg::Meta m_meta;
+    ncvslideio::GRunArg::Meta m_meta;
 
     // To store input/output data from frames
-    std::vector<cv::gimpl::GIslandExecutable::InObj>  m_input_objs;
-    std::vector<cv::gimpl::GIslandExecutable::OutObj> m_output_objs;
+    std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  m_input_objs;
+    std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> m_output_objs;
 
-    // To simplify access to cv::Mat inside cv::RMat
-    cv::gimpl::Mag m_res;
+    // To simplify access to ncvslideio::Mat inside ncvslideio::RMat
+    ncvslideio::gimpl::Mag m_res;
 
-    std::unordered_map<std::size_t, cv::GRunArgP> m_results;
+    std::unordered_map<std::size_t, ncvslideio::GRunArgP> m_results;
 
     // Input parameters passed to an inference operation.
-    cv::GArgs m_args;
-    cv::GShapes m_in_shapes;
+    ncvslideio::GArgs m_args;
+    ncvslideio::GShapes m_in_shapes;
 
-    cv::gimpl::ov::Options m_options;
+    ncvslideio::gimpl::ov::Options m_options;
 };
 
 OVCallContext::OVCallContext(const OVUnit                                      &  unit,
-                             cv::gimpl::GIslandExecutable::IOutput             &  output,
-                             const cv::GArgs                                   &  args,
-                             const std::vector<cv::gimpl::RcDesc>              &  outs,
-                             cv::GRunArg::Meta                                 && meta,
-                             std::vector<cv::gimpl::GIslandExecutable::InObj>  && input_objs,
-                             std::vector<cv::gimpl::GIslandExecutable::OutObj> && output_objs,
-                             const cv::gimpl::ov::Options                      &  options)
+                             ncvslideio::gimpl::GIslandExecutable::IOutput             &  output,
+                             const ncvslideio::GArgs                                   &  args,
+                             const std::vector<ncvslideio::gimpl::RcDesc>              &  outs,
+                             ncvslideio::GRunArg::Meta                                 && meta,
+                             std::vector<ncvslideio::gimpl::GIslandExecutable::InObj>  && input_objs,
+                             std::vector<ncvslideio::gimpl::GIslandExecutable::OutObj> && output_objs,
+                             const ncvslideio::gimpl::ov::Options                      &  options)
 : uu(unit), out(output), m_meta(std::move(meta)),
   m_input_objs(std::move(input_objs)), m_output_objs(std::move(output_objs)),
   m_options(options)
 {
-    for (auto& it : m_input_objs)  cv::gimpl::magazine::bindInArg (m_res, it.first, it.second);
-    for (auto& it : m_output_objs) cv::gimpl::magazine::bindOutArg(m_res, it.first, it.second);
+    for (auto& it : m_input_objs)  ncvslideio::gimpl::magazine::bindInArg (m_res, it.first, it.second);
+    for (auto& it : m_output_objs) ncvslideio::gimpl::magazine::bindOutArg(m_res, it.first, it.second);
 
     m_args.reserve(args.size());
     using namespace std::placeholders;
@@ -362,77 +362,77 @@ OVCallContext::OVCallContext(const OVUnit                                      &
                          std::bind(&OVCallContext::packArg, this, _1));
 
     ade::util::transform(args, std::back_inserter(m_in_shapes),
-            [](const cv::GArg& arg) {
-                return arg.get<cv::gimpl::RcDesc>().shape;
+            [](const ncvslideio::GArg& arg) {
+                return arg.get<ncvslideio::gimpl::RcDesc>().shape;
             });
 
     for (const auto out_it : ade::util::indexed(outs)) {
         // FIXME: Can the same GArg type resolution mechanism be reused here?
         const auto port  = ade::util::index(out_it);
         const auto desc  = ade::util::value(out_it);
-        m_results[port] = cv::gimpl::magazine::getObjPtr(m_res, desc);
+        m_results[port] = ncvslideio::gimpl::magazine::getObjPtr(m_res, desc);
     }
 }
 
-const cv::GArgs& OVCallContext::inArgs() const {
+const ncvslideio::GArgs& OVCallContext::inArgs() const {
     return m_args;
 }
 
-cv::GShape OVCallContext::inShape(std::size_t i) const {
+ncvslideio::GShape OVCallContext::inShape(std::size_t i) const {
     return m_in_shapes[i];
 }
 
-const cv::Mat& OVCallContext::inMat(std::size_t input) const {
-    return inArg<cv::Mat>(input);
+const ncvslideio::Mat& OVCallContext::inMat(std::size_t input) const {
+    return inArg<ncvslideio::Mat>(input);
 }
 
-const cv::MediaFrame& OVCallContext::inFrame(std::size_t input) const {
-    return inArg<cv::MediaFrame>(input);
+const ncvslideio::MediaFrame& OVCallContext::inFrame(std::size_t input) const {
+    return inArg<ncvslideio::MediaFrame>(input);
 }
 
-cv::Mat& OVCallContext::outMatR(std::size_t idx) {
-    return *cv::util::get<cv::Mat*>(m_results.at(idx));
+ncvslideio::Mat& OVCallContext::outMatR(std::size_t idx) {
+    return *ncvslideio::util::get<ncvslideio::Mat*>(m_results.at(idx));
 }
 
-cv::GRunArgP OVCallContext::output(std::size_t idx) {
+ncvslideio::GRunArgP OVCallContext::output(std::size_t idx) {
     return m_output_objs[idx].second;
 };
 
-cv::detail::VectorRef& OVCallContext::outVecRef(std::size_t idx) {
-    return cv::util::get<cv::detail::VectorRef>(m_results.at(idx));
+ncvslideio::detail::VectorRef& OVCallContext::outVecRef(std::size_t idx) {
+    return ncvslideio::util::get<ncvslideio::detail::VectorRef>(m_results.at(idx));
 }
 
-cv::GArg OVCallContext::packArg(const cv::GArg &arg) {
+ncvslideio::GArg OVCallContext::packArg(const ncvslideio::GArg &arg) {
     // No API placeholders allowed at this point
     // FIXME: this check has to be done somewhere in compilation stage.
-    GAPI_Assert(   arg.kind != cv::detail::ArgKind::GMAT
-                && arg.kind != cv::detail::ArgKind::GSCALAR
-                && arg.kind != cv::detail::ArgKind::GARRAY);
+    GAPI_Assert(   arg.kind != ncvslideio::detail::ArgKind::GMAT
+                && arg.kind != ncvslideio::detail::ArgKind::GSCALAR
+                && arg.kind != ncvslideio::detail::ArgKind::GARRAY);
 
-    if (arg.kind != cv::detail::ArgKind::GOBJREF) {
-        cv::util::throw_error(std::logic_error("Inference supports G-types ONLY!"));
+    if (arg.kind != ncvslideio::detail::ArgKind::GOBJREF) {
+        ncvslideio::util::throw_error(std::logic_error("Inference supports G-types ONLY!"));
     }
-    GAPI_Assert(arg.kind == cv::detail::ArgKind::GOBJREF);
+    GAPI_Assert(arg.kind == ncvslideio::detail::ArgKind::GOBJREF);
 
     // Wrap associated CPU object (either host or an internal one)
     // FIXME: object can be moved out!!! GExecutor faced that.
-    const cv::gimpl::RcDesc &ref = arg.get<cv::gimpl::RcDesc>();
+    const ncvslideio::gimpl::RcDesc &ref = arg.get<ncvslideio::gimpl::RcDesc>();
     switch (ref.shape)
     {
-    case cv::GShape::GMAT: return cv::GArg(m_res.slot<cv::Mat>()[ref.id]);
+    case ncvslideio::GShape::GMAT: return ncvslideio::GArg(m_res.slot<ncvslideio::Mat>()[ref.id]);
 
     // Note: .at() is intentional for GArray as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case cv::GShape::GARRAY:  return cv::GArg(m_res.slot<cv::detail::VectorRef>().at(ref.id));
+    case ncvslideio::GShape::GARRAY:  return ncvslideio::GArg(m_res.slot<ncvslideio::detail::VectorRef>().at(ref.id));
 
     // Note: .at() is intentional for GOpaque as object MUST be already there
     //   (and constructed by either bindIn/Out or resetInternal)
-    case cv::GShape::GOPAQUE:  return cv::GArg(m_res.slot<cv::detail::OpaqueRef>().at(ref.id));
+    case ncvslideio::GShape::GOPAQUE:  return ncvslideio::GArg(m_res.slot<ncvslideio::detail::OpaqueRef>().at(ref.id));
 
-    case cv::GShape::GFRAME:  return cv::GArg(m_res.slot<cv::MediaFrame>()[ref.id]);
+    case ncvslideio::GShape::GFRAME:  return ncvslideio::GArg(m_res.slot<ncvslideio::MediaFrame>()[ref.id]);
 
     default:
-        cv::util::throw_error(std::logic_error("Unsupported GShape type"));
+        ncvslideio::util::throw_error(std::logic_error("Unsupported GShape type"));
         break;
     }
 }
@@ -440,30 +440,30 @@ cv::GArg OVCallContext::packArg(const cv::GArg &arg) {
 struct OVCallable {
     static const char *name() { return "OVRequestCallable"; }
     using Run = std::function<void(std::shared_ptr<OVCallContext>,
-                                   cv::gimpl::ov::RequestPool&)>;
+                                   ncvslideio::gimpl::ov::RequestPool&)>;
     Run run;
 };
 
 struct KImpl {
-    cv::gimpl::CustomMetaFunction::CM customMetaFunc;
+    ncvslideio::gimpl::CustomMetaFunction::CM customMetaFunc;
     OVCallable::Run run;
 };
 
 using GOVModel = ade::TypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , OVUnit
     , OVCallable
     >;
 
 // FIXME: Same issue with Typed and ConstTyped
 using GConstGOVModel = ade::ConstTypedGraph
-    < cv::gimpl::Protocol
-    , cv::gimpl::Op
-    , cv::gimpl::NetworkParams
-    , cv::gimpl::CustomMetaFunction
+    < ncvslideio::gimpl::Protocol
+    , ncvslideio::gimpl::Op
+    , ncvslideio::gimpl::NetworkParams
+    , ncvslideio::gimpl::CustomMetaFunction
     , OVUnit
     , OVCallable
     >;
@@ -554,7 +554,7 @@ void AsyncInferExecutor::callback(IInferExecutor::Task task,
 } // anonymous namespace
 
 // TODO: Make it generic to reuse in IE and ONNX backends.
-class cv::gimpl::ov::RequestPool {
+class ncvslideio::gimpl::ov::RequestPool {
 public:
     explicit RequestPool(std::vector<::ov::InferRequest>&& requests);
 
@@ -569,11 +569,11 @@ private:
     std::vector<IInferExecutor::Ptr> m_requests;
 };
 
-void cv::gimpl::ov::RequestPool::release(const size_t id) {
+void ncvslideio::gimpl::ov::RequestPool::release(const size_t id) {
     m_idle_ids.push(id);
 }
 
-cv::gimpl::ov::RequestPool::RequestPool(std::vector<::ov::InferRequest>&& requests) {
+ncvslideio::gimpl::ov::RequestPool::RequestPool(std::vector<::ov::InferRequest>&& requests) {
     GAPI_Assert(!requests.empty());
     if (requests.size() == 1u) {
         m_requests.push_back(
@@ -589,20 +589,20 @@ cv::gimpl::ov::RequestPool::RequestPool(std::vector<::ov::InferRequest>&& reques
     setup();
 }
 
-void cv::gimpl::ov::RequestPool::setup() {
+void ncvslideio::gimpl::ov::RequestPool::setup() {
     for (size_t i = 0; i < m_requests.size(); ++i) {
         m_idle_ids.push(i);
     }
 }
 
-IInferExecutor::Ptr cv::gimpl::ov::RequestPool::getIdleRequest() {
+IInferExecutor::Ptr ncvslideio::gimpl::ov::RequestPool::getIdleRequest() {
     size_t id = 0u;
     m_idle_ids.pop(id);
     return m_requests[id];
 }
 
 // NB: Not thread-safe.
-void cv::gimpl::ov::RequestPool::waitAll() {
+void ncvslideio::gimpl::ov::RequestPool::waitAll() {
     // NB: It will be blocked if at least one request is busy.
     for (size_t i = 0; i < m_requests.size(); ++i) {
         size_t id = 0u;
@@ -613,7 +613,7 @@ void cv::gimpl::ov::RequestPool::waitAll() {
 
 
 // NB: This is a callback used by async infer
-// to post outputs blobs (cv::GMat's).
+// to post outputs blobs (ncvslideio::GMat's).
 static void PostOutputs(::ov::InferRequest             &infer_request,
                         std::exception_ptr             eptr,
                         std::shared_ptr<OVCallContext> ctx) {
@@ -671,7 +671,7 @@ void PostOutputsList::operator()(::ov::InferRequest &infer_request,
     ctx->eptr = eptr;
     if (!ctx->eptr) {
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
-            std::vector<cv::Mat> &out_vec = ctx->outVecR<cv::Mat>(i);
+            std::vector<ncvslideio::Mat> &out_vec = ctx->outVecR<ncvslideio::Mat>(i);
 
             const auto &out_name = ctx->uu.params.output_names[i];
             const auto &out_tensor = infer_request.get_tensor(out_name);
@@ -694,10 +694,10 @@ void PostOutputsList::operator()(::ov::InferRequest &infer_request,
 
 static void copyToOV(std::shared_ptr<OVCallContext> ctx, uint32_t input_idx, ov::Tensor &tensor) {
     switch (ctx->inShape(input_idx)) {
-        case cv::GShape::GMAT:
+        case ncvslideio::GShape::GMAT:
             copyToOV(ctx->inMat(input_idx), tensor);
             break;
-        case cv::GShape::GFRAME:
+        case ncvslideio::GShape::GFRAME:
             copyToOV(ctx->inFrame(input_idx), tensor);
             break;
         default:
@@ -705,22 +705,22 @@ static void copyToOV(std::shared_ptr<OVCallContext> ctx, uint32_t input_idx, ov:
     }
 }
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace ov {
 
 template <typename Attr>
-using AttrMap = cv::gapi::ov::detail::AttrMap<Attr>;
+using AttrMap = ncvslideio::gapi::ov::detail::AttrMap<Attr>;
 
 template <typename Attr>
-using LayerVariantAttr = cv::gapi::ov::detail::LayerVariantAttr<Attr>;
+using LayerVariantAttr = ncvslideio::gapi::ov::detail::LayerVariantAttr<Attr>;
 
 template <typename Attr> AttrMap<Attr>
 broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
                    const std::vector<std::string> &layer_names) {
     AttrMap<Attr> map;
-    if (cv::util::holds_alternative<AttrMap<Attr>>(layer_attr)) {
-        map = cv::util::get<AttrMap<Attr>>(layer_attr);
+    if (ncvslideio::util::holds_alternative<AttrMap<Attr>>(layer_attr)) {
+        map = ncvslideio::util::get<AttrMap<Attr>>(layer_attr);
         // NB: Validate map:
         std::unordered_set<std::string> existing_layers =
             {layer_names.begin(), layer_names.end()};
@@ -728,14 +728,14 @@ broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
         for (const auto &p : map) {
             const auto it = existing_layers.find(p.first);
             if (it == existing_layers.end()) {
-                cv::util::throw_error(
+                ncvslideio::util::throw_error(
                         std::logic_error("OV Backend: Failed to"
                                          " find layer with name: " + p.first));
             }
         }
-    } else if (cv::util::holds_alternative<Attr>(layer_attr)) {
+    } else if (ncvslideio::util::holds_alternative<Attr>(layer_attr)) {
         // NB: Broadcast value to all layers.
-        auto elem = cv::util::get<Attr>(layer_attr);
+        auto elem = ncvslideio::util::get<Attr>(layer_attr);
         for (auto &&layer_name : layer_names) {
             map.emplace(layer_name, elem);
         }
@@ -744,20 +744,20 @@ broadcastLayerAttr(const LayerVariantAttr<Attr>   &layer_attr,
 }
 
 template <typename K, typename V>
-cv::optional<V> lookUp(const std::map<K, V> &map, const K& key) {
+ncvslideio::optional<V> lookUp(const std::map<K, V> &map, const K& key) {
     const auto it = map.find(key);
     if (it == map.end()) {
         return {};
     }
-    return cv::util::make_optional(std::move(it->second));
+    return ncvslideio::util::make_optional(std::move(it->second));
 }
 
 // NB: This function is used to preprocess input image
 // for InferROI, InferList, InferList2 kernels.
-static cv::Mat preprocess(const cv::Mat     &in_mat,
-                          const cv::Rect    &roi,
+static ncvslideio::Mat preprocess(const ncvslideio::Mat     &in_mat,
+                          const ncvslideio::Rect    &roi,
                           const ::ov::Shape &model_shape) {
-    cv::Mat out;
+    ncvslideio::Mat out;
     // FIXME: Since there is no information about H and W positions
     // among tensor dimmensions assume that model layout is "NHWC".
     // (In fact "NHWC" is the only right layout for preprocessing because
@@ -771,38 +771,38 @@ static cv::Mat preprocess(const cv::Mat     &in_mat,
         std::stringstream ss;
         ss << "OV Backend: Failed to preprocess input data "
               " (Number of channels mismatch)."
-              " Provided data: " << cv::descr_of(in_mat) <<
+              " Provided data: " << ncvslideio::descr_of(in_mat) <<
               " and Model shape: " << model_shape;
         util::throw_error(std::logic_error(ss.str()));
     }
     // NB: Crop roi and resize to model size.
-    cv::resize(in_mat(roi), out, cv::Size(W, H));
+    ncvslideio::resize(in_mat(roi), out, ncvslideio::Size(W, H));
     return out;
 }
 
 // NB: This function is used to preprocess input image
 // for InferROI, InferList, InferList2 kernels.
-static cv::Mat preprocess(MediaFrame::View&     view,
-                          const cv::GFrameDesc& desc,
-                          const cv::Rect&       roi,
+static ncvslideio::Mat preprocess(MediaFrame::View&     view,
+                          const ncvslideio::GFrameDesc& desc,
+                          const ncvslideio::Rect&       roi,
                           const ::ov::Shape     &model_shape) {
     return preprocess(wrapOV(view, desc), roi, model_shape);
 }
 
 static void preprocess_and_copy(std::shared_ptr<OVCallContext> ctx,
                                 uint32_t input_idx,
-                                const cv::Rect &roi,
+                                const ncvslideio::Rect &roi,
                                 const ::ov::Shape &model_shape,
                                 ::ov::Tensor& tensor) {
     switch (ctx->inShape(input_idx)) {
-        case cv::GShape::GMAT: {
+        case ncvslideio::GShape::GMAT: {
             auto roi_mat = preprocess(ctx->inMat(input_idx), roi, model_shape);
             copyToOV(roi_mat, tensor);
             break;
         }
-        case cv::GShape::GFRAME: {
+        case ncvslideio::GShape::GFRAME: {
             auto currentFrame = ctx->inFrame(input_idx);
-            auto view = cv::MediaFrame::View(currentFrame.access(cv::MediaFrame::Access::R));
+            auto view = ncvslideio::MediaFrame::View(currentFrame.access(ncvslideio::MediaFrame::Access::R));
             auto roi_mat = preprocess(view, currentFrame.desc(), roi, model_shape);
             copyToOV(roi_mat, tensor);
             break;
@@ -812,7 +812,7 @@ static void preprocess_and_copy(std::shared_ptr<OVCallContext> ctx,
     }
 }
 
-static bool isImage(const cv::GMatDesc &desc,
+static bool isImage(const ncvslideio::GMatDesc &desc,
                     const ::ov::Shape  &model_shape) {
     return (model_shape.size() == 4u)                      &&
            (!desc.isND())  /* dims == 2 */                 &&
@@ -821,13 +821,13 @@ static bool isImage(const cv::GMatDesc &desc,
            (desc.depth == CV_8U);
 }
 
-static bool isImage(const cv::GMetaArg &meta,
+static bool isImage(const ncvslideio::GMetaArg &meta,
                     const ::ov::Shape  &shape) {
-    if (cv::util::holds_alternative<GFrameDesc>(meta)) {
+    if (ncvslideio::util::holds_alternative<GFrameDesc>(meta)) {
         return true;
     }
-    GAPI_Assert(cv::util::holds_alternative<GMatDesc>(meta));
-    auto matdesc = cv::util::get<GMatDesc>(meta);
+    GAPI_Assert(ncvslideio::util::holds_alternative<GMatDesc>(meta));
+    auto matdesc = ncvslideio::util::get<GMatDesc>(meta);
     return isImage(matdesc, shape);
 }
 
@@ -894,8 +894,8 @@ public:
         const auto scale_vec = lookUp(m_scale_values, input_name);
 
         if (mean_vec || scale_vec) {
-            GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(input_meta));
-            const auto depth = cv::util::get<cv::GMatDesc>(input_meta).depth;
+            GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(input_meta));
+            const auto depth = ncvslideio::util::get<ncvslideio::GMatDesc>(input_meta).depth;
             const bool depth_is_real = (depth == CV_32F) || (depth == CV_16F);
             if (!depth_is_real) {
                 input_info.preprocess().convert_element_type(toOV(CV_32F));
@@ -911,10 +911,10 @@ public:
 
     // FIXME: Decompose this...
     void cfgPreProcessing(const std::string  &input_name,
-                          const cv::GMetaArg &input_meta,
+                          const ncvslideio::GMetaArg &input_meta,
                           const bool         disable_img_resize = false) {
-        GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(input_meta) ||
-                    cv::util::holds_alternative<cv::GFrameDesc>(input_meta));
+        GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(input_meta) ||
+                    ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(input_meta));
         const auto explicit_in_tensor_layout = lookUp(m_input_tensor_layout, input_name);
         const auto explicit_in_model_layout  = lookUp(m_input_model_layout, input_name);
         const auto explicit_resize = lookUp(m_interpolation, input_name);
@@ -929,12 +929,12 @@ public:
         const auto &input_shape = m_model->input(input_name).get_shape();
         auto &input_info = m_ppp.input(input_name);
 
-        auto isMat = cv::util::holds_alternative<cv::GMatDesc>(input_meta);
-        auto prec  = isMat ? cv::util::get<cv::GMatDesc>(input_meta).depth : CV_8U;
+        auto isMat = ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(input_meta);
+        auto prec  = isMat ? ncvslideio::util::get<ncvslideio::GMatDesc>(input_meta).depth : CV_8U;
         m_ppp.input(input_name).tensor().set_element_type(toOV(prec));
 
-        const auto &matdesc   = isMat ? cv::util::get<cv::GMatDesc>(input_meta) : cv::GMatDesc();
-        const auto &framedesc = !isMat ? cv::util::get<cv::GFrameDesc>(input_meta) : cv::GFrameDesc();
+        const auto &matdesc   = isMat ? ncvslideio::util::get<ncvslideio::GMatDesc>(input_meta) : ncvslideio::GMatDesc();
+        const auto &framedesc = !isMat ? ncvslideio::util::get<ncvslideio::GFrameDesc>(input_meta) : ncvslideio::GFrameDesc();
         if (isImage(input_meta, input_shape)) {
             // NB: Image case - all necessary preprocessng is configured automatically.
             GAPI_LOG_DEBUG(NULL, "OV Backend: Input: \"" << input_name << "\" is image.");
@@ -955,7 +955,7 @@ public:
             }
 
             if (!disable_img_resize) {
-                const auto size = isMat ? cv::util::get<cv::GMatDesc>(input_meta).size : cv::util::get<cv::GFrameDesc>(input_meta).size;
+                const auto size = isMat ? ncvslideio::util::get<ncvslideio::GMatDesc>(input_meta).size : ncvslideio::util::get<ncvslideio::GFrameDesc>(input_meta).size;
                 input_info.tensor().set_spatial_static_shape(size.height,
                                                              size.width);
                 // NB: Even though resize is automatically configured
@@ -1044,26 +1044,26 @@ private:
     const std::vector<std::string> &m_input_names;
     const std::vector<std::string> &m_output_names;
 
-    cv::gimpl::ov::AttrMap<std::string>        m_input_tensor_layout;
-    cv::gimpl::ov::AttrMap<std::string>        m_input_model_layout;
-    cv::gimpl::ov::AttrMap<int>                m_interpolation;
-    cv::gimpl::ov::AttrMap<std::vector<float>> m_mean_values;
-    cv::gimpl::ov::AttrMap<std::vector<float>> m_scale_values;
-    cv::gimpl::ov::AttrMap<std::string>        m_output_tensor_layout;
-    cv::gimpl::ov::AttrMap<std::string>        m_output_model_layout;
-    cv::gimpl::ov::AttrMap<int>                m_output_tensor_precision;
+    ncvslideio::gimpl::ov::AttrMap<std::string>        m_input_tensor_layout;
+    ncvslideio::gimpl::ov::AttrMap<std::string>        m_input_model_layout;
+    ncvslideio::gimpl::ov::AttrMap<int>                m_interpolation;
+    ncvslideio::gimpl::ov::AttrMap<std::vector<float>> m_mean_values;
+    ncvslideio::gimpl::ov::AttrMap<std::vector<float>> m_scale_values;
+    ncvslideio::gimpl::ov::AttrMap<std::string>        m_output_tensor_layout;
+    ncvslideio::gimpl::ov::AttrMap<std::string>        m_output_model_layout;
+    ncvslideio::gimpl::ov::AttrMap<int>                m_output_tensor_precision;
 };
 
-struct Infer: public cv::detail::KernelTag {
-    using API = cv::GInferBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ov::backend(); }
+struct Infer: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ov::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
-        cv::GMetaArgs result;
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
+        ncvslideio::GMetaArgs result;
 
         GConstGOVModel gm(gr);
         const auto &uu = gm.metadata(nh).get<OVUnit>();
@@ -1074,8 +1074,8 @@ struct Infer: public cv::detail::KernelTag {
                     && "Known input layers count doesn't match input meta count");
 
         // NB: Pre/Post processing configuration avaiable only for read models.
-        if (cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
-            const auto &model_info = cv::util::get<ParamDesc::Model>(uu.params.kind);
+        if (ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
+            const auto &model_info = ncvslideio::util::get<ParamDesc::Model>(uu.params.kind);
             auto& model = const_cast<std::shared_ptr<::ov::Model>&>(uu.model);
             PrePostProcWrapper ppp {model, model_info,
                 uu.params.input_names, uu.params.output_names};
@@ -1093,15 +1093,15 @@ struct Infer: public cv::detail::KernelTag {
         }
 
         for (const auto &out_name : uu.params.output_names) {
-            cv::GMatDesc outm;
-            if (cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
+            ncvslideio::GMatDesc outm;
+            if (ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
                 const auto &out = uu.model->output(out_name);
-                outm = cv::GMatDesc(toCV(out.get_element_type()),
+                outm = ncvslideio::GMatDesc(toCV(out.get_element_type()),
                                     toCV(out.get_shape()));
             } else {
-                GAPI_Assert(cv::util::holds_alternative<ParamDesc::CompiledModel>(uu.params.kind));
+                GAPI_Assert(ncvslideio::util::holds_alternative<ParamDesc::CompiledModel>(uu.params.kind));
                 const auto &out = uu.compiled_model.output(out_name);
-                outm = cv::GMatDesc(toCV(out.get_element_type()),
+                outm = ncvslideio::GMatDesc(toCV(out.get_element_type()),
                                     toCV(out.get_shape()));
             }
             result.emplace_back(std::move(outm));
@@ -1111,7 +1111,7 @@ struct Infer: public cv::detail::KernelTag {
     }
 
     static void run(std::shared_ptr<OVCallContext> ctx,
-                    cv::gimpl::ov::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ov::RequestPool     &reqPool) {
         using namespace std::placeholders;
         reqPool.getIdleRequest()->execute(
                 IInferExecutor::Task {
@@ -1135,16 +1135,16 @@ struct Infer: public cv::detail::KernelTag {
     }
 };
 
-struct InferROI: public cv::detail::KernelTag {
-    using API = cv::GInferROIBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ov::backend(); }
+struct InferROI: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferROIBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ov::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
-        cv::GMetaArgs result;
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
+        ncvslideio::GMetaArgs result;
 
         GConstGOVModel gm(gr);
         const auto &uu = gm.metadata(nh).get<OVUnit>();
@@ -1155,9 +1155,9 @@ struct InferROI: public cv::detail::KernelTag {
 
         const auto &input_name = uu.params.input_names.at(0);
         const auto &mm = in_metas.at(1u);
-        GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(mm) ||
-                    cv::util::holds_alternative<cv::GFrameDesc>(mm));
-        const bool is_model = cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind);
+        GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm) ||
+                    ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm));
+        const bool is_model = ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind);
         const auto &input_shape = is_model ? uu.model->input(input_name).get_shape()
                                            : uu.compiled_model.input(input_name).get_shape();
 
@@ -1167,7 +1167,7 @@ struct InferROI: public cv::detail::KernelTag {
         }
 
         if (is_model) {
-            const auto &model_info = cv::util::get<ParamDesc::Model>(uu.params.kind);
+            const auto &model_info = ncvslideio::util::get<ParamDesc::Model>(uu.params.kind);
             auto& model = const_cast<std::shared_ptr<::ov::Model>&>(uu.model);
             PrePostProcWrapper ppp {model, model_info,
                 uu.params.input_names, uu.params.output_names};
@@ -1180,15 +1180,15 @@ struct InferROI: public cv::detail::KernelTag {
         }
 
         for (const auto &out_name : uu.params.output_names) {
-            cv::GMatDesc outm;
-            if (cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
+            ncvslideio::GMatDesc outm;
+            if (ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
                 const auto &out = uu.model->output(out_name);
-                outm = cv::GMatDesc(toCV(out.get_element_type()),
+                outm = ncvslideio::GMatDesc(toCV(out.get_element_type()),
                                     toCV(out.get_shape()));
             } else {
-                GAPI_Assert(cv::util::holds_alternative<ParamDesc::CompiledModel>(uu.params.kind));
+                GAPI_Assert(ncvslideio::util::holds_alternative<ParamDesc::CompiledModel>(uu.params.kind));
                 const auto &out = uu.compiled_model.output(out_name);
-                outm = cv::GMatDesc(toCV(out.get_element_type()),
+                outm = ncvslideio::GMatDesc(toCV(out.get_element_type()),
                                     toCV(out.get_shape()));
             }
             result.emplace_back(std::move(outm));
@@ -1198,10 +1198,10 @@ struct InferROI: public cv::detail::KernelTag {
     }
 
     static void run(std::shared_ptr<OVCallContext> ctx,
-                    cv::gimpl::ov::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ov::RequestPool     &reqPool) {
         using namespace std::placeholders;
         if (ctx->getOptions().inference_only) {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                     std::logic_error("OV Backend: Inference only mode is not supported for InferROI!"));
         }
         reqPool.getIdleRequest()->execute(
@@ -1211,7 +1211,7 @@ struct InferROI: public cv::detail::KernelTag {
                     const auto &input_name = ctx->uu.params.input_names[0];
                     auto input_tensor = infer_request.get_tensor(input_name);
                     const auto &shape = input_tensor.get_shape();
-                    const auto &roi = ctx->inArg<cv::detail::OpaqueRef>(0).rref<cv::Rect>();
+                    const auto &roi = ctx->inArg<ncvslideio::detail::OpaqueRef>(0).rref<ncvslideio::Rect>();
                     preprocess_and_copy(ctx, 1, roi, shape, input_tensor);
                 },
                 std::bind(PostOutputs, _1, _2, ctx)
@@ -1220,15 +1220,15 @@ struct InferROI: public cv::detail::KernelTag {
     }
 };
 
-struct InferList: public cv::detail::KernelTag {
-    using API = cv::GInferListBase;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ov::backend(); }
+struct InferList: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferListBase;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ov::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run};     }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         GConstGOVModel gm(gr);
         const auto &uu = gm.metadata(nh).get<OVUnit>();
         // Initialize input information
@@ -1238,8 +1238,8 @@ struct InferList: public cv::detail::KernelTag {
                     && "Known input layers count doesn't match input meta count");
 
         // NB: Pre/Post processing configuration avaiable only for read models.
-        if (cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
-            const auto &model_info = cv::util::get<ParamDesc::Model>(uu.params.kind);
+        if (ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind)) {
+            const auto &model_info = ncvslideio::util::get<ParamDesc::Model>(uu.params.kind);
             auto& model = const_cast<std::shared_ptr<::ov::Model>&>(uu.model);
             PrePostProcWrapper ppp {model, model_info,
                 uu.params.input_names, uu.params.output_names};
@@ -1247,8 +1247,8 @@ struct InferList: public cv::detail::KernelTag {
             size_t idx = 1u;
             for (auto &&input_name : uu.params.input_names) {
                 const auto &mm = in_metas[idx++];
-                GAPI_Assert(cv::util::holds_alternative<cv::GMatDesc>(mm) ||
-                            cv::util::holds_alternative<cv::GFrameDesc>(mm));
+                GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm) ||
+                            ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm));
                 const auto &input_shape = uu.model->input(input_name).get_shape();
 
                 if (!isImage(mm, input_shape)) {
@@ -1269,17 +1269,17 @@ struct InferList: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.params.output_names.size(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.params.output_names.size(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(std::shared_ptr<OVCallContext> ctx,
-                    cv::gimpl::ov::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ov::RequestPool     &reqPool) {
         if (ctx->getOptions().inference_only) {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                     std::logic_error("OV Backend: Inference only mode is not supported for InferList!"));
         }
-        const auto& in_roi_vec = ctx->inArg<cv::detail::VectorRef>(0u).rref<cv::Rect>();
+        const auto& in_roi_vec = ctx->inArg<ncvslideio::detail::VectorRef>(0u).rref<ncvslideio::Rect>();
         // NB: In case there is no input data need to post output anyway
         if (in_roi_vec.empty()) {
             for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
@@ -1293,7 +1293,7 @@ struct InferList: public cv::detail::KernelTag {
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
             // FIXME: Isn't this should be done automatically
             // by some resetInternalData(), etc? (Probably at the GExecutor level)
-            auto& out_vec = ctx->outVecR<cv::Mat>(i);
+            auto& out_vec = ctx->outVecR<ncvslideio::Mat>(i);
             out_vec.clear();
             out_vec.resize(in_roi_vec.size());
         }
@@ -1317,15 +1317,15 @@ struct InferList: public cv::detail::KernelTag {
     }
 };
 
-struct InferList2: public cv::detail::KernelTag {
-    using API = cv::GInferList2Base;
-    static cv::gapi::GBackend backend()  { return cv::gapi::ov::backend(); }
+struct InferList2: public ncvslideio::detail::KernelTag {
+    using API = ncvslideio::GInferList2Base;
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::ov::backend(); }
     static KImpl kernel()                { return KImpl{outMeta, run}; }
 
-    static cv::GMetaArgs outMeta(const ade::Graph      &gr,
+    static ncvslideio::GMetaArgs outMeta(const ade::Graph      &gr,
                                  const ade::NodeHandle &nh,
-                                 const cv::GMetaArgs   &in_metas,
-                                 const cv::GArgs       &/*in_args*/) {
+                                 const ncvslideio::GMetaArgs   &in_metas,
+                                 const ncvslideio::GArgs       &/*in_args*/) {
         GConstGOVModel gm(gr);
         const auto &uu = gm.metadata(nh).get<OVUnit>();
         // Initialize input information
@@ -1347,14 +1347,14 @@ struct InferList2: public cv::detail::KernelTag {
         const auto &input_name_0 = uu.params.input_names.front();
         const auto &mm_0 = in_metas[0u];
 
-        if (!(cv::util::holds_alternative<cv::GMatDesc>(mm_0) ||
-              cv::util::holds_alternative<cv::GFrameDesc>(mm_0))) {
+        if (!(ncvslideio::util::holds_alternative<ncvslideio::GMatDesc>(mm_0) ||
+              ncvslideio::util::holds_alternative<ncvslideio::GFrameDesc>(mm_0))) {
             util::throw_error(std::runtime_error(
                         "OV Backend: Unsupported input meta"
                         " for 0th argument in OV backend"));
         }
 
-        const bool is_model = cv::util::holds_alternative<ParamDesc::Model>(uu.params.kind);
+        const bool is_model = ncvslideio::util::holds_alternative<ParamDesc::Model>(uu.params.kind);
         const auto &input_shape = is_model ? uu.model->input(input_name_0).get_shape()
                                            : uu.compiled_model.input(input_name_0).get_shape();
         if (!isImage(mm_0, input_shape)) {
@@ -1363,24 +1363,24 @@ struct InferList2: public cv::detail::KernelTag {
         }
 
         if (is_model) {
-            const auto &model_info = cv::util::get<ParamDesc::Model>(uu.params.kind);
+            const auto &model_info = ncvslideio::util::get<ParamDesc::Model>(uu.params.kind);
             auto& model = const_cast<std::shared_ptr<::ov::Model>&>(uu.model);
             PrePostProcWrapper ppp {model, model_info,
                 uu.params.input_names, uu.params.output_names};
 
             size_t idx = 1u;
             for (auto &&input_name : uu.params.input_names) {
-                GAPI_Assert(util::holds_alternative<cv::GArrayDesc>(in_metas[idx])
+                GAPI_Assert(util::holds_alternative<ncvslideio::GArrayDesc>(in_metas[idx])
                             && "Non-array inputs are not supported");
 
                 ppp.cfgLayouts(input_name);
-                if (op.k.inKinds[idx] == cv::detail::OpaqueKind::CV_RECT) {
+                if (op.k.inKinds[idx] == ncvslideio::detail::OpaqueKind::CV_RECT) {
                     ppp.cfgPreProcessing(input_name, mm_0, true /*disable_img_resize*/);
                 } else {
-                    // This is a cv::GMat (equals to: cv::Mat)
+                    // This is a ncvslideio::GMat (equals to: ncvslideio::Mat)
                     // Just validate that it is really the type
                     // (other types are prohibited here)
-                    GAPI_Assert(op.k.inKinds[idx] == cv::detail::OpaqueKind::CV_MAT);
+                    GAPI_Assert(op.k.inKinds[idx] == ncvslideio::detail::OpaqueKind::CV_MAT);
                 }
 
                 ppp.cfgScaleMean(input_name, mm_0);
@@ -1394,21 +1394,21 @@ struct InferList2: public cv::detail::KernelTag {
         // All our outputs are vectors which don't have
         // metadata at the moment - so just create a vector of
         // "empty" array metadatas of the required size.
-        return cv::GMetaArgs(uu.params.output_names.size(),
-                             cv::GMetaArg{cv::empty_array_desc()});
+        return ncvslideio::GMetaArgs(uu.params.output_names.size(),
+                             ncvslideio::GMetaArg{ncvslideio::empty_array_desc()});
     }
 
     static void run(std::shared_ptr<OVCallContext> ctx,
-                    cv::gimpl::ov::RequestPool     &reqPool) {
+                    ncvslideio::gimpl::ov::RequestPool     &reqPool) {
         if (ctx->getOptions().inference_only) {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                     std::logic_error("OV Backend: Inference only mode is not supported for InferList2!"));
         }
         GAPI_Assert(ctx->inArgs().size() > 1u
                 && "This operation must have at least two arguments");
         // NB: This blob will be used to make roi from its, so
         // it should be treated as image
-        const auto list_size = ctx->inArg<cv::detail::VectorRef>(1u).size();
+        const auto list_size = ctx->inArg<ncvslideio::detail::VectorRef>(1u).size();
         if (list_size == 0u) {
             for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
                 auto output = ctx->output(i);
@@ -1421,7 +1421,7 @@ struct InferList2: public cv::detail::KernelTag {
         for (auto i : ade::util::iota(ctx->uu.params.num_out)) {
             // FIXME: Isn't this should be done automatically
             // by some resetInternalData(), etc? (Probably at the GExecutor level)
-            auto& out_vec = ctx->outVecR<cv::Mat>(i);
+            auto& out_vec = ctx->outVecR<ncvslideio::Mat>(i);
             out_vec.clear();
             out_vec.resize(list_size);
         }
@@ -1432,17 +1432,17 @@ struct InferList2: public cv::detail::KernelTag {
                 IInferExecutor::Task {
                     [ctx, list_idx, list_size](::ov::InferRequest &infer_request) {
                         for (auto in_idx : ade::util::iota(ctx->uu.params.num_in)) {
-                            const auto &this_vec = ctx->inArg<cv::detail::VectorRef>(in_idx+1u);
+                            const auto &this_vec = ctx->inArg<ncvslideio::detail::VectorRef>(in_idx+1u);
                             GAPI_Assert(this_vec.size() == list_size);
                             const auto &input_name = ctx->uu.params.input_names[in_idx];
                             auto input_tensor = infer_request.get_tensor(input_name);
                             const auto &shape = input_tensor.get_shape();
-                            if (this_vec.getKind() == cv::detail::OpaqueKind::CV_RECT) {
-                                const auto &vec = this_vec.rref<cv::Rect>();
+                            if (this_vec.getKind() == ncvslideio::detail::OpaqueKind::CV_RECT) {
+                                const auto &vec = this_vec.rref<ncvslideio::Rect>();
                                 const auto roi_mat = preprocess(ctx->inMat(0), vec[list_idx], shape);
                                 copyToOV(roi_mat, input_tensor);
-                            } else if (this_vec.getKind() == cv::detail::OpaqueKind::CV_MAT) {
-                                const auto &vec = this_vec.rref<cv::Mat>();
+                            } else if (this_vec.getKind() == ncvslideio::detail::OpaqueKind::CV_MAT) {
+                                const auto &vec = this_vec.rref<ncvslideio::Mat>();
                                 const auto &mat = vec[list_idx];
                                 copyToOV(mat, input_tensor);
                             } else {
@@ -1460,21 +1460,21 @@ struct InferList2: public cv::detail::KernelTag {
 
 } // namespace ov
 } // namespace gimpl
-} // namespace cv
+} // namespace ncvslideio
 
 // IE backend implementation of GBackend::Priv ///////////////////////
 namespace {
-class GOVBackendImpl final: public cv::gapi::GBackend::Priv {
+class GOVBackendImpl final: public ncvslideio::gapi::GBackend::Priv {
     virtual void unpackKernel(ade::Graph            &gr,
                               const ade::NodeHandle &nh,
-                              const cv::GKernelImpl &ii) override {
-        using namespace cv::gimpl;
+                              const ncvslideio::GKernelImpl &ii) override {
+        using namespace ncvslideio::gimpl;
         // FIXME: Introduce a DNNBackend interface which'd specify
         // the framework for this???
         GOVModel gm(gr);
         auto &np = gm.metadata(nh).get<NetworkParams>();
-        auto &pp = cv::util::any_cast<ParamDesc>(np.opaque);
-        const auto &ki = cv::util::any_cast<KImpl>(ii.opaque);
+        auto &pp = ncvslideio::util::any_cast<ParamDesc>(np.opaque);
+        const auto &ki = ncvslideio::util::any_cast<KImpl>(ii.opaque);
 
         GModel::Graph model(gr);
         auto& op = model.metadata(nh).get<Op>();
@@ -1482,7 +1482,7 @@ class GOVBackendImpl final: public cv::gapi::GBackend::Priv {
         // NB: In case generic infer, info about in/out names is stored in operation (op.params)
         if (pp.is_generic)
         {
-            auto& info      = cv::util::any_cast<cv::detail::InOutInfo>(op.params);
+            auto& info      = ncvslideio::util::any_cast<ncvslideio::detail::InOutInfo>(op.params);
             pp.input_names  = info.in_names;
             pp.output_names = info.out_names;
             pp.num_in       = info.in_names.size();
@@ -1495,23 +1495,23 @@ class GOVBackendImpl final: public cv::gapi::GBackend::Priv {
     }
 
     virtual EPtr compile(const ade::Graph &graph,
-                         const cv::GCompileArgs &compileArgs,
+                         const ncvslideio::GCompileArgs &compileArgs,
                          const std::vector<ade::NodeHandle> &nodes) const override {
-        return EPtr{new cv::gimpl::ov::GOVExecutable(graph, compileArgs, nodes)};
+        return EPtr{new ncvslideio::gimpl::ov::GOVExecutable(graph, compileArgs, nodes)};
     }
 
-    virtual cv::GKernelPackage auxiliaryKernels() const override {
-        return cv::gapi::kernels< cv::gimpl::ov::Infer
-                                , cv::gimpl::ov::InferROI
-                                , cv::gimpl::ov::InferList
-                                , cv::gimpl::ov::InferList2 >();
+    virtual ncvslideio::GKernelPackage auxiliaryKernels() const override {
+        return ncvslideio::gapi::kernels< ncvslideio::gimpl::ov::Infer
+                                , ncvslideio::gimpl::ov::InferROI
+                                , ncvslideio::gimpl::ov::InferList
+                                , ncvslideio::gimpl::ov::InferList2 >();
     }
 
     virtual bool controlsMerge() const override {
         return true;
     }
 
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &) const override {
@@ -1521,8 +1521,8 @@ class GOVBackendImpl final: public cv::gapi::GBackend::Priv {
 
 } // anonymous namespace
 
-cv::gapi::GBackend cv::gapi::ov::backend() {
-    static cv::gapi::GBackend this_backend(std::make_shared<GOVBackendImpl>());
+ncvslideio::gapi::GBackend ncvslideio::gapi::ov::backend() {
+    static ncvslideio::gapi::GBackend this_backend(std::make_shared<GOVBackendImpl>());
     return this_backend;
 }
 
@@ -1537,13 +1537,13 @@ createInferRequests(::ov::CompiledModel &compiled_model,
 }
 
 // GOVExecutable implementation //////////////////////////////////////////////
-cv::gimpl::ov::GOVExecutable::GOVExecutable(const ade::Graph &g,
-                                            const cv::GCompileArgs &compileArgs,
+ncvslideio::gimpl::ov::GOVExecutable::GOVExecutable(const ade::Graph &g,
+                                            const ncvslideio::GCompileArgs &compileArgs,
                                             const std::vector<ade::NodeHandle> &nodes)
     : m_g(g), m_gm(m_g) {
 
     m_options.inference_only =
-        cv::gapi::getCompileArg<cv::gapi::wip::ov::benchmark_mode>(compileArgs).has_value();
+        ncvslideio::gapi::getCompileArg<ncvslideio::gapi::wip::ov::benchmark_mode>(compileArgs).has_value();
     // FIXME: Currently this backend is capable to run a single inference node only.
     // Need to extend our island fusion with merge/not-to-merge decision making parametrization
     GConstGOVModel ovm(g);
@@ -1578,24 +1578,24 @@ cv::gimpl::ov::GOVExecutable::GOVExecutable(const ade::Graph &g,
     }
 }
 
-void cv::gimpl::ov::GOVExecutable::run(cv::gimpl::GIslandExecutable::IInput  &in,
-                                       cv::gimpl::GIslandExecutable::IOutput &out) {
+void ncvslideio::gimpl::ov::GOVExecutable::run(ncvslideio::gimpl::GIslandExecutable::IInput  &in,
+                                       ncvslideio::gimpl::GIslandExecutable::IOutput &out) {
     std::vector<InObj>  input_objs;
     std::vector<OutObj> output_objs;
 
     const auto &in_desc = in.desc();
           auto  in_msg  = in.get();
 
-    if (cv::util::holds_alternative<cv::gimpl::EndOfStream>(in_msg))
+    if (ncvslideio::util::holds_alternative<ncvslideio::gimpl::EndOfStream>(in_msg))
     {
         m_reqPool->waitAll();
-        out.post(cv::gimpl::EndOfStream{});
+        out.post(ncvslideio::gimpl::EndOfStream{});
         return;
     }
 
-    GAPI_Assert(cv::util::holds_alternative<cv::GRunArgs>(in_msg));
-    const auto in_vector = cv::util::get<cv::GRunArgs>(in_msg);
-    cv::GRunArg::Meta stub_meta;
+    GAPI_Assert(ncvslideio::util::holds_alternative<ncvslideio::GRunArgs>(in_msg));
+    const auto in_vector = ncvslideio::util::get<ncvslideio::GRunArgs>(in_msg);
+    ncvslideio::GRunArg::Meta stub_meta;
     for (auto &&in_arg : in_vector)
     {
         stub_meta.insert(in_arg.meta.begin(), in_arg.meta.end());
@@ -1645,7 +1645,7 @@ void cv::gimpl::ov::GOVExecutable::run(cv::gimpl::GIslandExecutable::IInput  &in
 
 #else // HAVE_INF_ENGINE && INF_ENGINE_RELEASE >= 2022010000
 
-cv::gapi::GBackend cv::gapi::ov::backend() {
+ncvslideio::gapi::GBackend ncvslideio::gapi::ov::backend() {
     // Still provide this symbol to avoid linking issues
     util::throw_error(std::runtime_error("G-API has been compiled without OpenVINO support"));
 }

@@ -207,7 +207,7 @@ void CV_DetectorTest::run( int )
         vector<string>::const_iterator it = imageFilenames.begin();
         for( int ii = 0; it != imageFilenames.end(); ++it, ii++ )
         {
-            //String buf = cv::format("img_%d", ii);
+            //String buf = ncvslideio::format("img_%d", ii);
             //cvWriteComment( validationFS.fs, buf, 0 );
             validationFS << *it;
         }
@@ -262,7 +262,7 @@ int CV_DetectorTest::runTestCase( int detectorIdx, vector<vector<Rect> >& object
         Mat image = images[ii];
         if( image.empty() )
         {
-            String msg = cv::format("image %d is empty", ii);
+            String msg = ncvslideio::format("image %d is empty", ii);
             ts->printf( cvtest::TS::LOG, msg.c_str() );
             return cvtest::TS::FAIL_INVALID_TEST_DATA;
         }
@@ -274,7 +274,7 @@ int CV_DetectorTest::runTestCase( int detectorIdx, vector<vector<Rect> >& object
 
         if( write_results )
         {
-            String imageIdxStr = cv::format("img_%d", ii);
+            String imageIdxStr = ncvslideio::format("img_%d", ii);
             validationFS << imageIdxStr << "[:";
             for( vector<Rect>::const_iterator it = imgObjects.begin();
                     it != imgObjects.end(); ++it )
@@ -307,7 +307,7 @@ int CV_DetectorTest::validate( int detectorIdx, vector<vector<Rect> >& objects )
         int noPair = 0;
 
         // read validation rectangles
-        String imageIdxStr = cv::format("img_%d", imageIdx);
+        String imageIdxStr = ncvslideio::format("img_%d", imageIdx);
         FileNode node = validationFS.getFirstTopLevelNode()[VALIDATION][detectorNames[detectorIdx]][imageIdxStr];
         vector<Rect> valRects;
         if( node.size() != 0 )
@@ -329,12 +329,12 @@ int CV_DetectorTest::validate( int detectorIdx, vector<vector<Rect> >& objects )
             // find nearest rectangle
             Point2f cp1 = Point2f( cr->x + (float)cr->width/2.0f, cr->y + (float)cr->height/2.0f );
             int minIdx = -1, vi = 0;
-            float minDist = (float)cv::norm( Point(imgSize.width, imgSize.height) );
+            float minDist = (float)ncvslideio::norm( Point(imgSize.width, imgSize.height) );
             for( vector<Rect>::const_iterator vr = valRects.begin();
                 vr != valRects.end(); ++vr, vi++ )
             {
                 Point2f cp2 = Point2f( vr->x + (float)vr->width/2.0f, vr->y + (float)vr->height/2.0f );
-                float curDist = (float)cv::norm(cp1-cp2);
+                float curDist = (float)ncvslideio::norm(cp1-cp2);
                 if( curDist < minDist )
                 {
                     minIdx = vi;
@@ -505,7 +505,7 @@ TEST(Objdetect_HOGDetectorReadWrite, regression)
     HOGDescriptor hog;
     hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 
-    string tempfilename = cv::tempfile(".xml");
+    string tempfilename = ncvslideio::tempfile(".xml");
     FileStorage fs(tempfilename, FileStorage::WRITE);
     hog.write(fs, "myHOG");
 
@@ -526,7 +526,7 @@ TEST(Objdetect_HOGDetector, regression) { CV_HOGDetectorTest test; test.safe_run
 //----------------------------------------------- HOG SSE2 compatible test -----------------------------------
 
 class HOGDescriptorTester :
-    public cv::HOGDescriptor
+    public ncvslideio::HOGDescriptor
 {
     HOGDescriptor* actual_hog;
     cvtest::TS* ts;
@@ -534,7 +534,7 @@ class HOGDescriptorTester :
 
 public:
     HOGDescriptorTester(HOGDescriptor& instance) :
-        cv::HOGDescriptor(instance), actual_hog(&instance),
+        ncvslideio::HOGDescriptor(instance), actual_hog(&instance),
         ts(cvtest::TS::ptr()), failed(false)
     { }
 

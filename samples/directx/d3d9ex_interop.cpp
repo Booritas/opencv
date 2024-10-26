@@ -1,7 +1,7 @@
 /*
-// A sample program demonstrating interoperability of OpenCV cv::UMat with Direct X surface
+// A sample program demonstrating interoperability of OpenCV ncvslideio::UMat with Direct X surface
 // At first, the data obtained from video file or camera and placed onto Direct X surface,
-// following mapping of this Direct X surface to OpenCV cv::UMat and call cv::Blur function.
+// following mapping of this Direct X surface to OpenCV ncvslideio::UMat and call ncvslideio::Blur function.
 // The result is mapped back to Direct X surface and rendered through Direct X API.
 */
 
@@ -22,7 +22,7 @@
 class D3D9ExWinApp : public D3DSample
 {
 public:
-    D3D9ExWinApp(int width, int height, std::string& window_name, cv::VideoCapture& cap) :
+    D3D9ExWinApp(int width, int height, std::string& window_name, ncvslideio::VideoCapture& cap) :
         D3DSample(width, height, window_name, cap) {}
 
     ~D3D9ExWinApp() {}
@@ -82,13 +82,13 @@ public:
         }
 
         // initialize OpenCL context of OpenCV lib from DirectX
-        if (cv::ocl::haveOpenCL())
+        if (ncvslideio::ocl::haveOpenCL())
         {
-            m_oclCtx = cv::directx::ocl::initializeContextFromDirect3DDevice9(m_pD3D9DevEx);
+            m_oclCtx = ncvslideio::directx::ocl::initializeContextFromDirect3DDevice9(m_pD3D9DevEx);
         }
 
-        m_oclDevName = cv::ocl::useOpenCL() ?
-            cv::ocl::Context::getDefault().device(0).name() :
+        m_oclDevName = ncvslideio::ocl::useOpenCL() ?
+            ncvslideio::ocl::Context::getDefault().device(0).name() :
             "No OpenCL device";
 
         return EXIT_SUCCESS;
@@ -103,7 +103,7 @@ public:
         if (!m_cap.read(m_frame_bgr))
             return EXIT_FAILURE;
 
-        cv::cvtColor(m_frame_bgr, m_frame_rgba, cv::COLOR_BGR2BGRA);
+        ncvslideio::cvtColor(m_frame_bgr, m_frame_rgba, ncvslideio::COLOR_BGR2BGRA);
 
         D3DLOCKED_RECT memDesc = { 0, NULL };
         RECT rc = { 0, 0, m_width, m_height };
@@ -114,7 +114,7 @@ public:
             return r;
         }
 
-        cv::Mat m(m_height, m_width, CV_8UC4, memDesc.pBits, memDesc.Pitch);
+        ncvslideio::Mat m(m_height, m_width, CV_8UC4, memDesc.pBits, memDesc.Pitch);
         // copy video frame data to surface
         m_frame_rgba.copyTo(m);
 
@@ -167,12 +167,12 @@ public:
                         return EXIT_FAILURE;
                     }
 
-                    cv::Mat m(m_height, m_width, CV_8UC4, memDesc.pBits, memDesc.Pitch);
+                    ncvslideio::Mat m(m_height, m_width, CV_8UC4, memDesc.pBits, memDesc.Pitch);
 
                     if (m_demo_processing)
                     {
                         // blur D3D9 surface with OpenCV on CPU
-                        cv::blur(m, m, cv::Size(15, 15));
+                        ncvslideio::blur(m, m, ncvslideio::Size(15, 15));
                     }
 
                     r = pSurface->UnlockRect();
@@ -187,17 +187,17 @@ public:
                 case MODE_GPU_RGBA:
                 {
                     // process video frame on GPU
-                    cv::UMat u;
+                    ncvslideio::UMat u;
 
-                    cv::directx::convertFromDirect3DSurface9(pSurface, u);
+                    ncvslideio::directx::convertFromDirect3DSurface9(pSurface, u);
 
                     if (m_demo_processing)
                     {
                         // blur D3D9 surface with OpenCV on GPU with OpenCL
-                        cv::blur(u, u, cv::Size(15, 15));
+                        ncvslideio::blur(u, u, ncvslideio::Size(15, 15));
                     }
 
-                    cv::directx::convertToDirect3DSurface9(u, pSurface);
+                    ncvslideio::directx::convertToDirect3DSurface9(u, pSurface);
 
                     break;
                 }
@@ -225,7 +225,7 @@ public:
 
         } // try
 
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             std::cerr << "Exception: " << e.what() << std::endl;
             return 10;
@@ -235,7 +235,7 @@ public:
     } // render()
 
 
-    void print_info(LPDIRECT3DSURFACE9 pSurface, int mode, double time, cv::String oclDevName)
+    void print_info(LPDIRECT3DSURFACE9 pSurface, int mode, double time, ncvslideio::String oclDevName)
     {
         HDC hDC;
 
@@ -300,9 +300,9 @@ private:
     LPDIRECT3DDEVICE9EX  m_pD3D9DevEx;
     LPDIRECT3DSURFACE9   m_pBackBuffer;
     LPDIRECT3DSURFACE9   m_pSurface;
-    cv::ocl::Context     m_oclCtx;
-    cv::String           m_oclPlatformName;
-    cv::String           m_oclDevName;
+    ncvslideio::ocl::Context     m_oclCtx;
+    ncvslideio::String           m_oclPlatformName;
+    ncvslideio::String           m_oclDevName;
 };
 
 

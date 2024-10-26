@@ -57,8 +57,8 @@
 #include <gdal.h>
 
 
-/// Start of CV Namespace
-namespace cv {
+/// Start of ncvslideio Namespace
+namespace ncvslideio {
 
 /**
  * Convert GDAL Pixel Range to OpenCV Pixel Range

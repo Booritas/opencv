@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <stdlib.h>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -393,7 +393,7 @@ public:
                     SoftmaxInt8OutputFloatInvoker<false>::run(src, dst, blobs[0], N, D);
                 }
             } break;
-            default: CV_Error(cv::Error::BadDepth, "DNN/SoftmaxInt8: Unsupported output type");
+            default: CV_Error(ncvslideio::Error::BadDepth, "DNN/SoftmaxInt8: Unsupported output type");
         }
 
         if (!coerced_2d && is_transpose_needed) {

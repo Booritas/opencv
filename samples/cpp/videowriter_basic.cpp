@@ -11,7 +11,7 @@
 #include <iostream>
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int main(int, char**)

@@ -23,7 +23,7 @@
 #include <opencv2/gapi/gmat.hpp>    // flatten_g only!
 #include <opencv2/gapi/gscalar.hpp> // flatten_g only!
 
-namespace cv
+namespace ncvslideio
 {
 // Forward declaration; GNode and GOrigin are an internal
 // (user-inaccessible) classes.
@@ -45,7 +45,7 @@ template<typename U> GArrayDesc descr_of(const std::vector<U> &) { return {};}
 GAPI_EXPORTS_W inline GArrayDesc empty_array_desc() {return {}; }
 /** @} */
 
-std::ostream& operator<<(std::ostream& os, const cv::GArrayDesc &desc);
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GArrayDesc &desc);
 
 namespace detail
 {
@@ -81,9 +81,9 @@ namespace detail
     protected:
         GArrayU();                                // Default constructor
         GArrayU(const detail::VectorRef& vref);   // Constant value constructor
-        template<class> friend class cv::GArray;  //  (available to GArray<T> only)
+        template<class> friend class ncvslideio::GArray;  //  (available to GArray<T> only)
 
-        void setConstructFcn(ConstructVec &&cv);  // Store T-aware constructor
+        void setConstructFcn(ConstructVec &&ncvslideio);  // Store T-aware constructor
 
         template <typename T>
         void specifyType();                       // Store type of initial GArray<T>
@@ -91,7 +91,7 @@ namespace detail
         template <typename T>
         void storeKind();
 
-        void setKind(cv::detail::OpaqueKind);
+        void setKind(ncvslideio::detail::OpaqueKind);
 
         std::shared_ptr<GOrigin> m_priv;
         std::shared_ptr<TypeHintBase> m_hint;
@@ -111,7 +111,7 @@ namespace detail
 
     template <typename T>
     void GArrayU::storeKind(){
-        setKind(cv::detail::GOpaqueTraits<T>::kind);
+        setKind(ncvslideio::detail::GOpaqueTraits<T>::kind);
     }
 
     // This class represents a typed STL vector reference.
@@ -123,7 +123,7 @@ namespace detail
     public:
         // These fields are set by the derived class(es)
         std::size_t    m_elemSize = 0ul;
-        cv::GArrayDesc m_desc;
+        ncvslideio::GArrayDesc m_desc;
         virtual ~BasicVectorRef() {}
 
         virtual void mov(BasicVectorRef &ref) = 0;
@@ -147,7 +147,7 @@ namespace detail
         void init(const std::vector<T>* vec = nullptr)
         {
             m_elemSize = sizeof(T);
-            if (vec) m_desc = cv::descr_of(*vec);
+            if (vec) m_desc = ncvslideio::descr_of(*vec);
         }
 
     public:
@@ -169,7 +169,7 @@ namespace detail
             if (isEmpty())
             {
                 std::vector<T> empty_vector;
-                m_desc = cv::descr_of(empty_vector);
+                m_desc = ncvslideio::descr_of(empty_vector);
                 m_ref  = std::move(empty_vector);
                 GAPI_Assert(isRWOwn());
             }
@@ -232,11 +232,11 @@ namespace detail
     // Its methods are typed proxies to VectorRefT<T>.
     // VectorRef maintains "reference" semantics so two copies of VectoRef refer
     // to the same underlying object.
-    // FIXME: Put a good explanation on why cv::OutputArray doesn't fit this role
+    // FIXME: Put a good explanation on why ncvslideio::OutputArray doesn't fit this role
     class VectorRef
     {
         std::shared_ptr<BasicVectorRef> m_ref;
-        cv::detail::OpaqueKind m_kind = cv::detail::OpaqueKind::CV_UNKNOWN;
+        ncvslideio::detail::OpaqueKind m_kind = ncvslideio::detail::OpaqueKind::CV_UNKNOWN;
 
         template<typename T> inline void check() const
         {
@@ -259,7 +259,7 @@ namespace detail
             , m_kind(GOpaqueTraits<T>::kind)
         {}
 
-        cv::detail::OpaqueKind getKind() const
+        ncvslideio::detail::OpaqueKind getKind() const
         {
             return m_kind;
         }
@@ -275,7 +275,7 @@ namespace detail
         template <typename T>
         void storeKind()
         {
-            m_kind = cv::detail::GOpaqueTraits<T>::kind;
+            m_kind = ncvslideio::detail::GOpaqueTraits<T>::kind;
         }
 
         template<typename T> std::vector<T>& wref()
@@ -303,7 +303,7 @@ namespace detail
             m_ref->mov(*v.m_ref);
         }
 
-        cv::GArrayDesc descr_of() const
+        ncvslideio::GArrayDesc descr_of() const
         {
             return m_ref->m_desc;
         }
@@ -319,16 +319,16 @@ namespace detail
 
     // Helper (FIXME: work-around?)
     // stripping G types to their host types
-    // like cv::GArray<GMat> would still map to std::vector<cv::Mat>
-    // but not to std::vector<cv::GMat>
+    // like ncvslideio::GArray<GMat> would still map to std::vector<ncvslideio::Mat>
+    // but not to std::vector<ncvslideio::GMat>
 #if defined(GAPI_STANDALONE)
-#  define FLATTEN_NS cv::gapi::own
+#  define FLATTEN_NS ncvslideio::gapi::own
 #else
-#  define FLATTEN_NS cv
+#  define FLATTEN_NS ncvslideio
 #endif
     template<class T> struct flatten_g;
-    template<> struct flatten_g<cv::GMat>         { using type = FLATTEN_NS::Mat; };
-    template<> struct flatten_g<cv::GScalar>      { using type = FLATTEN_NS::Scalar; };
+    template<> struct flatten_g<ncvslideio::GMat>         { using type = FLATTEN_NS::Mat; };
+    template<> struct flatten_g<ncvslideio::GScalar>      { using type = FLATTEN_NS::Scalar; };
     template<class T> struct flatten_g<GArray<T>> { using type = std::vector<T>; };
     template<class T> struct flatten_g            { using type = T; };
 #undef FLATTEN_NS
@@ -341,26 +341,26 @@ namespace detail
  * @{
  */
 /**
- * @brief `cv::GArray<T>` template class represents a list of objects
+ * @brief `ncvslideio::GArray<T>` template class represents a list of objects
  * of class `T` in the graph.
  *
- * `cv::GArray<T>` describes a functional relationship between
+ * `ncvslideio::GArray<T>` describes a functional relationship between
  * operations consuming and producing arrays of objects of class
- * `T`. The primary purpose of `cv::GArray<T>` is to represent a
+ * `T`. The primary purpose of `ncvslideio::GArray<T>` is to represent a
  * dynamic list of objects -- where the size of the list is not known
  * at the graph construction or compile time. Examples include: corner
- * and feature detectors (`cv::GArray<cv::Point>`), object detection
- * and tracking  results (`cv::GArray<cv::Rect>`). Programmers can use
- * their own types with `cv::GArray<T>` in the custom operations.
+ * and feature detectors (`ncvslideio::GArray<ncvslideio::Point>`), object detection
+ * and tracking  results (`ncvslideio::GArray<ncvslideio::Rect>`). Programmers can use
+ * their own types with `ncvslideio::GArray<T>` in the custom operations.
  *
- * Similar to `cv::GScalar`, `cv::GArray<T>` may be value-initialized
+ * Similar to `ncvslideio::GScalar`, `ncvslideio::GArray<T>` may be value-initialized
  * -- in this case a graph-constant value is associated with the object.
  *
  * `GArray<T>` is a virtual counterpart of `std::vector<T>`, which is
  * usually used to represent the `GArray<T>` data in G-API during the
  * execution.
  *
- * @sa `cv::GOpaque<T>`
+ * @sa `ncvslideio::GOpaque<T>`
  */
 template<typename T> class GArray
 {
@@ -371,40 +371,40 @@ public:
     using HT = typename detail::flatten_g<typename std::decay<T>::type>::type;
 
     /**
-     * @brief Constructs a value-initialized `cv::GArray<T>`
+     * @brief Constructs a value-initialized `ncvslideio::GArray<T>`
      *
-     * `cv::GArray<T>` objects  may have their values
+     * `ncvslideio::GArray<T>` objects  may have their values
      * be associated at graph construction time. It is useful when
-     * some operation has a `cv::GArray<T>` input which doesn't change during
+     * some operation has a `ncvslideio::GArray<T>` input which doesn't change during
      * the program execution, and is set only once. In this case,
-     * there is no need to declare such `cv::GArray<T>` as a graph input.
+     * there is no need to declare such `ncvslideio::GArray<T>` as a graph input.
      *
-     * @note The value of `cv::GArray<T>` may be overwritten by assigning some
-     * other `cv::GArray<T>` to the object using `operator=` -- on the
+     * @note The value of `ncvslideio::GArray<T>` may be overwritten by assigning some
+     * other `ncvslideio::GArray<T>` to the object using `operator=` -- on the
      * assignment, the old association or value is discarded.
      *
      * @param v a std::vector<T> to associate with this
-     * `cv::GArray<T>` object. Vector data is copied into the
-     * `cv::GArray<T>` (no reference to the passed data is held).
+     * `ncvslideio::GArray<T>` object. Vector data is copied into the
+     * `ncvslideio::GArray<T>` (no reference to the passed data is held).
      */
     explicit GArray(const std::vector<HT>& v) // Constant value constructor
         : m_ref(detail::GArrayU(detail::VectorRef(v))) { putDetails(); }
 
     /**
      * @overload
-     * @brief Constructs a value-initialized `cv::GArray<T>`
+     * @brief Constructs a value-initialized `ncvslideio::GArray<T>`
      *
      * @param v a std::vector<T> to associate with this
-     * `cv::GArray<T>` object. Vector data is moved into the `cv::GArray<T>`.
+     * `ncvslideio::GArray<T>` object. Vector data is moved into the `ncvslideio::GArray<T>`.
      */
     explicit GArray(std::vector<HT>&& v)      // Move-constructor
         : m_ref(detail::GArrayU(detail::VectorRef(std::move(v)))) { putDetails(); }
 
     /**
-     * @brief Constructs an empty `cv::GArray<T>`
+     * @brief Constructs an empty `ncvslideio::GArray<T>`
      *
      * Normally, empty G-API data objects denote a starting point of
-     * the graph. When an empty `cv::GArray<T>` is assigned to a result
+     * the graph. When an empty `ncvslideio::GArray<T>` is assigned to a result
      * of some operation, it obtains a functional link to this
      * operation (and is not empty anymore).
      */
@@ -435,6 +435,6 @@ private:
 
 /** @} */
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GARRAY_HPP

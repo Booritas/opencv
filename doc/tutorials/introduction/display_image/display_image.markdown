@@ -58,7 +58,7 @@ You'll almost always end up using the:
 
 We also include the *iostream* to facilitate console line output and input.
 
-By declaring `using namespace cv;`, in the following, the library functions can be accessed without explicitly stating the namespace.
+By declaring `using namespace ncvslideio;`, in the following, the library functions can be accessed without explicitly stating the namespace.
 
 @snippet cpp/tutorial_code/introduction/display_image/display_image.cpp includes
 @end_toggle

@@ -53,10 +53,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/reshape.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -349,7 +349,7 @@ public:
         // set inputs : shape
         std::vector<int> shape_of_shape{(int)newShapeDesc.size()};
         Mat shape_mat(shape_of_shape, CV_32S, newShapeDesc.data());
-        auto op_const_shape = std::make_shared<CannConstOp>(shape_mat.data, shape_mat.type(), shape_of_shape, cv::format("%s_shape", name.c_str()));
+        auto op_const_shape = std::make_shared<CannConstOp>(shape_mat.data, shape_mat.type(), shape_of_shape, ncvslideio::format("%s_shape", name.c_str()));
         op->set_input_shape(*(op_const_shape->getOp()));
         op->update_input_desc_shape(*(op_const_shape->getTensorDesc()));
 

@@ -2,7 +2,7 @@
 #include "cascadeclassifier.h"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 /*
 traincascade.cpp is the source file of the program used for cascade training.

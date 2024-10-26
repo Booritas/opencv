@@ -5,7 +5,7 @@
 
 #include "precomp.hpp"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 /****************************************************************************************\
 *                     LU & Cholesky implementation for small matrices                    *
@@ -203,7 +203,7 @@ QRImpl(_Tp* A, size_t astep, int m, int n, int k, _Tp* b, size_t bstep, _Tp* hFa
     astep /= sizeof(_Tp);
     bstep /= sizeof(_Tp);
 
-    cv::AutoBuffer<_Tp> buffer;
+    ncvslideio::AutoBuffer<_Tp> buffer;
     size_t buf_size = m ? m + n : hFactors != NULL;
     buffer.allocate(buf_size);
     _Tp* vl = buffer.data();
@@ -334,4 +334,4 @@ bool Cholesky(double* A, size_t astep, int m, double* b, size_t bstep, int n)
     return CholImpl(A, astep, m, b, bstep, n);
 }
 
-}} // cv::hal::
+}} // ncvslideio::hal::

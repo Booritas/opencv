@@ -9,10 +9,10 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-void show_wait_destroy(const char* winname, cv::Mat img);
+void show_wait_destroy(const char* winname, ncvslideio::Mat img);
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char** argv)
 {
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void show_wait_destroy(const char* winname, cv::Mat img) {
+void show_wait_destroy(const char* winname, ncvslideio::Mat img) {
     imshow(winname, img);
     moveWindow(winname, 500, 0);
     waitKey(0);

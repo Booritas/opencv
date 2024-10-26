@@ -8,7 +8,7 @@
 #include "opencv2/imgproc/hal/hal.hpp"
 #include "cap_interface.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 inline bool hasExtension(const String &filename, const String &ext)
@@ -34,7 +34,7 @@ inline mfxU32 determineCodecId(const String &filename)
 
 //==========================================================================
 
-VideoCapture_IntelMFX::VideoCapture_IntelMFX(const cv::String &filename)
+VideoCapture_IntelMFX::VideoCapture_IntelMFX(const ncvslideio::String &filename)
     : session(0), plugin(0), deviceHandler(0), bs(0), decoder(0), pool(0), outSurface(0), good(false)
 {
     mfxStatus res = MFX_ERR_NONE;
@@ -284,7 +284,7 @@ int VideoCapture_IntelMFX::getCaptureDomain()
 
 //==================================================================================================
 
-cv::Ptr<IVideoCapture> cv::create_MFX_capture(const std::string &filename)
+ncvslideio::Ptr<IVideoCapture> ncvslideio::create_MFX_capture(const std::string &filename)
 {
-    return cv::makePtr<VideoCapture_IntelMFX>(filename);
+    return ncvslideio::makePtr<VideoCapture_IntelMFX>(filename);
 }

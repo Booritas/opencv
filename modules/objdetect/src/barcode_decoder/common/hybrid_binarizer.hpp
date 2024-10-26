@@ -7,7 +7,7 @@
 #ifndef OPENCV_BARCODE_HYBRID_BINARIZER_HPP
 #define OPENCV_BARCODE_HYBRID_BINARIZER_HPP
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 void hybridBinarization(const Mat &src, Mat &dst);

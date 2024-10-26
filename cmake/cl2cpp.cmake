@@ -23,7 +23,7 @@ set(STR_CPP "// This file is auto-generated. Do not edit!
 
 #ifdef HAVE_OPENCL
 
-namespace cv
+namespace ncvslideio
 {
 namespace ocl
 {
@@ -41,7 +41,7 @@ set(STR_HPP "// This file is auto-generated. Do not edit!
 
 #ifdef HAVE_OPENCL
 
-namespace cv
+namespace ncvslideio
 {
 namespace ocl
 {
@@ -72,8 +72,8 @@ foreach(cl ${cl_list})
 
   string(MD5 hash "${lines}")
 
-  set(STR_CPP_DECL "struct cv::ocl::internal::ProgramEntry ${cl_filename}_oclsrc={moduleName, \"${cl_filename}\",\n\"${lines}, \"${hash}\", NULL};\n")
-  set(STR_HPP_DECL "extern struct cv::ocl::internal::ProgramEntry ${cl_filename}_oclsrc;\n")
+  set(STR_CPP_DECL "struct ncvslideio::ocl::internal::ProgramEntry ${cl_filename}_oclsrc={moduleName, \"${cl_filename}\",\n\"${lines}, \"${hash}\", NULL};\n")
+  set(STR_HPP_DECL "extern struct ncvslideio::ocl::internal::ProgramEntry ${cl_filename}_oclsrc;\n")
 
   set(STR_CPP "${STR_CPP}${STR_CPP_DECL}")
   set(STR_HPP "${STR_HPP}${STR_HPP_DECL}")

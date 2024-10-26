@@ -6,10 +6,10 @@ from common import *
 
 
 def get_args_parser(func_args):
-    backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE,
-                cv.dnn.DNN_BACKEND_OPENCV, cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-    targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD,
-               cv.dnn.DNN_TARGET_HDDL, cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+    backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE,
+                ncvslideio.dnn.DNN_BACKEND_OPENCV, ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+    targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD,
+               ncvslideio.dnn.DNN_TARGET_HDDL, ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--zoo', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models.yml'),
@@ -27,7 +27,7 @@ def get_args_parser(func_args):
                         help='Preprocess input image by initial resizing to a specific width.')
     parser.add_argument('--initial_height', type=int,
                         help='Preprocess input image by initial resizing to a specific height.')
-    parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+    parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                         help="Choose one of computation backends: "
                              "%d: automatically (by default), "
                              "%d: Halide language (http://halide-lang.org/), "
@@ -35,7 +35,7 @@ def get_args_parser(func_args):
                              "%d: OpenCV implementation, "
                              "%d: VKCOM, "
                              "%d: CUDA" % backends)
-    parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+    parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                         help='Choose one of target computation devices: '
                              '%d: CPU target (by default), '
                              '%d: OpenCL, '
@@ -67,18 +67,18 @@ def main(func_args=None):
             classes = f.read().rstrip('\n').split('\n')
 
     # Load a network
-    net = cv.dnn.readNet(args.model, args.config, args.framework)
+    net = ncvslideio.dnn.readNet(args.model, args.config, args.framework)
     net.setPreferableBackend(args.backend)
     net.setPreferableTarget(args.target)
 
     winName = 'Deep learning image classification in OpenCV'
-    cv.namedWindow(winName, cv.WINDOW_NORMAL)
+    ncvslideio.namedWindow(winName, ncvslideio.WINDOW_NORMAL)
 
-    cap = cv.VideoCapture(args.input if args.input else 0)
-    while cv.waitKey(1) < 0:
+    cap = ncvslideio.VideoCapture(args.input if args.input else 0)
+    while ncvslideio.waitKey(1) < 0:
         hasFrame, frame = cap.read()
         if not hasFrame:
-            cv.waitKey()
+            ncvslideio.waitKey()
             break
 
         # Create a 4D blob from a frame.
@@ -86,9 +86,9 @@ def main(func_args=None):
         inpHeight = args.height if args.height else frame.shape[0]
 
         if args.initial_width and args.initial_height:
-            frame = cv.resize(frame, (args.initial_width, args.initial_height))
+            frame = ncvslideio.resize(frame, (args.initial_width, args.initial_height))
 
-        blob = cv.dnn.blobFromImage(frame, args.scale, (inpWidth, inpHeight), args.mean, args.rgb, crop=args.crop)
+        blob = ncvslideio.dnn.blobFromImage(frame, args.scale, (inpWidth, inpHeight), args.mean, args.rgb, crop=args.crop)
         if args.std:
             blob[0] /= np.asarray(args.std, dtype=np.float32).reshape(3, 1, 1)
 
@@ -103,14 +103,14 @@ def main(func_args=None):
 
         # Put efficiency information.
         t, _ = net.getPerfProfile()
-        label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
-        cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+        label = 'Inference time: %.2f ms' % (t * 1000.0 / ncvslideio.getTickFrequency())
+        ncvslideio.putText(frame, label, (0, 15), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
         # Print predicted class.
         label = '%s: %.4f' % (classes[classId] if classes else 'Class #%d' % classId, confidence)
-        cv.putText(frame, label, (0, 40), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+        ncvslideio.putText(frame, label, (0, 40), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
-        cv.imshow(winName, frame)
+        ncvslideio.imshow(winName, frame)
 
 
 if __name__ == "__main__":

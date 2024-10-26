@@ -45,7 +45,7 @@
 #include "seamless_cloning.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static Mat checkMask(InputArray _mask, Size size)
 {
@@ -64,7 +64,7 @@ static Mat checkMask(InputArray _mask, Size size)
     return gray;
 }
 
-void cv::seamlessClone(InputArray _src, InputArray _dst, InputArray _mask, Point p, OutputArray _blend, int flags)
+void ncvslideio::seamlessClone(InputArray _src, InputArray _dst, InputArray _mask, Point p, OutputArray _blend, int flags)
 {
     CV_INSTRUMENT_REGION();
     CV_Assert(!_src.empty());
@@ -94,7 +94,7 @@ void cv::seamlessClone(InputArray _src, InputArray _dst, InputArray _mask, Point
     obj.normalClone(destinationROI,sourceROI,maskROI,recoveredROI,flags);
 }
 
-void cv::colorChange(InputArray _src, InputArray _mask, OutputArray _dst, float red, float green, float blue)
+void ncvslideio::colorChange(InputArray _src, InputArray _mask, OutputArray _dst, float red, float green, float blue)
 {
     CV_INSTRUMENT_REGION();
 
@@ -110,7 +110,7 @@ void cv::colorChange(InputArray _src, InputArray _mask, OutputArray _dst, float 
     obj.localColorChange(src, cs_mask, mask, blend, red, green, blue);
 }
 
-void cv::illuminationChange(InputArray _src, InputArray _mask, OutputArray _dst, float alpha, float beta)
+void ncvslideio::illuminationChange(InputArray _src, InputArray _mask, OutputArray _dst, float alpha, float beta)
 {
     CV_INSTRUMENT_REGION();
 
@@ -127,7 +127,7 @@ void cv::illuminationChange(InputArray _src, InputArray _mask, OutputArray _dst,
 
 }
 
-void cv::textureFlattening(InputArray _src, InputArray _mask, OutputArray _dst,
+void ncvslideio::textureFlattening(InputArray _src, InputArray _mask, OutputArray _dst,
                            float low_threshold, float high_threshold, int kernel_size)
 {
     CV_INSTRUMENT_REGION();

@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -43,8 +43,8 @@ using GStreamerPipeline = gst::GStreamerPipeline;
 // NB: Function for using from python
 // FIXME: a separate function is created due to absence of wrappers for `shared_ptr<> `
 // Ideally would be to wrap the `GStreamerPipeline::getStreamingSource()` method as is
-GAPI_EXPORTS_W cv::Ptr<IStreamSource>
-inline get_streaming_source(cv::Ptr<GStreamerPipeline>& pipeline,
+GAPI_EXPORTS_W ncvslideio::Ptr<IStreamSource>
+inline get_streaming_source(ncvslideio::Ptr<GStreamerPipeline>& pipeline,
                             const std::string& appsinkName,
                             const GStreamerSource::OutputType outputType
                                 = GStreamerSource::OutputType::MAT)
@@ -54,6 +54,6 @@ inline get_streaming_source(cv::Ptr<GStreamerPipeline>& pipeline,
 
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMERPIPELINE_HPP

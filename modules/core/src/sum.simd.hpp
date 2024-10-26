@@ -6,7 +6,7 @@
 #include "precomp.hpp"
 #include "stat.hpp"
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 SumFunc getSumFunc(int depth);

@@ -11,7 +11,7 @@
 
 #include <opencv2/gapi/core.hpp>
 
-cv::GMat cv::gapi::streaming::desync(const cv::GMat &g) {
+ncvslideio::GMat ncvslideio::gapi::streaming::desync(const ncvslideio::GMat &g) {
     // FIXME: this is a limited implementation of desync
     // The real implementation must be generic (template) and
     // reside in desync.hpp (and it is detail::desync<>())
@@ -20,7 +20,7 @@ cv::GMat cv::gapi::streaming::desync(const cv::GMat &g) {
     // FIXME: Because of the copy, the desync functionality is limited
     // to GMat only (we don't have generic copy kernel for other
     // object types)
-    return cv::gapi::copy(detail::desync(g));
+    return ncvslideio::gapi::copy(detail::desync(g));
 
     // FIXME
     //
@@ -76,18 +76,18 @@ cv::GMat cv::gapi::streaming::desync(const cv::GMat &g) {
 }
 
 // All notes from the above desync(GMat) are also applicable here
-cv::GFrame cv::gapi::streaming::desync(const cv::GFrame &f) {
-    return cv::gapi::copy(detail::desync(f));
+ncvslideio::GFrame ncvslideio::gapi::streaming::desync(const ncvslideio::GFrame &f) {
+    return ncvslideio::gapi::copy(detail::desync(f));
 }
 
-cv::GMat cv::gapi::streaming::BGR(const cv::GFrame& in) {
-    return cv::gapi::streaming::GBGR::on(in);
+ncvslideio::GMat ncvslideio::gapi::streaming::BGR(const ncvslideio::GFrame& in) {
+    return ncvslideio::gapi::streaming::GBGR::on(in);
 }
 
-cv::GMat cv::gapi::streaming::Y(const cv::GFrame& in){
-    return cv::gapi::streaming::GY::on(in);
+ncvslideio::GMat ncvslideio::gapi::streaming::Y(const ncvslideio::GFrame& in){
+    return ncvslideio::gapi::streaming::GY::on(in);
 }
 
-cv::GMat cv::gapi::streaming::UV(const cv::GFrame& in){
-    return cv::gapi::streaming::GUV::on(in);
+ncvslideio::GMat ncvslideio::gapi::streaming::UV(const ncvslideio::GFrame& in){
+    return ncvslideio::gapi::streaming::GUV::on(in);
 }

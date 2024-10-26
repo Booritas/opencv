@@ -45,7 +45,7 @@ The references are:
 #include "opencv2/core/hal/intrin.hpp"
 #define VERIFY_CORNERS 0
 
-namespace cv {
+namespace ncvslideio {
 
 void makeOffsets(int pixel[25], int rowStride, int patternSize)
 {
@@ -363,4 +363,4 @@ int cornerScore<8>(const uchar* ptr, const int pixel[], int threshold)
     return threshold;
 }
 
-} // namespace cv
+} // namespace ncvslideio

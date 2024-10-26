@@ -10,7 +10,7 @@
 #include <opencv2/gapi/own/assert.hpp>
 #include <opencv2/gapi/own/exports.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /**
@@ -75,6 +75,6 @@ template<typename T> struct has_S11N_spec {
 } // namespace detail
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_S11N_BASE_HPP

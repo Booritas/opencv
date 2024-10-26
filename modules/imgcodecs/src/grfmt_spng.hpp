@@ -10,7 +10,7 @@
 #include "grfmt_base.hpp"
 #include "bitstrm.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class SPngDecoder CV_FINAL : public BaseImageDecoder

@@ -9,7 +9,7 @@
 #include "opencv2/highgui.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static Mat loadImage(const string& name)
 {
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[])
     cout << "Detection time : " << tm.getTimeMilli() << " ms" << endl;
 
     Mat out;
-    cv::cvtColor(image, out, COLOR_GRAY2BGR);
+    ncvslideio::cvtColor(image, out, COLOR_GRAY2BGR);
 
     for (size_t i = 0; i < position.size(); ++i)
     {

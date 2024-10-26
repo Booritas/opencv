@@ -17,7 +17,7 @@
 #include <ade/node.hpp> // FIXME: Forward declarations instead?
 #include <ade/graph.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace pass_helpers {
 

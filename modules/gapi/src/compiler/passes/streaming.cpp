@@ -19,7 +19,7 @@
 #include "compiler/gislandmodel.hpp"
 #include "compiler/passes/passes.hpp"
 
-namespace cv { namespace gimpl { namespace passes {
+namespace ncvslideio { namespace gimpl { namespace passes {
 
 /**
  * This pass extends a GIslandModel with streaming-oriented
@@ -81,4 +81,4 @@ void addStreaming(ade::passes::PassContext &ctx)
     }
 }
 
-}}} // cv::gimpl::passes
+}}} // ncvslideio::gimpl::passes

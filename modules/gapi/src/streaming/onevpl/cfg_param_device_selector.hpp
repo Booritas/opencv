@@ -15,7 +15,7 @@
 
 #ifdef HAVE_ONEVPL
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -45,7 +45,7 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif //HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_CFG_PARAM_DEVICE_SELECTOR_HPP

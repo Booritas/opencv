@@ -15,7 +15,7 @@ PERF_TEST_P(TransformationType, findTransformECC, /*testing::ValuesIn(MotionType
             (int) MOTION_AFFINE, (int) MOTION_HOMOGRAPHY)
             )
 {
-    Mat img = imread(getDataPath("cv/shared/fruits_ecc.png"),0);
+    Mat img = imread(getDataPath("ncvslideio/shared/fruits_ecc.png"),0);
     Mat templateImage;
 
     int transform_type = get<0>(GetParam());

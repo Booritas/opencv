@@ -50,7 +50,7 @@
 #include "opencv2/core.hpp"
 #include "ocl.hpp"
 
-namespace cv { namespace ogl {
+namespace ncvslideio { namespace ogl {
 
 /** @addtogroup core_opengl
 This section describes OpenGL interoperability.
@@ -124,7 +124,7 @@ public:
     @param arows Number of rows in a 2D array.
     @param acols Number of columns in a 2D array.
     @param atype Array type ( CV_8UC1, ..., CV_64FC4 ). See Mat for details.
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     Buffer(int arows, int acols, int atype, Target target = ARRAY_BUFFER, bool autoRelease = false);
@@ -132,14 +132,14 @@ public:
     /** @overload
     @param asize 2D array size.
     @param atype Array type ( CV_8UC1, ..., CV_64FC4 ). See Mat for details.
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     Buffer(Size asize, int atype, Target target = ARRAY_BUFFER, bool autoRelease = false);
 
     /** @overload
     @param arr Input array (host or device memory, it can be Mat , cuda::GpuMat or std::vector ).
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     explicit Buffer(InputArray arr, Target target = ARRAY_BUFFER, bool autoRelease = false);
@@ -149,7 +149,7 @@ public:
     @param arows Number of rows in a 2D array.
     @param acols Number of columns in a 2D array.
     @param atype Array type ( CV_8UC1, ..., CV_64FC4 ). See Mat for details.
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
      */
     void create(int arows, int acols, int atype, Target target = ARRAY_BUFFER, bool autoRelease = false);
@@ -157,7 +157,7 @@ public:
     /** @overload
     @param asize 2D array size.
     @param atype Array type ( CV_8UC1, ..., CV_64FC4 ). See Mat for details.
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     void create(Size asize, int atype, Target target = ARRAY_BUFFER, bool autoRelease = false);
@@ -181,7 +181,7 @@ public:
 
     /** @brief Copies from host/device memory to OpenGL buffer.
     @param arr Input array (host or device memory, it can be Mat , cuda::GpuMat or std::vector ).
-    @param target Buffer usage. See cv::ogl::Buffer::Target .
+    @param target Buffer usage. See ncvslideio::ogl::Buffer::Target .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
      */
     void copyFrom(InputArray arr, Target target = ARRAY_BUFFER, bool autoRelease = false);
@@ -208,13 +208,13 @@ public:
 
     /** @brief Binds OpenGL buffer to the specified buffer binding point.
 
-    @param target Binding point. See cv::ogl::Buffer::Target .
+    @param target Binding point. See ncvslideio::ogl::Buffer::Target .
      */
     void bind(Target target) const;
 
     /** @brief Unbind any buffers from the specified binding point.
 
-    @param target Binding point. See cv::ogl::Buffer::Target .
+    @param target Binding point. See ncvslideio::ogl::Buffer::Target .
      */
     static void unbind(Target target);
 
@@ -309,14 +309,14 @@ public:
     /** @overload
     @param arows Number of rows.
     @param acols Number of columns.
-    @param aformat Image format. See cv::ogl::Texture2D::Format .
+    @param aformat Image format. See ncvslideio::ogl::Texture2D::Format .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     Texture2D(int arows, int acols, Format aformat, bool autoRelease = false);
 
     /** @overload
     @param asize 2D array size.
-    @param aformat Image format. See cv::ogl::Texture2D::Format .
+    @param aformat Image format. See ncvslideio::ogl::Texture2D::Format .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     Texture2D(Size asize, Format aformat, bool autoRelease = false);
@@ -331,13 +331,13 @@ public:
 
     @param arows Number of rows.
     @param acols Number of columns.
-    @param aformat Image format. See cv::ogl::Texture2D::Format .
+    @param aformat Image format. See ncvslideio::ogl::Texture2D::Format .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
      */
     void create(int arows, int acols, Format aformat, bool autoRelease = false);
     /** @overload
     @param asize 2D array size.
-    @param aformat Image format. See cv::ogl::Texture2D::Format .
+    @param aformat Image format. See ncvslideio::ogl::Texture2D::Format .
     @param autoRelease Auto release mode (if true, release will be called in object's destructor).
     */
     void create(Size asize, Format aformat, bool autoRelease = false);
@@ -499,7 +499,7 @@ CV_EXPORTS void render(const Texture2D& tex,
 
 /** @overload
 @param arr Array of privitives vertices.
-@param mode Render mode. One of cv::ogl::RenderModes
+@param mode Render mode. One of ncvslideio::ogl::RenderModes
 @param color Color for all vertices. Will be used if arr doesn't contain color array.
 */
 CV_EXPORTS void render(const Arrays& arr, int mode = POINTS, Scalar color = Scalar::all(255));
@@ -507,7 +507,7 @@ CV_EXPORTS void render(const Arrays& arr, int mode = POINTS, Scalar color = Scal
 /** @overload
 @param arr Array of privitives vertices.
 @param indices Array of vertices indices (host or device memory).
-@param mode Render mode. One of cv::ogl::RenderModes
+@param mode Render mode. One of ncvslideio::ogl::RenderModes
 @param color Color for all vertices. Will be used if arr doesn't contain color array.
 */
 CV_EXPORTS void render(const Arrays& arr, InputArray indices, int mode = POINTS, Scalar color = Scalar::all(255));
@@ -515,7 +515,7 @@ CV_EXPORTS void render(const Arrays& arr, InputArray indices, int mode = POINTS,
 /////////////////// CL-GL Interoperability Functions ///////////////////
 
 namespace ocl {
-using namespace cv::ocl;
+using namespace ncvslideio::ocl;
 
 // TODO static functions in the Context class
 /** @brief Creates OpenCL context from GL.
@@ -523,7 +523,7 @@ using namespace cv::ocl;
  */
 CV_EXPORTS Context& initializeContextFromGL();
 
-} // namespace cv::ogl::ocl
+} // namespace ncvslideio::ogl::ocl
 
 /** @brief Converts InputArray to Texture2D object.
 @param src     - source InputArray.
@@ -559,9 +559,9 @@ by the call to mapGLBuffer() function.
 CV_EXPORTS void unmapGLBuffer(UMat& u);
 
 //! @}
-}} // namespace cv::ogl
+}} // namespace ncvslideio::ogl
 
-namespace cv { namespace cuda {
+namespace ncvslideio { namespace cuda {
 
 /** @brief Sets a CUDA device and initializes it for the current thread with OpenGL interoperability.
 
@@ -580,73 +580,73 @@ CV_EXPORTS void setGlDevice(int device = 0);
 ////////////////////////////////////////////////////////////////////////
 
 inline
-cv::ogl::Buffer::Buffer(int arows, int acols, int atype, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer(int arows, int acols, int atype, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
 {
     create(arows, acols, atype, target, autoRelease);
 }
 
 inline
-cv::ogl::Buffer::Buffer(Size asize, int atype, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
+ncvslideio::ogl::Buffer::Buffer(Size asize, int atype, Target target, bool autoRelease) : rows_(0), cols_(0), type_(0)
 {
     create(asize, atype, target, autoRelease);
 }
 
 inline
-void cv::ogl::Buffer::create(Size asize, int atype, Target target, bool autoRelease)
+void ncvslideio::ogl::Buffer::create(Size asize, int atype, Target target, bool autoRelease)
 {
     create(asize.height, asize.width, atype, target, autoRelease);
 }
 
 inline
-int cv::ogl::Buffer::rows() const
+int ncvslideio::ogl::Buffer::rows() const
 {
     return rows_;
 }
 
 inline
-int cv::ogl::Buffer::cols() const
+int ncvslideio::ogl::Buffer::cols() const
 {
     return cols_;
 }
 
 inline
-cv::Size cv::ogl::Buffer::size() const
+ncvslideio::Size ncvslideio::ogl::Buffer::size() const
 {
     return Size(cols_, rows_);
 }
 
 inline
-bool cv::ogl::Buffer::empty() const
+bool ncvslideio::ogl::Buffer::empty() const
 {
     return rows_ == 0 || cols_ == 0;
 }
 
 inline
-int cv::ogl::Buffer::type() const
+int ncvslideio::ogl::Buffer::type() const
 {
     return type_;
 }
 
 inline
-int cv::ogl::Buffer::depth() const
+int ncvslideio::ogl::Buffer::depth() const
 {
     return CV_MAT_DEPTH(type_);
 }
 
 inline
-int cv::ogl::Buffer::channels() const
+int ncvslideio::ogl::Buffer::channels() const
 {
     return CV_MAT_CN(type_);
 }
 
 inline
-int cv::ogl::Buffer::elemSize() const
+int ncvslideio::ogl::Buffer::elemSize() const
 {
     return CV_ELEM_SIZE(type_);
 }
 
 inline
-int cv::ogl::Buffer::elemSize1() const
+int ncvslideio::ogl::Buffer::elemSize1() const
 {
     return CV_ELEM_SIZE1(type_);
 }
@@ -654,49 +654,49 @@ int cv::ogl::Buffer::elemSize1() const
 ///////
 
 inline
-cv::ogl::Texture2D::Texture2D(int arows, int acols, Format aformat, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D(int arows, int acols, Format aformat, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
 {
     create(arows, acols, aformat, autoRelease);
 }
 
 inline
-cv::ogl::Texture2D::Texture2D(Size asize, Format aformat, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
+ncvslideio::ogl::Texture2D::Texture2D(Size asize, Format aformat, bool autoRelease) : rows_(0), cols_(0), format_(NONE)
 {
     create(asize, aformat, autoRelease);
 }
 
 inline
-void cv::ogl::Texture2D::create(Size asize, Format aformat, bool autoRelease)
+void ncvslideio::ogl::Texture2D::create(Size asize, Format aformat, bool autoRelease)
 {
     create(asize.height, asize.width, aformat, autoRelease);
 }
 
 inline
-int cv::ogl::Texture2D::rows() const
+int ncvslideio::ogl::Texture2D::rows() const
 {
     return rows_;
 }
 
 inline
-int cv::ogl::Texture2D::cols() const
+int ncvslideio::ogl::Texture2D::cols() const
 {
     return cols_;
 }
 
 inline
-cv::Size cv::ogl::Texture2D::size() const
+ncvslideio::Size ncvslideio::ogl::Texture2D::size() const
 {
     return Size(cols_, rows_);
 }
 
 inline
-bool cv::ogl::Texture2D::empty() const
+bool ncvslideio::ogl::Texture2D::empty() const
 {
     return rows_ == 0 || cols_ == 0;
 }
 
 inline
-cv::ogl::Texture2D::Format cv::ogl::Texture2D::format() const
+ncvslideio::ogl::Texture2D::Format ncvslideio::ogl::Texture2D::format() const
 {
     return format_;
 }
@@ -709,7 +709,7 @@ cv::ogl::Texture2D::Format cv::ogl::Texture2D::format() const
 #pragma warning(disable: 4702)
 #endif
 inline
-cv::ogl::Arrays::Arrays() : size_(0)
+ncvslideio::ogl::Arrays::Arrays() : size_(0)
 {
 }
 #if defined _MSC_VER && _MSC_VER >= 1920
@@ -717,13 +717,13 @@ cv::ogl::Arrays::Arrays() : size_(0)
 #endif
 
 inline
-int cv::ogl::Arrays::size() const
+int ncvslideio::ogl::Arrays::size() const
 {
     return size_;
 }
 
 inline
-bool cv::ogl::Arrays::empty() const
+bool ncvslideio::ogl::Arrays::empty() const
 {
     return size_ == 0;
 }

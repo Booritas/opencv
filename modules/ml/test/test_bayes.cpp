@@ -9,7 +9,7 @@ namespace opencv_test { namespace {
 TEST(ML_NBAYES, regression_5911)
 {
     int N=12;
-    Ptr<ml::NormalBayesClassifier> nb = cv::ml::NormalBayesClassifier::create();
+    Ptr<ml::NormalBayesClassifier> nb = ncvslideio::ml::NormalBayesClassifier::create();
 
     // data:
     float X_data[] = {

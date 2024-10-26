@@ -3,15 +3,15 @@
 // of this distribution and at http://opencv.org/license.html.
 
 QUnit.test("init_cv", (assert) => {
-    if (cv instanceof Promise) {
+    if (ncvslideio instanceof Promise) {
         const done = assert.async();
-        cv.then((ready_cv) => {
-            cv = ready_cv;
+        ncvslideio.then((ready_cv) => {
+            ncvslideio = ready_cv;
             done();
         });
-    } else if (cv.getBuildInformation === undefined) {
+    } else if (ncvslideio.getBuildInformation === undefined) {
         const done = assert.async();
-        cv['onRuntimeInitialized'] = () => {
+        ncvslideio['onRuntimeInitialized'] = () => {
             done();
         }
     }

@@ -22,10 +22,10 @@ PERF_TEST_P(MatDepth_tb, DISABLED_Allocation_Aligned,
     testing::Values(CV_8UC1, CV_16SC1, CV_8UC3, CV_8UC4))
 {
     const int matType = GetParam();
-    const cv::Mat utility(1, 1, matType);
+    const ncvslideio::Mat utility(1, 1, matType);
     const size_t elementBytes = utility.elemSize();
 
-    const std::array<cv::Size, 20> sizes{ALLOC_MAT_SIZES};
+    const std::array<ncvslideio::Size, 20> sizes{ALLOC_MAT_SIZES};
     std::array<size_t, 20> bytes;
     for (size_t i = 0; i < sizes.size(); ++i)
     {

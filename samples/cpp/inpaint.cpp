@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help( char** argv )
@@ -46,7 +46,7 @@ static void onMouse( int event, int x, int y, int flags, void* )
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{@image|fruits.jpg|}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@image|fruits.jpg|}");
     help(argv);
 
     string filename = samples::findFile(parser.get<string>("@image"));

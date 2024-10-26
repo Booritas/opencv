@@ -47,10 +47,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/reshape.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {

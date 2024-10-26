@@ -3,7 +3,7 @@ import cv2 as cv
 import sys
 ## [imports]
 ## [imread]
-img = cv.imread(cv.samples.findFile("starry_night.jpg"))
+img = ncvslideio.imread(ncvslideio.samples.findFile("starry_night.jpg"))
 ## [imread]
 ## [empty]
 if img is None:
@@ -11,9 +11,9 @@ if img is None:
 ## [empty]
 ## [imshow]
 cv.imshow("Display window", img)
-k = cv.waitKey(0)
+k = ncvslideio.waitKey(0)
 ## [imshow]
 ## [imsave]
 if k == ord("s"):
-    cv.imwrite("starry_night.png", img)
+    ncvslideio.imwrite("starry_night.png", img)
 ## [imsave]

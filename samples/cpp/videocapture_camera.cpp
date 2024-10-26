@@ -1,10 +1,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>  // cv::Canny()
+#include <opencv2/imgproc.hpp>  // ncvslideio::Canny()
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using std::cout; using std::cerr; using std::endl;
 
 int main(int, char**)
@@ -27,7 +27,7 @@ int main(int, char**)
 
     size_t nFrames = 0;
     bool enableProcessing = false;
-    int64 t0 = cv::getTickCount();
+    int64 t0 = ncvslideio::getTickCount();
     int64 processingTime = 0;
     for (;;)
     {
@@ -41,11 +41,11 @@ int main(int, char**)
         if (nFrames % 10 == 0)
         {
             const int N = 10;
-            int64 t1 = cv::getTickCount();
-            cout << "Frames captured: " << cv::format("%5lld", (long long int)nFrames)
-                 << "    Average FPS: " << cv::format("%9.1f", (double)getTickFrequency() * N / (t1 - t0))
-                 << "    Average time per frame: " << cv::format("%9.2f ms", (double)(t1 - t0) * 1000.0f / (N * getTickFrequency()))
-                 << "    Average processing time: " << cv::format("%9.2f ms", (double)(processingTime) * 1000.0f / (N * getTickFrequency()))
+            int64 t1 = ncvslideio::getTickCount();
+            cout << "Frames captured: " << ncvslideio::format("%5lld", (long long int)nFrames)
+                 << "    Average FPS: " << ncvslideio::format("%9.1f", (double)getTickFrequency() * N / (t1 - t0))
+                 << "    Average time per frame: " << ncvslideio::format("%9.2f ms", (double)(t1 - t0) * 1000.0f / (N * getTickFrequency()))
+                 << "    Average processing time: " << ncvslideio::format("%9.2f ms", (double)(processingTime) * 1000.0f / (N * getTickFrequency()))
                  << std::endl;
             t0 = t1;
             processingTime = 0;
@@ -56,10 +56,10 @@ int main(int, char**)
         }
         else
         {
-            int64 tp0 = cv::getTickCount();
+            int64 tp0 = ncvslideio::getTickCount();
             Mat processed;
-            cv::Canny(frame, processed, 400, 1000, 5);
-            processingTime += cv::getTickCount() - tp0;
+            ncvslideio::Canny(frame, processed, 400, 1000, 5);
+            processingTime += ncvslideio::getTickCount() - tp0;
             imshow("Frame", processed);
         }
         int key = waitKey(1);

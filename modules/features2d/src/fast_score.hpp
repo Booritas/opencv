@@ -48,7 +48,7 @@ The references are:
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 void makeOffsets(int pixel[25], int row_stride, int patternSize);

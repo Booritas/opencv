@@ -21,7 +21,7 @@
 #include "backends/common/gbackend.hpp"
 #include "compiler/gislandmodel.hpp"
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 struct CPUUnit
 {
@@ -33,7 +33,7 @@ class GCPUExecutable final: public GIslandExecutable
 {
     const ade::Graph &m_g;
     GModel::ConstGraph m_gm;
-    cv::GCompileArgs m_compileArgs;
+    ncvslideio::GCompileArgs m_compileArgs;
 
     struct OperationInfo
     {
@@ -66,7 +66,7 @@ class GCPUExecutable final: public GIslandExecutable
 
 public:
     GCPUExecutable(const ade::Graph                   &graph,
-                   const cv::GCompileArgs             &compileArgs,
+                   const ncvslideio::GCompileArgs             &compileArgs,
                    const std::vector<ade::NodeHandle> &nodes);
 
     virtual inline bool canReshape() const override { return true; }

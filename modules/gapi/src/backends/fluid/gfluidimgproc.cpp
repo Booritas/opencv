@@ -38,7 +38,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace fluid {
 
@@ -77,7 +77,7 @@ static void run_rgb2gray(Buffer &dst, const View &src, float coef_r, float coef_
     run_rgb2gray_impl(out, in, width, coef_r, coef_g, coef_b);
 }
 
-GAPI_FLUID_KERNEL(GFluidRGB2GrayCustom, cv::gapi::imgproc::GRGB2GrayCustom, false)
+GAPI_FLUID_KERNEL(GFluidRGB2GrayCustom, ncvslideio::gapi::imgproc::GRGB2GrayCustom, false)
 {
     static const int Window = 1;
 
@@ -87,7 +87,7 @@ GAPI_FLUID_KERNEL(GFluidRGB2GrayCustom, cv::gapi::imgproc::GRGB2GrayCustom, fals
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidRGB2Gray, cv::gapi::imgproc::GRGB2Gray, false)
+GAPI_FLUID_KERNEL(GFluidRGB2Gray, ncvslideio::gapi::imgproc::GRGB2Gray, false)
 {
     static const int Window = 1;
 
@@ -100,7 +100,7 @@ GAPI_FLUID_KERNEL(GFluidRGB2Gray, cv::gapi::imgproc::GRGB2Gray, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidBGR2Gray, cv::gapi::imgproc::GBGR2Gray, false)
+GAPI_FLUID_KERNEL(GFluidBGR2Gray, ncvslideio::gapi::imgproc::GBGR2Gray, false)
 {
     static const int Window = 1;
 
@@ -151,7 +151,7 @@ static void run_yuv2rgb(Buffer &dst, const View &src, const float coef[4])
     run_yuv2rgb_impl(out, in, width, coef);
 }
 
-GAPI_FLUID_KERNEL(GFluidRGB2YUV, cv::gapi::imgproc::GRGB2YUV, false)
+GAPI_FLUID_KERNEL(GFluidRGB2YUV, ncvslideio::gapi::imgproc::GRGB2YUV, false)
 {
     static const int Window = 1;
 
@@ -161,7 +161,7 @@ GAPI_FLUID_KERNEL(GFluidRGB2YUV, cv::gapi::imgproc::GRGB2YUV, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidYUV2RGB, cv::gapi::imgproc::GYUV2RGB, false)
+GAPI_FLUID_KERNEL(GFluidYUV2RGB, ncvslideio::gapi::imgproc::GYUV2RGB, false)
 {
     static const int Window = 1;
 
@@ -277,7 +277,7 @@ static void run_rgb2labluv_reference(uchar out[], const uchar in[], int width)
             out[3*w + 2] = saturate<uchar>((v + 140) * 255.f/262, roundf);
         }
         else
-            CV_Error(cv::Error::StsBadArg, "unsupported color conversion");;
+            CV_Error(ncvslideio::Error::StsBadArg, "unsupported color conversion");;
     }
 }
 
@@ -312,12 +312,12 @@ static void run_rgb2labluv(Buffer &dst, const View &src)
     bool swapBlue = (blue == 2);
     bool isLab = (LL_Lab == labluv);
     bool srgb = true;
-    cv::hal::cvtBGRtoLab(src_data, src_step, dst_data, dst_step,
+    ncvslideio::hal::cvtBGRtoLab(src_data, src_step, dst_data, dst_step,
                width, height, depth, scn, swapBlue, isLab, srgb);
 #endif
 }
 
-GAPI_FLUID_KERNEL(GFluidRGB2Lab, cv::gapi::imgproc::GRGB2Lab, false)
+GAPI_FLUID_KERNEL(GFluidRGB2Lab, ncvslideio::gapi::imgproc::GRGB2Lab, false)
 {
     static const int Window = 1;
 
@@ -328,7 +328,7 @@ GAPI_FLUID_KERNEL(GFluidRGB2Lab, cv::gapi::imgproc::GRGB2Lab, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidBGR2LUV, cv::gapi::imgproc::GBGR2LUV, false)
+GAPI_FLUID_KERNEL(GFluidBGR2LUV, ncvslideio::gapi::imgproc::GBGR2LUV, false)
 {
     static const int Window = 1;
 
@@ -348,8 +348,8 @@ GAPI_FLUID_KERNEL(GFluidBGR2LUV, cv::gapi::imgproc::GBGR2LUV, false)
 static const int maxKernelSize = 9;
 
 template<typename DST, typename SRC>
-static void run_boxfilter(Buffer &dst, const View &src, const cv::Size &kernelSize,
-                          const cv::Point& /* anchor */, bool normalize, float *buf[])
+static void run_boxfilter(Buffer &dst, const View &src, const ncvslideio::Size &kernelSize,
+                          const ncvslideio::Point& /* anchor */, bool normalize, float *buf[])
 {
     GAPI_Assert(kernelSize.width <= maxKernelSize);
     GAPI_Assert(kernelSize.width == kernelSize.height);
@@ -410,12 +410,12 @@ static void run_boxfilter(Buffer &dst, const View &src, const cv::Size &kernelSi
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidBlur, cv::gapi::imgproc::GBlur, true)
+GAPI_FLUID_KERNEL(GFluidBlur, ncvslideio::gapi::imgproc::GBlur, true)
 {
     static const int Window = 3;
 
-    static void run(const View &src, const cv::Size& kernelSize, const cv::Point& anchor,
-                    int /* borderType */, const cv::Scalar& /* borderValue */, Buffer &dst,
+    static void run(const View &src, const ncvslideio::Size& kernelSize, const ncvslideio::Point& anchor,
+                    int /* borderType */, const ncvslideio::Scalar& /* borderValue */, Buffer &dst,
                     Buffer& scratch)
     {
         // TODO: support sizes 3, 5, 7, 9, ...
@@ -441,14 +441,14 @@ GAPI_FLUID_KERNEL(GFluidBlur, cv::gapi::imgproc::GBlur, true)
         UNARY_( short,  short, run_boxfilter, dst, src, kernelSize, anchor, normalize, buf);
         UNARY_( float,  float, run_boxfilter, dst, src, kernelSize, anchor, normalize, buf);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc   & in,
-                            const cv::Size   & /* ksize */,
-                            const cv::Point  & /* anchor */,
+                            const ncvslideio::Size   & /* ksize */,
+                            const ncvslideio::Point  & /* anchor */,
                                   int          /* borderType */,
-                            const cv::Scalar & /* borderValue */,
+                            const ncvslideio::Scalar & /* borderValue */,
                                   Buffer     & scratch)
     {
         int width = in.size.width;
@@ -456,7 +456,7 @@ GAPI_FLUID_KERNEL(GFluidBlur, cv::gapi::imgproc::GBlur, true)
 
         int buflen = width * chan * Window;  // work buffers
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -466,27 +466,27 @@ GAPI_FLUID_KERNEL(GFluidBlur, cv::gapi::imgproc::GBlur, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
-                            const cv::Size    & /* kernelSize */,
-                            const cv::Point   & /* anchor */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
+                            const ncvslideio::Size    & /* kernelSize */,
+                            const ncvslideio::Point   & /* anchor */,
                                       int          borderType,
-                            const cv::Scalar  &    borderValue)
+                            const ncvslideio::Scalar  &    borderValue)
     {
         return { borderType, borderValue};
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidBoxFilter, cv::gapi::imgproc::GBoxFilter, true)
+GAPI_FLUID_KERNEL(GFluidBoxFilter, ncvslideio::gapi::imgproc::GBoxFilter, true)
 {
     static const int Window = 3;
 
     static void run(const     View  &    src,
                               int     /* ddepth */,
-                    const cv::Size  &    kernelSize,
-                    const cv::Point &    anchor,
+                    const ncvslideio::Size  &    kernelSize,
+                    const ncvslideio::Point &    anchor,
                               bool       normalize,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -514,16 +514,16 @@ GAPI_FLUID_KERNEL(GFluidBoxFilter, cv::gapi::imgproc::GBoxFilter, true)
         UNARY_( float,  short, run_boxfilter, dst, src, kernelSize, anchor, normalize, buf);
         UNARY_( float,  float, run_boxfilter, dst, src, kernelSize, anchor, normalize, buf);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc  & in,
                                       int     /* ddepth */,
-                            const cv::Size  & /* kernelSize */,
-                            const cv::Point & /* anchor */,
+                            const ncvslideio::Size  & /* kernelSize */,
+                            const ncvslideio::Point & /* anchor */,
                                       bool    /*  normalize */,
                                       int     /* borderType */,
-                            const cv::Scalar& /* borderValue */,
+                            const ncvslideio::Scalar& /* borderValue */,
                                   Buffer    &  scratch)
     {
         int width = in.size.width;
@@ -531,7 +531,7 @@ GAPI_FLUID_KERNEL(GFluidBoxFilter, cv::gapi::imgproc::GBoxFilter, true)
 
         int buflen = width * chan * Window;  // work buffers
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -541,13 +541,13 @@ GAPI_FLUID_KERNEL(GFluidBoxFilter, cv::gapi::imgproc::GBoxFilter, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ddepth */,
-                            const cv::Size    & /* kernelSize */,
-                            const cv::Point   & /* anchor */,
+                            const ncvslideio::Size    & /* kernelSize */,
+                            const ncvslideio::Point   & /* anchor */,
                                       bool      /* normalize */,
                                       int          borderType,
-                            const cv::Scalar  &    borderValue)
+                            const ncvslideio::Scalar  &    borderValue)
     {
         return { borderType, borderValue};
     }
@@ -560,7 +560,7 @@ GAPI_FLUID_KERNEL(GFluidBoxFilter, cv::gapi::imgproc::GBoxFilter, true)
 //-------------------------
 
 template<typename T>
-static void getKernel(T k[], const cv::Mat& kernel)
+static void getKernel(T k[], const ncvslideio::Mat& kernel)
 {
     GAPI_Assert(kernel.channels() == 1);
 
@@ -590,7 +590,7 @@ static void getKernel(T k[], const cv::Mat& kernel)
         for (int w=0; w < cols; w++)
             k[h*cols + w] = static_cast<T>( kernel.at<float>(h, w) );
         break;
-    default: CV_Error(cv::Error::StsBadArg, "unsupported kernel type");
+    default: CV_Error(ncvslideio::Error::StsBadArg, "unsupported kernel type");
     }
 }
 
@@ -598,7 +598,7 @@ template<typename DST, typename SRC>
 static void run_sepfilter(Buffer& dst, const View& src,
                           const float kx[], int kxLen,
                           const float ky[], int kyLen,
-                          const cv::Point& /* anchor */,
+                          const ncvslideio::Point& /* anchor */,
                           float scale, float delta,
                           float *buf[])
 {
@@ -679,18 +679,18 @@ static void run_sepfilter(Buffer& dst, const View& src,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidSepFilter, cv::gapi::imgproc::GSepFilter, true)
+GAPI_FLUID_KERNEL(GFluidSepFilter, ncvslideio::gapi::imgproc::GSepFilter, true)
 {
     static const int Window = 3;
 
     static void run(const     View&      src,
                               int     /* ddepth */,
-                    const cv::Mat&       kernX,
-                    const cv::Mat&       kernY,
-                    const cv::Point&     anchor,
-                    const cv::Scalar&    delta_,
+                    const ncvslideio::Mat&       kernX,
+                    const ncvslideio::Mat&       kernY,
+                    const ncvslideio::Point&     anchor,
+                    const ncvslideio::Scalar&    delta_,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -731,7 +731,7 @@ GAPI_FLUID_KERNEL(GFluidSepFilter, cv::gapi::imgproc::GSepFilter, true)
         UNARY_( float,  short, run_sepfilter, dst, src, kx, kxLen, ky, kyLen, anchor, scale, delta, buf);
         UNARY_( float,  float, run_sepfilter, dst, src, kx, kxLen, ky, kyLen, anchor, scale, delta, buf);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&    in,
@@ -753,7 +753,7 @@ GAPI_FLUID_KERNEL(GFluidSepFilter, cv::gapi::imgproc::GSepFilter, true)
         int buflen = kxLen + kyLen +         // x, y kernels
                      width * chan * Window;  // work buffers
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -769,14 +769,14 @@ GAPI_FLUID_KERNEL(GFluidSepFilter, cv::gapi::imgproc::GSepFilter, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ddepth */,
-                            const cv::Mat&      /* kernX */,
-                            const cv::Mat&      /* kernY */,
-                            const cv::Point&    /* anchor */,
-                            const cv::Scalar&   /* delta */,
+                            const ncvslideio::Mat&      /* kernX */,
+                            const ncvslideio::Mat&      /* kernY */,
+                            const ncvslideio::Point&    /* anchor */,
+                            const ncvslideio::Scalar&   /* delta */,
                                       int          borderType,
-                            const cv::Scalar&      borderValue)
+                            const ncvslideio::Scalar&      borderValue)
     {
         return { borderType, borderValue};
     }
@@ -788,16 +788,16 @@ GAPI_FLUID_KERNEL(GFluidSepFilter, cv::gapi::imgproc::GSepFilter, true)
 //
 //----------------------------
 
-GAPI_FLUID_KERNEL(GFluidGaussBlur, cv::gapi::imgproc::GGaussBlur, true)
+GAPI_FLUID_KERNEL(GFluidGaussBlur, ncvslideio::gapi::imgproc::GGaussBlur, true)
 {
     // TODO: support kernel height 3, 5, 7, 9, ...
 
     static void run(const     View  &    src,
-                    const cv::Size  &    ksize,
+                    const ncvslideio::Size  &    ksize,
                               double  /* sigmaX */,
                               double  /* sigmaY */,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -824,7 +824,7 @@ GAPI_FLUID_KERNEL(GFluidGaussBlur, cv::gapi::imgproc::GGaussBlur, true)
             buf[i] = buf[i - 1] + length;
         }
 
-        auto  anchor = cv::Point(-1, -1);
+        auto  anchor = ncvslideio::Point(-1, -1);
 
         float scale = 1;
         float delta = 0;
@@ -835,15 +835,15 @@ GAPI_FLUID_KERNEL(GFluidGaussBlur, cv::gapi::imgproc::GGaussBlur, true)
         UNARY_( short,  short, run_sepfilter, dst, src, kx, kxsize, ky, kysize, anchor, scale, delta, buf);
         UNARY_( float,  float, run_sepfilter, dst, src, kx, kxsize, ky, kysize, anchor, scale, delta, buf);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&    in,
-                            const cv::Size &   ksize,
+                            const ncvslideio::Size &   ksize,
                                   double       sigmaX,
                                   double       sigmaY,
                                   int          /* borderType */,
-                            const cv::Scalar & /* borderValue */,
+                            const ncvslideio::Scalar & /* borderValue */,
                                   Buffer  &    scratch)
     {
         GAPI_Assert(ksize.height == ksize.width);
@@ -856,7 +856,7 @@ GAPI_FLUID_KERNEL(GFluidGaussBlur, cv::gapi::imgproc::GGaussBlur, true)
         int buflen = kxsize + kysize +       // x, y kernels
                      width * chan * ksize.height;  // work buffers
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -886,22 +886,22 @@ GAPI_FLUID_KERNEL(GFluidGaussBlur, cv::gapi::imgproc::GGaussBlur, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
-                            const cv::Size    & /* ksize */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
+                            const ncvslideio::Size    & /* ksize */,
                                       double    /* sigmaX */,
                                       double    /* sigmaY */,
                                       int          borderType,
-                            const cv::Scalar  &    borderValue)
+                            const ncvslideio::Scalar  &    borderValue)
     {
         return { borderType, borderValue};
     }
 
-    static int getWindow(const cv::GMatDesc& /* src */,
-                         const cv::Size&        ksize,
+    static int getWindow(const ncvslideio::GMatDesc& /* src */,
+                         const ncvslideio::Size&        ksize,
                          double              /* sigmaX */,
                          double              /* sigmaY */,
                          int                 /* borderType */,
-                         const cv::Scalar&   /* borderValue */)
+                         const ncvslideio::Scalar&   /* borderValue */)
     {
         GAPI_Assert(ksize.height == ksize.width);
         return ksize.height;
@@ -951,7 +951,7 @@ static void run_sobel(Buffer& dst,
     run_sepfilter3x3_impl(out, in, width, chan, kx, ky, border, scale, delta, buf, y, y0);
 }
 
-GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
+GAPI_FLUID_KERNEL(GFluidSobel, ncvslideio::gapi::imgproc::GSobel, true)
 {
     static const int Window = 3;
 
@@ -963,7 +963,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
                               double    _scale,
                               double    _delta,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -997,7 +997,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
         UNARY_( float,  short, run_sobel, dst, src, kx, ky, ksz, scale, delta, buf);
         UNARY_( float,  float, run_sobel, dst, src, kx, ky, ksz, scale, delta, buf);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc&    in,
@@ -1021,7 +1021,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
         int buflen = ksz + ksz            // kernels: kx, ky
                    + ksz * width * chan;  // working buffers
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -1038,7 +1038,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ddepth */,
                                       int       /* dx */,
                                       int       /* dy */,
@@ -1046,7 +1046,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
                                       double    /* scale */,
                                       double    /* delta */,
                                       int          borderType,
-                            const cv::Scalar  &    borderValue)
+                            const ncvslideio::Scalar  &    borderValue)
     {
         return {borderType, borderValue};
     }
@@ -1058,7 +1058,7 @@ GAPI_FLUID_KERNEL(GFluidSobel, cv::gapi::imgproc::GSobel, true)
 //
 //---------------------
 
-GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
+GAPI_FLUID_KERNEL(GFluidSobelXY, ncvslideio::gapi::imgproc::GSobelXY, true)
 {
     static const int Window = 3;
 
@@ -1098,7 +1098,7 @@ GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
                               double    _scale,
                               double    _delta,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    out_x,
                               Buffer&    out_y,
                               Buffer&    scratch)
@@ -1143,7 +1143,7 @@ GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
             UNARY_( float,  short, run_sobel, dst, src, kx, ky, ksz, scale, delta, buf);
             UNARY_( float,  float, run_sobel, dst, src, kx, ky, ksz, scale, delta, buf);
 
-            CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+            CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
         };
 
         // calculate x-derivative
@@ -1176,7 +1176,7 @@ GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
         int chan  = in.chan;
         int buflen = BufHelper::length(ksz, width, chan);
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -1201,14 +1201,14 @@ GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ddepth */,
                                       int       /* order */,
                                       int       /* ksize */,
                                       double    /* scale */,
                                       double    /* delta */,
                                       int          borderType,
-                            const cv::Scalar  &    borderValue)
+                            const ncvslideio::Scalar  &    borderValue)
     {
         return {borderType, borderValue};
     }
@@ -1223,7 +1223,7 @@ GAPI_FLUID_KERNEL(GFluidSobelXY, cv::gapi::imgproc::GSobelXY, true)
 template<typename DST, typename SRC>
 static void run_filter2d(Buffer& dst, const View& src,
                          const float k[], int k_rows, int k_cols,
-                         const cv::Point& /* anchor */,
+                         const ncvslideio::Point& /* anchor */,
                          float delta=0)
 {
     static const int maxLines = 9;
@@ -1271,17 +1271,17 @@ static void run_filter2d(Buffer& dst, const View& src,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidFilter2D, cv::gapi::imgproc::GFilter2D, true)
+GAPI_FLUID_KERNEL(GFluidFilter2D, ncvslideio::gapi::imgproc::GFilter2D, true)
 {
     static const int Window = 3;
 
     static void run(const     View  &    src,
                               int     /* ddepth */,
-                    const cv::Mat   &    kernel,
-                    const cv::Point &    anchor,
-                    const cv::Scalar&    delta_,
+                    const ncvslideio::Mat   &    kernel,
+                    const ncvslideio::Point &    anchor,
+                    const ncvslideio::Scalar&    delta_,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -1307,16 +1307,16 @@ GAPI_FLUID_KERNEL(GFluidFilter2D, cv::gapi::imgproc::GFilter2D, true)
         UNARY_( float,  short, run_filter2d, dst, src, k, k_rows, k_cols, anchor, delta);
         UNARY_( float,  float, run_filter2d, dst, src, k, k_rows, k_cols, anchor, delta);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
-    static void initScratch(const cv::GMatDesc& /* in */,
+    static void initScratch(const ncvslideio::GMatDesc& /* in */,
                                       int       /* ddepth */,
-                            const cv::Mat     &    kernel,
-                            const cv::Point   & /* anchor */,
-                            const cv::Scalar  & /* delta */,
+                            const ncvslideio::Mat     &    kernel,
+                            const ncvslideio::Point   & /* anchor */,
+                            const ncvslideio::Scalar  & /* delta */,
                                       int       /* borderType */,
-                            const cv::Scalar  & /* borderValue */,
+                            const ncvslideio::Scalar  & /* borderValue */,
                                       Buffer  &    scratch)
     {
         int krows = kernel.rows;
@@ -1324,7 +1324,7 @@ GAPI_FLUID_KERNEL(GFluidFilter2D, cv::gapi::imgproc::GFilter2D, true)
 
         int buflen = krows * kcols;  // kernel size
 
-        cv::Size bufsize(buflen, 1);
+        ncvslideio::Size bufsize(buflen, 1);
         GMatDesc bufdesc = {CV_32F, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -1338,13 +1338,13 @@ GAPI_FLUID_KERNEL(GFluidFilter2D, cv::gapi::imgproc::GFilter2D, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ddepth */,
-                            const cv::Mat&      /* kernel */,
-                            const cv::Point&    /* anchor */,
-                            const cv::Scalar&   /* delta */,
+                            const ncvslideio::Mat&      /* kernel */,
+                            const ncvslideio::Point&    /* anchor */,
+                            const ncvslideio::Scalar&   /* delta */,
                                       int          borderType,
-                            const cv::Scalar&      borderValue)
+                            const ncvslideio::Scalar&      borderValue)
     {
         return { borderType, borderValue};
     }
@@ -1384,7 +1384,7 @@ static void run_morphology(          Buffer&    dst,
                                      int        k_rows,
                                      int        k_cols,
                                      MorphShape k_type,
-                           const cv::Point & /* anchor */,
+                           const ncvslideio::Point & /* anchor */,
                                      Morphology morphology)
 {
     static_assert(std::is_same<DST, SRC>::value, "unsupported combination of types");
@@ -1451,16 +1451,16 @@ static void run_morphology(          Buffer&    dst,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidErode, cv::gapi::imgproc::GErode, true)
+GAPI_FLUID_KERNEL(GFluidErode, ncvslideio::gapi::imgproc::GErode, true)
 {
     static const int Window = 3;
 
     static void run(const     View  &    src,
-                    const cv::Mat   &    kernel,
-                    const cv::Point &    anchor,
+                    const ncvslideio::Mat   &    kernel,
+                    const ncvslideio::Point &    anchor,
                               int        iterations,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -1486,7 +1486,7 @@ GAPI_FLUID_KERNEL(GFluidErode, cv::gapi::imgproc::GErode, true)
         UNARY_( short,  short, run_morphology, dst, src, k, k_rows, k_cols, k_type, anchor, M_ERODE);
         UNARY_( float,  float, run_morphology, dst, src, k, k_rows, k_cols, k_type, anchor, M_ERODE);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc& /* in */,
@@ -1494,14 +1494,14 @@ GAPI_FLUID_KERNEL(GFluidErode, cv::gapi::imgproc::GErode, true)
                             const Point   & /* anchor */,
                                   int       /* iterations */,
                                   int       /* borderType */,
-                            const cv::Scalar  & /* borderValue */,
+                            const ncvslideio::Scalar  & /* borderValue */,
                                   Buffer  &    scratch)
     {
         int k_rows = kernel.rows;
         int k_cols = kernel.cols;
         int k_size = k_rows * k_cols;
 
-        cv::Size bufsize(k_size + 1, 1);
+        ncvslideio::Size bufsize(k_size + 1, 1);
         GMatDesc bufdesc = {CV_8U, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -1520,33 +1520,33 @@ GAPI_FLUID_KERNEL(GFluidErode, cv::gapi::imgproc::GErode, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
-                            const cv::Mat   &   /* kernel */,
-                            const cv::Point &   /* anchor */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
+                            const ncvslideio::Mat   &   /* kernel */,
+                            const ncvslideio::Point &   /* anchor */,
                                       int       /* iterations */,
                                       int          borderType,
-                            const cv::Scalar&      borderValue)
+                            const ncvslideio::Scalar&      borderValue)
     {
     #if 1
         // TODO: saturate borderValue to image type in general case (not only maximal border)
-        GAPI_Assert(borderType == cv::BORDER_CONSTANT && borderValue[0] == DBL_MAX);
-        return { borderType, cv::Scalar::all(INT_MAX) };
+        GAPI_Assert(borderType == ncvslideio::BORDER_CONSTANT && borderValue[0] == DBL_MAX);
+        return { borderType, ncvslideio::Scalar::all(INT_MAX) };
     #else
         return { borderType, borderValue };
     #endif
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidDilate, cv::gapi::imgproc::GDilate, true)
+GAPI_FLUID_KERNEL(GFluidDilate, ncvslideio::gapi::imgproc::GDilate, true)
 {
     static const int Window = 3;
 
     static void run(const     View  &    src,
-                    const cv::Mat   &    kernel,
-                    const cv::Point &    anchor,
+                    const ncvslideio::Mat   &    kernel,
+                    const ncvslideio::Point &    anchor,
                               int        iterations,
                               int     /* borderType */,
-                    const cv::Scalar& /* borderValue */,
+                    const ncvslideio::Scalar& /* borderValue */,
                               Buffer&    dst,
                               Buffer&    scratch)
     {
@@ -1572,7 +1572,7 @@ GAPI_FLUID_KERNEL(GFluidDilate, cv::gapi::imgproc::GDilate, true)
         UNARY_( short,  short, run_morphology, dst, src, k, k_rows, k_cols, k_type, anchor, M_DILATE);
         UNARY_( float,  float, run_morphology, dst, src, k, k_rows, k_cols, k_type, anchor, M_DILATE);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
     static void initScratch(const GMatDesc& /* in */,
@@ -1580,14 +1580,14 @@ GAPI_FLUID_KERNEL(GFluidDilate, cv::gapi::imgproc::GDilate, true)
                             const Point   & /* anchor */,
                               int           /* iterations */,
                                   int       /* borderType */,
-                            const cv::Scalar  & /* borderValue */,
+                            const ncvslideio::Scalar  & /* borderValue */,
                                   Buffer  &    scratch)
     {
         int k_rows = kernel.rows;
         int k_cols = kernel.cols;
         int k_size = k_rows * k_cols;
 
-        cv::Size bufsize(k_size + 1, 1);
+        ncvslideio::Size bufsize(k_size + 1, 1);
         GMatDesc bufdesc = {CV_8U, 1, bufsize};
         Buffer buffer(bufdesc);
         scratch = std::move(buffer);
@@ -1606,17 +1606,17 @@ GAPI_FLUID_KERNEL(GFluidDilate, cv::gapi::imgproc::GDilate, true)
     {
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
-                            const cv::Mat   &   /* kernel */,
-                            const cv::Point &   /* anchor */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
+                            const ncvslideio::Mat   &   /* kernel */,
+                            const ncvslideio::Point &   /* anchor */,
                                       int       /* iterations */,
                                       int       borderType,
-                            const cv::Scalar&   borderValue)
+                            const ncvslideio::Scalar&   borderValue)
     {
     #if 1
         // TODO: fix borderValue for Dilate in general case (not only minimal border)
-        GAPI_Assert(borderType == cv::BORDER_CONSTANT && borderValue[0] == DBL_MAX);
-        return { borderType, cv::Scalar::all(INT_MIN) };
+        GAPI_Assert(borderType == ncvslideio::BORDER_CONSTANT && borderValue[0] == DBL_MAX);
+        return { borderType, ncvslideio::Scalar::all(INT_MIN) };
     #else
         return { borderType, borderValue };
     #endif
@@ -1684,7 +1684,7 @@ static void run_medianblur(      Buffer& dst,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidMedianBlur, cv::gapi::imgproc::GMedianBlur, false)
+GAPI_FLUID_KERNEL(GFluidMedianBlur, ncvslideio::gapi::imgproc::GMedianBlur, false)
 {
     static const int Window = 3;
 
@@ -1701,25 +1701,25 @@ GAPI_FLUID_KERNEL(GFluidMedianBlur, cv::gapi::imgproc::GMedianBlur, false)
         UNARY_( short,  short, run_medianblur, dst, src, ksize);
         UNARY_( float,  float, run_medianblur, dst, src, ksize);
 
-        CV_Error(cv::Error::StsBadArg, "unsupported combination of types");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of types");
     }
 
-    static Border getBorder(const cv::GMatDesc& /* src */,
+    static Border getBorder(const ncvslideio::GMatDesc& /* src */,
                                       int       /* ksize */)
     {
-        int  borderType  = cv::BORDER_REPLICATE;
-        auto borderValue = cv::Scalar();
+        int  borderType  = ncvslideio::BORDER_REPLICATE;
+        auto borderValue = ncvslideio::Scalar();
         return { borderType, borderValue };
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidRGB2YUV422, cv::gapi::imgproc::GRGB2YUV422, false)
+GAPI_FLUID_KERNEL(GFluidRGB2YUV422, ncvslideio::gapi::imgproc::GRGB2YUV422, false)
 {
     static const int Window = 1;
-    static const auto Kind = cv::GFluidKernel::Kind::Filter;
+    static const auto Kind = ncvslideio::GFluidKernel::Kind::Filter;
 
-    static void run(const cv::gapi::fluid::View& in,
-                    cv::gapi::fluid::Buffer& out)
+    static void run(const ncvslideio::gapi::fluid::View& in,
+                    ncvslideio::gapi::fluid::Buffer& out)
     {
         const auto *src = in.InLine<uchar>(0);
         auto *dst = out.OutLine<uchar>();
@@ -1728,14 +1728,14 @@ GAPI_FLUID_KERNEL(GFluidRGB2YUV422, cv::gapi::imgproc::GRGB2YUV422, false)
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidRGB2HSV, cv::gapi::imgproc::GRGB2HSV, true)
+GAPI_FLUID_KERNEL(GFluidRGB2HSV, ncvslideio::gapi::imgproc::GRGB2HSV, true)
 {
     static const int Window = 1;
-    static const auto Kind = cv::GFluidKernel::Kind::Filter;
+    static const auto Kind = ncvslideio::GFluidKernel::Kind::Filter;
 
-    static void run(const cv::gapi::fluid::View&   in,
-                    cv::gapi::fluid::Buffer& out,
-                    cv::gapi::fluid::Buffer& scratch)
+    static void run(const ncvslideio::gapi::fluid::View&   in,
+                    ncvslideio::gapi::fluid::Buffer& out,
+                    ncvslideio::gapi::fluid::Buffer& scratch)
     {
         const auto *src = in.InLine<uchar>(0);
         auto *dst = out.OutLine<uchar>();
@@ -1746,17 +1746,17 @@ GAPI_FLUID_KERNEL(GFluidRGB2HSV, cv::gapi::imgproc::GRGB2HSV, true)
         run_rgb2hsv_impl(dst, src, sdiv_table, hdiv_table, in.length());
     }
 
-    static void initScratch(const cv::GMatDesc& /* in */,
-                            cv::gapi::fluid::Buffer& scratch)
+    static void initScratch(const ncvslideio::GMatDesc& /* in */,
+                            ncvslideio::gapi::fluid::Buffer& scratch)
     {
         const int hsv_shift = 12;
 
-        cv::GMatDesc desc;
+        ncvslideio::GMatDesc desc;
         desc.chan  = 1;
         desc.depth = CV_32S;
-        desc.size  = cv::Size(512, 1);
+        desc.size  = ncvslideio::Size(512, 1);
 
-        cv::gapi::fluid::Buffer buffer(desc);
+        ncvslideio::gapi::fluid::Buffer buffer(desc);
         scratch = std::move(buffer);
 
         auto* sdiv_table = scratch.OutLine<int>(0);
@@ -1765,24 +1765,24 @@ GAPI_FLUID_KERNEL(GFluidRGB2HSV, cv::gapi::imgproc::GRGB2HSV, true)
         sdiv_table[0] = hdiv_table[0] = 0;
         for(int i = 1; i < 256; i++ )
         {
-            sdiv_table[i] = cv::saturate_cast<int>((255 << hsv_shift)/(1.*i));
-            hdiv_table[i] = cv::saturate_cast<int>((180 << hsv_shift)/(6.*i));
+            sdiv_table[i] = ncvslideio::saturate_cast<int>((255 << hsv_shift)/(1.*i));
+            hdiv_table[i] = ncvslideio::saturate_cast<int>((180 << hsv_shift)/(6.*i));
         }
 
     }
 
-    static void resetScratch(cv::gapi::fluid::Buffer& /* scratch */)
+    static void resetScratch(ncvslideio::gapi::fluid::Buffer& /* scratch */)
     {
     }
 };
 
-GAPI_FLUID_KERNEL(GFluidBayerGR2RGB, cv::gapi::imgproc::GBayerGR2RGB, false)
+GAPI_FLUID_KERNEL(GFluidBayerGR2RGB, ncvslideio::gapi::imgproc::GBayerGR2RGB, false)
 {
     static const int Window = 3;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View& in,
-                    cv::gapi::fluid::Buffer& out)
+    static void run(const ncvslideio::gapi::fluid::View& in,
+                    ncvslideio::gapi::fluid::Buffer& out)
     {
         const int height = in.meta().size.height;
         const int border_size = 1;
@@ -1819,10 +1819,10 @@ GAPI_FLUID_KERNEL(GFluidBayerGR2RGB, cv::gapi::imgproc::GBayerGR2RGB, false)
         }
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc&)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc&)
     {
-        int  borderType  = cv::BORDER_CONSTANT;
-        auto borderValue = cv::Scalar();
+        int  borderType  = ncvslideio::BORDER_CONSTANT;
+        auto borderValue = ncvslideio::Scalar();
 
         return { borderType, borderValue };
     }
@@ -1869,9 +1869,9 @@ static inline double ratio(int inSz, int outSz) {
 }
 
 template<typename T, typename Mapper, int chanNum = 1>
-CV_ALWAYS_INLINE void initScratchLinear(const cv::GMatDesc& in,
+CV_ALWAYS_INLINE void initScratchLinear(const ncvslideio::GMatDesc& in,
                                         const         Size& outSz,
-                                        cv::gapi::fluid::Buffer& scratch,
+                                        ncvslideio::gapi::fluid::Buffer& scratch,
                                         int  lpi)
 {
     using alpha_type = typename Mapper::alpha_type;
@@ -1882,12 +1882,12 @@ CV_ALWAYS_INLINE void initScratchLinear(const cv::GMatDesc& in,
 
     Size scratch_size{sbufsize, 1};
 
-    cv::GMatDesc desc;
+    ncvslideio::GMatDesc desc;
     desc.chan = 1;
     desc.depth = CV_8UC1;
     desc.size = scratch_size;
 
-    cv::gapi::fluid::Buffer buffer(desc);
+    ncvslideio::gapi::fluid::Buffer buffer(desc);
     scratch = std::move(buffer);
 
     double hRatio = ratio(in.size.width, outSz.width);
@@ -2022,9 +2022,9 @@ struct Mapper {
 }  // namespace linear32f
 
 template<typename T, class Mapper, int numChan>
-CV_ALWAYS_INLINE void calcRowLinearC(const cv::gapi::fluid::View  & in,
-                                     cv::gapi::fluid::Buffer& out,
-                                     cv::gapi::fluid::Buffer& scratch) {
+CV_ALWAYS_INLINE void calcRowLinearC(const ncvslideio::gapi::fluid::View  & in,
+                                     ncvslideio::gapi::fluid::Buffer& out,
+                                     ncvslideio::gapi::fluid::Buffer& scratch) {
     using alpha_type = typename Mapper::alpha_type;
 
     auto  inSz =  in.meta().size;
@@ -2101,9 +2101,9 @@ CV_ALWAYS_INLINE void calcRowLinearC(const cv::gapi::fluid::View  & in,
 }
 
 template<class Mapper>
-CV_ALWAYS_INLINE void calcRowLinear(const cv::gapi::fluid::View& in,
-                                    cv::gapi::fluid::Buffer& out,
-                                    cv::gapi::fluid::Buffer& scratch)
+CV_ALWAYS_INLINE void calcRowLinear(const ncvslideio::gapi::fluid::View& in,
+                                    ncvslideio::gapi::fluid::Buffer& out,
+                                    ncvslideio::gapi::fluid::Buffer& scratch)
 {
     GAPI_DbgAssert((out.meta().depth == CV_32F) && (out.meta().chan == 1));
 
@@ -2175,7 +2175,7 @@ CV_ALWAYS_INLINE void calcRowLinear(const cv::gapi::fluid::View& in,
     }
 }
 
-GAPI_FLUID_KERNEL(GFluidResize, cv::gapi::imgproc::GResize, true)
+GAPI_FLUID_KERNEL(GFluidResize, ncvslideio::gapi::imgproc::GResize, true)
 {
     static const int Window = 1;
     static const int LPI = 4;
@@ -2185,13 +2185,13 @@ GAPI_FLUID_KERNEL(GFluidResize, cv::gapi::imgproc::GResize, true)
     constexpr static const int INTER_RESIZE_COEF_SCALE = 1 << INTER_RESIZE_COEF_BITS;
     constexpr static const short ONE = INTER_RESIZE_COEF_SCALE;
 
-   static void initScratch(const cv::GMatDesc& in,
-                           cv::Size outSz, double fx, double fy, int interp,
-                           cv::gapi::fluid::Buffer &scratch)
+   static void initScratch(const ncvslideio::GMatDesc& in,
+                           ncvslideio::Size outSz, double fx, double fy, int interp,
+                           ncvslideio::gapi::fluid::Buffer &scratch)
    {
        GAPI_Assert((in.depth == CV_8U && in.chan == 3) ||
                    (in.depth == CV_32F && in.chan == 1));
-       GAPI_Assert(interp == cv::INTER_LINEAR);
+       GAPI_Assert(interp == ncvslideio::INTER_LINEAR);
 
        int outSz_w;
        int outSz_h;
@@ -2205,7 +2205,7 @@ GAPI_FLUID_KERNEL(GFluidResize, cv::gapi::imgproc::GResize, true)
            outSz_w = outSz.width;
            outSz_h = outSz.height;
        }
-       cv::Size outSize(outSz_w, outSz_h);
+       ncvslideio::Size outSize(outSz_w, outSz_h);
 
        if (in.depth == CV_8U && in.chan == 3)
        {
@@ -2217,20 +2217,20 @@ GAPI_FLUID_KERNEL(GFluidResize, cv::gapi::imgproc::GResize, true)
        }
        else
        {
-           CV_Error(cv::Error::StsBadArg, "unsupported combination of type and number of channel");
+           CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of type and number of channel");
        }
    }
 
-    static void resetScratch(cv::gapi::fluid::Buffer& /*scratch*/)
+    static void resetScratch(ncvslideio::gapi::fluid::Buffer& /*scratch*/)
     {}
 
-    static void run(const cv::gapi::fluid::View& in, cv::Size /*sz*/, double /*fx*/,
-                    double /*fy*/, int interp, cv::gapi::fluid::Buffer& out,
-                    cv::gapi::fluid::Buffer& scratch)
+    static void run(const ncvslideio::gapi::fluid::View& in, ncvslideio::Size /*sz*/, double /*fx*/,
+                    double /*fy*/, int interp, ncvslideio::gapi::fluid::Buffer& out,
+                    ncvslideio::gapi::fluid::Buffer& scratch)
     {
         GAPI_Assert((in.meta().depth == CV_8U && in.meta().chan == 3) ||
                     (in.meta().depth == CV_32F && in.meta().chan == 1));
-        GAPI_Assert(interp == cv::INTER_LINEAR);
+        GAPI_Assert(interp == ncvslideio::INTER_LINEAR);
 
         const int channels = in.meta().chan;
         const int depth = in.meta().depth;
@@ -2245,20 +2245,20 @@ GAPI_FLUID_KERNEL(GFluidResize, cv::gapi::imgproc::GResize, true)
         }
         else
         {
-            CV_Error(cv::Error::StsBadArg, "unsupported combination of type and number of channel");
+            CV_Error(ncvslideio::Error::StsBadArg, "unsupported combination of type and number of channel");
         }
     }
 };
 
 } // namespace fluid
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
-cv::GKernelPackage cv::gapi::imgproc::fluid::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::imgproc::fluid::kernels()
 {
-    using namespace cv::gapi::fluid;
+    using namespace ncvslideio::gapi::fluid;
 
-    return cv::gapi::kernels
+    return ncvslideio::gapi::kernels
     <   GFluidBGR2Gray
       , GFluidResize
       , GFluidRGB2Gray

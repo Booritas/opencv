@@ -11,7 +11,7 @@
 #include <opencv2/gapi/gkernel.hpp>    // GKernelPackage
 #include <opencv2/gapi/gstreaming.hpp> // GOptRunArgsP
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace oak {
 
@@ -79,12 +79,12 @@ struct EncoderConfig {
 
 G_API_OP(GEncFrame, <GArray<uint8_t>(GFrame, EncoderConfig)>, "org.opencv.oak.enc_frame") {
     static GArrayDesc outMeta(const GFrameDesc&, const EncoderConfig&) {
-        return cv::empty_array_desc();
+        return ncvslideio::empty_array_desc();
     }
 };
 
-G_API_OP(GSobelXY, <GFrame(GFrame, const cv::Mat&, const cv::Mat&)>, "org.opencv.oak.sobelxy") {
-    static GFrameDesc outMeta(const GFrameDesc& in, const cv::Mat&, const cv::Mat&) {
+G_API_OP(GSobelXY, <GFrame(GFrame, const ncvslideio::Mat&, const ncvslideio::Mat&)>, "org.opencv.oak.sobelxy") {
+    static GFrameDesc outMeta(const GFrameDesc& in, const ncvslideio::Mat&, const ncvslideio::Mat&) {
         return in;
     }
 };
@@ -100,14 +100,14 @@ G_API_OP(GCopy, <GFrame(GFrame)>, "org.opencv.oak.copy") {
 GAPI_EXPORTS GArray<uint8_t> encode(const GFrame& in, const EncoderConfig&);
 
 GAPI_EXPORTS GFrame sobelXY(const GFrame& in,
-                            const cv::Mat& hk,
-                            const cv::Mat& vk);
+                            const ncvslideio::Mat& hk,
+                            const ncvslideio::Mat& vk);
 
 GAPI_EXPORTS GFrame copy(const GFrame& in);
 
 // OAK backend & kernels ////////////////////////////////////////////////////////
-GAPI_EXPORTS cv::gapi::GBackend backend();
-GAPI_EXPORTS cv::gapi::GKernelPackage kernels();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GKernelPackage kernels();
 
 // Camera object ///////////////////////////////////////////////////////////////
 
@@ -128,11 +128,11 @@ struct GAPI_EXPORTS ColorCameraParams {
     Resolution resolution = Resolution::THE_1080_P;
 };
 
-class GAPI_EXPORTS ColorCamera: public cv::gapi::wip::IStreamSource {
-    cv::MediaFrame m_dummy;
+class GAPI_EXPORTS ColorCamera: public ncvslideio::gapi::wip::IStreamSource {
+    ncvslideio::MediaFrame m_dummy;
     ColorCameraParams m_params;
 
-    virtual bool pull(cv::gapi::wip::Data &data) override;
+    virtual bool pull(ncvslideio::gapi::wip::Data &data) override;
     virtual GMetaArg descr_of() const override;
 
 public:
@@ -153,6 +153,6 @@ template<> struct CompileArgTag<gapi::oak::EncoderConfig> {
 };
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_OAK_HPP

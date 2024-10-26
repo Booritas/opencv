@@ -14,7 +14,7 @@
 #include "logger.hpp"
 
 #ifdef HAVE_ONEVPL
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -31,7 +31,7 @@ template <>
 struct ParamCreator<mfxVariant> {
     template<typename ValueType>
     mfxVariant create (const std::string& name, ValueType&& value, bool is_major_flag = false) {
-        cv::util::suppress_unused_warning(is_major_flag);
+        ncvslideio::util::suppress_unused_warning(is_major_flag);
         return create_impl(name, value);
     }
 private:
@@ -133,7 +133,7 @@ std::vector<mfxVariant> get_params_from_string(const std::string& str);
 mfxVariant cfg_param_to_mfx_variant(const CfgParam& cfg_val) {
     const CfgParam::name_t& name = cfg_val.get_name();
     mfxVariant ret;
-    cv::util::visit(cv::util::overload_lambdas(
+    ncvslideio::util::visit(ncvslideio::util::overload_lambdas(
             [&ret](uint8_t value)   { ret.Type = MFX_VARIANT_TYPE_U8;   ret.Data.U8 = value;    },
             [&ret](int8_t value)    { ret.Type = MFX_VARIANT_TYPE_I8;   ret.Data.I8 = value;    },
             [&ret](uint16_t value)  { ret.Type = MFX_VARIANT_TYPE_U16;  ret.Data.U16 = value;   },
@@ -157,25 +157,25 @@ mfxVariant cfg_param_to_mfx_variant(const CfgParam& cfg_val) {
 
 void extract_optional_param_by_name(const std::string &name,
                                     const std::vector<CfgParam> &in_params,
-                                    cv::util::optional<size_t> &out_param) {
+                                    ncvslideio::util::optional<size_t> &out_param) {
     auto it = std::find_if(in_params.begin(), in_params.end(), [&name] (const CfgParam& value) {
         return value.get_name() == name;
     });
     if (it != in_params.end()) {
-        cv::util::visit(cv::util::overload_lambdas(
-            [&out_param](uint8_t value)   { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](int8_t value)    { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](uint16_t value)  { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](int16_t value)   { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](uint32_t value)  { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](int32_t value)   { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](uint64_t value)  { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](int64_t value)   { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](float_t value)   { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
-            [&out_param](double_t value)  { out_param = cv::util::make_optional(static_cast<size_t>(value));   },
+        ncvslideio::util::visit(ncvslideio::util::overload_lambdas(
+            [&out_param](uint8_t value)   { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](int8_t value)    { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](uint16_t value)  { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](int16_t value)   { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](uint32_t value)  { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](int32_t value)   { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](uint64_t value)  { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](int64_t value)   { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](float_t value)   { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
+            [&out_param](double_t value)  { out_param = ncvslideio::util::make_optional(static_cast<size_t>(value));   },
             [&out_param](void*)     { GAPI_Error("`void*` is unsupported type");  },
             [&out_param](const std::string& value) {
-                out_param = cv::util::make_optional(strtoull_or_throw(value.c_str()));
+                out_param = ncvslideio::util::make_optional(strtoull_or_throw(value.c_str()));
             }),
             it->get_value());
     }
@@ -222,5 +222,5 @@ int64_t strtoll_or_throw(const char* str) {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

@@ -9,11 +9,11 @@
 
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace streaming {
 
-GAPI_EXPORTS cv::GKernelPackage kernels();
+GAPI_EXPORTS ncvslideio::GKernelPackage kernels();
 
 G_API_OP(GBGR, <GMat(GFrame)>, "org.opencv.streaming.BGR")
 {
@@ -28,7 +28,7 @@ G_API_OP(GY, <GMat(GFrame)>, "org.opencv.streaming.Y") {
 
 G_API_OP(GUV, <GMat(GFrame)>, "org.opencv.streaming.UV") {
     static GMatDesc outMeta(const GFrameDesc& frameDesc) {
-        return GMatDesc { CV_8U, 2, cv::Size(frameDesc.size.width / 2, frameDesc.size.height / 2),
+        return GMatDesc { CV_8U, 2, ncvslideio::Size(frameDesc.size.width / 2, frameDesc.size.height / 2),
                           false };
     }
 };
@@ -40,7 +40,7 @@ G_API_OP(GUV, <GMat(GFrame)>, "org.opencv.streaming.UV") {
 @param in Input frame
 @return Image in BGR format
 */
-GAPI_EXPORTS cv::GMat BGR(const cv::GFrame& in);
+GAPI_EXPORTS ncvslideio::GMat BGR(const ncvslideio::GFrame& in);
 
 /** @brief Extracts Y plane from media frame.
 
@@ -50,7 +50,7 @@ Output image is 8-bit 1-channel image of @ref CV_8UC1.
 
 @param frame input media frame.
 */
-GAPI_EXPORTS GMat Y(const cv::GFrame& frame);
+GAPI_EXPORTS GMat Y(const ncvslideio::GFrame& frame);
 
 /** @brief Extracts UV plane from media frame.
 
@@ -60,7 +60,7 @@ Output image is 8-bit 2-channel image of @ref CV_8UC2.
 
 @param frame input media frame.
 */
-GAPI_EXPORTS GMat UV(const cv::GFrame& frame);
+GAPI_EXPORTS GMat UV(const ncvslideio::GFrame& frame);
 } // namespace streaming
 
 //! @addtogroup gapi_transform
@@ -89,6 +89,6 @@ GAPI_EXPORTS GFrame copy(const GFrame& in);
 //! @} gapi_transform
 
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMING_FORMAT_HPP

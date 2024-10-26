@@ -10,7 +10,7 @@ def add_argument(zoo, parser, name, help, required=False, default=None, type=Non
     modelName = sys.argv[1]
 
     if os.path.isfile(zoo):
-        fs = cv.FileStorage(zoo, cv.FILE_STORAGE_READ)
+        fs = ncvslideio.FileStorage(zoo, ncvslideio.FILE_STORAGE_READ)
         node = fs.getNode(modelName)
         if not node.empty():
             value = node.getNode(name)
@@ -50,7 +50,7 @@ def add_argument(zoo, parser, name, help, required=False, default=None, type=Non
 def add_preproc_args(zoo, parser, sample):
     aliases = []
     if os.path.isfile(zoo):
-        fs = cv.FileStorage(zoo, cv.FILE_STORAGE_READ)
+        fs = ncvslideio.FileStorage(zoo, ncvslideio.FILE_STORAGE_READ)
         root = fs.root()
         for name in root.keys():
             model = root.getNode(name)
@@ -90,7 +90,7 @@ def findFile(filename):
         if os.path.exists(filename):
             return filename
 
-        fpath = cv.samples.findFile(filename, False)
+        fpath = ncvslideio.samples.findFile(filename, False)
         if fpath:
             return fpath
 

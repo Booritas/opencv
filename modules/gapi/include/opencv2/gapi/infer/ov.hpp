@@ -16,7 +16,7 @@
 
 #include <map>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /**
@@ -25,7 +25,7 @@ namespace gapi {
  */
 namespace ov {
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 namespace detail {
 
@@ -35,11 +35,11 @@ using AttrMap = std::map<std::string, T>;
 // attributes such as precision, layout, shape etc.
 //
 // User can provide attributes either:
-// 1. cv::util::monostate - No value specified explicitly.
+// 1. ncvslideio::util::monostate - No value specified explicitly.
 // 2. Attr - value specified explicitly that should be broadcasted to all layers.
 // 3. AttrMap[str->T] - map specifies value for particular layer.
 template <typename Attr>
-using LayerVariantAttr = cv::util::variant< cv::util::monostate
+using LayerVariantAttr = ncvslideio::util::variant< ncvslideio::util::monostate
                                           , AttrMap<Attr>
                                           , Attr>;
 
@@ -72,7 +72,7 @@ struct ParamDesc {
         std::string blob_path;
     };
 
-    using Kind = cv::util::variant<Model, CompiledModel>;
+    using Kind = ncvslideio::util::variant<Model, CompiledModel>;
 
     ParamDesc(Kind              &&kind_,
               const std::string &device_,
@@ -105,13 +105,13 @@ struct ParamDesc {
 static detail::ParamDesc::Model&
 getModelToSetAttrOrThrow(detail::ParamDesc::Kind  &kind,
                          const std::string        &attr_name) {
-    if (cv::util::holds_alternative<detail::ParamDesc::CompiledModel>(kind)) {
-        cv::util::throw_error(
+    if (ncvslideio::util::holds_alternative<detail::ParamDesc::CompiledModel>(kind)) {
+        ncvslideio::util::throw_error(
                 std::logic_error("Specifying " + attr_name + " isn't"
                                  " possible for compiled model."));
     }
-    GAPI_Assert(cv::util::holds_alternative<detail::ParamDesc::Model>(kind));
-    return cv::util::get<detail::ParamDesc::Model>(kind);
+    GAPI_Assert(ncvslideio::util::holds_alternative<detail::ParamDesc::Model>(kind));
+    return ncvslideio::util::get<detail::ParamDesc::Model>(kind);
 }
 
 } // namespace detail
@@ -163,7 +163,7 @@ public:
 
     /** @brief Specifies sequence of network input layers names for inference.
 
-    The function is used to associate cv::gapi::infer<> inputs with the model inputs.
+    The function is used to associate ncvslideio::gapi::infer<> inputs with the model inputs.
     Number of names has to match the number of network inputs as defined in G_API_NET().
     In case a network has only single input layer, there is no need to specify name manually.
 
@@ -178,7 +178,7 @@ public:
 
     /** @brief Specifies sequence of network output layers names for inference.
 
-    The function is used to associate cv::gapi::infer<> outputs with the model outputs.
+    The function is used to associate ncvslideio::gapi::infer<> outputs with the model outputs.
     Number of names has to match the number of network outputs as defined in G_API_NET().
     In case a network has only single output layer, there is no need to specify name manually.
 
@@ -370,7 +370,7 @@ public:
     */
     Params<Net>& cfgNumRequests(const size_t nireq) {
         if (nireq == 0) {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                     std::logic_error("Number of inference requests"
                                      " must be greater than zero."));
         }
@@ -455,9 +455,9 @@ public:
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend() const { return cv::gapi::ov::backend(); }
+    GBackend      backend() const { return ncvslideio::gapi::ov::backend(); }
     std::string   tag()     const { return Net::tag(); }
-    cv::util::any params()  const { return { m_desc }; }
+    ncvslideio::util::any params()  const { return { m_desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -470,7 +470,7 @@ protected:
 * @see struct Generic
 */
 template<>
-class Params<cv::gapi::Generic> {
+class Params<ncvslideio::gapi::Generic> {
 public:
     /** @brief Class constructor.
 
@@ -617,7 +617,7 @@ public:
     /** @see ov::Params::cfgNumRequests. */
     Params& cfgNumRequests(const size_t nireq) {
         if (nireq == 0) {
-            cv::util::throw_error(
+            ncvslideio::util::throw_error(
                     std::logic_error("Number of inference requests"
                                      " must be greater than zero."));
         }
@@ -668,9 +668,9 @@ public:
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend() const { return cv::gapi::ov::backend(); }
+    GBackend      backend() const { return ncvslideio::gapi::ov::backend(); }
     std::string   tag()     const { return m_tag; }
-    cv::util::any params()  const { return { m_desc }; }
+    ncvslideio::util::any params()  const { return { m_desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -698,12 +698,12 @@ struct benchmark_mode { };
 
 namespace detail
 {
-    template<> struct CompileArgTag<cv::gapi::wip::ov::benchmark_mode>
+    template<> struct CompileArgTag<ncvslideio::gapi::wip::ov::benchmark_mode>
     {
         static const char* tag() { return "gapi.wip.ov.benchmark_mode"; }
     };
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_INFER_OV_HPP

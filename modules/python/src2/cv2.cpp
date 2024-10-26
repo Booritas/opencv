@@ -17,7 +17,7 @@
 #include "cv2_convert.hpp"
 #include "cv2_highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 typedef std::vector<uchar> vector_uchar;
 typedef std::vector<char> vector_char;
@@ -92,7 +92,7 @@ static int convert_to_char(PyObject *o, char *dst, const ArgInfo& info)
 
 static PyObject* pycvRegisterMatType(PyObject *self, PyObject *value)
 {
-    CV_LOG_DEBUG(NULL, cv::format("pycvRegisterMatType %p %p\n", self, value));
+    CV_LOG_DEBUG(NULL, ncvslideio::format("pycvRegisterMatType %p %p\n", self, value));
 
     if (0 == PyType_Check(value))
     {
@@ -107,7 +107,7 @@ static PyObject* pycvRegisterMatType(PyObject *self, PyObject *value)
 }
 
 static PyMethodDef special_methods[] = {
-  {"_registerMatType", (PyCFunction)(pycvRegisterMatType), METH_O, "_registerMatType(cv.Mat) -> None (Internal)"},
+  {"_registerMatType", (PyCFunction)(pycvRegisterMatType), METH_O, "_registerMatType(ncvslideio.Mat) -> None (Internal)"},
   {"redirectError", CV_PY_FN_WITH_KW(pycvRedirectError), "redirectError(onError) -> None"},
 #ifdef HAVE_OPENCV_HIGHGUI
   {"createTrackbar", (PyCFunction)pycvCreateTrackbar, METH_VARARGS, "createTrackbar(trackbarName, windowName, value, count, onChange) -> None"},

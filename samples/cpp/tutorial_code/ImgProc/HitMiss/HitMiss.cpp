@@ -2,7 +2,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main(){
     Mat input_image = (Mat_<uchar>(8, 8) <<

@@ -22,7 +22,7 @@
 #include <limits>
 #include <map>
 
-namespace cv
+namespace ncvslideio
 {
 using std::vector;
 using std::pair;
@@ -971,9 +971,9 @@ public:
     std::string detectAndDecode(InputArray img, OutputArray points, OutputArray straight_qrcode) const override;
 
     bool detectMulti(InputArray img, OutputArray points) const override;
-    bool decodeMulti(InputArray img, InputArray points, std::vector<cv::String>& decoded_info,
+    bool decodeMulti(InputArray img, InputArray points, std::vector<ncvslideio::String>& decoded_info,
                      OutputArrayOfArrays straight_qrcode) const override;
-    bool detectAndDecodeMulti(InputArray img, std::vector<cv::String>& decoded_info, OutputArray points,
+    bool detectAndDecodeMulti(InputArray img, std::vector<ncvslideio::String>& decoded_info, OutputArray points,
                               OutputArrayOfArrays straight_qrcode) const override;
 
     String decodeCurved(InputArray in, InputArray points, OutputArray straight_qrcode);
@@ -4060,7 +4060,7 @@ private:
 bool ImplContour::decodeMulti(
         InputArray img,
         InputArray points,
-        CV_OUT std::vector<cv::String>& decoded_info,
+        CV_OUT std::vector<ncvslideio::String>& decoded_info,
         OutputArrayOfArrays straight_qrcode
     ) const
 {
@@ -4125,7 +4125,7 @@ bool ImplContour::decodeMulti(
             continue;
         }
 
-        cv::String decoded = info[i];
+        ncvslideio::String decoded = info[i];
         for (size_t idx = 1; idx < decoder.structure_info.total_num; ++idx)
         {
             auto it = std::find_if(qrdec.begin(), qrdec.end(), [&](QRDecode& dec) {
@@ -4160,7 +4160,7 @@ bool ImplContour::decodeMulti(
 
 bool ImplContour::detectAndDecodeMulti(
         InputArray img,
-        CV_OUT std::vector<cv::String>& decoded_info,
+        CV_OUT std::vector<ncvslideio::String>& decoded_info,
         OutputArray points_,
         OutputArrayOfArrays straight_qrcode
     ) const

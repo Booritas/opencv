@@ -45,7 +45,7 @@
 #include "../include/ocl4dnn.hpp"
 #include "opencl_kernels_dnn.hpp"
 
-namespace cv { namespace dnn { namespace ocl4dnn {
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
 template<typename Dtype>
 OCL4DNNSoftmax<Dtype>::OCL4DNNSoftmax(OCL4DNNSoftmaxConfig config)
 {
@@ -134,4 +134,4 @@ bool OCL4DNNSoftmax<Dtype>::Forward(const UMat& bottom, UMat& top)
 
 template class OCL4DNNSoftmax<float>;
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn

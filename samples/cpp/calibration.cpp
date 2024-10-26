@@ -13,7 +13,7 @@
 #include <time.h>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 const char * usage =
@@ -391,7 +391,7 @@ int main( int argc, char** argv )
     vector<string> imageList;
     Pattern pattern = CHESSBOARD;
 
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{help ||}{w||}{h||}{pt|chessboard|}{n|10|}{d|1000|}{s|1|}{ms|0.5|}{ad|DICT_4X4_50|}{adf|None|}{o|out_camera_data.yml|}"
         "{op||}{oe||}{zt||}{a||}{p||}{v||}{V||}{su||}"
         "{oo||}{ws|11|}{dt||}"
@@ -424,27 +424,27 @@ int main( int argc, char** argv )
     markerSize = parser.get<float>("ms");
 
     string arucoDictName = parser.get<string>("ad");
-    if (arucoDictName == "DICT_4X4_50") { arucoDict = cv::aruco::DICT_4X4_50; }
-    else if (arucoDictName == "DICT_4X4_100") { arucoDict = cv::aruco::DICT_4X4_100; }
-    else if (arucoDictName == "DICT_4X4_250") { arucoDict = cv::aruco::DICT_4X4_250; }
-    else if (arucoDictName == "DICT_4X4_1000") { arucoDict = cv::aruco::DICT_4X4_1000; }
-    else if (arucoDictName == "DICT_5X5_50") { arucoDict = cv::aruco::DICT_5X5_50; }
-    else if (arucoDictName == "DICT_5X5_100") { arucoDict = cv::aruco::DICT_5X5_100; }
-    else if (arucoDictName == "DICT_5X5_250") { arucoDict = cv::aruco::DICT_5X5_250; }
-    else if (arucoDictName == "DICT_5X5_1000") { arucoDict = cv::aruco::DICT_5X5_1000; }
-    else if (arucoDictName == "DICT_6X6_50") { arucoDict = cv::aruco::DICT_6X6_50; }
-    else if (arucoDictName == "DICT_6X6_100") { arucoDict = cv::aruco::DICT_6X6_100; }
-    else if (arucoDictName == "DICT_6X6_250") { arucoDict = cv::aruco::DICT_6X6_250; }
-    else if (arucoDictName == "DICT_6X6_1000") { arucoDict = cv::aruco::DICT_6X6_1000; }
-    else if (arucoDictName == "DICT_7X7_50") { arucoDict = cv::aruco::DICT_7X7_50; }
-    else if (arucoDictName == "DICT_7X7_100") { arucoDict = cv::aruco::DICT_7X7_100; }
-    else if (arucoDictName == "DICT_7X7_250") { arucoDict = cv::aruco::DICT_7X7_250; }
-    else if (arucoDictName == "DICT_7X7_1000") { arucoDict = cv::aruco::DICT_7X7_1000; }
-    else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = cv::aruco::DICT_ARUCO_ORIGINAL; }
-    else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = cv::aruco::DICT_APRILTAG_16h5; }
-    else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = cv::aruco::DICT_APRILTAG_25h9; }
-    else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = cv::aruco::DICT_APRILTAG_36h10; }
-    else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = cv::aruco::DICT_APRILTAG_36h11; }
+    if (arucoDictName == "DICT_4X4_50") { arucoDict = ncvslideio::aruco::DICT_4X4_50; }
+    else if (arucoDictName == "DICT_4X4_100") { arucoDict = ncvslideio::aruco::DICT_4X4_100; }
+    else if (arucoDictName == "DICT_4X4_250") { arucoDict = ncvslideio::aruco::DICT_4X4_250; }
+    else if (arucoDictName == "DICT_4X4_1000") { arucoDict = ncvslideio::aruco::DICT_4X4_1000; }
+    else if (arucoDictName == "DICT_5X5_50") { arucoDict = ncvslideio::aruco::DICT_5X5_50; }
+    else if (arucoDictName == "DICT_5X5_100") { arucoDict = ncvslideio::aruco::DICT_5X5_100; }
+    else if (arucoDictName == "DICT_5X5_250") { arucoDict = ncvslideio::aruco::DICT_5X5_250; }
+    else if (arucoDictName == "DICT_5X5_1000") { arucoDict = ncvslideio::aruco::DICT_5X5_1000; }
+    else if (arucoDictName == "DICT_6X6_50") { arucoDict = ncvslideio::aruco::DICT_6X6_50; }
+    else if (arucoDictName == "DICT_6X6_100") { arucoDict = ncvslideio::aruco::DICT_6X6_100; }
+    else if (arucoDictName == "DICT_6X6_250") { arucoDict = ncvslideio::aruco::DICT_6X6_250; }
+    else if (arucoDictName == "DICT_6X6_1000") { arucoDict = ncvslideio::aruco::DICT_6X6_1000; }
+    else if (arucoDictName == "DICT_7X7_50") { arucoDict = ncvslideio::aruco::DICT_7X7_50; }
+    else if (arucoDictName == "DICT_7X7_100") { arucoDict = ncvslideio::aruco::DICT_7X7_100; }
+    else if (arucoDictName == "DICT_7X7_250") { arucoDict = ncvslideio::aruco::DICT_7X7_250; }
+    else if (arucoDictName == "DICT_7X7_1000") { arucoDict = ncvslideio::aruco::DICT_7X7_1000; }
+    else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = ncvslideio::aruco::DICT_ARUCO_ORIGINAL; }
+    else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_16h5; }
+    else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_25h9; }
+    else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h10; }
+    else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h11; }
     else {
         cout << "Incorrect Aruco dictionary name " <<  arucoDictName << std::endl;
         return 1;
@@ -517,21 +517,21 @@ int main( int argc, char** argv )
     if ( boardSize.height <= 0 )
         return fprintf( stderr, "Invalid board height\n" ), -1;
 
-    cv::aruco::Dictionary dictionary;
+    ncvslideio::aruco::Dictionary dictionary;
     if (dictFilename == "None") {
         std::cout << "Using predefined dictionary with id: " << arucoDict << std::endl;
         dictionary = aruco::getPredefinedDictionary(arucoDict);
     }
     else {
         std::cout << "Using custom dictionary from file: " << dictFilename << std::endl;
-        cv::FileStorage dict_file(dictFilename, cv::FileStorage::Mode::READ);
-        cv::FileNode fn(dict_file.root());
+        ncvslideio::FileStorage dict_file(dictFilename, ncvslideio::FileStorage::Mode::READ);
+        ncvslideio::FileNode fn(dict_file.root());
         dictionary.readDictionary(fn);
     }
 
-    cv::aruco::CharucoBoard ch_board(boardSize, squareSize, markerSize, dictionary);
+    ncvslideio::aruco::CharucoBoard ch_board(boardSize, squareSize, markerSize, dictionary);
     std::vector<int> markerIds;
-    cv::aruco::CharucoDetector ch_detector(ch_board);
+    ncvslideio::aruco::CharucoDetector ch_detector(ch_board);
 
     if( !inputFilename.empty() )
     {
@@ -638,9 +638,9 @@ int main( int argc, char** argv )
         if( mode == CAPTURING )
         {
             if(undistortImage)
-                msg = cv::format( "%d/%d Undist", (int)imagePoints.size(), nframes );
+                msg = ncvslideio::format( "%d/%d Undist", (int)imagePoints.size(), nframes );
             else
-                msg = cv::format( "%d/%d", (int)imagePoints.size(), nframes );
+                msg = ncvslideio::format( "%d/%d", (int)imagePoints.size(), nframes );
         }
 
         putText( view, msg, textOrigin, 1, 1,

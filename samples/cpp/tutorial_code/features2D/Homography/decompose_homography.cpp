@@ -4,7 +4,7 @@
 #include <opencv2/calib3d.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace
 {

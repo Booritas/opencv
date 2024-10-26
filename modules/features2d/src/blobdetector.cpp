@@ -53,11 +53,11 @@
 #include "opencv2/highgui.hpp"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 // TODO: To be removed in 5.x branch
-const std::vector<std::vector<cv::Point> >& SimpleBlobDetector::getBlobContours() const
+const std::vector<std::vector<ncvslideio::Point> >& SimpleBlobDetector::getBlobContours() const
 {
     CV_Error(Error::StsNotImplemented, "Method SimpleBlobDetector::getBlobContours() is not implemented");
 }
@@ -154,7 +154,7 @@ SimpleBlobDetector::Params::Params()
     collectContours = false;
 }
 
-void SimpleBlobDetector::Params::read(const cv::FileNode& fn )
+void SimpleBlobDetector::Params::read(const ncvslideio::FileNode& fn )
 {
     thresholdStep = fn["thresholdStep"];
     minThreshold = fn["minThreshold"];
@@ -185,7 +185,7 @@ void SimpleBlobDetector::Params::read(const cv::FileNode& fn )
     collectContours = (int)fn["collectContours"] != 0 ? true : false;
 }
 
-void SimpleBlobDetector::Params::write(cv::FileStorage& fs) const
+void SimpleBlobDetector::Params::write(ncvslideio::FileStorage& fs) const
 {
     fs << "thresholdStep" << thresholdStep;
     fs << "minThreshold" << minThreshold;
@@ -221,7 +221,7 @@ params(parameters)
 {
 }
 
-void SimpleBlobDetectorImpl::read( const cv::FileNode& fn )
+void SimpleBlobDetectorImpl::read( const ncvslideio::FileNode& fn )
 {
     SimpleBlobDetector::Params rp;
     rp.read(fn);
@@ -229,7 +229,7 @@ void SimpleBlobDetectorImpl::read( const cv::FileNode& fn )
     params = rp;
 }
 
-void SimpleBlobDetectorImpl::write( cv::FileStorage& fs ) const
+void SimpleBlobDetectorImpl::write( ncvslideio::FileStorage& fs ) const
 {
     writeFormat(fs);
     params.write(fs);
@@ -359,7 +359,7 @@ void SimpleBlobDetectorImpl::findBlobs(InputArray _image, InputArray _binaryImag
 #endif
 }
 
-void SimpleBlobDetectorImpl::detect(InputArray image, std::vector<cv::KeyPoint>& keypoints, InputArray mask)
+void SimpleBlobDetectorImpl::detect(InputArray image, std::vector<ncvslideio::KeyPoint>& keypoints, InputArray mask)
 {
     CV_INSTRUMENT_REGION();
 

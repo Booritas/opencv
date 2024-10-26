@@ -7,7 +7,7 @@
 #include "../ie_ngraph.hpp"
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 class ExpandLayerImpl CV_FINAL : public ExpandLayer
 {
@@ -68,7 +68,7 @@ public:
                     d == lessDimension[j]) {           // plain copy
                     outputShape[i] = std::max(d, lessDimension[j]);
                 } else {
-                    CV_Error(Error::StsBadSize, cv::format("DNN/Expand: invalid dimension, d (%d) != d (%d)", moreDimension[i], lessDimension[j]));
+                    CV_Error(Error::StsBadSize, ncvslideio::format("DNN/Expand: invalid dimension, d (%d) != d (%d)", moreDimension[i], lessDimension[j]));
                 }
             } else {
                 outputShape[i] = d;
@@ -137,7 +137,7 @@ public:
                 std::memcpy(output + i * step, data, step);
             }
         } else {
-            cv::broadcast(inputs[0], target_shape, outputs[0]);
+            ncvslideio::broadcast(inputs[0], target_shape, outputs[0]);
         }
     }
 
@@ -169,4 +169,4 @@ Ptr<ExpandLayer> ExpandLayer::create(const LayerParams &params) {
     return makePtr<ExpandLayerImpl>(params);
 }
 
-}}  // cv::dnn
+}}  // ncvslideio::dnn

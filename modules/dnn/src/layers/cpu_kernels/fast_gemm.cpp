@@ -18,7 +18,7 @@
 #undef CV_CPU_OPTIMIZATION_DECLARATIONS_ONLY
 #include "fast_gemm_kernels.default.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 size_t fastGemmPackBSize(size_t N, size_t K, const FastGemmOpt &opt) {
 #if CV_TRY_NEON
@@ -399,4 +399,4 @@ void fastGemmBatch(bool trans_a, bool trans_b,
                   helper.ldb1, beta, c, helper.ldc, opt);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

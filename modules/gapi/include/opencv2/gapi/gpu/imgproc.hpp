@@ -14,7 +14,7 @@
 #include <opencv2/gapi/ocl/imgproc.hpp>
 
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace imgproc {
 namespace gpu {
@@ -22,7 +22,7 @@ namespace gpu {
 } // namespace gpu
 } // namespace imgproc
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 
 #endif // OPENCV_GAPI_GPU_IMGPROC_API_HPP

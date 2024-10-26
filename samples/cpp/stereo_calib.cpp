@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static int print_help(char** argv)
@@ -65,7 +65,7 @@ static int print_help(char** argv)
 
 
 static void
-StereoCalib(const vector<string>& imagelist, Size inputBoardSize, string type, float squareSize, float markerSize, cv::aruco::PredefinedDictionaryType arucoDict, string arucoDictFile, bool displayCorners = false, bool useCalibrated=true, bool showRectified=true)
+StereoCalib(const vector<string>& imagelist, Size inputBoardSize, string type, float squareSize, float markerSize, ncvslideio::aruco::PredefinedDictionaryType arucoDict, string arucoDictFile, bool displayCorners = false, bool useCalibrated=true, bool showRectified=true)
 {
     if( imagelist.size() % 2 != 0 )
     {
@@ -104,17 +104,17 @@ StereoCalib(const vector<string>& imagelist, Size inputBoardSize, string type, f
         return;
     }
 
-    cv::aruco::Dictionary dictionary;
+    ncvslideio::aruco::Dictionary dictionary;
     if (arucoDictFile == "None") {
-        dictionary = cv::aruco::getPredefinedDictionary(arucoDict);
+        dictionary = ncvslideio::aruco::getPredefinedDictionary(arucoDict);
     }
     else {
-        cv::FileStorage dict_file(arucoDictFile, cv::FileStorage::Mode::READ);
-        cv::FileNode fn(dict_file.root());
+        ncvslideio::FileStorage dict_file(arucoDictFile, ncvslideio::FileStorage::Mode::READ);
+        ncvslideio::FileNode fn(dict_file.root());
         dictionary.readDictionary(fn);
     }
-    cv::aruco::CharucoBoard ch_board(boardSizeUnits, squareSize, markerSize, dictionary);
-    cv::aruco::CharucoDetector ch_detector(ch_board);
+    ncvslideio::aruco::CharucoBoard ch_board(boardSizeUnits, squareSize, markerSize, dictionary);
+    ncvslideio::aruco::CharucoDetector ch_detector(ch_board);
     std::vector<int> markerIds;
 
     for( i = j = 0; i < nimages; i++ )
@@ -327,7 +327,7 @@ StereoCalib(const vector<string>& imagelist, Size inputBoardSize, string type, f
         P2 = cameraMatrix[1];
     }
 
-    //Precompute maps for cv::remap()
+    //Precompute maps for ncvslideio::remap()
     initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1, P1, imageSize, CV_16SC2, rmap[0][0], rmap[0][1]);
     initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2, P2, imageSize, CV_16SC2, rmap[1][0], rmap[1][1]);
 
@@ -400,7 +400,7 @@ int main(int argc, char** argv)
     Size inputBoardSize;
     string imagelistfn;
     bool showRectified;
-    cv::CommandLineParser parser(argc, argv, "{w|9|}{h|6|}{t|chessboard|}{s|1.0|}{ms|0.5|}{ad|DICT_4X4_50|}{adf|None|}{nr||}{help||}{@input|stereo_calib.xml|}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{w|9|}{h|6|}{t|chessboard|}{s|1.0|}{ms|0.5|}{ad|DICT_4X4_50|}{adf|None|}{nr||}{help||}{@input|stereo_calib.xml|}");
     if (parser.has("help"))
         return print_help(argv);
     showRectified = !parser.has("nr");
@@ -413,28 +413,28 @@ int main(int argc, char** argv)
     string arucoDictName = parser.get<string>("ad");
     string arucoDictFile = parser.get<string>("adf");
 
-    cv::aruco::PredefinedDictionaryType arucoDict;
-    if (arucoDictName == "DICT_4X4_50") { arucoDict = cv::aruco::DICT_4X4_50; }
-    else if (arucoDictName == "DICT_4X4_100") { arucoDict = cv::aruco::DICT_4X4_100; }
-    else if (arucoDictName == "DICT_4X4_250") { arucoDict = cv::aruco::DICT_4X4_250; }
-    else if (arucoDictName == "DICT_4X4_1000") { arucoDict = cv::aruco::DICT_4X4_1000; }
-    else if (arucoDictName == "DICT_5X5_50") { arucoDict = cv::aruco::DICT_5X5_50; }
-    else if (arucoDictName == "DICT_5X5_100") { arucoDict = cv::aruco::DICT_5X5_100; }
-    else if (arucoDictName == "DICT_5X5_250") { arucoDict = cv::aruco::DICT_5X5_250; }
-    else if (arucoDictName == "DICT_5X5_1000") { arucoDict = cv::aruco::DICT_5X5_1000; }
-    else if (arucoDictName == "DICT_6X6_50") { arucoDict = cv::aruco::DICT_6X6_50; }
-    else if (arucoDictName == "DICT_6X6_100") { arucoDict = cv::aruco::DICT_6X6_100; }
-    else if (arucoDictName == "DICT_6X6_250") { arucoDict = cv::aruco::DICT_6X6_250; }
-    else if (arucoDictName == "DICT_6X6_1000") { arucoDict = cv::aruco::DICT_6X6_1000; }
-    else if (arucoDictName == "DICT_7X7_50") { arucoDict = cv::aruco::DICT_7X7_50; }
-    else if (arucoDictName == "DICT_7X7_100") { arucoDict = cv::aruco::DICT_7X7_100; }
-    else if (arucoDictName == "DICT_7X7_250") { arucoDict = cv::aruco::DICT_7X7_250; }
-    else if (arucoDictName == "DICT_7X7_1000") { arucoDict = cv::aruco::DICT_7X7_1000; }
-    else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = cv::aruco::DICT_ARUCO_ORIGINAL; }
-    else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = cv::aruco::DICT_APRILTAG_16h5; }
-    else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = cv::aruco::DICT_APRILTAG_25h9; }
-    else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = cv::aruco::DICT_APRILTAG_36h10; }
-    else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = cv::aruco::DICT_APRILTAG_36h11; }
+    ncvslideio::aruco::PredefinedDictionaryType arucoDict;
+    if (arucoDictName == "DICT_4X4_50") { arucoDict = ncvslideio::aruco::DICT_4X4_50; }
+    else if (arucoDictName == "DICT_4X4_100") { arucoDict = ncvslideio::aruco::DICT_4X4_100; }
+    else if (arucoDictName == "DICT_4X4_250") { arucoDict = ncvslideio::aruco::DICT_4X4_250; }
+    else if (arucoDictName == "DICT_4X4_1000") { arucoDict = ncvslideio::aruco::DICT_4X4_1000; }
+    else if (arucoDictName == "DICT_5X5_50") { arucoDict = ncvslideio::aruco::DICT_5X5_50; }
+    else if (arucoDictName == "DICT_5X5_100") { arucoDict = ncvslideio::aruco::DICT_5X5_100; }
+    else if (arucoDictName == "DICT_5X5_250") { arucoDict = ncvslideio::aruco::DICT_5X5_250; }
+    else if (arucoDictName == "DICT_5X5_1000") { arucoDict = ncvslideio::aruco::DICT_5X5_1000; }
+    else if (arucoDictName == "DICT_6X6_50") { arucoDict = ncvslideio::aruco::DICT_6X6_50; }
+    else if (arucoDictName == "DICT_6X6_100") { arucoDict = ncvslideio::aruco::DICT_6X6_100; }
+    else if (arucoDictName == "DICT_6X6_250") { arucoDict = ncvslideio::aruco::DICT_6X6_250; }
+    else if (arucoDictName == "DICT_6X6_1000") { arucoDict = ncvslideio::aruco::DICT_6X6_1000; }
+    else if (arucoDictName == "DICT_7X7_50") { arucoDict = ncvslideio::aruco::DICT_7X7_50; }
+    else if (arucoDictName == "DICT_7X7_100") { arucoDict = ncvslideio::aruco::DICT_7X7_100; }
+    else if (arucoDictName == "DICT_7X7_250") { arucoDict = ncvslideio::aruco::DICT_7X7_250; }
+    else if (arucoDictName == "DICT_7X7_1000") { arucoDict = ncvslideio::aruco::DICT_7X7_1000; }
+    else if (arucoDictName == "DICT_ARUCO_ORIGINAL") { arucoDict = ncvslideio::aruco::DICT_ARUCO_ORIGINAL; }
+    else if (arucoDictName == "DICT_APRILTAG_16h5") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_16h5; }
+    else if (arucoDictName == "DICT_APRILTAG_25h9") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_25h9; }
+    else if (arucoDictName == "DICT_APRILTAG_36h10") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h10; }
+    else if (arucoDictName == "DICT_APRILTAG_36h11") { arucoDict = ncvslideio::aruco::DICT_APRILTAG_36h11; }
     else {
         cout << "incorrect name of aruco dictionary \n";
         return 1;

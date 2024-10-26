@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void region(const csl::Stream& stream, csl::Span<T> output, csl::View<T> input, csl::View<T> bias,
@@ -20,6 +20,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
         std::size_t height_norm, std::size_t width_norm,
         bool if_true_sigmoid_else_softmax, bool new_coords);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_REGION_HPP */

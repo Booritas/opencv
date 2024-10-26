@@ -48,7 +48,7 @@ The references are:
 #pragma warning( disable : 4127 )
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 void makeAgastOffsets(int pixel[16], int rowStride, int type)
@@ -9399,4 +9399,4 @@ int agast_cornerScore<AgastFeatureDetector::AGAST_5_8>(const uchar* ptr, const i
     }
 }
 
-} // namespace cv
+} // namespace ncvslideio

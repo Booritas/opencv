@@ -15,7 +15,7 @@
 
 #include "compiler/gmodel.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
     struct SubgraphMatch {
@@ -89,14 +89,14 @@ namespace gimpl {
        }
     };
 
-    GAPI_EXPORTS SubgraphMatch findMatches(const cv::gimpl::GModel::Graph& patternGraph,
-                                           const cv::gimpl::GModel::Graph& compGraph);
+    GAPI_EXPORTS SubgraphMatch findMatches(const ncvslideio::gimpl::GModel::Graph& patternGraph,
+                                           const ncvslideio::gimpl::GModel::Graph& compGraph);
 
-    GAPI_EXPORTS void performSubstitution(cv::gimpl::GModel::Graph& graph,
-                                          const cv::gimpl::Protocol& patternP,
-                                          const cv::gimpl::Protocol& substituteP,
-                                          const cv::gimpl::SubgraphMatch& patternToGraphMatch);
+    GAPI_EXPORTS void performSubstitution(ncvslideio::gimpl::GModel::Graph& graph,
+                                          const ncvslideio::gimpl::Protocol& patternP,
+                                          const ncvslideio::gimpl::Protocol& substituteP,
+                                          const ncvslideio::gimpl::SubgraphMatch& patternToGraphMatch);
 
 } //namespace gimpl
-} //namespace cv
+} //namespace ncvslideio
 #endif // OPENCV_GAPI_PATTERN_MATCHING_HPP

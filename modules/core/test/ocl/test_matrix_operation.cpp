@@ -150,7 +150,7 @@ PARAM_TEST_CASE(CopyTo, MatDepth, Channels, bool, bool)
             if (!one_cn_mask && randomDouble(0.0, 2.0) > 1.0)
                 mask_cn = cn;
             randomSubMat(mask, mask_roi, roiSize, maskBorder, CV_8UC(mask_cn), 0, 2);
-            cv::threshold(mask, mask, 0.5, 255., THRESH_BINARY);
+            ncvslideio::threshold(mask, mask, 0.5, 255., THRESH_BINARY);
         }
 
         Border dstBorder = randomBorder(0, use_roi ? MAX_VALUE : 0);

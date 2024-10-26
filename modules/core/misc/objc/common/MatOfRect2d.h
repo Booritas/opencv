@@ -20,8 +20,8 @@ CV_EXPORTS @interface MatOfRect2d : Mat
 #pragma mark - Constructors
 
 #ifdef __cplusplus
-- (instancetype)initWithNativeMat:(cv::Mat*)nativeMat;
-+ (instancetype)fromNative:(cv::Mat*)nativeMat;
+- (instancetype)initWithNativeMat:(ncvslideio::Mat*)nativeMat;
++ (instancetype)fromNative:(ncvslideio::Mat*)nativeMat;
 #endif
 
 /**

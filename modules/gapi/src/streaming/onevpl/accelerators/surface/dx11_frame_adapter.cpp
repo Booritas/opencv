@@ -19,7 +19,7 @@
 #include <inference_engine.hpp>
 #endif // HAVE_INF_ENGINE
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -73,7 +73,7 @@ MediaFrame::View VPLMediaFrameDX11Adapter::access(MediaFrame::Access mode) {
 
     GAPI_LOG_DEBUG(nullptr, "FINISH lock frame in surface: " << surface_ptr_copy->get_handle() <<
                             ", frame id: " << frame_id);
-    using stride_t = typename cv::MediaFrame::View::Strides::value_type;
+    using stride_t = typename ncvslideio::MediaFrame::View::Strides::value_type;
     stride_t pitch = static_cast<stride_t>(data.Pitch);
 
     auto release_guard = [surface_ptr_copy, frame_id, mode] () {
@@ -93,9 +93,9 @@ MediaFrame::View VPLMediaFrameDX11Adapter::access(MediaFrame::Access mode) {
         case MFX_FOURCC_I420:
         {
             GAPI_Assert(data.Y && data.U && data.V && "MFX_FOURCC_I420 frame data is nullptr");
-            cv::MediaFrame::View::Ptrs pp = { data.Y, data.U, data.V, nullptr };
-            cv::MediaFrame::View::Strides ss = { pitch, pitch / 2, pitch / 2, 0u };
-            return cv::MediaFrame::View(std::move(pp), std::move(ss), release_guard);
+            ncvslideio::MediaFrame::View::Ptrs pp = { data.Y, data.U, data.V, nullptr };
+            ncvslideio::MediaFrame::View::Strides ss = { pitch, pitch / 2, pitch / 2, 0u };
+            return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), release_guard);
         }
         case MFX_FOURCC_NV12:
         {
@@ -104,9 +104,9 @@ MediaFrame::View VPLMediaFrameDX11Adapter::access(MediaFrame::Access mode) {
                                           ", frame id: " << frame_id);
             }
             GAPI_Assert(data.Y && data.UV && "MFX_FOURCC_NV12 frame data is nullptr");
-            cv::MediaFrame::View::Ptrs pp = { data.Y, data.UV, nullptr, nullptr };
-            cv::MediaFrame::View::Strides ss = { pitch, pitch, 0u, 0u };
-            return cv::MediaFrame::View(std::move(pp), std::move(ss), release_guard);
+            ncvslideio::MediaFrame::View::Ptrs pp = { data.Y, data.UV, nullptr, nullptr };
+            ncvslideio::MediaFrame::View::Strides ss = { pitch, pitch, 0u, 0u };
+            return ncvslideio::MediaFrame::View(std::move(pp), std::move(ss), release_guard);
         }
             break;
         default:
@@ -124,7 +124,7 @@ mfxHDLPair VPLMediaFrameDX11Adapter::getHandle() const {
     return handle;
 }
 
-cv::util::any VPLMediaFrameDX11Adapter::blobParams() const {
+ncvslideio::util::any VPLMediaFrameDX11Adapter::blobParams() const {
     /*GAPI_Error("VPLMediaFrameDX11Adapter::blobParams() is not fully integrated"
                          "in OpenVINO InferenceEngine and would be temporary disable.");*/
 #ifdef HAVE_INF_ENGINE
@@ -166,11 +166,11 @@ cv::util::any VPLMediaFrameDX11Adapter::blobParams() const {
 #endif // HAVE_INF_ENGINE
 }
 
-void VPLMediaFrameDX11Adapter::serialize(cv::gapi::s11n::IOStream&) {
+void VPLMediaFrameDX11Adapter::serialize(ncvslideio::gapi::s11n::IOStream&) {
     GAPI_Error("VPLMediaFrameDX11Adapter::serialize() is not implemented");
 }
 
-void VPLMediaFrameDX11Adapter::deserialize(cv::gapi::s11n::IIStream&) {
+void VPLMediaFrameDX11Adapter::deserialize(ncvslideio::gapi::s11n::IIStream&) {
     GAPI_Error("VPLMediaFrameDX11Adapter::deserialize() is not implemented");
 }
 
@@ -210,7 +210,7 @@ DXGI_FORMAT VPLMediaFrameDX11Adapter::get_dx11_color_format(uint32_t mfx_fourcc)
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_D3D11
 #endif // HAVE_DIRECTX
 #endif // HAVE_ONEVPL

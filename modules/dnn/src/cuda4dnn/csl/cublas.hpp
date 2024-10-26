@@ -19,9 +19,9 @@
 #include <utility>
 
 #define CUDA4DNN_CHECK_CUBLAS(call) \
-    ::cv::dnn::cuda4dnn::csl::cublas::detail::check((call), CV_Func, __FILE__, __LINE__)
+    ::ncvslideio::dnn::cuda4dnn::csl::cublas::detail::check((call), CV_Func, __FILE__, __LINE__)
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cublas {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace cublas {
 
     /** @brief exception class for errors thrown by the cuBLAS API */
     class cuBLASException : public CUDAException {
@@ -503,6 +503,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace cu
         CUDA4DNN_CHECK_CUDA(cudaFree(dev_C_slices));
     }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::cublas */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::cublas */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_CUBLAS_HPP */

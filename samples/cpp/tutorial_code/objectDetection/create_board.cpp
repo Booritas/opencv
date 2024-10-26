@@ -3,7 +3,7 @@
 #include <iostream>
 #include "aruco_samples_utility.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Create an ArUco grid board image";

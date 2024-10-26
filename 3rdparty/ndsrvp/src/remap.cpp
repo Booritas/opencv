@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/hal/interface.h"
 #include "cvutils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -185,4 +185,4 @@ int remap32f(int src_type, const uchar* src_data, size_t src_step, int src_width
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio

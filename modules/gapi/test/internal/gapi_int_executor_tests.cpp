@@ -16,7 +16,7 @@ namespace opencv_test
 namespace
 {
 
-class GMockExecutable final: public cv::gimpl::GIslandExecutable
+class GMockExecutable final: public ncvslideio::gimpl::GIslandExecutable
 {
     virtual inline bool canReshape() const override {
         return m_priv->m_can_reshape;
@@ -33,10 +33,10 @@ class GMockExecutable final: public cv::gimpl::GIslandExecutable
         return true;
     }
 
-    virtual cv::RMat allocate(const cv::GMatDesc&) const override
+    virtual ncvslideio::RMat allocate(const ncvslideio::GMatDesc&) const override
     {
         m_priv->m_allocate_counter++;
-        return cv::RMat();
+        return ncvslideio::RMat();
     }
 
     // NB: GMockBackendImpl creates new unique_ptr<GMockExecutable>
@@ -63,14 +63,14 @@ public:
     int getAllocateCounter() const { return m_priv->m_allocate_counter; }
 };
 
-class GMockBackendImpl final: public cv::gapi::GBackend::Priv
+class GMockBackendImpl final: public ncvslideio::gapi::GBackend::Priv
 {
     virtual void unpackKernel(ade::Graph            &,
                               const ade::NodeHandle &,
-                              const cv::GKernelImpl &) override { }
+                              const ncvslideio::GKernelImpl &) override { }
 
     virtual EPtr compile(const ade::Graph &,
-                         const cv::GCompileArgs &,
+                         const ncvslideio::GCompileArgs &,
                          const std::vector<ade::NodeHandle> &) const override
     {
         ++m_compile_counter;
@@ -84,7 +84,7 @@ class GMockBackendImpl final: public cv::gapi::GBackend::Priv
         return true;
     }
 
-    virtual bool allowsMerge(const cv::gimpl::GIslandModel::Graph &,
+    virtual bool allowsMerge(const ncvslideio::gimpl::GIslandModel::Graph &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &,
                              const ade::NodeHandle &) const override {
@@ -99,7 +99,7 @@ public:
 class GMockFunctor : public gapi::cpu::GOCVFunctor
 {
 public:
-    GMockFunctor(cv::gapi::GBackend backend,
+    GMockFunctor(ncvslideio::gapi::GBackend backend,
                  const char* id,
                  const Meta &meta,
                  const Impl& impl)
@@ -107,16 +107,16 @@ public:
     {
     }
 
-    cv::gapi::GBackend backend() const override { return m_backend; }
+    ncvslideio::gapi::GBackend backend() const override { return m_backend; }
 
 private:
-    cv::gapi::GBackend m_backend;
+    ncvslideio::gapi::GBackend m_backend;
 };
 
 template<typename K, typename Callable>
-GMockFunctor mock_kernel(const cv::gapi::GBackend& backend, Callable c)
+GMockFunctor mock_kernel(const ncvslideio::gapi::GBackend& backend, Callable c)
 {
-    using P = cv::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
+    using P = ncvslideio::detail::OCVCallHelper<Callable, typename K::InArgs, typename K::OutArgs>;
     return GMockFunctor{ backend
                        , K::id()
                        , &K::getOutMeta
@@ -124,38 +124,38 @@ GMockFunctor mock_kernel(const cv::gapi::GBackend& backend, Callable c)
                        };
 }
 
-void dummyFooImpl(const cv::Mat&, cv::Mat&)                 { }
-void dummyBarImpl(const cv::Mat&, const cv::Mat&, cv::Mat&) { }
+void dummyFooImpl(const ncvslideio::Mat&, ncvslideio::Mat&)                 { }
+void dummyBarImpl(const ncvslideio::Mat&, const ncvslideio::Mat&, ncvslideio::Mat&) { }
 
 struct GExecutorReshapeTest: public ::testing::Test
 {
     GExecutorReshapeTest()
         : comp([](){
-                cv::GMat in;
-                cv::GMat out = I::Bar::on(I::Foo::on(in), in);
-                return cv::GComputation(in, out);
+                ncvslideio::GMat in;
+                ncvslideio::GMat out = I::Bar::on(I::Foo::on(in), in);
+                return ncvslideio::GComputation(in, out);
           })
     {
         backend_impl1 = std::make_shared<GMockBackendImpl>(island1);
-        backend1      = cv::gapi::GBackend{backend_impl1};
+        backend1      = ncvslideio::gapi::GBackend{backend_impl1};
         backend_impl2 = std::make_shared<GMockBackendImpl>(island2);
-        backend2      = cv::gapi::GBackend{backend_impl2};
+        backend2      = ncvslideio::gapi::GBackend{backend_impl2};
         auto kernel1  = mock_kernel<I::Foo>(backend1, dummyFooImpl);
         auto kernel2  = mock_kernel<I::Bar>(backend2, dummyBarImpl);
-        pkg           = cv::gapi::kernels(kernel1, kernel2);
-        in_mat1       = cv::Mat::eye(32, 32, CV_8UC1);
-        in_mat2       = cv::Mat::eye(64, 64, CV_8UC1);
+        pkg           = ncvslideio::gapi::kernels(kernel1, kernel2);
+        in_mat1       = ncvslideio::Mat::eye(32, 32, CV_8UC1);
+        in_mat2       = ncvslideio::Mat::eye(64, 64, CV_8UC1);
     }
 
-    cv::GComputation                  comp;
+    ncvslideio::GComputation                  comp;
     GMockExecutable                   island1;
     std::shared_ptr<GMockBackendImpl> backend_impl1;
-    cv::gapi::GBackend                backend1;
+    ncvslideio::gapi::GBackend                backend1;
     GMockExecutable                   island2;
     std::shared_ptr<GMockBackendImpl> backend_impl2;
-    cv::gapi::GBackend                backend2;
-    cv::GKernelPackage                pkg;
-    cv::Mat                           in_mat1, in_mat2, out_mat;
+    ncvslideio::gapi::GBackend                backend2;
+    ncvslideio::GKernelPackage                pkg;
+    ncvslideio::Mat                           in_mat1, in_mat2, out_mat;
 };
 
 } // anonymous namespace
@@ -164,18 +164,18 @@ struct GExecutorReshapeTest: public ::testing::Test
 // The below graph and config is taken from ComplexIslands test suite
 TEST(GExecutor, SmokeTest)
 {
-    cv::GMat    in[2];
-    cv::GMat    tmp[4];
-    cv::GScalar scl;
-    cv::GMat    out[2];
+    ncvslideio::GMat    in[2];
+    ncvslideio::GMat    tmp[4];
+    ncvslideio::GScalar scl;
+    ncvslideio::GMat    out[2];
 
-    tmp[0] = cv::gapi::bitwise_not(cv::gapi::bitwise_not(in[0]));
-    tmp[1] = cv::gapi::boxFilter(in[1], -1, cv::Size(3,3));
+    tmp[0] = ncvslideio::gapi::bitwise_not(ncvslideio::gapi::bitwise_not(in[0]));
+    tmp[1] = ncvslideio::gapi::boxFilter(in[1], -1, ncvslideio::Size(3,3));
     tmp[2] = tmp[0] + tmp[1]; // FIXME: handle tmp[2] = tmp[0]+tmp[2] typo
-    scl    = cv::gapi::sum(tmp[1]);
-    tmp[3] = cv::gapi::medianBlur(tmp[1], 3);
+    scl    = ncvslideio::gapi::sum(tmp[1]);
+    tmp[3] = ncvslideio::gapi::medianBlur(tmp[1], 3);
     out[0] = tmp[2] + scl;
-    out[1] = cv::gapi::boxFilter(tmp[3], -1, cv::Size(3,3));
+    out[1] = ncvslideio::gapi::boxFilter(tmp[3], -1, ncvslideio::Size(3,3));
 
     //       isl0                                         #internal1
     //       ...........................                  .........
@@ -191,33 +191,33 @@ TEST(GExecutor, SmokeTest)
     //                   `------------> Median -> (tmp3) --> Blur -------> (out2)
     //                               :............................:
 
-    cv::gapi::island("isl0", cv::GIn(in[0], tmp[1]),  cv::GOut(tmp[2]));
-    cv::gapi::island("isl1", cv::GIn(tmp[1]), cv::GOut(out[1]));
+    ncvslideio::gapi::island("isl0", ncvslideio::GIn(in[0], tmp[1]),  ncvslideio::GOut(tmp[2]));
+    ncvslideio::gapi::island("isl1", ncvslideio::GIn(tmp[1]), ncvslideio::GOut(out[1]));
 
-    cv::Mat in_mat1 = cv::Mat::eye(32, 32, CV_8UC1);
-    cv::Mat in_mat2 = cv::Mat::eye(32, 32, CV_8UC1);
-    cv::Mat out_gapi[2];
+    ncvslideio::Mat in_mat1 = ncvslideio::Mat::eye(32, 32, CV_8UC1);
+    ncvslideio::Mat in_mat2 = ncvslideio::Mat::eye(32, 32, CV_8UC1);
+    ncvslideio::Mat out_gapi[2];
 
     // Run G-API:
-    cv::GComputation(cv::GIn(in[0],   in[1]),    cv::GOut(out[0],      out[1]))
-              .apply(cv::gin(in_mat1, in_mat2),  cv::gout(out_gapi[0], out_gapi[1]));
+    ncvslideio::GComputation(ncvslideio::GIn(in[0],   in[1]),    ncvslideio::GOut(out[0],      out[1]))
+              .apply(ncvslideio::gin(in_mat1, in_mat2),  ncvslideio::gout(out_gapi[0], out_gapi[1]));
 
     // Run OpenCV
-    cv::Mat out_ocv[2];
+    ncvslideio::Mat out_ocv[2];
     {
-        cv::Mat    ocv_tmp0;
-        cv::Mat    ocv_tmp1;
-        cv::Mat    ocv_tmp2;
-        cv::Mat    ocv_tmp3;
-        cv::Scalar ocv_scl;
+        ncvslideio::Mat    ocv_tmp0;
+        ncvslideio::Mat    ocv_tmp1;
+        ncvslideio::Mat    ocv_tmp2;
+        ncvslideio::Mat    ocv_tmp3;
+        ncvslideio::Scalar ocv_scl;
 
         ocv_tmp0 = in_mat1; // skip !(!)
-        cv::boxFilter(in_mat2, ocv_tmp1, -1, cv::Size(3,3));
+        ncvslideio::boxFilter(in_mat2, ocv_tmp1, -1, ncvslideio::Size(3,3));
         ocv_tmp2 = ocv_tmp0 + ocv_tmp1;
-        ocv_scl  = cv::sum(ocv_tmp1);
-        cv::medianBlur(ocv_tmp1, ocv_tmp3, 3);
+        ocv_scl  = ncvslideio::sum(ocv_tmp1);
+        ncvslideio::medianBlur(ocv_tmp1, ocv_tmp3, 3);
         out_ocv[0] = ocv_tmp2 + ocv_scl;
-        cv::boxFilter(ocv_tmp3, out_ocv[1], -1, cv::Size(3,3));
+        ncvslideio::boxFilter(ocv_tmp3, out_ocv[1], -1, ncvslideio::Size(3,3));
     }
 
     EXPECT_EQ(0, cvtest::norm(out_gapi[0], out_ocv[0], NORM_INF));
@@ -236,7 +236,7 @@ TEST_F(GExecutorReshapeTest, ReshapeInsteadOfRecompile)
     EXPECT_EQ(0, island2.getReshapeCounter());
 
     // NB: First compilation.
-    comp.apply(cv::gin(in_mat1), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(1, backend_impl1->getCompileCounter());
     EXPECT_EQ(1, backend_impl2->getCompileCounter());
     EXPECT_EQ(0, island1.getReshapeCounter());
@@ -244,7 +244,7 @@ TEST_F(GExecutorReshapeTest, ReshapeInsteadOfRecompile)
 
     // NB: GMockBackendImpl implements "reshape" method,
     // so it won't be recompiled if the meta is changed.
-    comp.apply(cv::gin(in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(1, backend_impl1->getCompileCounter());
     EXPECT_EQ(1, backend_impl2->getCompileCounter());
     EXPECT_EQ(1, island1.getReshapeCounter());
@@ -263,7 +263,7 @@ TEST_F(GExecutorReshapeTest, OneBackendNotReshapable)
     EXPECT_EQ(0, island2.getReshapeCounter());
 
     // NB: First compilation.
-    comp.apply(cv::gin(in_mat1), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(1, backend_impl1->getCompileCounter());
     EXPECT_EQ(1, backend_impl2->getCompileCounter());
     EXPECT_EQ(0, island1.getReshapeCounter());
@@ -271,7 +271,7 @@ TEST_F(GExecutorReshapeTest, OneBackendNotReshapable)
 
     // NB: Since one of islands isn't reshapable
     // the entire graph isn't reshapable as well.
-    comp.apply(cv::gin(in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(2, backend_impl1->getCompileCounter());
     EXPECT_EQ(2, backend_impl2->getCompileCounter());
     EXPECT_EQ(0, island1.getReshapeCounter());
@@ -285,35 +285,35 @@ TEST_F(GExecutorReshapeTest, ReshapeCallAllocate)
     EXPECT_EQ(0, island1.getReshapeCounter());
 
     // NB: First compilation.
-    comp.apply(cv::gin(in_mat1), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(1, island1.getAllocateCounter());
     EXPECT_EQ(0, island1.getReshapeCounter());
 
     // NB: The entire graph is reshapable, so it won't be recompiled, but reshaped.
     // Check that reshape call "allocate" to reallocate buffers.
-    comp.apply(cv::gin(in_mat2), cv::gout(out_mat), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat2), ncvslideio::gout(out_mat), ncvslideio::compile_args(pkg));
     EXPECT_EQ(2, island1.getAllocateCounter());
     EXPECT_EQ(1, island1.getReshapeCounter());
 }
 
 TEST_F(GExecutorReshapeTest, CPUBackendIsReshapable)
 {
-    comp = cv::GComputation([](){
-        cv::GMat in;
-        cv::GMat foo = I::Foo::on(in);
-        cv::GMat out = cv::gapi::bitwise_not(cv::gapi::bitwise_not(in));
-        return cv::GComputation(cv::GIn(in), cv::GOut(foo, out));
+    comp = ncvslideio::GComputation([](){
+        ncvslideio::GMat in;
+        ncvslideio::GMat foo = I::Foo::on(in);
+        ncvslideio::GMat out = ncvslideio::gapi::bitwise_not(ncvslideio::gapi::bitwise_not(in));
+        return ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(foo, out));
     });
     // NB: Initial state
     EXPECT_EQ(0, island1.getReshapeCounter());
 
     // NB: First compilation.
-    cv::Mat out_mat2;
-    comp.apply(cv::gin(in_mat1), cv::gout(out_mat, out_mat2), cv::compile_args(pkg));
+    ncvslideio::Mat out_mat2;
+    comp.apply(ncvslideio::gin(in_mat1), ncvslideio::gout(out_mat, out_mat2), ncvslideio::compile_args(pkg));
     EXPECT_EQ(0, island1.getReshapeCounter());
 
     // NB: The entire graph is reshapable, so it won't be recompiled, but reshaped.
-    comp.apply(cv::gin(in_mat2), cv::gout(out_mat, out_mat2), cv::compile_args(pkg));
+    comp.apply(ncvslideio::gin(in_mat2), ncvslideio::gout(out_mat, out_mat2), ncvslideio::compile_args(pkg));
     EXPECT_EQ(1, island1.getReshapeCounter());
     EXPECT_EQ(0, cvtest::norm(out_mat2, in_mat2, NORM_INF));
 }

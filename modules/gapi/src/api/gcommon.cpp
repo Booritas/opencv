@@ -9,10 +9,10 @@
 #include <opencv2/gapi/gcommon.hpp>
 #include <opencv2/core/utility.hpp>
 
-cv::use_threaded_executor::use_threaded_executor()
-    : num_threads(cv::getNumThreads()) {
+ncvslideio::use_threaded_executor::use_threaded_executor()
+    : num_threads(ncvslideio::getNumThreads()) {
 }
 
-cv::use_threaded_executor::use_threaded_executor(const uint32_t nthreads)
+ncvslideio::use_threaded_executor::use_threaded_executor(const uint32_t nthreads)
     : num_threads(nthreads) {
 }

@@ -75,7 +75,7 @@ OCL_PERF_TEST_P(MergeFixture, Merge,
     }
     declare.out(dst);
 
-    OCL_TEST_CYCLE() cv::merge(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::merge(src, dst);
 
     SANITY_CHECK(dst);
 }
@@ -103,7 +103,7 @@ OCL_PERF_TEST_P(SplitFixture, Split,
     for (int i = 0; i < cn; ++i)
         declare.in(dst[i]);
 
-    OCL_TEST_CYCLE() cv::split(src, dst);
+    OCL_TEST_CYCLE() ncvslideio::split(src, dst);
 
     ASSERT_EQ(cn, (int)dst.size());
 
@@ -147,7 +147,7 @@ OCL_PERF_TEST_P(MixChannelsFixture, MixChannels,
 
     int fromTo[] = { 1,2, 2,0, 0,3, 3,1 };
 
-    OCL_TEST_CYCLE() cv::mixChannels(src, dst, fromTo, 4);
+    OCL_TEST_CYCLE() ncvslideio::mixChannels(src, dst, fromTo, 4);
 
     UMat & dst0 = dst[0], & dst1 = dst[1];
     SANITY_CHECK(dst0);
@@ -156,7 +156,7 @@ OCL_PERF_TEST_P(MixChannelsFixture, MixChannels,
 
 ///////////// InsertChannel ////////////////////////
 
-typedef tuple<cv::Size, MatDepth> Size_MatDepth_t;
+typedef tuple<ncvslideio::Size, MatDepth> Size_MatDepth_t;
 typedef TestBaseWithParam<Size_MatDepth_t> Size_MatDepth;
 
 typedef Size_MatDepth InsertChannelFixture;
@@ -174,7 +174,7 @@ OCL_PERF_TEST_P(InsertChannelFixture, InsertChannel,
     UMat src(srcSize, depth), dst(srcSize, type, Scalar::all(17));
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::insertChannel(src, dst, 1);
+    OCL_TEST_CYCLE() ncvslideio::insertChannel(src, dst, 1);
 
     SANITY_CHECK(dst);
 }
@@ -196,7 +196,7 @@ OCL_PERF_TEST_P(ExtractChannelFixture, ExtractChannel,
     UMat src(srcSize, type), dst(srcSize, depth);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::extractChannel(src, dst, 1);
+    OCL_TEST_CYCLE() ncvslideio::extractChannel(src, dst, 1);
 
     SANITY_CHECK(dst);
 }

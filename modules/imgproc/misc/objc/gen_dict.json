@@ -71,7 +71,7 @@
                              "hull"   : {"ctype" : "vector_int"},
                              "returnPoints" : {"ctype" : ""} },
             "getStructuringElement" : { "shape" : {"ctype" : "MorphShapes"} },
-            "EMD" : {"lowerBound" : {"defval" : "cv::Ptr<float>()"},
+            "EMD" : {"lowerBound" : {"defval" : "ncvslideio::Ptr<float>()"},
                      "distType" : {"ctype" : "DistanceTypes"}},
             "createLineSegmentDetector" : { "_refine" : {"ctype" : "LineSegmentDetectorModes"}},
             "compareHist" : { "method" : {"ctype" : "HistCompMethods"}},

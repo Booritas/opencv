@@ -13,7 +13,7 @@
  * TODO Changed CvHaarEvaluator based on ADABOOSTING implementation (Grabner et al.)
  */
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -118,8 +118,8 @@ public:
         void generateRandomFeature(Size imageSize);
         float getSum(const Mat& image, Rect imgROI) const;
         std::vector<Rect> m_areas;  // areas within the patch over which to compute the feature
-        cv::Size m_initSize;  // size of the patch used during training
-        cv::Size m_curSize;  // size of the patches currently under investigation
+        ncvslideio::Size m_initSize;  // size of the patch used during training
+        ncvslideio::Size m_curSize;  // size of the patches currently under investigation
         float m_scaleFactorHeight;  // scaling factor in vertical direction
         float m_scaleFactorWidth;  // scaling factor in horizontal direction
         std::vector<Rect> m_scaleAreas;  // areas after scaling
@@ -148,7 +148,7 @@ protected:
 
     /* TODO Added from MIL implementation */
     Mat _ii_img;
-    void compute_integral(const cv::Mat& img, std::vector<cv::Mat_<float>>& ii_imgs)
+    void compute_integral(const ncvslideio::Mat& img, std::vector<ncvslideio::Mat_<float>>& ii_imgs)
     {
         Mat ii_img;
         integral(img, ii_img, CV_32F);
@@ -163,6 +163,6 @@ protected:
 
 //! @}
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking
 
 #endif

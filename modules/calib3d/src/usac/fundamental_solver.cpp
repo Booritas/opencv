@@ -9,7 +9,7 @@
 #include <Eigen/Eigen>
 #endif
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class FundamentalMinimalSolver7ptsImpl: public FundamentalMinimalSolver7pts {
 private:
     Mat points_mat;
@@ -80,7 +80,7 @@ public:
             }
         } else {
             Mat U, Vt, D;
-            cv::Matx<double, 7, 9> A(&a[0]);
+            ncvslideio::Matx<double, 7, 9> A(&a[0]);
             SVD::compute(A, D, U, Vt, SVD::FULL_UV+SVD::MODIFY_A);
             const auto * const vt = (double *) Vt.data;
             int i1 = 8*9, i2 = 7*9;
@@ -552,8 +552,8 @@ public:
         if (sample_size < 5) return 0;
         const Matx33d E = is_fundamental ? K2_t * Matx33d(model) * K1 : model;
         RNG rng (sample_size);
-        cv::Matx33d R1, R2; cv::Vec3d t;
-        cv::decomposeEssentialMat(E, R1, R2, t);
+        ncvslideio::Matx33d R1, R2; ncvslideio::Vec3d t;
+        ncvslideio::decomposeEssentialMat(E, R1, R2, t);
         int positive_depth[4] = {0};
         const auto * const pts_ = (float *) calib_points.data;
         // a few point are enough to test

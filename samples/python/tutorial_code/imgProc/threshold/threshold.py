@@ -16,10 +16,10 @@ def Threshold_Demo(val):
     #2: Threshold Truncated
     #3: Threshold to Zero
     #4: Threshold to Zero Inverted
-    threshold_type = cv.getTrackbarPos(trackbar_type, window_name)
-    threshold_value = cv.getTrackbarPos(trackbar_value, window_name)
-    _, dst = cv.threshold(src_gray, threshold_value, max_binary_value, threshold_type )
-    cv.imshow(window_name, dst)
+    threshold_type = ncvslideio.getTrackbarPos(trackbar_type, window_name)
+    threshold_value = ncvslideio.getTrackbarPos(trackbar_value, window_name)
+    _, dst = ncvslideio.threshold(src_gray, threshold_value, max_binary_value, threshold_type )
+    ncvslideio.imshow(window_name, dst)
 ## [Threshold_Demo]
 
 parser = argparse.ArgumentParser(description='Code for Basic Thresholding Operations tutorial.')
@@ -28,12 +28,12 @@ args = parser.parse_args()
 
 ## [load]
 # Load an image
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image: ', args.input)
     exit(0)
 # Convert the image to Gray
-src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
 ## [load]
 
 ## [window]

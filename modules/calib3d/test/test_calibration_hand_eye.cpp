@@ -42,7 +42,7 @@ static void generatePose(RNG& rng, double min_theta, double max_theta,
         tvec.at<double>(2,0) *= std::copysign(1.0, rng.uniform(-1.0, 1.0));
     }
 
-    cv::Rodrigues(rvec, R);
+    ncvslideio::Rodrigues(rvec, R);
 }
 
 static Mat homogeneousInverse(const Mat& T)
@@ -106,12 +106,12 @@ static void simulateDataEyeInHand(RNG& rng, int nPoses,
             //Add some noise for the transformation between the target and the camera
             Mat R_target2cam_noise = T_target2cam(Rect(0, 0, 3, 3));
             Mat rvec_target2cam_noise;
-            cv::Rodrigues(R_target2cam_noise, rvec_target2cam_noise);
+            ncvslideio::Rodrigues(R_target2cam_noise, rvec_target2cam_noise);
             rvec_target2cam_noise.at<double>(0,0) += rng.gaussian(0.002);
             rvec_target2cam_noise.at<double>(1,0) += rng.gaussian(0.002);
             rvec_target2cam_noise.at<double>(2,0) += rng.gaussian(0.002);
 
-            cv::Rodrigues(rvec_target2cam_noise, R_target2cam_noise);
+            ncvslideio::Rodrigues(rvec_target2cam_noise, R_target2cam_noise);
 
             Mat t_target2cam_noise = T_target2cam(Rect(3, 0, 1, 3));
             t_target2cam_noise.at<double>(0,0) += rng.gaussian(0.005);
@@ -121,12 +121,12 @@ static void simulateDataEyeInHand(RNG& rng, int nPoses,
             //Add some noise for the transformation between the gripper and the robot base
             Mat R_gripper2base_noise = T_gripper2base(Rect(0, 0, 3, 3));
             Mat rvec_gripper2base_noise;
-            cv::Rodrigues(R_gripper2base_noise, rvec_gripper2base_noise);
+            ncvslideio::Rodrigues(R_gripper2base_noise, rvec_gripper2base_noise);
             rvec_gripper2base_noise.at<double>(0,0) += rng.gaussian(0.001);
             rvec_gripper2base_noise.at<double>(1,0) += rng.gaussian(0.001);
             rvec_gripper2base_noise.at<double>(2,0) += rng.gaussian(0.001);
 
-            cv::Rodrigues(rvec_gripper2base_noise, R_gripper2base_noise);
+            ncvslideio::Rodrigues(rvec_gripper2base_noise, R_gripper2base_noise);
 
             Mat t_gripper2base_noise = T_gripper2base(Rect(3, 0, 1, 3));
             t_gripper2base_noise.at<double>(0,0) += rng.gaussian(0.001);
@@ -136,7 +136,7 @@ static void simulateDataEyeInHand(RNG& rng, int nPoses,
 
         //Test rvec representation
         Mat rvec_target2cam;
-        cv::Rodrigues(T_target2cam(Rect(0, 0, 3, 3)), rvec_target2cam);
+        ncvslideio::Rodrigues(T_target2cam(Rect(0, 0, 3, 3)), rvec_target2cam);
         R_target2cam.push_back(rvec_target2cam);
         t_target2cam.push_back(T_target2cam(Rect(3, 0, 1, 3)));
     }
@@ -188,12 +188,12 @@ static void simulateDataEyeToHand(RNG& rng, int nPoses,
             //Add some noise for the transformation between the target and the camera
             Mat R_target2cam_noise = T_target2cam(Rect(0, 0, 3, 3));
             Mat rvec_target2cam_noise;
-            cv::Rodrigues(R_target2cam_noise, rvec_target2cam_noise);
+            ncvslideio::Rodrigues(R_target2cam_noise, rvec_target2cam_noise);
             rvec_target2cam_noise.at<double>(0,0) += rng.gaussian(0.002);
             rvec_target2cam_noise.at<double>(1,0) += rng.gaussian(0.002);
             rvec_target2cam_noise.at<double>(2,0) += rng.gaussian(0.002);
 
-            cv::Rodrigues(rvec_target2cam_noise, R_target2cam_noise);
+            ncvslideio::Rodrigues(rvec_target2cam_noise, R_target2cam_noise);
 
             Mat t_target2cam_noise = T_target2cam(Rect(3, 0, 1, 3));
             t_target2cam_noise.at<double>(0,0) += rng.gaussian(0.005);
@@ -202,12 +202,12 @@ static void simulateDataEyeToHand(RNG& rng, int nPoses,
 
             //Add some noise for the transformation between the robot base and the gripper
             Mat rvec_base2gripper_noise;
-            cv::Rodrigues(R_base2gripper_, rvec_base2gripper_noise);
+            ncvslideio::Rodrigues(R_base2gripper_, rvec_base2gripper_noise);
             rvec_base2gripper_noise.at<double>(0,0) += rng.gaussian(0.001);
             rvec_base2gripper_noise.at<double>(1,0) += rng.gaussian(0.001);
             rvec_base2gripper_noise.at<double>(2,0) += rng.gaussian(0.001);
 
-            cv::Rodrigues(rvec_base2gripper_noise, R_base2gripper_);
+            ncvslideio::Rodrigues(rvec_base2gripper_noise, R_base2gripper_);
 
             t_base2gripper_.at<double>(0,0) += rng.gaussian(0.001);
             t_base2gripper_.at<double>(1,0) += rng.gaussian(0.001);
@@ -219,7 +219,7 @@ static void simulateDataEyeToHand(RNG& rng, int nPoses,
 
         //Test rvec representation
         Mat rvec_target2cam;
-        cv::Rodrigues(T_target2cam(Rect(0, 0, 3, 3)), rvec_target2cam);
+        ncvslideio::Rodrigues(T_target2cam(Rect(0, 0, 3, 3)), rvec_target2cam);
         R_target2cam.push_back(rvec_target2cam);
         t_target2cam.push_back(T_target2cam(Rect(3, 0, 1, 3)));
     }
@@ -454,7 +454,7 @@ void CV_CalibrateHandEyeTest::run(int)
 {
     ts->set_failed_test_info(cvtest::TS::OK);
 
-    RNG& rng = cv::theRNG();
+    RNG& rng = ncvslideio::theRNG();
 
     std::vector<std::vector<double> > vec_rvec_diff(5);
     std::vector<std::vector<double> > vec_tvec_diff(5);
@@ -487,13 +487,13 @@ void CV_CalibrateHandEyeTest::run(int)
                 for (size_t idx = 0; idx < methods.size(); idx++)
                 {
                     Mat rvec_cam2base_true;
-                    cv::Rodrigues(R_cam2base_true, rvec_cam2base_true);
+                    ncvslideio::Rodrigues(R_cam2base_true, rvec_cam2base_true);
 
                     Mat R_cam2base_est, t_cam2base_est;
                     calibrateHandEye(R_base2gripper, t_base2gripper, R_target2cam, t_target2cam, R_cam2base_est, t_cam2base_est, methods[idx]);
 
                     Mat rvec_cam2base_est;
-                    cv::Rodrigues(R_cam2base_est, rvec_cam2base_est);
+                    ncvslideio::Rodrigues(R_cam2base_est, rvec_cam2base_est);
 
                     double rvecDiff = cvtest::norm(rvec_cam2base_true, rvec_cam2base_est, NORM_L2);
                     double tvecDiff = cvtest::norm(t_cam2base_true, t_cam2base_est, NORM_L2);
@@ -527,13 +527,13 @@ void CV_CalibrateHandEyeTest::run(int)
                 for (size_t idx = 0; idx < methods.size(); idx++)
                 {
                     Mat rvec_cam2base_true;
-                    cv::Rodrigues(R_cam2base_true, rvec_cam2base_true);
+                    ncvslideio::Rodrigues(R_cam2base_true, rvec_cam2base_true);
 
                     Mat R_cam2base_est, t_cam2base_est;
                     calibrateHandEye(R_base2gripper, t_base2gripper, R_target2cam, t_target2cam, R_cam2base_est, t_cam2base_est, methods[idx]);
 
                     Mat rvec_cam2base_est;
-                    cv::Rodrigues(R_cam2base_est, rvec_cam2base_est);
+                    ncvslideio::Rodrigues(R_cam2base_est, rvec_cam2base_est);
 
                     double rvecDiff = cvtest::norm(rvec_cam2base_true, rvec_cam2base_est, NORM_L2);
                     double tvecDiff = cvtest::norm(t_cam2base_true, t_cam2base_est, NORM_L2);
@@ -569,13 +569,13 @@ void CV_CalibrateHandEyeTest::run(int)
                 for (size_t idx = 0; idx < methods.size(); idx++)
                 {
                     Mat rvec_cam2gripper_true;
-                    cv::Rodrigues(R_cam2gripper_true, rvec_cam2gripper_true);
+                    ncvslideio::Rodrigues(R_cam2gripper_true, rvec_cam2gripper_true);
 
                     Mat R_cam2gripper_est, t_cam2gripper_est;
                     calibrateHandEye(R_gripper2base, t_gripper2base, R_target2cam, t_target2cam, R_cam2gripper_est, t_cam2gripper_est, methods[idx]);
 
                     Mat rvec_cam2gripper_est;
-                    cv::Rodrigues(R_cam2gripper_est, rvec_cam2gripper_est);
+                    ncvslideio::Rodrigues(R_cam2gripper_est, rvec_cam2gripper_est);
 
                     double rvecDiff = cvtest::norm(rvec_cam2gripper_true, rvec_cam2gripper_est, NORM_L2);
                     double tvecDiff = cvtest::norm(t_cam2gripper_true, t_cam2gripper_est, NORM_L2);
@@ -609,13 +609,13 @@ void CV_CalibrateHandEyeTest::run(int)
                 for (size_t idx = 0; idx < methods.size(); idx++)
                 {
                     Mat rvec_cam2gripper_true;
-                    cv::Rodrigues(R_cam2gripper_true, rvec_cam2gripper_true);
+                    ncvslideio::Rodrigues(R_cam2gripper_true, rvec_cam2gripper_true);
 
                     Mat R_cam2gripper_est, t_cam2gripper_est;
                     calibrateHandEye(R_gripper2base, t_gripper2base, R_target2cam, t_target2cam, R_cam2gripper_est, t_cam2gripper_est, methods[idx]);
 
                     Mat rvec_cam2gripper_est;
-                    cv::Rodrigues(R_cam2gripper_est, rvec_cam2gripper_est);
+                    ncvslideio::Rodrigues(R_cam2gripper_est, rvec_cam2gripper_est);
 
                     double rvecDiff = cvtest::norm(rvec_cam2gripper_true, rvec_cam2gripper_est, NORM_L2);
                     double tvecDiff = cvtest::norm(t_cam2gripper_true, t_cam2gripper_est, NORM_L2);
@@ -678,7 +678,7 @@ TEST(Calib3d_CalibrateHandEye, regression_17986)
                                                      CALIB_HAND_EYE_DANIILIDIS};
 
     for (auto method : methods) {
-        SCOPED_TRACE(cv::format("method=%s", getMethodName(method).c_str()));
+        SCOPED_TRACE(ncvslideio::format("method=%s", getMethodName(method).c_str()));
 
         Matx33d R_cam2base_est;
         Matx31d t_cam2base_est;
@@ -700,7 +700,7 @@ TEST(Calib3d_CalibrateRobotWorldHandEye, regression)
     for (size_t i = 0; i < R_world2cam.size(); i++)
     {
         Mat rvec;
-        cv::Rodrigues(R_world2cam[i], rvec);
+        ncvslideio::Rodrigues(R_world2cam[i], rvec);
         rvec_R_world2cam.push_back(rvec);
     }
 
@@ -712,7 +712,7 @@ TEST(Calib3d_CalibrateRobotWorldHandEye, regression)
     loadResults(wRb, wtb, cRg, ctg);
 
     for (auto method : methods) {
-        SCOPED_TRACE(cv::format("method=%s", getMethodName(method).c_str()));
+        SCOPED_TRACE(ncvslideio::format("method=%s", getMethodName(method).c_str()));
 
         Matx33d wRb_est, cRg_est;
         Matx31d wtb_est, ctg_est;
@@ -732,12 +732,12 @@ TEST(Calib3d_CalibrateRobotWorldHandEye, regression)
         //rotation error
         Matx33d wRw_est = wRb * wRb_est.t();
         Matx31d rvec_wRw_est;
-        cv::Rodrigues(wRw_est, rvec_wRw_est);
-        double X_rotation_error = cv::norm(rvec_wRw_est)*180/CV_PI;
+        ncvslideio::Rodrigues(wRw_est, rvec_wRw_est);
+        double X_rotation_error = ncvslideio::norm(rvec_wRw_est)*180/CV_PI;
         //translation error
-        double X_t_error = cv::norm(wtb_est - wtb);
-        SCOPED_TRACE(cv::format("X rotation error=%f", X_rotation_error));
-        SCOPED_TRACE(cv::format("X translation error=%f", X_t_error));
+        double X_t_error = ncvslideio::norm(wtb_est - wtb);
+        SCOPED_TRACE(ncvslideio::format("X rotation error=%f", X_rotation_error));
+        SCOPED_TRACE(ncvslideio::format("X translation error=%f", X_t_error));
         EXPECT_TRUE(X_rotation_error < rotation_threshold);
         EXPECT_TRUE(X_t_error < translation_threshold);
 
@@ -745,12 +745,12 @@ TEST(Calib3d_CalibrateRobotWorldHandEye, regression)
         //rotation error
         Matx33d cRc_est = cRg * cRg_est.t();
         Matx31d rvec_cMc_est;
-        cv::Rodrigues(cRc_est, rvec_cMc_est);
-        double Z_rotation_error = cv::norm(rvec_cMc_est)*180/CV_PI;
+        ncvslideio::Rodrigues(cRc_est, rvec_cMc_est);
+        double Z_rotation_error = ncvslideio::norm(rvec_cMc_est)*180/CV_PI;
         //translation error
-        double Z_t_error = cv::norm(ctg_est - ctg);
-        SCOPED_TRACE(cv::format("Z rotation error=%f", Z_rotation_error));
-        SCOPED_TRACE(cv::format("Z translation error=%f", Z_t_error));
+        double Z_t_error = ncvslideio::norm(ctg_est - ctg);
+        SCOPED_TRACE(ncvslideio::format("Z rotation error=%f", Z_rotation_error));
+        SCOPED_TRACE(ncvslideio::format("Z translation error=%f", Z_t_error));
         EXPECT_TRUE(Z_rotation_error < rotation_threshold);
         EXPECT_TRUE(Z_t_error < translation_threshold);
     }
@@ -762,79 +762,79 @@ TEST(Calib3d_CalibrateHandEye, regression_24871)
     std::vector<Mat> R_gripper2base, t_gripper2base;
     Mat T_true_cam2gripper;
 
-    T_true_cam2gripper = (cv::Mat_<double>(4, 4) <<  0,  0, -1, 0.1,
+    T_true_cam2gripper = (ncvslideio::Mat_<double>(4, 4) <<  0,  0, -1, 0.1,
                                                      1,  0,  0, 0.2,
                                                      0, -1,  0, 0.3,
                                                      0,  0,  0, 1);
 
-    R_target2cam.push_back((cv::Mat_<double>(3, 3) <<
+    R_target2cam.push_back((ncvslideio::Mat_<double>(3, 3) <<
             0.04964505493834381, 0.5136826827431226, 0.8565427426404346,
             -0.3923117691818854, 0.7987004864191318, -0.4562554205214679,
             -0.9184916136152514, -0.3133809733274676, 0.2411752915926112));
-    t_target2cam.push_back((cv::Mat_<double>(3, 1) <<
+    t_target2cam.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -1.588728904724121,
             0.07843752950429916,
             -1.002813339233398));
 
-    R_gripper2base.push_back((cv::Mat_<double>(3, 3) <<
+    R_gripper2base.push_back((ncvslideio::Mat_<double>(3, 3) <<
             -0.4143743581399177, -0.6105088815982459, -0.6749613298595637,
             -0.1598851232573451, -0.6812625208693498, 0.71436554019614,
             -0.895952364066927, 0.4039310376145889, 0.1846864320259794));
-    t_gripper2base.push_back((cv::Mat_<double>(3, 1) <<
+    t_gripper2base.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -1.249274406461827,
             -1.916570771580279,
             2.005069553422765));
 
-    R_target2cam.push_back((cv::Mat_<double>(3, 3) <<
+    R_target2cam.push_back((ncvslideio::Mat_<double>(3, 3) <<
             -0.3048000068139332, 0.6971848192711539, 0.6488684640388026,
             -0.9377589344241749, -0.3387497187353627, -0.07652979135179161,
             0.1664486009369332, -0.6318084803439735, 0.7570422097951847));
-    t_target2cam.push_back((cv::Mat_<double>(3, 1) <<
+    t_target2cam.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -1.906493663787842,
             -0.07281044125556946,
             0.6088893413543701));
 
-    R_gripper2base.push_back((cv::Mat_<double>(3, 3) <<
+    R_gripper2base.push_back((ncvslideio::Mat_<double>(3, 3) <<
             0.7262439860936567, -0.201662933718935, -0.6571923111439066,
             -0.4640017362244384, -0.8491808316335328, -0.2521791108852766,
             -0.5072199339965884, 0.4880819361030014, -0.7102844234575628));
-    t_gripper2base.push_back((cv::Mat_<double>(3, 1) <<
+    t_gripper2base.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -0.7375172846804027,
             -2.579760910816792,
             1.336561572270101));
 
-    R_target2cam.push_back((cv::Mat_<double>(3, 3) <<
+    R_target2cam.push_back((ncvslideio::Mat_<double>(3, 3) <<
             -0.590234879685801, -0.7051138289845309, -0.3929850823848928,
             0.6017371069678565, -0.7088332765096816, 0.3680595606834615,
             -0.5380847896941907, -0.01923211603859842, 0.8426712792141644));
-    t_target2cam.push_back((cv::Mat_<double>(3, 1) <<
+    t_target2cam.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -0.9809040427207947,
             -0.2707894444465637,
             -0.2577074766159058));
 
-    R_gripper2base.push_back((cv::Mat_<double>(3, 3) <<
+    R_gripper2base.push_back((ncvslideio::Mat_<double>(3, 3) <<
             0.2541996332132083, 0.6186461729765909, 0.7434106934499181,
             0.2194912986375709, 0.711701808961156, -0.6673111005698995,
             -0.9419161938817396, 0.3328024155303503, 0.04512688689130734));
-    t_gripper2base.push_back((cv::Mat_<double>(3, 1) <<
+    t_gripper2base.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -1.040123533893404,
             -0.1303773962721222,
             1.068029475621886));
 
-    R_target2cam.push_back((cv::Mat_<double>(3, 3) <<
+    R_target2cam.push_back((ncvslideio::Mat_<double>(3, 3) <<
             0.7643667483125168, -0.08523002870239212, 0.63912386614923,
             -0.2583463792779588, 0.8676987164647345, 0.424683512464778,
             -0.5907627462764713, -0.489729292214425, 0.6412211770980741));
-    t_target2cam.push_back((cv::Mat_<double>(3, 1) <<
+    t_target2cam.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -1.58987033367157,
             -1.924914002418518,
             -0.3109001517295837));
 
-    R_gripper2base.push_back((cv::Mat_<double>(3, 3) <<
+    R_gripper2base.push_back((ncvslideio::Mat_<double>(3, 3) <<
             0.116348305340805, -0.9917998080681939, 0.0528792261688552,
             -0.2760629007224059, 0.01884966191381591, 0.9609547154213178,
             -0.9540714578526358, -0.1264034452126562, -0.2716060057313114));
-    t_gripper2base.push_back((cv::Mat_<double>(3, 1) <<
+    t_gripper2base.push_back((ncvslideio::Mat_<double>(3, 1) <<
             -2.551899142554571,
             -2.986937398237611,
             1.317613923218308));
@@ -851,14 +851,14 @@ TEST(Calib3d_CalibrateHandEye, regression_24871)
                                                      CALIB_HAND_EYE_DANIILIDIS};
 
     for (auto method : methods) {
-        SCOPED_TRACE(cv::format("method=%s", getMethodName(method).c_str()));
+        SCOPED_TRACE(ncvslideio::format("method=%s", getMethodName(method).c_str()));
 
         Matx33d R_cam2gripper_est;
         Matx31d t_cam2gripper_est;
         calibrateHandEye(R_gripper2base, t_gripper2base, R_target2cam, t_target2cam, R_cam2gripper_est, t_cam2gripper_est, method);
 
-        EXPECT_TRUE(cv::norm(R_cam2gripper_est - R_true_cam2gripper) < 1e-9);
-        EXPECT_TRUE(cv::norm(t_cam2gripper_est - t_true_cam2gripper) < 1e-9);
+        EXPECT_TRUE(ncvslideio::norm(R_cam2gripper_est - R_true_cam2gripper) < 1e-9);
+        EXPECT_TRUE(ncvslideio::norm(t_cam2gripper_est - t_true_cam2gripper) < 1e-9);
     }
 }
 

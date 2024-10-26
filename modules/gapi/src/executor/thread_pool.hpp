@@ -21,10 +21,10 @@
 template<typename T> using QueueClass = tbb::concurrent_bounded_queue<T>;
 #else
 #  include "executor/conc_queue.hpp"
-template<typename T> using QueueClass = cv::gapi::own::concurrent_bounded_queue<T>;
+template<typename T> using QueueClass = ncvslideio::gapi::own::concurrent_bounded_queue<T>;
 #endif // TBB
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace own {
 
@@ -66,6 +66,6 @@ private:
     QueueClass<Task>         m_queue;
 };
 
-}}} // namespace cv::gapi::own
+}}} // namespace ncvslideio::gapi::own
 
 #endif // OPENCV_GAPI_THREAD_POOL_HPP

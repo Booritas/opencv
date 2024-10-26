@@ -42,7 +42,7 @@
 #include "precomp.hpp"
 #include <iostream>
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename _Tp, typename _DotTp>
@@ -471,7 +471,7 @@ cvConvexHull2( const CvArr* array, void* hull_storage,
     {
         ptseq = (CvSeq*)array;
         if( !CV_IS_SEQ_POINT_SET( ptseq ))
-            CV_Error( cv::Error::StsBadArg, "Unsupported sequence type" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unsupported sequence type" );
         if( hull_storage == 0 )
             hull_storage = ptseq->storage;
     }
@@ -503,15 +503,15 @@ cvConvexHull2( const CvArr* array, void* hull_storage,
         mat = (CvMat*)hull_storage;
 
         if( (mat->cols != 1 && mat->rows != 1) || !CV_IS_MAT_CONT(mat->type))
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
                      "The hull matrix should be continuous and have a single row or a single column" );
 
         if( mat->cols + mat->rows - 1 < ptseq->total )
-            CV_Error( cv::Error::StsBadSize, "The hull matrix size might be not enough to fit the hull" );
+            CV_Error( ncvslideio::Error::StsBadSize, "The hull matrix size might be not enough to fit the hull" );
 
         if( CV_MAT_TYPE(mat->type) != CV_SEQ_ELTYPE(ptseq) &&
            CV_MAT_TYPE(mat->type) != CV_32SC1 )
-            CV_Error( cv::Error::StsUnsupportedFormat,
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                      "The hull matrix must have the same type as input or 32sC1 (integers)" );
 
         hullseq = cvMakeSeqHeaderForArray(
@@ -526,14 +526,14 @@ cvConvexHull2( const CvArr* array, void* hull_storage,
     if( total == 0 )
     {
         if( !isStorage )
-            CV_Error( cv::Error::StsBadSize,
+            CV_Error( ncvslideio::Error::StsBadSize,
                      "Point sequence can not be empty if the output is matrix" );
         return 0;
     }
 
-    cv::AutoBuffer<double> _ptbuf;
-    cv::Mat h0;
-    cv::convexHull(cv::cvarrToMat(ptseq, false, false, 0, &_ptbuf), h0,
+    ncvslideio::AutoBuffer<double> _ptbuf;
+    ncvslideio::Mat h0;
+    ncvslideio::convexHull(ncvslideio::cvarrToMat(ptseq, false, false, 0, &_ptbuf), h0,
                    orientation == CV_CLOCKWISE, CV_MAT_CN(hulltype) == 2);
 
 
@@ -592,7 +592,7 @@ CV_IMPL CvSeq* cvConvexityDefects( const CvArr* array,
     if( CV_IS_SEQ( ptseq ))
     {
         if( !CV_IS_SEQ_POINT_SET( ptseq ))
-            CV_Error( cv::Error::StsUnsupportedFormat,
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                      "Input sequence is not a sequence of points" );
         if( !storage )
             storage = ptseq->storage;
@@ -603,13 +603,13 @@ CV_IMPL CvSeq* cvConvexityDefects( const CvArr* array,
     }
 
     if( CV_SEQ_ELTYPE( ptseq ) != CV_32SC2 )
-        CV_Error( cv::Error::StsUnsupportedFormat, "Floating-point coordinates are not supported here" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "Floating-point coordinates are not supported here" );
 
     if( CV_IS_SEQ( hull ))
     {
         int hulltype = CV_SEQ_ELTYPE( hull );
         if( hulltype != CV_SEQ_ELTYPE_PPOINT && hulltype != CV_SEQ_ELTYPE_INDEX )
-            CV_Error( cv::Error::StsUnsupportedFormat,
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                      "Convex hull must represented as a sequence "
                      "of indices or sequence of pointers" );
         if( !storage )
@@ -620,15 +620,15 @@ CV_IMPL CvSeq* cvConvexityDefects( const CvArr* array,
         CvMat* mat = (CvMat*)hull;
 
         if( !CV_IS_MAT( hull ))
-            CV_Error(cv::Error::StsBadArg, "Convex hull is neither sequence nor matrix");
+            CV_Error(ncvslideio::Error::StsBadArg, "Convex hull is neither sequence nor matrix");
 
         if( (mat->cols != 1 && mat->rows != 1) ||
            !CV_IS_MAT_CONT(mat->type) || CV_MAT_TYPE(mat->type) != CV_32SC1 )
-            CV_Error( cv::Error::StsBadArg,
+            CV_Error( ncvslideio::Error::StsBadArg,
                      "The matrix should be 1-dimensional and continuous array of int's" );
 
         if( mat->cols + mat->rows - 1 > ptseq->total )
-            CV_Error( cv::Error::StsBadSize, "Convex hull is larger than the point sequence" );
+            CV_Error( ncvslideio::Error::StsBadSize, "Convex hull is larger than the point sequence" );
 
         hull = cvMakeSeqHeaderForArray(
                                        CV_SEQ_KIND_CURVE|CV_MAT_TYPE(mat->type)|CV_SEQ_FLAG_CLOSED,
@@ -639,13 +639,13 @@ CV_IMPL CvSeq* cvConvexityDefects( const CvArr* array,
     is_index = CV_SEQ_ELTYPE(hull) == CV_SEQ_ELTYPE_INDEX;
 
     if( !storage )
-        CV_Error( cv::Error::StsNullPtr, "NULL storage pointer" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "NULL storage pointer" );
 
     defects = cvCreateSeq( CV_SEQ_KIND_GENERIC, sizeof(CvSeq), sizeof(CvConvexityDefect), storage );
 
     if( ptseq->total < 4 || hull->total < 3)
     {
-        //CV_ERROR( cv::Error::StsBadSize,
+        //CV_ERROR( ncvslideio::Error::StsBadSize,
         //    "point seq size must be >= 4, convex hull size must be >= 3" );
         return defects;
     }
@@ -779,7 +779,7 @@ cvCheckContourConvexity( const CvArr* array )
     if( CV_IS_SEQ(contour) )
     {
         if( !CV_IS_SEQ_POINT_SET(contour))
-            CV_Error( cv::Error::StsUnsupportedFormat,
+            CV_Error( ncvslideio::Error::StsUnsupportedFormat,
                      "Input sequence must be polygon (closed 2d curve)" );
     }
     else
@@ -791,8 +791,8 @@ cvCheckContourConvexity( const CvArr* array )
     if( contour->total == 0 )
         return -1;
 
-    cv::AutoBuffer<double> _buf;
-    return cv::isContourConvex(cv::cvarrToMat(contour, false, false, 0, &_buf)) ? 1 : 0;
+    ncvslideio::AutoBuffer<double> _buf;
+    return ncvslideio::isContourConvex(ncvslideio::cvarrToMat(contour, false, false, 0, &_buf)) ? 1 : 0;
 }
 
 /* End of file. */

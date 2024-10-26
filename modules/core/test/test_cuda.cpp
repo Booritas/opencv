@@ -12,7 +12,7 @@ namespace opencv_test { namespace {
 
 TEST(CUDA_Stream, construct_cudaFlags)
 {
-    cv::cuda::Stream stream(cudaStreamNonBlocking);
+    ncvslideio::cuda::Stream stream(cudaStreamNonBlocking);
     EXPECT_NE(stream.cudaPtr(), nullptr);
 }
 

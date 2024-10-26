@@ -6,8 +6,8 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
-using namespace cv::ml;
+using namespace ncvslideio;
+using namespace ncvslideio::ml;
 
 static void help(char** argv)
 {
@@ -520,7 +520,7 @@ int main( int argc, char *argv[] )
     string data_filename;
     int method = 0;
 
-    cv::CommandLineParser parser(argc, argv, "{data|letter-recognition.data|}{save||}{load||}{boost||}"
+    ncvslideio::CommandLineParser parser(argc, argv, "{data|letter-recognition.data|}{save||}{load||}{boost||}"
             "{mlp||}{knn knearest||}{nbayes||}{svm||}");
     data_filename = samples::findFile(parser.get<string>("data"));
     if (parser.has("save"))

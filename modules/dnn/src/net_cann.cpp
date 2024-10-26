@@ -8,7 +8,7 @@
 
 #include "net_impl.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 #ifdef HAVE_CANN
@@ -133,7 +133,7 @@ void NetImplCann::initBackend(const std::vector<LayerPin>& blobsToKeep_)
             for (int i = 0; i < ld.outputBlobsWrappers.size(); ++i)
             {
                 auto cannWrapper = ld.outputBlobsWrappers[i].dynamicCast<CannBackendWrapper>();
-                // cannWrapper->name = netInputLayer->outNames.empty() ? cv::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
+                // cannWrapper->name = netInputLayer->outNames.empty() ? ncvslideio::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
                 cannWrapper->name = std::string("y");
             }
         }
@@ -172,7 +172,7 @@ void NetImplCann::initBackend(const std::vector<LayerPin>& blobsToKeep_)
                 CV_Assert(!cannWrapper.empty());
 
                 // create graph input op
-                std::string inputOpName = netInputLayer->outNames.empty() ? cv::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
+                std::string inputOpName = netInputLayer->outNames.empty() ? ncvslideio::format("%s_%d", ld.name.c_str(), i) : netInputLayer->outNames[i];
                 auto inputOp = std::make_shared<ge::op::Data>(inputOpName);
 
                 inputOp->update_input_desc_x(*(cannWrapper->desc_));
@@ -226,7 +226,7 @@ void NetImplCann::initBackend(const std::vector<LayerPin>& blobsToKeep_)
 
     // build graph from collected graph inputs and outputs
     CV_LOG_INFO(NULL, "DNN/CANN: building ge::Graph");
-    std::string graphName = cv::format("graph_%d", networkId);
+    std::string graphName = ncvslideio::format("graph_%d", networkId);
     std::shared_ptr<ge::Graph> graph = std::make_shared<ge::Graph>(graphName.c_str());
     (void)graph->SetInputs(graphInputOps);
     (void)graph->SetOutputs(graphOutputOps);
@@ -370,4 +370,4 @@ void switchToCannBackend(Net& net)
 #endif // HAVE_CANN
 
 CV__DNN_INLINE_NS_END
-}} // namespace cv::dnn
+}} // namespace ncvslideio::dnn

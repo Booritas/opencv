@@ -21,7 +21,7 @@
 #include <vector>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class LayerNormOp final : public CUDABackendNode {
@@ -48,8 +48,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
             scratch_mem_in_bytes = builder.required_workspace_size();
         }
 
-        void forward(const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-                     const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+        void forward(const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+                     const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
                      csl::Workspace& workspace) override {
             auto input_wrapper = inputs[0].dynamicCast<wrapper_type>();
             auto input = input_wrapper->getView();
@@ -112,6 +112,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         std::size_t scratch_mem_in_bytes;
     };
 
-}}} // cv::dnn::cuda4dnn
+}}} // ncvslideio::dnn::cuda4dnn
 
 #endif // OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_LAYER_NORM_HPP

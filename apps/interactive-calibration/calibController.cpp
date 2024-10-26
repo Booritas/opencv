@@ -21,22 +21,22 @@ double calib::calibController::estimateCoverageQuality()
 
     std::fill(pointsInCell.begin(), pointsInCell.end(), 0);
 
-    for(std::vector<std::vector<cv::Point2f> >::iterator it = mCalibData->imagePoints.begin(); it != mCalibData->imagePoints.end(); ++it)
-        for(std::vector<cv::Point2f>::iterator pointIt = (*it).begin(); pointIt != (*it).end(); ++pointIt) {
+    for(std::vector<std::vector<ncvslideio::Point2f> >::iterator it = mCalibData->imagePoints.begin(); it != mCalibData->imagePoints.end(); ++it)
+        for(std::vector<ncvslideio::Point2f>::iterator pointIt = (*it).begin(); pointIt != (*it).end(); ++pointIt) {
             int i = (int)((*pointIt).x / xGridStep);
             int j = (int)((*pointIt).y / yGridStep);
             pointsInCell[i*gridSize + j]++;
         }
 
-    for(std::vector<cv::Mat>::iterator it = mCalibData->allCharucoCorners.begin(); it != mCalibData->allCharucoCorners.end(); ++it)
+    for(std::vector<ncvslideio::Mat>::iterator it = mCalibData->allCharucoCorners.begin(); it != mCalibData->allCharucoCorners.end(); ++it)
         for(int l = 0; l < (*it).size[0]; l++) {
             int i = (int)((*it).at<float>(l, 0) / xGridStep);
             int j = (int)((*it).at<float>(l, 1) / yGridStep);
             pointsInCell[i*gridSize + j]++;
         }
 
-    cv::Mat mean, stdDev;
-    cv::meanStdDev(pointsInCell, mean, stdDev);
+    ncvslideio::Mat mean, stdDev;
+    ncvslideio::meanStdDev(pointsInCell, mean, stdDev);
 
     return mean.at<double>(0) / (stdDev.at<double>(0) + 1e-7);
 }
@@ -46,7 +46,7 @@ calib::calibController::calibController()
     mCalibFlags = 0;
 }
 
-calib::calibController::calibController(cv::Ptr<calib::calibrationData> data, int initialFlags, bool autoTuning, int minFramesNum) :
+calib::calibController::calibController(ncvslideio::Ptr<calib::calibrationData> data, int initialFlags, bool autoTuning, int minFramesNum) :
     mCalibData(data)
 {
     mCalibFlags = initialFlags;
@@ -79,42 +79,42 @@ void calib::calibController::updateState()
         mCoverageQualityState = estimateCoverageQuality() > 1.8 ? true : false;
 
     if (getFramesNumberState() && mNeedTuning) {
-        if( !(mCalibFlags & cv::CALIB_FIX_ASPECT_RATIO) &&
+        if( !(mCalibFlags & ncvslideio::CALIB_FIX_ASPECT_RATIO) &&
             mCalibData->cameraMatrix.total()) {
             double fDiff = fabs(mCalibData->cameraMatrix.at<double>(0,0) -
                                 mCalibData->cameraMatrix.at<double>(1,1));
 
             if (fDiff < 3*mCalibData->stdDeviations.at<double>(0) &&
                     fDiff < 3*mCalibData->stdDeviations.at<double>(1)) {
-                mCalibFlags |= cv::CALIB_FIX_ASPECT_RATIO;
+                mCalibFlags |= ncvslideio::CALIB_FIX_ASPECT_RATIO;
                 mCalibData->cameraMatrix.at<double>(0,0) =
                         mCalibData->cameraMatrix.at<double>(1,1);
             }
         }
 
-        if(!(mCalibFlags & cv::CALIB_ZERO_TANGENT_DIST)) {
+        if(!(mCalibFlags & ncvslideio::CALIB_ZERO_TANGENT_DIST)) {
             const double eps = 0.005;
             if(fabs(mCalibData->distCoeffs.at<double>(2)) < eps &&
                     fabs(mCalibData->distCoeffs.at<double>(3)) < eps)
-                mCalibFlags |= cv::CALIB_ZERO_TANGENT_DIST;
+                mCalibFlags |= ncvslideio::CALIB_ZERO_TANGENT_DIST;
         }
 
-        if(!(mCalibFlags & cv::CALIB_FIX_K1)) {
+        if(!(mCalibFlags & ncvslideio::CALIB_FIX_K1)) {
             const double eps = 0.005;
             if(fabs(mCalibData->distCoeffs.at<double>(0)) < eps)
-                mCalibFlags |= cv::CALIB_FIX_K1;
+                mCalibFlags |= ncvslideio::CALIB_FIX_K1;
         }
 
-        if(!(mCalibFlags & cv::CALIB_FIX_K2)) {
+        if(!(mCalibFlags & ncvslideio::CALIB_FIX_K2)) {
             const double eps = 0.005;
             if(fabs(mCalibData->distCoeffs.at<double>(1)) < eps)
-                mCalibFlags |= cv::CALIB_FIX_K2;
+                mCalibFlags |= ncvslideio::CALIB_FIX_K2;
         }
 
-        if(!(mCalibFlags & cv::CALIB_FIX_K3)) {
+        if(!(mCalibFlags & ncvslideio::CALIB_FIX_K3)) {
             const double eps = 0.005;
             if(fabs(mCalibData->distCoeffs.at<double>(4)) < eps)
-                mCalibFlags |= cv::CALIB_FIX_K3;
+                mCalibFlags |= ncvslideio::CALIB_FIX_K3;
         }
 
     }
@@ -162,7 +162,7 @@ double calib::calibDataController::estimateGridSubsetQuality(size_t excludedInde
 
         for(size_t k = 0; k < mCalibData->imagePoints.size(); k++)
             if(k != excludedIndex)
-                for(std::vector<cv::Point2f>::iterator pointIt = mCalibData->imagePoints[k].begin(); pointIt != mCalibData->imagePoints[k].end(); ++pointIt) {
+                for(std::vector<ncvslideio::Point2f>::iterator pointIt = mCalibData->imagePoints[k].begin(); pointIt != mCalibData->imagePoints[k].end(); ++pointIt) {
                     int i = (int)((*pointIt).x / xGridStep);
                     int j = (int)((*pointIt).y / yGridStep);
                     pointsInCell[i*gridSize + j]++;
@@ -176,14 +176,14 @@ double calib::calibDataController::estimateGridSubsetQuality(size_t excludedInde
                     pointsInCell[i*gridSize + j]++;
                 }
 
-        cv::Mat mean, stdDev;
-        cv::meanStdDev(pointsInCell, mean, stdDev);
+        ncvslideio::Mat mean, stdDev;
+        ncvslideio::meanStdDev(pointsInCell, mean, stdDev);
 
         return mean.at<double>(0) / (stdDev.at<double>(0) + 1e-7);
     }
 }
 
-calib::calibDataController::calibDataController(cv::Ptr<calib::calibrationData> data, int maxFrames, double convParameter) :
+calib::calibDataController::calibDataController(ncvslideio::Ptr<calib::calibrationData> data, int maxFrames, double convParameter) :
     mCalibData(data), mParamsFileName("CamParams.xml")
 {
     mMaxFramesNum = maxFrames;
@@ -211,7 +211,7 @@ void calib::calibDataController::filterFrames()
                 worstElemIndex = i;
             }
         }
-        showOverlayMessage(cv::format("Frame %zu is worst", worstElemIndex + 1));
+        showOverlayMessage(ncvslideio::format("Frame %zu is worst", worstElemIndex + 1));
 
         if(mCalibData->allFrames.size())
             mCalibData->allFrames.erase(mCalibData->allFrames.begin() + worstElemIndex);
@@ -225,7 +225,7 @@ void calib::calibDataController::filterFrames()
             }
         }
 
-        cv::Mat newErrorsVec = cv::Mat((int)numberOfFrames - 1, 1, CV_64F);
+        ncvslideio::Mat newErrorsVec = ncvslideio::Mat((int)numberOfFrames - 1, 1, CV_64F);
         std::copy(mCalibData->perViewErrors.ptr<double>(0),
                   mCalibData->perViewErrors.ptr<double>((int)worstElemIndex), newErrorsVec.ptr<double>(0));
         if((int)worstElemIndex < (int)numberOfFrames-1) {
@@ -269,7 +269,7 @@ void calib::calibDataController::deleteLastFrame()
 
 void calib::calibDataController::rememberCurrentParameters()
 {
-    cv::Mat oldCameraMat, oldDistcoeefs, oldStdDevs;
+    ncvslideio::Mat oldCameraMat, oldDistcoeefs, oldStdDevs;
     mCalibData->cameraMatrix.copyTo(oldCameraMat);
     mCalibData->distCoeffs.copyTo(oldDistcoeefs);
     mCalibData->stdDeviations.copyTo(oldStdDevs);
@@ -283,7 +283,7 @@ void calib::calibDataController::deleteAllData()
     mCalibData->objectPoints.clear();
     mCalibData->allCharucoCorners.clear();
     mCalibData->allCharucoIds.clear();
-    mCalibData->cameraMatrix = mCalibData->distCoeffs = cv::Mat();
+    mCalibData->cameraMatrix = mCalibData->distCoeffs = ncvslideio::Mat();
     mParamsStack = std::stack<cameraParameters>();
     rememberCurrentParameters();
 }
@@ -292,11 +292,11 @@ bool calib::calibDataController::saveCurrentCameraParameters() const
 {
 
     for(size_t i = 0; i < mCalibData->allFrames.size(); i++)
-        cv::imwrite(cv::format("calibration_%zu.png", i), mCalibData->allFrames[i]);
+        ncvslideio::imwrite(ncvslideio::format("calibration_%zu.png", i), mCalibData->allFrames[i]);
 
     bool success = false;
     if(mCalibData->cameraMatrix.total()) {
-            cv::FileStorage parametersWriter(mParamsFileName, cv::FileStorage::WRITE);
+            ncvslideio::FileStorage parametersWriter(mParamsFileName, ncvslideio::FileStorage::WRITE);
             if(parametersWriter.isOpened()) {
                 time_t rawtime;
                 time(&rawtime);
@@ -307,9 +307,9 @@ bool calib::calibDataController::saveCurrentCameraParameters() const
                 parametersWriter << "framesCount" << std::max((int)mCalibData->objectPoints.size(), (int)mCalibData->allCharucoCorners.size());
                 parametersWriter << "cameraResolution" << mCalibData->imageSize;
                 parametersWriter << "cameraMatrix" << mCalibData->cameraMatrix;
-                parametersWriter << "cameraMatrix_std_dev" << mCalibData->stdDeviations.rowRange(cv::Range(0, 4));
+                parametersWriter << "cameraMatrix_std_dev" << mCalibData->stdDeviations.rowRange(ncvslideio::Range(0, 4));
                 parametersWriter << "dist_coeffs" << mCalibData->distCoeffs;
-                parametersWriter << "dist_coeffs_std_dev" << mCalibData->stdDeviations.rowRange(cv::Range(4, 9));
+                parametersWriter << "dist_coeffs_std_dev" << mCalibData->stdDeviations.rowRange(ncvslideio::Range(4, 9));
                 parametersWriter << "avg_reprojection_error" << mCalibData->totalAvgErr;
 
                 parametersWriter.release();
@@ -341,8 +341,8 @@ void calib::calibDataController::printParametersToConsole(std::ostream &output) 
 
 void calib::calibDataController::updateUndistortMap()
 {
-    cv::initUndistortRectifyMap(mCalibData->cameraMatrix, mCalibData->distCoeffs, cv::noArray(),
-                                cv::getOptimalNewCameraMatrix(mCalibData->cameraMatrix, mCalibData->distCoeffs, mCalibData->imageSize, 0.0, mCalibData->imageSize),
+    ncvslideio::initUndistortRectifyMap(mCalibData->cameraMatrix, mCalibData->distCoeffs, ncvslideio::noArray(),
+                                ncvslideio::getOptimalNewCameraMatrix(mCalibData->cameraMatrix, mCalibData->distCoeffs, mCalibData->imageSize, 0.0, mCalibData->imageSize),
                                 mCalibData->imageSize, CV_16SC2, mCalibData->undistMap1, mCalibData->undistMap2);
 
 }

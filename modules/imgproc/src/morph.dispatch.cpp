@@ -56,7 +56,7 @@
                      Basic Morphological Operations: Erosion & Dilation
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 
 /////////////////////////////////// External Interface /////////////////////////////////////
 
@@ -250,7 +250,7 @@ static bool ippMorph(int op, int src_type, int dst_type,
 
 #if IPP_VERSION_X100 < 201800
     // Problem with SSE42 optimizations performance
-    if(cv::ipp::getIppTopFeatures() == ippCPUID_SSE42)
+    if(ncvslideio::ipp::getIppTopFeatures() == ippCPUID_SSE42)
         return false;
 
     // Different mask flipping
@@ -265,7 +265,7 @@ static bool ippMorph(int op, int src_type, int dst_type,
 
 #if IPP_VERSION_X100 < 201801
     // Problem with AVX512 optimizations performance
-    if(cv::ipp::getIppTopFeatures()&ippCPUID_AVX512F)
+    if(ncvslideio::ipp::getIppTopFeatures()&ippCPUID_AVX512F)
         return false;
 
     // Multiple iterations on small mask is not effective in current integration
@@ -510,7 +510,7 @@ void morph(int op, int src_type, int dst_type,
              borderType, borderValue, iterations);
 }
 
-} // cv::hal
+} // ncvslideio::hal
 
 #ifdef HAVE_OPENCL
 
@@ -558,10 +558,10 @@ static bool ocl_morph3x3_8UC1( InputArray _src, OutputArray _dst, InputArray _ke
 
     static const char * const op2str[] = { "OP_ERODE", "OP_DILATE", NULL, NULL, "OP_GRADIENT", "OP_TOPHAT", "OP_BLACKHAT" };
     String opts = format("-D PROCESS_ELEM_=%s -D %s%s", processing.c_str(), op2str[op],
-                         actual_op == op ? "" : cv::format(" -D %s", op2str[actual_op]).c_str());
+                         actual_op == op ? "" : ncvslideio::format(" -D %s", op2str[actual_op]).c_str());
 
     ocl::Kernel k;
-    k.create("morph3x3_8UC1_cols16_rows2", cv::ocl::imgproc::morph3x3_oclsrc, opts);
+    k.create("morph3x3_8UC1_cols16_rows2", ncvslideio::ocl::imgproc::morph3x3_oclsrc, opts);
 
     if (k.empty())
         return false;
@@ -696,9 +696,9 @@ static bool ocl_morphSmall( InputArray _src, OutputArray _dst, InputArray _kerne
             haveExtraMat ? ocl::convertTypeStr(wdepth, depth, cn, cvt[1], sizeof(cvt[1])) : "noconvert",//to prevent overflow - WT to dst
             ocl::typeToStr(CV_MAKE_TYPE(haveExtraMat ? wdepth : depth, pxLoadVecSize)), //PX_LOAD_FLOAT_VEC_CONV
             processing.c_str(), op2str[op],
-            actual_op == op ? "" : cv::format(" -D %s", op2str[actual_op]).c_str());
+            actual_op == op ? "" : ncvslideio::format(" -D %s", op2str[actual_op]).c_str());
 
-    ocl::Kernel kernel("filterSmall", cv::ocl::imgproc::filterSmall_oclsrc, opts);
+    ocl::Kernel kernel("filterSmall", ncvslideio::ocl::imgproc::filterSmall_oclsrc, opts);
     if (kernel.empty())
         return false;
 
@@ -856,7 +856,7 @@ static bool ocl_morphOp(InputArray _src, OutputArray _dst, InputArray _kernel,
                                      ocl::convertTypeStr(depth, wdepth, cn, cvt[0], sizeof(cvt[0])),
                                      ocl::convertTypeStr(wdepth, depth, cn, cvt[1], sizeof(cvt[1])),
                                      ocl::typeToStr(CV_MAKE_TYPE(depth, scalarcn)),
-                                     current_op == op ? "" : cv::format(" -D %s", op2str[current_op]).c_str());
+                                     current_op == op ? "" : ncvslideio::format(" -D %s", op2str[current_op]).c_str());
 
         kernels[i].create("morph", ocl::imgproc::morph_oclsrc, buildOptions);
         if (kernels[i].empty())
@@ -946,7 +946,7 @@ static void morphOp( int op, InputArray _src, OutputArray _dst,
     anchor = normalizeAnchor(anchor, ksize);
 
     CV_OCL_RUN(_dst.isUMat() && _src.dims() <= 2 && _src.channels() <= 4 &&
-               borderType == cv::BORDER_CONSTANT && borderValue == morphologyDefaultBorderValue() &&
+               borderType == ncvslideio::BORDER_CONSTANT && borderValue == morphologyDefaultBorderValue() &&
                (op == MORPH_ERODE || op == MORPH_DILATE) &&
                anchor.x == ksize.width >> 1 && anchor.y == ksize.height >> 1,
                ocl_morphOp(_src, _dst, kernel, anchor, iterations, op, borderType, borderValue) )
@@ -1076,7 +1076,7 @@ static bool ocl_morphologyEx(InputArray _src, OutputArray _dst, int op,
             return false;
         break;
     default:
-        CV_Error( cv::Error::StsBadArg, "unknown morphological operation" );
+        CV_Error( ncvslideio::Error::StsBadArg, "unknown morphological operation" );
     }
 
     return true;
@@ -1173,7 +1173,7 @@ void morphologyEx( InputArray _src, OutputArray _dst, int op,
 
     CV_OCL_RUN(_dst.isUMat() && _src.dims() <= 2 && _src.channels() <= 4 &&
         anchor.x == ksize.width >> 1 && anchor.y == ksize.height >> 1 &&
-        borderType == cv::BORDER_CONSTANT && borderValue == morphologyDefaultBorderValue(),
+        borderType == ncvslideio::BORDER_CONSTANT && borderValue == morphologyDefaultBorderValue(),
         ocl_morphologyEx(_src, _dst, op, kernel, anchor, iterations, borderType, borderValue))
 #endif
 
@@ -1249,20 +1249,20 @@ void morphologyEx( InputArray _src, OutputArray _dst, int op,
         }
         break;
     default:
-        CV_Error( cv::Error::StsBadArg, "unknown morphological operation" );
+        CV_Error( ncvslideio::Error::StsBadArg, "unknown morphological operation" );
     }
 }
 
-} // namespace cv
+} // namespace ncvslideio
 
 CV_IMPL IplConvKernel *
 cvCreateStructuringElementEx( int cols, int rows,
                               int anchorX, int anchorY,
                               int shape, int *values )
 {
-    cv::Size ksize = cv::Size(cols, rows);
-    cv::Point anchor = cv::Point(anchorX, anchorY);
-    CV_Assert( cols > 0 && rows > 0 && anchor.inside(cv::Rect(0,0,cols,rows)) &&
+    ncvslideio::Size ksize = ncvslideio::Size(cols, rows);
+    ncvslideio::Point anchor = ncvslideio::Point(anchorX, anchorY);
+    CV_Assert( cols > 0 && rows > 0 && anchor.inside(ncvslideio::Rect(0,0,cols,rows)) &&
                (shape != CV_SHAPE_CUSTOM || values != 0));
 
     int i, size = rows * cols;
@@ -1283,7 +1283,7 @@ cvCreateStructuringElementEx( int cols, int rows,
     }
     else
     {
-        cv::Mat elem = cv::getStructuringElement(shape, ksize, anchor);
+        ncvslideio::Mat elem = ncvslideio::getStructuringElement(shape, ksize, anchor);
         for( i = 0; i < size; i++ )
             element->values[i] = elem.ptr()[i];
     }
@@ -1296,20 +1296,20 @@ CV_IMPL void
 cvReleaseStructuringElement( IplConvKernel ** element )
 {
     if( !element )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
     cvFree( element );
 }
 
 
-static void convertConvKernel( const IplConvKernel* src, cv::Mat& dst, cv::Point& anchor )
+static void convertConvKernel( const IplConvKernel* src, ncvslideio::Mat& dst, ncvslideio::Point& anchor )
 {
     if(!src)
     {
-        anchor = cv::Point(1,1);
+        anchor = ncvslideio::Point(1,1);
         dst.release();
         return;
     }
-    anchor = cv::Point(src->anchorX, src->anchorY);
+    anchor = ncvslideio::Point(src->anchorX, src->anchorY);
     dst.create(src->nRows, src->nCols, CV_8U);
 
     int i, size = src->nRows*src->nCols;
@@ -1321,22 +1321,22 @@ static void convertConvKernel( const IplConvKernel* src, cv::Mat& dst, cv::Point
 CV_IMPL void
 cvErode( const CvArr* srcarr, CvArr* dstarr, IplConvKernel* element, int iterations )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), kernel;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), kernel;
     CV_Assert( src.size() == dst.size() && src.type() == dst.type() );
-    cv::Point anchor;
+    ncvslideio::Point anchor;
     convertConvKernel( element, kernel, anchor );
-    cv::erode( src, dst, kernel, anchor, iterations, cv::BORDER_REPLICATE );
+    ncvslideio::erode( src, dst, kernel, anchor, iterations, ncvslideio::BORDER_REPLICATE );
 }
 
 
 CV_IMPL void
 cvDilate( const CvArr* srcarr, CvArr* dstarr, IplConvKernel* element, int iterations )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), kernel;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), kernel;
     CV_Assert( src.size() == dst.size() && src.type() == dst.type() );
-    cv::Point anchor;
+    ncvslideio::Point anchor;
     convertConvKernel( element, kernel, anchor );
-    cv::dilate( src, dst, kernel, anchor, iterations, cv::BORDER_REPLICATE );
+    ncvslideio::dilate( src, dst, kernel, anchor, iterations, ncvslideio::BORDER_REPLICATE );
 }
 
 
@@ -1344,9 +1344,9 @@ CV_IMPL void
 cvMorphologyEx( const void* srcarr, void* dstarr, void*,
                 IplConvKernel* element, int op, int iterations )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), kernel;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), kernel;
     CV_Assert( src.size() == dst.size() && src.type() == dst.type() );
-    cv::Point anchor;
+    ncvslideio::Point anchor;
     IplConvKernel* temp_element = NULL;
     if (!element)
     {
@@ -1359,7 +1359,7 @@ cvMorphologyEx( const void* srcarr, void* dstarr, void*,
     {
         cvReleaseStructuringElement(&temp_element);
     }
-    cv::morphologyEx( src, dst, op, kernel, anchor, iterations, cv::BORDER_REPLICATE );
+    ncvslideio::morphologyEx( src, dst, op, kernel, anchor, iterations, ncvslideio::BORDER_REPLICATE );
 }
 
 /* End of file. */

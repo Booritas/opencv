@@ -30,7 +30,7 @@
 #include <opencv2/gapi/streaming/source.hpp>
 #include <opencv2/gapi/rmat.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 class GArg;
 
@@ -97,15 +97,15 @@ using GArgs = std::vector<GArg>;
 // FIXME: Move to a separate file!
 using GRunArgBase  = util::variant<
 #if !defined(GAPI_STANDALONE)
-    cv::UMat,
+    ncvslideio::UMat,
 #endif // !defined(GAPI_STANDALONE)
-    cv::RMat,
-    cv::gapi::wip::IStreamSource::Ptr,
-    cv::Mat,
-    cv::Scalar,
-    cv::detail::VectorRef,
-    cv::detail::OpaqueRef,
-    cv::MediaFrame
+    ncvslideio::RMat,
+    ncvslideio::gapi::wip::IStreamSource::Ptr,
+    ncvslideio::Mat,
+    ncvslideio::Scalar,
+    ncvslideio::detail::VectorRef,
+    ncvslideio::detail::OpaqueRef,
+    ncvslideio::MediaFrame
     >;
 
 namespace detail {
@@ -114,7 +114,7 @@ struct in_variant;
 
 template<typename T, typename... Types>
 struct in_variant<T, util::variant<Types...> >
-    : std::integral_constant<bool, cv::detail::contains<T, Types...>::value > {
+    : std::integral_constant<bool, ncvslideio::detail::contains<T, Types...>::value > {
 };
 } // namespace detail
 
@@ -127,8 +127,8 @@ struct GAPI_EXPORTS GRunArg: public GRunArgBase
     // Mimic the old GRunArg semantics here, old of the times when
     // GRunArg was an alias to variant<>
     GRunArg();
-    GRunArg(const cv::GRunArg &arg);
-    GRunArg(cv::GRunArg &&arg);
+    GRunArg(const ncvslideio::GRunArg &arg);
+    GRunArg(ncvslideio::GRunArg &&arg);
 
     GRunArg& operator= (const GRunArg &arg);
     GRunArg& operator= (GRunArg &&arg);
@@ -150,13 +150,13 @@ struct GAPI_EXPORTS GRunArg: public GRunArgBase
     {
     }
     template <typename T> auto operator= (const T &t)
-        -> typename std::enable_if< detail::in_variant<T, GRunArgBase>::value, cv::GRunArg>::type&
+        -> typename std::enable_if< detail::in_variant<T, GRunArgBase>::value, ncvslideio::GRunArg>::type&
     {
         GRunArgBase::operator=(t);
         return *this;
     }
     template <typename T> auto operator= (T&& t)
-        -> typename std::enable_if< detail::in_variant<T, GRunArgBase>::value, cv::GRunArg>::type&
+        -> typename std::enable_if< detail::in_variant<T, GRunArgBase>::value, ncvslideio::GRunArg>::type&
     {
         GRunArgBase::operator=(std::move(t));
         return *this;
@@ -205,14 +205,14 @@ struct GAPI_EXPORTS Data: public GRunArg
 
 using GRunArgP = util::variant<
 #if !defined(GAPI_STANDALONE)
-    cv::UMat*,
+    ncvslideio::UMat*,
 #endif // !defined(GAPI_STANDALONE)
-    cv::Mat*,
-    cv::RMat*,
-    cv::Scalar*,
-    cv::MediaFrame*,
-    cv::detail::VectorRef,
-    cv::detail::OpaqueRef
+    ncvslideio::Mat*,
+    ncvslideio::RMat*,
+    ncvslideio::Scalar*,
+    ncvslideio::MediaFrame*,
+    ncvslideio::detail::VectorRef,
+    ncvslideio::detail::OpaqueRef
     >;
 using GRunArgsP = std::vector<GRunArgP>;
 
@@ -254,7 +254,7 @@ namespace gapi
  * @return the same GRunArgs wrapped in GRunArgsP.
  * @see deserialize
  */
-GAPI_EXPORTS cv::GRunArgsP bind(cv::GRunArgs &out_args);
+GAPI_EXPORTS ncvslideio::GRunArgsP bind(ncvslideio::GRunArgs &out_args);
 
 /** @brief Wraps output GRunArgsP available during graph execution to GRunArgs which can be serialized.
  *
@@ -268,7 +268,7 @@ GAPI_EXPORTS cv::GRunArgsP bind(cv::GRunArgs &out_args);
  * @return the same GRunArgsP wrapped in serializable GRunArgs.
  * @see serialize
  */
-GAPI_EXPORTS cv::GRunArg   bind(cv::GRunArgP &out);     // FIXME: think more about it
+GAPI_EXPORTS ncvslideio::GRunArg   bind(ncvslideio::GRunArgP &out);     // FIXME: think more about it
 /** @} */
 }
 
@@ -289,23 +289,23 @@ using GTypesInfo = std::vector<GTypeInfo>;
 namespace detail {
 struct ExtractArgsCallback
 {
-    cv::GRunArgs operator()(const cv::GTypesInfo& info) const { return c(info); }
-    using CallBackT = std::function<cv::GRunArgs(const cv::GTypesInfo& info)>;
+    ncvslideio::GRunArgs operator()(const ncvslideio::GTypesInfo& info) const { return c(info); }
+    using CallBackT = std::function<ncvslideio::GRunArgs(const ncvslideio::GTypesInfo& info)>;
     CallBackT c;
 };
 
 struct ExtractMetaCallback
 {
-    cv::GMetaArgs operator()(const cv::GTypesInfo& info) const { return c(info); }
-    using CallBackT = std::function<cv::GMetaArgs(const cv::GTypesInfo& info)>;
+    ncvslideio::GMetaArgs operator()(const ncvslideio::GTypesInfo& info) const { return c(info); }
+    using CallBackT = std::function<ncvslideio::GMetaArgs(const ncvslideio::GTypesInfo& info)>;
     CallBackT c;
 };
 
-void constructGraphOutputs(const cv::GTypesInfo &out_info,
-                           cv::GRunArgs         &args,
-                           cv::GRunArgsP        &outs);
+void constructGraphOutputs(const ncvslideio::GTypesInfo &out_info,
+                           ncvslideio::GRunArgs         &args,
+                           ncvslideio::GRunArgsP        &outs);
 } // namespace detail
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GARG_HPP

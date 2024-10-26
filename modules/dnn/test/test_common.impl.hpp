@@ -23,10 +23,10 @@
 #include <psapi.h>
 #endif  // _WIN32
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
-void PrintTo(const cv::dnn::Backend& v, std::ostream* os)
+void PrintTo(const ncvslideio::dnn::Backend& v, std::ostream* os)
 {
     switch (v) {
     case DNN_BACKEND_DEFAULT: *os << "DEFAULT"; return;
@@ -44,7 +44,7 @@ void PrintTo(const cv::dnn::Backend& v, std::ostream* os)
     *os << "DNN_BACKEND_UNKNOWN(" << (int)v << ")";
 }
 
-void PrintTo(const cv::dnn::Target& v, std::ostream* os)
+void PrintTo(const ncvslideio::dnn::Target& v, std::ostream* os)
 {
     switch (v) {
     case DNN_TARGET_CPU: *os << "CPU"; return;
@@ -62,7 +62,7 @@ void PrintTo(const cv::dnn::Target& v, std::ostream* os)
     *os << "DNN_TARGET_UNKNOWN(" << (int)v << ")";
 }
 
-void PrintTo(const tuple<cv::dnn::Backend, cv::dnn::Target> v, std::ostream* os)
+void PrintTo(const tuple<ncvslideio::dnn::Backend, ncvslideio::dnn::Target> v, std::ostream* os)
 {
     PrintTo(get<0>(v), os);
     *os << "/";
@@ -77,29 +77,29 @@ CV__DNN_INLINE_NS_END
 namespace opencv_test {
 
 void normAssert(
-        cv::InputArray ref, cv::InputArray test, const char *comment /*= ""*/,
+        ncvslideio::InputArray ref, ncvslideio::InputArray test, const char *comment /*= ""*/,
         double l1 /*= 0.00001*/, double lInf /*= 0.0001*/)
 {
-    double normL1 = cvtest::norm(ref, test, cv::NORM_L1) / ref.getMat().total();
-    EXPECT_LE(normL1, l1) << comment << "  |ref| = " << cvtest::norm(ref, cv::NORM_INF);
+    double normL1 = cvtest::norm(ref, test, ncvslideio::NORM_L1) / ref.getMat().total();
+    EXPECT_LE(normL1, l1) << comment << "  |ref| = " << cvtest::norm(ref, ncvslideio::NORM_INF);
 
-    double normInf = cvtest::norm(ref, test, cv::NORM_INF);
-    EXPECT_LE(normInf, lInf) << comment << "  |ref| = " << cvtest::norm(ref, cv::NORM_INF);
+    double normInf = cvtest::norm(ref, test, ncvslideio::NORM_INF);
+    EXPECT_LE(normInf, lInf) << comment << "  |ref| = " << cvtest::norm(ref, ncvslideio::NORM_INF);
 }
 
-std::vector<cv::Rect2d> matToBoxes(const cv::Mat& m)
+std::vector<ncvslideio::Rect2d> matToBoxes(const ncvslideio::Mat& m)
 {
     EXPECT_EQ(m.type(), CV_32FC1);
     EXPECT_EQ(m.dims, 2);
     EXPECT_EQ(m.cols, 4);
 
-    std::vector<cv::Rect2d> boxes(m.rows);
+    std::vector<ncvslideio::Rect2d> boxes(m.rows);
     for (int i = 0; i < m.rows; ++i)
     {
         CV_Assert(m.row(i).isContinuous());
         const float* data = m.ptr<float>(i);
         double l = data[0], t = data[1], r = data[2], b = data[3];
-        boxes[i] = cv::Rect2d(l, t, r - l, b - t);
+        boxes[i] = ncvslideio::Rect2d(l, t, r - l, b - t);
     }
     return boxes;
 }
@@ -107,10 +107,10 @@ std::vector<cv::Rect2d> matToBoxes(const cv::Mat& m)
 void normAssertDetections(
         const std::vector<int>& refClassIds,
         const std::vector<float>& refScores,
-        const std::vector<cv::Rect2d>& refBoxes,
+        const std::vector<ncvslideio::Rect2d>& refBoxes,
         const std::vector<int>& testClassIds,
         const std::vector<float>& testScores,
-        const std::vector<cv::Rect2d>& testBoxes,
+        const std::vector<ncvslideio::Rect2d>& testBoxes,
         const char *comment /*= ""*/, double confThreshold /*= 0.0*/,
         double scores_diff /*= 1e-5*/, double boxes_iou_diff /*= 1e-4*/)
 {
@@ -125,7 +125,7 @@ void normAssertDetections(
             continue;
 
         int testClassId = testClassIds[i];
-        const cv::Rect2d& testBox = testBoxes[i];
+        const ncvslideio::Rect2d& testBox = testBoxes[i];
         bool matched = false;
         double topIoU = 0;
         for (int j = 0; j < refBoxes.size() && !matched; ++j)
@@ -146,7 +146,7 @@ void normAssertDetections(
         }
         if (!matched)
         {
-            std::cout << cv::format("Unmatched prediction: class %d score %f box ",
+            std::cout << ncvslideio::format("Unmatched prediction: class %d score %f box ",
                                     testClassId, testScore) << testBox << std::endl;
             std::cout << "Highest IoU: " << topIoU << std::endl;
         }
@@ -158,7 +158,7 @@ void normAssertDetections(
     {
         if (!matchedRefBoxes[i] && refScores[i] > confThreshold)
         {
-            std::cout << cv::format("Unmatched reference: class %d score %f box ",
+            std::cout << ncvslideio::format("Unmatched reference: class %d score %f box ",
                                     refClassIds[i], refScores[i]) << refBoxes[i]
                 << " IoU diff: " << refBoxesIoUDiff[i]
                 << std::endl;
@@ -171,7 +171,7 @@ void normAssertDetections(
 // where N is a number of detections and an every detection is represented by
 // a vector [batchId, classId, confidence, left, top, right, bottom].
 void normAssertDetections(
-        cv::Mat ref, cv::Mat out, const char *comment /*= ""*/,
+        ncvslideio::Mat ref, ncvslideio::Mat out, const char *comment /*= ""*/,
         double confThreshold /*= 0.0*/, double scores_diff /*= 1e-5*/,
         double boxes_iou_diff /*= 1e-4*/)
 {
@@ -180,12 +180,12 @@ void normAssertDetections(
     ref = ref.reshape(1, ref.total() / 7);
     out = out.reshape(1, out.total() / 7);
 
-    cv::Mat refClassIds, testClassIds;
+    ncvslideio::Mat refClassIds, testClassIds;
     ref.col(1).convertTo(refClassIds, CV_32SC1);
     out.col(1).convertTo(testClassIds, CV_32SC1);
     std::vector<float> refScores(ref.col(2)), testScores(out.col(2));
-    std::vector<cv::Rect2d> refBoxes = matToBoxes(ref.colRange(3, 7));
-    std::vector<cv::Rect2d> testBoxes = matToBoxes(out.colRange(3, 7));
+    std::vector<ncvslideio::Rect2d> refBoxes = matToBoxes(ref.colRange(3, 7));
+    std::vector<ncvslideio::Rect2d> testBoxes = matToBoxes(out.colRange(3, 7));
     normAssertDetections(refClassIds, refScores, refBoxes, testClassIds, testScores,
                          testBoxes, comment, confThreshold, scores_diff, boxes_iou_diff);
 }
@@ -220,7 +220,7 @@ void normAssertTextDetections(
             }
         }
         if (!matched) {
-            std::cout << cv::format("Unmatched-det:") << testPoly << std::endl;
+            std::cout << ncvslideio::format("Unmatched-det:") << testPoly << std::endl;
             std::cout << "Highest IoU: " << topIoU << std::endl;
         }
         EXPECT_TRUE(matched) << comment;
@@ -230,7 +230,7 @@ void normAssertTextDetections(
     for (uint i = 0; i < gtPolys.size(); ++i)
     {
         if (!matchedRefBoxes[i]) {
-            std::cout << cv::format("Unmatched-gt:") << gtPolys[i] << std::endl;
+            std::cout << ncvslideio::format("Unmatched-gt:") << gtPolys[i] << std::endl;
         }
         EXPECT_TRUE(matchedRefBoxes[i]);
     }

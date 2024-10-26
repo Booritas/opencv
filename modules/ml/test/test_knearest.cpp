@@ -6,9 +6,9 @@
 
 namespace opencv_test { namespace {
 
-using cv::ml::TrainData;
-using cv::ml::EM;
-using cv::ml::KNearest;
+using ncvslideio::ml::TrainData;
+using ncvslideio::ml::EM;
+using ncvslideio::ml::KNearest;
 
 TEST(ML_KNearest, accuracy)
 {

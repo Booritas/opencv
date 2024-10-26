@@ -17,7 +17,7 @@
 
 /**  GLOBAL VARIABLES  **/
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 /**  Functions headers  **/
@@ -191,10 +191,10 @@ int main(int argc, char *argv[])
 
     if (!saveDirectory.empty())
     {
-        if (!cv::utils::fs::exists(saveDirectory))
+        if (!ncvslideio::utils::fs::exists(saveDirectory))
         {
             std::cout << "Create directory: " << saveDirectory << std::endl;
-            cv::utils::fs::createDirectories(saveDirectory);
+            ncvslideio::utils::fs::createDirectories(saveDirectory);
         }
     }
 
@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
                 frame_vis.copyTo(frameSave);
             }
 
-            string saveFilename = cv::format(string(saveDirectory + "/image_%04d.png").c_str(), frameCount);
+            string saveFilename = ncvslideio::format(string(saveDirectory + "/image_%04d.png").c_str(), frameCount);
             imwrite(saveFilename, frameSave);
             frameCount++;
         }

@@ -3,7 +3,7 @@
 #include "opencv2/highgui.hpp"
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {

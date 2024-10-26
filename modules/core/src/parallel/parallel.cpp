@@ -21,7 +21,7 @@
 #include "plugin_parallel_wrapper.impl.hpp"
 
 
-namespace cv { namespace parallel {
+namespace ncvslideio { namespace parallel {
 
 int numThreads = -1;
 
@@ -33,7 +33,7 @@ ParallelForAPI::~ParallelForAPI()
 static
 std::string& getParallelBackendName()
 {
-    static std::string g_backendName = toUpperCase(cv::utils::getConfigurationParameterString("OPENCV_PARALLEL_BACKEND", ""));
+    static std::string g_backendName = toUpperCase(ncvslideio::utils::getConfigurationParameterString("OPENCV_PARALLEL_BACKEND", ""));
     return g_backendName;
 }
 

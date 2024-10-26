@@ -26,7 +26,7 @@
 #include "libobsensor/ObSensor.hpp"
 #include "cap_obsensor_liborbbec.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 Ptr<IVideoCapture> create_obsensor_capture(int index)
 {
@@ -101,7 +101,7 @@ bool VideoCapture_obsensor::grabFrame()
     return grabbedColorFrame || grabbedDepthFrame;
 }
 
-bool VideoCapture_obsensor::retrieveFrame(int outputType, cv::OutputArray frame)
+bool VideoCapture_obsensor::retrieveFrame(int outputType, ncvslideio::OutputArray frame)
 {
     switch (outputType)
     {

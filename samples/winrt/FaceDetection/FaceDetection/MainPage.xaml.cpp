@@ -34,8 +34,8 @@ using namespace Microsoft::WRL;
 
 
 // Name of the resource classifier used to detect human faces (frontal)
-cv::String face_cascade_name = "Assets/haarcascade_frontalface_alt.xml";
-cv::String window_name = "Faces";
+ncvslideio::String face_cascade_name = "Assets/haarcascade_frontalface_alt.xml";
+ncvslideio::String window_name = "Faces";
 
 MainPage::MainPage()
 {
@@ -45,11 +45,11 @@ MainPage::MainPage()
 void FaceDetection::MainPage::InitBtn_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
     // load Image and Init recognizer
-    cv::Mat image = cv::imread("Assets/group1.jpg");
-    groupFaces = cv::Mat(image.rows, image.cols, CV_8UC4);
-    cv::cvtColor(image, groupFaces, COLOR_BGR2BGRA);
-    cv::winrt_initContainer(cvContainer);
-    cv::imshow(window_name, groupFaces);
+    ncvslideio::Mat image = ncvslideio::imread("Assets/group1.jpg");
+    groupFaces = ncvslideio::Mat(image.rows, image.cols, CV_8UC4);
+    ncvslideio::cvtColor(image, groupFaces, COLOR_BGR2BGRA);
+    ncvslideio::winrt_initContainer(cvContainer);
+    ncvslideio::imshow(window_name, groupFaces);
 
     if (!face_cascade.load(face_cascade_name)) {
         Windows::UI::Popups::MessageDialog("Couldn't load face detector \n").ShowAsync();
@@ -60,21 +60,21 @@ void FaceDetection::MainPage::InitBtn_Click(Platform::Object^ sender, Windows::U
 void FaceDetection::MainPage::detectBtn_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
     if (!groupFaces.empty()) {
-        std::vector<cv::Rect> facesColl;
-        cv::Mat frame_gray;
+        std::vector<ncvslideio::Rect> facesColl;
+        ncvslideio::Mat frame_gray;
 
         cvtColor(groupFaces, frame_gray, COLOR_BGR2GRAY);
-        cv::equalizeHist(frame_gray, frame_gray);
+        ncvslideio::equalizeHist(frame_gray, frame_gray);
 
         // Detect faces
-        face_cascade.detectMultiScale(frame_gray, facesColl, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(1, 1));
+        face_cascade.detectMultiScale(frame_gray, facesColl, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, ncvslideio::Size(1, 1));
         for (unsigned int i = 0; i < facesColl.size(); i++)
         {
             auto face = facesColl[i];
-            cv::rectangle(groupFaces, face, cv::Scalar(0, 255, 255), 5);
+            ncvslideio::rectangle(groupFaces, face, ncvslideio::Scalar(0, 255, 255), 5);
         }
 
-        cv::imshow(window_name, groupFaces);
+        ncvslideio::imshow(window_name, groupFaces);
     } else {
         Windows::UI::Popups::MessageDialog("Initialize image before processing \n").ShowAsync();
     }

@@ -6,7 +6,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char* argv[])
 {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     typeAlgoMatch.push_back("BruteForce-L1");
     typeAlgoMatch.push_back("BruteForce-Hamming");
     typeAlgoMatch.push_back("BruteForce-Hamming(2)");
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{ @image1 | basketball1.png | }"
         "{ @image2 | basketball2.png | }"
         "{help h ||}");

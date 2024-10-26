@@ -1,7 +1,7 @@
 #error This is a shadow header file, which is not intended for processing by any compiler. \
        Only bindings parser should handle this file.
 
-namespace cv
+namespace ncvslideio
 {
 
 class CV_EXPORTS_W UMat
@@ -56,4 +56,4 @@ public:
     CV_PROP_RW size_t offset;
 };
 
-} // namespace cv
+} // namespace ncvslideio

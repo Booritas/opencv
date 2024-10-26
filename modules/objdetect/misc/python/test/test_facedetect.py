@@ -12,7 +12,7 @@ import cv2 as cv
 
 def detect(img, cascade):
     rects = cascade.detectMultiScale(img, scaleFactor=1.275, minNeighbors=4, minSize=(30, 30),
-                                     flags=cv.CASCADE_SCALE_IMAGE)
+                                     flags=ncvslideio.CASCADE_SCALE_IMAGE)
     if len(rects) == 0:
         return []
     rects[:,2:] += rects[:,:2]
@@ -26,10 +26,10 @@ class facedetect_test(NewOpenCVTests):
         cascade_fn = self.repoPath + '/data/haarcascades/haarcascade_frontalface_alt.xml'
         nested_fn  = self.repoPath + '/data/haarcascades/haarcascade_eye.xml'
 
-        cascade = cv.CascadeClassifier(cascade_fn)
-        nested = cv.CascadeClassifier(nested_fn)
+        cascade = ncvslideio.CascadeClassifier(cascade_fn)
+        nested = ncvslideio.CascadeClassifier(nested_fn)
 
-        samples = ['samples/data/lena.jpg', 'cv/cascadeandhog/images/mona-lisa.png']
+        samples = ['samples/data/lena.jpg', 'ncvslideio/cascadeandhog/images/mona-lisa.png']
 
         faces = []
         eyes = []
@@ -49,8 +49,8 @@ class facedetect_test(NewOpenCVTests):
         for sample in samples:
 
             img = self.get_sample(  sample)
-            gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            gray = cv.GaussianBlur(gray, (5, 5), 0)
+            gray = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
+            gray = ncvslideio.GaussianBlur(gray, (5, 5), 0)
 
             rects = detect(gray, cascade)
             faces.append(rects)

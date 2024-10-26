@@ -7,7 +7,7 @@
 #include "opencv2/flann/miniflann.hpp"
 #include <map>
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 /*
 SolvePoly is used to find only real roots of N-degree polynomial using Sturm sequence.
 It recursively finds interval where a root lies, and the actual root is found using Regula-Falsi method.

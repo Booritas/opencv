@@ -40,7 +40,7 @@ As you can see, training data can have rather complex structure; besides, it may
 not entirely available, so there is need to make abstraction for this concept. In OpenCV ml there is
 cv::ml::TrainData class for that.
 
-@sa cv::ml::TrainData
+@sa ncvslideio::ml::TrainData
 
 Normal Bayes Classifier {#ml_intro_bayes}
 =======================
@@ -51,7 +51,7 @@ function is assumed to be a Gaussian mixture, one component per class. Using the
 algorithm estimates mean vectors and covariance matrices for every class, and then it uses them for
 prediction.
 
-@sa cv::ml::NormalBayesClassifier
+@sa ncvslideio::ml::NormalBayesClassifier
 
 K-Nearest Neighbors {#ml_intro_knn}
 ===================
@@ -61,7 +61,7 @@ certain number (__K__) of the nearest neighbors of the sample using voting, calc
 sum, and so on. The method is sometimes referred to as "learning by example" because for prediction
 it looks for the feature vector with a known response that is closest to the given vector.
 
-@sa cv::ml::KNearest
+@sa ncvslideio::ml::KNearest
 
 Support Vector Machines {#ml_intro_svm}
 =======================
@@ -80,7 +80,7 @@ position of other vectors does not affect the hyper-plane (the decision function
 
 SVM implementation in OpenCV is based on @cite LibSVM
 
-@sa cv::ml::SVM
+@sa ncvslideio::ml::SVM
 
 Prediction with SVM {#ml_intro_svm_predict}
 -------------------
@@ -94,7 +94,7 @@ Decision Trees {#ml_intro_trees}
 The ML classes discussed in this section implement Classification and Regression Tree algorithms
 described in @cite Breiman84 .
 
-The class cv::ml::DTrees represents a single decision tree or a collection of decision trees. It's
+The class ncvslideio::ml::DTrees represents a single decision tree or a collection of decision trees. It's
 also a base class for RTrees and Boost.
 
 A decision tree is a binary tree (tree where each non-leaf node has two child nodes). It can be used
@@ -102,7 +102,7 @@ either for classification or for regression. For classification, each tree leaf 
 class label; multiple leaves may have the same label. For regression, a constant is also assigned to
 each tree leaf, so the approximation function is piecewise constant.
 
-@sa cv::ml::DTrees
+@sa ncvslideio::ml::DTrees
 
 Predicting with Decision Trees {#ml_intro_trees_predict}
 ------------------------------
@@ -236,7 +236,7 @@ training. Note that the weights for __all__ training examples are recomputed at 
 iteration. Examples deleted at a particular iteration may be used again for learning some of the
 weak classifiers further @cite FHT98
 
-@sa cv::ml::Boost
+@sa ncvslideio::ml::Boost
 
 Prediction with Boost {#ml_intro_boost_predict}
 ---------------------
@@ -283,7 +283,7 @@ about N/3 . The classification error is estimated by using this oob-data as foll
 
 For the random trees usage example, please, see letter_recog.cpp sample in OpenCV distribution.
 
-@sa cv::ml::RTrees
+@sa ncvslideio::ml::RTrees
 
 __References:__
 
@@ -345,7 +345,7 @@ could start with harder constraints on the covariance matrices and then use the 
 as an input for a less constrained optimization problem (often a diagonal covariance matrix is
 already a good enough approximation).
 
-@sa cv::ml::EM
+@sa ncvslideio::ml::EM
 
 References:
 -   Bilmes98 J. A. Bilmes. _A Gentle Tutorial of the EM Algorithm and its Application to Parameter
@@ -381,15 +381,15 @@ layer \f$n+1\f$ are computed as:
 
 Different activation functions may be used. ML implements three standard functions:
 
--   Identity function ( cv::ml::ANN_MLP::IDENTITY ): \f$f(x)=x\f$
+-   Identity function ( ncvslideio::ml::ANN_MLP::IDENTITY ): \f$f(x)=x\f$
 
--   Symmetrical sigmoid ( cv::ml::ANN_MLP::SIGMOID_SYM ): \f$f(x)=\beta*(1-e^{-\alpha
+-   Symmetrical sigmoid ( ncvslideio::ml::ANN_MLP::SIGMOID_SYM ): \f$f(x)=\beta*(1-e^{-\alpha
     x})/(1+e^{-\alpha x}\f$ ), which is the default choice for MLP. The standard sigmoid with
     \f$\beta =1, \alpha =1\f$ is shown below:
 
     ![image](pics/sigmoid_bipolar.png)
 
--   Gaussian function ( cv::ml::ANN_MLP::GAUSSIAN ): \f$f(x)=\beta e^{-\alpha x*x}\f$ , which is not
+-   Gaussian function ( ncvslideio::ml::ANN_MLP::GAUSSIAN ): \f$f(x)=\beta e^{-\alpha x*x}\f$ , which is not
     completely supported at the moment.
 
 In ML, all the neurons have the same activation functions, with the same free parameters (
@@ -412,7 +412,7 @@ network flexibility is. The error on the training set could be made arbitrarily 
 same time the learned network also "learns" the noise present in the training set, so the error on
 the test set usually starts increasing after the network size reaches a limit. Besides, the larger
 networks are trained much longer than the smaller ones, so it is reasonable to pre-process the data,
-using cv::PCA or similar technique, and train a smaller network on only essential features.
+using ncvslideio::PCA or similar technique, and train a smaller network on only essential features.
 
 Another MLP feature is an inability to handle categorical data as is. However, there is a
 workaround. If a certain feature in the input or output (in case of n -class classifier for
@@ -425,7 +425,7 @@ of such variables, that is, a tuple of probabilities instead of a fixed value.
 ML implements two algorithms for training MLP's. The first algorithm is a classical random
 sequential back-propagation algorithm. The second (default) one is a batch RPROP algorithm.
 
-@sa cv::ml::ANN_MLP
+@sa ncvslideio::ml::ANN_MLP
 
 Logistic Regression {#ml_intro_lr}
 ===================
@@ -451,31 +451,31 @@ classes 0 and 1, one can determine that the given data instance belongs to class
 In Logistic Regression, choosing the right parameters is of utmost importance for reducing the
 training error and ensuring high training accuracy:
 
--   The learning rate can be set with @ref cv::ml::LogisticRegression::setLearningRate "setLearningRate"
+-   The learning rate can be set with @ref ncvslideio::ml::LogisticRegression::setLearningRate "setLearningRate"
     method. It determines how fast we approach the solution. It is a positive real number.
 
 -   Optimization algorithms like Batch Gradient Descent and Mini-Batch Gradient Descent are supported
     in LogisticRegression. It is important that we mention the number of iterations these optimization
     algorithms have to run. The number of iterations can be set with @ref
-    cv::ml::LogisticRegression::setIterations "setIterations". This parameter can be thought
+    ncvslideio::ml::LogisticRegression::setIterations "setIterations". This parameter can be thought
     as number of steps taken and learning rate specifies if it is a long step or a short step. This
     and previous parameter define how fast we arrive at a possible solution.
 
 -   In order to compensate for overfitting regularization is performed, which can be enabled with
-    @ref cv::ml::LogisticRegression::setRegularization "setRegularization". One can specify what
+    @ref ncvslideio::ml::LogisticRegression::setRegularization "setRegularization". One can specify what
     kind of regularization has to be performed by passing one of @ref
-    cv::ml::LogisticRegression::RegKinds "regularization kinds" to this method.
+    ncvslideio::ml::LogisticRegression::RegKinds "regularization kinds" to this method.
 
 -   Logistic regression implementation provides a choice of 2 training methods with Batch Gradient
     Descent or the MiniBatch Gradient Descent. To specify this, call @ref
-    cv::ml::LogisticRegression::setTrainMethod "setTrainMethod" with either @ref
-    cv::ml::LogisticRegression::BATCH "LogisticRegression::BATCH" or @ref
-    cv::ml::LogisticRegression::MINI_BATCH "LogisticRegression::MINI_BATCH". If training method is
-    set to @ref cv::ml::LogisticRegression::MINI_BATCH "MINI_BATCH", the size of the mini batch has
-    to be to a positive integer set with @ref cv::ml::LogisticRegression::setMiniBatchSize
+    ncvslideio::ml::LogisticRegression::setTrainMethod "setTrainMethod" with either @ref
+    ncvslideio::ml::LogisticRegression::BATCH "LogisticRegression::BATCH" or @ref
+    ncvslideio::ml::LogisticRegression::MINI_BATCH "LogisticRegression::MINI_BATCH". If training method is
+    set to @ref ncvslideio::ml::LogisticRegression::MINI_BATCH "MINI_BATCH", the size of the mini batch has
+    to be to a positive integer set with @ref ncvslideio::ml::LogisticRegression::setMiniBatchSize
     "setMiniBatchSize".
 
 A sample set of training parameters for the Logistic Regression classifier can be initialized as follows:
 @snippet samples/cpp/logistic_regression.cpp init
 
-@sa cv::ml::LogisticRegression
+@sa ncvslideio::ml::LogisticRegression

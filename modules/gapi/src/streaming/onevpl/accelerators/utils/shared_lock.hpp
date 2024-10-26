@@ -12,7 +12,7 @@
 
 #include "opencv2/gapi/own/exports.hpp" // GAPI_EXPORTS
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -42,6 +42,6 @@ private:
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_ACCELERATORS_SURFACE_SHARED_LOCK_HPP

@@ -12,7 +12,7 @@
 #include <opencv2/gapi/core.hpp>
 #include <opencv2/gapi/own/saturate.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi_test_kernels
 {
@@ -21,9 +21,9 @@ GAPI_FLUID_KERNEL(FAddSimple, TAddSimple, false)
 {
     static const int Window = 1;
 
-    static void run(const cv::gapi::fluid::View   &a,
-                    const cv::gapi::fluid::View   &b,
-                          cv::gapi::fluid::Buffer &o)
+    static void run(const ncvslideio::gapi::fluid::View   &a,
+                    const ncvslideio::gapi::fluid::View   &b,
+                          ncvslideio::gapi::fluid::Buffer &o)
     {
         // std::cout << "AddSimple {{{\n";
         // std::cout << "  a - "; a.debug(std::cout);
@@ -62,9 +62,9 @@ GAPI_FLUID_KERNEL(FAddCSimple, TAddCSimple, false)
     static const int Window = 1;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View   &in,
+    static void run(const ncvslideio::gapi::fluid::View   &in,
                     const int                      cval,
-                          cv::gapi::fluid::Buffer &out)
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         for (int l = 0, lpi = out.lpi(); l < lpi; l++)
         {
@@ -75,7 +75,7 @@ GAPI_FLUID_KERNEL(FAddCSimple, TAddCSimple, false)
             {
                 //std::cout << std::setw(4) << int(in_row[i]);
                 //FIXME: it seems that over kernels might need it as well
-                out_row[i] = cv::gapi::own::saturate<uint8_t>(in_row[i] + cval);
+                out_row[i] = ncvslideio::gapi::own::saturate<uint8_t>(in_row[i] + cval);
             }
             //std::cout << std::endl;
         }
@@ -87,9 +87,9 @@ GAPI_FLUID_KERNEL(FAddScalar, TAddScalar, false)
     static const int Window = 1;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View   &in,
-                    const cv::Scalar              &cval,
-                          cv::gapi::fluid::Buffer &out)
+    static void run(const ncvslideio::gapi::fluid::View   &in,
+                    const ncvslideio::Scalar              &cval,
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         for (int l = 0, lpi = out.lpi(); l < lpi; l++)
         {
@@ -111,9 +111,9 @@ GAPI_FLUID_KERNEL(FAddScalarToMat, TAddScalarToMat, false)
     static const int Window = 1;
     static const int LPI    = 2;
 
-    static void run(const cv::Scalar              &cval,
-                    const cv::gapi::fluid::View   &in,
-                          cv::gapi::fluid::Buffer &out)
+    static void run(const ncvslideio::Scalar              &cval,
+                    const ncvslideio::gapi::fluid::View   &in,
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         for (int l = 0, lpi = out.lpi(); l < lpi; l++)
         {
@@ -131,7 +131,7 @@ GAPI_FLUID_KERNEL(FAddScalarToMat, TAddScalarToMat, false)
 };
 
 template<int kernelSize, int lpi = 1>
-static void runBlur(const cv::gapi::fluid::View& src, cv::gapi::fluid::Buffer& dst)
+static void runBlur(const ncvslideio::gapi::fluid::View& src, ncvslideio::gapi::fluid::Buffer& dst)
 {
     const auto borderSize = (kernelSize - 1) / 2;
     const unsigned char* ins[kernelSize];
@@ -165,8 +165,8 @@ GAPI_FLUID_KERNEL(FBlur1x1, TBlur1x1, false)
 {
     static const int Window = 1;
 
-    static void run(const cv::gapi::fluid::View &src, int /*borderType*/,
-                    cv::Scalar /*borderValue*/, cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src, int /*borderType*/,
+                    ncvslideio::Scalar /*borderValue*/, ncvslideio::gapi::fluid::Buffer &dst)
     {
         runBlur<Window>(src, dst);
     }
@@ -176,13 +176,13 @@ GAPI_FLUID_KERNEL(FBlur3x3, TBlur3x3, false)
 {
     static const int Window = 3;
 
-    static void run(const cv::gapi::fluid::View &src, int /*borderType*/,
-                    cv::Scalar /*borderValue*/, cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src, int /*borderType*/,
+                    ncvslideio::Scalar /*borderValue*/, ncvslideio::gapi::fluid::Buffer &dst)
     {
         runBlur<Window>(src, dst);
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc &/*src*/, int borderType, cv::Scalar borderValue)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc &/*src*/, int borderType, ncvslideio::Scalar borderValue)
     {
         return { borderType, borderValue};
     }
@@ -192,13 +192,13 @@ GAPI_FLUID_KERNEL(FBlur5x5, TBlur5x5, false)
 {
     static const int Window = 5;
 
-    static void run(const cv::gapi::fluid::View &src, int /*borderType*/,
-                    cv::Scalar /*borderValue*/, cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src, int /*borderType*/,
+                    ncvslideio::Scalar /*borderValue*/, ncvslideio::gapi::fluid::Buffer &dst)
     {
         runBlur<Window>(src, dst);
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc &/*src*/, int borderType, cv::Scalar borderValue)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc &/*src*/, int borderType, ncvslideio::Scalar borderValue)
     {
         return { borderType, borderValue};
     }
@@ -209,13 +209,13 @@ GAPI_FLUID_KERNEL(FBlur3x3_2lpi, TBlur3x3_2lpi, false)
     static const int Window = 3;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View &src, int /*borderType*/,
-                    cv::Scalar /*borderValue*/, cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src, int /*borderType*/,
+                    ncvslideio::Scalar /*borderValue*/, ncvslideio::gapi::fluid::Buffer &dst)
     {
         runBlur<Window, LPI>(src, dst);
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc &/*src*/, int borderType, cv::Scalar borderValue)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc &/*src*/, int borderType, ncvslideio::Scalar borderValue)
     {
         return { borderType, borderValue};
     }
@@ -226,13 +226,13 @@ GAPI_FLUID_KERNEL(FBlur5x5_2lpi, TBlur5x5_2lpi, false)
     static const int Window = 5;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View &src, int /*borderType*/,
-                    cv::Scalar /*borderValue*/, cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src, int /*borderType*/,
+                    ncvslideio::Scalar /*borderValue*/, ncvslideio::gapi::fluid::Buffer &dst)
     {
         runBlur<Window, LPI>(src, dst);
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc &/*src*/, int borderType, cv::Scalar borderValue)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc &/*src*/, int borderType, ncvslideio::Scalar borderValue)
     {
         return { borderType, borderValue};
     }
@@ -242,8 +242,8 @@ GAPI_FLUID_KERNEL(FIdentity, TId, false)
 {
     static const int Window = 3;
 
-    static void run(const cv::gapi::fluid::View   &a,
-                          cv::gapi::fluid::Buffer &o)
+    static void run(const ncvslideio::gapi::fluid::View   &a,
+                          ncvslideio::gapi::fluid::Buffer &o)
     {
         const uint8_t* in[3] = {
             a.InLine<uint8_t>(-1),
@@ -259,9 +259,9 @@ GAPI_FLUID_KERNEL(FIdentity, TId, false)
         }
     }
 
-    static gapi::fluid::Border getBorder(const cv::GMatDesc &)
+    static gapi::fluid::Border getBorder(const ncvslideio::GMatDesc &)
     {
-        return { cv::BORDER_REPLICATE, cv::Scalar{} };
+        return { ncvslideio::BORDER_REPLICATE, ncvslideio::Scalar{} };
     }
 };
 
@@ -270,8 +270,8 @@ GAPI_FLUID_KERNEL(FId7x7, TId7x7, false)
     static const int Window = 7;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View   &a,
-                          cv::gapi::fluid::Buffer &o)
+    static void run(const ncvslideio::gapi::fluid::View   &a,
+                          ncvslideio::gapi::fluid::Buffer &o)
     {
         for (int l = 0, lpi = o.lpi(); l < lpi; l++)
         {
@@ -306,9 +306,9 @@ GAPI_FLUID_KERNEL(FId7x7, TId7x7, false)
         }
     }
 
-    static cv::gapi::fluid::Border getBorder(const cv::GMatDesc&/* src*/)
+    static ncvslideio::gapi::fluid::Border getBorder(const ncvslideio::GMatDesc&/* src*/)
     {
-        return { cv::BORDER_REPLICATE, cv::Scalar{} };
+        return { ncvslideio::BORDER_REPLICATE, ncvslideio::Scalar{} };
     }
 };
 
@@ -316,15 +316,15 @@ GAPI_FLUID_KERNEL(FPlusRow0, TPlusRow0, true)
 {
     static const int Window = 1;
 
-    static void initScratch(const cv::GMatDesc            &in,
-                                  cv::gapi::fluid::Buffer &scratch)
+    static void initScratch(const ncvslideio::GMatDesc            &in,
+                                  ncvslideio::gapi::fluid::Buffer &scratch)
     {
-        cv::Size scratch_size{in.size.width, 1};
-        cv::gapi::fluid::Buffer buffer(in.withSize(scratch_size));
+        ncvslideio::Size scratch_size{in.size.width, 1};
+        ncvslideio::gapi::fluid::Buffer buffer(in.withSize(scratch_size));
         scratch = std::move(buffer);
     }
 
-    static void resetScratch(cv::gapi::fluid::Buffer &scratch)
+    static void resetScratch(ncvslideio::gapi::fluid::Buffer &scratch)
     {
         // FIXME: only 1 line can be used!
         uint8_t* out_row = scratch.OutLine<uint8_t>();
@@ -334,9 +334,9 @@ GAPI_FLUID_KERNEL(FPlusRow0, TPlusRow0, true)
         }
     }
 
-    static void run(const cv::gapi::fluid::View   &in,
-                          cv::gapi::fluid::Buffer &out,
-                          cv::gapi::fluid::Buffer &scratch)
+    static void run(const ncvslideio::gapi::fluid::View   &in,
+                          ncvslideio::gapi::fluid::Buffer &out,
+                          ncvslideio::gapi::fluid::Buffer &scratch)
     {
         const uint8_t* in_row  = in     .InLine <uint8_t>(0);
               uint8_t* out_row = out    .OutLine<uint8_t>();
@@ -362,10 +362,10 @@ GAPI_FLUID_KERNEL(FPlusRow0, TPlusRow0, true)
     }
 };
 
-static void split3Row(const cv::gapi::fluid::View   &in,
-                      cv::gapi::fluid::Buffer &o1,
-                      cv::gapi::fluid::Buffer &o2,
-                      cv::gapi::fluid::Buffer &o3)
+static void split3Row(const ncvslideio::gapi::fluid::View   &in,
+                      ncvslideio::gapi::fluid::Buffer &o1,
+                      ncvslideio::gapi::fluid::Buffer &o2,
+                      ncvslideio::gapi::fluid::Buffer &o3)
 {
     for (int l = 0; l < o1.lpi(); l++)
     {
@@ -390,14 +390,14 @@ static void split3Row(const cv::gapi::fluid::View   &in,
     }
 }
 
-GAPI_FLUID_KERNEL(FTestSplit3, cv::gapi::core::GSplit3, false)
+GAPI_FLUID_KERNEL(FTestSplit3, ncvslideio::gapi::core::GSplit3, false)
 {
     static const int Window = 1;
 
-    static void run(const cv::gapi::fluid::View   &in,
-                          cv::gapi::fluid::Buffer &o1,
-                          cv::gapi::fluid::Buffer &o2,
-                          cv::gapi::fluid::Buffer &o3)
+    static void run(const ncvslideio::gapi::fluid::View   &in,
+                          ncvslideio::gapi::fluid::Buffer &o1,
+                          ncvslideio::gapi::fluid::Buffer &o2,
+                          ncvslideio::gapi::fluid::Buffer &o3)
     {
         split3Row(in, o1, o2, o3);
     }
@@ -408,10 +408,10 @@ GAPI_FLUID_KERNEL(FTestSplit3_4lpi, TSplit3_4lpi, false)
     static const int Window = 1;
     static const int LPI = 4;
 
-    static void run(const cv::gapi::fluid::View   &in,
-                          cv::gapi::fluid::Buffer &o1,
-                          cv::gapi::fluid::Buffer &o2,
-                          cv::gapi::fluid::Buffer &o3)
+    static void run(const ncvslideio::gapi::fluid::View   &in,
+                          ncvslideio::gapi::fluid::Buffer &o1,
+                          ncvslideio::gapi::fluid::Buffer &o2,
+                          ncvslideio::gapi::fluid::Buffer &o3)
     {
         split3Row(in, o1, o2, o3);
     }
@@ -427,10 +427,10 @@ GAPI_FLUID_KERNEL(FSum2MatsAndScalar, TSum2MatsAndScalar, false)
     static const int Window = 1;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View   &a,
-                    const cv::Scalar              &cval,
-                    const cv::gapi::fluid::View   &b,
-                          cv::gapi::fluid::Buffer &out)
+    static void run(const ncvslideio::gapi::fluid::View   &a,
+                    const ncvslideio::Scalar              &cval,
+                    const ncvslideio::gapi::fluid::View   &b,
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         for (int l = 0, lpi = out.lpi(); l < lpi; l++)
         {
@@ -454,9 +454,9 @@ GAPI_FLUID_KERNEL(FEqualizeHist, TEqualizeHist, false)
     static const int Window = 1;
     static const int LPI    = 2;
 
-    static void run(const cv::gapi::fluid::View   &mat,
+    static void run(const ncvslideio::gapi::fluid::View   &mat,
                     const std::vector<int>        &arr,
-                          cv::gapi::fluid::Buffer &out)
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         for (int l = 0, lpi = out.lpi(); l < lpi; l++)
         {
@@ -473,7 +473,7 @@ GAPI_FLUID_KERNEL(FEqualizeHist, TEqualizeHist, false)
 
 GAPI_OCV_KERNEL(OCVCalcHist, TCalcHist)
 {
-    static void run(const cv::Mat& in, std::vector<int>& out)
+    static void run(const ncvslideio::Mat& in, std::vector<int>& out)
     {
         out = std::vector<int>(256, 0);
 
@@ -526,15 +526,15 @@ static inline void yRGBuvToRGB(const uchar vy, const int ruv, const int guv, con
     b = saturate_cast<uchar>((y + buv) >> ITUR_BT_601_SHIFT);
 }
 
-GAPI_FLUID_KERNEL(FNV12toRGB, cv::gapi::imgproc::GNV12toRGB, false)
+GAPI_FLUID_KERNEL(FNV12toRGB, ncvslideio::gapi::imgproc::GNV12toRGB, false)
 {
     static const int Window = 1;
     static const int LPI    = 2;
     static const auto Kind = GFluidKernel::Kind::YUV420toRGB;
 
-    static void run(const cv::gapi::fluid::View   &in1,
-                    const cv::gapi::fluid::View   &in2,
-                          cv::gapi::fluid::Buffer &out)
+    static void run(const ncvslideio::gapi::fluid::View   &in1,
+                    const ncvslideio::gapi::fluid::View   &in2,
+                          ncvslideio::gapi::fluid::Buffer &out)
     {
         const auto w = out.length();
 
@@ -575,10 +575,10 @@ GAPI_FLUID_KERNEL(FMerge3_4lpi, TMerge3_4lpi, false)
     static const int Window = 1;
     static const int LPI = 4;
 
-    static void run(const cv::gapi::fluid::View &src1,
-                    const cv::gapi::fluid::View &src2,
-                    const cv::gapi::fluid::View &src3,
-                          cv::gapi::fluid::Buffer &dst)
+    static void run(const ncvslideio::gapi::fluid::View &src1,
+                    const ncvslideio::gapi::fluid::View &src2,
+                    const ncvslideio::gapi::fluid::View &src3,
+                          ncvslideio::gapi::fluid::Buffer &dst)
     {
         for (int l = 0; l < dst.lpi(); l++)
         {
@@ -602,7 +602,7 @@ GMat merge3_4lpi(const GMat& src1, const GMat& src2, const GMat& src3)
     return TMerge3_4lpi::on(src1, src2, src3);
 }
 
-cv::GKernelPackage fluidTestPackage = cv::gapi::kernels
+ncvslideio::GKernelPackage fluidTestPackage = ncvslideio::gapi::kernels
         <FAddSimple
         ,FAddCSimple
         ,FAddScalar
@@ -624,4 +624,4 @@ cv::GKernelPackage fluidTestPackage = cv::gapi::kernels
         ,OCVCalcHist
         >();
 } // namespace gapi_test_kernels
-} // namespace cv
+} // namespace ncvslideio

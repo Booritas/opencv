@@ -23,7 +23,7 @@
 #include <memory>
 #include <iterator>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
     constexpr bool IS_DNN_CUDA_TARGET(int id) {
         return id == DNN_TARGET_CUDA_FP16 || id == DNN_TARGET_CUDA;
@@ -45,10 +45,10 @@ namespace cv { namespace dnn {
             cudnn::Handle cudnn_handle;
         };
 
-        /** @brief creates Tensor object from cv::Mat (only the header is created, i.e. no data is copied)
+        /** @brief creates Tensor object from ncvslideio::Mat (only the header is created, i.e. no data is copied)
          *
          * \tparam      T   element type for the tensor
-         * \param[in]   mat cv::Mat from which the shape must be inferred
+         * \param[in]   mat ncvslideio::Mat from which the shape must be inferred
          *
          * \return a Tensor object with the shape of \p mat
          */
@@ -58,7 +58,7 @@ namespace cv { namespace dnn {
             return Tensor<T>(std::begin(sizes), std::end(sizes));
         }
 
-        /** @brief copies data from a cv::Mat to TensorType
+        /** @brief copies data from a ncvslideio::Mat to TensorType
          *
          * \tparam  T   the type of the elements contained in TensorType object
          *
@@ -81,7 +81,7 @@ namespace cv { namespace dnn {
 
         template <> inline
         void copyMatToTensor(const Mat& srcMat, const TensorSpan<half> destTensor, const Stream& stream) {
-            /* should perhaps convert cv::Mat of different type to the required type and copy */
+            /* should perhaps convert ncvslideio::Mat of different type to the required type and copy */
             CV_Assert(srcMat.type() == CV_32F);
             CV_Assert(srcMat.total() >= destTensor.size());
 
@@ -94,7 +94,7 @@ namespace cv { namespace dnn {
 
         template <> inline
         void copyMatToTensor(const Mat& srcMat, const TensorSpan<float> destTensor, const Stream& stream) {
-            /* should perhaps convert cv::Mat of different type to the required type and copy */
+            /* should perhaps convert ncvslideio::Mat of different type to the required type and copy */
             CV_Assert(srcMat.type() == CV_32F);
             CV_Assert(srcMat.total() >= destTensor.size());
 
@@ -104,7 +104,7 @@ namespace cv { namespace dnn {
             memcpy<float>(destTensor.get(), reinterpret_cast<float*>(temp.data), destTensor.size(), stream);
         }
 
-        /** @brief copies data from a TensorType to a cv::Mat
+        /** @brief copies data from a TensorType to a ncvslideio::Mat
          *
          * \tparam  T   the type of the elements contained in TensorType object
          *
@@ -159,8 +159,8 @@ namespace cv { namespace dnn {
         virtual ~CUDABackendNode() { }
 
         virtual void forward(
-            const std::vector<cv::Ptr<BackendWrapper>>& inputs,
-            const std::vector<cv::Ptr<BackendWrapper>>& outputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& inputs,
+            const std::vector<ncvslideio::Ptr<BackendWrapper>>& outputs,
             cuda4dnn::csl::Workspace& workspace) = 0;
 
         virtual std::size_t get_workspace_memory_in_bytes() const noexcept { return 0; }
@@ -180,14 +180,14 @@ namespace cv { namespace dnn {
      * template <class T>
      * class ConcatOp : public CUDABackendNode;
      *
-     * // returns a cv::Ptr to a ConcatOp<half> object
+     * // returns a ncvslideio::Ptr to a ConcatOp<half> object
      * auto node = make_cuda_node<ConcatOp>(DNN_TARGET_CUDA_FP16, axis);
      *
-     * // returns a cv::Ptr to a ConcatOp<float> object
+     * // returns a ncvslideio::Ptr to a ConcatOp<float> object
      * auto node = make_cuda_node<ConcatOp>(DNN_TARGET_CUDA, axis);
      */
     template <template <class> class NodeType, class ...Args>
-    cv::Ptr<BackendNode> make_cuda_node(int targetId, Args&& ...args) {
+    ncvslideio::Ptr<BackendNode> make_cuda_node(int targetId, Args&& ...args) {
         switch (targetId)
         {
         case DNN_TARGET_CUDA_FP16:
@@ -225,10 +225,10 @@ namespace cv { namespace dnn {
     namespace cuda4dnn { namespace detail {
 
         template <class U>
-        void convert_D2H(const cv::Mat& mat, cuda4dnn::csl::View<U> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream);
+        void convert_D2H(const ncvslideio::Mat& mat, cuda4dnn::csl::View<U> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream);
 
         template <> inline
-        void convert_D2H<half>(const cv::Mat& mat, cuda4dnn::csl::View<half> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
+        void convert_D2H<half>(const ncvslideio::Mat& mat, cuda4dnn::csl::View<half> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
             if (device_temp.size() < view.size())
                 device_temp.reset(view.size());
             auto temp_span = cuda4dnn::csl::Span<float>(device_temp.get(), view.size());
@@ -238,15 +238,15 @@ namespace cv { namespace dnn {
         }
 
         template <> inline
-        void convert_D2H<float>(const cv::Mat& mat, cuda4dnn::csl::View<float> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
+        void convert_D2H<float>(const ncvslideio::Mat& mat, cuda4dnn::csl::View<float> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
             cuda4dnn::csl::memcpy<float>(reinterpret_cast<float*>(mat.data), view.data(), view.size(), stream);
         }
 
         template <class U>
-        void convert_D2H_background(const cv::Mat& mat, cuda4dnn::csl::View<U> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event);
+        void convert_D2H_background(const ncvslideio::Mat& mat, cuda4dnn::csl::View<U> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event);
 
         template <> inline
-        void convert_D2H_background<half>(const cv::Mat& mat, cuda4dnn::csl::View<half> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event) {
+        void convert_D2H_background<half>(const ncvslideio::Mat& mat, cuda4dnn::csl::View<half> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event) {
             if (device_temp.size() < view.size())
                 device_temp.reset(view.size());
             auto temp_span = cuda4dnn::csl::Span<float>(device_temp.get(), view.size());
@@ -266,17 +266,17 @@ namespace cv { namespace dnn {
         }
 
         template <> inline
-        void convert_D2H_background<float>(const cv::Mat& mat, cuda4dnn::csl::View<float> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event) {
+        void convert_D2H_background<float>(const ncvslideio::Mat& mat, cuda4dnn::csl::View<float> view, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream, const cuda4dnn::csl::Stream& d2h_stream, cuda4dnn::csl::Event& d2h_event) {
             d2h_event.record(stream);
             cuda4dnn::csl::StreamWaitOnEvent(d2h_stream, d2h_event);
             cuda4dnn::csl::memcpy<float>(reinterpret_cast<float*>(mat.data), view.data(), view.size(), d2h_stream);
         }
 
         template <class U>
-        void convert_H2D(cuda4dnn::csl::Span<U> span, const cv::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream);
+        void convert_H2D(cuda4dnn::csl::Span<U> span, const ncvslideio::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream);
 
         template <> inline
-        void convert_H2D<half>(cuda4dnn::csl::Span<half> span, const cv::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
+        void convert_H2D<half>(cuda4dnn::csl::Span<half> span, const ncvslideio::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
             if (device_temp.size() < span.size())
                 device_temp.reset(span.size());
             auto temp_span = cuda4dnn::csl::Span<float>(device_temp.get(), span.size());
@@ -286,7 +286,7 @@ namespace cv { namespace dnn {
         }
 
         template <> inline
-        void convert_H2D<float>(cuda4dnn::csl::Span<float> span, const cv::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
+        void convert_H2D<float>(cuda4dnn::csl::Span<float> span, const ncvslideio::Mat& mat, cuda4dnn::csl::ManagedPtr<float>& device_temp, const cuda4dnn::csl::Stream& stream) {
             cuda4dnn::csl::memcpy<float>(span.data(), reinterpret_cast<float*>(mat.data), span.size(), stream);
         }
     }} /* namespace cuda4dnn::detail */
@@ -308,7 +308,7 @@ namespace cv { namespace dnn {
         GenericCUDABackendWrapper(Mat& m)
             : CUDABackendWrapper(TargetID)
         {
-            shape = cv::dnn::shape(m);
+            shape = ncvslideio::dnn::shape(m);
             offset = 0;
 
             shared_block = std::make_shared<shared_block_type>();
@@ -451,14 +451,14 @@ namespace cv { namespace dnn {
             offset = offset_;
         }
 
-        cv::Mat getMutableHostMat() noexcept {
+        ncvslideio::Mat getMutableHostMat() noexcept {
             CV_Assert(offset == 0); /* we cannot track each piece of the memory separately */
             copyToHost();
             setHostDirty();
             return shared_block->host;
         }
 
-        const cv::Mat getImmutableHostMat() const noexcept {
+        const ncvslideio::Mat getImmutableHostMat() const noexcept {
             CV_Assert(offset == 0); /* we cannot track each piece of the memory separately */
             copyToHost();
             return shared_block->host;
@@ -501,7 +501,7 @@ namespace cv { namespace dnn {
             bool host_dirty;
             bool device_dirty;
 
-            cv::Mat host;
+            ncvslideio::Mat host;
             cuda4dnn::csl::MemoryLockGuard memGuard; /* keeps host memory page-locked if possible */
 
             cuda4dnn::csl::ManagedPtr<T> device;
@@ -526,6 +526,6 @@ namespace cv { namespace dnn {
     using GetCUDABackendWrapperType = typename GetCUDABackendWrapperType_<T>::type;
 
 #endif
-}} /* namespace cv::dnn */
+}} /* namespace ncvslideio::dnn */
 
 #endif /* OPENCV_DNN_SRC_OP_CUDA_HPP */

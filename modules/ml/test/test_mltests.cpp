@@ -313,11 +313,11 @@ INSTANTIATE_TEST_CASE_P(/**/, ML_SL_Params, testing::ValuesIn(ML_SL_Params_List)
 
 TEST(TrainDataGet, layout_ROW_SAMPLE)  // Details: #12236
 {
-    cv::Mat test = cv::Mat::ones(150, 30, CV_32FC1) * 2;
+    ncvslideio::Mat test = ncvslideio::Mat::ones(150, 30, CV_32FC1) * 2;
     test.col(3) += Scalar::all(3);
-    cv::Mat labels = cv::Mat::ones(150, 3, CV_32SC1) * 5;
+    ncvslideio::Mat labels = ncvslideio::Mat::ones(150, 3, CV_32SC1) * 5;
     labels.col(1) += 1;
-    cv::Ptr<cv::ml::TrainData> train_data = cv::ml::TrainData::create(test, cv::ml::ROW_SAMPLE, labels);
+    ncvslideio::Ptr<ncvslideio::ml::TrainData> train_data = ncvslideio::ml::TrainData::create(test, ncvslideio::ml::ROW_SAMPLE, labels);
     train_data->setTrainTestSplitRatio(0.9);
 
     Mat tidx = train_data->getTestSampleIdx();
@@ -342,11 +342,11 @@ TEST(TrainDataGet, layout_ROW_SAMPLE)  // Details: #12236
 
 TEST(TrainDataGet, layout_COL_SAMPLE)  // Details: #12236
 {
-    cv::Mat test = cv::Mat::ones(30, 150, CV_32FC1) * 3;
+    ncvslideio::Mat test = ncvslideio::Mat::ones(30, 150, CV_32FC1) * 3;
     test.row(3) += Scalar::all(3);
-    cv::Mat labels = cv::Mat::ones(3, 150, CV_32SC1) * 5;
+    ncvslideio::Mat labels = ncvslideio::Mat::ones(3, 150, CV_32SC1) * 5;
     labels.row(1) += 1;
-    cv::Ptr<cv::ml::TrainData> train_data = cv::ml::TrainData::create(test, cv::ml::COL_SAMPLE, labels);
+    ncvslideio::Ptr<ncvslideio::ml::TrainData> train_data = ncvslideio::ml::TrainData::create(test, ncvslideio::ml::COL_SAMPLE, labels);
     train_data->setTrainTestSplitRatio(0.9);
 
     Mat tidx = train_data->getTestSampleIdx();

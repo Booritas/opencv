@@ -13,7 +13,7 @@
 
 #include "api/gorigin.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 namespace proto {
 

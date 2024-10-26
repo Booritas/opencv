@@ -26,7 +26,7 @@ void FormTrackingPointsArray(vector<Point2f>& points, int width, int height, int
 }
 
 PERF_TEST_P(Path_Idx_Cn_NPoints_WSize, OpticalFlowPyrLK_full, testing::Combine(
-                testing::Values<std::string>("cv/optflow/frames/VGA_%02d.png", "cv/optflow/frames/720p_%02d.png"),
+                testing::Values<std::string>("ncvslideio/optflow/frames/VGA_%02d.png", "ncvslideio/optflow/frames/720p_%02d.png"),
                 testing::Range(1, 3),
                 testing::Values(1, 3, 4),
                 testing::Values(make_tuple(9, 9), make_tuple(15, 15)),
@@ -34,8 +34,8 @@ PERF_TEST_P(Path_Idx_Cn_NPoints_WSize, OpticalFlowPyrLK_full, testing::Combine(
                 )
             )
 {
-    string filename1 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
-    string filename2 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
+    string filename1 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
+    string filename2 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
     Mat img1 = imread(filename1);
     Mat img2 = imread(filename2);
     if (img1.empty()) FAIL() << "Unable to load source image " << filename1;
@@ -96,15 +96,15 @@ typedef tuple<std::string, int, tuple<int, int>, int> Path_Idx_NPoints_WSize_t;
 typedef TestBaseWithParam<Path_Idx_NPoints_WSize_t> Path_Idx_NPoints_WSize;
 
 PERF_TEST_P(Path_Idx_NPoints_WSize, DISABLED_OpticalFlowPyrLK_ovx, testing::Combine(
-                testing::Values<std::string>("cv/optflow/frames/VGA_%02d.png", "cv/optflow/frames/720p_%02d.png"),
+                testing::Values<std::string>("ncvslideio/optflow/frames/VGA_%02d.png", "ncvslideio/optflow/frames/720p_%02d.png"),
                 testing::Range(1, 3),
                 testing::Values(make_tuple(9, 9), make_tuple(15, 15)),
                 testing::Values(7, 11)
                 )
             )
 {
-    string filename1 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
-    string filename2 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
+    string filename1 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
+    string filename2 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
     Mat img1 = imread(filename1);
     Mat img2 = imread(filename2);
     if (img1.empty()) FAIL() << "Unable to load source image " << filename1;
@@ -135,7 +135,7 @@ PERF_TEST_P(Path_Idx_NPoints_WSize, DISABLED_OpticalFlowPyrLK_ovx, testing::Comb
 
     TEST_CYCLE_N(30)
     {
-        calcOpticalFlowPyrLK(frame1, frame2, inPoints, outPoints, status, cv::noArray(),
+        calcOpticalFlowPyrLK(frame1, frame2, inPoints, outPoints, status, ncvslideio::noArray(),
                              Size(winSize, winSize), maxLevel, criteria,
                              flags, minEigThreshold);
     }
@@ -147,7 +147,7 @@ typedef tuple<std::string, int, int, tuple<int,int>, int, bool> Path_Idx_Cn_NPoi
 typedef TestBaseWithParam<Path_Idx_Cn_NPoints_WSize_Deriv_t> Path_Idx_Cn_NPoints_WSize_Deriv;
 
 PERF_TEST_P(Path_Idx_Cn_NPoints_WSize_Deriv, OpticalFlowPyrLK_self, testing::Combine(
-                testing::Values<std::string>("cv/optflow/frames/VGA_%02d.png", "cv/optflow/frames/720p_%02d.png"),
+                testing::Values<std::string>("ncvslideio/optflow/frames/VGA_%02d.png", "ncvslideio/optflow/frames/720p_%02d.png"),
                 testing::Range(1, 3),
                 testing::Values(1, 3, 4),
                 testing::Values(make_tuple(9, 9), make_tuple(15, 15)),
@@ -156,8 +156,8 @@ PERF_TEST_P(Path_Idx_Cn_NPoints_WSize_Deriv, OpticalFlowPyrLK_self, testing::Com
                 )
             )
 {
-    string filename1 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
-    string filename2 = getDataPath(cv::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
+    string filename1 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam())));
+    string filename2 = getDataPath(ncvslideio::format(get<0>(GetParam()).c_str(), get<1>(GetParam()) + 1));
     Mat img1 = imread(filename1);
     Mat img2 = imread(filename2);
     if (img1.empty()) FAIL() << "Unable to load source image " << filename1;
@@ -227,7 +227,7 @@ typedef tuple<std::string, int, bool, PyrBorderMode, bool> Path_Win_Deriv_Border
 typedef TestBaseWithParam<Path_Win_Deriv_Border_Reuse_t> Path_Win_Deriv_Border_Reuse;
 
 PERF_TEST_P(Path_Win_Deriv_Border_Reuse, OpticalFlowPyrLK_pyr, testing::Combine(
-                testing::Values<std::string>("cv/optflow/frames/720p_01.png"),
+                testing::Values<std::string>("ncvslideio/optflow/frames/720p_01.png"),
                 testing::Values(7, 11),
                 testing::Bool(),
                 PyrBorderMode::all(),

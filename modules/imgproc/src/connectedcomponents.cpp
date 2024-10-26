@@ -49,7 +49,7 @@
 #include "precomp.hpp"
 #include <vector>
 
-namespace cv{
+namespace ncvslideio{
     namespace connectedcomponents{
 
     struct NoOp{
@@ -79,7 +79,7 @@ namespace cv{
         }
 
         inline static
-        void mergeStats(const cv::Mat& /*imgLabels*/, NoOp * /*sopArray*/, NoOp& /*sop*/, const int& /*nLabels*/){
+        void mergeStats(const ncvslideio::Mat& /*imgLabels*/, NoOp * /*sopArray*/, NoOp& /*sop*/, const int& /*nLabels*/){
         }
 
     };
@@ -90,9 +90,9 @@ namespace cv{
 
     struct CCStatsOp{
         const _OutputArray *_mstatsv;
-        cv::Mat statsv;
+        ncvslideio::Mat statsv;
         const _OutputArray *_mcentroidsv;
-        cv::Mat centroidsv;
+        ncvslideio::Mat centroidsv;
         std::vector<Point2ui64> integrals;
         int _nextLoc;
 
@@ -101,9 +101,9 @@ namespace cv{
 
         inline
         void init(int nlabels){
-            _mstatsv->create(cv::Size(CC_STAT_MAX, nlabels), cv::DataType<int>::type);
+            _mstatsv->create(ncvslideio::Size(CC_STAT_MAX, nlabels), ncvslideio::DataType<int>::type);
             statsv = _mstatsv->getMat();
-            _mcentroidsv->create(cv::Size(2, nlabels), cv::DataType<double>::type);
+            _mcentroidsv->create(ncvslideio::Size(2, nlabels), ncvslideio::DataType<double>::type);
             centroidsv = _mcentroidsv->getMat();
 
             for (int l = 0; l < (int)nlabels; ++l){
@@ -119,7 +119,7 @@ namespace cv{
 
         inline
         void initElement(const int nlabels){
-            statsv = cv::Mat(nlabels, CC_STAT_MAX, cv::DataType<int>::type);
+            statsv = ncvslideio::Mat(nlabels, CC_STAT_MAX, ncvslideio::DataType<int>::type);
             for (int l = 0; l < (int)nlabels; ++l){
                 int *row = (int *)statsv.ptr(l);
                 row[CC_STAT_LEFT] = INT_MAX;
@@ -170,7 +170,7 @@ namespace cv{
         }
 
         inline static
-        void mergeStats(const cv::Mat& imgLabels, CCStatsOp *sopArray, CCStatsOp& sop, const int& nLabels){
+        void mergeStats(const ncvslideio::Mat& imgLabels, CCStatsOp *sopArray, CCStatsOp& sop, const int& nLabels){
             const int  h = imgLabels.rows;
 
             if (sop._nextLoc != h){
@@ -294,20 +294,20 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingBolelliParallel {
 
-        class FirstScan : public cv::ParallelLoopBody {
+        class FirstScan : public ncvslideio::ParallelLoopBody {
         private:
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT* P_;
             int* chunksSizeAndLabels_;
 
         public:
-            FirstScan(const cv::Mat& img, cv::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels)
+            FirstScan(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), chunksSizeAndLabels_(chunksSizeAndLabels) {}
 
             FirstScan& operator=(const FirstScan&) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
 
@@ -480,20 +480,20 @@ namespace cv{
             }
         };
 
-        class SecondScan : public cv::ParallelLoopBody {
+        class SecondScan : public ncvslideio::ParallelLoopBody {
         private:
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT* P_;
             StatsOp& sop_;
             StatsOp* sopArray_;
             LabelT& nLabels_;
 
         public:
-            SecondScan(const cv::Mat& img, cv::Mat& imgLabels, LabelT* P, StatsOp& sop, StatsOp* sopArray, LabelT& nLabels)
+            SecondScan(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT* P, StatsOp& sop, StatsOp* sopArray, LabelT& nLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), sop_(sop), sopArray_(sopArray), nLabels_(nLabels) {}
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -1056,7 +1056,7 @@ namespace cv{
         };
 
         inline static
-            void mergeLabels(const cv::Mat& img, cv::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels) {
+            void mergeLabels(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels) {
 
             // Merge Mask
             // +---+---+---+
@@ -1120,7 +1120,7 @@ namespace cv{
             }
         }
 
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop) {
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop) {
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
             CV_Assert(connectivity == 8);
@@ -1148,11 +1148,11 @@ namespace cv{
             //First label is for background
             //P[0] = 0;
 
-            cv::Range range2(0, divUp(h, 2));
+            ncvslideio::Range range2(0, divUp(h, 2));
             const double nParallelStripes = std::max(1, std::min(h / 2, getNumThreads() * 4));
 
             //First scan
-            cv::parallel_for_(range2, FirstScan(img, imgLabels, P.data(), chunksSizeAndLabels.data()), nParallelStripes);
+            ncvslideio::parallel_for_(range2, FirstScan(img, imgLabels, P.data(), chunksSizeAndLabels.data()), nParallelStripes);
 
             //merge labels of different chunks
             mergeLabels(img, imgLabels, P.data(), chunksSizeAndLabels.data());
@@ -1168,7 +1168,7 @@ namespace cv{
             sop.init(nLabels);
 
             //Second scan
-            cv::parallel_for_(range2, SecondScan(img, imgLabels, P.data(), sop, sopArray.data(), nLabels), nParallelStripes);
+            ncvslideio::parallel_for_(range2, SecondScan(img, imgLabels, P.data(), sop, sopArray.data(), nLabels), nParallelStripes);
 
             StatsOp::mergeStats(imgLabels, sopArray.data(), sop, nLabels);
             sop.finish();
@@ -1182,7 +1182,7 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingBolelli
     {
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop)
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop)
         {
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
@@ -1540,19 +1540,19 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingBolelli4CParallel {
 
-        class FirstScan : public cv::ParallelLoopBody {
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+        class FirstScan : public ncvslideio::ParallelLoopBody {
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT* P_;
             int* chunksSizeAndLabels_;
 
         public:
-            FirstScan(const cv::Mat& img, cv::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels)
+            FirstScan(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT* P, int* chunksSizeAndLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), chunksSizeAndLabels_(chunksSizeAndLabels) {}
 
             FirstScan& operator=(const FirstScan&) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -1669,19 +1669,19 @@ namespace cv{
             }
         };
 
-        class SecondScan : public cv::ParallelLoopBody {
-            cv::Mat& imgLabels_;
+        class SecondScan : public ncvslideio::ParallelLoopBody {
+            ncvslideio::Mat& imgLabels_;
             const LabelT* P_;
             StatsOp& sop_;
             StatsOp* sopArray_;
             LabelT& nLabels_;
         public:
-            SecondScan(cv::Mat& imgLabels, const LabelT* P, StatsOp& sop, StatsOp* sopArray, LabelT& nLabels)
+            SecondScan(ncvslideio::Mat& imgLabels, const LabelT* P, StatsOp& sop, StatsOp* sopArray, LabelT& nLabels)
                 : imgLabels_(imgLabels), P_(P), sop_(sop), sopArray_(sopArray), nLabels_(nLabels) {}
 
             SecondScan& operator=(const SecondScan&) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, imgLabels_.rows));
                 int r = range.start;
@@ -1717,7 +1717,7 @@ namespace cv{
         };
 
         inline static
-            void mergeLabels(cv::Mat& imgLabels, LabelT* P, const int* chunksSizeAndLabels) {
+            void mergeLabels(ncvslideio::Mat& imgLabels, LabelT* P, const int* chunksSizeAndLabels) {
 
             // Merge Mask
             // +-+-+-+
@@ -1749,7 +1749,7 @@ namespace cv{
 #undef condition_x
         }
 
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop) {
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop) {
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
             CV_Assert(connectivity == 4);
@@ -1777,13 +1777,13 @@ namespace cv{
             //First label is for background
             //P[0] = 0;
 
-            cv::Range range2(0, divUp(h, 2));
+            ncvslideio::Range range2(0, divUp(h, 2));
             const double nParallelStripes = std::max(1, std::min(h / 2, getNumThreads() * 4));
 
             LabelT nLabels = 1;
 
             //First scan
-            cv::parallel_for_(range2, FirstScan(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
+            ncvslideio::parallel_for_(range2, FirstScan(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
 
             //merge labels of different chunks
             mergeLabels(imgLabels, P, chunksSizeAndLabels.data());
@@ -1797,7 +1797,7 @@ namespace cv{
 
             sop.init(nLabels);
             //Second scan
-            cv::parallel_for_(range2, SecondScan(imgLabels, P, sop, sopArray.data(), nLabels), nParallelStripes);
+            ncvslideio::parallel_for_(range2, SecondScan(imgLabels, P, sop, sopArray.data(), nLabels), nParallelStripes);
             StatsOp::mergeStats(imgLabels, sopArray.data(), sop, nLabels);
             sop.finish();
 
@@ -1810,7 +1810,7 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingBolelli4C
     {
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop)
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop)
         {
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
@@ -1970,19 +1970,19 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingWuParallel{
 
-        class FirstScan8Connectivity : public cv::ParallelLoopBody{
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+        class FirstScan8Connectivity : public ncvslideio::ParallelLoopBody{
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT *P_;
             int *chunksSizeAndLabels_;
 
         public:
-            FirstScan8Connectivity(const cv::Mat& img, cv::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
+            FirstScan8Connectivity(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), chunksSizeAndLabels_(chunksSizeAndLabels){}
 
             FirstScan8Connectivity&  operator=(const FirstScan8Connectivity& ) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -2074,19 +2074,19 @@ namespace cv{
             #undef condition_x
         };
 
-        class FirstScan4Connectivity : public cv::ParallelLoopBody{
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+        class FirstScan4Connectivity : public ncvslideio::ParallelLoopBody{
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT *P_;
             int *chunksSizeAndLabels_;
 
         public:
-            FirstScan4Connectivity(const cv::Mat& img, cv::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
+            FirstScan4Connectivity(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), chunksSizeAndLabels_(chunksSizeAndLabels){}
 
             FirstScan4Connectivity&  operator=(const FirstScan4Connectivity& ) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -2153,19 +2153,19 @@ namespace cv{
             #undef condition_x
         };
 
-        class SecondScan : public cv::ParallelLoopBody{
-            cv::Mat& imgLabels_;
+        class SecondScan : public ncvslideio::ParallelLoopBody{
+            ncvslideio::Mat& imgLabels_;
             const LabelT *P_;
             StatsOp& sop_;
             StatsOp *sopArray_;
             LabelT& nLabels_;
         public:
-            SecondScan(cv::Mat& imgLabels, const LabelT *P, StatsOp& sop, StatsOp *sopArray, LabelT& nLabels)
+            SecondScan(ncvslideio::Mat& imgLabels, const LabelT *P, StatsOp& sop, StatsOp *sopArray, LabelT& nLabels)
                 : imgLabels_(imgLabels), P_(P), sop_(sop), sopArray_(sopArray), nLabels_(nLabels){}
 
             SecondScan&  operator=(const SecondScan& ) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, imgLabels_.rows));
                 int r = range.start;
@@ -2201,7 +2201,7 @@ namespace cv{
         };
 
         inline static
-        void mergeLabels8Connectivity(cv::Mat& imgLabels, LabelT *P, const int *chunksSizeAndLabels){
+        void mergeLabels8Connectivity(ncvslideio::Mat& imgLabels, LabelT *P, const int *chunksSizeAndLabels){
 
             // Merge Mask
             // +-+-+-+
@@ -2246,7 +2246,7 @@ namespace cv{
         }
 
         inline static
-        void mergeLabels4Connectivity(cv::Mat& imgLabels, LabelT *P, const int *chunksSizeAndLabels){
+        void mergeLabels4Connectivity(ncvslideio::Mat& imgLabels, LabelT *P, const int *chunksSizeAndLabels){
 
             // Merge Mask
             // +-+-+-+
@@ -2278,7 +2278,7 @@ namespace cv{
             #undef condition_x
         }
 
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop){
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop){
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
             CV_Assert(connectivity == 8 || connectivity == 4);
@@ -2307,14 +2307,14 @@ namespace cv{
             //First label is for background
             //P[0] = 0;
 
-            cv::Range range2(0, divUp(h, 2));
+            ncvslideio::Range range2(0, divUp(h, 2));
             const double nParallelStripes = std::max(1, std::min(h / 2, getNumThreads()*4));
 
             LabelT nLabels = 1;
 
             if (connectivity == 8){
                 //First scan
-                cv::parallel_for_(range2, FirstScan8Connectivity(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
+                ncvslideio::parallel_for_(range2, FirstScan8Connectivity(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
 
                 //merge labels of different chunks
                 mergeLabels8Connectivity(imgLabels, P, chunksSizeAndLabels.data());
@@ -2325,7 +2325,7 @@ namespace cv{
             }
             else{
                 //First scan
-                cv::parallel_for_(range2, FirstScan4Connectivity(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
+                ncvslideio::parallel_for_(range2, FirstScan4Connectivity(img, imgLabels, P, chunksSizeAndLabels.data()), nParallelStripes);
 
                 //merge labels of different chunks
                 mergeLabels4Connectivity(imgLabels, P, chunksSizeAndLabels.data());
@@ -2340,7 +2340,7 @@ namespace cv{
 
             sop.init(nLabels);
             //Second scan
-            cv::parallel_for_(range2, SecondScan(imgLabels, P, sop, sopArray.data(), nLabels), nParallelStripes);
+            ncvslideio::parallel_for_(range2, SecondScan(imgLabels, P, sop, sopArray.data(), nLabels), nParallelStripes);
             StatsOp::mergeStats(imgLabels, sopArray.data(), sop, nLabels);
             sop.finish();
 
@@ -2352,7 +2352,7 @@ namespace cv{
     //using decision trees, Kesheng Wu et. al.
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingWu{
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop){
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop){
             CV_Assert(imgLabels.rows == img.rows);
             CV_Assert(imgLabels.cols == img.cols);
             CV_Assert(connectivity == 8 || connectivity == 4);
@@ -2522,20 +2522,20 @@ namespace cv{
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingGranaParallel{
 
-        class FirstScan : public cv::ParallelLoopBody{
+        class FirstScan : public ncvslideio::ParallelLoopBody{
         private:
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT *P_;
             int *chunksSizeAndLabels_;
 
         public:
-            FirstScan(const cv::Mat& img, cv::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
+            FirstScan(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), chunksSizeAndLabels_(chunksSizeAndLabels){}
 
             FirstScan&  operator=(const FirstScan&) { return *this; }
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -3588,20 +3588,20 @@ namespace cv{
             #undef condition_b
         };
 
-        class SecondScan : public cv::ParallelLoopBody{
+        class SecondScan : public ncvslideio::ParallelLoopBody{
         private:
-            const cv::Mat& img_;
-            cv::Mat& imgLabels_;
+            const ncvslideio::Mat& img_;
+            ncvslideio::Mat& imgLabels_;
             LabelT *P_;
             StatsOp& sop_;
             StatsOp *sopArray_;
             LabelT& nLabels_;
 
         public:
-            SecondScan(const cv::Mat& img, cv::Mat& imgLabels, LabelT *P, StatsOp& sop, StatsOp *sopArray, LabelT& nLabels)
+            SecondScan(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT *P, StatsOp& sop, StatsOp *sopArray, LabelT& nLabels)
                 : img_(img), imgLabels_(imgLabels), P_(P), sop_(sop), sopArray_(sopArray), nLabels_(nLabels){}
 
-            void operator()(const cv::Range& range2) const CV_OVERRIDE
+            void operator()(const ncvslideio::Range& range2) const CV_OVERRIDE
             {
                 const Range range(range2.start * 2, std::min(range2.end * 2, img_.rows));
                 int r = range.start;
@@ -4164,7 +4164,7 @@ namespace cv{
         };
 
         inline static
-        void mergeLabels(const cv::Mat& img, cv::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels){
+        void mergeLabels(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, LabelT *P, int *chunksSizeAndLabels){
 
                 // Merge Mask
                 // +---+---+---+
@@ -4220,7 +4220,7 @@ namespace cv{
                 }
             }
 
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop){
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop){
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
             CV_Assert(connectivity == 8);
@@ -4248,11 +4248,11 @@ namespace cv{
             //First label is for background
             //P[0] = 0;
 
-            cv::Range range2(0, divUp(h, 2));
+            ncvslideio::Range range2(0, divUp(h, 2));
             const double nParallelStripes = std::max(1, std::min(h / 2, getNumThreads()*4));
 
             //First scan
-            cv::parallel_for_(range2, FirstScan(img, imgLabels, P.data(), chunksSizeAndLabels.data()), nParallelStripes);
+            ncvslideio::parallel_for_(range2, FirstScan(img, imgLabels, P.data(), chunksSizeAndLabels.data()), nParallelStripes);
 
             //merge labels of different chunks
             mergeLabels(img, imgLabels, P.data(), chunksSizeAndLabels.data());
@@ -4268,7 +4268,7 @@ namespace cv{
             sop.init(nLabels);
 
             //Second scan
-            cv::parallel_for_(range2, SecondScan(img, imgLabels, P.data(), sop, sopArray.data(), nLabels), nParallelStripes);
+            ncvslideio::parallel_for_(range2, SecondScan(img, imgLabels, P.data(), sop, sopArray.data(), nLabels), nParallelStripes);
 
             StatsOp::mergeStats(imgLabels, sopArray.data(), sop, nLabels);
             sop.finish();
@@ -4281,7 +4281,7 @@ namespace cv{
     //Components Labeling with Decision Trees", IEEE Transactions on Image Processing, Costantino Grana et. al.
     template<typename LabelT, typename PixelT, typename StatsOp = NoOp >
     struct LabelingGrana{
-        LabelT operator()(const cv::Mat& img, cv::Mat& imgLabels, int connectivity, StatsOp& sop){
+        LabelT operator()(const ncvslideio::Mat& img, ncvslideio::Mat& imgLabels, int connectivity, StatsOp& sop){
             CV_Assert(img.rows == imgLabels.rows);
             CV_Assert(img.cols == imgLabels.cols);
             CV_Assert(connectivity == 8);
@@ -5619,15 +5619,15 @@ namespace cv{
     //L's type must have an appropriate depth for the number of pixels in I
     template<typename StatsOp>
     static
-    int connectedComponents_sub1(const cv::Mat& I, cv::Mat& L, int connectivity, int ccltype, StatsOp& sop){
+    int connectedComponents_sub1(const ncvslideio::Mat& I, ncvslideio::Mat& L, int connectivity, int ccltype, StatsOp& sop){
         CV_Assert(L.channels() == 1 && I.channels() == 1);
         CV_Assert(connectivity == 8 || connectivity == 4);
         CV_Assert(ccltype == CCL_SPAGHETTI || ccltype == CCL_BBDT || ccltype == CCL_SAUF || ccltype == CCL_BOLELLI || ccltype == CCL_GRANA || ccltype == CCL_WU || ccltype == CCL_DEFAULT);
 
         int lDepth = L.depth();
         int iDepth = I.depth();
-        const char *currentParallelFramework = cv::currentParallelFramework();
-        const int nThreads = cv::getNumThreads();
+        const char *currentParallelFramework = ncvslideio::currentParallelFramework();
+        const int nThreads = ncvslideio::getNumThreads();
 
         CV_Assert(iDepth == CV_8U || iDepth == CV_8S);
 
@@ -5716,20 +5716,20 @@ namespace cv{
             }
         }
 
-        CV_Error(cv::Error::StsUnsupportedFormat, "unsupported label/image type");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "unsupported label/image type");
     }
 
 }
 
 // Simple wrapper to ensure binary and source compatibility (ABI)
-int cv::connectedComponents(InputArray img_, OutputArray _labels, int connectivity, int ltype){
-    return cv::connectedComponents(img_, _labels, connectivity, ltype, CCL_DEFAULT);
+int ncvslideio::connectedComponents(InputArray img_, OutputArray _labels, int connectivity, int ltype){
+    return ncvslideio::connectedComponents(img_, _labels, connectivity, ltype, CCL_DEFAULT);
 }
 
-int cv::connectedComponents(InputArray img_, OutputArray _labels, int connectivity, int ltype, int ccltype){
-    const cv::Mat img = img_.getMat();
+int ncvslideio::connectedComponents(InputArray img_, OutputArray _labels, int connectivity, int ltype, int ccltype){
+    const ncvslideio::Mat img = img_.getMat();
     _labels.create(img.size(), CV_MAT_DEPTH(ltype));
-    cv::Mat labels = _labels.getMat();
+    ncvslideio::Mat labels = _labels.getMat();
     connectedcomponents::NoOp sop;
     if (ltype == CV_16U){
         return connectedComponents_sub1(img, labels, connectivity, ccltype, sop);
@@ -5738,23 +5738,23 @@ int cv::connectedComponents(InputArray img_, OutputArray _labels, int connectivi
         return connectedComponents_sub1(img, labels, connectivity, ccltype, sop);
     }
     else{
-        CV_Error(cv::Error::StsUnsupportedFormat, "the type of labels must be 16u or 32s");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "the type of labels must be 16u or 32s");
     }
 }
 
 // Simple wrapper to ensure binary and source compatibility (ABI)
-int cv::connectedComponentsWithStats(InputArray img_, OutputArray _labels, OutputArray statsv,
+int ncvslideio::connectedComponentsWithStats(InputArray img_, OutputArray _labels, OutputArray statsv,
     OutputArray centroids, int connectivity, int ltype)
 {
-    return cv::connectedComponentsWithStats(img_, _labels, statsv, centroids, connectivity, ltype, CCL_DEFAULT);
+    return ncvslideio::connectedComponentsWithStats(img_, _labels, statsv, centroids, connectivity, ltype, CCL_DEFAULT);
 }
 
-int cv::connectedComponentsWithStats(InputArray img_, OutputArray _labels, OutputArray statsv,
+int ncvslideio::connectedComponentsWithStats(InputArray img_, OutputArray _labels, OutputArray statsv,
     OutputArray centroids, int connectivity, int ltype, int ccltype)
 {
-    const cv::Mat img = img_.getMat();
+    const ncvslideio::Mat img = img_.getMat();
     _labels.create(img.size(), CV_MAT_DEPTH(ltype));
-    cv::Mat labels = _labels.getMat();
+    ncvslideio::Mat labels = _labels.getMat();
     connectedcomponents::CCStatsOp sop(statsv, centroids);
     if (ltype == CV_16U){
         return connectedComponents_sub1(img, labels, connectivity, ccltype, sop);
@@ -5763,7 +5763,7 @@ int cv::connectedComponentsWithStats(InputArray img_, OutputArray _labels, Outpu
         return connectedComponents_sub1(img, labels, connectivity, ccltype, sop);
     }
     else{
-        CV_Error(cv::Error::StsUnsupportedFormat, "the type of labels must be 16u or 32s");
+        CV_Error(ncvslideio::Error::StsUnsupportedFormat, "the type of labels must be 16u or 32s");
         return 0;
     }
 }

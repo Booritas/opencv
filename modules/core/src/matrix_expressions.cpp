@@ -12,7 +12,7 @@
 #include "precomp.hpp"
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 //This and its overload below are used in various MatExpr operator overloads
@@ -21,7 +21,7 @@ static void checkOperandsExist(const Mat& a)
 {
     if (a.empty())
     {
-        CV_Error(cv::Error::StsBadArg, "Matrix operand is an empty matrix.");
+        CV_Error(ncvslideio::Error::StsBadArg, "Matrix operand is an empty matrix.");
     }
 }
 
@@ -29,7 +29,7 @@ static void checkOperandsExist(const Mat& a, const Mat& b)
 {
     if (a.empty() || b.empty())
     {
-        CV_Error(cv::Error::StsBadArg, "One or more matrix operands are empty.");
+        CV_Error(ncvslideio::Error::StsBadArg, "One or more matrix operands are empty.");
     }
 }
 
@@ -1300,31 +1300,31 @@ void MatOp_AddEx::assign(const MatExpr& e, Mat& m, int _type) const
             if( e.alpha == 1 )
             {
                 if( e.beta == 1 )
-                    cv::add(e.a, e.b, dst);
+                    ncvslideio::add(e.a, e.b, dst);
                 else if( e.beta == -1 )
-                    cv::subtract(e.a, e.b, dst);
+                    ncvslideio::subtract(e.a, e.b, dst);
                 else
-                    cv::scaleAdd(e.b, e.beta, e.a, dst);
+                    ncvslideio::scaleAdd(e.b, e.beta, e.a, dst);
             }
             else if( e.beta == 1 )
             {
                 if( e.alpha == -1 )
-                    cv::subtract(e.b, e.a, dst);
+                    ncvslideio::subtract(e.b, e.a, dst);
                 else
-                    cv::scaleAdd(e.a, e.alpha, e.b, dst);
+                    ncvslideio::scaleAdd(e.a, e.alpha, e.b, dst);
             }
             else
-                cv::addWeighted(e.a, e.alpha, e.b, e.beta, 0, dst);
+                ncvslideio::addWeighted(e.a, e.alpha, e.b, e.beta, 0, dst);
 
             if( !e.s.isReal() )
-                cv::add(dst, e.s, dst);
+                ncvslideio::add(dst, e.s, dst);
         }
         else
         {
             if (e.a.channels() > 1)
                 CV_LOG_ONCE_WARNING(NULL, "OpenCV/MatExpr: processing of multi-channel arrays might be changed in the future: "
                                           "https://github.com/opencv/opencv/issues/16739");
-            cv::addWeighted(e.a, e.alpha, e.b, e.beta, e.s[0], dst);
+            ncvslideio::addWeighted(e.a, e.alpha, e.b, e.beta, e.s[0], dst);
         }
     }
     else if( e.s.isReal() && (dst.data != m.data || fabs(e.alpha) != 1))
@@ -1336,13 +1336,13 @@ void MatOp_AddEx::assign(const MatExpr& e, Mat& m, int _type) const
         return;
     }
     else if( e.alpha == 1 )
-        cv::add(e.a, e.s, dst);
+        ncvslideio::add(e.a, e.s, dst);
     else if( e.alpha == -1 )
-        cv::subtract(e.s, e.a, dst);
+        ncvslideio::subtract(e.s, e.a, dst);
     else
     {
         e.a.convertTo(dst, e.a.type(), e.alpha);
-        cv::add(dst, e.s, dst);
+        ncvslideio::add(dst, e.s, dst);
     }
 
     if( dst.data != m.data )
@@ -1424,11 +1424,11 @@ void MatOp_Bin::assign(const MatExpr& e, Mat& m, int _type) const
     Mat temp, &dst = _type == -1 || e.a.type() == _type ? m : temp;
 
     if( e.flags == '*' )
-        cv::multiply(e.a, e.b, dst, e.alpha);
+        ncvslideio::multiply(e.a, e.b, dst, e.alpha);
     else if( e.flags == '/' && e.b.data )
-        cv::divide(e.a, e.b, dst, e.alpha);
+        ncvslideio::divide(e.a, e.b, dst, e.alpha);
     else if( e.flags == '/' && !e.b.data )
-        cv::divide(e.alpha, e.a, dst );
+        ncvslideio::divide(e.alpha, e.a, dst );
     else if( e.flags == '&' && e.b.data )
         bitwise_and(e.a, e.b, dst);
     else if( e.flags == '&' && !e.b.data )
@@ -1444,19 +1444,19 @@ void MatOp_Bin::assign(const MatExpr& e, Mat& m, int _type) const
     else if( e.flags == '~' && !e.b.data )
         bitwise_not(e.a, dst);
     else if( e.flags == 'm' )
-        cv::min(e.a, e.b, dst);
+        ncvslideio::min(e.a, e.b, dst);
     else if( e.flags == 'n' )
-        cv::min(e.a, e.s[0], dst);
+        ncvslideio::min(e.a, e.s[0], dst);
     else if( e.flags == 'M' )
-        cv::max(e.a, e.b, dst);
+        ncvslideio::max(e.a, e.b, dst);
     else if( e.flags == 'N' )
-        cv::max(e.a, e.s[0], dst);
+        ncvslideio::max(e.a, e.s[0], dst);
     else if( e.flags == 'a' && e.b.data )
-        cv::absdiff(e.a, e.b, dst);
+        ncvslideio::absdiff(e.a, e.b, dst);
     else if( e.flags == 'a' && !e.b.data )
-        cv::absdiff(e.a, e.s, dst);
+        ncvslideio::absdiff(e.a, e.s, dst);
     else
-        CV_Error(cv::Error::StsError, "Unknown operation");
+        CV_Error(ncvslideio::Error::StsError, "Unknown operation");
 
     if( dst.data != m.data )
         dst.convertTo(m, _type);
@@ -1502,9 +1502,9 @@ void MatOp_Cmp::assign(const MatExpr& e, Mat& m, int _type) const
     Mat temp, &dst = _type == -1 || _type == CV_8U ? m : temp;
 
     if( e.b.data )
-        cv::compare(e.a, e.b, dst, e.flags);
+        ncvslideio::compare(e.a, e.b, dst, e.flags);
     else
-        cv::compare(e.a, e.alpha, dst, e.flags);
+        ncvslideio::compare(e.a, e.alpha, dst, e.flags);
 
     if( dst.data != m.data )
         dst.convertTo(m, _type);
@@ -1526,7 +1526,7 @@ void MatOp_T::assign(const MatExpr& e, Mat& m, int _type) const
 {
     Mat temp, &dst = _type == -1 || _type == e.a.type() ? m : temp;
 
-    cv::transpose(e.a, dst);
+    ncvslideio::transpose(e.a, dst);
 
     if( dst.data != m.data || e.alpha != 1 )
         dst.convertTo(m, _type, e.alpha);
@@ -1561,7 +1561,7 @@ void MatOp_GEMM::assign(const MatExpr& e, Mat& m, int _type) const
 {
     Mat temp, &dst = _type == -1 || _type == e.a.type() ? m : temp;
 
-    cv::gemm(e.a, e.b, e.alpha, e.c, e.beta, dst, e.flags);
+    ncvslideio::gemm(e.a, e.b, e.alpha, e.c, e.beta, dst, e.flags);
     if( dst.data != m.data )
         dst.convertTo(m, _type);
 }
@@ -1636,7 +1636,7 @@ void MatOp_Invert::assign(const MatExpr& e, Mat& m, int _type) const
 {
     Mat temp, &dst = _type == -1 || _type == e.a.type() ? m : temp;
 
-    cv::invert(e.a, dst, e.flags);
+    ncvslideio::invert(e.a, dst, e.flags);
     if( dst.data != m.data )
         dst.convertTo(m, _type);
 }
@@ -1662,7 +1662,7 @@ void MatOp_Solve::assign(const MatExpr& e, Mat& m, int _type) const
 {
     Mat temp, &dst = _type == -1 || _type == e.a.type() ? m : temp;
 
-    cv::solve(e.a, e.b, dst, e.flags);
+    ncvslideio::solve(e.a, e.b, dst, e.flags);
     if( dst.data != m.data )
         dst.convertTo(m, _type);
 }
@@ -1691,7 +1691,7 @@ void MatOp_Initializer::assign(const MatExpr& e, Mat& m, int _type) const
     else if( e.flags == '1' )
         m = Scalar(e.alpha);
     else
-        CV_Error(cv::Error::StsError, "Invalid matrix initializer type");
+        CV_Error(ncvslideio::Error::StsError, "Invalid matrix initializer type");
 }
 
 void MatOp_Initializer::multiply(const MatExpr& e, double s, MatExpr& res) const
@@ -1844,4 +1844,4 @@ _InputArray::_InputArray(const MatExpr& expr)
     init(FIXED_TYPE + FIXED_SIZE + MAT + ACCESS_READ, &expr.a);
 }
 
-} // cv::
+} // ncvslideio::

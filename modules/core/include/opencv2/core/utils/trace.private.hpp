@@ -40,7 +40,7 @@
 #endif
 
 
-namespace cv {
+namespace ncvslideio {
 namespace utils {
 namespace trace {
 namespace details {
@@ -265,10 +265,10 @@ struct TraceManagerThreadLocal
     size_t parallel_for_stack_size;
 
 
-    mutable cv::Ptr<TraceStorage> storage;
+    mutable ncvslideio::Ptr<TraceStorage> storage;
 
     TraceManagerThreadLocal() :
-        threadID(cv::utils::getThreadID()),
+        threadID(ncvslideio::utils::getThreadID()),
         region_counter(0), totalSkippedEvents(0),
         currentActiveRegion(NULL),
         regionDepth(0),
@@ -336,7 +336,7 @@ public:
 
     TLSDataAccumulator<TraceManagerThreadLocal> tls;
 
-    cv::Ptr<TraceStorage> trace_storage;
+    ncvslideio::Ptr<TraceStorage> trace_storage;
 private:
     // disable copying
     TraceManager(const TraceManager&);

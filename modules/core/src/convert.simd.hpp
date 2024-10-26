@@ -10,7 +10,7 @@
 #warning "Non-optimal compiler flags: AVX2 without FP16. Generated code is very slow. Consider adding '-mf16c' compiler option."
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
@@ -20,7 +20,7 @@ void addRNGBias32f(float* arr, const float* scaleBiasPairs, int len);
 void addRNGBias64f(double* arr, const double* scaleBiasPairs, int len);
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-} // namespace cv::hal
+} // namespace ncvslideio::hal
 
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
@@ -94,9 +94,9 @@ void addRNGBias64f( double* arr, const double* scaleBiasPairs, int len )
 }
 
 CV_CPU_OPTIMIZATION_NAMESPACE_END
-} // namespace cv::hal
+} // namespace ncvslideio::hal
 
-// cv::
+// ncvslideio::
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 
 template<typename _Ts, typename _Td, typename _Twvec> static inline void

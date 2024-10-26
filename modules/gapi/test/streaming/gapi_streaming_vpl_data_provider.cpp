@@ -56,7 +56,7 @@ array_element_t files[] = {
 class OneVPL_Source_MFPAsyncDispatcherTest : public ::testing::TestWithParam<array_element_t> {};
 TEST_P(OneVPL_Source_MFPAsyncDispatcherTest, open_and_decode_file)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     source_t path = findDataFile(std::get<0>(GetParam()));
     dd_valid_t dd_result = std::get<1>(GetParam());
@@ -119,7 +119,7 @@ TEST_P(OneVPL_Source_MFPAsyncDispatcherTest, open_and_decode_file)
 
 TEST_P(OneVPL_Source_MFPAsyncDispatcherTest, choose_dmux_provider)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
 
     source_t path = findDataFile(std::get<0>(GetParam()));
@@ -150,9 +150,9 @@ INSTANTIATE_TEST_CASE_P(MFP_VPL_DecodeHeaderTests, OneVPL_Source_MFPAsyncDispatc
 
 namespace test {
     struct IntrusiveAsyncDemuxDataProvider :
-            public cv::gapi::wip::onevpl::MFPAsyncDemuxDataProvider {
+            public ncvslideio::gapi::wip::onevpl::MFPAsyncDemuxDataProvider {
 
-    using base_t = cv::gapi::wip::onevpl::MFPAsyncDemuxDataProvider;
+    using base_t = ncvslideio::gapi::wip::onevpl::MFPAsyncDemuxDataProvider;
     using base_t::base_t;
 
     ~IntrusiveAsyncDemuxDataProvider() {
@@ -172,7 +172,7 @@ namespace test {
 
     // implementation methods
     size_t produce_worker_data(void *key,
-                               cv::gapi::wip::onevpl::ComPtrGuard<IMFMediaBuffer> &&buffer,
+                               ncvslideio::gapi::wip::onevpl::ComPtrGuard<IMFMediaBuffer> &&buffer,
                                std::shared_ptr<mfx_bitstream> &&staging_stream) override {
         return base_t::produce_worker_data(key, std::move(buffer),
                                            std::move(staging_stream));
@@ -187,7 +187,7 @@ bool IntrusiveAsyncDemuxDataProvider::destroyed{};
 } // namespace test
 
 TEST(OneVPL_Source_MFPAsyncDemux, sync_flush) {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     source_t path = findDataFile("highgui/video/sample_322x242_15frames.yuv420p.libx265.mp4");
     test::IntrusiveAsyncDemuxDataProvider::need_request_next = false;
@@ -211,7 +211,7 @@ TEST(OneVPL_Source_MFPAsyncDemux, sync_flush) {
 }
 
 TEST(OneVPL_Source_MFPAsyncDemux, async_flush) {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     source_t path = findDataFile("highgui/video/sample_322x242_15frames.yuv420p.libx265.mp4");
     test::IntrusiveAsyncDemuxDataProvider::need_request_next = true;
@@ -227,7 +227,7 @@ TEST(OneVPL_Source_MFPAsyncDemux, async_flush) {
 }
 
 TEST(OneVPL_Source_MFPAsyncDemux, eof_async_detection) {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     source_t path = findDataFile("highgui/video/sample_322x242_15frames.yuv420p.libx265.mp4");
     test::IntrusiveAsyncDemuxDataProvider::need_request_next = false;
@@ -252,7 +252,7 @@ TEST(OneVPL_Source_MFPAsyncDemux, eof_async_detection) {
 }
 
 TEST(OneVPL_Source_MFPAsyncDemux, produce_consume) {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     source_t path = findDataFile("highgui/video/sample_322x242_15frames.yuv420p.libx265.mp4");
     test::IntrusiveAsyncDemuxDataProvider::need_request_next = false;

@@ -56,7 +56,7 @@
 #include "utils.hpp"
 #include "grfmt_pam.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 /* the PAM related fields */
 #define MAX_PAM_HEADER_IDENITFIER_LENGTH 8
@@ -242,7 +242,7 @@ basic_conversion (void *src, const struct channel_layout *layout, int src_sampe_
 
 static
 bool ReadPAMHeaderLine(
-        cv::RLByteStream& strm,
+        ncvslideio::RLByteStream& strm,
         CV_OUT PamHeaderFieldType &fieldtype,
         CV_OUT char value[MAX_PAM_HEADER_VALUE_LENGTH+1])
 {
@@ -593,7 +593,7 @@ bool PAMDecoder::readData(Mat& img)
                 }
                 else
                 {
-                    CV_Error(Error::StsError, cv::format("Unsupported value of target_channels: %d", target_channels));
+                    CV_Error(Error::StsError, ncvslideio::format("Unsupported value of target_channels: %d", target_channels));
                 }
             } else {
                 for (int y = 0; y < m_height; y++, data += imp_stride)

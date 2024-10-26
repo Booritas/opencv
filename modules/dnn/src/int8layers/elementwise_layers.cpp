@@ -10,7 +10,7 @@
 #include <opencv2/dnn/shape_utils.hpp>
 #include <iostream>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -69,7 +69,7 @@ public:
         return true;
     }
 
-    class Activation : public cv::ParallelLoopBody
+    class Activation : public ncvslideio::ParallelLoopBody
     {
     public:
         const Mat* src;

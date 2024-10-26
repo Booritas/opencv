@@ -7,14 +7,14 @@ parser = argparse.ArgumentParser(description='Code for Feature Detection tutoria
 parser.add_argument('--input', help='Path to input image.', default='box.png')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input), cv.IMREAD_GRAYSCALE)
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input), ncvslideio.IMREAD_GRAYSCALE)
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 
 #-- Step 1: Detect the keypoints using SURF Detector
 minHessian = 400
-detector = cv.xfeatures2d_SURF.create(hessianThreshold=minHessian)
+detector = ncvslideio.xfeatures2d_SURF.create(hessianThreshold=minHessian)
 keypoints = detector.detect(src)
 
 #-- Draw keypoints

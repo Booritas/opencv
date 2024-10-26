@@ -16,7 +16,7 @@ $includes
 #define LOG_TAG "org.opencv.$m"
 #include "common.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 /// throw java exception
 #undef throwJavaException
@@ -28,8 +28,8 @@ static void throwJavaException(JNIEnv *env, const std::exception *e, const char 
   if(e) {
     std::string exception_type = "std::exception";
 
-    if(dynamic_cast<const cv::Exception*>(e)) {
-      exception_type = "cv::Exception";
+    if(dynamic_cast<const ncvslideio::Exception*>(e)) {
+      exception_type = "ncvslideio::Exception";
       je = env->FindClass("org/opencv/core/CvException");
     }
 

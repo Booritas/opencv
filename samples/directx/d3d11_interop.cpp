@@ -1,7 +1,7 @@
 /*
-// A sample program demonstrating interoperability of OpenCV cv::UMat with Direct X surface
+// A sample program demonstrating interoperability of OpenCV ncvslideio::UMat with Direct X surface
 // At first, the data obtained from video file or camera and placed onto Direct X surface,
-// following mapping of this Direct X surface to OpenCV cv::UMat and call cv::Blur function.
+// following mapping of this Direct X surface to OpenCV ncvslideio::UMat and call ncvslideio::Blur function.
 // The result is mapped back to Direct X surface and rendered through Direct X API.
 */
 
@@ -21,7 +21,7 @@
 class D3D11WinApp : public D3DSample
 {
 public:
-    D3D11WinApp(int width, int height, std::string& window_name, cv::VideoCapture& cap)
+    D3D11WinApp(int width, int height, std::string& window_name, ncvslideio::VideoCapture& cap)
     : D3DSample(width, height, window_name, cap),
       m_nv12_available(false)
     {}
@@ -173,13 +173,13 @@ public:
 #endif
 
         // initialize OpenCL context of OpenCV lib from DirectX
-        if (cv::ocl::haveOpenCL())
+        if (ncvslideio::ocl::haveOpenCL())
         {
-            m_oclCtx = cv::directx::ocl::initializeContextFromD3D11Device(m_pD3D11Dev);
+            m_oclCtx = ncvslideio::directx::ocl::initializeContextFromD3D11Device(m_pD3D11Dev);
         }
 
-        m_oclDevName = cv::ocl::useOpenCL() ?
-            cv::ocl::Context::getDefault().device(0).name() :
+        m_oclDevName = ncvslideio::ocl::useOpenCL() ?
+            ncvslideio::ocl::Context::getDefault().device(0).name() :
             "No OpenCL device";
 
         return EXIT_SUCCESS;
@@ -196,7 +196,7 @@ public:
 
         if (use_nv12)
         {
-            cv::cvtColor(m_frame_bgr, m_frame_i420, cv::COLOR_BGR2YUV_I420);
+            ncvslideio::cvtColor(m_frame_bgr, m_frame_i420, ncvslideio::COLOR_BGR2YUV_I420);
 
             convert_I420_to_NV12(m_frame_i420, m_frame_nv12, m_width, m_height);
 
@@ -204,7 +204,7 @@ public:
         }
         else
         {
-            cv::cvtColor(m_frame_bgr, m_frame_rgba, cv::COLOR_BGR2RGBA);
+            ncvslideio::cvtColor(m_frame_bgr, m_frame_rgba, ncvslideio::COLOR_BGR2RGBA);
 
             // process video frame on CPU
             UINT subResource = ::D3D11CalcSubresource(0, 0, 1);
@@ -216,7 +216,7 @@ public:
                 throw std::runtime_error("surface mapping failed!");
             }
 
-            cv::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, mappedTex.RowPitch);
+            ncvslideio::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, mappedTex.RowPitch);
             m_frame_rgba.copyTo(m);
 
             m_pD3D11Ctx->Unmap(m_pSurfaceRGBA, subResource);
@@ -265,25 +265,25 @@ public:
                     throw std::runtime_error("surface mapping failed!");
                 }
 
-                cv::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, (int)mappedTex.RowPitch);
+                ncvslideio::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, (int)mappedTex.RowPitch);
 
                 if (m_demo_processing)
                 {
                     // blur data from D3D11 surface with OpenCV on CPU
-                    cv::blur(m, m, cv::Size(15, 15));
+                    ncvslideio::blur(m, m, ncvslideio::Size(15, 15));
                 }
 
                 m_timer.stop();
 
-                cv::String strMode = cv::format("mode: %s", m_modeStr[MODE_CPU].c_str());
-                cv::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
-                cv::String strTime = cv::format("time: %4.3f msec", m_timer.getTimeMilli());
-                cv::String strDevName = cv::format("OpenCL device: %s", m_oclDevName.c_str());
+                ncvslideio::String strMode = ncvslideio::format("mode: %s", m_modeStr[MODE_CPU].c_str());
+                ncvslideio::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
+                ncvslideio::String strTime = ncvslideio::format("time: %4.3f msec", m_timer.getTimeMilli());
+                ncvslideio::String strDevName = ncvslideio::format("OpenCL device: %s", m_oclDevName.c_str());
 
-                cv::putText(m, strMode, cv::Point(0, 20), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(m, strProcessing, cv::Point(0, 40), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(m, strTime, cv::Point(0, 60), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(m, strDevName, cv::Point(0, 80), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(m, strMode, ncvslideio::Point(0, 20), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(m, strProcessing, ncvslideio::Point(0, 40), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(m, strTime, ncvslideio::Point(0, 60), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(m, strDevName, ncvslideio::Point(0, 80), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
 
                 m_pD3D11Ctx->Unmap(pSurface, subResource);
 
@@ -294,29 +294,29 @@ public:
             case MODE_GPU_NV12:
             {
                 // process video frame on GPU
-                cv::UMat u;
+                ncvslideio::UMat u;
 
-                cv::directx::convertFromD3D11Texture2D(pSurface, u);
+                ncvslideio::directx::convertFromD3D11Texture2D(pSurface, u);
 
                 if (m_demo_processing)
                 {
                     // blur data from D3D11 surface with OpenCV on GPU with OpenCL
-                    cv::blur(u, u, cv::Size(15, 15));
+                    ncvslideio::blur(u, u, ncvslideio::Size(15, 15));
                 }
 
                 m_timer.stop();
 
-                cv::String strMode = cv::format("mode: %s", m_modeStr[mode].c_str());
-                cv::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
-                cv::String strTime = cv::format("time: %4.3f msec", m_timer.getTimeMilli());
-                cv::String strDevName = cv::format("OpenCL device: %s", m_oclDevName.c_str());
+                ncvslideio::String strMode = ncvslideio::format("mode: %s", m_modeStr[mode].c_str());
+                ncvslideio::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
+                ncvslideio::String strTime = ncvslideio::format("time: %4.3f msec", m_timer.getTimeMilli());
+                ncvslideio::String strDevName = ncvslideio::format("OpenCL device: %s", m_oclDevName.c_str());
 
-                cv::putText(u, strMode, cv::Point(0, 20), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(u, strProcessing, cv::Point(0, 40), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(u, strTime, cv::Point(0, 60), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
-                cv::putText(u, strDevName, cv::Point(0, 80), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(u, strMode, ncvslideio::Point(0, 20), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(u, strProcessing, ncvslideio::Point(0, 40), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(u, strTime, ncvslideio::Point(0, 60), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
+                ncvslideio::putText(u, strDevName, ncvslideio::Point(0, 80), ncvslideio::FONT_HERSHEY_SIMPLEX, 0.8, ncvslideio::Scalar(0, 0, 200), 2);
 
-                cv::directx::convertToD3D11Texture2D(u, pSurface);
+                ncvslideio::directx::convertToD3D11Texture2D(u, pSurface);
 
                 if (mode == MODE_GPU_NV12)
                 {
@@ -334,8 +334,8 @@ public:
                             throw std::runtime_error("surface mapping failed!");
                         }
 
-                        cv::Mat frame_nv12(m_height + (m_height / 2), m_width, CV_8UC1, mappedTex.pData, mappedTex.RowPitch);
-                        cv::cvtColor(frame_nv12, m_frame_rgba, cv::COLOR_YUV2RGBA_NV12);
+                        ncvslideio::Mat frame_nv12(m_height + (m_height / 2), m_width, CV_8UC1, mappedTex.pData, mappedTex.RowPitch);
+                        ncvslideio::cvtColor(frame_nv12, m_frame_rgba, ncvslideio::COLOR_YUV2RGBA_NV12);
 
                         m_pD3D11Ctx->Unmap(m_pSurfaceNV12_cpu_copy, subResource);
                     }
@@ -350,7 +350,7 @@ public:
                             throw std::runtime_error("surface mapping failed!");
                         }
 
-                        cv::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, mappedTex.RowPitch);
+                        ncvslideio::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, mappedTex.RowPitch);
                         m_frame_rgba.copyTo(m);
 
                         m_pD3D11Ctx->Unmap(m_pSurfaceRGBA, subResource);
@@ -377,7 +377,7 @@ public:
             }
         } // try
 
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             std::cerr << "Exception: " << e.what() << std::endl;
             cleanup();
@@ -410,7 +410,7 @@ public:
     } // cleanup()
 
 protected:
-    void convert_I420_to_NV12(cv::Mat& i420, cv::Mat& nv12, int width, int height)
+    void convert_I420_to_NV12(ncvslideio::Mat& i420, ncvslideio::Mat& nv12, int width, int height)
     {
         nv12.create(i420.rows, i420.cols, CV_8UC1);
 
@@ -471,12 +471,12 @@ private:
     ID3D11Texture2D*        m_pSurfaceNV12;
     ID3D11Texture2D*        m_pSurfaceNV12_cpu_copy;
     ID3D11RenderTargetView* m_pRenderTarget;
-    cv::ocl::Context        m_oclCtx;
-    cv::String              m_oclPlatformName;
-    cv::String              m_oclDevName;
+    ncvslideio::ocl::Context        m_oclCtx;
+    ncvslideio::String              m_oclPlatformName;
+    ncvslideio::String              m_oclDevName;
     bool                    m_nv12_available;
-    cv::Mat                 m_frame_i420;
-    cv::Mat                 m_frame_nv12;
+    ncvslideio::Mat                 m_frame_i420;
+    ncvslideio::Mat                 m_frame_nv12;
 };
 
 

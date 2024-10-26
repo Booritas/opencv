@@ -10,7 +10,7 @@
 
 #include <opencv2/dnn.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 
 namespace

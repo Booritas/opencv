@@ -15,7 +15,7 @@
 
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn {
 
     template <class T>
     class DepthSpaceOps final : public CUDABackendNode {
@@ -38,8 +38,8 @@ namespace cv { namespace dnn { namespace cuda4dnn {
             scratch_mem_in_bytes = builder.required_workspace_size();
         }
 
-        void forward(const std::vector<cv::Ptr<BackendWrapper>> &inputs,
-                     const std::vector<cv::Ptr<BackendWrapper>> &outputs,
+        void forward(const std::vector<ncvslideio::Ptr<BackendWrapper>> &inputs,
+                     const std::vector<ncvslideio::Ptr<BackendWrapper>> &outputs,
                      csl::Workspace &workspace) override {
             CV_CheckEQ(inputs.size(), size_t(1), "DepthSpaceOps: only one input is accepted");
             CV_CheckEQ(outputs.size(), size_t(1), "DepthSpaceOps: only one output is accepted");
@@ -71,6 +71,6 @@ namespace cv { namespace dnn { namespace cuda4dnn {
         std::size_t scratch_mem_in_bytes;
     };
 
-}}} // namespace cv::dnn::cuda4dnn
+}}} // namespace ncvslideio::dnn::cuda4dnn
 
 #endif // OPENCV_DNN_SRC_CUDA4DNN_PRIMITIVES_DEPTH_SPACE_OPS_HPP

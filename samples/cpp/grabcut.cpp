@@ -5,7 +5,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {
@@ -111,7 +111,7 @@ void GCApplication::showImage() const
     if( isInitialized ){
         getBinMask( mask, binMask);
 
-        Mat black (binMask.rows, binMask.cols, CV_8UC3, cv::Scalar(0,0,0));
+        Mat black (binMask.rows, binMask.cols, CV_8UC3, ncvslideio::Scalar(0,0,0));
         black.setTo(Scalar::all(255), binMask);
 
         addWeighted(black, 0.5, res, 0.5, 0.0, res);
@@ -293,7 +293,7 @@ static void on_mouse( int event, int x, int y, int flags, void* param )
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{@input| messi5.jpg |}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@input| messi5.jpg |}");
     help(argv);
 
     string filename = parser.get<string>("@input");

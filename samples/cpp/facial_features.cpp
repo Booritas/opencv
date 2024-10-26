@@ -16,7 +16,7 @@
 #include <algorithm>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 // Functions for facial feature detection
 static void help(char** argv);
@@ -31,7 +31,7 @@ string face_cascade_path, eye_cascade_path, nose_cascade_path, mouth_cascade_pat
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
             "{eyes||}{nose||}{mouth||}{help h||}{@image||}{@facexml||}");
     if (parser.has("help"))
     {

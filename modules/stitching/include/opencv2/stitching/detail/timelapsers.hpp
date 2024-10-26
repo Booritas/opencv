@@ -46,7 +46,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching
@@ -86,6 +86,6 @@ public:
 //! @}
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_TIMELAPSERS_HPP

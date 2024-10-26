@@ -50,7 +50,7 @@ public:
 
 protected:
     int prepare_test_case( int test_case_idx ) CV_OVERRIDE;
-    int read_params( const cv::FileStorage& fs ) CV_OVERRIDE;
+    int read_params( const ncvslideio::FileStorage& fs ) CV_OVERRIDE;
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types ) CV_OVERRIDE;
     void get_minmax_bounds( int i, int j, int type, Scalar& low, Scalar& high ) CV_OVERRIDE;
     Size aperture_size;
@@ -83,7 +83,7 @@ CV_FilterBaseTest::CV_FilterBaseTest( bool _fp_kernel ) : fp_kernel(_fp_kernel)
 }
 
 
-int CV_FilterBaseTest::read_params( const cv::FileStorage& fs )
+int CV_FilterBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     if( code < 0 )
@@ -307,7 +307,7 @@ void CV_MorphologyBaseTest::prepare_to_validation( int /*test_case_idx*/ )
             cvtest::add( dst, 1, src, -1, Scalar::all(0), dst, dst.type() );
         }
         else
-            CV_Error( cv::Error::StsBadArg, "Unknown operation" );
+            CV_Error( ncvslideio::Error::StsBadArg, "Unknown operation" );
     }
 
     cvReleaseStructuringElement( &element );
@@ -543,7 +543,7 @@ void CV_SobelTest::get_test_array_types_and_sizes( int test_case_idx,
 
 void CV_SobelTest::run_func()
 {
-    cv::Sobel( test_mat[inplace ? OUTPUT : INPUT][0],
+    ncvslideio::Sobel( test_mat[inplace ? OUTPUT : INPUT][0],
                test_mat[OUTPUT][0], test_mat[OUTPUT][0].depth(),
                dx, dy, _aperture_size, 1, 0, border );
 }
@@ -660,9 +660,9 @@ void CV_LaplaceTest::get_test_array_types_and_sizes( int test_case_idx,
 
 void CV_LaplaceTest::run_func()
 {
-    cv::Laplacian( test_mat[inplace ? OUTPUT : INPUT][0],
+    ncvslideio::Laplacian( test_mat[inplace ? OUTPUT : INPUT][0],
                    test_mat[OUTPUT][0],test_mat[OUTPUT][0].depth(),
-                   _aperture_size, 1, 0, cv::BORDER_REPLICATE );
+                   _aperture_size, 1, 0, ncvslideio::BORDER_REPLICATE );
 }
 
 
@@ -772,8 +772,8 @@ void CV_BlurTest::get_test_array_types_and_sizes( int test_case_idx,
 
 void CV_BlurTest::run_func()
 {
-    cv::boxFilter(inplace ? test_mat[OUTPUT][0] : test_mat[INPUT][0], test_mat[OUTPUT][0],
-                  test_mat[OUTPUT][0].type(), aperture_size, cv::Point(-1, -1), normalize, cv::BORDER_REPLICATE);
+    ncvslideio::boxFilter(inplace ? test_mat[OUTPUT][0] : test_mat[INPUT][0], test_mat[OUTPUT][0],
+                  test_mat[OUTPUT][0].type(), aperture_size, ncvslideio::Point(-1, -1), normalize, ncvslideio::BORDER_REPLICATE);
 }
 
 
@@ -1192,7 +1192,7 @@ CV_PyramidDownTest::CV_PyramidDownTest() : CV_PyramidBaseTest( true )
 
 void CV_PyramidDownTest::run_func()
 {
-    cv::pyrDown(test_mat[INPUT][0], test_mat[OUTPUT][0]);
+    ncvslideio::pyrDown(test_mat[INPUT][0], test_mat[OUTPUT][0]);
 }
 
 
@@ -1308,7 +1308,7 @@ CV_FeatureSelBaseTest::CV_FeatureSelBaseTest( int _width_factor )
 }
 
 
-int CV_FeatureSelBaseTest::read_params( const cv::FileStorage& fs )
+int CV_FeatureSelBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::BaseTest::read_params( fs );
     if( code < 0 )
@@ -1575,7 +1575,7 @@ CV_PreCornerDetectTest::CV_PreCornerDetectTest() : CV_FeatureSelBaseTest( 1 )
 
 void CV_PreCornerDetectTest::run_func()
 {
-    cv::preCornerDetect( test_mat[INPUT][0], test_mat[OUTPUT][0], aperture_size, BORDER_REPLICATE );
+    ncvslideio::preCornerDetect( test_mat[INPUT][0], test_mat[OUTPUT][0], aperture_size, BORDER_REPLICATE );
 }
 
 
@@ -1922,27 +1922,27 @@ protected:
                 randu(src, 0, 100);
                 // non-separable filtering with a small kernel
                 fidx = 0;
-                cv::filter2D(src, dst, ddepth, small_kernel);
+                ncvslideio::filter2D(src, dst, ddepth, small_kernel);
                 fidx++;
-                cv::filter2D(src, dst, ddepth, big_kernel);
+                ncvslideio::filter2D(src, dst, ddepth, big_kernel);
                 fidx++;
-                cv::sepFilter2D(src, dst, ddepth, kernelX, kernelY);
+                ncvslideio::sepFilter2D(src, dst, ddepth, kernelX, kernelY);
                 fidx++;
-                cv::sepFilter2D(src, dst, ddepth, symkernelX, symkernelY);
+                ncvslideio::sepFilter2D(src, dst, ddepth, symkernelX, symkernelY);
                 fidx++;
-                cv::Sobel(src, dst, ddepth, 2, 0, 5);
+                ncvslideio::Sobel(src, dst, ddepth, 2, 0, 5);
                 fidx++;
-                cv::Scharr(src, dst, ddepth, 0, 1);
+                ncvslideio::Scharr(src, dst, ddepth, 0, 1);
                 if( sdepth != ddepth )
                     continue;
                 fidx++;
-                cv::GaussianBlur(src, dst, Size(5, 5), 1.2, 1.2);
+                ncvslideio::GaussianBlur(src, dst, Size(5, 5), 1.2, 1.2);
                 fidx++;
-                cv::blur(src, dst, Size(11, 11));
+                ncvslideio::blur(src, dst, Size(11, 11));
                 fidx++;
-                cv::morphologyEx(src, dst, MORPH_GRADIENT, elem_ellipse);
+                ncvslideio::morphologyEx(src, dst, MORPH_GRADIENT, elem_ellipse);
                 fidx++;
-                cv::morphologyEx(src, dst, MORPH_GRADIENT, elem_rect);
+                ncvslideio::morphologyEx(src, dst, MORPH_GRADIENT, elem_rect);
             }
         }
         catch(...)
@@ -1972,26 +1972,26 @@ TEST(Imgproc_Blur, borderTypes)
     Size kernelSize(3, 3);
 
     /// ksize > src_roi.size()
-    Mat src(3, 3, CV_8UC1, cv::Scalar::all(255)), dst;
+    Mat src(3, 3, CV_8UC1, ncvslideio::Scalar::all(255)), dst;
     Mat src_roi = src(Rect(1, 1, 1, 1));
-    src_roi.setTo(cv::Scalar::all(0));
+    src_roi.setTo(ncvslideio::Scalar::all(0));
 
     // should work like !BORDER_ISOLATED
     blur(src_roi, dst, kernelSize, Point(-1, -1), BORDER_REPLICATE);
     EXPECT_EQ(227, dst.at<uchar>(0, 0));
 
     // should work like BORDER_ISOLATED
-    cv::blur(src_roi, dst, kernelSize, Point(-1, -1), BORDER_REPLICATE | BORDER_ISOLATED);
+    ncvslideio::blur(src_roi, dst, kernelSize, Point(-1, -1), BORDER_REPLICATE | BORDER_ISOLATED);
     EXPECT_EQ(0, dst.at<uchar>(0, 0));
 
     /// ksize <= src_roi.size()
-    src = Mat(5, 5, CV_8UC1, cv::Scalar(255));
+    src = Mat(5, 5, CV_8UC1, ncvslideio::Scalar(255));
     src_roi = src(Rect(1, 1, 3, 3));
     src_roi.setTo(0);
     src.at<uchar>(2, 2) = 255;
 
     // should work like !BORDER_ISOLATED
-    cv::blur(src_roi, dst, kernelSize, Point(-1, -1), BORDER_REPLICATE);
+    ncvslideio::blur(src_roi, dst, kernelSize, Point(-1, -1), BORDER_REPLICATE);
     Mat expected_dst =
             (Mat_<uchar>(3, 3) << 170, 113, 170, 113, 28, 113, 170, 113, 170);
     EXPECT_EQ(expected_dst.type(), dst.type());
@@ -2003,19 +2003,19 @@ TEST(Imgproc_GaussianBlur, borderTypes)
 {
     Size kernelSize(3, 3);
 
-    Mat src_16(16, 16, CV_8UC1, cv::Scalar::all(42)), dst_16;
+    Mat src_16(16, 16, CV_8UC1, ncvslideio::Scalar::all(42)), dst_16;
     Mat src_roi_16 = src_16(Rect(1, 1, 14, 14));
-    src_roi_16.setTo(cv::Scalar::all(3));
+    src_roi_16.setTo(ncvslideio::Scalar::all(3));
 
-    cv::GaussianBlur(src_roi_16, dst_16, kernelSize, 0, 0, BORDER_REPLICATE);
+    ncvslideio::GaussianBlur(src_roi_16, dst_16, kernelSize, 0, 0, BORDER_REPLICATE);
 
     EXPECT_EQ(20, dst_16.at<uchar>(0, 0));
 
-    Mat src(3, 12, CV_8UC1, cv::Scalar::all(42)), dst;
+    Mat src(3, 12, CV_8UC1, ncvslideio::Scalar::all(42)), dst;
     Mat src_roi = src(Rect(1, 1, 10, 1));
-    src_roi.setTo(cv::Scalar::all(2));
+    src_roi.setTo(ncvslideio::Scalar::all(2));
 
-    cv::GaussianBlur(src_roi, dst, kernelSize, 0, 0, BORDER_REPLICATE);
+    ncvslideio::GaussianBlur(src_roi, dst, kernelSize, 0, 0, BORDER_REPLICATE);
 
     EXPECT_EQ(27, dst.at<uchar>(0, 0));
 }
@@ -2034,21 +2034,21 @@ TEST(Imgproc_Morphology, iterated)
 
         randu(src, 0, 256);
         if( op == 0 )
-            cv::dilate(src, dst0, Mat(), Point(-1,-1), iterations);
+            ncvslideio::dilate(src, dst0, Mat(), Point(-1,-1), iterations);
         else
-            cv::erode(src, dst0, Mat(), Point(-1,-1), iterations);
+            ncvslideio::erode(src, dst0, Mat(), Point(-1,-1), iterations);
 
         for( int i = 0; i < iterations; i++ )
             if( op == 0 )
-                cv::dilate(i == 0 ? src : dst1, dst1, Mat(), Point(-1,-1), 1);
+                ncvslideio::dilate(i == 0 ? src : dst1, dst1, Mat(), Point(-1,-1), 1);
             else
-                cv::erode(i == 0 ? src : dst1, dst1, Mat(), Point(-1,-1), 1);
+                ncvslideio::erode(i == 0 ? src : dst1, dst1, Mat(), Point(-1,-1), 1);
 
         Mat kern = getStructuringElement(MORPH_RECT, Size(3,3));
         if( op == 0 )
-            cv::dilate(src, dst2, kern, Point(-1,-1), iterations);
+            ncvslideio::dilate(src, dst2, kern, Point(-1,-1), iterations);
         else
-            cv::erode(src, dst2, kern, Point(-1,-1), iterations);
+            ncvslideio::erode(src, dst2, kern, Point(-1,-1), iterations);
         ASSERT_EQ(0.0, cvtest::norm(dst0, dst1, NORM_INF));
         ASSERT_EQ(0.0, cvtest::norm(dst0, dst2, NORM_INF));
     }
@@ -2061,44 +2061,44 @@ TEST(Imgproc_Sobel, borderTypes)
     /// ksize > src_roi.size()
     Mat src = (Mat_<uchar>(3, 3) << 1, 2, 3, 4, 5, 6, 7, 8, 9), dst, expected_dst;
     Mat src_roi = src(Rect(1, 1, 1, 1));
-    src_roi.setTo(cv::Scalar::all(0));
+    src_roi.setTo(ncvslideio::Scalar::all(0));
 
     // should work like !BORDER_ISOLATED, so the function MUST read values in full matrix
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE);
     EXPECT_EQ(8, dst.at<short>(0, 0));
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT);
     EXPECT_EQ(8, dst.at<short>(0, 0));
 
     // should work like BORDER_ISOLATED
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE | BORDER_ISOLATED);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE | BORDER_ISOLATED);
     EXPECT_EQ(0, dst.at<short>(0, 0));
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT | BORDER_ISOLATED);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT | BORDER_ISOLATED);
     EXPECT_EQ(0, dst.at<short>(0, 0));
 
     /// ksize <= src_roi.size()
-    src = Mat(5, 5, CV_8UC1, cv::Scalar(5));
+    src = Mat(5, 5, CV_8UC1, ncvslideio::Scalar(5));
     src_roi = src(Rect(1, 1, 3, 3));
     src_roi.setTo(0);
 
     // should work like !BORDER_ISOLATED, so the function MUST read values in full matrix
     expected_dst =
         (Mat_<short>(3, 3) << -15, 0, 15, -20, 0, 20, -15, 0, 15);
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE);
     EXPECT_EQ(expected_dst.type(), dst.type());
     EXPECT_EQ(expected_dst.size(), dst.size());
     EXPECT_DOUBLE_EQ(0.0, cvtest::norm(expected_dst, dst, NORM_INF));
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT);
     EXPECT_EQ(expected_dst.type(), dst.type());
     EXPECT_EQ(expected_dst.size(), dst.size());
     EXPECT_DOUBLE_EQ(0.0, cvtest::norm(expected_dst, dst, NORM_INF));
 
     // should work like !BORDER_ISOLATED, so the function MUST read values in full matrix
     expected_dst = Mat::zeros(3, 3, CV_16SC1);
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE | BORDER_ISOLATED);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REPLICATE | BORDER_ISOLATED);
     EXPECT_EQ(expected_dst.type(), dst.type());
     EXPECT_EQ(expected_dst.size(), dst.size());
     EXPECT_DOUBLE_EQ(0.0, cvtest::norm(expected_dst, dst, NORM_INF));
-    cv::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT | BORDER_ISOLATED);
+    ncvslideio::Sobel(src_roi, dst, CV_16S, 1, 0, kernelSize, 1, 0, BORDER_REFLECT | BORDER_ISOLATED);
     EXPECT_EQ(expected_dst.type(), dst.type());
     EXPECT_EQ(expected_dst.size(), dst.size());
     EXPECT_DOUBLE_EQ(0.0, cvtest::norm(expected_dst, dst, NORM_INF));
@@ -2114,7 +2114,7 @@ TEST(Imgproc_MorphEx, hitmiss_regression_8957)
     Mat_<uchar> kernel = src / 255;
 
     Mat dst;
-    cv::morphologyEx(src, dst, MORPH_HITMISS, kernel);
+    ncvslideio::morphologyEx(src, dst, MORPH_HITMISS, kernel);
 
     Mat ref = Mat::zeros(3, 3, CV_8U);
     ref.at<uchar>(1, 1) = 255;
@@ -2124,7 +2124,7 @@ TEST(Imgproc_MorphEx, hitmiss_regression_8957)
     src.at<uchar>(1, 1) = 255;
     ref.at<uchar>(0, 1) = 255;
     ref.at<uchar>(2, 1) = 255;
-    cv::morphologyEx(src, dst, MORPH_HITMISS, kernel);
+    ncvslideio::morphologyEx(src, dst, MORPH_HITMISS, kernel);
     ASSERT_DOUBLE_EQ(cvtest::norm(dst, ref, NORM_INF), 0.);
 }
 
@@ -2138,7 +2138,7 @@ TEST(Imgproc_MorphEx, hitmiss_zero_kernel)
     Mat_<uchar> kernel = Mat_<uchar>::zeros(3, 3);
 
     Mat dst;
-    cv::morphologyEx(src, dst, MORPH_HITMISS, kernel);
+    ncvslideio::morphologyEx(src, dst, MORPH_HITMISS, kernel);
 
     ASSERT_DOUBLE_EQ(cvtest::norm(dst, src, NORM_INF), 0.);
 }
@@ -2209,10 +2209,10 @@ TEST(Imgproc_Filter2D, dftFilter2d_regression_10683)
     {
         for(int c = 0; c < src.cols / 3; ++c)
         {
-            cv::Rect region(c * 3, r * 3, 3, 3);
+            ncvslideio::Rect region(c * 3, r * 3, 3, 3);
             Mat roi_i(src, region);
             Mat roi_o(dst, region);
-            cv::filter2D(roi_i, roi_o, -1, kernel);
+            ncvslideio::filter2D(roi_i, roi_o, -1, kernel);
         }
     }
 
@@ -2247,7 +2247,7 @@ TEST(Imgproc_Filter2D, dftFilter2d_regression_13179)
         0, 0, 0, 164, 181, 0, 0, 0, 69, 255, 31, 0, 255, 195, 0, 0, 255, 164, 109, 0, 0, 202, 0, 206,
         0, 0, 61, 235, 33, 255, 77, 0, 0, 0, 0, 85, 0, 228, 0, 0, 0, 0, 255, 0, 0, 5, 255, 255
     };
-    cv::Mat_<uchar> src(24, 24, src_);
+    ncvslideio::Mat_<uchar> src(24, 24, src_);
 
     uchar expected_[16*16] = {
          0,255,  0,  0,255,  0,  0,255,  0,  0,255,255,  0,255,  0,  0,
@@ -2267,17 +2267,17 @@ TEST(Imgproc_Filter2D, dftFilter2d_regression_13179)
          0,  0,255,255,  0,  0,255, 26,  0,255,255,  0,255,255,  0,255,
          0,  0,255,255,  0,  0,255,  0,  0,255,255,  0,255,255,  0,255,
     };
-    cv::Mat_<uchar> expected(16, 16, expected_);
+    ncvslideio::Mat_<uchar> expected(16, 16, expected_);
 
-    cv::Mat kernel = cv::getGaborKernel(cv::Size(13, 13), 8, 0, 3, 0.25);
+    ncvslideio::Mat kernel = ncvslideio::getGaborKernel(ncvslideio::Size(13, 13), 8, 0, 3, 0.25);
 
-    cv::Mat roi(src, cv::Rect(0, 0, 16, 16));
+    ncvslideio::Mat roi(src, ncvslideio::Rect(0, 0, 16, 16));
 
-    cv::Mat filtered(16, 16, roi.type());
+    ncvslideio::Mat filtered(16, 16, roi.type());
 
-    cv::filter2D(roi, filtered, -1, kernel);
+    ncvslideio::filter2D(roi, filtered, -1, kernel);
 
-    EXPECT_LE(cvtest::norm(filtered, expected, cv::NORM_INF), 2);
+    EXPECT_LE(cvtest::norm(filtered, expected, ncvslideio::NORM_INF), 2);
 }
 
 TEST(Imgproc_MedianBlur, hires_regression_13409)
@@ -2318,8 +2318,8 @@ TEST(Imgproc_Pyrdown, issue_12961)
 {
     Mat src(9, 9, CV_8UC1, Scalar::all(0));
     Mat dst;
-    cv::pyrDown(src, dst);
-    ASSERT_EQ(0.0, cv::norm(dst));
+    ncvslideio::pyrDown(src, dst);
+    ASSERT_EQ(0.0, ncvslideio::norm(dst));
 }
 
 
@@ -2336,15 +2336,15 @@ TEST(Imgproc, filter_empty_src_16857)
     CV_TEST_EXPECT_EMPTY_THROW(sqrBoxFilter(src, dst, CV_8U, Size(3, 3)));
     CV_TEST_EXPECT_EMPTY_THROW(medianBlur(src, dst, 3));
     CV_TEST_EXPECT_EMPTY_THROW(GaussianBlur(src, dst, Size(3, 3), 0));
-    CV_TEST_EXPECT_EMPTY_THROW(cv::filter2D(src, dst, CV_8U, Mat_<float>::zeros(Size(3, 3))));
+    CV_TEST_EXPECT_EMPTY_THROW(ncvslideio::filter2D(src, dst, CV_8U, Mat_<float>::zeros(Size(3, 3))));
     CV_TEST_EXPECT_EMPTY_THROW(sepFilter2D(src, dst, CV_8U, Mat_<float>::zeros(Size(3, 1)), Mat_<float>::zeros(Size(1, 3))));
     CV_TEST_EXPECT_EMPTY_THROW(Sobel(src, dst, CV_8U, 1, 1));
     CV_TEST_EXPECT_EMPTY_THROW(spatialGradient(src, dst, dst2));
     CV_TEST_EXPECT_EMPTY_THROW(Scharr(src, dst, CV_8U, 1, 1));
     CV_TEST_EXPECT_EMPTY_THROW(Laplacian(src, dst, CV_8U));
 
-    CV_TEST_EXPECT_EMPTY_THROW(cv::dilate(src, dst, Mat()));  // cvtest:: by default
-    CV_TEST_EXPECT_EMPTY_THROW(cv::erode(src, dst, Mat()));  // cvtest:: by default
+    CV_TEST_EXPECT_EMPTY_THROW(ncvslideio::dilate(src, dst, Mat()));  // cvtest:: by default
+    CV_TEST_EXPECT_EMPTY_THROW(ncvslideio::erode(src, dst, Mat()));  // cvtest:: by default
     CV_TEST_EXPECT_EMPTY_THROW(morphologyEx(src, dst, MORPH_OPEN, Mat()));
 
     //debug: CV_TEST_EXPECT_EMPTY_THROW(blur(Mat_<uchar>(Size(3,3)), dst, Size(3, 3)));
@@ -2356,25 +2356,25 @@ TEST(Imgproc, filter_empty_src_16857)
 
 TEST(Imgproc_GaussianBlur, regression_11303)
 {
-    cv::Mat dst;
+    ncvslideio::Mat dst;
     int width = 2115;
     int height = 211;
     double sigma = 8.64421;
-    cv::Mat src(cv::Size(width, height), CV_32F, 1);
-    cv::GaussianBlur(src, dst, cv::Size(), sigma, sigma);
-    EXPECT_LE(cv::norm(src, dst, NORM_L2), 1e-3);
+    ncvslideio::Mat src(ncvslideio::Size(width, height), CV_32F, 1);
+    ncvslideio::GaussianBlur(src, dst, ncvslideio::Size(), sigma, sigma);
+    EXPECT_LE(ncvslideio::norm(src, dst, NORM_L2), 1e-3);
 }
 
 TEST(Imgproc, morphologyEx_small_input_22893)
 {
     char input_data[] = {1, 2, 3, 4};
     char gold_data[] = {2, 3, 4, 4};
-    cv::Mat img(1, 4, CV_8UC1, input_data);
-    cv::Mat gold(1, 4, CV_8UC1, gold_data);
+    ncvslideio::Mat img(1, 4, CV_8UC1, input_data);
+    ncvslideio::Mat gold(1, 4, CV_8UC1, gold_data);
 
-    cv::Mat kernel = getStructuringElement(cv::MORPH_RECT, cv::Size(4,4));
-    cv::Mat result;
-    morphologyEx(img, result, cv::MORPH_DILATE, kernel);
+    ncvslideio::Mat kernel = getStructuringElement(ncvslideio::MORPH_RECT, ncvslideio::Size(4,4));
+    ncvslideio::Mat result;
+    morphologyEx(img, result, ncvslideio::MORPH_DILATE, kernel);
 
     ASSERT_EQ(0, cvtest::norm(result, gold, NORM_INF));
 }
@@ -2384,13 +2384,13 @@ TEST(Imgproc_sepFilter2D, identity)
     std::vector<uint8_t> kernelX{0, 0, 0, 1, 0, 0, 0};
     std::vector<uint8_t> kernelY{0, 0, 1, 0, 0};
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, input.depth(), kernelX, kernelY);
+    ncvslideio::sepFilter2D(input, result, input.depth(), kernelX, kernelY);
 
-    EXPECT_EQ(0, cv::norm(result, input, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(result, input, NORM_INF));
 }
 
 TEST(Imgproc_sepFilter2D, shift)
@@ -2398,31 +2398,31 @@ TEST(Imgproc_sepFilter2D, shift)
     std::vector<float> kernelX{1, 0, 0};
     std::vector<float> kernelY{0, 0, 1};
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, input.depth(), kernelX, kernelY);
+    ncvslideio::sepFilter2D(input, result, input.depth(), kernelX, kernelY);
 
     int W = input.cols;
     int H = input.rows;
     Mat inputCrop = input(Range(1, H), Range(0, W - 1));
     Mat resultCrop = result(Range(0, H - 1), Range(1, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     // Checking borders. Should be BORDER_REFLECT_101
 
     inputCrop = input(Range(H - 2, H - 1), Range(0, W - 1));
     resultCrop = result(Range(H - 1, H), Range(1, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     inputCrop = input(Range(1, H), Range(1, 2));
     resultCrop = result(Range(0, H - 1), Range(0, 1));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     inputCrop = input(Range(H - 2, H - 1), Range(1, 2));
     resultCrop = result(Range(H - 1, H), Range(0, 1));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 }
 
 TEST(Imgproc_sepFilter2D, zeroPadding)
@@ -2432,25 +2432,25 @@ TEST(Imgproc_sepFilter2D, zeroPadding)
     Point anchor(-1, -1);
     double delta = 0;
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor, delta, BORDER_CONSTANT);
+    ncvslideio::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor, delta, BORDER_CONSTANT);
 
     int W = input.cols;
     int H = input.rows;
     Mat inputCrop = input(Range(1, H), Range(0, W - 1));
     Mat resultCrop = result(Range(0, H - 1), Range(1, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     // Checking borders
 
     resultCrop = result(Range(H - 1, H), Range(0, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, NORM_INF));
 
     resultCrop = result(Range(0, H), Range(0, 1));
-    EXPECT_EQ(0, cv::norm(resultCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, NORM_INF));
 }
 
 TEST(Imgproc_sepFilter2D, anchor)
@@ -2459,31 +2459,31 @@ TEST(Imgproc_sepFilter2D, anchor)
     std::vector<float> kernelY{0, 1, 0};
     Point anchor(2, 0);
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor);
+    ncvslideio::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor);
 
     int W = input.cols;
     int H = input.rows;
     Mat inputCrop = input(Range(1, H), Range(0, W - 1));
     Mat resultCrop = result(Range(0, H - 1), Range(1, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     // Checking borders. Should be BORDER_REFLECT_101
 
     inputCrop = input(Range(H - 2, H - 1), Range(0, W - 1));
     resultCrop = result(Range(H - 1, H), Range(1, W));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     inputCrop = input(Range(1, H), Range(1, 2));
     resultCrop = result(Range(0, H - 1), Range(0, 1));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 
     inputCrop = input(Range(H - 2, H - 1), Range(1, 2));
     resultCrop = result(Range(H - 1, H), Range(0, 1));
-    EXPECT_EQ(0, cv::norm(resultCrop, inputCrop, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(resultCrop, inputCrop, NORM_INF));
 }
 
 TEST(Imgproc_sepFilter2D, delta)
@@ -2493,14 +2493,14 @@ TEST(Imgproc_sepFilter2D, delta)
     Point anchor(1, 1);
     double delta = 5;
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor, delta);
+    ncvslideio::sepFilter2D(input, result, input.depth(), kernelX, kernelY, anchor, delta);
 
     Mat gt = input / 2 + delta;
-    EXPECT_EQ(0, cv::norm(result, gt, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(result, gt, NORM_INF));
 }
 
 typedef testing::TestWithParam<int> Imgproc_sepFilter2D_outTypes;
@@ -2512,15 +2512,15 @@ TEST_P(Imgproc_sepFilter2D_outTypes, simple)
     Point anchor(1, 1);
     double delta = 5;
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     Mat result;
 
-    cv::sepFilter2D(input, result, outputType, kernelX, kernelY, anchor, delta);
+    ncvslideio::sepFilter2D(input, result, outputType, kernelX, kernelY, anchor, delta);
 
     input.convertTo(input, outputType);
     Mat gt = input / 4 + delta;
-    EXPECT_EQ(0, cv::norm(result, gt, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(result, gt, NORM_INF));
 }
 
 INSTANTIATE_TEST_CASE_P(/**/, Imgproc_sepFilter2D_outTypes,
@@ -2536,15 +2536,15 @@ TEST_P(Imgproc_sepFilter2D_types, simple)
     Point anchor(1, 1);
     double delta = 5;
 
-    const string input_path = cvtest::findDataFile("../cv/shared/baboon.png");
+    const string input_path = cvtest::findDataFile("../ncvslideio/shared/baboon.png");
     Mat input = imread(input_path, IMREAD_GRAYSCALE);
     input.convertTo(input, outputType);
     Mat result;
 
-    cv::sepFilter2D(input, result, outputType, kernelX, kernelY, anchor, delta);
+    ncvslideio::sepFilter2D(input, result, outputType, kernelX, kernelY, anchor, delta);
 
     Mat gt = input / 4 + delta;
-    EXPECT_EQ(0, cv::norm(result, gt, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(result, gt, NORM_INF));
 }
 
 INSTANTIATE_TEST_CASE_P(/**/, Imgproc_sepFilter2D_types,

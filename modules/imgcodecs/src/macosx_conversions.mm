@@ -5,11 +5,11 @@
 #include "apple_conversions.h"
 #import <AppKit/AppKit.h>
 
-CV_EXPORTS NSImage* MatToNSImage(const cv::Mat& image);
-CV_EXPORTS void NSImageToMat(const NSImage* image, cv::Mat& m, bool alphaExist);
+CV_EXPORTS NSImage* MatToNSImage(const ncvslideio::Mat& image);
+CV_EXPORTS void NSImageToMat(const NSImage* image, ncvslideio::Mat& m, bool alphaExist);
 
-NSImage* MatToNSImage(const cv::Mat& image) {
-    // Creating CGImage from cv::Mat
+NSImage* MatToNSImage(const ncvslideio::Mat& image) {
+    // Creating CGImage from ncvslideio::Mat
     CGImageRef imageRef = MatToCGImage(image);
 
     // Getting NSImage from CGImage
@@ -19,7 +19,7 @@ NSImage* MatToNSImage(const cv::Mat& image) {
     return nsImage;
 }
 
-void NSImageToMat(const NSImage* image, cv::Mat& m, bool alphaExist) {
+void NSImageToMat(const NSImage* image, ncvslideio::Mat& m, bool alphaExist) {
     CGImageRef imageRef = [image CGImageForProposedRect:NULL context:NULL hints:NULL];
     CGImageToMat(imageRef, m, alphaExist);
 }

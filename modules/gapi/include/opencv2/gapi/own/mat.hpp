@@ -20,7 +20,7 @@
 #include <vector>
 #include <opencv2/gapi/util/throw.hpp>
 
-namespace cv { namespace gapi { namespace own {
+namespace ncvslideio { namespace gapi { namespace own {
     namespace detail {
         template <typename T, unsigned char channels>
         void assign_row(void* ptr, int cols, Scalar const& s)
@@ -84,7 +84,7 @@ namespace cv { namespace gapi { namespace own {
             std::vector<int> dims;
         };
     } // namespace detail
-    //concise version of cv::Mat suitable for GAPI needs (used when no dependence on OpenCV is required)
+    //concise version of ncvslideio::Mat suitable for GAPI needs (used when no dependence on OpenCV is required)
     class Mat : public detail::MatHeader{
     public:
 
@@ -349,6 +349,6 @@ namespace cv { namespace gapi { namespace own {
 
 } //namespace own
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio
 
 #endif /* OPENCV_GAPI_OWN_MAT_HPP */

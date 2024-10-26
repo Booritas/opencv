@@ -49,19 +49,19 @@ class SymbolName(NamedTuple):
         Returns:
             SymbolName: Parsed symbol name structure.
 
-        >>> SymbolName.parse('cv.ns.Feature', ('cv', 'cv.ns'))
-        (namespace="cv::ns", classes="", name="Feature")
+        >>> SymbolName.parse('ncvslideio.ns.Feature', ('ncvslideio', 'ncvslideio.ns'))
+        (namespace="ncvslideio::ns", classes="", name="Feature")
 
-        >>> SymbolName.parse('cv.ns.Feature', ())
-        (namespace="", classes="cv::ns", name="Feature")
+        >>> SymbolName.parse('ncvslideio.ns.Feature', ())
+        (namespace="", classes="ncvslideio::ns", name="Feature")
 
-        >>> SymbolName.parse('cv.ns.Feature.Params', ('cv', 'cv.ns'))
-        (namespace="cv::ns", classes="Feature", name="Params")
+        >>> SymbolName.parse('ncvslideio.ns.Feature.Params', ('ncvslideio', 'ncvslideio.ns'))
+        (namespace="ncvslideio::ns", classes="Feature", name="Params")
 
-        >>> SymbolName.parse('cv::ns::Feature::Params::serialize',
-        ...                  known_namespaces=('cv', 'cv.ns'),
+        >>> SymbolName.parse('ncvslideio::ns::Feature::Params::serialize',
+        ...                  known_namespaces=('ncvslideio', 'ncvslideio.ns'),
         ...                  symbol_parts_delimiter='::')
-        (namespace="cv::ns", classes="Feature::Params", name="serialize")
+        (namespace="ncvslideio::ns", classes="Feature::Params", name="serialize")
         """
 
         chunks = full_symbol_name.split(symbol_parts_delimiter)
@@ -91,22 +91,22 @@ def find_scope(root: NamespaceNode, symbol_name: SymbolName,
         Union[NamespaceNode, ClassNode]: Direct parent for the node referred by
             `symbol_name`.
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> algorithm_node = root.add_class('Algorithm')
-    >>> find_scope(root, SymbolName(('cv', ), ('Algorithm',), 'Params')) == algorithm_node
+    >>> find_scope(root, SymbolName(('ncvslideio', ), ('Algorithm',), 'Params')) == algorithm_node
     True
 
-    >>> root = NamespaceNode('cv')
-    >>> scope = find_scope(root, SymbolName(('cv', 'gapi', 'detail'), (), 'function'))
+    >>> root = NamespaceNode('ncvslideio')
+    >>> scope = find_scope(root, SymbolName(('ncvslideio', 'gapi', 'detail'), (), 'function'))
     >>> scope.full_export_name
-    'cv.gapi.detail'
+    'ncvslideio.gapi.detail'
 
-    >>> root = NamespaceNode('cv')
-    >>> scope = find_scope(root, SymbolName(('cv', 'gapi'), ('GOpaque',), 'function'))
+    >>> root = NamespaceNode('ncvslideio')
+    >>> scope = find_scope(root, SymbolName(('ncvslideio', 'gapi'), ('GOpaque',), 'function'))
     Traceback (most recent call last):
     ...
     ast_utils.ScopeNotFoundError: Can't find a scope for 'function', with \
-'(namespace="cv::gapi", classes="GOpaque", name="function")', \
+'(namespace="ncvslideio::gapi", classes="GOpaque", name="function")', \
 because 'GOpaque' class is not registered yet
     """
     assert isinstance(root, NamespaceNode), \
@@ -352,19 +352,19 @@ def get_enclosing_namespace(
     Raises:
         AssertionError: if nodes hierarchy missing a namespace node.
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> feature_class = root.add_class("Feature")
     >>> get_enclosing_namespace(feature_class) == root
     True
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> feature_class = root.add_class("Feature")
     >>> feature_params_class = feature_class.add_class("Params")
     >>> serialize_params_func = feature_params_class.add_function("serialize")
     >>> get_enclosing_namespace(serialize_params_func) == root
     True
 
-    >>> root = NamespaceNode('cv')
+    >>> root = NamespaceNode('ncvslideio')
     >>> detail_ns = root.add_namespace('detail')
     >>> flags_enum = detail_ns.add_enumeration('Flags')
     >>> get_enclosing_namespace(flags_enum) == detail_ns

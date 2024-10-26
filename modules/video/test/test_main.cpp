@@ -19,7 +19,7 @@ void initTests()
     if (extraTestDataPath)
         cvtest::addDataSearchPath(extraTestDataPath);
 
-    cvtest::addDataSearchSubDirectory("");  // override "cv" prefix below to access without "../dnn" hacks
+    cvtest::addDataSearchSubDirectory("");  // override "ncvslideio" prefix below to access without "../dnn" hacks
 }
 
-CV_TEST_MAIN("cv", initTests())
+CV_TEST_MAIN("ncvslideio", initTests())

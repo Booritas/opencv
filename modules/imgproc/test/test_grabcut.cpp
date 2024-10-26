@@ -112,8 +112,8 @@ void CV_GrabcutTest::run( int /* start_from */)
         return;
     }
     // The model should not be changed after calling with GC_EVAL_FREEZE_MODEL
-    double sumBgdModel = cv::sum(cv::abs(bgdModel) - cv::abs(exp_bgdModel))[0];
-    double sumFgdModel = cv::sum(cv::abs(fgdModel) - cv::abs(exp_fgdModel))[0];
+    double sumBgdModel = ncvslideio::sum(ncvslideio::abs(bgdModel) - ncvslideio::abs(exp_bgdModel))[0];
+    double sumFgdModel = ncvslideio::sum(ncvslideio::abs(fgdModel) - ncvslideio::abs(exp_fgdModel))[0];
     if (sumBgdModel >= 0.1 || sumFgdModel >= 0.1)
     {
         ts->printf(cvtest::TS::LOG, "sumBgdModel = %f, sumFgdModel = %f\n", sumBgdModel, sumFgdModel);

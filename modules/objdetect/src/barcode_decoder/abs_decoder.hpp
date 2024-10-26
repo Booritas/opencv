@@ -8,7 +8,7 @@
 
 #include "opencv2/objdetect/barcode.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 using std::string;
 using std::vector;
@@ -94,6 +94,6 @@ constexpr static uint PATTERN_MATCH_RESULT_SCALE_FACTOR = 1 << INTEGER_MATH_SHIF
 
 uint patternMatch(const Counter &counters, const std::vector<int> &pattern, uint maxIndividual);
 }
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_BARCODE_ABS_DECODER_HPP

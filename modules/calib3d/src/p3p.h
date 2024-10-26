@@ -8,10 +8,10 @@ class p3p
 {
  public:
   p3p(double fx, double fy, double cx, double cy);
-  p3p(cv::Mat cameraMatrix);
+  p3p(ncvslideio::Mat cameraMatrix);
 
-  bool solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints);
-  int solve(std::vector<cv::Mat>& Rs, std::vector<cv::Mat>& tvecs, const cv::Mat& opoints, const cv::Mat& ipoints);
+  bool solve(ncvslideio::Mat& R, ncvslideio::Mat& tvec, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints);
+  int solve(std::vector<ncvslideio::Mat>& Rs, std::vector<ncvslideio::Mat>& tvecs, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints);
   int solve(double R[4][3][3], double t[4][3],
             double mu0, double mv0,   double X0, double Y0, double Z0,
             double mu1, double mv1,   double X1, double Y1, double Z1,
@@ -26,7 +26,7 @@ class p3p
 
  private:
   template <typename T>
-  void init_camera_parameters(const cv::Mat& cameraMatrix)
+  void init_camera_parameters(const ncvslideio::Mat& cameraMatrix)
   {
     cx = cameraMatrix.at<T> (0, 2);
     cy = cameraMatrix.at<T> (1, 2);
@@ -34,7 +34,7 @@ class p3p
     fy = cameraMatrix.at<T> (1, 1);
   }
   template <typename OpointType, typename IpointType>
-  void extract_points(const cv::Mat& opoints, const cv::Mat& ipoints, std::vector<double>& points)
+  void extract_points(const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints, std::vector<double>& points)
   {
       points.clear();
       int npoints = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F));

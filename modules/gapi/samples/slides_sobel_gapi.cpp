@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    using namespace cv;
+    using namespace ncvslideio;
     Mat in_mat = imread("lena.png");
     Mat out_mat;
 

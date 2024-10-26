@@ -59,7 +59,7 @@
 #include "opencv2/core/softfloat.hpp"
 #include "fixedpoint.inl.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace
 {
@@ -953,7 +953,7 @@ typedef void(*be_resize_func)(const uchar* src, size_t src_step, int src_width, 
 
 }
 
-namespace cv
+namespace ncvslideio
 {
 
 /************** interpolation formulas and tables ***************/
@@ -1272,7 +1272,7 @@ static void resizeNN_bitexact( const Mat& src, Mat& dst, double /*fx*/, double /
     int ify = ((ssize.height << 16) + dsize.height / 2) / dsize.height;
     int ify0 = ify / 2 - ssize.height % 2;
 
-    cv::utils::BufferArea area;
+    ncvslideio::utils::BufferArea area;
     int* x_ofse = 0;
     area.allocate(x_ofse, dsize.width, CV_SIMD_WIDTH);
     area.commit();
@@ -3452,7 +3452,7 @@ static bool ocl_resize( InputArray _src, OutputArray _dst, Size dsize,
     {
         int wdepth = std::max(depth, CV_32S);
         char buf[2][50];
-        cv::String compileOpts = format("-D USE_SAMPLER -D SRC_DEPTH=%d -D T=%s -D T1=%s "
+        ncvslideio::String compileOpts = format("-D USE_SAMPLER -D SRC_DEPTH=%d -D T=%s -D T1=%s "
                         "-D CONVERT_TO_DT=%s -D CN=%d",
                         depth, ocl::typeToStr(type), ocl::typeToStr(depth),
                         ocl::convertTypeStr(wdepth, depth, cn, buf[1], sizeof(buf[1])),
@@ -3739,7 +3739,7 @@ static bool ipp_resize(const uchar * src_data, size_t src_step, int src_width, i
         return false;
 
     // Resize which doesn't match OpenCV exactly
-    if (!cv::ipp::useIPP_NotExact())
+    if (!ncvslideio::ipp::useIPP_NotExact())
     {
         if (ippInter == ippNearest || ippInter == ippSuper || (ippDataType == ipp8u && ippInter == ippLinear))
             return false;
@@ -4080,7 +4080,7 @@ void resize(int src_type,
     else if( interpolation == INTER_LINEAR || interpolation == INTER_AREA )
         ksize = 2, func = linear_tab[depth];
     else
-        CV_Error( cv::Error::StsBadArg, "Unknown interpolation method" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Unknown interpolation method" );
     ksize2 = ksize/2;
 
     CV_Assert( func != 0 );
@@ -4193,12 +4193,12 @@ void resize(int src_type,
           fixpt ? (void*)ibeta : (void*)beta, xmin, xmax, ksize );
 }
 
-} // cv::hal::
-} // cv::
+} // ncvslideio::hal::
+} // ncvslideio::
 
 //==================================================================================================
 
-void cv::resize( InputArray _src, OutputArray _dst, Size dsize,
+void ncvslideio::resize( InputArray _src, OutputArray _dst, Size dsize,
                  double inv_scale_x, double inv_scale_y, int interpolation )
 {
     CV_INSTRUMENT_REGION();
@@ -4249,9 +4249,9 @@ void cv::resize( InputArray _src, OutputArray _dst, Size dsize,
 CV_IMPL void
 cvResize( const CvArr* srcarr, CvArr* dstarr, int method )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.type() == dst.type() );
-    cv::resize( src, dst, dst.size(), (double)dst.cols/src.cols,
+    ncvslideio::resize( src, dst, dst.size(), (double)dst.cols/src.cols,
         (double)dst.rows/src.rows, method );
 }
 

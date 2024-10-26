@@ -45,7 +45,7 @@
 #include "../include/ocl4dnn.hpp"
 #include "../include/math_functions.hpp"
 
-namespace cv { namespace dnn { namespace ocl4dnn {
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
 template<typename Dtype>
 OCL4DNNInnerProduct<Dtype>::OCL4DNNInnerProduct(OCL4DNNInnerProductConfig config)
 {
@@ -104,11 +104,11 @@ bool OCL4DNNInnerProduct<Dtype>::Forward(const UMat& bottom,
 
                 bias.convertTo(newbias, CV_32F);
                 top.convertTo(tmpTop, CV_32F);
-                cv::gemm(biasOneMat, newbias, 1, tmpTop, 1, tmpTop, 0);
+                ncvslideio::gemm(biasOneMat, newbias, 1, tmpTop, 1, tmpTop, 0);
                 tmpTop.convertTo(top, CV_16F);
             } else {
                 UMat biasOnesMat = UMat::ones(M_, 1, CV_32F);
-                cv::gemm(biasOnesMat, bias, 1, top, 1, top, 0);
+                ncvslideio::gemm(biasOnesMat, bias, 1, top, 1, top, 0);
             }
         }
 
@@ -118,4 +118,4 @@ bool OCL4DNNInnerProduct<Dtype>::Forward(const UMat& bottom,
 
 template class OCL4DNNInnerProduct<float>;
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn

@@ -19,16 +19,16 @@
 #include "../ocl4dnn/include/ocl4dnn.hpp"
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
 void getConvolutionKernelParams(const LayerParams &params, std::vector<size_t>& kernel, std::vector<size_t>& pads_begin,
                                 std::vector<size_t>& pads_end, std::vector<size_t>& strides, std::vector<size_t>& dilations,
-                                cv::String &padMode, std::vector<size_t>& adjust_pads, bool& useWinograd);
+                                ncvslideio::String &padMode, std::vector<size_t>& adjust_pads, bool& useWinograd);
 
 void getPoolingKernelParams(const LayerParams &params, std::vector<size_t>& kernel, std::vector<bool>& globalPooling,
-                            std::vector<size_t>& pads_begin, std::vector<size_t>& pads_end, std::vector<size_t>& strides, cv::String &padMode);
+                            std::vector<size_t>& pads_begin, std::vector<size_t>& pads_end, std::vector<size_t>& strides, ncvslideio::String &padMode);
 
 void getConvPoolOutParams(const std::vector<int>& inp, const std::vector<size_t>& kernel,
                           const std::vector<size_t>& stride, const String &padMode,

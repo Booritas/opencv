@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int edgeThresh = 1;

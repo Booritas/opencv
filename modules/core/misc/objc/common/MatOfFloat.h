@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 CV_EXPORTS @interface MatOfFloat : Mat
 
 #ifdef __cplusplus
-- (instancetype)initWithNativeMat:(cv::Mat*)nativeMat;
+- (instancetype)initWithNativeMat:(ncvslideio::Mat*)nativeMat;
 #endif
 
 /**

@@ -4,7 +4,7 @@
 #include "opencv2/videoio.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 void drawText(Mat & image);

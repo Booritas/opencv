@@ -60,8 +60,8 @@
 
 
 
-/* For the sake of cv:: namespace ONLY: */
-namespace cv{/* For C support, replace with extern "C" { */
+/* For the sake of ncvslideio:: namespace ONLY: */
+namespace ncvslideio{/* For C support, replace with extern "C" { */
 
 
 /* Constants */
@@ -450,7 +450,7 @@ Ptr<RHO_HEST> rhoInit(void){
     /**
      * For now, only the generic C implementation is available. In the future,
      * SSE2/AVX/AVX2/FMA/NEON versions may be added, and they will be selected
-     * depending on cv::checkHardwareSupport()'s return values.
+     * depending on ncvslideio::checkHardwareSupport()'s return values.
      */
 
     Ptr<RHO_HEST> p = Ptr<RHO_HEST>(new RHO_HEST_REFC);
@@ -2644,5 +2644,5 @@ static inline void   sacSub8x1(float* Hout, const float* H, const float* dH){
 }
 
 
-/* End namespace cv */
+/* End namespace ncvslideio */
 }

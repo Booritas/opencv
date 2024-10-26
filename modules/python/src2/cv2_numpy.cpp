@@ -6,7 +6,7 @@
 #include "cv2_numpy.hpp"
 #include "cv2_util.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
 UMatData* NumpyAllocator::allocate(PyObject* o, int dims, const int* sizes, int type, size_t* step) const
 {
@@ -39,7 +39,7 @@ UMatData* NumpyAllocator::allocate(int dims0, const int* sizes, int type, void* 
     depth == CV_32S ? NPY_INT : depth == CV_32F ? NPY_FLOAT :
     depth == CV_64F ? NPY_DOUBLE : depth == CV_16F ? NPY_HALF : f*NPY_ULONGLONG + (f^1)*NPY_UINT;
     int i, dims = dims0;
-    cv::AutoBuffer<npy_intp> _sizes(dims + 1);
+    ncvslideio::AutoBuffer<npy_intp> _sizes(dims + 1);
     for( i = 0; i < dims; i++ )
         _sizes[i] = sizes[i];
     if( cn > 1 )

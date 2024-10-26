@@ -48,7 +48,7 @@
 
 #ifdef HAVE_IMGCODEC_PXM
 
-namespace cv
+namespace ncvslideio
 {
 
 enum PxMMode

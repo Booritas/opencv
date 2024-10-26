@@ -7,7 +7,7 @@
 
 #include <opencv2/dnn/layer.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -17,7 +17,7 @@ CV__DNN_INLINE_NS_BEGIN
 *   @details This macros must be placed inside the function code.
 */
 #define CV_DNN_REGISTER_LAYER_FUNC(type, constructorFunc) \
-    cv::dnn::LayerFactory::registerLayer(#type, constructorFunc);
+    ncvslideio::dnn::LayerFactory::registerLayer(#type, constructorFunc);
 
 /** @brief Registers layer class in runtime.
  *  @param type string, containing type name of the layer.
@@ -25,7 +25,7 @@ CV__DNN_INLINE_NS_BEGIN
  *  @details This macros must be placed inside the function code.
  */
 #define CV_DNN_REGISTER_LAYER_CLASS(type, class) \
-    cv::dnn::LayerFactory::registerLayer(#type, cv::dnn::details::_layerDynamicRegisterer<class>);
+    ncvslideio::dnn::LayerFactory::registerLayer(#type, ncvslideio::dnn::details::_layerDynamicRegisterer<class>);
 
 /** @brief Registers layer constructor on module load time.
 *   @param type string, containing type name of the layer.
@@ -33,7 +33,7 @@ CV__DNN_INLINE_NS_BEGIN
 *   @details This macros must be placed outside the function code.
 */
 #define CV_DNN_REGISTER_LAYER_FUNC_STATIC(type, constructorFunc) \
-static cv::dnn::details::_LayerStaticRegisterer __LayerStaticRegisterer_##type(#type, constructorFunc);
+static ncvslideio::dnn::details::_LayerStaticRegisterer __LayerStaticRegisterer_##type(#type, constructorFunc);
 
 /** @brief Registers layer class on module load time.
  *  @param type string, containing type name of the layer.
@@ -43,7 +43,7 @@ static cv::dnn::details::_LayerStaticRegisterer __LayerStaticRegisterer_##type(#
 #define CV_DNN_REGISTER_LAYER_CLASS_STATIC(type, class)                         \
 Ptr<Layer> __LayerStaticRegisterer_func_##type(LayerParams &params) \
     { return Ptr<Layer>(new class(params)); }                       \
-static cv::dnn::details::_LayerStaticRegisterer __LayerStaticRegisterer_##type(#type, __LayerStaticRegisterer_func_##type);
+static ncvslideio::dnn::details::_LayerStaticRegisterer __LayerStaticRegisterer_##type(#type, __LayerStaticRegisterer_func_##type);
 
 namespace details {
 

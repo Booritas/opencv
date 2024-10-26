@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <iterator>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
     template <class T, std::size_t N>
     struct array {
@@ -68,6 +68,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace de
         T ptr[N];
     };
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_ARRAY_HPP */

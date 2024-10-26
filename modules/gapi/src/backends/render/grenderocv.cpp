@@ -7,33 +7,33 @@
 
 struct RenderOCVState
 {
-    std::shared_ptr<cv::gapi::wip::draw::FTTextRender> ftpr;
+    std::shared_ptr<ncvslideio::gapi::wip::draw::FTTextRender> ftpr;
 };
 
-GAPI_OCV_KERNEL_ST(RenderBGROCVImpl, cv::gapi::wip::draw::GRenderBGR, RenderOCVState)
+GAPI_OCV_KERNEL_ST(RenderBGROCVImpl, ncvslideio::gapi::wip::draw::GRenderBGR, RenderOCVState)
 {
-    static void run(const cv::Mat& in,
-                    const cv::gapi::wip::draw::Prims& prims,
-                    cv::Mat& out,
+    static void run(const ncvslideio::Mat& in,
+                    const ncvslideio::gapi::wip::draw::Prims& prims,
+                    ncvslideio::Mat& out,
                     RenderOCVState& state)
     {
-        // NB: If in and out cv::Mats are the same object
-        // we can avoid copy and render on out cv::Mat
+        // NB: If in and out ncvslideio::Mats are the same object
+        // we can avoid copy and render on out ncvslideio::Mat
         // It's work if this kernel is last operation in the graph
         if (in.data != out.data) {
             in.copyTo(out);
         }
 
-        cv::gapi::wip::draw::drawPrimitivesOCVBGR(out, prims, state.ftpr);
+        ncvslideio::gapi::wip::draw::drawPrimitivesOCVBGR(out, prims, state.ftpr);
     }
 
-    static void setup(const cv::GMatDesc& /* in */,
-                      const cv::GArrayDesc& /* prims */,
+    static void setup(const ncvslideio::GMatDesc& /* in */,
+                      const ncvslideio::GArrayDesc& /* prims */,
                       std::shared_ptr<RenderOCVState>& state,
-                      const cv::GCompileArgs& args)
+                      const ncvslideio::GCompileArgs& args)
     {
-        using namespace cv::gapi::wip::draw;
-        auto opt_freetype_font = cv::gapi::getCompileArg<freetype_font>(args);
+        using namespace ncvslideio::gapi::wip::draw;
+        auto opt_freetype_font = ncvslideio::gapi::getCompileArg<freetype_font>(args);
         state = std::make_shared<RenderOCVState>();
 
         if (opt_freetype_font.has_value())
@@ -43,17 +43,17 @@ GAPI_OCV_KERNEL_ST(RenderBGROCVImpl, cv::gapi::wip::draw::GRenderBGR, RenderOCVS
     }
 };
 
-GAPI_OCV_KERNEL_ST(RenderNV12OCVImpl, cv::gapi::wip::draw::GRenderNV12, RenderOCVState)
+GAPI_OCV_KERNEL_ST(RenderNV12OCVImpl, ncvslideio::gapi::wip::draw::GRenderNV12, RenderOCVState)
 {
-    static void run(const cv::Mat& in_y,
-                    const cv::Mat& in_uv,
-                    const cv::gapi::wip::draw::Prims& prims,
-                    cv::Mat& out_y,
-                    cv::Mat& out_uv,
+    static void run(const ncvslideio::Mat& in_y,
+                    const ncvslideio::Mat& in_uv,
+                    const ncvslideio::gapi::wip::draw::Prims& prims,
+                    ncvslideio::Mat& out_y,
+                    ncvslideio::Mat& out_uv,
                     RenderOCVState& state)
     {
-        // NB: If in and out cv::Mats are the same object
-        // we can avoid copy and render on out cv::Mat
+        // NB: If in and out ncvslideio::Mats are the same object
+        // we can avoid copy and render on out ncvslideio::Mat
         // It's work if this kernel is last operation in the graph
         if (in_y.data != out_y.data) {
             in_y.copyTo(out_y);
@@ -83,28 +83,28 @@ GAPI_OCV_KERNEL_ST(RenderNV12OCVImpl, cv::gapi::wip::draw::GRenderNV12, RenderOC
          */
 
         // NV12 -> YUV
-        cv::Mat upsample_uv, yuv;
-        cv::resize(in_uv, upsample_uv, in_uv.size() * 2, cv::INTER_LINEAR);
-        cv::merge(std::vector<cv::Mat>{in_y, upsample_uv}, yuv);
+        ncvslideio::Mat upsample_uv, yuv;
+        ncvslideio::resize(in_uv, upsample_uv, in_uv.size() * 2, ncvslideio::INTER_LINEAR);
+        ncvslideio::merge(std::vector<ncvslideio::Mat>{in_y, upsample_uv}, yuv);
 
-        cv::gapi::wip::draw::drawPrimitivesOCVYUV(yuv, prims, state.ftpr);
+        ncvslideio::gapi::wip::draw::drawPrimitivesOCVYUV(yuv, prims, state.ftpr);
 
         // YUV -> NV12
-        cv::Mat out_u, out_v, uv_plane;
-        std::vector<cv::Mat> chs = {out_y, out_u, out_v};
-        cv::split(yuv, chs);
-        cv::merge(std::vector<cv::Mat>{chs[1], chs[2]}, uv_plane);
-        cv::resize(uv_plane, out_uv, uv_plane.size() / 2, cv::INTER_LINEAR);
+        ncvslideio::Mat out_u, out_v, uv_plane;
+        std::vector<ncvslideio::Mat> chs = {out_y, out_u, out_v};
+        ncvslideio::split(yuv, chs);
+        ncvslideio::merge(std::vector<ncvslideio::Mat>{chs[1], chs[2]}, uv_plane);
+        ncvslideio::resize(uv_plane, out_uv, uv_plane.size() / 2, ncvslideio::INTER_LINEAR);
     }
 
-    static void setup(const cv::GMatDesc&   /* in_y  */,
-                      const cv::GMatDesc&   /* in_uv */,
-                      const cv::GArrayDesc& /* prims */,
+    static void setup(const ncvslideio::GMatDesc&   /* in_y  */,
+                      const ncvslideio::GMatDesc&   /* in_uv */,
+                      const ncvslideio::GArrayDesc& /* prims */,
                       std::shared_ptr<RenderOCVState>& state,
-                      const cv::GCompileArgs& args)
+                      const ncvslideio::GCompileArgs& args)
     {
-        using namespace cv::gapi::wip::draw;
-        auto has_freetype_font = cv::gapi::getCompileArg<freetype_font>(args);
+        using namespace ncvslideio::gapi::wip::draw;
+        auto has_freetype_font = ncvslideio::gapi::getCompileArg<freetype_font>(args);
         state = std::make_shared<RenderOCVState>();
 
         if (has_freetype_font)
@@ -114,26 +114,26 @@ GAPI_OCV_KERNEL_ST(RenderNV12OCVImpl, cv::gapi::wip::draw::GRenderNV12, RenderOC
     }
 };
 
-GAPI_OCV_KERNEL_ST(RenderFrameOCVImpl, cv::gapi::wip::draw::GRenderFrame, RenderOCVState)
+GAPI_OCV_KERNEL_ST(RenderFrameOCVImpl, ncvslideio::gapi::wip::draw::GRenderFrame, RenderOCVState)
 {
-    static void run(const cv::MediaFrame & in,
-                    const cv::gapi::wip::draw::Prims & prims,
-                    cv::MediaFrame & out,
+    static void run(const ncvslideio::MediaFrame & in,
+                    const ncvslideio::gapi::wip::draw::Prims & prims,
+                    ncvslideio::MediaFrame & out,
                     RenderOCVState & state)
     {
-        GAPI_Assert(in.desc().fmt == cv::MediaFormat::NV12);
+        GAPI_Assert(in.desc().fmt == ncvslideio::MediaFormat::NV12);
 
         // FIXME: consider a better approach (aka native inplace operation)
         // Non-intuitive logic with shared_ptr Priv class
         out = in;
 
         auto desc = out.desc();
-        cv::Mat upsample_uv, yuv;
+        ncvslideio::Mat upsample_uv, yuv;
         {
-            auto r_in = in.access(cv::MediaFrame::Access::R);
+            auto r_in = in.access(ncvslideio::MediaFrame::Access::R);
 
-            auto in_y = cv::Mat(desc.size, CV_8UC1, r_in.ptr[0], r_in.stride[0]);
-            auto in_uv = cv::Mat(desc.size / 2, CV_8UC2, r_in.ptr[1], r_in.stride[1]);
+            auto in_y = ncvslideio::Mat(desc.size, CV_8UC1, r_in.ptr[0], r_in.stride[0]);
+            auto in_uv = ncvslideio::Mat(desc.size / 2, CV_8UC2, r_in.ptr[1], r_in.stride[1]);
 
         /* FIXME How to render correctly on NV12 format ?
          *
@@ -155,34 +155,34 @@ GAPI_OCV_KERNEL_ST(RenderFrameOCVImpl, cv::gapi::wip::draw::GRenderFrame, Render
          */
 
             // NV12 -> YUV
-            cv::resize(in_uv, upsample_uv, in_uv.size() * 2, cv::INTER_LINEAR);
-            cv::merge(std::vector<cv::Mat>{in_y, upsample_uv}, yuv);
+            ncvslideio::resize(in_uv, upsample_uv, in_uv.size() * 2, ncvslideio::INTER_LINEAR);
+            ncvslideio::merge(std::vector<ncvslideio::Mat>{in_y, upsample_uv}, yuv);
         }
 
-        cv::gapi::wip::draw::drawPrimitivesOCVYUV(yuv, prims, state.ftpr);
+        ncvslideio::gapi::wip::draw::drawPrimitivesOCVYUV(yuv, prims, state.ftpr);
 
         // YUV -> NV12
         {
-            auto w_out = out.access(cv::MediaFrame::Access::W);
+            auto w_out = out.access(ncvslideio::MediaFrame::Access::W);
 
-            auto out_y = cv::Mat(desc.size, CV_8UC1, w_out.ptr[0], w_out.stride[0]);
-            auto out_uv = cv::Mat(desc.size / 2, CV_8UC2, w_out.ptr[1], w_out.stride[1]);
+            auto out_y = ncvslideio::Mat(desc.size, CV_8UC1, w_out.ptr[0], w_out.stride[0]);
+            auto out_uv = ncvslideio::Mat(desc.size / 2, CV_8UC2, w_out.ptr[1], w_out.stride[1]);
 
-            cv::Mat out_u, out_v, uv_plane;
-            std::vector<cv::Mat> chs = { out_y, out_u, out_v };
-            cv::split(yuv, chs);
-            cv::merge(std::vector<cv::Mat>{chs[1], chs[2]}, uv_plane);
-            cv::resize(uv_plane, out_uv, uv_plane.size() / 2, cv::INTER_LINEAR);
+            ncvslideio::Mat out_u, out_v, uv_plane;
+            std::vector<ncvslideio::Mat> chs = { out_y, out_u, out_v };
+            ncvslideio::split(yuv, chs);
+            ncvslideio::merge(std::vector<ncvslideio::Mat>{chs[1], chs[2]}, uv_plane);
+            ncvslideio::resize(uv_plane, out_uv, uv_plane.size() / 2, ncvslideio::INTER_LINEAR);
         }
     }
 
-    static void setup(const cv::GFrameDesc&   /* in_nv12  */,
-        const cv::GArrayDesc& /* prims */,
+    static void setup(const ncvslideio::GFrameDesc&   /* in_nv12  */,
+        const ncvslideio::GArrayDesc& /* prims */,
         std::shared_ptr<RenderOCVState>&state,
-        const cv::GCompileArgs & args)
+        const ncvslideio::GCompileArgs & args)
     {
-        using namespace cv::gapi::wip::draw;
-        auto has_freetype_font = cv::gapi::getCompileArg<freetype_font>(args);
+        using namespace ncvslideio::gapi::wip::draw;
+        auto has_freetype_font = ncvslideio::gapi::getCompileArg<freetype_font>(args);
         state = std::make_shared<RenderOCVState>();
 
         if (has_freetype_font)
@@ -193,8 +193,8 @@ GAPI_OCV_KERNEL_ST(RenderFrameOCVImpl, cv::gapi::wip::draw::GRenderFrame, Render
 };
 
 
-cv::GKernelPackage cv::gapi::render::ocv::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::render::ocv::kernels()
 {
-    const static auto pkg = cv::gapi::kernels<RenderBGROCVImpl, RenderNV12OCVImpl, RenderFrameOCVImpl>();
+    const static auto pkg = ncvslideio::gapi::kernels<RenderBGROCVImpl, RenderNV12OCVImpl, RenderFrameOCVImpl>();
     return pkg;
 }

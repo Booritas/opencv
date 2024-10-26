@@ -30,7 +30,7 @@ class MyData:
 
     ## [inside]
     def write(self, fs, name):
-        fs.startWriteStruct(name, cv.FileNode_MAP|cv.FileNode_FLOW)
+        fs.startWriteStruct(name, ncvslideio.FileNode_MAP|ncvslideio.FileNode_FLOW)
         fs.write('A', self.A)
         fs.write('X', self.X)
         fs.write('name', self.name)
@@ -63,10 +63,10 @@ def main(argv):
     ## [customIOi]
 
     ## [open]
-    s = cv.FileStorage(filename, cv.FileStorage_WRITE)
+    s = ncvslideio.FileStorage(filename, ncvslideio.FileStorage_WRITE)
     # or:
-    # s = cv.FileStorage()
-    # s.open(filename, cv.FileStorage_WRITE)
+    # s = ncvslideio.FileStorage()
+    # s.open(filename, ncvslideio.FileStorage_WRITE)
     ## [open]
 
     ## [writeNum]
@@ -74,14 +74,14 @@ def main(argv):
     ## [writeNum]
 
     ## [writeStr]
-    s.startWriteStruct('strings', cv.FileNode_SEQ)
+    s.startWriteStruct('strings', ncvslideio.FileNode_SEQ)
     for elem in ['image1.jpg', 'Awesomeness', '../data/baboon.jpg']:
         s.write('', elem)
     s.endWriteStruct()
     ## [writeStr]
 
     ## [writeMap]
-    s.startWriteStruct('Mapping', cv.FileNode_MAP)
+    s.startWriteStruct('Mapping', ncvslideio.FileNode_MAP)
     s.write('One', 1)
     s.write('Two', 2)
     s.endWriteStruct()
@@ -102,8 +102,8 @@ def main(argv):
 
     # read
     print ('\nReading: ')
-    s = cv.FileStorage()
-    s.open(filename, cv.FileStorage_READ)
+    s = ncvslideio.FileStorage()
+    s.open(filename, ncvslideio.FileStorage_READ)
 
     ## [readNum]
     n = s.getNode('iterationNr')

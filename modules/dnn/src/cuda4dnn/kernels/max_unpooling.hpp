@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     template <class T>
     void max_pooling_with_indices(
@@ -27,6 +27,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
         const std::vector<std::size_t>& window_size, const std::vector<std::size_t>& strides,
         const std::vector<std::size_t>& padding_left);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_KERNELS_MAX_UNPOOLING_HPP */

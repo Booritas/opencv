@@ -17,7 +17,7 @@
 #include "../op_cuda.hpp"
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/instance_norm.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
 // OpenCL backend
@@ -26,7 +26,7 @@ using namespace cv::dnn::cuda4dnn;
 #include "opencl_kernels_dnn.hpp"
 #endif
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 // https://github.com/onnx/onnx/blob/main/docs/Operators.md#InstanceNormalization
 class InstanceNormLayerImpl CV_FINAL : public InstanceNormLayer {
@@ -270,4 +270,4 @@ Ptr<InstanceNormLayer> InstanceNormLayer::create(const LayerParams &params) {
     return Ptr<InstanceNormLayer>(new InstanceNormLayerImpl(params));
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

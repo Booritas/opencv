@@ -77,11 +77,11 @@ OCL_TEST_P(PyrLKOpticalFlow, Mat)
     static const float eps = 0.03f;
     static const float erreps = 0.1f;
 
-    cv::Mat frame0 = readImage("optflow/RubberWhale1.png", cv::IMREAD_GRAYSCALE);
+    ncvslideio::Mat frame0 = readImage("optflow/RubberWhale1.png", ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame0.empty());
     UMat umatFrame0; frame0.copyTo(umatFrame0);
 
-    cv::Mat frame1 = readImage("optflow/RubberWhale2.png", cv::IMREAD_GRAYSCALE);
+    ncvslideio::Mat frame1 = readImage("optflow/RubberWhale2.png", ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(frame1.empty());
     UMat umatFrame1; frame1.copyTo(umatFrame1);
 
@@ -94,17 +94,17 @@ OCL_TEST_P(PyrLKOpticalFlow, Mat)
     }
 #endif
 
-    std::vector<cv::Point2f> pts;
-    cv::goodFeaturesToTrack(frame0, pts, npoints, 0.01, 0.0);
+    std::vector<ncvslideio::Point2f> pts;
+    ncvslideio::goodFeaturesToTrack(frame0, pts, npoints, 0.01, 0.0);
 
-    std::vector<cv::Point2f> cpuNextPts;
+    std::vector<ncvslideio::Point2f> cpuNextPts;
     std::vector<unsigned char> cpuStatusCPU;
     std::vector<float> cpuErr;
-    OCL_OFF(cv::calcOpticalFlowPyrLK(frame0, frame1, pts, cpuNextPts, cpuStatusCPU, cpuErr, winSize, maxLevel, criteria, flags, minEigThreshold));
+    OCL_OFF(ncvslideio::calcOpticalFlowPyrLK(frame0, frame1, pts, cpuNextPts, cpuStatusCPU, cpuErr, winSize, maxLevel, criteria, flags, minEigThreshold));
 
     UMat umatNextPts, umatStatus, umatErr;
-    OCL_ON(cv::calcOpticalFlowPyrLK(umatFrame0, umatFrame1, pts, umatNextPts, umatStatus, umatErr, winSize, maxLevel, criteria, flags, minEigThreshold));
-    std::vector<cv::Point2f> nextPts; umatNextPts.reshape(2, 1).copyTo(nextPts);
+    OCL_ON(ncvslideio::calcOpticalFlowPyrLK(umatFrame0, umatFrame1, pts, umatNextPts, umatStatus, umatErr, winSize, maxLevel, criteria, flags, minEigThreshold));
+    std::vector<ncvslideio::Point2f> nextPts; umatNextPts.reshape(2, 1).copyTo(nextPts);
     std::vector<unsigned char> status; umatStatus.reshape(1, 1).copyTo(status);
     std::vector<float> err; umatErr.reshape(1, 1).copyTo(err);
 
@@ -124,8 +124,8 @@ OCL_TEST_P(PyrLKOpticalFlow, Mat)
 
         if (status[i])
         {
-            cv::Point2i a = nextPts[i];
-            cv::Point2i b = cpuNextPts[i];
+            ncvslideio::Point2i a = nextPts[i];
+            ncvslideio::Point2i b = cpuNextPts[i];
 
             bool eq = std::abs(a.x - b.x) < 1 && std::abs(a.y - b.y) < 1;
             float errdiff = 0.0f;

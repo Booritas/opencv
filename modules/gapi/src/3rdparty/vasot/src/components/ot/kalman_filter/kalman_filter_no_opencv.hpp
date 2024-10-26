@@ -29,17 +29,17 @@ class KalmanFilterNoOpencv {
      * matrix. If you consider the detection method is enough reliable, it is recommended to use lower ratio value than
      * the default value.
      * @code
-     *      cv::Rect2f input_rect(50.f, 50.f, 100.f, 100.f);
-     *      cv::Rect2f predicted, corrected;
+     *      ncvslideio::Rect2f input_rect(50.f, 50.f, 100.f, 100.f);
+     *      ncvslideio::Rect2f predicted, corrected;
      *      vas::KalmanFilter kalman_filter = new vas::KalmanFilter(input_rect);
      *      predicted = kalman_filter->Predict();
-     *      corrected = kalman_filter->Correct(cv::Rect(52, 52, 105, 105));
+     *      corrected = kalman_filter->Correct(ncvslideio::Rect(52, 52, 105, 105));
      *      delete kalman_filter;
      * @endcode
      * @param
      *      initial_rect                        Initial rectangular coordinates
      */
-    explicit KalmanFilterNoOpencv(const cv::Rect2f &initial_rect);
+    explicit KalmanFilterNoOpencv(const ncvslideio::Rect2f &initial_rect);
     KalmanFilterNoOpencv() = delete;
 
     KalmanFilterNoOpencv(const KalmanFilterNoOpencv &) = delete;
@@ -53,12 +53,12 @@ class KalmanFilterNoOpencv {
      * This function computes a predicted state.
      * input 'delta_t' is not used.
      */
-    cv::Rect2f Predict(float delta_t = 0.033f);
+    ncvslideio::Rect2f Predict(float delta_t = 0.033f);
 
     /*
      * This function updates the predicted state from the measurement.
      */
-    cv::Rect2f Correct(const cv::Rect2f &detect_rect);
+    ncvslideio::Rect2f Correct(const ncvslideio::Rect2f &detect_rect);
 
   private:
     struct kalmanfilter1d32i {

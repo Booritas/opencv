@@ -3,7 +3,7 @@
 #include "opencv2/core/cuda/common.hpp"
 #include "opencv2/core/types.hpp"
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     namespace blend
     {
@@ -25,7 +25,7 @@ namespace cv { namespace cuda { namespace device
         }
 
         void addSrcWeightGpu16S(const PtrStep<short> src, const PtrStep<short> src_weight,
-            PtrStep<short> dst, PtrStep<short> dst_weight, cv::Rect &rc)
+            PtrStep<short> dst, PtrStep<short> dst_weight, ncvslideio::Rect &rc)
         {
             dim3 threads(16, 16);
             dim3 grid(divUp(rc.width, threads.x), divUp(rc.height, threads.y));
@@ -51,7 +51,7 @@ namespace cv { namespace cuda { namespace device
         }
 
         void addSrcWeightGpu32F(const PtrStep<short> src, const PtrStepf src_weight,
-            PtrStep<short> dst, PtrStepf dst_weight, cv::Rect &rc)
+            PtrStep<short> dst, PtrStepf dst_weight, ncvslideio::Rect &rc)
         {
             dim3 threads(16, 16);
             dim3 grid(divUp(rc.width, threads.x), divUp(rc.height, threads.y));

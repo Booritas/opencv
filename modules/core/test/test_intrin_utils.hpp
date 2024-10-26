@@ -226,7 +226,7 @@ template<typename R> struct TheTest
         v_store(out.u.d, r_low);
         for (int i = 0; i < VTraits<R>::vlanes()/2; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)data.u[i], (LaneType)out.u[i]);
         }
 
@@ -235,7 +235,7 @@ template<typename R> struct TheTest
         v_store(out.u.d, r_low_align8byte);
         for (int i = 0; i < VTraits<R>::vlanes()/2; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)data.u[i + VTraits<R>::vlanes()/2], (LaneType)out.u[i]);
         }
 
@@ -266,7 +266,7 @@ template<typename R> struct TheTest
         resV.fill((LaneType)8);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)0, resZ[i]);
             EXPECT_EQ((LaneType)8, resV[i]);
         }
@@ -309,7 +309,7 @@ template<typename R> struct TheTest
         Data<R> setall_resz_; v_store(setall_resz_.d, setall_resz);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)5, setall_res1_[i]);
             EXPECT_EQ((LaneType)6, setall_res2_[i]);
             EXPECT_EQ((LaneType)7, setall_res3_[i]);
@@ -323,7 +323,7 @@ template<typename R> struct TheTest
         Data<R> vx_setall_res2_; v_store(vx_setall_res2_.d, vx_setall_res2);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)11, vx_setall_res1_[i]);
             EXPECT_EQ((LaneType)12, vx_setall_res2_[i]);
         }
@@ -373,7 +373,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(data1, Data<R>(a));
             EXPECT_EQ(data2, Data<R>(b));
             EXPECT_EQ(data3, Data<R>(c));
@@ -394,7 +394,7 @@ template<typename R> struct TheTest
         Data<R> resQ = v_interleave_quads(a);
         for (int i = 0; i < VTraits<R>::vlanes()/4; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(resP[4*i],     dataA[4*i  ]);
             EXPECT_EQ(resP[4*i + 1], dataA[4*i+2]);
             EXPECT_EQ(resP[4*i + 2], dataA[4*i+1]);
@@ -402,7 +402,7 @@ template<typename R> struct TheTest
         }
         for (int i = 0; i < VTraits<R>::vlanes()/8; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(resQ[8*i],     dataA[8*i  ]);
             EXPECT_EQ(resQ[8*i + 1], dataA[8*i+4]);
             EXPECT_EQ(resQ[8*i + 2], dataA[8*i+1]);
@@ -434,7 +434,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(data1, Data<R>(a));
             EXPECT_EQ(data2, Data<R>(b));
         }
@@ -461,7 +461,7 @@ template<typename R> struct TheTest
         const int n = VTraits<Rx2>::vlanes();
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i], resB[i]);
             EXPECT_EQ(dataA[i], resC[i]);
             EXPECT_EQ(dataA[i + n], resD[i]);
@@ -480,7 +480,7 @@ template<typename R> struct TheTest
         const int n = VTraits<Rx4>::vlanes();
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(data[i], out[i]);
         }
 
@@ -497,7 +497,7 @@ template<typename R> struct TheTest
         Data<R> resD = v_add(a, b), resE = v_add(a, b, c), resF = v_sub(a, b);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(saturate_cast<LaneType>(dataA[i] + dataB[i]), resD[i]);
             EXPECT_EQ(saturate_cast<LaneType>(dataA[i] + dataB[i] + dataC[i]), resE[i]);
             EXPECT_EQ(saturate_cast<LaneType>(dataA[i] - dataB[i]), resF[i]);
@@ -517,7 +517,7 @@ template<typename R> struct TheTest
                 resE = v_mul_wrap(a, b);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((LaneType)(dataA[i] + dataB[i]), resC[i]);
             EXPECT_EQ((LaneType)(dataA[i] - dataB[i]), resD[i]);
             EXPECT_EQ((LaneType)(dataA[i] * dataB[i]), resE[i]);
@@ -536,7 +536,7 @@ template<typename R> struct TheTest
         Data<R> resE = v_mul(a, b, c);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(saturate_cast<LaneType>(dataA[i] * dataB[i]), resD[i]);
             EXPECT_EQ(saturate_cast<LaneType>(dataA[i] * dataB[i] * dataC[i]), resE[i]);
         }
@@ -553,7 +553,7 @@ template<typename R> struct TheTest
         Data<R> resC = v_div(a, b);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i] / dataB[i], resC[i]);
         }
 
@@ -573,7 +573,7 @@ template<typename R> struct TheTest
         const int n = VTraits<R>::vlanes() / 2;
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((typename VTraits<Rx2>::lane_type)dataA[i] * dataB[i], resC[i]);
             EXPECT_EQ((typename VTraits<Rx2>::lane_type)dataA[i + n] * dataB[i + n], resD[i]);
         }
@@ -593,7 +593,7 @@ template<typename R> struct TheTest
         const int n = VTraits<R>::vlanes() / 2;
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((typename VTraits<R>::lane_type)((dataA[i] * dataB[i]) >> 16), resC[i]);
         }
 
@@ -613,7 +613,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<Ru>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             R_type ssub = dataA[i] - dataB[i] < std::numeric_limits<R_type>::lowest() ? std::numeric_limits<R_type>::lowest() : dataA[i] - dataB[i];
             EXPECT_EQ((u_type)std::abs(ssub), resC[i]);
         }
@@ -633,7 +633,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(static_cast<LaneType>(dataA[i] << s), resB[i]);
             EXPECT_EQ(static_cast<LaneType>(dataA[i] << s), resC[i]);
             EXPECT_EQ(static_cast<LaneType>(dataA[i] >> s), resD[i]);
@@ -658,7 +658,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i] == dataB[i], resC[i] != 0);
             EXPECT_EQ(dataA[i] != dataB[i], resD[i] != 0);
             EXPECT_EQ(dataA[i] >  dataB[i], resE[i] != 0);
@@ -692,7 +692,7 @@ template<typename R> struct TheTest
         w_type sumAB = 0, sumABC = 0, tmp_sum;
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
 
             tmp_sum = (w_type)dataA[i*2] * (w_type)dataB[i*2] +
                       (w_type)dataA[i*2 + 1] * (w_type)dataB[i*2 + 1];
@@ -730,7 +730,7 @@ template<typename R> struct TheTest
         l4_type sumAB = 0, sumABC = 0, tmp_sum;
         for (int i = 0; i < VTraits<Rx4>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             tmp_sum  = (l4_type)dataA[i*4]     * (l4_type)dataB[i*4]     +
                        (l4_type)dataA[i*4 + 1] * (l4_type)dataB[i*4 + 1] +
                        (l4_type)dataA[i*4 + 2] * (l4_type)dataB[i*4 + 2] +
@@ -769,7 +769,7 @@ template<typename R> struct TheTest
         const int n = VTraits<R>::vlanes() / 2;
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_COMPARE_EQ((double)dataA[i*2]     * (double)dataA[i*2] +
                               (double)dataA[i*2 + 1] * (double)dataA[i*2  + 1], resA[i]);
             EXPECT_COMPARE_EQ((double)dataB[i*2]     * (double)dataB[i*2] +
@@ -789,7 +789,7 @@ template<typename R> struct TheTest
         Data<R> resC = v_and(a, b), resD = v_or(a, b), resE = v_xor(a, b), resF = v_not(a);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i] & dataB[i], resC[i]);
             EXPECT_EQ(dataA[i] | dataB[i], resD[i]);
             EXPECT_EQ(dataA[i] ^ dataB[i], resE[i]);
@@ -808,7 +808,7 @@ template<typename R> struct TheTest
         Data<R> resB = v_sqrt(a), resC = v_invsqrt(a), resE = v_abs(d);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_COMPARE_EQ((float)std::sqrt(dataA[i]), (float)resB[i]);
             EXPECT_COMPARE_EQ((float)(1/std::sqrt(dataA[i])), (float)resC[i]);
             EXPECT_COMPARE_EQ((float)abs(dataA[i]), (float)resE[i]);
@@ -826,7 +826,7 @@ template<typename R> struct TheTest
         Data<R> resC = v_min(a, b), resD = v_max(a, b);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(std::min(dataA[i], dataB[i]), resC[i]);
             EXPECT_EQ(std::max(dataA[i], dataB[i]), resD[i]);
         }
@@ -873,7 +873,7 @@ template<typename R> struct TheTest
         const u_type mask = std::numeric_limits<LaneType>::is_signed ? (u_type)(1 << (sizeof(u_type)*8 - 1)) : 0;
         for (int i = 0; i < VTraits<Ru>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             u_type uA = dataA[i] ^ mask;
             u_type uB = dataB[i] ^ mask;
             EXPECT_EQ(uA > uB ? uA - uB : uB - uA, resC[i]);
@@ -893,7 +893,7 @@ template<typename R> struct TheTest
         Data<R> resC = v_absdiff(a, b);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i] > dataB[i] ? dataA[i] - dataB[i] : dataB[i] - dataA[i], resC[i]);
         }
         return *this;
@@ -1001,7 +1001,7 @@ template<typename R> struct TheTest
         Data<R> resF = f;
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             int_type m2 = dataB.as_int(i);
             EXPECT_EQ((dataD.as_int(i) & m2) | (dataE.as_int(i) & ~m2), resF.as_int(i));
         }
@@ -1034,7 +1034,7 @@ template<typename R> struct TheTest
         const w_type add = (w_type)1 << (s - 1);
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(pack_saturate_cast<LaneType>(dataA[i]), resC[i]);
             EXPECT_EQ(pack_saturate_cast<LaneType>(dataB[i]), resC[i + n]);
             EXPECT_EQ(pack_saturate_cast<LaneType>((dataA[i] + add) >> s), resD[i]);
@@ -1055,7 +1055,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes()/4; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[4*i],   res[3*i]);
             EXPECT_EQ(dataA[4*i+1], res[3*i+1]);
             EXPECT_EQ(dataA[4*i+2], res[3*i+2]);
@@ -1091,7 +1091,7 @@ template<typename R> struct TheTest
         const w_type add = (w_type)1 << (s - 1);
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(pack_saturate_cast<LaneType>(dataA[i]), resC[i]);
             EXPECT_EQ(pack_saturate_cast<LaneType>(dataB[i]), resC[i + n]);
             EXPECT_EQ(pack_saturate_cast<LaneType>((dataA[i] + add) >> s), resD[i]);
@@ -1118,7 +1118,7 @@ template<typename R> struct TheTest
         Data<R> res  = v_pack_b(v_reinterpret_as_u16(a), v_reinterpret_as_u16(b));
         for (int i = 0; i < VTraits<v_uint16>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(maskA[i * 2], res[i]);
             EXPECT_EQ(maskB[i * 2], res[i + VTraits<v_uint16>::vlanes()]);
         }
@@ -1139,7 +1139,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<v_uint32>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(maskA[i * 4], res[i]);
             EXPECT_EQ(maskB[i * 4], res[i + VTraits<v_uint32>::vlanes()]);
             EXPECT_EQ(maskC[i * 4], res[i + VTraits<v_uint32>::vlanes() * 2]);
@@ -1164,7 +1164,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<v_uint64>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(maskA[i * 8], res[i]);
             EXPECT_EQ(maskB[i * 8], res[i + VTraits<v_uint64>::vlanes()]);
             EXPECT_EQ(maskC[i * 8], res[i + VTraits<v_uint64>::vlanes() * 2]);
@@ -1196,7 +1196,7 @@ template<typename R> struct TheTest
         const int n = VTraits<R>::vlanes()/2;
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[i], resC[i*2]);
             EXPECT_EQ(dataB[i], resC[i*2+1]);
             EXPECT_EQ(dataA[i+n], resD[i*2]);
@@ -1225,7 +1225,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(dataA[VTraits<R>::vlanes() - i - 1], resB[i]);
         }
 
@@ -1244,7 +1244,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             if (i + s >= VTraits<R>::vlanes())
                 EXPECT_EQ(dataB[i - VTraits<R>::vlanes() + s], resC[i]);
             else
@@ -1270,7 +1270,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             if (i + s >= VTraits<R>::vlanes())
             {
                 EXPECT_EQ((LaneType)0, resC[i]);
@@ -1377,7 +1377,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ(cvRound(data1[i]), resB[i]);
             EXPECT_EQ(cvRound(data1_border[i]), resB_border[i]);
             EXPECT_EQ((typename VTraits<Ri>::lane_type)data1[i], resC[i]);
@@ -1430,7 +1430,7 @@ template<typename R> struct TheTest
         int n = std::min<int>(VTraits<Rt>::vlanes(), VTraits<R>::vlanes());
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((typename VTraits<Rt>::lane_type)dataA[i], resB[i]);
         }
         return *this;
@@ -1450,12 +1450,12 @@ template<typename R> struct TheTest
         int n = std::min<int>(VTraits<Rt>::vlanes(), VTraits<R>::vlanes());
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((typename VTraits<Rt>::lane_type)dataA[i], resB[i]);
         }
         for (int i = 0; i < n; ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((typename VTraits<Rt>::lane_type)dataA[i+n], resC[i]);
         }
 #endif
@@ -1477,7 +1477,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_EQ((double)dataA[i], resC[i]);
             EXPECT_EQ((double)dataB[i], resD[i]);
         }
@@ -1499,7 +1499,7 @@ template<typename R> struct TheTest
             int i = 0;
             for (int j = i; j < i + 4; ++j)
             {
-                SCOPED_TRACE(cv::format("i=%d j=%d", i, j));
+                SCOPED_TRACE(ncvslideio::format("i=%d j=%d", i, j));
                 LaneType val = dataV[i]     * dataA[j]
                              + dataV[i + 1] * dataB[j]
                              + dataV[i + 2] * dataC[j]
@@ -1514,7 +1514,7 @@ template<typename R> struct TheTest
             i = 0;
             for (int j = i; j < i + 4; ++j)
             {
-                SCOPED_TRACE(cv::format("i=%d j=%d", i, j));
+                SCOPED_TRACE(ncvslideio::format("i=%d j=%d", i, j));
                 LaneType val = dataV[i]     * dataA[j]
                              + dataV[i + 1] * dataB[j]
                              + dataV[i + 2] * dataC[j]
@@ -1572,7 +1572,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); i += 4)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             EXPECT_COMPARE_EQ(dataA.sum(i, 4), res[i]);
             EXPECT_COMPARE_EQ(dataB.sum(i, 4), res[i + 1]);
             EXPECT_COMPARE_EQ(dataC.sum(i, 4), res[i + 2]);
@@ -1590,14 +1590,14 @@ template<typename R> struct TheTest
         AlignedData<v_float32> data_f32; data_f32.a.clear();
         AlignedData<v_uint16> out;
 
-        R r1 = vx_load_expand((const cv::hfloat*)data.a.d);
+        R r1 = vx_load_expand((const ncvslideio::hfloat*)data.a.d);
         R r2(r1);
         EXPECT_EQ(1.0f, v_get0(r1));
         v_store(data_f32.a.d, r2);
         EXPECT_EQ(-2.0f, data_f32.a.d[VTraits<R>::vlanes() - 1]);
 
         out.a.clear();
-        v_pack_store((cv::hfloat*)out.a.d, r2);
+        v_pack_store((ncvslideio::hfloat*)out.a.d, r2);
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
             EXPECT_EQ(data.a[i], out.a[i]) << "i=" << i;
@@ -1660,7 +1660,7 @@ template<typename R> struct TheTest
 
         for (int i = 0; i < VTraits<R>::vlanes(); ++i)
         {
-            SCOPED_TRACE(cv::format("i=%d", i));
+            SCOPED_TRACE(ncvslideio::format("i=%d", i));
             if (cvtest::debugLevel > 0) cout << "i=" << i << " ( " << dataA[i] << " vs " << dataB[i] << " ): eq=" << dataEQ[i] << " ne=" << dataNE[i] << endl;
             EXPECT_NE((LaneType)dataEQ[i], (LaneType)dataNE[i]);
             if (dataA[i] == dataB[i])
@@ -1720,7 +1720,7 @@ template<typename R> struct TheTest
             resOverflow = v_exp(upperBound);
             resUnderflow = v_exp(lowerBound);
             for (int j = 0; j < n; ++j) {
-                SCOPED_TRACE(cv::format("Overflow/Underflow test value: %f", i));
+                SCOPED_TRACE(ncvslideio::format("Overflow/Underflow test value: %f", i));
                 EXPECT_TRUE(resOverflow[j] > 0 && std::isinf(resOverflow[j]));
                 EXPECT_GE(resUnderflow[j], 0);
                 EXPECT_LT(resUnderflow[j], flt_min);
@@ -1731,7 +1731,7 @@ template<typename R> struct TheTest
         std::vector<LaneType> specialValues = {0, 1, INFINITY, -INFINITY, NAN, dataMax};
         const int testRandNum = 10000;
         const double specialValueProbability = 0.1; // 10% chance to insert a special value
-        cv::RNG_MT19937 rng;
+        ncvslideio::RNG_MT19937 rng;
 
         for (int i = 0; i < testRandNum; i++) {
             Data<R> dataRand, resRand;
@@ -1749,7 +1749,7 @@ template<typename R> struct TheTest
             R x = dataRand;
             resRand = v_exp(x);
             for (int j = 0; j < n; ++j) {
-                SCOPED_TRACE(cv::format("Random test value: %f", dataRand[j]));
+                SCOPED_TRACE(ncvslideio::format("Random test value: %f", dataRand[j]));
                 LaneType std_exp = std::exp(dataRand[j]);
                 if (dataRand[j] == 0) {
                     // input 0 -> output 1
@@ -1808,7 +1808,7 @@ template<typename R> struct TheTest
         std::vector<LaneType> specialValues = {0, 1, (LaneType) M_E, INFINITY, -INFINITY, NAN};
         const int testRandNum = 10000;
         const double specialValueProbability = 0.1; // 10% chance to insert a special value
-        cv::RNG_MT19937 rng;
+        ncvslideio::RNG_MT19937 rng;
 
         for (int i = 0; i < testRandNum; i++) {
             Data<R> dataRand, resRand;
@@ -1827,7 +1827,7 @@ template<typename R> struct TheTest
             R x = dataRand;
             resRand = v_log(x);
             for (int j = 0; j < n; ++j) {
-                SCOPED_TRACE(cv::format("Random test value: %f", dataRand[j]));
+                SCOPED_TRACE(ncvslideio::format("Random test value: %f", dataRand[j]));
                 LaneType std_log = std::log(dataRand[j]);
                 if (dataRand[j] == 0) {
                     // input 0 -> output -INF
@@ -1877,7 +1877,7 @@ template<typename R> struct TheTest
         constexpr int num_loops = 10000;
         const std::vector<LaneType> singular_inputs{INFINITY, -INFINITY, NAN};
         constexpr double insert_singular_input_probability = 0.1;
-        cv::RNG_MT19937 rng;
+        ncvslideio::RNG_MT19937 rng;
 
         for (int i = 0; i < num_loops; i++) {
             Data<R> inputs;
@@ -1894,7 +1894,7 @@ template<typename R> struct TheTest
 
             Data<R> outputs = v_erf(R(inputs));
             for (int j = 0; j < n; j++) {
-                SCOPED_TRACE(cv::format("Random test value: %f", inputs[j]));
+                SCOPED_TRACE(ncvslideio::format("Random test value: %f", inputs[j]));
                 if (std::isinf(inputs[j])) {
                     if (inputs[j] < 0) {
                         EXPECT_EQ(-1, outputs[j]);
@@ -1933,7 +1933,7 @@ template<typename R> struct TheTest
                 LaneType std_cos_pos = (LaneType) std::cos(dataPosPI[j]);
                 LaneType std_sin_neg = (LaneType) std::sin(dataNegPI[j]);
                 LaneType std_cos_neg = (LaneType) std::cos(dataNegPI[j]);
-                SCOPED_TRACE(cv::format("Period test value: %lf and %lf", (double) dataPosPI[j], (double) dataNegPI[j]));
+                SCOPED_TRACE(ncvslideio::format("Period test value: %lf and %lf", (double) dataPosPI[j], (double) dataNegPI[j]));
                 EXPECT_LT(std::abs(resSinPos[j] - std_sin_pos), diff_thr * (std::abs(std_sin_pos) + flt_min * 100));
                 EXPECT_LT(std::abs(resCosPos[j] - std_cos_pos), diff_thr * (std::abs(std_cos_pos) + flt_min * 100));
                 EXPECT_LT(std::abs(resSinNeg[j] - std_sin_neg), diff_thr * (std::abs(std_sin_neg) + flt_min * 100));
@@ -1945,7 +1945,7 @@ template<typename R> struct TheTest
         std::vector<LaneType> specialValues = {(LaneType) 0, (LaneType) M_PI, (LaneType) (M_PI / 2), (LaneType) INFINITY, (LaneType) -INFINITY, (LaneType) NAN};
         const int testRandNum = 10000;
         const double specialValueProbability = 0.1; // 10% chance to insert a special value
-        cv::RNG_MT19937 rng;
+        ncvslideio::RNG_MT19937 rng;
 
         for (int i = 0; i < testRandNum; i++) {
             Data<R> dataRand;
@@ -1965,7 +1965,7 @@ template<typename R> struct TheTest
             v_sincos(x, s, c);
             Data<R> resSin = s, resCos = c;
             for (int j = 0; j < n; ++j) {
-                SCOPED_TRACE(cv::format("Random test value: %lf", (double) dataRand[j]));
+                SCOPED_TRACE(ncvslideio::format("Random test value: %lf", (double) dataRand[j]));
                 LaneType std_sin = (LaneType) std::sin(dataRand[j]);
                 LaneType std_cos = (LaneType) std::cos(dataRand[j]);
                 // input NaN, +INF, -INF -> output NaN

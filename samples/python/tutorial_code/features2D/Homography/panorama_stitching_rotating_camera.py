@@ -8,8 +8,8 @@ import numpy as np
 import cv2 as cv
 
 def basicPanoramaStitching(img1Path, img2Path):
-    img1 = cv.imread(cv.samples.findFile(img1Path))
-    img2 = cv.imread(cv.samples.findFile(img2Path))
+    img1 = ncvslideio.imread(ncvslideio.samples.findFile(img1Path))
+    img2 = ncvslideio.imread(ncvslideio.samples.findFile(img2Path))
 
     # [camera-pose-from-Blender-at-location-1]
     c1Mo = np.array([[0.9659258723258972, 0.2588190734386444, 0.0, 1.5529145002365112],
@@ -45,16 +45,16 @@ def basicPanoramaStitching(img1Path, img2Path):
     # [compute-homography]
 
     # [stitch]
-    img_stitch = cv.warpPerspective(img2, H, (img2.shape[1]*2, img2.shape[0]))
+    img_stitch = ncvslideio.warpPerspective(img2, H, (img2.shape[1]*2, img2.shape[0]))
     img_stitch[0:img1.shape[0], 0:img1.shape[1]] = img1
     # [stitch]
 
     img_space = np.zeros((img1.shape[0],50,3), dtype=np.uint8)
-    img_compare = cv.hconcat([img1,img_space, img2])
+    img_compare = ncvslideio.hconcat([img1,img_space, img2])
 
-    cv.imshow("Final", img_compare)
-    cv.imshow("Panorama", img_stitch)
-    cv.waitKey(0)
+    ncvslideio.imshow("Final", img_compare)
+    ncvslideio.imshow("Panorama", img_stitch)
+    ncvslideio.waitKey(0)
 
 def main():
     import argparse

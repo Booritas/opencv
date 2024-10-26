@@ -7,7 +7,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 // Create a vector of points describing a rectangle with the given corners

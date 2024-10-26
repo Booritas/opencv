@@ -62,7 +62,7 @@
 #pragma warning(disable: 4459)  // declaration of '...' hides global declaration
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_basic
@@ -249,7 +249,7 @@ The following Point3_\<\> aliases are available:
     typedef Point3_<float> Point3f;
     typedef Point3_<double> Point3d;
 @endcode
-@see cv::Point3i, cv::Point3f and cv::Point3d
+@see ncvslideio::Point3i, ncvslideio::Point3f and ncvslideio::Point3d
 */
 template<typename _Tp> class Point3_
 {
@@ -272,7 +272,7 @@ public:
 #endif
     //! conversion to another data type
     template<typename _Tp2> operator Point3_<_Tp2>() const;
-    //! conversion to cv::Vec<>
+    //! conversion to ncvslideio::Vec<>
     operator Vec<_Tp, 3>() const;
 
     //! dot product
@@ -438,7 +438,7 @@ rect2):
         return (r1 & r2) == r1;
     }
 @endcode
-For your convenience, the Rect_\<\> alias is available: cv::Rect
+For your convenience, the Rect_\<\> alias is available: ncvslideio::Rect
 */
 template<typename _Tp> class Rect_
 {
@@ -475,7 +475,7 @@ public:
     template<typename _Tp2> operator Rect_<_Tp2>() const;
 
     //! checks whether the rectangle contains the point
-    /*! @warning After OpenCV 4.11.0, when calling Rect.contains() with cv::Point2f / cv::Point2d point, point should not convert/round to int.
+    /*! @warning After OpenCV 4.11.0, when calling Rect.contains() with ncvslideio::Point2f / ncvslideio::Point2d point, point should not convert/round to int.
      * ```
      * Rect_<int> r(0,0,500,500); Point_<float> pt(250.0f, 499.9f);
      * r.contains(pt) returns false.(OpenCV 4.10.0 or before)
@@ -931,7 +931,7 @@ public:
 //! @addtogroup imgproc_shape
 //! @{
 
-/** @brief struct returned by cv::moments
+/** @brief struct returned by ncvslideio::moments
 
 The spatial moments \f$\texttt{Moments::m}_{ji}\f$ are computed as:
 
@@ -2205,7 +2205,7 @@ Scalar_<_Tp>::Scalar_(const Vec<_Tp2, cn>& v)
 {
     int i;
     for( i = 0; i < (cn < 4 ? cn : 4); i++ )
-        this->val[i] = cv::saturate_cast<_Tp>(v.val[i]);
+        this->val[i] = ncvslideio::saturate_cast<_Tp>(v.val[i]);
     for( ; i < 4; i++ )
         this->val[i] = 0;
 }

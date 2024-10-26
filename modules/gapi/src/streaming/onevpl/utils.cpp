@@ -28,7 +28,7 @@
 #define DUMP_MEMBER(stream, object, member)                                    \
     stream << #member << ": " << object.member << "\n";
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -428,6 +428,6 @@ std::string ext_mem_frame_type_to_cstr(int type) {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL

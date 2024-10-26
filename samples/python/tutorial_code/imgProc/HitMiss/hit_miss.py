@@ -16,21 +16,21 @@ kernel = np.array((
         [1, -1, 1],
         [0, 1, 0]), dtype="int")
 
-output_image = cv.morphologyEx(input_image, cv.MORPH_HITMISS, kernel)
+output_image = ncvslideio.morphologyEx(input_image, ncvslideio.MORPH_HITMISS, kernel)
 
 rate = 50
 kernel = (kernel + 1) * 127
 kernel = np.uint8(kernel)
 
-kernel = cv.resize(kernel, None, fx = rate, fy = rate, interpolation = cv.INTER_NEAREST)
+kernel = ncvslideio.resize(kernel, None, fx = rate, fy = rate, interpolation = ncvslideio.INTER_NEAREST)
 cv.imshow("kernel", kernel)
 cv.moveWindow("kernel", 0, 0)
 
-input_image = cv.resize(input_image, None, fx = rate, fy = rate, interpolation = cv.INTER_NEAREST)
+input_image = ncvslideio.resize(input_image, None, fx = rate, fy = rate, interpolation = ncvslideio.INTER_NEAREST)
 cv.imshow("Original", input_image)
 cv.moveWindow("Original", 0, 200)
 
-output_image = cv.resize(output_image, None , fx = rate, fy = rate, interpolation = cv.INTER_NEAREST)
+output_image = ncvslideio.resize(output_image, None , fx = rate, fy = rate, interpolation = ncvslideio.INTER_NEAREST)
 cv.imshow("Hit or Miss", output_image)
 cv.moveWindow("Hit or Miss", 500, 200)
 

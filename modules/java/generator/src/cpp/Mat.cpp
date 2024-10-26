@@ -7,7 +7,7 @@
 #define LOG_TAG "org.opencv.core.Mat"
 #include "common.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 /// throw java exception
 static void throwJavaException(JNIEnv *env, const std::exception *e, const char *method) {
@@ -17,8 +17,8 @@ static void throwJavaException(JNIEnv *env, const std::exception *e, const char 
   if(e) {
     std::string exception_type = "std::exception";
 
-    if(dynamic_cast<const cv::Exception*>(e)) {
-      exception_type = "cv::Exception";
+    if(dynamic_cast<const ncvslideio::Exception*>(e)) {
+      exception_type = "ncvslideio::Exception";
       je = env->FindClass("org/opencv/core/CvException");
     }
 
@@ -59,7 +59,7 @@ JNIEXPORT jlong JNICALL Java_org_opencv_core_Mat_n_1Mat__
   (JNIEnv*, jclass)
 {
     LOGD("Mat::n_1Mat__()");
-    return (jlong) new cv::Mat();
+    return (jlong) new ncvslideio::Mat();
 }
 
 
@@ -635,7 +635,7 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_n_1dims
         LOGD("%s", method_name);
         Mat* me = (Mat*) self; //TODO: check for NULL
         return me->dims;
-    } catch(const cv::Exception& e) {
+    } catch(const ncvslideio::Exception& e) {
         throwJavaException(env, &e, method_name);
     } catch (...) {
         throwJavaException(env, 0, method_name);
@@ -2155,7 +2155,7 @@ namespace {
 #undef JOCvT
 }
 
-static size_t idx2Offset(cv::Mat* mat, std::vector<int>& indices) {
+static size_t idx2Offset(ncvslideio::Mat* mat, std::vector<int>& indices) {
     size_t offset = indices[0];
     for (int dim=1; dim < mat->dims; dim++) {
         offset = offset*mat->size[dim] + indices[dim];
@@ -2163,7 +2163,7 @@ static size_t idx2Offset(cv::Mat* mat, std::vector<int>& indices) {
     return offset;
 }
 
-static void offset2Idx(cv::Mat* mat, size_t offset, std::vector<int>& indices) {
+static void offset2Idx(ncvslideio::Mat* mat, size_t offset, std::vector<int>& indices) {
     for (int dim=mat->dims-1; dim>=0; dim--) {
         indices[dim] = offset % mat->size[dim];
         offset = (offset - indices[dim]) / mat->size[dim];
@@ -2171,7 +2171,7 @@ static void offset2Idx(cv::Mat* mat, size_t offset, std::vector<int>& indices) {
 }
 
 // returns true if final index was reached
-static bool updateIdx(cv::Mat* mat, std::vector<int>& indices, size_t inc) {
+static bool updateIdx(ncvslideio::Mat* mat, std::vector<int>& indices, size_t inc) {
     size_t currentOffset = idx2Offset(mat, indices);
     size_t newOffset = currentOffset + inc;
     bool reachedEnd = newOffset>=(size_t)mat->total();
@@ -2179,7 +2179,7 @@ static bool updateIdx(cv::Mat* mat, std::vector<int>& indices, size_t inc) {
     return reachedEnd;
 }
 
-template<typename T> static int mat_copy_data(cv::Mat* m, std::vector<int>& idx, int count, char* buff, bool isPut) {
+template<typename T> static int mat_copy_data(ncvslideio::Mat* m, std::vector<int>& idx, int count, char* buff, bool isPut) {
     if(! m) return 0;
     if(! buff) return 0;
 
@@ -2220,12 +2220,12 @@ template<typename T> static int mat_copy_data(cv::Mat* m, std::vector<int>& idx,
     return res;
 }
 
-template<typename T> static int mat_put_idx(cv::Mat* m, std::vector<int>& idx, int count, int offset, char* buff)
+template<typename T> static int mat_put_idx(ncvslideio::Mat* m, std::vector<int>& idx, int count, int offset, char* buff)
 {
     return mat_copy_data<T>(m, idx, count, buff + offset, true);
 }
 
-template<typename T> static int mat_put(cv::Mat* m, int row, int col, int count, int offset, char* buff)
+template<typename T> static int mat_put(ncvslideio::Mat* m, int row, int col, int count, int offset, char* buff)
 {
     int indicesArray[] = { row, col };
     std::vector<int> indices(indicesArray, indicesArray+2);
@@ -2237,7 +2237,7 @@ template<class ARRAY> static jint java_mat_put(JNIEnv* env, jlong self, jint row
     static const char *method_name = JavaOpenCVTrait<ARRAY>::put;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         if(me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_1 && me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_2) return 0; // incompatible type
         if(me->rows<=row || me->cols<=col) return 0; // indexes out of range
@@ -2260,7 +2260,7 @@ template<class ARRAY> static jint java_mat_put_idx(JNIEnv* env, jlong self, jint
     static const char *method_name = JavaOpenCVTrait<ARRAY>::put;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         if(me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_1 && me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_2) return 0; // incompatible type
         std::vector<int> idx = convertJintArrayToVector(env, idxArray);
@@ -2373,7 +2373,7 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutFIdx
 }
 
 // unlike other nPut()-s this one (with double[]) should convert input values to correct type
-#define PUT_ITEM(T, R, C) { T*dst = (T*)me->ptr(R, C); for(int ch=0; ch<me->channels() && count>0; count--,ch++,src++,dst++) *dst = cv::saturate_cast<T>(*src); }
+#define PUT_ITEM(T, R, C) { T*dst = (T*)me->ptr(R, C); for(int ch=0; ch<me->channels() && count>0; count--,ch++,src++,dst++) *dst = ncvslideio::saturate_cast<T>(*src); }
 
 JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutD
     (JNIEnv* env, jclass, jlong self, jint row, jint col, jint count, jdoubleArray vals);
@@ -2384,7 +2384,7 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutD
     static const char* method_name = JavaOpenCVTrait<jdoubleArray>::put;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(!me || !me->data) return 0;  // no native object behind
         if(me->rows<=row || me->cols<=col) return 0; // indexes out of range
 
@@ -2433,7 +2433,7 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutD
 }
 
 // unlike other nPut()-s this one (with double[]) should convert input values to correct type
-#define PUT_ITEM_IDX(T, I) { T*dst = (T*)me->ptr(I); for(int ch=0; ch<me->channels() && count>0; count--,ch++,src++,dst++) *dst = cv::saturate_cast<T>(*src); }
+#define PUT_ITEM_IDX(T, I) { T*dst = (T*)me->ptr(I); for(int ch=0; ch<me->channels() && count>0; count--,ch++,src++,dst++) *dst = ncvslideio::saturate_cast<T>(*src); }
 
 JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutDIdx
     (JNIEnv* env, jclass, jlong self, jintArray idxArray, jint count, jdoubleArray vals);
@@ -2444,7 +2444,7 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutDIdx
     static const char* method_name = JavaOpenCVTrait<jdoubleArray>::put;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(!me || !me->data) return 0;  // no native object behind
         std::vector<int> idx = convertJintArrayToVector(env, idxArray);
         for (int i=0; i<me->dims; i++) {
@@ -2484,12 +2484,12 @@ JNIEXPORT jint JNICALL Java_org_opencv_core_Mat_nPutDIdx
 
 } // extern "C"
 
-template<typename T> static int mat_get_idx(cv::Mat* m, std::vector<int>& idx, int count, char* buff)
+template<typename T> static int mat_get_idx(ncvslideio::Mat* m, std::vector<int>& idx, int count, char* buff)
 {
     return mat_copy_data<T>(m, idx, count, buff, false);
 }
 
-template<typename T> static int mat_get(cv::Mat* m, int row, int col, int count, char* buff)
+template<typename T> static int mat_get(ncvslideio::Mat* m, int row, int col, int count, char* buff)
 {
     int indicesArray[] = { row, col };
     std::vector<int> indices(indicesArray, indicesArray+2);
@@ -2500,7 +2500,7 @@ template<class ARRAY> static jint java_mat_get(JNIEnv* env, jlong self, jint row
     static const char *method_name = JavaOpenCVTrait<ARRAY>::get;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         if(me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_1 && me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_2) return 0; // incompatible type
         if(me->rows<=row || me->cols<=col) return 0; // indexes out of range
@@ -2522,7 +2522,7 @@ template<class ARRAY> static jint java_mat_get_idx(JNIEnv* env, jlong self, jint
     static const char *method_name = JavaOpenCVTrait<ARRAY>::get;
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         if(me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_1 && me->depth() != JavaOpenCVTrait<ARRAY>::cvtype_2) return 0; // incompatible type
         std::vector<int> idx = convertJintArrayToVector(env, idxArray);
@@ -2644,7 +2644,7 @@ JNIEXPORT jdoubleArray JNICALL Java_org_opencv_core_Mat_nGet
     static const char method_name[] = "Mat::nGet()";
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         if(me->rows<=row || me->cols<=col) return 0; // indexes out of range
 
@@ -2682,7 +2682,7 @@ JNIEXPORT jdoubleArray JNICALL Java_org_opencv_core_Mat_nGetIdx
     static const char method_name[] = "Mat::nGetIdx()";
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self;
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self;
         if(! self) return 0; // no native object behind
         std::vector<int> idx = convertJintArrayToVector(env, idxArray);
         for (int i=0; i<me->dims; i++) {
@@ -2723,7 +2723,7 @@ JNIEXPORT jstring JNICALL Java_org_opencv_core_Mat_nDump
     static const char method_name[] = "Mat::nDump()";
     try {
         LOGD("%s", method_name);
-        cv::Mat* me = (cv::Mat*) self; //TODO: check for NULL
+        ncvslideio::Mat* me = (ncvslideio::Mat*) self; //TODO: check for NULL
         String s;
         Ptr<Formatted> fmtd = Formatter::get()->format(*me);
         for(const char* str = fmtd->next(); str; str = fmtd->next())

@@ -11,7 +11,7 @@
 #include "opencv2/imgproc.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 bool help_showed = false;
 
@@ -233,7 +233,7 @@ Args Args::read(int argc, char** argv)
 
 App::App(const Args& s)
 {
-    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+    ncvslideio::cuda::printShortCudaDeviceInfo(ncvslideio::cuda::getDevice());
 
     args = s;
     cout << "\nControls:\n"
@@ -278,7 +278,7 @@ App::App(const Args& s)
 void App::run()
 {
     running = true;
-    cv::VideoWriter video_writer;
+    ncvslideio::VideoWriter video_writer;
 
     Size win_stride(args.win_stride_width, args.win_stride_height);
     Size win_size(args.win_width, args.win_width * 2);
@@ -286,8 +286,8 @@ void App::run()
     Size block_stride(args.block_stride_width, args.block_stride_height);
     Size cell_size(args.cell_width, args.cell_width);
 
-    cv::Ptr<cv::cuda::HOG> gpu_hog = cv::cuda::HOG::create(win_size, block_size, block_stride, cell_size, args.nbins);
-    cv::HOGDescriptor cpu_hog(win_size, block_size, block_stride, cell_size, args.nbins);
+    ncvslideio::Ptr<ncvslideio::cuda::HOG> gpu_hog = ncvslideio::cuda::HOG::create(win_size, block_size, block_stride, cell_size, args.nbins);
+    ncvslideio::HOGDescriptor cpu_hog(win_size, block_size, block_stride, cell_size, args.nbins);
 
     if(args.svm_load) {
         std::vector<float> svm_model;

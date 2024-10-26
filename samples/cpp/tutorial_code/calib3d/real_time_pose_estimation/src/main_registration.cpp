@@ -13,7 +13,7 @@
 #include "ModelRegistration.h"
 #include "Utils.h"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 /**  GLOBAL VARIABLES  **/

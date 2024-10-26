@@ -18,7 +18,7 @@
 #include <opencv2/gapi/own/assert.hpp>
 
 // TODO GAPI_EXPORTS or so
-namespace cv
+namespace ncvslideio
 {
 // Forward declaration; GNode and GOrigin are an internal
 // (user-inaccessible) classes.
@@ -46,16 +46,16 @@ struct GOrigin;
  * renderFrame(); these operations are expected to handle different
  * media formats inside. There is also a number of accessor
  * operations like BGR(), Y(), UV() -- these operations provide
- * access to frame's data in the familiar cv::GMat form, which can be
+ * access to frame's data in the familiar ncvslideio::GMat form, which can be
  * used with the majority of the existing G-API operations. These
  * accessor functions may perform color space conversion on the fly if
  * the image format of the GFrame they are applied to differs from the
  * operation's semantic (e.g. the BGR() accessor is called on an NV12
  * image frame).
  *
- * GFrame is a virtual counterpart of cv::MediaFrame.
+ * GFrame is a virtual counterpart of ncvslideio::MediaFrame.
  *
- * @sa cv::MediaFrame, cv::GFrameDesc, BGR(), Y(), UV(), infer<>().
+ * @sa ncvslideio::MediaFrame, ncvslideio::GFrameDesc, BGR(), Y(), UV(), infer<>().
  */
 class GAPI_EXPORTS_W_SIMPLE GFrame
 {
@@ -96,7 +96,7 @@ enum class MediaFormat: int
 struct GAPI_EXPORTS GFrameDesc
 {
     MediaFormat fmt;
-    cv::Size size;
+    ncvslideio::Size size;
 
     bool operator== (const GFrameDesc &) const;
 };
@@ -106,8 +106,8 @@ static inline GFrameDesc empty_gframe_desc() { return GFrameDesc{}; }
 class MediaFrame;
 GAPI_EXPORTS GFrameDesc descr_of(const MediaFrame &frame);
 
-GAPI_EXPORTS std::ostream& operator<<(std::ostream& os, const cv::GFrameDesc &desc);
+GAPI_EXPORTS std::ostream& operator<<(std::ostream& os, const ncvslideio::GFrameDesc &desc);
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GFRAME_HPP

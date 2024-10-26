@@ -21,39 +21,39 @@ int main(int argc, const char* argv[])
 
     const std::string fname(argv[1]);
 
-    cv::namedWindow("CPU", cv::WINDOW_NORMAL);
+    ncvslideio::namedWindow("CPU", ncvslideio::WINDOW_NORMAL);
 #if defined(HAVE_OPENGL)
-    cv::namedWindow("GPU", cv::WINDOW_OPENGL);
-    cv::cuda::setGlDevice();
+    ncvslideio::namedWindow("GPU", ncvslideio::WINDOW_OPENGL);
+    ncvslideio::cuda::setGlDevice();
 #else
-    cv::namedWindow("GPU", cv::WINDOW_NORMAL);
+    ncvslideio::namedWindow("GPU", ncvslideio::WINDOW_NORMAL);
 #endif
 
-    cv::TickMeter tm;
-    cv::Mat frame;
-    cv::VideoCapture reader(fname);
+    ncvslideio::TickMeter tm;
+    ncvslideio::Mat frame;
+    ncvslideio::VideoCapture reader(fname);
     for (;;)
     {
         if (!reader.read(frame))
             break;
-        cv::imshow("CPU", frame);
-        if (cv::waitKey(3) > 0)
+        ncvslideio::imshow("CPU", frame);
+        if (ncvslideio::waitKey(3) > 0)
             break;
     }
 
-    cv::cuda::GpuMat d_frame;
-    cv::Ptr<cv::cudacodec::VideoReader> d_reader = cv::cudacodec::createVideoReader(fname);
+    ncvslideio::cuda::GpuMat d_frame;
+    ncvslideio::Ptr<ncvslideio::cudacodec::VideoReader> d_reader = ncvslideio::cudacodec::createVideoReader(fname);
     for (;;)
     {
         if (!d_reader->nextFrame(d_frame))
             break;
 #if defined(HAVE_OPENGL)
-        cv::imshow("GPU", cv::ogl::Texture2D(d_frame));
+        ncvslideio::imshow("GPU", ncvslideio::ogl::Texture2D(d_frame));
 #else
         d_frame.download(frame);
-        cv::imshow("GPU", frame);
+        ncvslideio::imshow("GPU", frame);
 #endif
-        if (cv::waitKey(3) > 0)
+        if (ncvslideio::waitKey(3) > 0)
             break;
     }
 

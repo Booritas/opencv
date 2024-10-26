@@ -12,415 +12,415 @@
 #include <opencv2/gapi/cpu/core.hpp>
 #include <opencv2/gapi/cpu/gcpukernel.hpp>
 
-GAPI_OCV_KERNEL(GCPUAdd, cv::gapi::core::GAdd)
+GAPI_OCV_KERNEL(GCPUAdd, ncvslideio::gapi::core::GAdd)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::add(a, b, out, cv::noArray(), dtype);
+        ncvslideio::add(a, b, out, ncvslideio::noArray(), dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAddC, cv::gapi::core::GAddC)
+GAPI_OCV_KERNEL(GCPUAddC, ncvslideio::gapi::core::GAddC)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::add(a, b, out, cv::noArray(), dtype);
+        ncvslideio::add(a, b, out, ncvslideio::noArray(), dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSub, cv::gapi::core::GSub)
+GAPI_OCV_KERNEL(GCPUSub, ncvslideio::gapi::core::GSub)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::subtract(a, b, out, cv::noArray(), dtype);
+        ncvslideio::subtract(a, b, out, ncvslideio::noArray(), dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSubC, cv::gapi::core::GSubC)
+GAPI_OCV_KERNEL(GCPUSubC, ncvslideio::gapi::core::GSubC)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::subtract(a, b, out, cv::noArray(), dtype);
+        ncvslideio::subtract(a, b, out, ncvslideio::noArray(), dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSubRC, cv::gapi::core::GSubRC)
+GAPI_OCV_KERNEL(GCPUSubRC, ncvslideio::gapi::core::GSubRC)
 {
-    static void run(const cv::Scalar& a, const cv::Mat& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Scalar& a, const ncvslideio::Mat& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::subtract(a, b, out, cv::noArray(), dtype);
+        ncvslideio::subtract(a, b, out, ncvslideio::noArray(), dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMul, cv::gapi::core::GMul)
+GAPI_OCV_KERNEL(GCPUMul, ncvslideio::gapi::core::GMul)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, double scale, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, double scale, int dtype, ncvslideio::Mat& out)
     {
-        cv::multiply(a, b, out, scale, dtype);
+        ncvslideio::multiply(a, b, out, scale, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMulCOld, cv::gapi::core::GMulCOld)
+GAPI_OCV_KERNEL(GCPUMulCOld, ncvslideio::gapi::core::GMulCOld)
 {
-    static void run(const cv::Mat& a, double b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, double b, int dtype, ncvslideio::Mat& out)
     {
-        cv::multiply(a, b, out, 1, dtype);
+        ncvslideio::multiply(a, b, out, 1, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMulC, cv::gapi::core::GMulC)
+GAPI_OCV_KERNEL(GCPUMulC, ncvslideio::gapi::core::GMulC)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, int dtype, ncvslideio::Mat& out)
     {
-        cv::multiply(a, b, out, 1, dtype);
+        ncvslideio::multiply(a, b, out, 1, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUDiv, cv::gapi::core::GDiv)
+GAPI_OCV_KERNEL(GCPUDiv, ncvslideio::gapi::core::GDiv)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, double scale, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, double scale, int dtype, ncvslideio::Mat& out)
     {
-        cv::divide(a, b, out, scale, dtype);
+        ncvslideio::divide(a, b, out, scale, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUDivC, cv::gapi::core::GDivC)
+GAPI_OCV_KERNEL(GCPUDivC, ncvslideio::gapi::core::GDivC)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, double scale, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, double scale, int dtype, ncvslideio::Mat& out)
     {
-        cv::divide(a, b, out, scale, dtype);
+        ncvslideio::divide(a, b, out, scale, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUDivRC, cv::gapi::core::GDivRC)
+GAPI_OCV_KERNEL(GCPUDivRC, ncvslideio::gapi::core::GDivRC)
 {
-    static void run(const cv::Scalar& a, const cv::Mat& b, double scale, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Scalar& a, const ncvslideio::Mat& b, double scale, int dtype, ncvslideio::Mat& out)
     {
-        cv::divide(a, b, out, scale, dtype);
+        ncvslideio::divide(a, b, out, scale, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMask, cv::gapi::core::GMask)
+GAPI_OCV_KERNEL(GCPUMask, ncvslideio::gapi::core::GMask)
 {
-    static void run(const cv::Mat& in, const cv::Mat& mask, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Mat& mask, ncvslideio::Mat& out)
     {
-        out = cv::Mat::zeros(in.size(), in.type());
+        out = ncvslideio::Mat::zeros(in.size(), in.type());
         in.copyTo(out, mask);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMean, cv::gapi::core::GMean)
+GAPI_OCV_KERNEL(GCPUMean, ncvslideio::gapi::core::GMean)
 {
-    static void run(const cv::Mat& in, cv::Scalar& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Scalar& out)
     {
-        out = cv::mean(in);
+        out = ncvslideio::mean(in);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUPolarToCart, cv::gapi::core::GPolarToCart)
+GAPI_OCV_KERNEL(GCPUPolarToCart, ncvslideio::gapi::core::GPolarToCart)
 {
-    static void run(const cv::Mat& magn, const cv::Mat& angle, bool angleInDegrees, cv::Mat& outx, cv::Mat& outy)
+    static void run(const ncvslideio::Mat& magn, const ncvslideio::Mat& angle, bool angleInDegrees, ncvslideio::Mat& outx, ncvslideio::Mat& outy)
     {
-        cv::polarToCart(magn, angle, outx, outy, angleInDegrees);
+        ncvslideio::polarToCart(magn, angle, outx, outy, angleInDegrees);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCartToPolar, cv::gapi::core::GCartToPolar)
+GAPI_OCV_KERNEL(GCPUCartToPolar, ncvslideio::gapi::core::GCartToPolar)
 {
-    static void run(const cv::Mat& x, const cv::Mat& y, bool angleInDegrees, cv::Mat& outmagn, cv::Mat& outangle)
+    static void run(const ncvslideio::Mat& x, const ncvslideio::Mat& y, bool angleInDegrees, ncvslideio::Mat& outmagn, ncvslideio::Mat& outangle)
     {
-        cv::cartToPolar(x, y, outmagn, outangle, angleInDegrees);
+        ncvslideio::cartToPolar(x, y, outmagn, outangle, angleInDegrees);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUPhase, cv::gapi::core::GPhase)
+GAPI_OCV_KERNEL(GCPUPhase, ncvslideio::gapi::core::GPhase)
 {
-    static void run(const cv::Mat &x, const cv::Mat &y, bool angleInDegrees, cv::Mat &out)
+    static void run(const ncvslideio::Mat &x, const ncvslideio::Mat &y, bool angleInDegrees, ncvslideio::Mat &out)
     {
-        cv::phase(x, y, out, angleInDegrees);
+        ncvslideio::phase(x, y, out, angleInDegrees);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpGT, cv::gapi::core::GCmpGT)
+GAPI_OCV_KERNEL(GCPUCmpGT, ncvslideio::gapi::core::GCmpGT)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_GT);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_GT);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpGE, cv::gapi::core::GCmpGE)
+GAPI_OCV_KERNEL(GCPUCmpGE, ncvslideio::gapi::core::GCmpGE)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_GE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_GE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpLE, cv::gapi::core::GCmpLE)
+GAPI_OCV_KERNEL(GCPUCmpLE, ncvslideio::gapi::core::GCmpLE)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_LE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_LE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpLT, cv::gapi::core::GCmpLT)
+GAPI_OCV_KERNEL(GCPUCmpLT, ncvslideio::gapi::core::GCmpLT)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_LT);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_LT);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpEQ, cv::gapi::core::GCmpEQ)
+GAPI_OCV_KERNEL(GCPUCmpEQ, ncvslideio::gapi::core::GCmpEQ)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_EQ);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_EQ);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpNE, cv::gapi::core::GCmpNE)
+GAPI_OCV_KERNEL(GCPUCmpNE, ncvslideio::gapi::core::GCmpNE)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_NE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_NE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpGTScalar, cv::gapi::core::GCmpGTScalar)
+GAPI_OCV_KERNEL(GCPUCmpGTScalar, ncvslideio::gapi::core::GCmpGTScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_GT);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_GT);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpGEScalar, cv::gapi::core::GCmpGEScalar)
+GAPI_OCV_KERNEL(GCPUCmpGEScalar, ncvslideio::gapi::core::GCmpGEScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_GE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_GE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpLEScalar, cv::gapi::core::GCmpLEScalar)
+GAPI_OCV_KERNEL(GCPUCmpLEScalar, ncvslideio::gapi::core::GCmpLEScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_LE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_LE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpLTScalar, cv::gapi::core::GCmpLTScalar)
+GAPI_OCV_KERNEL(GCPUCmpLTScalar, ncvslideio::gapi::core::GCmpLTScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_LT);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_LT);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpEQScalar, cv::gapi::core::GCmpEQScalar)
+GAPI_OCV_KERNEL(GCPUCmpEQScalar, ncvslideio::gapi::core::GCmpEQScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_EQ);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_EQ);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCmpNEScalar, cv::gapi::core::GCmpNEScalar)
+GAPI_OCV_KERNEL(GCPUCmpNEScalar, ncvslideio::gapi::core::GCmpNEScalar)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::compare(a, b, out, cv::CMP_NE);
+        ncvslideio::compare(a, b, out, ncvslideio::CMP_NE);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAnd, cv::gapi::core::GAnd)
+GAPI_OCV_KERNEL(GCPUAnd, ncvslideio::gapi::core::GAnd)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_and(a, b, out);
+        ncvslideio::bitwise_and(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAndS, cv::gapi::core::GAndS)
+GAPI_OCV_KERNEL(GCPUAndS, ncvslideio::gapi::core::GAndS)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_and(a, b, out);
+        ncvslideio::bitwise_and(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUOr, cv::gapi::core::GOr)
+GAPI_OCV_KERNEL(GCPUOr, ncvslideio::gapi::core::GOr)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_or(a, b, out);
+        ncvslideio::bitwise_or(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUOrS, cv::gapi::core::GOrS)
+GAPI_OCV_KERNEL(GCPUOrS, ncvslideio::gapi::core::GOrS)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_or(a, b, out);
+        ncvslideio::bitwise_or(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUXor, cv::gapi::core::GXor)
+GAPI_OCV_KERNEL(GCPUXor, ncvslideio::gapi::core::GXor)
 {
-    static void run(const cv::Mat& a, const cv::Mat& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Mat& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_xor(a, b, out);
+        ncvslideio::bitwise_xor(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUXorS, cv::gapi::core::GXorS)
+GAPI_OCV_KERNEL(GCPUXorS, ncvslideio::gapi::core::GXorS)
 {
-    static void run(const cv::Mat& a, const cv::Scalar& b, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, const ncvslideio::Scalar& b, ncvslideio::Mat& out)
     {
-        cv::bitwise_xor(a, b, out);
+        ncvslideio::bitwise_xor(a, b, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUNot, cv::gapi::core::GNot)
+GAPI_OCV_KERNEL(GCPUNot, ncvslideio::gapi::core::GNot)
 {
-    static void run(const cv::Mat& a, cv::Mat& out)
+    static void run(const ncvslideio::Mat& a, ncvslideio::Mat& out)
     {
-        cv::bitwise_not(a, out);
+        ncvslideio::bitwise_not(a, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSelect, cv::gapi::core::GSelect)
+GAPI_OCV_KERNEL(GCPUSelect, ncvslideio::gapi::core::GSelect)
 {
-    static void run(const cv::Mat& src1, const cv::Mat& src2, const cv::Mat& mask, cv::Mat& out)
+    static void run(const ncvslideio::Mat& src1, const ncvslideio::Mat& src2, const ncvslideio::Mat& mask, ncvslideio::Mat& out)
     {
         src2.copyTo(out);
         src1.copyTo(out, mask);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMin, cv::gapi::core::GMin)
+GAPI_OCV_KERNEL(GCPUMin, ncvslideio::gapi::core::GMin)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, ncvslideio::Mat& out)
     {
-        out = cv::min(in1, in2);
+        out = ncvslideio::min(in1, in2);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMax, cv::gapi::core::GMax)
+GAPI_OCV_KERNEL(GCPUMax, ncvslideio::gapi::core::GMax)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, ncvslideio::Mat& out)
     {
-        out = cv::max(in1, in2);
+        out = ncvslideio::max(in1, in2);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAbsDiff, cv::gapi::core::GAbsDiff)
+GAPI_OCV_KERNEL(GCPUAbsDiff, ncvslideio::gapi::core::GAbsDiff)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, ncvslideio::Mat& out)
     {
-        cv::absdiff(in1, in2, out);
+        ncvslideio::absdiff(in1, in2, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAbsDiffC, cv::gapi::core::GAbsDiffC)
+GAPI_OCV_KERNEL(GCPUAbsDiffC, ncvslideio::gapi::core::GAbsDiffC)
 {
-    static void run(const cv::Mat& in1, const cv::Scalar& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Scalar& in2, ncvslideio::Mat& out)
     {
-        cv::absdiff(in1, in2, out);
+        ncvslideio::absdiff(in1, in2, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSum, cv::gapi::core::GSum)
+GAPI_OCV_KERNEL(GCPUSum, ncvslideio::gapi::core::GSum)
 {
-    static void run(const cv::Mat& in, cv::Scalar& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Scalar& out)
     {
-        out = cv::sum(in);
+        out = ncvslideio::sum(in);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCountNonZero, cv::gapi::core::GCountNonZero)
+GAPI_OCV_KERNEL(GCPUCountNonZero, ncvslideio::gapi::core::GCountNonZero)
 {
-    static void run(const cv::Mat& in, int& out)
+    static void run(const ncvslideio::Mat& in, int& out)
     {
-        out = cv::countNonZero(in);
+        out = ncvslideio::countNonZero(in);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUAddW, cv::gapi::core::GAddW)
+GAPI_OCV_KERNEL(GCPUAddW, ncvslideio::gapi::core::GAddW)
 {
-    static void run(const cv::Mat& in1, double alpha, const cv::Mat& in2, double beta, double gamma, int dtype, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, double alpha, const ncvslideio::Mat& in2, double beta, double gamma, int dtype, ncvslideio::Mat& out)
     {
-        cv::addWeighted(in1, alpha, in2, beta, gamma, out, dtype);
+        ncvslideio::addWeighted(in1, alpha, in2, beta, gamma, out, dtype);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUNormL1, cv::gapi::core::GNormL1)
+GAPI_OCV_KERNEL(GCPUNormL1, ncvslideio::gapi::core::GNormL1)
 {
-    static void run(const cv::Mat& in, cv::Scalar& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Scalar& out)
     {
-        out = cv::norm(in, cv::NORM_L1);
+        out = ncvslideio::norm(in, ncvslideio::NORM_L1);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUNormL2, cv::gapi::core::GNormL2)
+GAPI_OCV_KERNEL(GCPUNormL2, ncvslideio::gapi::core::GNormL2)
 {
-    static void run(const cv::Mat& in, cv::Scalar& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Scalar& out)
     {
-        out = cv::norm(in, cv::NORM_L2);
+        out = ncvslideio::norm(in, ncvslideio::NORM_L2);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUNormInf, cv::gapi::core::GNormInf)
+GAPI_OCV_KERNEL(GCPUNormInf, ncvslideio::gapi::core::GNormInf)
 {
-    static void run(const cv::Mat& in, cv::Scalar& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Scalar& out)
     {
-        out = cv::norm(in, cv::NORM_INF);
+        out = ncvslideio::norm(in, ncvslideio::NORM_INF);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUIntegral, cv::gapi::core::GIntegral)
+GAPI_OCV_KERNEL(GCPUIntegral, ncvslideio::gapi::core::GIntegral)
 {
-    static void run(const cv::Mat& in, int sdepth, int sqdepth, cv::Mat& out, cv::Mat& outSq)
+    static void run(const ncvslideio::Mat& in, int sdepth, int sqdepth, ncvslideio::Mat& out, ncvslideio::Mat& outSq)
     {
-        cv::integral(in, out, outSq, sdepth, sqdepth);
+        ncvslideio::integral(in, out, outSq, sdepth, sqdepth);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUThreshold, cv::gapi::core::GThreshold)
+GAPI_OCV_KERNEL(GCPUThreshold, ncvslideio::gapi::core::GThreshold)
 {
-    static void run(const cv::Mat& in, const cv::Scalar& a, const cv::Scalar& b, int type, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Scalar& a, const ncvslideio::Scalar& b, int type, ncvslideio::Mat& out)
     {
-        cv::threshold(in, out, a.val[0], b.val[0], type);
+        ncvslideio::threshold(in, out, a.val[0], b.val[0], type);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUThresholdOT, cv::gapi::core::GThresholdOT)
+GAPI_OCV_KERNEL(GCPUThresholdOT, ncvslideio::gapi::core::GThresholdOT)
 {
-    static void run(const cv::Mat& in, const cv::Scalar& b, int type, cv::Mat& out, cv::Scalar& outScalar)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Scalar& b, int type, ncvslideio::Mat& out, ncvslideio::Scalar& outScalar)
     {
-        outScalar = cv::threshold(in, out, b.val[0], b.val[0], type);
+        outScalar = ncvslideio::threshold(in, out, b.val[0], b.val[0], type);
     }
 };
 
 
-GAPI_OCV_KERNEL(GCPUInRange, cv::gapi::core::GInRange)
+GAPI_OCV_KERNEL(GCPUInRange, ncvslideio::gapi::core::GInRange)
 {
-    static void run(const cv::Mat& in, const cv::Scalar& low, const cv::Scalar& up, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Scalar& low, const ncvslideio::Scalar& up, ncvslideio::Mat& out)
     {
-        cv::inRange(in, low, up, out);
+        ncvslideio::inRange(in, low, up, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSplit3, cv::gapi::core::GSplit3)
+GAPI_OCV_KERNEL(GCPUSplit3, ncvslideio::gapi::core::GSplit3)
 {
-    static void run(const cv::Mat& in, cv::Mat &m1, cv::Mat &m2, cv::Mat &m3)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat &m1, ncvslideio::Mat &m2, ncvslideio::Mat &m3)
     {
-        std::vector<cv::Mat> outMats = {m1, m2, m3};
-        cv::split(in, outMats);
+        std::vector<ncvslideio::Mat> outMats = {m1, m2, m3};
+        ncvslideio::split(in, outMats);
 
         // Write back FIXME: Write a helper or avoid this nonsense completely!
         m1 = outMats[0];
@@ -429,12 +429,12 @@ GAPI_OCV_KERNEL(GCPUSplit3, cv::gapi::core::GSplit3)
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSplit4, cv::gapi::core::GSplit4)
+GAPI_OCV_KERNEL(GCPUSplit4, ncvslideio::gapi::core::GSplit4)
 {
-    static void run(const cv::Mat& in, cv::Mat &m1, cv::Mat &m2, cv::Mat &m3, cv::Mat &m4)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat &m1, ncvslideio::Mat &m2, ncvslideio::Mat &m3, ncvslideio::Mat &m4)
     {
-        std::vector<cv::Mat> outMats = {m1, m2, m3, m4};
-        cv::split(in, outMats);
+        std::vector<ncvslideio::Mat> outMats = {m1, m2, m3, m4};
+        ncvslideio::split(in, outMats);
 
         // Write back FIXME: Write a helper or avoid this nonsense completely!
         m1 = outMats[0];
@@ -444,191 +444,191 @@ GAPI_OCV_KERNEL(GCPUSplit4, cv::gapi::core::GSplit4)
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMerge3, cv::gapi::core::GMerge3)
+GAPI_OCV_KERNEL(GCPUMerge3, ncvslideio::gapi::core::GMerge3)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, const cv::Mat& in3, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, const ncvslideio::Mat& in3, ncvslideio::Mat &out)
     {
-        std::vector<cv::Mat> inMats = {in1, in2, in3};
-        cv::merge(inMats, out);
+        std::vector<ncvslideio::Mat> inMats = {in1, in2, in3};
+        ncvslideio::merge(inMats, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUMerge4, cv::gapi::core::GMerge4)
+GAPI_OCV_KERNEL(GCPUMerge4, ncvslideio::gapi::core::GMerge4)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, const cv::Mat& in3, const cv::Mat& in4, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, const ncvslideio::Mat& in3, const ncvslideio::Mat& in4, ncvslideio::Mat &out)
     {
-        std::vector<cv::Mat> inMats = {in1, in2, in3, in4};
-        cv::merge(inMats, out);
+        std::vector<ncvslideio::Mat> inMats = {in1, in2, in3, in4};
+        ncvslideio::merge(inMats, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPURemap, cv::gapi::core::GRemap)
+GAPI_OCV_KERNEL(GCPURemap, ncvslideio::gapi::core::GRemap)
 {
-    static void run(const cv::Mat& in, const cv::Mat& x, const cv::Mat& y, int a, int b, cv::Scalar s, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Mat& x, const ncvslideio::Mat& y, int a, int b, ncvslideio::Scalar s, ncvslideio::Mat& out)
     {
-        cv::remap(in, out, x, y, a, b, s);
+        ncvslideio::remap(in, out, x, y, a, b, s);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUFlip, cv::gapi::core::GFlip)
+GAPI_OCV_KERNEL(GCPUFlip, ncvslideio::gapi::core::GFlip)
 {
-    static void run(const cv::Mat& in, int code, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, int code, ncvslideio::Mat& out)
     {
-        cv::flip(in, out, code);
+        ncvslideio::flip(in, out, code);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUCrop, cv::gapi::core::GCrop)
+GAPI_OCV_KERNEL(GCPUCrop, ncvslideio::gapi::core::GCrop)
 {
-    static void run(const cv::Mat& in, cv::Rect rect, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Rect rect, ncvslideio::Mat& out)
     {
-        cv::Mat(in, rect).copyTo(out);
+        ncvslideio::Mat(in, rect).copyTo(out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUConcatHor, cv::gapi::core::GConcatHor)
+GAPI_OCV_KERNEL(GCPUConcatHor, ncvslideio::gapi::core::GConcatHor)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, ncvslideio::Mat& out)
     {
-        cv::hconcat(in1, in2, out);
+        ncvslideio::hconcat(in1, in2, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUConcatVert, cv::gapi::core::GConcatVert)
+GAPI_OCV_KERNEL(GCPUConcatVert, ncvslideio::gapi::core::GConcatVert)
 {
-    static void run(const cv::Mat& in1, const cv::Mat& in2, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in1, const ncvslideio::Mat& in2, ncvslideio::Mat& out)
     {
-        cv::vconcat(in1, in2, out);
+        ncvslideio::vconcat(in1, in2, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPULUT, cv::gapi::core::GLUT)
+GAPI_OCV_KERNEL(GCPULUT, ncvslideio::gapi::core::GLUT)
 {
-    static void run(const cv::Mat& in, const cv::Mat& lut, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, const ncvslideio::Mat& lut, ncvslideio::Mat& out)
     {
-        cv::LUT(in, lut, out);
+        ncvslideio::LUT(in, lut, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUConvertTo, cv::gapi::core::GConvertTo)
+GAPI_OCV_KERNEL(GCPUConvertTo, ncvslideio::gapi::core::GConvertTo)
 {
-    static void run(const cv::Mat& in, int rtype, double alpha, double beta, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, int rtype, double alpha, double beta, ncvslideio::Mat& out)
     {
         in.convertTo(out, rtype, alpha, beta);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSqrt, cv::gapi::core::GSqrt)
+GAPI_OCV_KERNEL(GCPUSqrt, ncvslideio::gapi::core::GSqrt)
 {
-    static void run(const cv::Mat& in, cv::Mat &out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat &out)
     {
-        cv::sqrt(in, out);
+        ncvslideio::sqrt(in, out);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUNormalize, cv::gapi::core::GNormalize)
+GAPI_OCV_KERNEL(GCPUNormalize, ncvslideio::gapi::core::GNormalize)
 {
-    static void run(const cv::Mat& src, double a, double b,
-                    int norm_type, int ddepth, cv::Mat& out)
+    static void run(const ncvslideio::Mat& src, double a, double b,
+                    int norm_type, int ddepth, ncvslideio::Mat& out)
     {
-        cv::normalize(src, out, a, b, norm_type, ddepth);
+        ncvslideio::normalize(src, out, a, b, norm_type, ddepth);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUWarpPerspective, cv::gapi::core::GWarpPerspective)
+GAPI_OCV_KERNEL(GCPUWarpPerspective, ncvslideio::gapi::core::GWarpPerspective)
 {
-    static void run(const cv::Mat& src, const cv::Mat& M,  const cv::Size& dsize,
-                    int flags, int borderMode, const cv::Scalar& borderValue, cv::Mat& out)
+    static void run(const ncvslideio::Mat& src, const ncvslideio::Mat& M,  const ncvslideio::Size& dsize,
+                    int flags, int borderMode, const ncvslideio::Scalar& borderValue, ncvslideio::Mat& out)
     {
-        cv::warpPerspective(src, out, M, dsize, flags, borderMode, borderValue);
+        ncvslideio::warpPerspective(src, out, M, dsize, flags, borderMode, borderValue);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUWarpAffine, cv::gapi::core::GWarpAffine)
+GAPI_OCV_KERNEL(GCPUWarpAffine, ncvslideio::gapi::core::GWarpAffine)
 {
-    static void run(const cv::Mat& src, const cv::Mat& M,  const cv::Size& dsize,
-                    int flags, int borderMode, const cv::Scalar& borderValue, cv::Mat& out)
+    static void run(const ncvslideio::Mat& src, const ncvslideio::Mat& M,  const ncvslideio::Size& dsize,
+                    int flags, int borderMode, const ncvslideio::Scalar& borderValue, ncvslideio::Mat& out)
     {
-        cv::warpAffine(src, out, M, dsize, flags, borderMode, borderValue);
+        ncvslideio::warpAffine(src, out, M, dsize, flags, borderMode, borderValue);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUKMeansND, cv::gapi::core::GKMeansND)
+GAPI_OCV_KERNEL(GCPUKMeansND, ncvslideio::gapi::core::GKMeansND)
 {
-    static void run(const cv::Mat& data, const int K, const cv::Mat& inBestLabels,
-                    const cv::TermCriteria& criteria, const int attempts,
-                    const cv::KmeansFlags flags,
-                    double& compactness, cv::Mat& outBestLabels, cv::Mat& centers)
+    static void run(const ncvslideio::Mat& data, const int K, const ncvslideio::Mat& inBestLabels,
+                    const ncvslideio::TermCriteria& criteria, const int attempts,
+                    const ncvslideio::KmeansFlags flags,
+                    double& compactness, ncvslideio::Mat& outBestLabels, ncvslideio::Mat& centers)
     {
-        if (flags & cv::KMEANS_USE_INITIAL_LABELS)
+        if (flags & ncvslideio::KMEANS_USE_INITIAL_LABELS)
         {
             inBestLabels.copyTo(outBestLabels);
         }
-        compactness = cv::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
+        compactness = ncvslideio::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUKMeansNDNoInit, cv::gapi::core::GKMeansNDNoInit)
+GAPI_OCV_KERNEL(GCPUKMeansNDNoInit, ncvslideio::gapi::core::GKMeansNDNoInit)
 {
-    static void run(const cv::Mat& data, const int K, const cv::TermCriteria& criteria,
-                    const int attempts, const cv::KmeansFlags flags,
-                    double& compactness, cv::Mat& outBestLabels, cv::Mat& centers)
+    static void run(const ncvslideio::Mat& data, const int K, const ncvslideio::TermCriteria& criteria,
+                    const int attempts, const ncvslideio::KmeansFlags flags,
+                    double& compactness, ncvslideio::Mat& outBestLabels, ncvslideio::Mat& centers)
     {
-        compactness = cv::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
+        compactness = ncvslideio::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUKMeans2D, cv::gapi::core::GKMeans2D)
+GAPI_OCV_KERNEL(GCPUKMeans2D, ncvslideio::gapi::core::GKMeans2D)
 {
-    static void run(const std::vector<cv::Point2f>& data, const int K,
-                    const std::vector<int>& inBestLabels, const cv::TermCriteria& criteria,
-                    const int attempts, const cv::KmeansFlags flags,
+    static void run(const std::vector<ncvslideio::Point2f>& data, const int K,
+                    const std::vector<int>& inBestLabels, const ncvslideio::TermCriteria& criteria,
+                    const int attempts, const ncvslideio::KmeansFlags flags,
                     double& compactness, std::vector<int>& outBestLabels,
-                    std::vector<cv::Point2f>& centers)
+                    std::vector<ncvslideio::Point2f>& centers)
     {
-        if (flags & cv::KMEANS_USE_INITIAL_LABELS)
+        if (flags & ncvslideio::KMEANS_USE_INITIAL_LABELS)
         {
             outBestLabels = inBestLabels;
         }
-        compactness = cv::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
+        compactness = ncvslideio::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUKMeans3D, cv::gapi::core::GKMeans3D)
+GAPI_OCV_KERNEL(GCPUKMeans3D, ncvslideio::gapi::core::GKMeans3D)
 {
-    static void run(const std::vector<cv::Point3f>& data, const int K,
-                    const std::vector<int>& inBestLabels, const cv::TermCriteria& criteria,
-                    const int attempts, const cv::KmeansFlags flags,
+    static void run(const std::vector<ncvslideio::Point3f>& data, const int K,
+                    const std::vector<int>& inBestLabels, const ncvslideio::TermCriteria& criteria,
+                    const int attempts, const ncvslideio::KmeansFlags flags,
                     double& compactness, std::vector<int>& outBestLabels,
-                    std::vector<cv::Point3f>& centers)
+                    std::vector<ncvslideio::Point3f>& centers)
     {
-        if (flags & cv::KMEANS_USE_INITIAL_LABELS)
+        if (flags & ncvslideio::KMEANS_USE_INITIAL_LABELS)
         {
             outBestLabels = inBestLabels;
         }
-        compactness = cv::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
+        compactness = ncvslideio::kmeans(data, K, outBestLabels, criteria, attempts, flags, centers);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUTranspose, cv::gapi::core::GTranspose)
+GAPI_OCV_KERNEL(GCPUTranspose, ncvslideio::gapi::core::GTranspose)
 {
-    static void run(const cv::Mat& in, cv::Mat& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Mat& out)
     {
-        cv::transpose(in, out);
+        ncvslideio::transpose(in, out);
     }
 };
 
 
-GAPI_OCV_KERNEL(GCPUParseSSDBL, cv::gapi::nn::parsers::GParseSSDBL)
+GAPI_OCV_KERNEL(GCPUParseSSDBL, ncvslideio::gapi::nn::parsers::GParseSSDBL)
 {
-    static void run(const cv::Mat&  in_ssd_result,
-                    const cv::Size& in_size,
+    static void run(const ncvslideio::Mat&  in_ssd_result,
+                    const ncvslideio::Size& in_size,
                     const float     confidence_threshold,
                     const int       filter_label,
-                    std::vector<cv::Rect>& out_boxes,
+                    std::vector<ncvslideio::Rect>& out_boxes,
                     std::vector<int>&      out_labels)
     {
-        cv::ParseSSD(in_ssd_result, in_size,
+        ncvslideio::ParseSSD(in_ssd_result, in_size,
                      confidence_threshold,
                      filter_label,
                      false,
@@ -637,17 +637,17 @@ GAPI_OCV_KERNEL(GCPUParseSSDBL, cv::gapi::nn::parsers::GParseSSDBL)
     }
 };
 
-GAPI_OCV_KERNEL(GOCVParseSSD, cv::gapi::nn::parsers::GParseSSD)
+GAPI_OCV_KERNEL(GOCVParseSSD, ncvslideio::gapi::nn::parsers::GParseSSD)
 {
-    static void run(const cv::Mat&  in_ssd_result,
-                    const cv::Size& in_size,
+    static void run(const ncvslideio::Mat&  in_ssd_result,
+                    const ncvslideio::Size& in_size,
                     const float     confidence_threshold,
                     const bool      alignment_to_square,
                     const bool      filter_out_of_bounds,
-                    std::vector<cv::Rect>& out_boxes)
+                    std::vector<ncvslideio::Rect>& out_boxes)
     {
         std::vector<int> unused_labels;
-        cv::ParseSSD(in_ssd_result, in_size,
+        ncvslideio::ParseSSD(in_ssd_result, in_size,
                      confidence_threshold,
                      -1,
                      alignment_to_square,
@@ -656,49 +656,49 @@ GAPI_OCV_KERNEL(GOCVParseSSD, cv::gapi::nn::parsers::GParseSSD)
     }
 };
 
-GAPI_OCV_KERNEL(GCPUParseYolo, cv::gapi::nn::parsers::GParseYolo)
+GAPI_OCV_KERNEL(GCPUParseYolo, ncvslideio::gapi::nn::parsers::GParseYolo)
 {
-    static void run(const cv::Mat&  in_yolo_result,
-                    const cv::Size& in_size,
+    static void run(const ncvslideio::Mat&  in_yolo_result,
+                    const ncvslideio::Size& in_size,
                     const float     confidence_threshold,
                     const float     nms_threshold,
                     const std::vector<float>& anchors,
-                    std::vector<cv::Rect>& out_boxes,
+                    std::vector<ncvslideio::Rect>& out_boxes,
                     std::vector<int>&      out_labels)
     {
-        cv::parseYolo(in_yolo_result, in_size, confidence_threshold, nms_threshold, anchors, out_boxes, out_labels);
+        ncvslideio::parseYolo(in_yolo_result, in_size, confidence_threshold, nms_threshold, anchors, out_boxes, out_labels);
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSize, cv::gapi::streaming::GSize)
+GAPI_OCV_KERNEL(GCPUSize, ncvslideio::gapi::streaming::GSize)
 {
-    static void run(const cv::Mat& in, cv::Size& out)
+    static void run(const ncvslideio::Mat& in, ncvslideio::Size& out)
     {
         out.width  = in.cols;
         out.height = in.rows;
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSizeR, cv::gapi::streaming::GSizeR)
+GAPI_OCV_KERNEL(GCPUSizeR, ncvslideio::gapi::streaming::GSizeR)
 {
-    static void run(const cv::Rect& in, cv::Size& out)
+    static void run(const ncvslideio::Rect& in, ncvslideio::Size& out)
     {
         out.width  = in.width;
         out.height = in.height;
     }
 };
 
-GAPI_OCV_KERNEL(GCPUSizeMF, cv::gapi::streaming::GSizeMF)
+GAPI_OCV_KERNEL(GCPUSizeMF, ncvslideio::gapi::streaming::GSizeMF)
 {
-    static void run(const cv::MediaFrame& in, cv::Size& out)
+    static void run(const ncvslideio::MediaFrame& in, ncvslideio::Size& out)
     {
         out = in.desc().size;
     }
 };
 
-cv::GKernelPackage cv::gapi::core::cpu::kernels()
+ncvslideio::GKernelPackage ncvslideio::gapi::core::cpu::kernels()
 {
-    static auto pkg = cv::gapi::kernels
+    static auto pkg = ncvslideio::gapi::kernels
         <  GCPUAdd
          , GCPUAddC
          , GCPUSub

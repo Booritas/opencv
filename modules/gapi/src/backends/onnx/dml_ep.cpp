@@ -42,24 +42,24 @@
 static void addDMLExecutionProviderWithAdapterName(Ort::SessionOptions *session_options,
                                                    const std::string &adapter_name);
 
-void cv::gimpl::onnx::addDMLExecutionProvider(Ort::SessionOptions *session_options,
-                                              const cv::gapi::onnx::ep::DirectML &dml_ep) {
-    namespace ep = cv::gapi::onnx::ep;
+void ncvslideio::gimpl::onnx::addDMLExecutionProvider(Ort::SessionOptions *session_options,
+                                              const ncvslideio::gapi::onnx::ep::DirectML &dml_ep) {
+    namespace ep = ncvslideio::gapi::onnx::ep;
     switch (dml_ep.ddesc.index()) {
         case ep::DirectML::DeviceDesc::index_of<int>(): {
-            const int device_id = cv::util::get<int>(dml_ep.ddesc);
+            const int device_id = ncvslideio::util::get<int>(dml_ep.ddesc);
             try {
                 OrtSessionOptionsAppendExecutionProvider_DML(*session_options, device_id);
             } catch (const std::exception &e) {
                 std::stringstream ss;
                 ss << "ONNX Backend: Failed to enable DirectML"
                    << " Execution Provider: " << e.what();
-                cv::util::throw_error(std::runtime_error(ss.str()));
+                ncvslideio::util::throw_error(std::runtime_error(ss.str()));
             }
             break;
         }
         case ep::DirectML::DeviceDesc::index_of<std::string>(): {
-            const std::string adapter_name = cv::util::get<std::string>(dml_ep.ddesc);
+            const std::string adapter_name = ncvslideio::util::get<std::string>(dml_ep.ddesc);
             addDMLExecutionProviderWithAdapterName(session_options, adapter_name);
             break;
         }
@@ -232,14 +232,14 @@ static void addDMLExecutionProviderWithAdapterName(Ort::SessionOptions *session_
     if (selected_adapters.empty()) {
         std::stringstream error_msg;
         error_msg << "ONNX Backend: No DirectML adapters found match to \"" << adapter_name << "\"";
-        cv::util::throw_error(std::runtime_error(error_msg.str()));
+        ncvslideio::util::throw_error(std::runtime_error(error_msg.str()));
     } else if (selected_adapters.size() > 1) {
         std::stringstream error_msg;
         error_msg << "ONNX Backend: More than one adapter matches to \"" << adapter_name << "\":\n";
         for (const auto &selected_adapter : selected_adapters) {
             error_msg << selected_adapter.description << "\n";
         }
-        cv::util::throw_error(std::runtime_error(error_msg.str()));
+        ncvslideio::util::throw_error(std::runtime_error(error_msg.str()));
     }
 
     GAPI_LOG_INFO(NULL, "Selected device: " << selected_adapters.front().description);
@@ -251,7 +251,7 @@ static void addDMLExecutionProviderWithAdapterName(Ort::SessionOptions *session_
         std::stringstream ss;
         ss << "ONNX Backend: Failed to enable DirectML"
            << " Execution Provider: " << e.what();
-        cv::util::throw_error(std::runtime_error(ss.str()));
+        ncvslideio::util::throw_error(std::runtime_error(ss.str()));
     }
 }
 
@@ -261,14 +261,14 @@ static void addDMLExecutionProviderWithAdapterName(Ort::SessionOptions*, const s
     std::stringstream ss;
     ss << "ONNX Backend: Failed to add DirectML Execution Provider with adapter name."
        << " DirectML support is required.";
-    cv::util::throw_error(std::runtime_error(ss.str()));
+    ncvslideio::util::throw_error(std::runtime_error(ss.str()));
 }
 
 #endif  // HAVE_DIRECTML
 #else  // HAVE_ONNX_DML
 
-void cv::gimpl::onnx::addDMLExecutionProvider(Ort::SessionOptions*,
-                                              const cv::gapi::onnx::ep::DirectML&) {
+void ncvslideio::gimpl::onnx::addDMLExecutionProvider(Ort::SessionOptions*,
+                                              const ncvslideio::gapi::onnx::ep::DirectML&) {
      util::throw_error(std::runtime_error("G-API has been compiled with ONNXRT"
                                           " without DirectML support"));
 }

@@ -50,7 +50,7 @@
 
 // IJG-based Jpeg codec
 
-namespace cv
+namespace ncvslideio
 {
 /**
 * @brief Jpeg markers that can be encountered in a Jpeg file

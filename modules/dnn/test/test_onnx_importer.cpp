@@ -1146,7 +1146,7 @@ TEST_P(Test_ONNX_layers, Div)
     Mat inp1 = blobFromNPY(_tf("data/input_div_1.npy"));
     Mat inp2 = blobFromNPY(_tf("data/input_div_0.npy"));
     Mat ref  = blobFromNPY(_tf("data/output_div.npy"));
-    cv::divide(1.0, ref, ref);
+    ncvslideio::divide(1.0, ref, ref);
     checkBackend(&inp1, &ref);
 
     net.setInput(inp1, "0");
@@ -2035,7 +2035,7 @@ TEST_P(Test_ONNX_layers, Quantized_MatMul_Variable_Weights)
     EXPECT_THROW(
     {
         testONNXModels("quantized_matmul_variable_inputs");
-    }, cv::Exception);
+    }, ncvslideio::Exception);
 }
 
 TEST_P(Test_ONNX_layers, Quantized_Eltwise)
@@ -2687,7 +2687,7 @@ void yoloPostProcessing(
     if (model_name == "yolov8" || model_name == "yolov10" ||
         model_name == "yolov9")
     {
-        cv::transposeND(outs[0], {0, 2, 1}, outs[0]);
+        ncvslideio::transposeND(outs[0], {0, 2, 1}, outs[0]);
     }
 
     if (model_name == "yolonas"){
@@ -2696,7 +2696,7 @@ void yoloPostProcessing(
         // squeeze the first dimension
         outs[0] = outs[0].reshape(1, outs[0].size[1]);
         outs[1] = outs[1].reshape(1, outs[1].size[1]);
-        cv::hconcat(outs[1], outs[0], concat_out);
+        ncvslideio::hconcat(outs[1], outs[0], concat_out);
         outs[0] = concat_out;
         // remove the second element
         outs.pop_back();

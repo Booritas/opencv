@@ -25,7 +25,7 @@
     #include <opencv2/imgproc.hpp>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 static void ptsort_(struct pt *pts, int sz); // forward delaration
@@ -93,7 +93,7 @@ void ptsort_(struct pt *pts, int sz)
     // a merge sort with temp storage.
 
     // Use stack storage if it's not too big.
-    cv::AutoBuffer<struct pt, 1024> _tmp_stack(sz);
+    ncvslideio::AutoBuffer<struct pt, 1024> _tmp_stack(sz);
     memcpy(_tmp_stack.data(), pts, sizeof(struct pt) * sz);
 
     int asz = sz/2;
@@ -198,7 +198,7 @@ void fit_line(struct line_fit_pt *lfps, int sz, int i0, int i1, double *lineparm
         //
         // XXX this was using the double-precision atan2. Was there a case where
         // we needed that precision? Seems doubtful.
-        float normal_theta = float(.5f * (CV_PI / 180)) * cv::fastAtan2((float)(-2*Cxy), (float)(Cyy - Cxx));
+        float normal_theta = float(.5f * (CV_PI / 180)) * ncvslideio::fastAtan2((float)(-2*Cxy), (float)(Cyy - Cxx));
         nx = cosf(normal_theta);
         ny = sinf(normal_theta);
     } else {
@@ -469,10 +469,10 @@ int quad_segment_agg(int sz, struct line_fit_pt *lfps, int indices[4]){
 
     int rvalloc_pos = 0;
     int rvalloc_size = 3*sz;
-    cv::AutoBuffer<struct remove_vertex, 0> rvalloc_(std::max(1, rvalloc_size));
+    ncvslideio::AutoBuffer<struct remove_vertex, 0> rvalloc_(std::max(1, rvalloc_size));
     memset(rvalloc_.data(), 0, sizeof(rvalloc_[0]) * rvalloc_.size()); // TODO Add AutoBuffer zero fill
     struct remove_vertex *rvalloc = rvalloc_.data();
-    cv::AutoBuffer<struct segment, 0> segs_(std::max(1, sz)); // TODO Add AutoBuffer zero fill
+    ncvslideio::AutoBuffer<struct segment, 0> segs_(std::max(1, sz)); // TODO Add AutoBuffer zero fill
     memset(segs_.data(), 0, sizeof(segs_[0]) * segs_.size());
     struct segment *segs = segs_.data();
 
@@ -652,7 +652,7 @@ int fit_quad(const DetectorParameters &_params, const Mat im, zarray_t *cluster,
         double dx = p->x - cx;
         double dy = p->y - cy;
 
-        p->theta = cv::fastAtan2((float)dy, (float)dx) * (float)(CV_PI/180);
+        p->theta = ncvslideio::fastAtan2((float)dy, (float)dx) * (float)(CV_PI/180);
 
         dot += dx*p->gx + dy*p->gy;
     }
@@ -752,7 +752,7 @@ int fit_quad(const DetectorParameters &_params, const Mat im, zarray_t *cluster,
     // Step 2. Precompute statistics that allow line fit queries to be
     // efficiently computed for any contiguous range of indices.
 
-    cv::AutoBuffer<struct line_fit_pt, 64> lfps_(sz);
+    ncvslideio::AutoBuffer<struct line_fit_pt, 64> lfps_(sz);
     memset(lfps_.data(), 0, sizeof(lfps_[0]) * lfps_.size()); // TODO Add AutoBuffer zero fill
     struct line_fit_pt *lfps = lfps_.data();
 

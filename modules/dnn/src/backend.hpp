@@ -7,9 +7,9 @@
 #include <memory>
 #include <map>
 
-namespace cv { namespace dnn_backend {
+namespace ncvslideio { namespace dnn_backend {
 
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 
 class CV_EXPORTS NetworkBackend
 {
@@ -20,8 +20,8 @@ public:
 
     /**
     @param loaderID use empty "" for auto
-    @param model see cv::dnn::readNetwork
-    @param config see cv::dnn::readNetwork
+    @param model see ncvslideio::dnn::readNetwork
+    @param config see ncvslideio::dnn::readNetwork
     */
     virtual Net readNetwork(const std::string& loaderID, const std::string& model, const std::string& config) = 0;
 
@@ -38,6 +38,6 @@ public:
 
 
 }  // namespace dnn_backend
-}  // namespace cv
+}  // namespace ncvslideio
 
 #endif // OPENCV_DNN_BACKEND_HPP

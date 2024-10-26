@@ -54,12 +54,12 @@ TEST(Imgproc_CornerSubPix, out_of_image_corners)
         0, 0, 0, 0, 0, 0, 2,
         0, 0, 0, 0, 0, 0, 3};
 
-    cv::Mat image(cv::Size(7, 7), CV_8UC1, (void*)image_pixels, cv::Mat::AUTO_STEP);
-    std::vector<cv::Point2f> corners = {cv::Point2f(5.25, 6.5)};
-    cv::Size win(1, 1);
-    cv::Size zeroZone(-1, -1);
-    cv::TermCriteria criteria;
-    cv::cornerSubPix(image, corners, win, zeroZone, criteria);
+    ncvslideio::Mat image(ncvslideio::Size(7, 7), CV_8UC1, (void*)image_pixels, ncvslideio::Mat::AUTO_STEP);
+    std::vector<ncvslideio::Point2f> corners = {ncvslideio::Point2f(5.25, 6.5)};
+    ncvslideio::Size win(1, 1);
+    ncvslideio::Size zeroZone(-1, -1);
+    ncvslideio::TermCriteria criteria;
+    ncvslideio::cornerSubPix(image, corners, win, zeroZone, criteria);
 
     ASSERT_EQ(corners.size(), 1u);
     ASSERT_TRUE(Rect(0, 0, image.cols, image.rows).contains(corners.front()));
@@ -68,28 +68,28 @@ TEST(Imgproc_CornerSubPix, out_of_image_corners)
 // See https://github.com/opencv/opencv/issues/26016
 TEST(Imgproc_CornerSubPix, corners_on_the_edge)
 {
-    cv::Mat image(500, 500, CV_8UC1);
-    cv::Size win(1, 1);
-    cv::Size zeroZone(-1, -1);
-    cv::TermCriteria criteria;
+    ncvslideio::Mat image(500, 500, CV_8UC1);
+    ncvslideio::Size win(1, 1);
+    ncvslideio::Size zeroZone(-1, -1);
+    ncvslideio::TermCriteria criteria;
 
-    std::vector<cv::Point2f> cornersOK1 = { cv::Point2f(250, std::nextafter(499.5f, 499.5f - 1.0f)) };
-    EXPECT_NO_THROW( cv::cornerSubPix(image, cornersOK1, win, zeroZone, criteria) ) << cornersOK1;
+    std::vector<ncvslideio::Point2f> cornersOK1 = { ncvslideio::Point2f(250, std::nextafter(499.5f, 499.5f - 1.0f)) };
+    EXPECT_NO_THROW( ncvslideio::cornerSubPix(image, cornersOK1, win, zeroZone, criteria) ) << cornersOK1;
 
-    std::vector<cv::Point2f> cornersOK2 = { cv::Point2f(250, 499.5f) };
-    EXPECT_NO_THROW( cv::cornerSubPix(image, cornersOK2, win, zeroZone, criteria) ) << cornersOK2;
+    std::vector<ncvslideio::Point2f> cornersOK2 = { ncvslideio::Point2f(250, 499.5f) };
+    EXPECT_NO_THROW( ncvslideio::cornerSubPix(image, cornersOK2, win, zeroZone, criteria) ) << cornersOK2;
 
-    std::vector<cv::Point2f> cornersOK3 = { cv::Point2f(250, std::nextafter(499.5f, 499.5f + 1.0f)) };
-    EXPECT_NO_THROW( cv::cornerSubPix(image, cornersOK3, win, zeroZone, criteria) ) << cornersOK3;
+    std::vector<ncvslideio::Point2f> cornersOK3 = { ncvslideio::Point2f(250, std::nextafter(499.5f, 499.5f + 1.0f)) };
+    EXPECT_NO_THROW( ncvslideio::cornerSubPix(image, cornersOK3, win, zeroZone, criteria) ) << cornersOK3;
 
-    std::vector<cv::Point2f> cornersOK4 = { cv::Point2f(250, std::nextafter(500.0f, 500.0f - 1.0f)) };
-    EXPECT_NO_THROW( cv::cornerSubPix(image, cornersOK4, win, zeroZone, criteria) ) << cornersOK4;
+    std::vector<ncvslideio::Point2f> cornersOK4 = { ncvslideio::Point2f(250, std::nextafter(500.0f, 500.0f - 1.0f)) };
+    EXPECT_NO_THROW( ncvslideio::cornerSubPix(image, cornersOK4, win, zeroZone, criteria) ) << cornersOK4;
 
-    std::vector<cv::Point2f> cornersNG1 = { cv::Point2f(250, 500.0f) };
-    EXPECT_ANY_THROW( cv::cornerSubPix(image, cornersNG1, win, zeroZone, criteria) ) << cornersNG1;
+    std::vector<ncvslideio::Point2f> cornersNG1 = { ncvslideio::Point2f(250, 500.0f) };
+    EXPECT_ANY_THROW( ncvslideio::cornerSubPix(image, cornersNG1, win, zeroZone, criteria) ) << cornersNG1;
 
-    std::vector<cv::Point2f> cornersNG2 = { cv::Point2f(250, std::nextafter(500.0f, 500.0f + 1.0f)) };
-    EXPECT_ANY_THROW( cv::cornerSubPix(image, cornersNG2, win, zeroZone, criteria) ) << cornersNG2;
+    std::vector<ncvslideio::Point2f> cornersNG2 = { ncvslideio::Point2f(250, std::nextafter(500.0f, 500.0f + 1.0f)) };
+    EXPECT_ANY_THROW( ncvslideio::cornerSubPix(image, cornersNG2, win, zeroZone, criteria) ) << cornersNG2;
 }
 
 }} // namespace

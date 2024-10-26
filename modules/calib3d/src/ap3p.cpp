@@ -5,7 +5,7 @@
 #include <cmath>
 #include <complex>
 #if defined (_MSC_VER) && (_MSC_VER <= 1700)
-static inline double cbrt(double x) { return (double)cv::cubeRoot((float)x); };
+static inline double cbrt(double x) { return (double)ncvslideio::cubeRoot((float)x); };
 #endif
 
 namespace {
@@ -71,7 +71,7 @@ inline void mat_mult(const double a[3][3], const double b[3][3], double result[3
 }
 }
 
-namespace cv {
+namespace ncvslideio {
 void ap3p::init_inverse_parameters() {
     inv_fx = 1. / fx;
     inv_fy = 1. / fy;
@@ -79,7 +79,7 @@ void ap3p::init_inverse_parameters() {
     cy_fy = cy / fy;
 }
 
-ap3p::ap3p(cv::Mat cameraMatrix) {
+ap3p::ap3p(ncvslideio::Mat cameraMatrix) {
     if (cameraMatrix.depth() == CV_32F)
         init_camera_parameters<float>(cameraMatrix);
     else
@@ -272,45 +272,45 @@ int ap3p::computePoses(const double featureVectors[3][4],
     return nb_solutions;
 }
 
-bool ap3p::solve(cv::Mat &R, cv::Mat &tvec, const cv::Mat &opoints, const cv::Mat &ipoints) {
+bool ap3p::solve(ncvslideio::Mat &R, ncvslideio::Mat &tvec, const ncvslideio::Mat &opoints, const ncvslideio::Mat &ipoints) {
     CV_INSTRUMENT_REGION();
 
     double rotation_matrix[3][3] = {}, translation[3] = {};
     std::vector<double> points;
     if (opoints.depth() == ipoints.depth()) {
         if (opoints.depth() == CV_32F)
-            extract_points<cv::Point3f, cv::Point2f>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3f, ncvslideio::Point2f>(opoints, ipoints, points);
         else
-            extract_points<cv::Point3d, cv::Point2d>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3d, ncvslideio::Point2d>(opoints, ipoints, points);
     } else if (opoints.depth() == CV_32F)
-        extract_points<cv::Point3f, cv::Point2d>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3f, ncvslideio::Point2d>(opoints, ipoints, points);
     else
-        extract_points<cv::Point3d, cv::Point2f>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3d, ncvslideio::Point2f>(opoints, ipoints, points);
 
     bool result = solve(rotation_matrix, translation,
                         points[0], points[1], points[2], points[3], points[4],
                         points[5], points[6], points[7], points[8], points[9],
                         points[10], points[11], points[12], points[13],points[14],
                         points[15], points[16], points[17], points[18], points[19]);
-    cv::Mat(3, 1, CV_64F, translation).copyTo(tvec);
-    cv::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
+    ncvslideio::Mat(3, 1, CV_64F, translation).copyTo(tvec);
+    ncvslideio::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
     return result;
 }
 
-int ap3p::solve(std::vector<cv::Mat> &Rs, std::vector<cv::Mat> &tvecs, const cv::Mat &opoints, const cv::Mat &ipoints) {
+int ap3p::solve(std::vector<ncvslideio::Mat> &Rs, std::vector<ncvslideio::Mat> &tvecs, const ncvslideio::Mat &opoints, const ncvslideio::Mat &ipoints) {
     CV_INSTRUMENT_REGION();
 
     double rotation_matrix[4][3][3] = {}, translation[4][3] = {};
     std::vector<double> points;
     if (opoints.depth() == ipoints.depth()) {
         if (opoints.depth() == CV_32F)
-            extract_points<cv::Point3f, cv::Point2f>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3f, ncvslideio::Point2f>(opoints, ipoints, points);
         else
-            extract_points<cv::Point3d, cv::Point2d>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3d, ncvslideio::Point2d>(opoints, ipoints, points);
     } else if (opoints.depth() == CV_32F)
-        extract_points<cv::Point3f, cv::Point2d>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3f, ncvslideio::Point2d>(opoints, ipoints, points);
     else
-        extract_points<cv::Point3d, cv::Point2f>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3d, ncvslideio::Point2f>(opoints, ipoints, points);
 
     const bool p4p = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F)) == 4;
     int solutions = solve(rotation_matrix, translation,
@@ -321,9 +321,9 @@ int ap3p::solve(std::vector<cv::Mat> &Rs, std::vector<cv::Mat> &tvecs, const cv:
                           p4p);
 
     for (int i = 0; i < solutions; i++) {
-        cv::Mat R, tvec;
-        cv::Mat(3, 1, CV_64F, translation[i]).copyTo(tvec);
-        cv::Mat(3, 3, CV_64F, rotation_matrix[i]).copyTo(R);
+        ncvslideio::Mat R, tvec;
+        ncvslideio::Mat(3, 1, CV_64F, translation[i]).copyTo(tvec);
+        ncvslideio::Mat(3, 3, CV_64F, rotation_matrix[i]).copyTo(R);
 
         Rs.push_back(R);
         tvecs.push_back(tvec);

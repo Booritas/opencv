@@ -62,9 +62,9 @@ namespace ocl {
 ////////////////////////////////////////////////////////////////////////////
 // Dft
 
-PARAM_TEST_CASE(Dft, cv::Size, OCL_FFT_TYPE, MatDepth, bool, bool, bool, bool)
+PARAM_TEST_CASE(Dft, ncvslideio::Size, OCL_FFT_TYPE, MatDepth, bool, bool, bool, bool)
 {
-    cv::Size dft_size;
+    ncvslideio::Size dft_size;
     int	dft_flags, depth, cn, dft_type;
     bool hint;
     bool is1d;
@@ -81,18 +81,18 @@ PARAM_TEST_CASE(Dft, cv::Size, OCL_FFT_TYPE, MatDepth, bool, bool, bool, bool)
         dft_flags = 0;
         switch (dft_type)
         {
-        case R2R: dft_flags |= cv::DFT_REAL_OUTPUT; cn = 1; break;
-        case C2R: dft_flags |= cv::DFT_REAL_OUTPUT; cn = 2; break;
-        case R2C: dft_flags |= cv::DFT_COMPLEX_OUTPUT; cn = 1; break;
-        case C2C: dft_flags |= cv::DFT_COMPLEX_OUTPUT; cn = 2; break;
+        case R2R: dft_flags |= ncvslideio::DFT_REAL_OUTPUT; cn = 1; break;
+        case C2R: dft_flags |= ncvslideio::DFT_REAL_OUTPUT; cn = 2; break;
+        case R2C: dft_flags |= ncvslideio::DFT_COMPLEX_OUTPUT; cn = 1; break;
+        case C2C: dft_flags |= ncvslideio::DFT_COMPLEX_OUTPUT; cn = 2; break;
         }
 
         if (GET_PARAM(3))
-            dft_flags |= cv::DFT_INVERSE;
+            dft_flags |= ncvslideio::DFT_INVERSE;
         if (GET_PARAM(4))
-            dft_flags |= cv::DFT_ROWS;
+            dft_flags |= ncvslideio::DFT_ROWS;
         if (GET_PARAM(5))
-            dft_flags |= cv::DFT_SCALE;
+            dft_flags |= ncvslideio::DFT_SCALE;
         hint = GET_PARAM(6);
         is1d = (dft_flags & DFT_ROWS) != 0 || dft_size.height == 1;
     }
@@ -109,15 +109,15 @@ OCL_TEST_P(Dft, Mat)
     generateTestData();
 
     int nonzero_rows = hint ? src.rows - randomInt(1, src.rows-1) : 0;
-    OCL_OFF(cv::dft(src, dst, dft_flags, nonzero_rows));
-    OCL_ON(cv::dft(usrc, udst, dft_flags, nonzero_rows));
+    OCL_OFF(ncvslideio::dft(src, dst, dft_flags, nonzero_rows));
+    OCL_ON(ncvslideio::dft(usrc, udst, dft_flags, nonzero_rows));
 
     // In case forward R2C 1d transform dst contains only half of output
     // without complex conjugate
-    if (dft_type == R2C && is1d && (dft_flags & cv::DFT_INVERSE) == 0)
+    if (dft_type == R2C && is1d && (dft_flags & ncvslideio::DFT_INVERSE) == 0)
     {
-        dst = dst(cv::Range(0, dst.rows), cv::Range(0, dst.cols/2 + 1));
-        udst = udst(cv::Range(0, udst.rows), cv::Range(0, udst.cols/2 + 1));
+        dst = dst(ncvslideio::Range(0, dst.rows), ncvslideio::Range(0, dst.cols/2 + 1));
+        udst = udst(ncvslideio::Range(0, udst.rows), ncvslideio::Range(0, udst.cols/2 + 1));
     }
 
     double eps = src.size().area() * 1e-4;
@@ -166,8 +166,8 @@ OCL_TEST_P(MulSpectrums, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::mulSpectrums(src1_roi, src2_roi, dst_roi, 0, ccorr));
-        OCL_ON(cv::mulSpectrums(usrc1_roi, usrc2_roi, udst_roi, 0, ccorr));
+        OCL_OFF(ncvslideio::mulSpectrums(src1_roi, src2_roi, dst_roi, 0, ccorr));
+        OCL_ON(ncvslideio::mulSpectrums(usrc1_roi, usrc2_roi, udst_roi, 0, ccorr));
 
         OCL_EXPECT_MATS_NEAR_RELATIVE(dst, 1e-6);
     }
@@ -175,7 +175,7 @@ OCL_TEST_P(MulSpectrums, Mat)
 
 OCL_INSTANTIATE_TEST_CASE_P(OCL_ImgProc, MulSpectrums, testing::Combine(Bool(), Bool()));
 
-OCL_INSTANTIATE_TEST_CASE_P(Core, Dft, Combine(Values(cv::Size(45, 72), cv::Size(36, 36), cv::Size(512, 1), cv::Size(1280, 768)),
+OCL_INSTANTIATE_TEST_CASE_P(Core, Dft, Combine(Values(ncvslideio::Size(45, 72), ncvslideio::Size(36, 36), ncvslideio::Size(512, 1), ncvslideio::Size(1280, 768)),
                                                Values((OCL_FFT_TYPE) R2C, (OCL_FFT_TYPE) C2C, (OCL_FFT_TYPE) R2R, (OCL_FFT_TYPE) C2R),
                                                Values(CV_32F, CV_64F),
                                                Bool(), // DFT_INVERSE

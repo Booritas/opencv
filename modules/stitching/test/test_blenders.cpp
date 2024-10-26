@@ -45,8 +45,8 @@ namespace opencv_test { namespace {
 
 TEST(MultiBandBlender, CanBlendTwoImages)
 {
-    Mat image1 = imread(string(cvtest::TS::ptr()->get_data_path()) + "cv/shared/baboon.png");
-    Mat image2 = imread(string(cvtest::TS::ptr()->get_data_path()) + "cv/shared/lena.png");
+    Mat image1 = imread(string(cvtest::TS::ptr()->get_data_path()) + "ncvslideio/shared/baboon.png");
+    Mat image2 = imread(string(cvtest::TS::ptr()->get_data_path()) + "ncvslideio/shared/lena.png");
     ASSERT_EQ(image1.rows, image2.rows); ASSERT_EQ(image1.cols, image2.cols);
 
     Mat image1s, image2s;

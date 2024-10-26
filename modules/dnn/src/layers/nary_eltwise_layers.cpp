@@ -17,10 +17,10 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/eltwise.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -262,7 +262,7 @@ public:
         else if (operation == "where")
             op = OPERATION::WHERE;
         else
-            CV_Error(cv::Error::StsBadArg, "Unknown operation type \"" + operation + "\"");
+            CV_Error(ncvslideio::Error::StsBadArg, "Unknown operation type \"" + operation + "\"");
     }
 
     virtual bool supportBackend(int backendId) CV_OVERRIDE
@@ -333,7 +333,7 @@ public:
         if (op != OPERATION::POW) {
             for (size_t i = 0; i < inputs.size(); i++) {
                 if (inputs[i].depth() != outputs[0].depth()) {
-                    CV_Error(Error::BadDepth, cv::format("NaryEltwiseLayer: Data type mismatch, input %zu of type %d, output of type %d", i, inputs[i].depth(), outputs[0].depth()));
+                    CV_Error(Error::BadDepth, ncvslideio::format("NaryEltwiseLayer: Data type mismatch, input %zu of type %d, output of type %d", i, inputs[i].depth(), outputs[0].depth()));
                 }
             }
         }
@@ -888,7 +888,7 @@ public:
                 opDispatch<float>(std::forward<Args>(args)...);
                 break;
             default:
-                CV_Error(cv::Error::BadDepth, "Unsupported type.");
+                CV_Error(ncvslideio::Error::BadDepth, "Unsupported type.");
         };
     }
 

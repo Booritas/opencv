@@ -15,7 +15,7 @@
 #endif
 
 // defined in core/private.hpp
-namespace cv {
+namespace ncvslideio {
 CV_EXPORTS const char* currentParallelFramework();
 }
 
@@ -25,10 +25,10 @@ static void dumpHWFeatures(bool showAll = false)
     int count = 0;
     for (int i = 0; i < CV_HARDWARE_MAX_FEATURE; i++)
     {
-        cv::String name = cv::getHardwareFeatureName(i);
+        ncvslideio::String name = ncvslideio::getHardwareFeatureName(i);
         if (name.empty())
             continue;
-        bool enabled = cv::checkHardwareSupport(i);
+        bool enabled = ncvslideio::checkHardwareSupport(i);
         if (enabled)
             count++;
         if (enabled || showAll)
@@ -41,10 +41,10 @@ static void dumpHWFeatures(bool showAll = false)
 
 static void dumpParallelFramework()
 {
-    const char* parallelFramework = cv::currentParallelFramework();
+    const char* parallelFramework = ncvslideio::currentParallelFramework();
     if (parallelFramework)
     {
-        int threads = cv::getNumThreads();
+        int threads = ncvslideio::getNumThreads();
         std::cout << "Parallel framework: " << parallelFramework << " (nthreads=" << threads << ")" << std::endl;
     }
 }
@@ -57,11 +57,11 @@ int main(int argc, const char** argv)
     CV_TRACE_ARG_VALUE(argv1, "argv1", argv[1]);
 
 #ifndef OPENCV_WIN32_API
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{ help h usage ? |      | show this help message }"
         "{ verbose v      |      | show build configuration log }"
         "{ opencl         |      | show information about OpenCL (available platforms/devices, default selected device) }"
-        "{ hw             |      | show detected HW features (see cv::checkHardwareSupport() function). Use --hw=0 to show available features only }"
+        "{ hw             |      | show detected HW features (see ncvslideio::checkHardwareSupport() function). Use --hw=0 to show available features only }"
         "{ threads        |      | show configured parallel framework and number of active threads }"
     );
 
@@ -73,7 +73,7 @@ int main(int argc, const char** argv)
 
     if (parser.has("verbose"))
     {
-        std::cout << cv::getBuildInformation().c_str() << std::endl;
+        std::cout << ncvslideio::getBuildInformation().c_str() << std::endl;
     }
     else
     {
@@ -82,7 +82,7 @@ int main(int argc, const char** argv)
 
     if (parser.has("opencl"))
     {
-        cv::dumpOpenCLInformation();
+        ncvslideio::dumpOpenCLInformation();
     }
 
     if (parser.has("hw"))
@@ -96,8 +96,8 @@ int main(int argc, const char** argv)
     }
 
 #else
-    std::cout << cv::getBuildInformation().c_str() << std::endl;
-    cv::dumpOpenCLInformation();
+    std::cout << ncvslideio::getBuildInformation().c_str() << std::endl;
+    ncvslideio::dumpOpenCLInformation();
     dumpHWFeatures();
     dumpParallelFramework();
     MessageBoxA(NULL, "Check console window output", "OpenCV(" CV_VERSION ")", MB_ICONINFORMATION | MB_OK);

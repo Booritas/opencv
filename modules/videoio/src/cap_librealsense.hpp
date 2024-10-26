@@ -9,7 +9,7 @@
 
 #include <librealsense2/rs.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 class VideoCapture_LibRealsense : public IVideoCapture

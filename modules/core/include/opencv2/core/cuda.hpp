@@ -62,7 +62,7 @@
   @}
  */
 
-namespace cv { namespace cuda {
+namespace ncvslideio { namespace cuda {
 
 //! @addtogroup cudacore_struct
 //! @{
@@ -644,8 +644,8 @@ Below is an example that utilizes BufferPool with StackAllocator:
 @code
     #include <opencv2/opencv.hpp>
 
-    using namespace cv;
-    using namespace cv::cuda
+    using namespace ncvslideio;
+    using namespace ncvslideio::cuda
 
     int main()
     {
@@ -661,8 +661,8 @@ Below is an example that utilizes BufferPool with StackAllocator:
         GpuMat d_src2 = pool2.getBuffer(1024, 1024, CV_8UC1);   // 1MB
         GpuMat d_dst2 = pool2.getBuffer(1024, 1024, CV_8UC3);   // 3MB
 
-        cvtColor(d_src1, d_dst1, cv::COLOR_GRAY2BGR, 0, stream1);
-        cvtColor(d_src2, d_dst2, cv::COLOR_GRAY2BGR, 0, stream2);
+        cvtColor(d_src1, d_dst1, ncvslideio::COLOR_GRAY2BGR, 0, stream1);
+        cvtColor(d_src2, d_dst2, ncvslideio::COLOR_GRAY2BGR, 0, stream2);
     }
 @endcode
 
@@ -727,8 +727,8 @@ and the corresponding memory is automatically returned to the pool for later usa
             d_src1.setTo(Scalar(i), stream1);
             d_src2.setTo(Scalar(i), stream2);
 
-            cvtColor(d_src1, d_dst1, cv::COLOR_GRAY2BGR, 0, stream1);
-            cvtColor(d_src2, d_dst2, cv::COLOR_GRAY2BGR, 0, stream2);
+            cvtColor(d_src1, d_dst1, ncvslideio::COLOR_GRAY2BGR, 0, stream1);
+            cvtColor(d_src2, d_dst2, ncvslideio::COLOR_GRAY2BGR, 0, stream2);
                                                                     // The order of destruction of the local variables is:
                                                                     //   d_dst2 => d_src2 => d_dst1 => d_src1
                                                                     // LIFO rule is satisfied, this code runs without error
@@ -837,7 +837,7 @@ public:
      */
     GpuMat createGpuMatHeader() const;
 
-    // Please see cv::Mat for descriptions
+    // Please see ncvslideio::Mat for descriptions
     CV_WRAP bool isContinuous() const;
     CV_WRAP size_t elemSize() const;
     CV_WRAP size_t elemSize1() const;
@@ -848,7 +848,7 @@ public:
     CV_WRAP Size size() const;
     CV_WRAP bool empty() const;
 
-    // Please see cv::Mat for descriptions
+    // Please see ncvslideio::Mat for descriptions
     int flags;
     int rows, cols;
     CV_PROP size_t step;
@@ -891,14 +891,14 @@ also safe.
 @code
 void thread1()
 {
-    cv::cuda::Stream stream1;
-    cv::cuda::func1(..., stream1);
+    ncvslideio::cuda::Stream stream1;
+    ncvslideio::cuda::func1(..., stream1);
 }
 
 void thread2()
 {
-    cv::cuda::Stream stream2;
-    cv::cuda::func2(..., stream2);
+    ncvslideio::cuda::Stream stream2;
+    ncvslideio::cuda::func2(..., stream2);
 }
 @endcode
 
@@ -926,7 +926,7 @@ public:
     @code
         // creates an OpenCV cuda::Stream that manages an asynchronous, non-blocking,
         // non-default CUDA stream
-        cv::cuda::Stream cvStream(cudaStreamNonBlocking);
+        ncvslideio::cuda::Stream cvStream(cudaStreamNonBlocking);
     @endcode
      */
     CV_WRAP Stream(const size_t cudaFlags);
@@ -1330,7 +1330,7 @@ CV_EXPORTS void convertFp16(InputArray _src, OutputArray _dst, Stream& stream = 
 
 //! @} cudacore_init
 
-}} // namespace cv { namespace cuda {
+}} // namespace ncvslideio { namespace cuda {
 
 
 #include "opencv2/core/cuda.inl.hpp"

@@ -34,7 +34,7 @@ Below is the original copyright:
 #include "command.hpp"
 #include "pipeline.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -180,5 +180,5 @@ private:
 };
 
 #endif // HAVE_VULKAN
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 #endif //OPENCV_CONTEXT_VULKAN_HPP

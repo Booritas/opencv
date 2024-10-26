@@ -1227,7 +1227,7 @@ TEST_P(Test_ONNX_conformance, Layer_Test)
     std::vector<Mat> inputs;
     std::vector<Mat> ref_outputs;
 
-    std::string prefix = cv::format("dnn/onnx/conformance/node/%s", test_case.name);
+    std::string prefix = ncvslideio::format("dnn/onnx/conformance/node/%s", test_case.name);
 
     Net net;
     try
@@ -1237,14 +1237,14 @@ TEST_P(Test_ONNX_conformance, Layer_Test)
         //cout << "Read ONNX inputs..." << endl;
         for (int i = 0; i < test_case.inputs; ++i)
         {
-            Mat input = readTensorFromONNX(findDataFile(prefix + cv::format("/test_data_set_0/input_%d.pb", i)));
+            Mat input = readTensorFromONNX(findDataFile(prefix + ncvslideio::format("/test_data_set_0/input_%d.pb", i)));
             inputs.push_back(input);
         }
 
         //cout << "Read ONNX reference outputs..." << endl;
         for (int i = 0; i < test_case.outputs; ++i)
         {
-            Mat output = readTensorFromONNX(findDataFile(prefix + cv::format("/test_data_set_0/output_%d.pb", i)));
+            Mat output = readTensorFromONNX(findDataFile(prefix + ncvslideio::format("/test_data_set_0/output_%d.pb", i)));
             ref_outputs.push_back(output);
         }
 
@@ -1265,7 +1265,7 @@ TEST_P(Test_ONNX_conformance, Layer_Test)
 
     std::vector<std::string> inputNames;
     for (int i = 0; i < inputs.size(); ++i)
-        inputNames.push_back(cv::format("%d", i));
+        inputNames.push_back(ncvslideio::format("%d", i));
     net.setInputsNames(inputNames);
 
     try

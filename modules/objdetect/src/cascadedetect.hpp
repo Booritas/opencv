@@ -2,7 +2,7 @@
 
 #include "opencv2/core/ocl.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 void clipObjects(Size sz, std::vector<Rect>& objects,

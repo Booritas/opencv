@@ -36,7 +36,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "precomp.hpp"
 #include "ippe.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace IPPE {
 PoseSolver::PoseSolver() : IPPE_SMALL(1e-3)
 {
@@ -1097,4 +1097,4 @@ void homographyHO(InputArray _srcPoints, InputArray _targPoints, Matx33d& H)
     H = H * h22_inv;
 }
 }
-} //namespace cv
+} //namespace ncvslideio

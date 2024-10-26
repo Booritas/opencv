@@ -8,7 +8,7 @@
 #ifndef __OPENCV_FEATURES_2D_AKAZE_CONFIG_H__
 #define __OPENCV_FEATURES_2D_AKAZE_CONFIG_H__
 
-namespace cv
+namespace ncvslideio
 {
 /* ************************************************************************* */
 /// AKAZE configuration options structure

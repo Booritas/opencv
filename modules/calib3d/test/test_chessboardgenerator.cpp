@@ -43,7 +43,7 @@
 #include "test_precomp.hpp"
 #include "test_chessboardgenerator.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 ChessBoardGenerator::ChessBoardGenerator(const Size& _patternSize) : sensorWidth(32), sensorHeight(24),
     squareEdgePointsNum(200), min_cos(std::sqrt(3.f)*0.5f), cov(0.5),

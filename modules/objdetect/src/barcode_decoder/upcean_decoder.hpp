@@ -12,7 +12,7 @@
  *   upcean_decoder the abstract basic class for decode formats,
  *   it will have ean13/8,upc_a,upc_e , etc.. class extend this class
 */
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 using std::string;
 using std::vector;
@@ -62,6 +62,6 @@ constexpr static uint MAX_AVG_VARIANCE = static_cast<uint>(PATTERN_MATCH_RESULT_
 constexpr static uint MAX_INDIVIDUAL_VARIANCE = static_cast<uint>(PATTERN_MATCH_RESULT_SCALE_FACTOR * 0.7f);
 
 }
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_BARCODE_UPCEAN_DECODER_HPP

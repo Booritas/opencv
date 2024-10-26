@@ -11,7 +11,7 @@
 #include "streaming/onevpl/utils.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -133,12 +133,12 @@ FileDataProvider::FileDataProvider(const std::string&,
 FileDataProvider::~FileDataProvider() = default;
 
 IDataProvider::mfx_codec_id_type FileDataProvider::get_mfx_codec_id() const {
-    cv::util::suppress_unused_warning(codec);
+    ncvslideio::util::suppress_unused_warning(codec);
     GAPI_Error("Unsupported: G-API compiled without `WITH_GAPI_ONEVPL=ON`");
 }
 
 bool FileDataProvider::fetch_bitstream_data(std::shared_ptr<mfx_bitstream> &) {
-    cv::util::suppress_unused_warning(bitstream_data_size);
+    ncvslideio::util::suppress_unused_warning(bitstream_data_size);
     GAPI_Error("Unsupported: G-API compiled without `WITH_GAPI_ONEVPL=ON`");
 }
 
@@ -149,4 +149,4 @@ bool FileDataProvider::empty() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

@@ -14,7 +14,7 @@
 #include <opencv2/gapi/streaming/source.hpp>
 #include <opencv2/gapi/util/variant.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -38,7 +38,7 @@ namespace onevpl {
  */
 struct GAPI_EXPORTS CfgParam {
     using name_t = std::string;
-    using value_t = cv::util::variant<uint8_t, int8_t,
+    using value_t = ncvslideio::util::variant<uint8_t, int8_t,
                                       uint16_t, int16_t,
                                       uint32_t, int32_t,
                                       uint64_t, int64_t,
@@ -204,6 +204,6 @@ private:
 } //namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_STREAMING_ONEVPL_CFG_PARAMS_HPP

@@ -40,7 +40,7 @@ CV_EXPORTS @interface Double2 : NSObject
 /**
 * The wrapped vector
 */
-@property(readonly) cv::Vec2d& nativeRef;
+@property(readonly) ncvslideio::Vec2d& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -63,7 +63,7 @@ CV_EXPORTS @interface Double2 : NSObject
 */
 -(instancetype)initWithVals:(NSArray<NSNumber*>*)vals;
 #ifdef __cplusplus
-+(instancetype)fromNative:(cv::Vec2d&)vec2d;
++(instancetype)fromNative:(ncvslideio::Vec2d&)vec2d;
 #endif
 
 /**

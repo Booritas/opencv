@@ -9,46 +9,46 @@
 
 #include <opencv2/gapi/ocl/goclkernel.hpp>
 
-const cv::UMat& cv::GOCLContext::inMat(int input)
+const ncvslideio::UMat& ncvslideio::GOCLContext::inMat(int input)
 {
-    return (inArg<cv::UMat>(input));
+    return (inArg<ncvslideio::UMat>(input));
 }
 
-cv::UMat& cv::GOCLContext::outMatR(int output)
+ncvslideio::UMat& ncvslideio::GOCLContext::outMatR(int output)
 {
-    return (*(util::get<cv::UMat*>(m_results.at(output))));
+    return (*(util::get<ncvslideio::UMat*>(m_results.at(output))));
 }
 
-const cv::Scalar& cv::GOCLContext::inVal(int input)
+const ncvslideio::Scalar& ncvslideio::GOCLContext::inVal(int input)
 {
-    return inArg<cv::Scalar>(input);
+    return inArg<ncvslideio::Scalar>(input);
 }
 
-cv::Scalar& cv::GOCLContext::outValR(int output)
+ncvslideio::Scalar& ncvslideio::GOCLContext::outValR(int output)
 {
-    return *util::get<cv::Scalar*>(m_results.at(output));
+    return *util::get<ncvslideio::Scalar*>(m_results.at(output));
 }
 
-cv::detail::VectorRef& cv::GOCLContext::outVecRef(int output)
+ncvslideio::detail::VectorRef& ncvslideio::GOCLContext::outVecRef(int output)
 {
-    return util::get<cv::detail::VectorRef>(m_results.at(output));
+    return util::get<ncvslideio::detail::VectorRef>(m_results.at(output));
 }
 
-cv::detail::OpaqueRef& cv::GOCLContext::outOpaqueRef(int output)
+ncvslideio::detail::OpaqueRef& ncvslideio::GOCLContext::outOpaqueRef(int output)
 {
-    return util::get<cv::detail::OpaqueRef>(m_results.at(output));
+    return util::get<ncvslideio::detail::OpaqueRef>(m_results.at(output));
 }
 
-cv::GOCLKernel::GOCLKernel()
+ncvslideio::GOCLKernel::GOCLKernel()
 {
 }
 
-cv::GOCLKernel::GOCLKernel(const GOCLKernel::F &f)
+ncvslideio::GOCLKernel::GOCLKernel(const GOCLKernel::F &f)
     : m_f(f)
 {
 }
 
-void cv::GOCLKernel::apply(GOCLContext &ctx)
+void ncvslideio::GOCLKernel::apply(GOCLContext &ctx)
 {
     CV_Assert(m_f);
     m_f(ctx);

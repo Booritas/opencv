@@ -41,7 +41,7 @@
 
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class GFTTDetector_Impl CV_FINAL : public GFTTDetector

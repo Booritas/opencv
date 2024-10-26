@@ -70,8 +70,8 @@ TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad')
 
 class PlaneTracker:
     def __init__(self):
-        self.detector = cv.ORB_create( nfeatures = 1000 )
-        self.matcher = cv.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
+        self.detector = ncvslideio.ORB_create( nfeatures = 1000 )
+        self.matcher = ncvslideio.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
         self.targets = []
         self.frame_points = []
 
@@ -115,7 +115,7 @@ class PlaneTracker:
             p0 = [target.keypoints[m.trainIdx].pt for m in matches]
             p1 = [self.frame_points[m.queryIdx].pt for m in matches]
             p0, p1 = np.float32((p0, p1))
-            H, status = cv.findHomography(p0, p1, cv.RANSAC, 3.0)
+            H, status = ncvslideio.findHomography(p0, p1, ncvslideio.RANSAC, 3.0)
             status = status.ravel() != 0
             if status.sum() < MIN_MATCH_COUNT:
                 continue
@@ -123,7 +123,7 @@ class PlaneTracker:
 
             x0, y0, x1, y1 = target.rect
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-            quad = cv.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
+            quad = ncvslideio.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
 
             track = TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad)
             tracked.append(track)
@@ -145,7 +145,7 @@ class App:
         self.paused = False
         self.tracker = PlaneTracker()
 
-        cv.namedWindow('plane')
+        ncvslideio.namedWindow('plane')
         self.rect_sel = common.RectSelector('plane', self.on_rect)
 
     def on_rect(self, rect):
@@ -164,13 +164,13 @@ class App:
             if playing:
                 tracked = self.tracker.track(self.frame)
                 for tr in tracked:
-                    cv.polylines(vis, [np.int32(tr.quad)], True, (255, 255, 255), 2)
+                    ncvslideio.polylines(vis, [np.int32(tr.quad)], True, (255, 255, 255), 2)
                     for (x, y) in np.int32(tr.p1):
-                        cv.circle(vis, (x, y), 2, (255, 255, 255))
+                        ncvslideio.circle(vis, (x, y), 2, (255, 255, 255))
 
             self.rect_sel.draw(vis)
-            cv.imshow('plane', vis)
-            ch = cv.waitKey(1)
+            ncvslideio.imshow('plane', vis)
+            ch = ncvslideio.waitKey(1)
             if ch == ord(' '):
                 self.paused = not self.paused
             if ch == ord('c'):

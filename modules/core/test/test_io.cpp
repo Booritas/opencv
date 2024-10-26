@@ -39,9 +39,9 @@ static SparseMat cvTsGetRandomSparseMat(int dims, const int* sz, int type,
     return m;
 }
 
-static bool cvTsCheckSparse(const cv::SparseMat& m1, const cv::SparseMat& m2, double eps)
+static bool cvTsCheckSparse(const ncvslideio::SparseMat& m1, const ncvslideio::SparseMat& m2, double eps)
 {
-    cv::SparseMatConstIterator it1, it1_end = m1.end();
+    ncvslideio::SparseMatConstIterator it1, it1_end = m1.end();
     int depth = m1.depth();
 
     if( m1.nzcount() != m2.nzcount() ||
@@ -50,7 +50,7 @@ static bool cvTsCheckSparse(const cv::SparseMat& m1, const cv::SparseMat& m2, do
 
     for( it1 = m1.begin(); it1 != it1_end; ++it1 )
     {
-        const cv::SparseMat::Node* node1 = it1.node();
+        const ncvslideio::SparseMat::Node* node1 = it1.node();
         const uchar* v2 = m2.find<uchar>(node1->idx, (size_t*)&node1->hashval);
         if( !v2 )
             return false;
@@ -124,7 +124,7 @@ protected:
                 exp(test_mat, test_mat);
                 Mat test_mat_scale(test_mat.size(), test_mat.type());
                 rng0.fill(test_mat_scale, RNG::UNIFORM, Scalar::all(-1), Scalar::all(1));
-                cv::multiply(test_mat, test_mat_scale, test_mat);
+                ncvslideio::multiply(test_mat, test_mat_scale, test_mat);
             }
 
             depth = cvtest::randInt(rng) % (CV_64F+1);
@@ -142,7 +142,7 @@ protected:
                 exp(test_mat_nd, test_mat_nd);
                 MatND test_mat_scale(test_mat_nd.dims, test_mat_nd.size, test_mat_nd.type());
                 rng0.fill(test_mat_scale, RNG::UNIFORM, Scalar::all(-1), Scalar::all(1));
-                cv::multiply(test_mat_nd, test_mat_scale, test_mat_nd);
+                ncvslideio::multiply(test_mat_nd, test_mat_scale, test_mat_nd);
             }
 
             int ssz[] = {
@@ -365,7 +365,7 @@ protected:
         {
             try
             {
-                string fname = cv::tempfile(suffix[i]);
+                string fname = ncvslideio::tempfile(suffix[i]);
                 vector<int> mi, mi2, mi3, mi4;
                 vector<Mat> mv, mv2, mv3, mv4;
                 vector<UserDefinedType> vudt, vudt2, vudt3, vudt4;
@@ -459,7 +459,7 @@ BIGDATA_TEST(Core_InputOutput, huge)
     rng.fill(mat, RNG::UNIFORM, 0, 1);
     std::cout << "Writing..." << std::endl;
     {
-        FileStorage fs(cv::tempfile(".xml"), FileStorage::WRITE);
+        FileStorage fs(ncvslideio::tempfile(".xml"), FileStorage::WRITE);
         fs << "mat" << mat;
         fs.release();
     }
@@ -472,8 +472,8 @@ TEST(Core_globbing, accuracy)
     std::string patternLenaPng = cvtest::TS::ptr()->get_data_path() + "lena.png";
 
     std::vector<String> lenas, pngLenas;
-    cv::glob(patternLena, lenas, true);
-    cv::glob(patternLenaPng, pngLenas, true);
+    ncvslideio::glob(patternLena, lenas, true);
+    ncvslideio::glob(patternLenaPng, pngLenas, true);
 
     ASSERT_GT(lenas.size(), pngLenas.size());
 
@@ -485,8 +485,8 @@ TEST(Core_globbing, accuracy)
 
 TEST(Core_InputOutput, FileStorage)
 {
-    std::string file = cv::tempfile(".xml");
-    cv::FileStorage f(file, cv::FileStorage::WRITE);
+    std::string file = ncvslideio::tempfile(".xml");
+    ncvslideio::FileStorage f(file, ncvslideio::FileStorage::WRITE);
 
     char arr[66];
     snprintf(arr, sizeof(arr), "snprintf is hell %d", 666);
@@ -496,7 +496,7 @@ TEST(Core_InputOutput, FileStorage)
 
 TEST(Core_InputOutput, FileStorageKey)
 {
-    cv::FileStorage f("dummy.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage f("dummy.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
     EXPECT_NO_THROW(f << "key1" << "value1");
     EXPECT_NO_THROW(f << "_key2" << "value2");
@@ -507,33 +507,33 @@ TEST(Core_InputOutput, FileStorageKey)
 
 TEST(Core_InputOutput, FileStorageSpaces)
 {
-    cv::FileStorage f("dummy.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage f("dummy.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     const int valueCount = 5;
     std::string values[5] = { "", " ", " ", "  a", " some string" };
     for (size_t i = 0; i < valueCount; i++) {
-        EXPECT_NO_THROW(f << cv::format("key%zu", i) << values[i]);
+        EXPECT_NO_THROW(f << ncvslideio::format("key%zu", i) << values[i]);
     }
-    cv::FileStorage f2(f.releaseAndGetString(), cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage f2(f.releaseAndGetString(), ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
     std::string valuesRead[valueCount];
     for (size_t i = 0; i < valueCount; i++) {
-        EXPECT_NO_THROW(f2[cv::format("key%zu", i)] >> valuesRead[i]);
+        EXPECT_NO_THROW(f2[ncvslideio::format("key%zu", i)] >> valuesRead[i]);
         ASSERT_STREQ(values[i].c_str(), valuesRead[i].c_str());
     }
-    std::string fileName = cv::tempfile(".xml");
-    cv::FileStorage g1(fileName, cv::FileStorage::WRITE);
+    std::string fileName = ncvslideio::tempfile(".xml");
+    ncvslideio::FileStorage g1(fileName, ncvslideio::FileStorage::WRITE);
     for (size_t i = 0; i < 2; i++) {
-        EXPECT_NO_THROW(g1 << cv::format("key%zu", i) << values[i]);
+        EXPECT_NO_THROW(g1 << ncvslideio::format("key%zu", i) << values[i]);
     }
     g1.release();
-    cv::FileStorage g2(fileName, cv::FileStorage::APPEND);
+    ncvslideio::FileStorage g2(fileName, ncvslideio::FileStorage::APPEND);
     for (size_t i = 2; i < valueCount; i++) {
-        EXPECT_NO_THROW(g2 << cv::format("key%zu", i) << values[i]);
+        EXPECT_NO_THROW(g2 << ncvslideio::format("key%zu", i) << values[i]);
     }
     g2.release();
-    cv::FileStorage g3(fileName, cv::FileStorage::READ);
+    ncvslideio::FileStorage g3(fileName, ncvslideio::FileStorage::READ);
     std::string valuesReadAppend[valueCount];
     for (size_t i = 0; i < valueCount; i++) {
-        EXPECT_NO_THROW(g3[cv::format("key%zu", i)] >> valuesReadAppend[i]);
+        EXPECT_NO_THROW(g3[ncvslideio::format("key%zu", i)] >> valuesReadAppend[i]);
         ASSERT_STREQ(values[i].c_str(), valuesReadAppend[i].c_str());
     }
     g3.release();
@@ -597,37 +597,37 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
     if (!testReadWrite || generateTestData)
         name = string(cvtest::TS::ptr()->get_data_path()) + "io/" + name;
     else
-        name = cv::tempfile(name.c_str());
+        name = ncvslideio::tempfile(name.c_str());
 
     {
         const size_t rawdata_N = 40;
         std::vector<data_t> rawdata;
 
-        cv::Mat _em_out, _em_in;
-        cv::Mat _2d_out, _2d_in;
-        cv::Mat _nd_out, _nd_in;
-        cv::Mat _rd_out(8, 16, CV_64FC1), _rd_in;
+        ncvslideio::Mat _em_out, _em_in;
+        ncvslideio::Mat _2d_out, _2d_in;
+        ncvslideio::Mat _nd_out, _nd_in;
+        ncvslideio::Mat _rd_out(8, 16, CV_64FC1), _rd_in;
 
         {   /* init */
 
             /* a normal mat */
-            _2d_out = cv::Mat(10, 20, CV_8UC3, cvScalar(1U, 2U, 127U));
+            _2d_out = ncvslideio::Mat(10, 20, CV_8UC3, cvScalar(1U, 2U, 127U));
             for (int i = 0; i < _2d_out.rows; ++i)
                 for (int j = 0; j < _2d_out.cols; ++j)
-                    _2d_out.at<cv::Vec3b>(i, j)[1] = (i + j) % 256;
+                    _2d_out.at<ncvslideio::Vec3b>(i, j)[1] = (i + j) % 256;
 
             /* a 4d mat */
             const int Size[] = {4, 4, 4, 4};
-            cv::Mat _4d(4, Size, CV_64FC4, cvScalar(0.888, 0.111, 0.666, 0.444));
-            const cv::Range ranges[] = {
-                cv::Range(0, 2),
-                cv::Range(0, 2),
-                cv::Range(1, 2),
-                cv::Range(0, 2) };
+            ncvslideio::Mat _4d(4, Size, CV_64FC4, cvScalar(0.888, 0.111, 0.666, 0.444));
+            const ncvslideio::Range ranges[] = {
+                ncvslideio::Range(0, 2),
+                ncvslideio::Range(0, 2),
+                ncvslideio::Range(1, 2),
+                ncvslideio::Range(0, 2) };
             _nd_out = _4d(ranges);
 
             /* a random mat */
-            cv::randu(_rd_out, cv::Scalar(0.0), cv::Scalar(1.0));
+            ncvslideio::randu(_rd_out, ncvslideio::Scalar(0.0), ncvslideio::Scalar(1.0));
 
             /* raw data */
             for (int i = 0; i < (int)rawdata_N; i++) {
@@ -645,7 +645,7 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
         }
         if (testReadWrite || useMemory || generateTestData)
         {
-            cv::FileStorage fs(name, write_flags + (useMemory ? cv::FileStorage::MEMORY : 0));
+            ncvslideio::FileStorage fs(name, write_flags + (useMemory ? ncvslideio::FileStorage::MEMORY : 0));
             fs << "normal_2d_mat" << _2d_out;
             fs << "normal_nd_mat" << _nd_out;
             fs << "empty_2d_mat"  << _em_out;
@@ -691,7 +691,7 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
 
         }
         {   /* read */
-            cv::FileStorage fs(name, cv::FileStorage::READ + (useMemory ? cv::FileStorage::MEMORY : 0));
+            ncvslideio::FileStorage fs(name, ncvslideio::FileStorage::READ + (useMemory ? ncvslideio::FileStorage::MEMORY : 0));
 
             /* mat */
             fs["empty_2d_mat"]  >> _em_in;
@@ -741,7 +741,7 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
         {
             for (int j = 0; j < _2d_out.cols; ++j)
             {
-                EXPECT_EQ(_2d_in.at<cv::Vec3b>(i, j), _2d_out.at<cv::Vec3b>(i, j));
+                EXPECT_EQ(_2d_in.at<ncvslideio::Vec3b>(i, j), _2d_out.at<ncvslideio::Vec3b>(i, j));
                 if (::testing::Test::HasNonfatalFailure())
                 {
                     printf("i = %d, j = %d\n", i, j);
@@ -759,13 +759,13 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
         ASSERT_EQ(_nd_in.cols   , _nd_out.cols);
         ASSERT_EQ(_nd_in.dims   , _nd_out.dims);
         ASSERT_EQ(_nd_in.depth(), _nd_out.depth());
-        EXPECT_EQ(0, cv::norm(_nd_in, _nd_out, NORM_INF));
+        EXPECT_EQ(0, ncvslideio::norm(_nd_in, _nd_out, NORM_INF));
 
         ASSERT_EQ(_rd_in.rows   , _rd_out.rows);
         ASSERT_EQ(_rd_in.cols   , _rd_out.cols);
         ASSERT_EQ(_rd_in.dims   , _rd_out.dims);
         ASSERT_EQ(_rd_in.depth(), _rd_out.depth());
-        EXPECT_EQ(0, cv::norm(_rd_in, _rd_out, NORM_INF));
+        EXPECT_EQ(0, ncvslideio::norm(_rd_in, _rd_out, NORM_INF));
         if (testReadWrite && !useMemory && !generateTestData)
         {
             EXPECT_EQ(0, remove(name.c_str()));
@@ -775,39 +775,39 @@ static void test_filestorage_basic(int write_flags, const char* suffix_name, boo
 
 TEST(Core_InputOutput, filestorage_base64_basic_read_XML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".xml", false);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".xml", false);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_read_YAML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".yml", false);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".yml", false);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_read_JSON)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".json", false);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".json", false);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_rw_XML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".xml", true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".xml", true);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_rw_YAML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".yml", true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".yml", true);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_rw_JSON)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".json", true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".json", true);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_memory_XML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".xml", true, true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".xml", true, true);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_memory_YAML)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".yml", true, true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".yml", true, true);
 }
 TEST(Core_InputOutput, filestorage_base64_basic_memory_JSON)
 {
-    test_filestorage_basic(cv::FileStorage::WRITE_BASE64, ".json", true, true);
+    test_filestorage_basic(ncvslideio::FileStorage::WRITE_BASE64, ".json", true, true);
 }
 
 // issue #21851
@@ -816,7 +816,7 @@ TEST(Core_InputOutput, filestorage_heap_overflow)
     const ::testing::TestInfo* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
     CV_Assert(test_info);
 
-    std::string name = cv::tempfile();
+    std::string name = ncvslideio::tempfile();
     const char data[] = {0x00, 0x2f, 0x4a, 0x4a, 0x50, 0x4a, 0x4a };
 
     std::ofstream file;
@@ -846,20 +846,20 @@ TEST(Core_InputOutput, filestorage_base64_valid_call)
     };
 
     std::vector<int> rawdata(10, static_cast<int>(0x00010203));
-    cv::String str_out = "test_string";
+    ncvslideio::String str_out = "test_string";
 
     for (int n = 0; n < 6; n++)
     {
         const int idx = n / 2;
         const std::string mode_suffix = (n % 2 == 0) ? "" : "?base64";
         std::string suffix_name = basename + "_" + filenames[idx];
-        std::string file_name = cv::tempfile(suffix_name.c_str());
+        std::string file_name = ncvslideio::tempfile(suffix_name.c_str());
         std::string mode_file_name = file_name + mode_suffix;
         SCOPED_TRACE(mode_file_name);
 
         EXPECT_NO_THROW(
         {
-            cv::FileStorage fs(mode_file_name, cv::FileStorage::WRITE_BASE64);
+            ncvslideio::FileStorage fs(mode_file_name, ncvslideio::FileStorage::WRITE_BASE64);
 
             fs << "manydata" << "[";
             fs << "[:";
@@ -873,12 +873,12 @@ TEST(Core_InputOutput, filestorage_base64_valid_call)
         });
 
         {
-            cv::FileStorage fs(file_name, cv::FileStorage::READ);
+            ncvslideio::FileStorage fs(file_name, ncvslideio::FileStorage::READ);
             std::vector<int> data_in(rawdata.size());
             fs["manydata"][0].readRaw("i", (uchar *)data_in.data(), data_in.size() * sizeof(data_in[0]));
             EXPECT_TRUE(fs["manydata"][0].isSeq());
             EXPECT_TRUE(std::equal(rawdata.begin(), rawdata.end(), data_in.begin()));
-            cv::String str_in;
+            ncvslideio::String str_in;
             fs["manydata"][1] >> str_in;
             EXPECT_TRUE(fs["manydata"][1].isString());
             EXPECT_EQ(str_in, str_out);
@@ -887,7 +887,7 @@ TEST(Core_InputOutput, filestorage_base64_valid_call)
 
         EXPECT_NO_THROW(
         {
-            cv::FileStorage fs(mode_file_name, cv::FileStorage::WRITE);
+            ncvslideio::FileStorage fs(mode_file_name, ncvslideio::FileStorage::WRITE);
 
             fs << "manydata" << "[";
             fs << str_out;
@@ -901,8 +901,8 @@ TEST(Core_InputOutput, filestorage_base64_valid_call)
         });
 
         {
-            cv::FileStorage fs(file_name, cv::FileStorage::READ);
-            cv::String str_in;
+            ncvslideio::FileStorage fs(file_name, ncvslideio::FileStorage::READ);
+            ncvslideio::String str_in;
             fs["manydata"][0] >> str_in;
             EXPECT_TRUE(fs["manydata"][0].isString());
             EXPECT_EQ(str_in, str_out);
@@ -934,16 +934,16 @@ TEST(Core_InputOutput, filestorage_base64_invalid_call)
     for (int idx = 0; idx < 3; ++idx)
     {
         const string base_suffix = basename + '_' + filenames[idx];
-        std::string name = cv::tempfile(base_suffix.c_str());
+        std::string name = ncvslideio::tempfile(base_suffix.c_str());
 
         EXPECT_NO_THROW({
-            cv::FileStorage fs(name, cv::FileStorage::WRITE);
+            ncvslideio::FileStorage fs(name, ncvslideio::FileStorage::WRITE);
             fs << "rawdata" << "[";
             fs << "[:";
         });
 
         EXPECT_NO_THROW({
-            cv::FileStorage fs(name, cv::FileStorage::WRITE);
+            ncvslideio::FileStorage fs(name, ncvslideio::FileStorage::WRITE);
             fs << "rawdata" << "[";
             fs << "[:";
             fs.writeRaw("u", name.c_str(), 1);
@@ -955,19 +955,19 @@ TEST(Core_InputOutput, filestorage_base64_invalid_call)
 
 TEST(Core_InputOutput, filestorage_yml_vec2i)
 {
-    const std::string file_name = cv::tempfile("vec2i.yml");
-    cv::Vec2i vec(2, 1), ovec;
+    const std::string file_name = ncvslideio::tempfile("vec2i.yml");
+    ncvslideio::Vec2i vec(2, 1), ovec;
 
     /* write */
     {
-        cv::FileStorage fs(file_name, cv::FileStorage::WRITE);
+        ncvslideio::FileStorage fs(file_name, ncvslideio::FileStorage::WRITE);
         fs << "prms0" << "{" << "vec0" << vec << "}";
         fs.release();
     }
 
     /* read */
     {
-        cv::FileStorage fs(file_name, cv::FileStorage::READ);
+        ncvslideio::FileStorage fs(file_name, ncvslideio::FileStorage::READ);
         fs["prms0"]["vec0"] >> ovec;
         fs.release();
     }
@@ -995,7 +995,7 @@ TEST(Core_InputOutput, filestorage_json_comment)
 
     EXPECT_NO_THROW(
     {
-        cv::FileStorage fs(mem_str, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+        ncvslideio::FileStorage fs(mem_str, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
         fs["key"] >> str;
         fs.release();
     });
@@ -1008,19 +1008,19 @@ TEST(Core_InputOutput, filestorage_utf8_bom)
     EXPECT_NO_THROW(
     {
         String content ="\xEF\xBB\xBF<?xml version=\"1.0\"?>\n<opencv_storage>\n</opencv_storage>\n";
-        cv::FileStorage fs(content, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+        ncvslideio::FileStorage fs(content, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
         fs.release();
     });
     EXPECT_NO_THROW(
     {
         String content ="\xEF\xBB\xBF%YAML:1.0\n";
-        cv::FileStorage fs(content, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+        ncvslideio::FileStorage fs(content, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
         fs.release();
     });
     EXPECT_NO_THROW(
     {
         String content ="\xEF\xBB\xBF{\n}\n";
-        cv::FileStorage fs(content, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+        ncvslideio::FileStorage fs(content, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
         fs.release();
     });
 }
@@ -1081,13 +1081,13 @@ TEST(Core_InputOutput, filestorage_yaml_advanvced_type_heading)
             "   dt: d\n"
             "   data: [ 1. ]";
 
-    cv::FileStorage fs(content, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs(content, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    cv::Mat inputMatrix;
-    cv::Mat actualMatrix = cv::Mat::eye(1, 1, CV_64F);
+    ncvslideio::Mat inputMatrix;
+    ncvslideio::Mat actualMatrix = ncvslideio::Mat::eye(1, 1, CV_64F);
     fs["cameraMatrix"] >> inputMatrix;
 
-    ASSERT_EQ(cv::norm(inputMatrix, actualMatrix, NORM_INF), 0.);
+    ASSERT_EQ(ncvslideio::norm(inputMatrix, actualMatrix, NORM_INF), 0.);
 }
 
 TEST(Core_InputOutput, filestorage_matx_io)
@@ -1101,7 +1101,7 @@ TEST(Core_InputOutput, filestorage_matx_io)
     FileStorage reader(content, FileStorage::READ | FileStorage::MEMORY);
     Matx33d matxTestRead;
     reader["matxTest"] >> matxTestRead;
-    ASSERT_TRUE( cv::norm(matxTest, matxTestRead, NORM_INF) == 0 );
+    ASSERT_TRUE( ncvslideio::norm(matxTest, matxTestRead, NORM_INF) == 0 );
 
     reader.release();
 }
@@ -1139,7 +1139,7 @@ TEST(Core_InputOutput, filestorage_matx_io_with_mat)
     FileStorage reader(content, FileStorage::READ | FileStorage::MEMORY);
     Matx33d matxTestRead;
     reader["normalMat"] >> matxTestRead;
-    ASSERT_TRUE( cv::norm(Mat::eye(3, 3, CV_64F), matxTestRead, NORM_INF) == 0 );
+    ASSERT_TRUE( ncvslideio::norm(Mat::eye(3, 3, CV_64F), matxTestRead, NORM_INF) == 0 );
 
     reader.release();
 }
@@ -1183,17 +1183,17 @@ TEST(Core_InputOutput, filestorage_keypoints_vec_vec_io)
 
 TEST(Core_InputOutput, FileStorage_DMatch)
 {
-    cv::FileStorage fs("dmatch.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("dmatch.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::DMatch d(1, 2, 3, -1.5f);
+    ncvslideio::DMatch d(1, 2, 3, -1.5f);
 
     EXPECT_NO_THROW(fs << "d" << d);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
     EXPECT_STREQ(fs_result.c_str(), "%YAML:1.0\n---\nd: [ 1, 2, 3, -1.5 ]\n");
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    cv::DMatch d_read;
+    ncvslideio::DMatch d_read;
     ASSERT_NO_THROW(fs_read["d"] >> d_read);
 
     EXPECT_EQ(d.queryIdx, d_read.queryIdx);
@@ -1204,18 +1204,18 @@ TEST(Core_InputOutput, FileStorage_DMatch)
 
 TEST(Core_InputOutput, FileStorage_DMatch_vector)
 {
-    cv::FileStorage fs("dmatch.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("dmatch.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::DMatch d1(1, 2, 3, -1.5f);
-    cv::DMatch d2(2, 3, 4, 1.5f);
-    cv::DMatch d3(3, 2, 1, 0.5f);
-    std::vector<cv::DMatch> dv;
+    ncvslideio::DMatch d1(1, 2, 3, -1.5f);
+    ncvslideio::DMatch d2(2, 3, 4, 1.5f);
+    ncvslideio::DMatch d3(3, 2, 1, 0.5f);
+    std::vector<ncvslideio::DMatch> dv;
     dv.push_back(d1);
     dv.push_back(d2);
     dv.push_back(d3);
 
     EXPECT_NO_THROW(fs << "dv" << dv);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
     EXPECT_STREQ(fs_result.c_str(),
 "%YAML:1.0\n"
 "---\n"
@@ -1225,9 +1225,9 @@ TEST(Core_InputOutput, FileStorage_DMatch_vector)
 "   - [ 3, 2, 1, 0.5 ]\n"
 );
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector<cv::DMatch> dv_read;
+    std::vector<ncvslideio::DMatch> dv_read;
     ASSERT_NO_THROW(fs_read["dv"] >> dv_read);
 
     ASSERT_EQ(dv.size(), dv_read.size());
@@ -1242,26 +1242,26 @@ TEST(Core_InputOutput, FileStorage_DMatch_vector)
 
 TEST(Core_InputOutput, FileStorage_DMatch_vector_vector)
 {
-    cv::FileStorage fs("dmatch.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("dmatch.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::DMatch d1(1, 2, 3, -1.5f);
-    cv::DMatch d2(2, 3, 4, 1.5f);
-    cv::DMatch d3(3, 2, 1, 0.5f);
-    std::vector<cv::DMatch> dv1;
+    ncvslideio::DMatch d1(1, 2, 3, -1.5f);
+    ncvslideio::DMatch d2(2, 3, 4, 1.5f);
+    ncvslideio::DMatch d3(3, 2, 1, 0.5f);
+    std::vector<ncvslideio::DMatch> dv1;
     dv1.push_back(d1);
     dv1.push_back(d2);
     dv1.push_back(d3);
 
-    std::vector<cv::DMatch> dv2;
+    std::vector<ncvslideio::DMatch> dv2;
     dv2.push_back(d3);
     dv2.push_back(d1);
 
-    std::vector< std::vector<cv::DMatch> > dvv;
+    std::vector< std::vector<ncvslideio::DMatch> > dvv;
     dvv.push_back(dv1);
     dvv.push_back(dv2);
 
     EXPECT_NO_THROW(fs << "dvv" << dvv);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
 #ifndef OPENCV_TRAITS_ENABLE_DEPRECATED
     EXPECT_STREQ(fs_result.c_str(),
 "%YAML:1.0\n"
@@ -1277,16 +1277,16 @@ TEST(Core_InputOutput, FileStorage_DMatch_vector_vector)
 );
 #endif // OPENCV_TRAITS_ENABLE_DEPRECATED
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector< std::vector<cv::DMatch> > dvv_read;
+    std::vector< std::vector<ncvslideio::DMatch> > dvv_read;
     ASSERT_NO_THROW(fs_read["dvv"] >> dvv_read);
 
     ASSERT_EQ(dvv.size(), dvv_read.size());
     for (size_t j = 0; j < dvv.size(); j++)
     {
-        const std::vector<cv::DMatch>& dv = dvv[j];
-        const std::vector<cv::DMatch>& dv_read = dvv_read[j];
+        const std::vector<ncvslideio::DMatch>& dv = dvv[j];
+        const std::vector<ncvslideio::DMatch>& dv_read = dvv_read[j];
         ASSERT_EQ(dvv.size(), dvv_read.size());
         for (size_t i = 0; i < dv.size(); i++)
         {
@@ -1301,12 +1301,12 @@ TEST(Core_InputOutput, FileStorage_DMatch_vector_vector)
 
 TEST(Core_InputOutput, FileStorage_KeyPoint)
 {
-    cv::FileStorage fs("keypoint.xml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("keypoint.xml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::KeyPoint k(Point2f(1, 2), 16, 0, 100, 1, -1);
+    ncvslideio::KeyPoint k(Point2f(1, 2), 16, 0, 100, 1, -1);
 
     EXPECT_NO_THROW(fs << "k" << k);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
     EXPECT_STREQ(fs_result.c_str(),
 "<?xml version=\"1.0\"?>\n"
 "<opencv_storage>\n"
@@ -1315,9 +1315,9 @@ TEST(Core_InputOutput, FileStorage_KeyPoint)
 "</opencv_storage>\n"
 );
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    cv::KeyPoint k_read;
+    ncvslideio::KeyPoint k_read;
     ASSERT_NO_THROW(fs_read["k"] >> k_read);
 
     EXPECT_EQ(k.pt, k_read.pt);
@@ -1330,18 +1330,18 @@ TEST(Core_InputOutput, FileStorage_KeyPoint)
 
 TEST(Core_InputOutput, FileStorage_KeyPoint_vector)
 {
-    cv::FileStorage fs("keypoint.xml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("keypoint.xml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
-    cv::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
-    cv::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
-    std::vector<cv::KeyPoint> kv;
+    ncvslideio::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
+    ncvslideio::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
+    ncvslideio::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
+    std::vector<ncvslideio::KeyPoint> kv;
     kv.push_back(k1);
     kv.push_back(k2);
     kv.push_back(k3);
 
     EXPECT_NO_THROW(fs << "kv" << kv);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
     EXPECT_STREQ(fs_result.c_str(),
 "<?xml version=\"1.0\"?>\n"
 "<opencv_storage>\n"
@@ -1355,9 +1355,9 @@ TEST(Core_InputOutput, FileStorage_KeyPoint_vector)
 "</opencv_storage>\n"
 );
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector<cv::KeyPoint> kv_read;
+    std::vector<ncvslideio::KeyPoint> kv_read;
     ASSERT_NO_THROW(fs_read["kv"] >> kv_read);
 
     ASSERT_EQ(kv.size(), kv_read.size());
@@ -1374,26 +1374,26 @@ TEST(Core_InputOutput, FileStorage_KeyPoint_vector)
 
 TEST(Core_InputOutput, FileStorage_KeyPoint_vector_vector)
 {
-    cv::FileStorage fs("keypoint.xml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs("keypoint.xml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
 
-    cv::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
-    cv::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
-    cv::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
-    std::vector<cv::KeyPoint> kv1;
+    ncvslideio::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
+    ncvslideio::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
+    ncvslideio::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
+    std::vector<ncvslideio::KeyPoint> kv1;
     kv1.push_back(k1);
     kv1.push_back(k2);
     kv1.push_back(k3);
 
-    std::vector<cv::KeyPoint> kv2;
+    std::vector<ncvslideio::KeyPoint> kv2;
     kv2.push_back(k3);
     kv2.push_back(k1);
 
-    std::vector< std::vector<cv::KeyPoint> > kvv;
+    std::vector< std::vector<ncvslideio::KeyPoint> > kvv;
     kvv.push_back(kv1);
     kvv.push_back(kv2);
 
     EXPECT_NO_THROW(fs << "kvv" << kvv);
-    cv::String fs_result = fs.releaseAndGetString();
+    ncvslideio::String fs_result = fs.releaseAndGetString();
 #ifndef OPENCV_TRAITS_ENABLE_DEPRECATED
     EXPECT_STREQ(fs_result.c_str(),
 "<?xml version=\"1.0\"?>\n"
@@ -1415,16 +1415,16 @@ TEST(Core_InputOutput, FileStorage_KeyPoint_vector_vector)
 );
 #endif //OPENCV_TRAITS_ENABLE_DEPRECATED
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector< std::vector<cv::KeyPoint> > kvv_read;
+    std::vector< std::vector<ncvslideio::KeyPoint> > kvv_read;
     ASSERT_NO_THROW(fs_read["kvv"] >> kvv_read);
 
     ASSERT_EQ(kvv.size(), kvv_read.size());
     for (size_t j = 0; j < kvv.size(); j++)
     {
-        const std::vector<cv::KeyPoint>& kv = kvv[j];
-        const std::vector<cv::KeyPoint>& kv_read = kvv_read[j];
+        const std::vector<ncvslideio::KeyPoint>& kv = kvv[j];
+        const std::vector<ncvslideio::KeyPoint>& kv_read = kvv_read[j];
         ASSERT_EQ(kvv.size(), kvv_read.size());
         for (size_t i = 0; i < kv.size(); i++)
         {
@@ -1442,10 +1442,10 @@ TEST(Core_InputOutput, FileStorage_KeyPoint_vector_vector)
 #ifdef CV__LEGACY_PERSISTENCE
 TEST(Core_InputOutput, FileStorage_LEGACY_DMatch_vector)
 {
-    cv::DMatch d1(1, 2, 3, -1.5f);
-    cv::DMatch d2(2, 3, 4, 1.5f);
-    cv::DMatch d3(3, 2, 1, 0.5f);
-    std::vector<cv::DMatch> dv;
+    ncvslideio::DMatch d1(1, 2, 3, -1.5f);
+    ncvslideio::DMatch d2(2, 3, 4, 1.5f);
+    ncvslideio::DMatch d3(3, 2, 1, 0.5f);
+    std::vector<ncvslideio::DMatch> dv;
     dv.push_back(d1);
     dv.push_back(d2);
     dv.push_back(d3);
@@ -1459,9 +1459,9 @@ TEST(Core_InputOutput, FileStorage_LEGACY_DMatch_vector)
 "</opencv_storage>\n"
     ;
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector<cv::DMatch> dv_read;
+    std::vector<ncvslideio::DMatch> dv_read;
     ASSERT_NO_THROW(fs_read["dv"] >> dv_read);
 
     ASSERT_EQ(dv.size(), dv_read.size());
@@ -1477,15 +1477,15 @@ TEST(Core_InputOutput, FileStorage_LEGACY_DMatch_vector)
 
 TEST(Core_InputOutput, FileStorage_LEGACY_KeyPoint_vector)
 {
-    cv::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
-    cv::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
-    cv::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
-    std::vector<cv::KeyPoint> kv;
+    ncvslideio::KeyPoint k1(Point2f(1, 2), 16, 0, 100, 1, -1);
+    ncvslideio::KeyPoint k2(Point2f(2, 3), 16, 45, 100, 1, -1);
+    ncvslideio::KeyPoint k3(Point2f(1, 2), 16, 90, 100, 1, -1);
+    std::vector<ncvslideio::KeyPoint> kv;
     kv.push_back(k1);
     kv.push_back(k2);
     kv.push_back(k3);
 
-    cv::String fs_result =
+    ncvslideio::String fs_result =
 "<?xml version=\"1.0\"?>\n"
 "<opencv_storage>\n"
 "<kv>\n"
@@ -1495,9 +1495,9 @@ TEST(Core_InputOutput, FileStorage_LEGACY_KeyPoint_vector)
 "</opencv_storage>\n"
     ;
 
-    cv::FileStorage fs_read(fs_result, cv::FileStorage::READ | cv::FileStorage::MEMORY);
+    ncvslideio::FileStorage fs_read(fs_result, ncvslideio::FileStorage::READ | ncvslideio::FileStorage::MEMORY);
 
-    std::vector<cv::KeyPoint> kv_read;
+    std::vector<ncvslideio::KeyPoint> kv_read;
     ASSERT_NO_THROW(fs_read["kv"] >> kv_read);
 
     ASSERT_EQ(kv.size(), kv_read.size());
@@ -1630,7 +1630,7 @@ TEST(Core_InputOutput, FileStorage_json_bool)
 
 TEST(Core_InputOutput, FileStorage_free_file_after_exception)
 {
-    const std::string fileName = cv::tempfile("FileStorage_free_file_after_exception_test.yml");
+    const std::string fileName = ncvslideio::tempfile("FileStorage_free_file_after_exception_test.yml");
     const std::string content = "%YAML:1.0\n cameraMatrix;:: !<tag:yaml.org,2002:opencv-matrix>\n";
 
     std::fstream testFile;
@@ -1659,7 +1659,7 @@ TEST(Core_InputOutput, FileStorage_write_to_sequence)
 
         FileStorage fs(name, FileStorage::WRITE);
         std::vector<int> in = { 23, 42 };
-        fs.startWriteStruct("some_sequence", cv::FileNode::SEQ);
+        fs.startWriteStruct("some_sequence", ncvslideio::FileNode::SEQ);
         for (int i : in)
             fs.write("", i);
         fs.endWriteStruct();
@@ -1679,7 +1679,7 @@ TEST(Core_InputOutput, FileStorage_write_to_sequence)
 
 TEST(Core_InputOutput, FileStorage_YAML_parse_multiple_documents)
 {
-    const std::string filename = cv::tempfile("FileStorage_YAML_parse_multiple_documents.yml");
+    const std::string filename = ncvslideio::tempfile("FileStorage_YAML_parse_multiple_documents.yml");
     FileStorage fs;
 
     fs.open(filename, FileStorage::WRITE);
@@ -1710,14 +1710,14 @@ TEST(Core_InputOutput, FileStorage_JSON_VeryLongLines)
 {
     for( int iter = 0; iter < 2; iter++ )
     {
-        std::string temp_path = cv::tempfile("temp.json");
+        std::string temp_path = ncvslideio::tempfile("temp.json");
         {
         std::ofstream ofs(temp_path);
         ofs << "{     ";
         int prev_len = 0, start = 0;
         for (int i = 0; i < 52500; i++)
         {
-            std::string str = cv::format("\"KEY%d\"", i);
+            std::string str = ncvslideio::format("\"KEY%d\"", i);
             ofs << str;
             if(iter == 1 && i - start > prev_len)
             {
@@ -1726,14 +1726,14 @@ TEST(Core_InputOutput, FileStorage_JSON_VeryLongLines)
                 prev_len = i - start;
                 start = i;
             }
-            str = cv::format(": \"VALUE%d\", ", i);
+            str = ncvslideio::format(": \"VALUE%d\", ", i);
             ofs << str;
         }
         ofs << "}";
         }
 
         {
-        cv::FileStorage fs(temp_path, cv::FileStorage::READ);
+        ncvslideio::FileStorage fs(temp_path, ncvslideio::FileStorage::READ);
         char key[16], val0[16];
         std::string val;
         for(int i = 0; i < 52500; i += 100)
@@ -1761,7 +1761,7 @@ TEST(Core_InputOutput, FileStorage_empty_16823)
         FileStorage fs(fname, FileStorage::READ);
         ADD_FAILURE() << "Exception must be thrown for empty file.";
     }
-    catch (const cv::Exception&)
+    catch (const ncvslideio::Exception&)
     {
         // expected way
         // closed files can be checked manually through 'strace'
@@ -1792,7 +1792,7 @@ TEST(Core_InputOutput, FileStorage_open_empty_16823)
         fs.open(fname, FileStorage::READ);
         ADD_FAILURE() << "Exception must be thrown for empty file.";
     }
-    catch (const cv::Exception&)
+    catch (const ncvslideio::Exception&)
     {
         // expected way
         // closed files can be checked manually through 'strace'
@@ -1812,13 +1812,13 @@ TEST(Core_InputOutput, FileStorage_open_empty_16823)
 TEST(Core_InputOutput, FileStorage_copy_constructor_17412)
 {
     std::string fname = tempfile("test.yml");
-    FileStorage fs_orig(fname, cv::FileStorage::WRITE);
+    FileStorage fs_orig(fname, ncvslideio::FileStorage::WRITE);
     fs_orig << "string" << "wat";
     fs_orig.release();
 
     // no crash anymore
-    cv::FileStorage fs;
-    fs = cv::FileStorage(fname,  cv::FileStorage::READ);
+    ncvslideio::FileStorage fs;
+    fs = ncvslideio::FileStorage(fname,  ncvslideio::FileStorage::READ);
     std::string s;
     fs["string"] >> s;
     EXPECT_EQ(s, "wat");
@@ -1828,16 +1828,16 @@ TEST(Core_InputOutput, FileStorage_copy_constructor_17412)
 TEST(Core_InputOutput, FileStorage_copy_constructor_17412_heap)
 {
     std::string fname = tempfile("test.yml");
-    FileStorage fs_orig(fname, cv::FileStorage::WRITE);
+    FileStorage fs_orig(fname, ncvslideio::FileStorage::WRITE);
     fs_orig << "string" << "wat";
     fs_orig.release();
 
     // no crash anymore
-    cv::FileStorage fs;
+    ncvslideio::FileStorage fs;
 
     // use heap to allow valgrind detections
     {
-    cv::FileStorage* fs2 = new cv::FileStorage(fname, cv::FileStorage::READ);
+    ncvslideio::FileStorage* fs2 = new ncvslideio::FileStorage(fname, ncvslideio::FileStorage::READ);
     fs = *fs2;
     delete fs2;
     }
@@ -1896,25 +1896,25 @@ static void test_20279(FileStorage& fs)
 
 TEST(Core_InputOutput, FileStorage_16F_xml)
 {
-    FileStorage fs("test.xml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs("test.xml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     test_20279(fs);
 }
 
 TEST(Core_InputOutput, FileStorage_16F_yml)
 {
-    FileStorage fs("test.yml", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs("test.yml", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     test_20279(fs);
 }
 
 TEST(Core_InputOutput, FileStorage_16F_json)
 {
-    FileStorage fs("test.json", cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs("test.json", ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     test_20279(fs);
 }
 
 TEST(Core_InputOutput, FileStorage_invalid_path_regression_21448_YAML)
 {
-    FileStorage fs("invalid_path/test.yaml", cv::FileStorage::WRITE);
+    FileStorage fs("invalid_path/test.yaml", ncvslideio::FileStorage::WRITE);
     EXPECT_FALSE(fs.isOpened());
     EXPECT_ANY_THROW(fs.write("K", 1));
     fs.release();
@@ -1922,7 +1922,7 @@ TEST(Core_InputOutput, FileStorage_invalid_path_regression_21448_YAML)
 
 TEST(Core_InputOutput, FileStorage_invalid_path_regression_21448_XML)
 {
-    FileStorage fs("invalid_path/test.xml", cv::FileStorage::WRITE);
+    FileStorage fs("invalid_path/test.xml", ncvslideio::FileStorage::WRITE);
     EXPECT_FALSE(fs.isOpened());
     EXPECT_ANY_THROW(fs.write("K", 1));
     fs.release();
@@ -1930,7 +1930,7 @@ TEST(Core_InputOutput, FileStorage_invalid_path_regression_21448_XML)
 
 TEST(Core_InputOutput, FileStorage_invalid_path_regression_21448_JSON)
 {
-    FileStorage fs("invalid_path/test.json", cv::FileStorage::WRITE);
+    FileStorage fs("invalid_path/test.json", ncvslideio::FileStorage::WRITE);
     EXPECT_FALSE(fs.isOpened());
     EXPECT_ANY_THROW(fs.write("K", 1));
     fs.release();
@@ -1941,10 +1941,10 @@ typedef testing::TestWithParam< std::string > Core_InputOutput_regression_25073;
 
 TEST_P(Core_InputOutput_regression_25073, my_double)
 {
-    cv::String res = "";
+    ncvslideio::String res = "";
     double my_double = 0.5;
 
-    FileStorage fs( GetParam(), cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs( GetParam(), ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     EXPECT_NO_THROW( fs << "my_double" << my_double );
     EXPECT_NO_THROW( fs << "my_int" << 5 );
     EXPECT_NO_THROW( res = fs.releaseAndGetString() );
@@ -1955,10 +1955,10 @@ TEST_P(Core_InputOutput_regression_25073, my_double)
 
 TEST_P(Core_InputOutput_regression_25073, my_float)
 {
-    cv::String res = "";
+    ncvslideio::String res = "";
     float my_float = 0.5;
 
-    FileStorage fs( GetParam(), cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs( GetParam(), ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     EXPECT_NO_THROW( fs << "my_float" << my_float );
     EXPECT_NO_THROW( fs << "my_int" << 5 );
     EXPECT_NO_THROW( res = fs.releaseAndGetString() );
@@ -1969,10 +1969,10 @@ TEST_P(Core_InputOutput_regression_25073, my_float)
 
 TEST_P(Core_InputOutput_regression_25073, my_hfloat)
 {
-    cv::String res = "";
-    cv::hfloat my_hfloat(0.5);
+    ncvslideio::String res = "";
+    ncvslideio::hfloat my_hfloat(0.5);
 
-    FileStorage fs( GetParam(), cv::FileStorage::WRITE | cv::FileStorage::MEMORY);
+    FileStorage fs( GetParam(), ncvslideio::FileStorage::WRITE | ncvslideio::FileStorage::MEMORY);
     EXPECT_NO_THROW( fs << "my_hfloat" << my_hfloat );
     EXPECT_NO_THROW( fs << "my_int" << 5 );
     EXPECT_NO_THROW( res = fs.releaseAndGetString() );
@@ -1988,7 +1988,7 @@ INSTANTIATE_TEST_CASE_P( /*nothing*/,
 // see https://github.com/opencv/opencv/issues/25946
 TEST(Core_InputOutput, FileStorage_invalid_attribute_value_regression_25946)
 {
-    const std::string fileName = cv::tempfile("FileStorage_invalid_attribute_value_exception_test.xml");
+    const std::string fileName = ncvslideio::tempfile("FileStorage_invalid_attribute_value_exception_test.xml");
     const std::string content = "<?xml \n_=";
 
     std::fstream testFile;

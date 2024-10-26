@@ -9,25 +9,25 @@
 
 #include <opencv2/gapi/streaming/onevpl/cfg_params.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
 
 namespace util {
-struct variant_comparator : cv::util::static_visitor<bool, variant_comparator> {
+struct variant_comparator : ncvslideio::util::static_visitor<bool, variant_comparator> {
     variant_comparator(const CfgParam::value_t& rhs_value) :
         rhs(rhs_value) {}
 
     template<typename ValueType>
     bool visit(const ValueType& lhs) const {
-        return lhs < cv::util::get<ValueType>(rhs);
+        return lhs < ncvslideio::util::get<ValueType>(rhs);
     }
 private:
     const CfgParam::value_t& rhs;
 };
 
-struct variant_stringifier : cv::util::static_visitor<std::string, variant_stringifier> {
+struct variant_stringifier : ncvslideio::util::static_visitor<std::string, variant_stringifier> {
     template<typename ValueType>
     std::string visit(const ValueType& lhs) const {
         std::stringstream ss;
@@ -63,7 +63,7 @@ struct CfgParam::Priv {
             return false;
         }
 
-        //TODO implement operator < for cv::util::variant
+        //TODO implement operator < for ncvslideio::util::variant
         const CfgParam::value_t& lvar = get_value_impl();
         const CfgParam::value_t& rvar = rhs.get_value_impl();
         if (lvar.index() < rvar.index()) {
@@ -73,7 +73,7 @@ struct CfgParam::Priv {
         }
 
         util::variant_comparator comp(rvar);
-        return cv::util::visit(comp, lvar);
+        return ncvslideio::util::visit(comp, lvar);
     }
 
     bool operator==(const Priv& rhs) const {
@@ -239,7 +239,7 @@ bool CfgParam::is_major() const {
 }
 
 std::string CfgParam::to_string() const {
-    return get_name() + ":" + cv::util::visit(util::variant_stringifier{},
+    return get_name() + ":" + ncvslideio::util::visit(util::variant_stringifier{},
                                               get_value());
 }
 
@@ -257,4 +257,4 @@ bool CfgParam::operator!=(const CfgParam& rhs) const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

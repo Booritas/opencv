@@ -16,34 +16,34 @@ def cornerHarris_demo(val):
     k = 0.04
 
     # Detecting corners
-    dst = cv.cornerHarris(src_gray, blockSize, apertureSize, k)
+    dst = ncvslideio.cornerHarris(src_gray, blockSize, apertureSize, k)
 
     # Normalizing
     dst_norm = np.empty(dst.shape, dtype=np.float32)
-    cv.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
-    dst_norm_scaled = cv.convertScaleAbs(dst_norm)
+    ncvslideio.normalize(dst, dst_norm, alpha=0, beta=255, norm_type=ncvslideio.NORM_MINMAX)
+    dst_norm_scaled = ncvslideio.convertScaleAbs(dst_norm)
 
     # Drawing a circle around corners
     for i in range(dst_norm.shape[0]):
         for j in range(dst_norm.shape[1]):
             if int(dst_norm[i,j]) > thresh:
-                cv.circle(dst_norm_scaled, (j,i), 5, (0), 2)
+                ncvslideio.circle(dst_norm_scaled, (j,i), 5, (0), 2)
 
     # Showing the result
-    cv.namedWindow(corners_window)
-    cv.imshow(corners_window, dst_norm_scaled)
+    ncvslideio.namedWindow(corners_window)
+    ncvslideio.imshow(corners_window, dst_norm_scaled)
 
 # Load source image and convert it to gray
 parser = argparse.ArgumentParser(description='Code for Harris corner detector tutorial.')
 parser.add_argument('--input', help='Path to input image.', default='building.jpg')
 args = parser.parse_args()
 
-src = cv.imread(cv.samples.findFile(args.input))
+src = ncvslideio.imread(ncvslideio.samples.findFile(args.input))
 if src is None:
     print('Could not open or find the image:', args.input)
     exit(0)
 
-src_gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
+src_gray = ncvslideio.cvtColor(src, ncvslideio.COLOR_BGR2GRAY)
 
 # Create a window and a trackbar
 cv.namedWindow(source_window)

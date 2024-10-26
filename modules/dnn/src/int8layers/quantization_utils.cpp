@@ -7,7 +7,7 @@
 #include "../op_timvx.hpp"
 #include "../ie_ngraph.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -33,7 +33,7 @@ static void broadcast1D2TargetMat(Mat& data, const MatShape& targetShape, int ax
     {
         subTargetShape[broadcast_axis] = targetShape[broadcast_axis];
         data = data.reshape(0, total(data, 0, broadcast_axis));
-        Mat tmp = cv::repeat(data, 1, subTargetShape[broadcast_axis]);
+        Mat tmp = ncvslideio::repeat(data, 1, subTargetShape[broadcast_axis]);
         data = tmp.reshape(0, subTargetShape);
     }
 }

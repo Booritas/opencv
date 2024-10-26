@@ -4,7 +4,7 @@
 
 #include "../../precomp.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 extern const unsigned int nary_eltwise_binary_forward_spv[1757] = {
     0x07230203,0x00010000,0x0008000b,0x00000131,0x00000000,0x00020011,0x00000001,0x0006000b,
@@ -229,4 +229,4 @@ extern const unsigned int nary_eltwise_binary_forward_spv[1757] = {
     0x000000a3,0x000200f8,0x000000a5,0x000100fd,0x00010038
 };
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

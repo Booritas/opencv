@@ -43,7 +43,7 @@
 #include "precomp.hpp"
 #include "grfmt_bmp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static const char* fmtSignBmp = "BM";
@@ -536,7 +536,7 @@ decode_rle8_bad: ;
             result = true;
             break;
         default:
-            CV_Error(cv::Error::StsError, "Invalid/unsupported mode");
+            CV_Error(ncvslideio::Error::StsError, "Invalid/unsupported mode");
         }
     }
     catch(...)
@@ -546,7 +546,7 @@ decode_rle8_bad: ;
 
     if (m_use_rgb && color && img.channels() == 3)
     {
-        cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
+        ncvslideio::cvtColor(img, img, ncvslideio::COLOR_BGR2RGB);
     }
 
     return result;

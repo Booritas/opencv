@@ -52,7 +52,7 @@
 
 #include "THDiskFile.h"
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -114,7 +114,7 @@ struct TorchImporter
     typedef std::map<String, std::pair<int, Mat> > TensorsMap;
     Net net;
 
-    cv::Ptr<THFile> file;
+    ncvslideio::Ptr<THFile> file;
     std::set<int> readedIndexes;
     std::map<int, Mat> storages;
     std::map<int, Mat> tensors;
@@ -125,7 +125,7 @@ struct TorchImporter
     {
         String thName, apiType;
         dnn::LayerParams params;
-        std::vector<cv::Ptr<Module> > modules;
+        std::vector<ncvslideio::Ptr<Module> > modules;
 
         Module(const String &_thName, const String &_apiType = String())
             : thName(_thName), apiType(_apiType) {}
@@ -144,7 +144,7 @@ struct TorchImporter
         moduleCounter = 0;
         testPhase = evaluate;
 
-        file = cv::Ptr<THFile>(THDiskFile_new(filename, "r", 0), THFile_free);
+        file = ncvslideio::Ptr<THFile>(THDiskFile_new(filename, "r", 0), THFile_free);
         CV_Assert(file && THFile_isOpened(file));
 
         if (isBinary)
@@ -463,7 +463,7 @@ struct TorchImporter
         return false;
     }
 
-    static void convertTorchKernelsParams(const Dict &torchParams, cv::dnn::LayerParams &layerParams)
+    static void convertTorchKernelsParams(const Dict &torchParams, ncvslideio::dnn::LayerParams &layerParams)
     {
         layerParams.set("kernel_h", torchParams.get<int>("kH"));
         layerParams.set("kernel_w", torchParams.get<int>("kW"));
@@ -498,8 +498,8 @@ struct TorchImporter
             Dict scalarParams;
             TensorsMap tensorParams;
 
-            cv::Ptr<Module> newModule(new Module(nnName));
-            cv::dnn::LayerParams &layerParams = newModule->params;
+            ncvslideio::Ptr<Module> newModule(new Module(nnName));
+            ncvslideio::dnn::LayerParams &layerParams = newModule->params;
 
             layerParams.set("torch_index", index);
 
@@ -626,17 +626,17 @@ struct TorchImporter
             }
             else if (nnName == "ReLU")
             {
-                curModule->modules.push_back(cv::Ptr<Module>(new Module(nnName, "ReLU")));
+                curModule->modules.push_back(ncvslideio::Ptr<Module>(new Module(nnName, "ReLU")));
                 readObject();
             }
             else if (nnName == "Tanh")
             {
-                curModule->modules.push_back(cv::Ptr<Module>(new Module(nnName, "TanH")));
+                curModule->modules.push_back(ncvslideio::Ptr<Module>(new Module(nnName, "TanH")));
                 readObject();
             }
             else if (nnName == "Sigmoid")
             {
-                curModule->modules.push_back(cv::Ptr<Module>(new Module(nnName, "Sigmoid")));
+                curModule->modules.push_back(ncvslideio::Ptr<Module>(new Module(nnName, "Sigmoid")));
                 readObject();
             }
             else if (nnName == "SpatialBatchNormalization" || nnName == "InstanceNormalization" ||
@@ -690,7 +690,7 @@ struct TorchImporter
                 bool trainPhase = scalarParams.get<bool>("train", false);
                 if (nnName == "InstanceNormalization" || (trainPhase && !testPhase))
                 {
-                    cv::Ptr<Module> mvnModule(new Module(nnName));
+                    ncvslideio::Ptr<Module> mvnModule(new Module(nnName));
                     mvnModule->apiType = "MVN";
                     curModule->modules.push_back(mvnModule);
 
@@ -1231,7 +1231,7 @@ struct TorchImporter
         CV_TRACE_FUNCTION();
 
         CV_Assert(rootModule == NULL);
-        cv::Ptr<Module> rootModule_ = cv::makePtr<Module>("Sequential");
+        ncvslideio::Ptr<Module> rootModule_ = ncvslideio::makePtr<Module>("Sequential");
         rootModule = rootModule_.get();
         curModule = rootModule;
 

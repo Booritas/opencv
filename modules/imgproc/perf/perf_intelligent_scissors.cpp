@@ -12,7 +12,7 @@ PERF_TEST_P(TestIntelligentScissorsMB, buildMap, testing::Values( IMREAD_GRAYSCA
 {
     const int flags = GetParam();
 
-    const Mat image = imread(findDataFile("cv/shared/lena.png"), flags);
+    const Mat image = imread(findDataFile("ncvslideio/shared/lena.png"), flags);
     ASSERT_TRUE(!image.empty());
 
     const Point source_point(275, 63);

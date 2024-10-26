@@ -12,7 +12,7 @@
 #include "opencv2/core/ovx.hpp"
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace ovx
@@ -102,4 +102,4 @@ void setUseOpenVX(bool flag)
 #endif
 }
 
-} // namespace cv
+} // namespace ncvslideio

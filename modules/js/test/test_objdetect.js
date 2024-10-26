@@ -79,18 +79,18 @@ QUnit.module('Object Detection', {});
 QUnit.test('Cascade classification', function(assert) {
     // Group rectangle
     {
-        let rectList = new cv.RectVector();
-        let weights = new cv.IntVector();
+        let rectList = new ncvslideio.RectVector();
+        let weights = new ncvslideio.IntVector();
         let groupThreshold = 1;
         const eps = 0.2;
 
-        let rect1 = new cv.Rect(1, 2, 3, 4);
-        let rect2 = new cv.Rect(1, 4, 2, 3);
+        let rect1 = new ncvslideio.Rect(1, 2, 3, 4);
+        let rect2 = new ncvslideio.Rect(1, 4, 2, 3);
 
         rectList.push_back(rect1);
         rectList.push_back(rect2);
 
-        cv.groupRectangles(rectList, weights, groupThreshold, eps);
+        ncvslideio.groupRectangles(rectList, weights, groupThreshold, eps);
 
 
         rectList.delete();
@@ -100,10 +100,10 @@ QUnit.test('Cascade classification', function(assert) {
     // CascadeClassifier
     {
         if (haarcascade_data) {
-            cv.FS_createDataFile("/", "haarcascade_frontalface_default.xml", haarcascade_data, true, false, false);
+            ncvslideio.FS_createDataFile("/", "haarcascade_frontalface_default.xml", haarcascade_data, true, false, false);
         }
 
-        let classifier = new cv.CascadeClassifier();
+        let classifier = new ncvslideio.CascadeClassifier();
         const modelPath = '/haarcascade_frontalface_default.xml';
 
         assert.equal(classifier.empty(), true);
@@ -112,9 +112,9 @@ QUnit.test('Cascade classification', function(assert) {
         classifier.load(modelPath);
         assert.equal(classifier.empty(), false);
 
-        let image = cv.Mat.eye({height: 10, width: 10}, cv.CV_8UC3);
-        let objects = new cv.RectVector();
-        let numDetections = new cv.IntVector();
+        let image = ncvslideio.Mat.eye({height: 10, width: 10}, ncvslideio.CV_8UC3);
+        let objects = new ncvslideio.RectVector();
+        let numDetections = new ncvslideio.IntVector();
         const scaleFactor = 1.1;
         const minNeighbors = 3;
         const flags = 0;
@@ -140,10 +140,10 @@ QUnit.test('Cascade classification', function(assert) {
 
     // HOGDescriptor
     {
-        let hog = new cv.HOGDescriptor();
-        let mat = new cv.Mat({height: 10, width: 10}, cv.CV_8UC1);
-        let descriptors = new cv.FloatVector();
-        let locations = new cv.PointVector();
+        let hog = new ncvslideio.HOGDescriptor();
+        let mat = new ncvslideio.Mat({height: 10, width: 10}, ncvslideio.CV_8UC1);
+        let descriptors = new ncvslideio.FloatVector();
+        let locations = new ncvslideio.PointVector();
 
 
         assert.equal(hog.winSize.height, 128);
@@ -165,12 +165,12 @@ QUnit.test('Cascade classification', function(assert) {
 });
 QUnit.test('QR code detect and decode', function (assert) {
     {
-        const detector = new cv.QRCodeDetector();
-        let mat = cv.Mat.ones(800, 600, cv.CV_8U);
+        const detector = new ncvslideio.QRCodeDetector();
+        let mat = ncvslideio.Mat.ones(800, 600, ncvslideio.CV_8U);
         assert.ok(mat);
 
         // test detect
-        let points = new cv.Mat();
+        let points = new ncvslideio.Mat();
         let qrCodeFound = detector.detect(mat, points);
         assert.equal(points.rows, 0)
         assert.equal(points.cols, 0)
@@ -183,7 +183,7 @@ QUnit.test('QR code detect and decode', function (assert) {
         assert.equal(qrCodeFound, false);
 
         // test decode (with random numbers)
-        let decodeTestPoints = cv.matFromArray(1, 4, cv.CV_32FC2, [10, 20, 30, 40, 60, 80, 90, 100]);
+        let decodeTestPoints = ncvslideio.matFromArray(1, 4, ncvslideio.CV_32FC2, [10, 20, 30, 40, 60, 80, 90, 100]);
         let qrCodeContent = detector.decode(mat, decodeTestPoints);
         assert.equal(typeof qrCodeContent, 'string');
         assert.equal(qrCodeContent, '');
@@ -206,14 +206,14 @@ QUnit.test('QR code detect and decode', function (assert) {
 });
 QUnit.test('Aruco-based QR code detect', function (assert) {
     {
-        let qrcode_params = new cv.QRCodeDetectorAruco_Params();
-        let detector = new cv.QRCodeDetectorAruco();
-        let mat = cv.Mat.ones(800, 600, cv.CV_8U);
+        let qrcode_params = new ncvslideio.QRCodeDetectorAruco_Params();
+        let detector = new ncvslideio.QRCodeDetectorAruco();
+        let mat = ncvslideio.Mat.ones(800, 600, ncvslideio.CV_8U);
         assert.ok(mat);
 
         detector.setDetectorParameters(qrcode_params);
 
-        let points = new cv.Mat();
+        let points = new ncvslideio.Mat();
         let qrCodeFound = detector.detect(mat, points);
         assert.equal(points.rows, 0)
         assert.equal(points.cols, 0)
@@ -227,11 +227,11 @@ QUnit.test('Aruco-based QR code detect', function (assert) {
 });
 QUnit.test('Bar code detect', function (assert) {
     {
-        let detector = new cv.barcode_BarcodeDetector();
-        let mat = cv.Mat.ones(800, 600, cv.CV_8U);
+        let detector = new ncvslideio.barcode_BarcodeDetector();
+        let mat = ncvslideio.Mat.ones(800, 600, ncvslideio.CV_8U);
         assert.ok(mat);
 
-        let points = new cv.Mat();
+        let points = new ncvslideio.Mat();
         let codeFound = detector.detect(mat, points);
         assert.equal(points.rows, 0)
         assert.equal(points.cols, 0)
@@ -248,13 +248,13 @@ QUnit.test('Bar code detect', function (assert) {
 });
 QUnit.test('Aruco detector', function (assert) {
     {
-        let dictionary = cv.getPredefinedDictionary(cv.DICT_4X4_50);
-        let aruco_image = new cv.Mat();
-        let detectorParameters = new cv.aruco_DetectorParameters();
-        let refineParameters = new cv.aruco_RefineParameters(10, 3, true);
-        let detector = new cv.aruco_ArucoDetector(dictionary, detectorParameters,refineParameters);
-        let corners = new cv.MatVector();
-        let ids = new cv.Mat();
+        let dictionary = ncvslideio.getPredefinedDictionary(ncvslideio.DICT_4X4_50);
+        let aruco_image = new ncvslideio.Mat();
+        let detectorParameters = new ncvslideio.aruco_DetectorParameters();
+        let refineParameters = new ncvslideio.aruco_RefineParameters(10, 3, true);
+        let detector = new ncvslideio.aruco_ArucoDetector(dictionary, detectorParameters,refineParameters);
+        let corners = new ncvslideio.MatVector();
+        let ids = new ncvslideio.Mat();
 
         dictionary.generateImageMarker(10, 128, aruco_image);
         assert.ok(!aruco_image.empty());
@@ -272,18 +272,18 @@ QUnit.test('Aruco detector', function (assert) {
 });
 QUnit.test('Charuco detector', function (assert) {
     {
-        let dictionary = new cv.getPredefinedDictionary(cv.DICT_4X4_50);
-        let boardIds = new cv.Mat();
-        let board = new cv.aruco_CharucoBoard(new cv.Size(3, 5), 64, 32, dictionary, boardIds);
-        let charucoParameters = new cv.aruco_CharucoParameters();
-        let detectorParameters = new cv.aruco_DetectorParameters();
-        let refineParameters = new cv.aruco_RefineParameters(10, 3, true);
-        let detector = new cv.aruco_CharucoDetector(board, charucoParameters, detectorParameters, refineParameters);
-        let board_image = new cv.Mat();
-        let corners = new cv.Mat();
-        let ids = new cv.Mat();
+        let dictionary = new ncvslideio.getPredefinedDictionary(ncvslideio.DICT_4X4_50);
+        let boardIds = new ncvslideio.Mat();
+        let board = new ncvslideio.aruco_CharucoBoard(new ncvslideio.Size(3, 5), 64, 32, dictionary, boardIds);
+        let charucoParameters = new ncvslideio.aruco_CharucoParameters();
+        let detectorParameters = new ncvslideio.aruco_DetectorParameters();
+        let refineParameters = new ncvslideio.aruco_RefineParameters(10, 3, true);
+        let detector = new ncvslideio.aruco_CharucoDetector(board, charucoParameters, detectorParameters, refineParameters);
+        let board_image = new ncvslideio.Mat();
+        let corners = new ncvslideio.Mat();
+        let ids = new ncvslideio.Mat();
 
-        board.generateImage(new cv.Size(300, 500), board_image);
+        board.generateImage(new ncvslideio.Size(300, 500), board_image);
         assert.ok(!board_image.empty());
 
         detector.detectBoard(board_image, corners, ids);

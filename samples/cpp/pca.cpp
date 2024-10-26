@@ -46,7 +46,7 @@
 #include "opencv2/imgcodecs.hpp"
 #include <opencv2/highgui.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 ///////////////////////
@@ -83,7 +83,7 @@ static Mat toGrayscale(InputArray _src) {
     }
     // create and return normalized image
     Mat dst;
-    cv::normalize(_src, dst, 0, 255, NORM_MINMAX, CV_8UC1);
+    ncvslideio::normalize(_src, dst, 0, 255, NORM_MINMAX, CV_8UC1);
     return dst;
 }
 
@@ -105,7 +105,7 @@ static void onTrackbar(int pos, void* ptr)
 
     struct params *p = (struct params *)ptr;
 
-    p->pca = PCA(p->data, cv::Mat(), PCA::DATA_AS_ROW, var);
+    p->pca = PCA(p->data, ncvslideio::Mat(), PCA::DATA_AS_ROW, var);
 
     Mat point = p->pca.project(p->data.row(0));
     Mat reconstruction = p->pca.backProject(point);
@@ -121,7 +121,7 @@ static void onTrackbar(int pos, void* ptr)
 // Main
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{@input||image list}{help h||show help message}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@input||image list}{help h||show help message}");
     if (parser.has("help"))
     {
         parser.printMessage();
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
     // Read in the data. This can fail if not valid
     try {
         read_imgList(imgList, images);
-    } catch (const cv::Exception& e) {
+    } catch (const ncvslideio::Exception& e) {
         cerr << "Error opening file \"" << imgList << "\". Reason: " << e.msg << endl;
         exit(1);
     }
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
     Mat data = formatImagesForPCA(images);
 
     // perform PCA
-    PCA pca(data, cv::Mat(), PCA::DATA_AS_ROW, 0.95); // trackbar is initially set here, also this is a common value for retainedVariance
+    PCA pca(data, ncvslideio::Mat(), PCA::DATA_AS_ROW, 0.95); // trackbar is initially set here, also this is a common value for retainedVariance
 
     // Demonstration of the effect of retainedVariance on the first image
     Mat point = pca.project(data.row(0)); // project into the eigenspace, thus the image becomes a "point"

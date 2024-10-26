@@ -79,7 +79,7 @@ OCL_PERF_TEST_P(WarpAffineFixture, WarpAffine,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::warpAffine(src, dst, M, srcSize, interpolation);
+    OCL_TEST_CYCLE() ncvslideio::warpAffine(src, dst, M, srcSize, interpolation);
 
     SANITY_CHECK(dst, eps);
 }
@@ -111,7 +111,7 @@ OCL_PERF_TEST_P(WarpPerspectiveFixture, WarpPerspective,
     UMat src(srcSize, type), dst(srcSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::warpPerspective(src, dst, M, srcSize, interpolation);
+    OCL_TEST_CYCLE() ncvslideio::warpPerspective(src, dst, M, srcSize, interpolation);
 
     SANITY_CHECK(dst, eps);
 }
@@ -139,7 +139,7 @@ OCL_PERF_TEST_P(ResizeFixture, Resize,
     UMat src(srcSize, type), dst(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::resize(src, dst, Size(), scale, scale, interType);
+    OCL_TEST_CYCLE() ncvslideio::resize(src, dst, Size(), scale, scale, interType);
 
     SANITY_CHECK(dst, eps);
 }
@@ -163,7 +163,7 @@ OCL_PERF_TEST_P(ResizeAreaFixture, Resize,
     UMat src(srcSize, type), dst(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::resize(src, dst, Size(), scale, scale, cv::INTER_AREA);
+    OCL_TEST_CYCLE() ncvslideio::resize(src, dst, Size(), scale, scale, ncvslideio::INTER_AREA);
 
     SANITY_CHECK(dst, eps);
 }
@@ -187,7 +187,7 @@ OCL_PERF_TEST_P(ResizeLinearExactFixture, Resize,
     UMat src(srcSize, type), dst(dstSize, type);
     declare.in(src, WARMUP_RNG).out(dst);
 
-    OCL_TEST_CYCLE() cv::resize(src, dst, Size(), scale, scale, cv::INTER_LINEAR_EXACT);
+    OCL_TEST_CYCLE() ncvslideio::resize(src, dst, Size(), scale, scale, ncvslideio::INTER_LINEAR_EXACT);
 
     SANITY_CHECK(dst, eps);
 }
@@ -227,7 +227,7 @@ OCL_PERF_TEST_P(RemapFixture, Remap,
     }
     declare.in(src, WARMUP_RNG).in(xmap, ymap, WARMUP_READ).out(dst);
 
-    OCL_TEST_CYCLE() cv::remap(src, dst, xmap, ymap, interpolation, borderMode);
+    OCL_TEST_CYCLE() ncvslideio::remap(src, dst, xmap, ymap, interpolation, borderMode);
 
     SANITY_CHECK_NOTHING();
 }

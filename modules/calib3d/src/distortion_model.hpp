@@ -45,7 +45,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace detail {
+namespace ncvslideio { namespace detail {
 /**
 Computes the matrix for the projection onto a tilted image sensor
 \param tauX angular parameter rotation around x-axis

@@ -11,20 +11,20 @@
 #include "opencv2/gapi/util/variant.hpp"
 #include "opencv2/gapi/garg.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 namespace gimpl
 {
     // HostCtor was there, but then moved to public
     // Redeclare here to avoid changing tons of code
-    using HostCtor = cv::detail::HostCtor;
+    using HostCtor = ncvslideio::detail::HostCtor;
 
     using ConstVal = util::variant
     < util::monostate
-    , cv::Scalar
-    , cv::detail::VectorRef
-    , cv::Mat
+    , ncvslideio::Scalar
+    , ncvslideio::detail::VectorRef
+    , ncvslideio::Mat
     >;
 
     struct RcDesc
@@ -48,7 +48,7 @@ namespace gimpl
 
 namespace detail
 {
-    template<> struct GTypeTraits<cv::gimpl::RcDesc>
+    template<> struct GTypeTraits<ncvslideio::gimpl::RcDesc>
     {
         static constexpr const ArgKind kind = ArgKind::GOBJREF;
     };

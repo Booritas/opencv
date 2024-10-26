@@ -13,7 +13,7 @@
 #include <opencv2/gapi/gkernel.hpp>
 #include <opencv2/gapi/gtype_traits.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace streaming {
 
@@ -30,8 +30,8 @@ struct GMeta {
     }
     // A universal yield for meta(), same as in GDesync
     template<typename... R, int... IIs>
-    static std::tuple<R...> yield(cv::GCall &call, cv::detail::Seq<IIs...>) {
-        return std::make_tuple(cv::detail::Yield<R>::yield(call, IIs)...);
+    static std::tuple<R...> yield(ncvslideio::GCall &call, ncvslideio::detail::Seq<IIs...>) {
+        return std::make_tuple(ncvslideio::detail::Yield<R>::yield(call, IIs)...);
     }
     // Also a universal outMeta stub here
     static GMetaArgs getOutMeta(const GMetaArgs &args, const GArgs &) {
@@ -41,40 +41,40 @@ struct GMeta {
 } // namespace detail
 
 template<typename T, typename G>
-cv::GOpaque<T> meta(G g, const std::string &tag) {
-    using O = cv::GOpaque<T>;
-    cv::GKernel k{
+ncvslideio::GOpaque<T> meta(G g, const std::string &tag) {
+    using O = ncvslideio::GOpaque<T>;
+    ncvslideio::GKernel k{
           detail::GMeta::id()                    // kernel id
         , tag                                    // kernel tag. Use meta tag here
         , &detail::GMeta::getOutMeta             // outMeta callback
-        , {cv::detail::GTypeTraits<O>::shape}    // output Shape
-        , {cv::detail::GTypeTraits<G>::op_kind}  // input data kinds
-        , {cv::detail::GObtainCtor<O>::get()}    // output template ctors
-        , {cv::detail::GTypeTraits<O>::op_kind}  // output data kind
+        , {ncvslideio::detail::GTypeTraits<O>::shape}    // output Shape
+        , {ncvslideio::detail::GTypeTraits<G>::op_kind}  // input data kinds
+        , {ncvslideio::detail::GObtainCtor<O>::get()}    // output template ctors
+        , {ncvslideio::detail::GTypeTraits<O>::op_kind}  // output data kind
     };
-    cv::GCall call(std::move(k));
+    ncvslideio::GCall call(std::move(k));
     call.pass(g);
-    return std::get<0>(detail::GMeta::yield<O>(call, cv::detail::MkSeq<1>::type()));
+    return std::get<0>(detail::GMeta::yield<O>(call, ncvslideio::detail::MkSeq<1>::type()));
 }
 
 template<typename G>
-cv::GOpaque<int64_t> timestamp(G g) {
+ncvslideio::GOpaque<int64_t> timestamp(G g) {
     return meta<int64_t>(g, meta_tag::timestamp);
 }
 
 template<typename G>
-cv::GOpaque<int64_t> seq_id(G g) {
+ncvslideio::GOpaque<int64_t> seq_id(G g) {
     return meta<int64_t>(g, meta_tag::seq_id);
 }
 
 template<typename G>
-cv::GOpaque<int64_t> seqNo(G g) {
+ncvslideio::GOpaque<int64_t> seqNo(G g) {
     // Old name, compatibility only
     return seq_id(g);
 }
 
 } // namespace streaming
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GSTREAMING_META_HPP

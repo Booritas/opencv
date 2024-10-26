@@ -12,7 +12,7 @@
 using std::cin;
 using std::cout;
 using std::endl;
-using namespace cv;
+using namespace ncvslideio;
 
 /**
  * @function main

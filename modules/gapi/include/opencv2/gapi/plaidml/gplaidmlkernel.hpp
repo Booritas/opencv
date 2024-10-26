@@ -20,14 +20,14 @@ namespace edsl
 } // namespace edsl
 } // namespace plaidml
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
 namespace plaidml
 {
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 } // namespace plaidml
 } // namespace gapi
@@ -76,7 +76,7 @@ namespace detail
 {
 
 template<class T> struct plaidml_get_in;
-template<> struct plaidml_get_in<cv::GMat>
+template<> struct plaidml_get_in<ncvslideio::GMat>
 {
     static const plaidml::edsl::Tensor& get(GPlaidMLContext& ctx, int idx)
     {
@@ -90,7 +90,7 @@ template<class T> struct plaidml_get_in
 };
 
 template<class T> struct plaidml_get_out;
-template<> struct plaidml_get_out<cv::GMat>
+template<> struct plaidml_get_out<ncvslideio::GMat>
 {
     static plaidml::edsl::Tensor& get(GPlaidMLContext& ctx, int idx)
     {
@@ -121,20 +121,20 @@ struct PlaidMLCallHelper<Impl, std::tuple<Ins...>, std::tuple<Outs...> >
 } // namespace detail
 
 template<class Impl, class K>
-class GPlaidMLKernelImpl: public cv::detail::PlaidMLCallHelper<Impl, typename K::InArgs, typename K::OutArgs>,
-                          public cv::detail::KernelTag
+class GPlaidMLKernelImpl: public ncvslideio::detail::PlaidMLCallHelper<Impl, typename K::InArgs, typename K::OutArgs>,
+                          public ncvslideio::detail::KernelTag
 {
     using P = detail::PlaidMLCallHelper<Impl, typename K::InArgs, typename K::OutArgs>;
 
 public:
     using API = K;
 
-    static cv::gapi::GBackend backend()  { return cv::gapi::plaidml::backend(); }
-    static cv::GPlaidMLKernel kernel()   { return GPlaidMLKernel(&P::call);     }
+    static ncvslideio::gapi::GBackend backend()  { return ncvslideio::gapi::plaidml::backend(); }
+    static ncvslideio::GPlaidMLKernel kernel()   { return GPlaidMLKernel(&P::call);     }
 };
 
-#define GAPI_PLAIDML_KERNEL(Name, API) struct Name: public cv::GPlaidMLKernelImpl<Name, API>
+#define GAPI_PLAIDML_KERNEL(Name, API) struct Name: public ncvslideio::GPlaidMLKernelImpl<Name, API>
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GPLAIDMLKERNEL_HPP

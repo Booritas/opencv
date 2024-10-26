@@ -861,18 +861,18 @@ void cvSetPropTopmost_COCOA( const char* name, const bool topmost )
     __END__;
 }
 
-void setWindowTitle_COCOA(const cv::String& winname, const cv::String& title)
+void setWindowTitle_COCOA(const ncvslideio::String& winname, const ncvslideio::String& title)
 {
     CVWindow *window = cvGetWindow(winname.c_str());
 
     if (window == NULL)
     {
-        cv::namedWindow(winname);
+        ncvslideio::namedWindow(winname);
         window = cvGetWindow(winname.c_str());
     }
 
     if (window == NULL)
-        CV_Error(cv::Error::StsNullPtr, "NULL window");
+        CV_Error(ncvslideio::Error::StsNullPtr, "NULL window");
 
     NSAutoreleasePool* localpool = [[NSAutoreleasePool alloc] init];
 
@@ -1088,7 +1088,7 @@ static NSSize constrainAspectRatio(NSSize base, NSSize constraint) {
     //cout << "setImageData" << endl;
     NSAutoreleasePool* localpool = [[NSAutoreleasePool alloc] init];
 
-    cv::Mat arrMat = cv::cvarrToMat(arr);
+    ncvslideio::Mat arrMat = ncvslideio::cvarrToMat(arr);
     /*CGColorSpaceRef colorspace = NULL;
     CGDataProviderRef provider = NULL;
     int width = cvimage->width;
@@ -1121,7 +1121,7 @@ static NSSize constrainAspectRatio(NSSize base, NSSize constraint) {
                 bitsPerPixel:24];
 
     if (bitmap) {
-        cv::Mat dst(arrMat.rows, arrMat.cols, CV_8UC3, [bitmap bitmapData], [bitmap bytesPerRow]);
+        ncvslideio::Mat dst(arrMat.rows, arrMat.cols, CV_8UC3, [bitmap bitmapData], [bitmap bytesPerRow]);
         convertToShow(arrMat, dst);
     }
     else {
@@ -1136,7 +1136,7 @@ static NSSize constrainAspectRatio(NSSize base, NSSize constraint) {
             colorSpaceName:NSDeviceRGBColorSpace
             bytesPerRow:(arrMat.cols * 4)
             bitsPerPixel:32];
-        cv::Mat dst(arrMat.rows, arrMat.cols, CV_8UC4, [bitmap bitmapData], [bitmap bytesPerRow]);
+        ncvslideio::Mat dst(arrMat.rows, arrMat.cols, CV_8UC4, [bitmap bitmapData], [bitmap bytesPerRow]);
         convertToShow(arrMat, dst);
     }
 

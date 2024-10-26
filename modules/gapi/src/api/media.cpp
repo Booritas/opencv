@@ -7,55 +7,55 @@
 #include "precomp.hpp"
 #include <opencv2/gapi/media.hpp>
 
-struct cv::MediaFrame::Priv {
+struct ncvslideio::MediaFrame::Priv {
     std::unique_ptr<IAdapter> adapter;
 };
 
-cv::MediaFrame::MediaFrame() {
+ncvslideio::MediaFrame::MediaFrame() {
 }
 
-cv::MediaFrame::MediaFrame(AdapterPtr &&ptr)
+ncvslideio::MediaFrame::MediaFrame(AdapterPtr &&ptr)
     : m(new Priv{std::move(ptr)}) {
 }
 
-cv::GFrameDesc cv::MediaFrame::desc() const {
+ncvslideio::GFrameDesc ncvslideio::MediaFrame::desc() const {
     return m->adapter->meta();
 }
 
-cv::MediaFrame::View cv::MediaFrame::access(Access code) const {
+ncvslideio::MediaFrame::View ncvslideio::MediaFrame::access(Access code) const {
     return m->adapter->access(code);
 }
 
-cv::util::any cv::MediaFrame::blobParams() const
+ncvslideio::util::any ncvslideio::MediaFrame::blobParams() const
 {
     return m->adapter->blobParams();
 }
 
-cv::MediaFrame::IAdapter* cv::MediaFrame::getAdapter() const {
+ncvslideio::MediaFrame::IAdapter* ncvslideio::MediaFrame::getAdapter() const {
     return m->adapter.get();
 }
 
-void cv::MediaFrame::serialize(cv::gapi::s11n::IOStream& os) const {
+void ncvslideio::MediaFrame::serialize(ncvslideio::gapi::s11n::IOStream& os) const {
     m->adapter->serialize(os);
 }
 
-cv::MediaFrame::View::View(Ptrs&& ptrs, Strides&& strs, Callback &&cb)
+ncvslideio::MediaFrame::View::View(Ptrs&& ptrs, Strides&& strs, Callback &&cb)
     : ptr   (std::move(ptrs))
     , stride(std::move(strs))
     , m_cb  (std::move(cb)) {
 }
 
-cv::MediaFrame::View::~View() {
+ncvslideio::MediaFrame::View::~View() {
     if (m_cb) {
         m_cb();
     }
 }
 
-cv::util::any cv::MediaFrame::IAdapter::blobParams() const
+ncvslideio::util::any ncvslideio::MediaFrame::IAdapter::blobParams() const
 {
     // Does nothing by default
     return {};
 }
 
-cv::MediaFrame::IAdapter::~IAdapter() {
+ncvslideio::MediaFrame::IAdapter::~IAdapter() {
 }

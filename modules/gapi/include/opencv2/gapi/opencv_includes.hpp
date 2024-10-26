@@ -14,19 +14,19 @@
 #  include <opencv2/core/cvdef.h>
 #  include <opencv2/core/types.hpp>
 #  include <opencv2/core/base.hpp>
-#define GAPI_OWN_TYPES_LIST     cv::gapi::own::Rect,                           \
-                                cv::gapi::own::Size,                           \
-                                cv::gapi::own::Point,                          \
-                                cv::gapi::own::Point2f,                        \
-                                cv::gapi::own::Scalar,                         \
-                                cv::gapi::own::Mat
+#define GAPI_OWN_TYPES_LIST     ncvslideio::gapi::own::Rect,                           \
+                                ncvslideio::gapi::own::Size,                           \
+                                ncvslideio::gapi::own::Point,                          \
+                                ncvslideio::gapi::own::Point2f,                        \
+                                ncvslideio::gapi::own::Scalar,                         \
+                                ncvslideio::gapi::own::Mat
 #else   // Without OpenCV
 #  include <opencv2/gapi/own/cvdefs.hpp>
-#  include <opencv2/gapi/own/types.hpp>  // cv::gapi::own::Rect/Size/Point
-#  include <opencv2/gapi/own/scalar.hpp> // cv::gapi::own::Scalar
+#  include <opencv2/gapi/own/types.hpp>  // ncvslideio::gapi::own::Rect/Size/Point
+#  include <opencv2/gapi/own/scalar.hpp> // ncvslideio::gapi::own::Scalar
 #  include <opencv2/gapi/own/mat.hpp>
-// replacement of cv's structures:
-namespace cv {
+// replacement of ncvslideio's structures:
+namespace ncvslideio {
     using Rect    = gapi::own::Rect;
     using Size    = gapi::own::Size;
     using Point   = gapi::own::Point;
@@ -34,8 +34,8 @@ namespace cv {
     using Point3f = gapi::own::Point3f;
     using Scalar  = gapi::own::Scalar;
     using Mat     = gapi::own::Mat;
-}  // namespace cv
-#define GAPI_OWN_TYPES_LIST     cv::gapi::own::VoidType
+}  // namespace ncvslideio
+#define GAPI_OWN_TYPES_LIST     ncvslideio::gapi::own::VoidType
 
 #endif // !defined(GAPI_STANDALONE)
 

@@ -16,18 +16,18 @@
 #define LAYER_CONSTRUCTOR(ENV, CLS) ENV->GetMethodID(CLS, "<init>", "(J)V")
 
 
-using namespace cv::dnn;
+using namespace ncvslideio::dnn;
 
-void Mat_to_MatShape(cv::Mat& mat, MatShape& matshape);
+void Mat_to_MatShape(ncvslideio::Mat& mat, MatShape& matshape);
 
-void MatShape_to_Mat(MatShape& matshape, cv::Mat& mat);
+void MatShape_to_Mat(MatShape& matshape, ncvslideio::Mat& mat);
 
 std::vector<MatShape> List_to_vector_MatShape(JNIEnv* env, jobject list);
 
-jobject vector_Ptr_Layer_to_List(JNIEnv* env, std::vector<cv::Ptr<cv::dnn::Layer> >& vs);
+jobject vector_Ptr_Layer_to_List(JNIEnv* env, std::vector<ncvslideio::Ptr<ncvslideio::dnn::Layer> >& vs);
 
-std::vector<cv::Ptr<cv::dnn::Layer> > List_to_vector_Ptr_Layer(JNIEnv* env, jobject list);
+std::vector<ncvslideio::Ptr<ncvslideio::dnn::Layer> > List_to_vector_Ptr_Layer(JNIEnv* env, jobject list);
 
-jobject vector_Target_to_List(JNIEnv* env, std::vector<cv::dnn::Target>& vs);
+jobject vector_Target_to_List(JNIEnv* env, std::vector<ncvslideio::dnn::Target>& vs);
 
 #endif	/* DNN_CONVERTERS_HPP */

@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
     console.log('opencv.js loaded');
     if (isNodeJs) {
-      global.cv = cv;
+      global.ncvslideio = ncvslideio;
       global.fillGradient = HelpFunc.fillGradient;
       global.smoothBorder = HelpFunc.smoothBorder;
       global.combine = HelpFunc.combine;
@@ -37,24 +37,24 @@ function perf() {
 
     function addWarpAffineCase(suite, type) {
         suite.add('warpAffine', function() {
-            cv.warpAffine(src, dst, warpMat, sz, interType, borderMode, borderColor);
+            ncvslideio.warpAffine(src, dst, warpMat, sz, interType, borderMode, borderColor);
           }, {
               'setup': function() {
                 let sz = this.params.size;
-                let interType = cv[this.params.interType];
-                let borderMode = cv[this.params.borderMode];
-                let srcSize = new cv.Size(512, 512);
+                let interType = ncvslideio[this.params.interType];
+                let borderMode = ncvslideio[this.params.borderMode];
+                let srcSize = new ncvslideio.Size(512, 512);
 
-                let borderColor = new cv.Scalar.all(150);
-                let src = new cv.Mat(srcSize, cv.CV_8UC4);
-                let dst = new cv.Mat(sz, cv.CV_8UC4);
-                fillGradient(cv, src);
-                if (borderMode == cv.BORDER_CONSTANT) {
-                  smoothBorder(cv, src, borderMode, 1);
+                let borderColor = new ncvslideio.Scalar.all(150);
+                let src = new ncvslideio.Mat(srcSize, ncvslideio.CV_8UC4);
+                let dst = new ncvslideio.Mat(sz, ncvslideio.CV_8UC4);
+                fillGradient(ncvslideio, src);
+                if (borderMode == ncvslideio.BORDER_CONSTANT) {
+                  smoothBorder(ncvslideio, src, borderMode, 1);
                 }
 
-                let point = new cv.Point(src.cols/2.0, src.rows/2.0);
-                let warpMat = cv.getRotationMatrix2D(point, 30.0, 2.2);
+                let point = new ncvslideio.Point(src.cols/2.0, src.rows/2.0);
+                let warpMat = ncvslideio.getRotationMatrix2D(point, 30.0, 2.2);
                 },
               'teardown': function() {
                 src.delete();
@@ -124,11 +124,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

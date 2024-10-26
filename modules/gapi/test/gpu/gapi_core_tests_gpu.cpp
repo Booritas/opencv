@@ -10,8 +10,8 @@
 
 namespace
 {
-#define CORE_GPU [] () { return cv::compile_args(cv::gapi::use_only{cv::gapi::core::gpu::kernels()}); }
-    const std::vector <cv::Size> in_sizes{ cv::Size(1280, 720), cv::Size(128, 128) };
+#define CORE_GPU [] () { return ncvslideio::compile_args(ncvslideio::gapi::use_only{ncvslideio::gapi::core::gpu::kernels()}); }
+    const std::vector <ncvslideio::Size> in_sizes{ ncvslideio::Size(1280, 720), ncvslideio::Size(128, 128) };
 }  // anonymous namespace
 
 namespace opencv_test
@@ -48,13 +48,13 @@ INSTANTIATE_TEST_CASE_P(SubTestGPU, MathOpTest,
                                 Values (1.0),
                                 testing::Bool()));
 
-// FIXME: Accuracy test for DIV math operation fails on CV_8UC3 HD input cv::Mat, double-presicion
-//        input cv::Scalar and CV_16U output cv::Mat when we also test reverse operation on Mac.
-//        Accuracy test for DIV math operation fails on CV_8UC3 VGA input cv::Mat, double-presicion
-//        input cv::Scalar and output cv::Mat having the SAME depth as input one when we also test
+// FIXME: Accuracy test for DIV math operation fails on CV_8UC3 HD input ncvslideio::Mat, double-presicion
+//        input ncvslideio::Scalar and CV_16U output ncvslideio::Mat when we also test reverse operation on Mac.
+//        Accuracy test for DIV math operation fails on CV_8UC3 VGA input ncvslideio::Mat, double-presicion
+//        input ncvslideio::Scalar and output ncvslideio::Mat having the SAME depth as input one when we also test
 //        reverse operation on Mac.
-//        It is oddly, but test doesn't fail if we have VGA CV_8UC3 input cv::Mat, double-precision
-//        input cv::Scalar and output cv::Mat having explicitly specified CV_8U depth when we also
+//        It is oddly, but test doesn't fail if we have VGA CV_8UC3 input ncvslideio::Mat, double-precision
+//        input ncvslideio::Scalar and output ncvslideio::Mat having explicitly specified CV_8U depth when we also
 //        test reverse operation on Mac.
 //        As failures are sporadic, disabling all instantiation cases for DIV operation.
 //        Github ticket: https://github.com/opencv/opencv/issues/18373.
@@ -204,18 +204,18 @@ INSTANTIATE_TEST_CASE_P(ThresholdTestGPU, ThresholdTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_GPU),
-                                Values(cv::THRESH_BINARY, cv::THRESH_BINARY_INV, cv::THRESH_TRUNC,
-                                       cv::THRESH_TOZERO, cv::THRESH_TOZERO_INV),
-                                Values(cv::Scalar(0, 0, 0, 0),
-                                       cv::Scalar(100, 100, 100, 100),
-                                       cv::Scalar(255, 255, 255, 255))));
+                                Values(ncvslideio::THRESH_BINARY, ncvslideio::THRESH_BINARY_INV, ncvslideio::THRESH_TRUNC,
+                                       ncvslideio::THRESH_TOZERO, ncvslideio::THRESH_TOZERO_INV),
+                                Values(ncvslideio::Scalar(0, 0, 0, 0),
+                                       ncvslideio::Scalar(100, 100, 100, 100),
+                                       ncvslideio::Scalar(255, 255, 255, 255))));
 
 INSTANTIATE_TEST_CASE_P(ThresholdTestGPU, ThresholdOTTest,
                         Combine(Values(CV_8UC1),
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_GPU),
-                                Values(cv::THRESH_OTSU, cv::THRESH_TRIANGLE)));
+                                Values(ncvslideio::THRESH_OTSU, ncvslideio::THRESH_TRIANGLE)));
 
 
 INSTANTIATE_TEST_CASE_P(InRangeTestGPU, InRangeTest,
@@ -266,7 +266,7 @@ INSTANTIATE_TEST_CASE_P(CropTestGPU, CropTest,
                                 ValuesIn(in_sizes),
                                 Values(-1),
                                 Values(CORE_GPU),
-                                Values(cv::Rect(10, 8, 20, 35), cv::Rect(4, 10, 37, 50))));
+                                Values(ncvslideio::Rect(10, 8, 20, 35), ncvslideio::Rect(4, 10, 37, 50))));
 
 INSTANTIATE_TEST_CASE_P(LUTTestGPU, LUTTest,
                         Combine(Values(CV_8UC1, CV_8UC3),
@@ -313,7 +313,7 @@ INSTANTIATE_TEST_CASE_P(TransposeTestGPU, TransposeTest,
 
 INSTANTIATE_TEST_CASE_P(BackendOutputAllocationTestGPU, BackendOutputAllocationTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_GPU)));
 
@@ -321,17 +321,17 @@ INSTANTIATE_TEST_CASE_P(BackendOutputAllocationTestGPU, BackendOutputAllocationT
 INSTANTIATE_TEST_CASE_P(DISABLED_BackendOutputAllocationLargeSizeWithCorrectSubmatrixTestGPU,
                         BackendOutputAllocationLargeSizeWithCorrectSubmatrixTest,
                         Combine(Values(CV_8UC3, CV_16SC2, CV_32FC1),
-                                Values(cv::Size(50, 50)),
+                                Values(ncvslideio::Size(50, 50)),
                                 Values(-1),
                                 Values(CORE_GPU)));
 
 INSTANTIATE_TEST_CASE_P(ReInitOutTestGPU, ReInitOutTest,
                         Combine(Values(CV_8UC3, CV_16SC4, CV_32FC1),
-                                Values(cv::Size(640, 480)),
+                                Values(ncvslideio::Size(640, 480)),
                                 Values(-1),
                                 Values(CORE_GPU),
-                                Values(cv::Size(640, 400),
-                                       cv::Size(10, 480))));
+                                Values(ncvslideio::Size(640, 400),
+                                       ncvslideio::Size(10, 480))));
 
 //TODO: fix this backend to allow ConcatVertVec ConcatHorVec
 INSTANTIATE_TEST_CASE_P(DISABLED_ConcatVertVecTestGPU, ConcatVertVecTest,

@@ -44,14 +44,14 @@
 #include "opencl_kernels_stitching.hpp"
 
 #ifdef HAVE_CUDA
-    namespace cv { namespace cuda { namespace device
+    namespace ncvslideio { namespace cuda { namespace device
     {
         namespace blend
         {
             void addSrcWeightGpu16S(const PtrStep<short> src, const PtrStep<short> src_weight,
-                                    PtrStep<short> dst, PtrStep<short> dst_weight, cv::Rect &rc);
+                                    PtrStep<short> dst, PtrStep<short> dst_weight, ncvslideio::Rect &rc);
             void addSrcWeightGpu32F(const PtrStep<short> src, const PtrStepf src_weight,
-                                    PtrStep<short> dst, PtrStepf dst_weight, cv::Rect &rc);
+                                    PtrStep<short> dst, PtrStepf dst_weight, ncvslideio::Rect &rc);
             void normalizeUsingWeightMapGpu16S(const PtrStep<short> weight, PtrStep<short> src,
                                                const int width, const int height);
             void normalizeUsingWeightMapGpu32F(const PtrStepf weight, PtrStep<short> src,
@@ -60,7 +60,7 @@
     }}}
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 static const float WEIGHT_EPS = 1e-5f;
@@ -467,7 +467,7 @@ void MultiBandBlender::feed(InputArray _img, InputArray mask, Point tl)
             cuda::GpuMat &_weight_pyr_gauss = gpu_weight_pyr_gauss_vec_[gpu_feed_idx_][i];
             cuda::GpuMat _dst_band_weights = gpu_dst_band_weights_[i](rc);
 
-            using namespace cv::cuda::device::blend;
+            using namespace ncvslideio::cuda::device::blend;
             if (weight_type_ == CV_32F)
             {
                 addSrcWeightGpu32F(_src_pyr_laplace, _weight_pyr_gauss, _dst_pyr_laplace, _dst_band_weights, rc);
@@ -537,7 +537,7 @@ void MultiBandBlender::feed(InputArray _img, InputArray mask, Point tl)
     {
         Rect rc(x_tl, y_tl, x_br - x_tl, y_br - y_tl);
 #ifdef HAVE_OPENCL
-        if ( !cv::ocl::isOpenCLActivated() ||
+        if ( !ncvslideio::ocl::isOpenCLActivated() ||
              !ocl_MultiBandBlender_feed(src_pyr_laplace[i], weight_pyr_gauss[i],
                     dst_pyr_laplace_[i](rc), dst_band_weights_[i](rc)) )
 #endif
@@ -614,7 +614,7 @@ void MultiBandBlender::blend(InputOutputArray dst, InputOutputArray dst_mask)
             cuda::GpuMat dst_i = gpu_dst_pyr_laplace_[i];
             cuda::GpuMat weight_i = gpu_dst_band_weights_[i];
 
-            using namespace ::cv::cuda::device::blend;
+            using namespace ::ncvslideio::cuda::device::blend;
             if (weight_type_ == CV_32F)
             {
                 normalizeUsingWeightMapGpu32F(weight_i, dst_i, weight_i.cols, weight_i.rows);
@@ -670,7 +670,7 @@ void MultiBandBlender::blend(InputOutputArray dst, InputOutputArray dst_mask)
     else
 #endif
     {
-        cv::UMat dst_band_weights_0;
+        ncvslideio::UMat dst_band_weights_0;
 
         for (int i = 0; i <= num_bands_; ++i)
             normalizeUsingWeightMap(dst_band_weights_[i], dst_pyr_laplace_[i]);
@@ -720,7 +720,7 @@ void normalizeUsingWeightMap(InputArray _weight, InputOutputArray _src)
     Mat weight;
 
 #ifdef HAVE_OPENCL
-    if ( !cv::ocl::isOpenCLActivated() ||
+    if ( !ncvslideio::ocl::isOpenCLActivated() ||
             !ocl_normalizeUsingWeightMap(_weight, _src) )
 #endif
     {
@@ -900,4 +900,4 @@ void restoreImageFromLaplacePyrGpu(std::vector<UMat> &pyr)
 }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

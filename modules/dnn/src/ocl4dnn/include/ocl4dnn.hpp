@@ -49,7 +49,7 @@
 #include <vector>
 #include "common.hpp"
 
-namespace cv { namespace dnn { namespace ocl4dnn {
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
 
 struct OCL4DNNConvConfig
 {
@@ -260,12 +260,12 @@ class OCL4DNNConvSpatial
         bool setupKernelByConfig(int x, int y, int z, int type,
                                  int lx, int ly, int lz,
                                  bool swizzle, bool nullLocal);
-        void generateTunerItems(std::vector< cv::Ptr<tunerParam> > &tunerItems);
-        void generate_dwconv_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+        void generateTunerItems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems);
+        void generate_dwconv_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                         int blockM, int blockK, int blockN);
-        void generate_gemmlike_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+        void generate_gemmlike_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                           int blockM, int blockK, int blockN);
-        void generate_idlf_tuneritems(std::vector< cv::Ptr<tunerParam> > &tunerItems,
+        void generate_idlf_tuneritems(std::vector< ncvslideio::Ptr<tunerParam> > &tunerItems,
                                       int blockM, int blockK, int simd_size);
         void setFusionDefine(ocl4dnnFusedActiv_t fused_activ, bool fused_eltwise);
         void setFusionArg(ocl4dnnFusedActiv_t fused_activ, bool fused_eltwise, int fused_eltwise_offset, ocl::Kernel &kernel, cl_uint &argIdx);
@@ -306,8 +306,8 @@ class OCL4DNNConvSpatial
         bool run_auto_tuning_;
         bool force_auto_tuning_;
         int32_t kernel_index_;
-        std::vector< cv::Ptr<kernelConfig> > kernelQueue;
-        cv::Ptr<kernelConfig> bestKernelConfig;
+        std::vector< ncvslideio::Ptr<kernelConfig> > kernelQueue;
+        ncvslideio::Ptr<kernelConfig> bestKernelConfig;
 
         int32_t bottom_dim_;
         int32_t top_dim_;
@@ -320,7 +320,7 @@ class OCL4DNNConvSpatial
         int32_t blockK_;
         int32_t blockN_;
         std::stringstream options_;
-        cv::ocl::ProgramSource src_;
+        ncvslideio::ocl::ProgramSource src_;
         int32_t prev_kernel_type_;
         float negative_slope_;
         float min_value_;
@@ -524,6 +524,6 @@ class OCL4DNNSoftmax
         bool use_half_;
 };
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn
 
 #endif

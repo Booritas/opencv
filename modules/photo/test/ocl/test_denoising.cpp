@@ -82,8 +82,8 @@ OCL_TEST_P(FastNlMeansDenoising, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::fastNlMeansDenoising(src_roi, dst_roi, std::vector<float>(1, h[0]), templateWindowSize, searchWindowSize, normType));
-        OCL_ON(cv::fastNlMeansDenoising(usrc_roi, udst_roi, std::vector<float>(1, h[0]), templateWindowSize, searchWindowSize, normType));
+        OCL_OFF(ncvslideio::fastNlMeansDenoising(src_roi, dst_roi, std::vector<float>(1, h[0]), templateWindowSize, searchWindowSize, normType));
+        OCL_ON(ncvslideio::fastNlMeansDenoising(usrc_roi, udst_roi, std::vector<float>(1, h[0]), templateWindowSize, searchWindowSize, normType));
 
         OCL_EXPECT_MATS_NEAR(dst, 1);
     }
@@ -97,8 +97,8 @@ OCL_TEST_P(FastNlMeansDenoising_hsep, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::fastNlMeansDenoising(src_roi, dst_roi, h, templateWindowSize, searchWindowSize, normType));
-        OCL_ON(cv::fastNlMeansDenoising(usrc_roi, udst_roi, h, templateWindowSize, searchWindowSize, normType));
+        OCL_OFF(ncvslideio::fastNlMeansDenoising(src_roi, dst_roi, h, templateWindowSize, searchWindowSize, normType));
+        OCL_ON(ncvslideio::fastNlMeansDenoising(usrc_roi, udst_roi, h, templateWindowSize, searchWindowSize, normType));
 
         OCL_EXPECT_MATS_NEAR(dst, 1);
     }
@@ -112,8 +112,8 @@ OCL_TEST_P(FastNlMeansDenoisingColored, Mat)
     {
         generateTestData();
 
-        OCL_OFF(cv::fastNlMeansDenoisingColored(src_roi, dst_roi, h[0], h[0], templateWindowSize, searchWindowSize));
-        OCL_ON(cv::fastNlMeansDenoisingColored(usrc_roi, udst_roi, h[0], h[0], templateWindowSize, searchWindowSize));
+        OCL_OFF(ncvslideio::fastNlMeansDenoisingColored(src_roi, dst_roi, h[0], h[0], templateWindowSize, searchWindowSize));
+        OCL_ON(ncvslideio::fastNlMeansDenoisingColored(usrc_roi, udst_roi, h[0], h[0], templateWindowSize, searchWindowSize));
 
         OCL_EXPECT_MATS_NEAR(dst, 1);
     }

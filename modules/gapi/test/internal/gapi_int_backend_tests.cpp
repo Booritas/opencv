@@ -20,17 +20,17 @@ struct MockMeta
     static const char* name() { return "MockMeta"; }
 };
 
-class GMockBackendImpl final: public cv::gapi::GBackend::Priv
+class GMockBackendImpl final: public ncvslideio::gapi::GBackend::Priv
 {
     virtual void unpackKernel(ade::Graph            &,
                               const ade::NodeHandle &,
-                              const cv::GKernelImpl &) override
+                              const ncvslideio::GKernelImpl &) override
     {
         // Do nothing here
     }
 
     virtual EPtr compile(const ade::Graph &,
-                         const cv::GCompileArgs &,
+                         const ncvslideio::GCompileArgs &,
                          const std::vector<ade::NodeHandle> &) const override
     {
         // Do nothing here as well
@@ -49,29 +49,29 @@ class GMockBackendImpl final: public cv::gapi::GBackend::Priv
     }
 };
 
-static cv::gapi::GBackend mock_backend(std::make_shared<GMockBackendImpl>());
+static ncvslideio::gapi::GBackend mock_backend(std::make_shared<GMockBackendImpl>());
 
 GAPI_OCV_KERNEL(MockFoo, I::Foo)
 {
-    static void run(const cv::Mat &, cv::Mat &) { /*Do nothing*/ }
-    static cv::gapi::GBackend backend() { return mock_backend; } // FIXME: Must be removed
+    static void run(const ncvslideio::Mat &, ncvslideio::Mat &) { /*Do nothing*/ }
+    static ncvslideio::gapi::GBackend backend() { return mock_backend; } // FIXME: Must be removed
 };
 
 } // anonymous namespace
 
 TEST(GBackend, CustomPassesExecuted)
 {
-    cv::GMat in;
-    cv::GMat out = I::Foo::on(in);
-    cv::GComputation c(in, out);
+    ncvslideio::GMat in;
+    ncvslideio::GMat out = I::Foo::on(in);
+    ncvslideio::GComputation c(in, out);
 
     // Prepare compilation parameters manually
-    const auto in_meta = cv::GMetaArg(cv::GMatDesc{CV_8U,1,cv::Size(32,32)});
-    const auto pkg     = cv::gapi::kernels<MockFoo>();
+    const auto in_meta = ncvslideio::GMetaArg(ncvslideio::GMatDesc{CV_8U,1,ncvslideio::Size(32,32)});
+    const auto pkg     = ncvslideio::gapi::kernels<MockFoo>();
 
     // Directly instantiate G-API graph compiler and run partial compilation
-    cv::gimpl::GCompiler compiler(c, {in_meta}, cv::compile_args(pkg));
-    cv::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
+    ncvslideio::gimpl::GCompiler compiler(c, {in_meta}, ncvslideio::compile_args(pkg));
+    ncvslideio::gimpl::GCompiler::GPtr graph = compiler.generateGraph();
     compiler.runPasses(*graph);
 
     // Inspect the graph and verify the metadata written by Mock backend

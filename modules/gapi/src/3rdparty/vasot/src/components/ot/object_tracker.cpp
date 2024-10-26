@@ -73,7 +73,7 @@ class ObjectTracker::Impl {
     vas::BackendType GetBackendType() const noexcept;
     bool GetTrackingPerClass() const noexcept;
     void SetDeltaTime(float delta_t);
-    std::vector<Object> Track(const cv::Mat &frame, const std::vector<DetectedObject> &objects);
+    std::vector<Object> Track(const ncvslideio::Mat &frame, const std::vector<DetectedObject> &objects);
 
   private:
     std::unique_ptr<vas::ot::Tracker> tracker_;
@@ -131,7 +131,7 @@ void ObjectTracker::SetFrameDeltaTime(float frame_delta_t) {
     impl_->SetDeltaTime(frame_delta_t);
 }
 
-std::vector<Object> ObjectTracker::Track(const cv::Mat &frame, const std::vector<DetectedObject> &objects) {
+std::vector<Object> ObjectTracker::Track(const ncvslideio::Mat &frame, const std::vector<DetectedObject> &objects) {
     return impl_->Track(frame, objects);
 }
 
@@ -200,7 +200,7 @@ bool ObjectTracker::Impl::GetTrackingPerClass() const noexcept {
     return tracking_per_class_;
 }
 
-std::vector<Object> ObjectTracker::Impl::Track(const cv::Mat &frame,
+std::vector<Object> ObjectTracker::Impl::Track(const ncvslideio::Mat &frame,
                                                const std::vector<DetectedObject> &detected_objects) {
     if (frame.cols <= 0 || frame.rows <= 0) {
         std::cout << "Error: Invalid frame size(" << frame.cols << "x" << frame.rows << ") empty("
@@ -209,7 +209,7 @@ std::vector<Object> ObjectTracker::Impl::Track(const cv::Mat &frame,
     }
     int32_t frame_w = frame.cols;
     int32_t frmae_h = (input_color_format_ == vas::ColorFormat::NV12) ? frame.rows * 2 / 3 : frame.rows;
-    cv::Rect frame_rect(0, 0, frame_w, frmae_h);
+    ncvslideio::Rect frame_rect(0, 0, frame_w, frmae_h);
 
     TRACE("START");
     PROF_START(PROF_COMPONENTS_OT_RUN_TRACK);
@@ -221,7 +221,7 @@ std::vector<Object> ObjectTracker::Impl::Track(const cv::Mat &frame,
         vas::ot::Detection detection;
 
         detection.class_label = object.class_label;
-        detection.rect = static_cast<cv::Rect2f>(object.rect);
+        detection.rect = static_cast<ncvslideio::Rect2f>(object.rect);
         detection.index = index;
 
         detections.emplace_back(detection);
@@ -235,11 +235,11 @@ std::vector<Object> ObjectTracker::Impl::Track(const cv::Mat &frame,
 
         for (const auto &tracklet : produced_tracklets_) // result 'Tracklet'
         {
-            cv::Rect rect = static_cast<cv::Rect>(tracklet->trajectory_filtered.back());
+            ncvslideio::Rect rect = static_cast<ncvslideio::Rect>(tracklet->trajectory_filtered.back());
             if ((rect & frame_rect).area() > 0) {
                 Object object;
                 // TRACE("     - ID(%d) Status(%d)", tracklet.id, tracklet.status);
-                object.rect = static_cast<cv::Rect>(tracklet->trajectory_filtered.back());
+                object.rect = static_cast<ncvslideio::Rect>(tracklet->trajectory_filtered.back());
                 object.tracking_id = tracklet->id;
                 object.class_label = tracklet->label;
                 object.association_idx = tracklet->association_idx;

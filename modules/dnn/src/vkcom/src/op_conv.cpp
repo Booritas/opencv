@@ -6,7 +6,7 @@
 #include "internal.hpp"
 #include "../include/op_conv.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 #define BLOCK_SIZE 64
@@ -244,7 +244,7 @@ bool OpConv::computeGroupCount()
         group_z_ = 1;
     }
     else
-        CV_Error(cv::Error::StsNotImplemented, "shader type is not supported at compute GroupCount.");
+        CV_Error(ncvslideio::Error::StsNotImplemented, "shader type is not supported at compute GroupCount.");
 
     CV_Assert(group_x_ <= MAX_GROUP_COUNT_X);
     CV_Assert(group_y_ <= MAX_GROUP_COUNT_Y);
@@ -255,4 +255,4 @@ bool OpConv::computeGroupCount()
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

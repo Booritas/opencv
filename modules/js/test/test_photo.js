@@ -45,64 +45,64 @@ QUnit.module('Photo', {});
 QUnit.test('test_photo', function(assert) {
     // CalibrateDebevec
     {
-        let calibration = new cv.CalibrateDebevec();
+        let calibration = new ncvslideio.CalibrateDebevec();
         assert.ok(true, calibration);
         //let response = calibration.process(images, exposures);
     }
     // CalibrateRobertson
     {
-        let calibration = new cv.CalibrateRobertson();
+        let calibration = new ncvslideio.CalibrateRobertson();
         assert.ok(true, calibration);
         //let response = calibration.process(images, exposures);
     }
 
     // MergeDebevec
     {
-        let merge = new cv.MergeDebevec();
+        let merge = new ncvslideio.MergeDebevec();
         assert.ok(true, merge);
         //let hdr = merge.process(images, exposures, response);
     }
     // MergeMertens
     {
-        let merge = new cv.MergeMertens();
+        let merge = new ncvslideio.MergeMertens();
         assert.ok(true, merge);
         //let hdr = merge.process(images, exposures, response);
     }
     // MergeRobertson
     {
-        let merge = new cv.MergeRobertson();
+        let merge = new ncvslideio.MergeRobertson();
         assert.ok(true, merge);
         //let hdr = merge.process(images, exposures, response);
     }
 
     // TonemapDrago
     {
-        let tonemap = new cv.TonemapDrago();
+        let tonemap = new ncvslideio.TonemapDrago();
         assert.ok(true, tonemap);
-        // let ldr = new cv.Mat();
+        // let ldr = new ncvslideio.Mat();
         // let retval = tonemap.process(hdr, ldr);
     }
     // TonemapMantiuk
     {
-        let tonemap = new cv.TonemapMantiuk();
+        let tonemap = new ncvslideio.TonemapMantiuk();
         assert.ok(true, tonemap);
-        // let ldr = new cv.Mat();
+        // let ldr = new ncvslideio.Mat();
         // let retval = tonemap.process(hdr, ldr);
     }
     // TonemapReinhard
     {
-        let tonemap = new cv.TonemapReinhard();
+        let tonemap = new ncvslideio.TonemapReinhard();
         assert.ok(true, tonemap);
-        // let ldr = new cv.Mat();
+        // let ldr = new ncvslideio.Mat();
         // let retval = tonemap.process(hdr, ldr);
     }
     // Inpaint
     {
-        let src = new cv.Mat(100, 100, cv.CV_8UC3, new cv.Scalar(127, 127, 127, 255));
-        let mask = new cv.Mat(100, 100, cv.CV_8UC1, new cv.Scalar(0, 0, 0, 0));
-        let dst = new cv.Mat();
-        cv.line(mask, new cv.Point(10, 50), new cv.Point(90, 50), new cv.Scalar(255, 255, 255, 255),5);
-        cv.inpaint(src, mask, dst, 3, cv.INPAINT_TELEA);
+        let src = new ncvslideio.Mat(100, 100, ncvslideio.CV_8UC3, new ncvslideio.Scalar(127, 127, 127, 255));
+        let mask = new ncvslideio.Mat(100, 100, ncvslideio.CV_8UC1, new ncvslideio.Scalar(0, 0, 0, 0));
+        let dst = new ncvslideio.Mat();
+        ncvslideio.line(mask, new ncvslideio.Point(10, 50), new ncvslideio.Point(90, 50), new ncvslideio.Scalar(255, 255, 255, 255),5);
+        ncvslideio.inpaint(src, mask, dst, 3, ncvslideio.INPAINT_TELEA);
         assert.equal(dst.rows, 100);
         assert.equal(dst.cols, 100);
         assert.equal(dst.channels(), 3);

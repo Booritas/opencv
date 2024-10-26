@@ -47,7 +47,7 @@
 
 ////////////////////////////////////////// kmeans ////////////////////////////////////////////
 
-namespace cv
+namespace ncvslideio
 {
 
 static int CV_KMEANS_PARALLEL_GRANULARITY = (int)utils::getConfigurationParameterSizeT("OPENCV_KMEANS_PARALLEL_GRANULARITY", 1000);
@@ -66,7 +66,7 @@ public:
         tdist2(tdist2_), data(data_), dist(dist_), ci(ci_)
     { }
 
-    void operator()( const cv::Range& range ) const CV_OVERRIDE
+    void operator()( const ncvslideio::Range& range ) const CV_OVERRIDE
     {
         CV_TRACE_FUNCTION();
         const int begin = range.start;
@@ -97,9 +97,9 @@ static void generateCentersPP(const Mat& data, Mat& _out_centers,
 {
     CV_TRACE_FUNCTION();
     const int dims = data.cols, N = data.rows;
-    cv::AutoBuffer<int, 64> _centers(K);
+    ncvslideio::AutoBuffer<int, 64> _centers(K);
     int* centers = &_centers[0];
-    cv::AutoBuffer<float, 0> _dist(N*3);
+    ncvslideio::AutoBuffer<float, 0> _dist(N*3);
     float* dist = &_dist[0], *tdist = dist + N, *tdist2 = tdist + N;
     double sum0 = 0;
 
@@ -225,7 +225,7 @@ private:
 
 }
 
-double cv::kmeans( InputArray _data, int K,
+double ncvslideio::kmeans( InputArray _data, int K,
                    InputOutputArray _bestLabels,
                    TermCriteria criteria, int attempts,
                    int flags, OutputArray _centers )
@@ -274,8 +274,8 @@ double cv::kmeans( InputArray _data, int K,
     int* labels = _labels.ptr<int>();
 
     Mat centers(K, dims, type), old_centers(K, dims, type), temp(1, dims, type);
-    cv::AutoBuffer<int, 64> counters(K);
-    cv::AutoBuffer<double, 64> dists(N);
+    ncvslideio::AutoBuffer<int, 64> counters(K);
+    ncvslideio::AutoBuffer<double, 64> dists(N);
     RNG& rng = theRNG();
 
     if (criteria.type & TermCriteria::EPS)
@@ -295,7 +295,7 @@ double cv::kmeans( InputArray _data, int K,
         criteria.maxCount = 2;
     }
 
-    cv::AutoBuffer<Vec2f, 64> box(dims);
+    ncvslideio::AutoBuffer<Vec2f, 64> box(dims);
     if (!(flags & KMEANS_PP_CENTERS))
     {
         {

@@ -44,7 +44,7 @@
 //M*/
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static inline bool _isOnPositiveSide(const Point2f& line_vec, const Point2f& line_pt, const Point2f& pt)
@@ -241,8 +241,8 @@ static int _rotatedRectangleIntersection( const RotatedRect& rect1, const Rotate
 
     // Get rid of duplicated points
     const int Nstride = N;
-    cv::AutoBuffer<float, 100> distPt(N * N);
-    cv::AutoBuffer<int> ptDistRemap(N);
+    ncvslideio::AutoBuffer<float, 100> distPt(N * N);
+    ncvslideio::AutoBuffer<int> ptDistRemap(N);
     for (int i = 0; i < N; ++i)
     {
         const Point2f pt0 = intersection[i];

@@ -4,7 +4,7 @@
 Robust line fitting.
 ==================
 
-Example of using cv.fitLine function for fitting line
+Example of using ncvslideio.fitLine function for fitting line
 to points in presence of outliers.
 
 Switch through different M-estimator functions and see,
@@ -53,17 +53,17 @@ class fitline_test(NewOpenCVTests):
         lines = []
 
         for name in dist_func_names:
-            func = getattr(cv, name)
-            vx, vy, cx, cy = cv.fitLine(np.float32(points), func, 0, 0.01, 0.01)
+            func = getattr(ncvslideio, name)
+            vx, vy, cx, cy = ncvslideio.fitLine(np.float32(points), func, 0, 0.01, 0.01)
             line = [float(vx), float(vy), float(cx), float(cy)]
             lines.append(line)
 
         eps = 0.05
 
-        refVec =  (np.float32(p1) - p0) / cv.norm(np.float32(p1) - p0)
+        refVec =  (np.float32(p1) - p0) / ncvslideio.norm(np.float32(p1) - p0)
 
         for i in range(len(lines)):
-            self.assertLessEqual(cv.norm(refVec - lines[i][0:2], cv.NORM_L2), eps)
+            self.assertLessEqual(ncvslideio.norm(refVec - lines[i][0:2], ncvslideio.NORM_L2), eps)
 
 
 if __name__ == '__main__':

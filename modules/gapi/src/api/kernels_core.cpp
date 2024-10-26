@@ -15,7 +15,7 @@
 #include <tuple>
 #include <numeric>
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 GMat add(const GMat& src1, const GMat& src2, int dtype)
 {
@@ -266,13 +266,13 @@ std::tuple<GMat, GMat> integral(const GMat& src, int sdepth, int sqdepth)
 
 GMat threshold(const GMat& src, const GScalar& thresh, const GScalar& maxval, int type)
 {
-    GAPI_Assert(type != cv::THRESH_TRIANGLE && type != cv::THRESH_OTSU);
+    GAPI_Assert(type != ncvslideio::THRESH_TRIANGLE && type != ncvslideio::THRESH_OTSU);
     return core::GThreshold::on(src, thresh, maxval, type);
 }
 
 std::tuple<GMat, GScalar> threshold(const GMat& src, const GScalar& maxval, int type)
 {
-    GAPI_Assert(type == cv::THRESH_TRIANGLE || type == cv::THRESH_OTSU);
+    GAPI_Assert(type == ncvslideio::THRESH_TRIANGLE || type == ncvslideio::THRESH_OTSU);
     return core::GThresholdOT::on(src, maxval, type);
 }
 
@@ -429,4 +429,4 @@ GOpaque<Size> streaming::size(const GFrame& src)
 }
 
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio

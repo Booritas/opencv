@@ -12,7 +12,7 @@
 #include <opencv2/gapi/gkernel.hpp>
 #include <opencv2/gapi/imgproc.hpp>
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 GMat resize(const GMat& src, const Size& dsize, double fx, double fy, int interpolation)
 {
@@ -68,7 +68,7 @@ GMat erode(const GMat& src, const Mat& kernel, const Point& anchor, int iteratio
 GMat erode3x3(const GMat& src, int iterations,
            int borderType, const Scalar& borderValue )
 {
-    return erode(src, cv::Mat(), cv::Point(-1, -1), iterations, borderType, borderValue);
+    return erode(src, ncvslideio::Mat(), ncvslideio::Point(-1, -1), iterations, borderType, borderValue);
 }
 
 GMat dilate(const GMat& src, const Mat& kernel, const Point& anchor, int iterations,
@@ -80,7 +80,7 @@ GMat dilate(const GMat& src, const Mat& kernel, const Point& anchor, int iterati
 GMat dilate3x3(const GMat& src, int iterations,
             int borderType, const Scalar& borderValue)
 {
-    return dilate(src, cv::Mat(), cv::Point(-1,-1), iterations, borderType, borderValue);
+    return dilate(src, ncvslideio::Mat(), ncvslideio::Point(-1,-1), iterations, borderType, borderValue);
 }
 
 GMat morphologyEx(const GMat &src, const MorphTypes op, const Mat &kernel, const Point &anchor,
@@ -124,7 +124,7 @@ GMat Canny(const GMat& src, double thr1, double thr2, int apertureSize, bool l2g
     return imgproc::GCanny::on(src, thr1, thr2, apertureSize, l2gradient);
 }
 
-cv::GArray<cv::Point2f> goodFeaturesToTrack(const GMat& image, int maxCorners, double qualityLevel,
+ncvslideio::GArray<ncvslideio::Point2f> goodFeaturesToTrack(const GMat& image, int maxCorners, double qualityLevel,
                                             double minDistance, const Mat& mask, int blockSize,
                                             bool useHarrisDetector, double k)
 {
@@ -338,4 +338,4 @@ GMatP NV12toBGRp(const GMat &y, const GMat &uv)
 }
 
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio

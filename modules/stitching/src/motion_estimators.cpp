@@ -45,8 +45,8 @@
 #include "opencv2/calib3d/calib3d_c.h"
 #include "opencv2/core/cvdef.h"
 
-using namespace cv;
-using namespace cv::detail;
+using namespace ncvslideio;
+using namespace ncvslideio::detail;
 
 namespace {
 
@@ -122,7 +122,7 @@ void calcDeriv(const Mat &err1, const Mat &err2, double h, Mat res)
 } // namespace
 
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 bool HomographyBasedEstimator::estimate(
@@ -204,7 +204,7 @@ bool AffineBasedEstimator::estimate(const std::vector<ImageFeatures> &features,
     const int num_images = static_cast<int>(features.size());
 
     // find maximum spaning tree on pairwise matches
-    cv::detail::Graph span_tree;
+    ncvslideio::detail::Graph span_tree;
     std::vector<int> span_tree_centers;
     // uses number of inliers as weights
     findMaxSpanningTree(num_images, pairwise_matches, span_tree,
@@ -962,7 +962,7 @@ void waveCorrect(std::vector<Mat> &rmats, WaveCorrectKind kind)
     else if (kind == WAVE_CORRECT_VERT)
         rg1 = eigen_vecs.row(0).t();
     else
-        CV_Error(cv::Error::StsBadArg, "unsupported kind of wave correction");
+        CV_Error(ncvslideio::Error::StsBadArg, "unsupported kind of wave correction");
 
     Mat img_k = Mat::zeros(3, 1, CV_32F);
     for (size_t i = 0; i < rmats.size(); ++i)
@@ -1214,4 +1214,4 @@ void findMaxSpanningTree(int num_images, const std::vector<MatchesInfo> &pairwis
 }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

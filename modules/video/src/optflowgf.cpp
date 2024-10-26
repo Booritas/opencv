@@ -54,7 +54,7 @@
 // Proceedings of the 13th Scandinavian Conference on Image Analysis, Gothenburg, Sweden
 //
 
-namespace cv
+namespace ncvslideio
 {
 
 static void
@@ -578,7 +578,7 @@ FarnebackUpdateFlow_GaussianBlur( const Mat& _R0, const Mat& _R1,
 
 }
 
-namespace cv
+namespace ncvslideio
 {
 namespace
 {
@@ -707,7 +707,7 @@ private:
 
             if (prevFlowX.empty())
             {
-                if (flags_ & cv::OPTFLOW_USE_INITIAL_FLOW)
+                if (flags_ & ncvslideio::OPTFLOW_USE_INITIAL_FLOW)
                 {
                     resize(flowx0, curFlowX, Size(width, height), 0, 0, INTER_LINEAR);
                     resize(flowy0, curFlowY, Size(width, height), 0, 0, INTER_LINEAR);
@@ -829,9 +829,9 @@ private:
 
         FarnebackPrepareGaussian(n, sigma, g, xg, xxg, m_igd[0], m_igd[1], m_igd[2], m_igd[3]);
 
-        cv::Mat t_g(1, n + 1, CV_32FC1, g);     t_g.copyTo(m_g);
-        cv::Mat t_xg(1, n + 1, CV_32FC1, xg);   t_xg.copyTo(m_xg);
-        cv::Mat t_xxg(1, n + 1, CV_32FC1, xxg); t_xxg.copyTo(m_xxg);
+        ncvslideio::Mat t_g(1, n + 1, CV_32FC1, g);     t_g.copyTo(m_g);
+        ncvslideio::Mat t_xg(1, n + 1, CV_32FC1, xg);   t_xg.copyTo(m_xg);
+        ncvslideio::Mat t_xxg(1, n + 1, CV_32FC1, xxg); t_xxg.copyTo(m_xxg);
 
         m_ig[0] = static_cast<float>(m_igd[0]);
         m_ig[1] = static_cast<float>(m_igd[1]);
@@ -870,7 +870,7 @@ private:
         size_t globalsize[2] = { (size_t)src.cols, (size_t)src.rows};
         int smem_size = (int)((localsize[0] + 2*ksizeHalf) * sizeof(float));
         ocl::Kernel kernel;
-        if (!kernel.create("gaussianBlur", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
+        if (!kernel.create("gaussianBlur", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, ""))
             return false;
 
         CV_Assert(dst.size() == src.size());
@@ -897,7 +897,7 @@ private:
         size_t globalsize[2] = { (size_t)src.cols, (size_t)height};
         int smem_size = (int)((localsize[0] + 2*ksizeHalf) * 5 * sizeof(float));
         ocl::Kernel kernel;
-        if (!kernel.create("gaussianBlur5", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
+        if (!kernel.create("gaussianBlur5", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, ""))
             return false;
 
         int idxArg = 0;
@@ -922,15 +922,15 @@ private:
         size_t globalsize[2] = { DIVUP((size_t)src.cols, localsize[0] - 2*polyN_) * localsize[0], (size_t)src.rows};
 
 #if 0
-        const cv::ocl::Device &device = cv::ocl::Device::getDefault();
+        const ncvslideio::ocl::Device &device = ncvslideio::ocl::Device::getDefault();
         bool useDouble = (0 != device.doubleFPConfig());
 
-        cv::String build_options = cv::format("-D polyN=%d -D USE_DOUBLE=%d", polyN_, useDouble ? 1 : 0);
+        ncvslideio::String build_options = ncvslideio::format("-D polyN=%d -D USE_DOUBLE=%d", polyN_, useDouble ? 1 : 0);
 #else
-        cv::String build_options = cv::format("-D polyN=%d", polyN_);
+        ncvslideio::String build_options = ncvslideio::format("-D polyN=%d", polyN_);
 #endif
         ocl::Kernel kernel;
-        if (!kernel.create("polynomialExpansion", cv::ocl::video::optical_flow_farneback_oclsrc, build_options))
+        if (!kernel.create("polynomialExpansion", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, build_options))
             return false;
 
         int smem_size = (int)(3 * localsize[0] * sizeof(float));
@@ -959,7 +959,7 @@ private:
         size_t globalsize[2] = { (size_t)src.cols, (size_t)height};
 
         ocl::Kernel kernel;
-        if (!kernel.create("boxFilter5", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
+        if (!kernel.create("boxFilter5", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, ""))
             return false;
 
         int smem_size = (int)((localsize[0] + 2*ksizeHalf) * 5 * sizeof(float));
@@ -986,7 +986,7 @@ private:
         size_t globalsize[2] = { (size_t)flowx.cols, (size_t)flowx.rows};
 
         ocl::Kernel kernel;
-        if (!kernel.create("updateFlow", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
+        if (!kernel.create("updateFlow", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, ""))
             return false;
 
         int idxArg = 0;
@@ -1010,7 +1010,7 @@ private:
         size_t globalsize[2] = { (size_t)flowx.cols, (size_t)flowx.rows};
 
         ocl::Kernel kernel;
-        if (!kernel.create("updateMatrices", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
+        if (!kernel.create("updateMatrices", ncvslideio::ocl::video::optical_flow_farneback_oclsrc, ""))
             return false;
 
         int idxArg = 0;
@@ -1189,21 +1189,21 @@ void FarnebackOpticalFlowImpl::calc(InputArray _prev0, InputArray _next0,
     }
 }
 } // namespace
-} // namespace cv
+} // namespace ncvslideio
 
-void cv::calcOpticalFlowFarneback( InputArray _prev0, InputArray _next0,
+void ncvslideio::calcOpticalFlowFarneback( InputArray _prev0, InputArray _next0,
                                InputOutputArray _flow0, double pyr_scale, int levels, int winsize,
                                int iterations, int poly_n, double poly_sigma, int flags )
 {
     CV_INSTRUMENT_REGION();
 
-    Ptr<cv::FarnebackOpticalFlow> optflow;
+    Ptr<ncvslideio::FarnebackOpticalFlow> optflow;
     optflow = makePtr<FarnebackOpticalFlowImpl>(levels,pyr_scale,false,winsize,iterations,poly_n,poly_sigma,flags);
     optflow->calc(_prev0,_next0,_flow0);
 }
 
 
-cv::Ptr<cv::FarnebackOpticalFlow> cv::FarnebackOpticalFlow::create(int numLevels, double pyrScale, bool fastPyramids, int winSize,
+ncvslideio::Ptr<ncvslideio::FarnebackOpticalFlow> ncvslideio::FarnebackOpticalFlow::create(int numLevels, double pyrScale, bool fastPyramids, int winSize,
                                                                int numIters, int polyN, double polySigma, int flags)
 {
     return makePtr<FarnebackOpticalFlowImpl>(numLevels, pyrScale, fastPyramids, winSize,

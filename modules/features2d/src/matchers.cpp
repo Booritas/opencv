@@ -59,7 +59,7 @@
 #  endif
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 /////////////////////// ocl functions for BFMatcher ///////////////////////////
@@ -103,8 +103,8 @@ static bool ocl_matchSingle(InputArray query, InputArray train,
         max_desc_len = 128 / kercn;
 
     int depth = query.depth();
-    cv::String opts;
-    opts = cv::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d -D MAX_DESC_LEN=%d",
+    ncvslideio::String opts;
+    opts = ncvslideio::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d -D MAX_DESC_LEN=%d",
         ocl::typeToStr(depth), ocl::typeToStr(CV_MAKETYPE(depth, kercn)), kercn, depth == CV_32F ? "-D T_FLOAT" : "", distType, block_size, max_desc_len);
     ocl::Kernel k("BruteForceMatch_Match", ocl::features2d::brute_force_match_oclsrc, opts);
     if(k.empty())
@@ -203,8 +203,8 @@ static bool ocl_knnMatchSingle(InputArray query, InputArray train, UMat &trainId
         max_desc_len = 128 / kercn;
 
     int depth = query.depth();
-    cv::String opts;
-    opts = cv::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d -D MAX_DESC_LEN=%d",
+    ncvslideio::String opts;
+    opts = ncvslideio::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d -D MAX_DESC_LEN=%d",
         ocl::typeToStr(depth), ocl::typeToStr(CV_MAKETYPE(depth, kercn)), kercn, depth == CV_32F ? "-D T_FLOAT" : "", distType, block_size, max_desc_len);
     ocl::Kernel k("BruteForceMatch_knnMatch", ocl::features2d::brute_force_match_oclsrc, opts);
     if(k.empty())
@@ -312,8 +312,8 @@ static bool ocl_radiusMatchSingle(InputArray query, InputArray train,
 
     int block_size = 16;
     int depth = query.depth();
-    cv::String opts;
-    opts = cv::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d",
+    ncvslideio::String opts;
+    opts = ncvslideio::format("-D T=%s -D TN=%s -D kercn=%d %s -D DIST_TYPE=%d -D BLOCK_SIZE=%d",
         ocl::typeToStr(depth), ocl::typeToStr(CV_MAKETYPE(depth, kercn)), kercn, depth == CV_32F ? "-D T_FLOAT" : "", distType, block_size);
     ocl::Kernel k("BruteForceMatch_RadiusMatch", ocl::features2d::brute_force_match_oclsrc, opts);
     if (k.empty())
@@ -1175,7 +1175,7 @@ void FlannBasedMatcher::train()
     }
 }
 
-using namespace cv::flann;
+using namespace ncvslideio::flann;
 
 void FlannBasedMatcher::read( const FileNode& fn)
 {

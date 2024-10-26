@@ -37,7 +37,7 @@
 
 #include "opencv2/core/utils/filesystem.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace obsensor {
 
 #define IOCTL_FAILED_RETURN(x)                                 \
@@ -94,22 +94,22 @@ std::vector<UvcDeviceInfo> V4L2Context::queryUvcDeviceInfoList()
 {
     std::vector<UvcDeviceInfo> uvcDevList;
     std::map<std::string, UvcDeviceInfo> uvcDevMap;
-    const cv::String videosDir = "/sys/class/video4linux";
-    cv::utils::Paths videos;
-    if (cv::utils::fs::isDirectory(videosDir))
+    const ncvslideio::String videosDir = "/sys/class/video4linux";
+    ncvslideio::utils::Paths videos;
+    if (ncvslideio::utils::fs::isDirectory(videosDir))
     {
-        cv::utils::fs::glob(videosDir, "*", videos, false, true);
+        ncvslideio::utils::fs::glob(videosDir, "*", videos, false, true);
         for (const auto& video : videos)
         {
             UvcDeviceInfo uvcDev{};
-            cv::String videoName = video.substr(video.find_last_of("/") + 1);
+            ncvslideio::String videoName = video.substr(video.find_last_of("/") + 1);
             char buf[PATH_MAX];
-            if (realpath(video.c_str(), buf) == nullptr || cv::String(buf).find("virtual") != std::string::npos)
+            if (realpath(video.c_str(), buf) == nullptr || ncvslideio::String(buf).find("virtual") != std::string::npos)
             {
                 continue;
             }
-            cv::String videoRealPath = buf;
-            cv::String interfaceRealPath = videoRealPath.substr(0, videoRealPath.find_last_of("/"));
+            ncvslideio::String videoRealPath = buf;
+            ncvslideio::String interfaceRealPath = videoRealPath.substr(0, videoRealPath.find_last_of("/"));
 
             std::string busNum, devNum, devPath;
             while (videoRealPath.find_last_of("/") != std::string::npos)
@@ -132,7 +132,7 @@ std::vector<UvcDeviceInfo> V4L2Context::queryUvcDeviceInfoList()
                 /* code */
             }
 
-            uvcDev.id = cv::String("/dev/") + videoName;
+            uvcDev.id = ncvslideio::String("/dev/") + videoName;
             v4l2_capability caps = {};
             int videoFd = open(uvcDev.id.c_str(), O_RDONLY);
             IOCTL_FAILED_EXEC(xioctl(videoFd, VIDIOC_QUERYCAP, &caps), {
@@ -143,7 +143,7 @@ std::vector<UvcDeviceInfo> V4L2Context::queryUvcDeviceInfoList()
 
             if (caps.capabilities & V4L2_CAP_VIDEO_CAPTURE)
             {
-                cv::String modalias;
+                ncvslideio::String modalias;
                 if (!(std::ifstream(video + "/device/modalias") >> modalias) ||
                     modalias.size() < 14 ||
                     modalias.substr(0, 5) != "usb:v" ||
@@ -376,5 +376,5 @@ void V4L2StreamChannel::stop()
         }
     }
 }
-}} // namespace cv::obsensor::
+}} // namespace ncvslideio::obsensor::
 #endif // HAVE_OBSENSOR_V4L2

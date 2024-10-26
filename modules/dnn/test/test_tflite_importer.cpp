@@ -17,8 +17,8 @@ Test for TFLite models loading
 
 namespace opencv_test { namespace {
 
-using namespace cv;
-using namespace cv::dnn;
+using namespace ncvslideio;
+using namespace ncvslideio::dnn;
 
 class Test_TFLite : public DNNTestLayer {
 public:

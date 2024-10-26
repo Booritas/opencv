@@ -10,7 +10,7 @@ static const std::string keys = "{ b build | | print complete build info }"
 
 int main(int argc, const char* argv[])
 {
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     parser.about("This sample outputs OpenCV version and build configuration.");
     if (parser.has("help"))
     {
@@ -22,7 +22,7 @@ int main(int argc, const char* argv[])
     }
     else if (parser.has("build"))
     {
-        std::cout << cv::getBuildInformation() << std::endl;
+        std::cout << ncvslideio::getBuildInformation() << std::endl;
     }
     else
     {

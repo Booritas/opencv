@@ -4,7 +4,7 @@
 
 #include "cvutils.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 namespace ndsrvp {
 
@@ -109,4 +109,4 @@ int16x4_t borderInterpolate_vector(int16x4_t vp, short len, int borderType)
 
 } // namespace ndsrvp
 
-} // namespace cv
+} // namespace ncvslideio

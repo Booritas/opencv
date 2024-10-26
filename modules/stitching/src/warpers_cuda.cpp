@@ -43,12 +43,12 @@
 #include "precomp.hpp"
 #include "opencv2/core/private.cuda.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
 #ifdef HAVE_CUDA
 
-namespace cv { namespace cuda { namespace device
+namespace ncvslideio { namespace cuda { namespace device
 {
     namespace imgproc
     {
@@ -146,13 +146,13 @@ static void buildWarpCylindricalMaps(Size src_size, Rect dst_roi, InputArray _K,
 
 #endif
 
-Rect cv::detail::PlaneWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R,
+Rect ncvslideio::detail::PlaneWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R,
                                            cuda::GpuMat & xmap, cuda::GpuMat & ymap)
 {
     return buildMaps(src_size, K, R, Mat::zeros(3, 1, CV_32F), xmap, ymap);
 }
 
-Rect cv::detail::PlaneWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R, InputArray T,
+Rect ncvslideio::detail::PlaneWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R, InputArray T,
                                            cuda::GpuMat & xmap, cuda::GpuMat & ymap)
 {
 #ifndef HAVE_CUDA
@@ -176,7 +176,7 @@ Rect cv::detail::PlaneWarperGpu::buildMaps(Size src_size, InputArray K, InputArr
 #endif
 }
 
-Point cv::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
+Point ncvslideio::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
                                        int interp_mode, int border_mode,
                                        cuda::GpuMat & dst)
 {
@@ -184,7 +184,7 @@ Point cv::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, I
 }
 
 
-Point cv::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R, InputArray T,
+Point ncvslideio::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R, InputArray T,
                                        int interp_mode, int border_mode,
                                        cuda::GpuMat & dst)
 {
@@ -205,7 +205,7 @@ Point cv::detail::PlaneWarperGpu::warp(const cuda::GpuMat & src, InputArray K, I
 #endif
 }
 
-Rect cv::detail::SphericalWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R, cuda::GpuMat & xmap, cuda::GpuMat & ymap)
+Rect ncvslideio::detail::SphericalWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R, cuda::GpuMat & xmap, cuda::GpuMat & ymap)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(src_size);
@@ -227,7 +227,7 @@ Rect cv::detail::SphericalWarperGpu::buildMaps(Size src_size, InputArray K, Inpu
 #endif
 }
 
-Point cv::detail::SphericalWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
+Point ncvslideio::detail::SphericalWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
                                            int interp_mode, int border_mode,
                                            cuda::GpuMat & dst)
 {
@@ -248,7 +248,7 @@ Point cv::detail::SphericalWarperGpu::warp(const cuda::GpuMat & src, InputArray 
 }
 
 
-Rect cv::detail::CylindricalWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R,
+Rect ncvslideio::detail::CylindricalWarperGpu::buildMaps(Size src_size, InputArray K, InputArray R,
                                                  cuda::GpuMat & xmap, cuda::GpuMat & ymap)
 {
 #ifndef HAVE_CUDA
@@ -271,7 +271,7 @@ Rect cv::detail::CylindricalWarperGpu::buildMaps(Size src_size, InputArray K, In
 #endif
 }
 
-Point cv::detail::CylindricalWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
+Point ncvslideio::detail::CylindricalWarperGpu::warp(const cuda::GpuMat & src, InputArray K, InputArray R,
                                              int interp_mode, int border_mode,
                                              cuda::GpuMat & dst)
 {

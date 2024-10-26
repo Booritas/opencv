@@ -15,7 +15,7 @@
 #ifdef HAVE_DSHOW
 
 class videoInput;
-namespace cv
+namespace ncvslideio
 {
 
 class VideoCapture_DShow : public IVideoCapture

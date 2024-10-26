@@ -44,7 +44,7 @@
 #include "opencv2/imgproc/detail/gcgraph.hpp"
 #include <map>
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 Ptr<SeamFinder> SeamFinder::createDefault(int type)
@@ -647,7 +647,7 @@ bool DpSeamFinder::getSeamTips(int comp1, int comp2, Point &p1, Point &p2)
     // find clusters
 
     std::vector<int> labels;
-    cv::partition(specialPoints, labels, ClosePoints(10));
+    ncvslideio::partition(specialPoints, labels, ClosePoints(10));
 
     int nlabels = *std::max_element(labels.begin(), labels.end()) + 1;
     if (nlabels < 2)
@@ -1714,4 +1714,4 @@ void GraphCutSeamFinderGpu::setGraphWeightsColorGrad(
 #endif
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

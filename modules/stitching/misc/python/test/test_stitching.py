@@ -11,11 +11,11 @@ class stitching_test(NewOpenCVTests):
         img1 = self.get_sample('stitching/a1.png')
         img2 = self.get_sample('stitching/a2.png')
 
-        stitcher = cv.Stitcher.create(cv.Stitcher_PANORAMA)
+        stitcher = ncvslideio.Stitcher.create(ncvslideio.Stitcher_PANORAMA)
         (_result, pano) = stitcher.stitch((img1, img2))
 
-        #cv.imshow("pano", pano)
-        #cv.waitKey()
+        #ncvslideio.imshow("pano", pano)
+        #ncvslideio.waitKey()
 
         self.assertAlmostEqual(pano.shape[0], 685, delta=100, msg="rows: %r" % list(pano.shape))
         self.assertAlmostEqual(pano.shape[1], 1025, delta=100, msg="cols: %r" % list(pano.shape))
@@ -25,66 +25,66 @@ class stitching_detail_test(NewOpenCVTests):
 
     def test_simple(self):
         img = self.get_sample('stitching/a1.png')
-        finder= cv.ORB.create()
-        imgFea = cv.detail.computeImageFeatures2(finder,img)
+        finder= ncvslideio.ORB.create()
+        imgFea = ncvslideio.detail.computeImageFeatures2(finder,img)
         self.assertIsNotNone(imgFea)
 
         # Added Test for PR #21180
         self.assertIsNotNone(imgFea.keypoints)
 
-        matcher = cv.detail_BestOf2NearestMatcher(False, 0.3)
+        matcher = ncvslideio.detail_BestOf2NearestMatcher(False, 0.3)
         self.assertIsNotNone(matcher)
-        matcher = cv.detail_AffineBestOf2NearestMatcher(False, False, 0.3)
+        matcher = ncvslideio.detail_AffineBestOf2NearestMatcher(False, False, 0.3)
         self.assertIsNotNone(matcher)
-        matcher = cv.detail_BestOf2NearestRangeMatcher(2, False, 0.3)
+        matcher = ncvslideio.detail_BestOf2NearestRangeMatcher(2, False, 0.3)
         self.assertIsNotNone(matcher)
-        estimator = cv.detail_AffineBasedEstimator()
+        estimator = ncvslideio.detail_AffineBasedEstimator()
         self.assertIsNotNone(estimator)
-        estimator = cv.detail_HomographyBasedEstimator()
+        estimator = ncvslideio.detail_HomographyBasedEstimator()
         self.assertIsNotNone(estimator)
 
-        adjuster = cv.detail_BundleAdjusterReproj()
+        adjuster = ncvslideio.detail_BundleAdjusterReproj()
         self.assertIsNotNone(adjuster)
-        adjuster = cv.detail_BundleAdjusterRay()
+        adjuster = ncvslideio.detail_BundleAdjusterRay()
         self.assertIsNotNone(adjuster)
-        adjuster = cv.detail_BundleAdjusterAffinePartial()
+        adjuster = ncvslideio.detail_BundleAdjusterAffinePartial()
         self.assertIsNotNone(adjuster)
-        adjuster = cv.detail_NoBundleAdjuster()
+        adjuster = ncvslideio.detail_NoBundleAdjuster()
         self.assertIsNotNone(adjuster)
 
-        compensator=cv.detail.ExposureCompensator_createDefault(cv.detail.ExposureCompensator_NO)
+        compensator=ncvslideio.detail.ExposureCompensator_createDefault(ncvslideio.detail.ExposureCompensator_NO)
         self.assertIsNotNone(compensator)
-        compensator=cv.detail.ExposureCompensator_createDefault(cv.detail.ExposureCompensator_GAIN)
+        compensator=ncvslideio.detail.ExposureCompensator_createDefault(ncvslideio.detail.ExposureCompensator_GAIN)
         self.assertIsNotNone(compensator)
-        compensator=cv.detail.ExposureCompensator_createDefault(cv.detail.ExposureCompensator_GAIN_BLOCKS)
+        compensator=ncvslideio.detail.ExposureCompensator_createDefault(ncvslideio.detail.ExposureCompensator_GAIN_BLOCKS)
         self.assertIsNotNone(compensator)
 
-        seam_finder = cv.detail.SeamFinder_createDefault(cv.detail.SeamFinder_NO)
+        seam_finder = ncvslideio.detail.SeamFinder_createDefault(ncvslideio.detail.SeamFinder_NO)
         self.assertIsNotNone(seam_finder)
-        seam_finder = cv.detail.SeamFinder_createDefault(cv.detail.SeamFinder_NO)
+        seam_finder = ncvslideio.detail.SeamFinder_createDefault(ncvslideio.detail.SeamFinder_NO)
         self.assertIsNotNone(seam_finder)
-        seam_finder = cv.detail.SeamFinder_createDefault(cv.detail.SeamFinder_VORONOI_SEAM)
-        self.assertIsNotNone(seam_finder)
-
-        seam_finder = cv.detail_GraphCutSeamFinder("COST_COLOR")
-        self.assertIsNotNone(seam_finder)
-        seam_finder = cv.detail_GraphCutSeamFinder("COST_COLOR_GRAD")
-        self.assertIsNotNone(seam_finder)
-        seam_finder = cv.detail_DpSeamFinder("COLOR")
-        self.assertIsNotNone(seam_finder)
-        seam_finder = cv.detail_DpSeamFinder("COLOR_GRAD")
+        seam_finder = ncvslideio.detail.SeamFinder_createDefault(ncvslideio.detail.SeamFinder_VORONOI_SEAM)
         self.assertIsNotNone(seam_finder)
 
-        blender = cv.detail.Blender_createDefault(cv.detail.Blender_NO)
+        seam_finder = ncvslideio.detail_GraphCutSeamFinder("COST_COLOR")
+        self.assertIsNotNone(seam_finder)
+        seam_finder = ncvslideio.detail_GraphCutSeamFinder("COST_COLOR_GRAD")
+        self.assertIsNotNone(seam_finder)
+        seam_finder = ncvslideio.detail_DpSeamFinder("COLOR")
+        self.assertIsNotNone(seam_finder)
+        seam_finder = ncvslideio.detail_DpSeamFinder("COLOR_GRAD")
+        self.assertIsNotNone(seam_finder)
+
+        blender = ncvslideio.detail.Blender_createDefault(ncvslideio.detail.Blender_NO)
         self.assertIsNotNone(blender)
-        blender = cv.detail.Blender_createDefault(cv.detail.Blender_FEATHER)
+        blender = ncvslideio.detail.Blender_createDefault(ncvslideio.detail.Blender_FEATHER)
         self.assertIsNotNone(blender)
-        blender = cv.detail.Blender_createDefault(cv.detail.Blender_MULTI_BAND)
+        blender = ncvslideio.detail.Blender_createDefault(ncvslideio.detail.Blender_MULTI_BAND)
         self.assertIsNotNone(blender)
 
-        timelapser = cv.detail.Timelapser_createDefault(cv.detail.Timelapser_AS_IS);
+        timelapser = ncvslideio.detail.Timelapser_createDefault(ncvslideio.detail.Timelapser_AS_IS);
         self.assertIsNotNone(timelapser)
-        timelapser = cv.detail.Timelapser_createDefault(cv.detail.Timelapser_CROP);
+        timelapser = ncvslideio.detail.Timelapser_createDefault(ncvslideio.detail.Timelapser_CROP);
         self.assertIsNotNone(timelapser)
 
 
@@ -95,7 +95,7 @@ class stitching_compose_panorama_test_no_args(NewOpenCVTests):
         img1 = self.get_sample('stitching/a1.png')
         img2 = self.get_sample('stitching/a2.png')
 
-        stitcher = cv.Stitcher.create(cv.Stitcher_PANORAMA)
+        stitcher = ncvslideio.Stitcher.create(ncvslideio.Stitcher_PANORAMA)
 
         stitcher.estimateTransform((img1, img2))
 
@@ -111,7 +111,7 @@ class stitching_compose_panorama_args(NewOpenCVTests):
         img1 = self.get_sample('stitching/a1.png')
         img2 = self.get_sample('stitching/a2.png')
 
-        stitcher = cv.Stitcher.create(cv.Stitcher_PANORAMA)
+        stitcher = ncvslideio.Stitcher.create(ncvslideio.Stitcher_PANORAMA)
 
         stitcher.estimateTransform((img1, img2))
         result, _ = stitcher.composePanorama((img1, img2))
@@ -122,14 +122,14 @@ class stitching_compose_panorama_args(NewOpenCVTests):
 class stitching_matches_info_test(NewOpenCVTests):
 
     def test_simple(self):
-        finder = cv.ORB.create()
+        finder = ncvslideio.ORB.create()
         img1 = self.get_sample('stitching/a1.png')
         img2 = self.get_sample('stitching/a2.png')
 
-        img_feat1 = cv.detail.computeImageFeatures2(finder, img1)
-        img_feat2 = cv.detail.computeImageFeatures2(finder, img2)
+        img_feat1 = ncvslideio.detail.computeImageFeatures2(finder, img1)
+        img_feat2 = ncvslideio.detail.computeImageFeatures2(finder, img2)
 
-        matcher = cv.detail.BestOf2NearestMatcher_create()
+        matcher = ncvslideio.detail.BestOf2NearestMatcher_create()
         matches_info = matcher.apply(img_feat1, img_feat2)
 
         self.assertIsNotNone(matches_info.matches)
@@ -144,11 +144,11 @@ class stitching_range_matcher_test(NewOpenCVTests):
             self.get_sample('stitching/a3.png')
         ]
 
-        orb = cv.ORB_create()
+        orb = ncvslideio.ORB_create()
 
-        features = [cv.detail.computeImageFeatures2(orb, img) for img in images]
+        features = [ncvslideio.detail.computeImageFeatures2(orb, img) for img in images]
 
-        matcher = cv.detail_BestOf2NearestRangeMatcher(range_width=1)
+        matcher = ncvslideio.detail_BestOf2NearestRangeMatcher(range_width=1)
         matches = matcher.apply2(features)
 
         # matches[1] is image 0 and image 1, should have non-zero confidence
@@ -167,10 +167,10 @@ class stitching_seam_finder_graph_cuts(NewOpenCVTests):
             self.get_sample('stitching/a3.png')
         ]
 
-        images = [cv.resize(img, [100, 100]) for img in images]
+        images = [ncvslideio.resize(img, [100, 100]) for img in images]
 
-        finder = cv.detail_GraphCutSeamFinder('COST_COLOR_GRAD')
-        masks = [cv.UMat(255 * np.ones((img.shape[0], img.shape[1]), np.uint8)) for img in images]
+        finder = ncvslideio.detail_GraphCutSeamFinder('COST_COLOR_GRAD')
+        masks = [ncvslideio.UMat(255 * np.ones((img.shape[0], img.shape[1]), np.uint8)) for img in images]
         images_f = [img.astype(np.float32) for img in images]
         masks_warped = finder.find(images_f, [(0, 0), (75, 0), (150, 0)], masks)
 

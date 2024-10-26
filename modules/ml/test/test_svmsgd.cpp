@@ -42,7 +42,7 @@ TEST_P(ML_SVMSGD_Params, scale_and_features)
     const int featureCount = get<1>(GetParam());
     const double precision = get<2>(GetParam());
 
-    RNG &rng = cv::theRNG();
+    RNG &rng = ncvslideio::theRNG();
 
     Mat_<float> weights(1, featureCount);
     rng.fill(weights, RNG::UNIFORM, -1, 1);
@@ -81,10 +81,10 @@ TEST_P(ML_SVMSGD_Params, scale_and_features)
     makeData(rng, testSamplesCount, weights, shift, borders, testSamples, testResponses);
     ASSERT_EQ(testResponses.type(), CV_32FC1);
 
-    Ptr<TrainData> data = TrainData::create(trainSamples, cv::ml::ROW_SAMPLE, trainResponses);
+    Ptr<TrainData> data = TrainData::create(trainSamples, ncvslideio::ml::ROW_SAMPLE, trainResponses);
     ASSERT_TRUE(data);
 
-    cv::Ptr<SVMSGD> svmsgd = SVMSGD::create();
+    ncvslideio::Ptr<SVMSGD> svmsgd = SVMSGD::create();
     ASSERT_TRUE(svmsgd);
 
     svmsgd->train(data);
@@ -127,7 +127,7 @@ TEST(ML_SVMSGD, twoPoints)
     responses.at<float>(0) = -1;
     responses.at<float>(1) = 1;
 
-    cv::Ptr<TrainData> trainData = TrainData::create(samples, cv::ml::ROW_SAMPLE, responses);
+    ncvslideio::Ptr<TrainData> trainData = TrainData::create(samples, ncvslideio::ml::ROW_SAMPLE, responses);
 
     Mat realWeights(1, 2, CV_32FC1);
     realWeights.at<float>(0) = 1000;
@@ -135,21 +135,21 @@ TEST(ML_SVMSGD, twoPoints)
 
     float realShift = -500000.5;
 
-    float normRealWeights = static_cast<float>(cv::norm(realWeights)); // TODO cvtest
+    float normRealWeights = static_cast<float>(ncvslideio::norm(realWeights)); // TODO cvtest
     realWeights /= normRealWeights;
     realShift /= normRealWeights;
 
-    cv::Ptr<SVMSGD> svmsgd = SVMSGD::create();
+    ncvslideio::Ptr<SVMSGD> svmsgd = SVMSGD::create();
     svmsgd->setOptimalParameters();
     svmsgd->train( trainData );
 
     Mat foundWeights = svmsgd->getWeights();
     float foundShift = svmsgd->getShift();
 
-    float normFoundWeights = static_cast<float>(cv::norm(foundWeights)); // TODO cvtest
+    float normFoundWeights = static_cast<float>(ncvslideio::norm(foundWeights)); // TODO cvtest
     foundWeights /= normFoundWeights;
     foundShift /= normFoundWeights;
-    EXPECT_LE(cv::norm(Mat(foundWeights - realWeights)), 0.001); // TODO cvtest
+    EXPECT_LE(ncvslideio::norm(Mat(foundWeights - realWeights)), 0.001); // TODO cvtest
     EXPECT_LE(std::abs((foundShift - realShift) / realShift), 0.05);
 }
 

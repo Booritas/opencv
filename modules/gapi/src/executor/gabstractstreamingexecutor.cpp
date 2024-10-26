@@ -10,7 +10,7 @@
 
 #include "executor/gabstractstreamingexecutor.hpp"
 
-cv::gimpl::GAbstractStreamingExecutor::GAbstractStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
+ncvslideio::gimpl::GAbstractStreamingExecutor::GAbstractStreamingExecutor(std::unique_ptr<ade::Graph> &&g_model,
                                                                   const GCompileArgs &comp_args)
     : m_orig_graph(std::move(g_model))
     , m_island_graph(GModel::Graph(*m_orig_graph).metadata()

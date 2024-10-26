@@ -76,7 +76,7 @@ int calcDistance(const vector<Point2f>& set1, const vector<Point2f>& set2, doubl
 
         for(int j = 0; j < (int)set2.size(); j++)
         {
-            double dist = cv::norm(set1[i] - set2[j]); // TODO cvtest
+            double dist = ncvslideio::norm(set1[i] - set2[j]); // TODO cvtest
             if(dist < min_dist)
             {
                 min_idx = j;
@@ -243,16 +243,16 @@ TEST(Calib3d_ChessboardSubPixDetector, accuracy) { CV_ChessboardSubpixelTest tes
 
 TEST(Calib3d_CornerSubPix, regression_7204)
 {
-    cv::Mat image(cv::Size(70, 38), CV_8UC1, cv::Scalar::all(0));
-    image(cv::Rect(65, 26, 5, 5)).setTo(cv::Scalar::all(255));
-    image(cv::Rect(55, 31, 8, 1)).setTo(cv::Scalar::all(255));
-    image(cv::Rect(56, 35, 14, 2)).setTo(cv::Scalar::all(255));
-    image(cv::Rect(66, 24, 4, 2)).setTo(cv::Scalar::all(255));
+    ncvslideio::Mat image(ncvslideio::Size(70, 38), CV_8UC1, ncvslideio::Scalar::all(0));
+    image(ncvslideio::Rect(65, 26, 5, 5)).setTo(ncvslideio::Scalar::all(255));
+    image(ncvslideio::Rect(55, 31, 8, 1)).setTo(ncvslideio::Scalar::all(255));
+    image(ncvslideio::Rect(56, 35, 14, 2)).setTo(ncvslideio::Scalar::all(255));
+    image(ncvslideio::Rect(66, 24, 4, 2)).setTo(ncvslideio::Scalar::all(255));
     image.at<uchar>(24, 69) = 0;
-    std::vector<cv::Point2f> corners;
-    corners.push_back(cv::Point2f(65, 30));
-    cv::cornerSubPix(image, corners, cv::Size(3, 3), cv::Size(-1, -1),
-        cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    std::vector<ncvslideio::Point2f> corners;
+    corners.push_back(ncvslideio::Point2f(65, 30));
+    ncvslideio::cornerSubPix(image, corners, ncvslideio::Size(3, 3), ncvslideio::Size(-1, -1),
+        ncvslideio::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 }
 
 }} // namespace

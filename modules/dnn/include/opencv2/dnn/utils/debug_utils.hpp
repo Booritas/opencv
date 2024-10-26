@@ -7,7 +7,7 @@
 
 #include "../dnn.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 /**

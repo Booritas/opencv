@@ -314,7 +314,7 @@ def writeTextGraph(modelPath, outputPath, outNodes):
     try:
         import cv2 as cv
 
-        cv.dnn.writeTextGraph(modelPath, outputPath)
+        ncvslideio.dnn.writeTextGraph(modelPath, outputPath)
     except:
         import tensorflow as tf
         from tensorflow.tools.graph_transforms import TransformGraph

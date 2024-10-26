@@ -92,7 +92,7 @@ type_dict = {
 }
 
 # Defines a rule to add extra prefixes for names from specific namespaces.
-# In example, cv::fisheye::stereoRectify from namespace fisheye is wrapped as fisheye_stereoRectify
+# In example, ncvslideio::fisheye::stereoRectify from namespace fisheye is wrapped as fisheye_stereoRectify
 namespaces_dict = {}
 
 # { class : { func : {j_code, jn_code, cpp_code} } }
@@ -217,7 +217,7 @@ def normalize_field_name(name):
     return name.replace(".","_").replace("[","").replace("]","").replace("_getNativeObjAddr()","_nativeObj")
 
 def normalize_class_name(name):
-    return re.sub(r"^cv\.", "", name).replace(".", "_")
+    return re.sub(r"^ncvslideio\.", "", name).replace(".", "_")
 
 def get_cname(name):
     return name.replace(".", "::")
@@ -276,7 +276,7 @@ class ClassInfo(GeneralInfo):
         if decl[1]:
             # FIXIT Use generator to find type properly instead of hacks below
             base_class = re.sub(r"^: ", "", decl[1])
-            base_class = re.sub(r"^cv::", "", base_class)
+            base_class = re.sub(r"^ncvslideio::", "", base_class)
             base_class = base_class.replace('::', '.')
             base_info = ClassInfo(('class {}'.format(base_class), '', [], [], None, None), [self.namespace])
             base_type_name = base_info.name
@@ -446,8 +446,8 @@ class JavaWrapperGenerator(object):
         self.clear()
 
     def clear(self):
-        self.namespaces = ["cv"]
-        classinfo_Mat = ClassInfo([ 'class cv.Mat', '', ['/Simple'], [] ], self.namespaces)
+        self.namespaces = ["ncvslideio"]
+        classinfo_Mat = ClassInfo([ 'class ncvslideio.Mat', '', ['/Simple'], [] ], self.namespaces)
         self.classes = { "Mat" : classinfo_Mat }
         self.module = ""
         self.Module = ""
@@ -588,7 +588,7 @@ class JavaWrapperGenerator(object):
         # TODO: support UMat versions of declarations (implement UMat-wrapper for Java)
         parser = hdr_parser.CppHeaderParser(generate_umat_decls=False)
 
-        self.add_class( ['class cv.' + self.Module, '', [], []] ) # [ 'class/struct cname', ':bases', [modlist] [props] ]
+        self.add_class( ['class ncvslideio.' + self.Module, '', [], []] ) # [ 'class/struct cname', ':bases', [modlist] [props] ]
 
         # scan the headers and build more descriptive maps of classes, consts, functions
         includes = []
@@ -1002,7 +1002,7 @@ class JavaWrapperGenerator(object):
             if fi.ctype == "void":
                 retval = ""
             elif fi.ctype == "String":
-                retval = "cv::" + self.fullTypeNameCPP(fi.ctype) + " _retval_ = "
+                retval = "ncvslideio::" + self.fullTypeNameCPP(fi.ctype) + " _retval_ = "
             elif fi.ctype == "string":
                 retval = "std::string _retval_ = "
             elif "v_type" in type_dict[fi.ctype]: # vector is returned
@@ -1086,7 +1086,7 @@ JNIEXPORT $rtype JNICALL Java_org_opencv_${module}_${clazz}_$fname
         cvargs = " " + ", ".join(cvargs) + " " if cvargs else "",
         default = "\n    " + default if default else "",
         retval = retval,
-        namespace = ('using namespace ' + ci.namespace.replace('.', '::') + ';') if ci.namespace and ci.namespace != 'cv' else ''
+        namespace = ('using namespace ' + ci.namespace.replace('.', '::') + ';') if ci.namespace and ci.namespace != 'ncvslideio' else ''
     ) )
 
             # adding method signature to dictionary

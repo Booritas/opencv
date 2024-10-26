@@ -44,7 +44,7 @@
 
 //! @cond IGNORED
 
-namespace cv { namespace detail {
+namespace ncvslideio { namespace detail {
 template <class TWeight> class GCGraph
 {
 public:

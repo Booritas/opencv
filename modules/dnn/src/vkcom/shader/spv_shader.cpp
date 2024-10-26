@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "spv_shader.hpp"
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 std::map<std::string, std::pair<const unsigned int *, size_t> > SPVMaps;
 
@@ -19,4 +19,4 @@ void initSPVMaps()
     SPVMaps.insert(std::make_pair("nary_eltwise_binary_forward_spv", std::make_pair(nary_eltwise_binary_forward_spv, 1757)));
 }
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom

@@ -42,8 +42,8 @@
 
 namespace opencv_test { namespace {
 
-static void mytest(cv::Ptr<cv::ConjGradSolver> solver,cv::Ptr<cv::MinProblemSolver::Function> ptr_F,cv::Mat& x,
-        cv::Mat& etalon_x,double etalon_res){
+static void mytest(ncvslideio::Ptr<ncvslideio::ConjGradSolver> solver,ncvslideio::Ptr<ncvslideio::MinProblemSolver::Function> ptr_F,ncvslideio::Mat& x,
+        ncvslideio::Mat& etalon_x,double etalon_res){
     solver->setFunction(ptr_F);
     //int ndim=MAX(step.cols,step.rows);
     double res=solver->minimize(x);
@@ -53,13 +53,13 @@ static void mytest(cv::Ptr<cv::ConjGradSolver> solver,cv::Ptr<cv::MinProblemSolv
     std::cout<<"etalon_x:\n\t"<<etalon_x<<std::endl;
     double tol = 1e-2;
     ASSERT_TRUE(std::abs(res-etalon_res)<tol);
-    /*for(cv::Mat_<double>::iterator it1=x.begin<double>(),it2=etalon_x.begin<double>();it1!=x.end<double>();it1++,it2++){
+    /*for(ncvslideio::Mat_<double>::iterator it1=x.begin<double>(),it2=etalon_x.begin<double>();it1!=x.end<double>();it1++,it2++){
         ASSERT_TRUE(std::abs((*it1)-(*it2))<tol);
     }*/
     std::cout<<"--------------------------\n";
 }
 
-class SphereF_CG:public cv::MinProblemSolver::Function{
+class SphereF_CG:public ncvslideio::MinProblemSolver::Function{
 public:
     int getDims() const { return 4; }
     double calc(const double* x)const{
@@ -72,7 +72,7 @@ public:
         }
     }*/
 };
-class RosenbrockF_CG:public cv::MinProblemSolver::Function{
+class RosenbrockF_CG:public ncvslideio::MinProblemSolver::Function{
     int getDims() const { return 2; }
     double calc(const double* x)const{
         return 100*(x[1]-x[0]*x[0])*(x[1]-x[0]*x[0])+(1-x[0])*(1-x[0]);
@@ -84,21 +84,21 @@ class RosenbrockF_CG:public cv::MinProblemSolver::Function{
 };
 
 TEST(Core_ConjGradSolver, regression_basic){
-    cv::Ptr<cv::ConjGradSolver> solver=cv::ConjGradSolver::create();
+    ncvslideio::Ptr<ncvslideio::ConjGradSolver> solver=ncvslideio::ConjGradSolver::create();
 #if 1
     {
-        cv::Ptr<cv::MinProblemSolver::Function> ptr_F(new SphereF_CG());
-        cv::Mat x=(cv::Mat_<double>(4,1)<<50.0,10.0,1.0,-10.0),
-            etalon_x=(cv::Mat_<double>(1,4)<<0.0,0.0,0.0,0.0);
+        ncvslideio::Ptr<ncvslideio::MinProblemSolver::Function> ptr_F(new SphereF_CG());
+        ncvslideio::Mat x=(ncvslideio::Mat_<double>(4,1)<<50.0,10.0,1.0,-10.0),
+            etalon_x=(ncvslideio::Mat_<double>(1,4)<<0.0,0.0,0.0,0.0);
         double etalon_res=0.0;
         mytest(solver,ptr_F,x,etalon_x,etalon_res);
     }
 #endif
 #if 1
     {
-        cv::Ptr<cv::MinProblemSolver::Function> ptr_F(new RosenbrockF_CG());
-        cv::Mat x=(cv::Mat_<double>(2,1)<<0.0,0.0),
-            etalon_x=(cv::Mat_<double>(2,1)<<1.0,1.0);
+        ncvslideio::Ptr<ncvslideio::MinProblemSolver::Function> ptr_F(new RosenbrockF_CG());
+        ncvslideio::Mat x=(ncvslideio::Mat_<double>(2,1)<<0.0,0.0),
+            etalon_x=(ncvslideio::Mat_<double>(2,1)<<1.0,1.0);
         double etalon_res=0.0;
         mytest(solver,ptr_F,x,etalon_x,etalon_res);
     }

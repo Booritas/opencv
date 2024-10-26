@@ -7,7 +7,7 @@
 
 #include <opencv2/videoio.hpp>
 
-namespace cv { namespace videoio_registry {
+namespace ncvslideio { namespace videoio_registry {
 /** @addtogroup videoio_registry
 This section contains API description how to query/configure available Video I/O backends.
 
@@ -24,18 +24,18 @@ Runtime configuration options:
 /** @brief Returns backend API name or "UnknownVideoAPI(xxx)"
 @param api backend ID (#VideoCaptureAPIs)
 */
-CV_EXPORTS_W cv::String getBackendName(VideoCaptureAPIs api);
+CV_EXPORTS_W ncvslideio::String getBackendName(VideoCaptureAPIs api);
 
 /** @brief Returns list of all available backends */
 CV_EXPORTS_W std::vector<VideoCaptureAPIs> getBackends();
 
-/** @brief Returns list of available backends which works via `cv::VideoCapture(int index)` */
+/** @brief Returns list of available backends which works via `ncvslideio::VideoCapture(int index)` */
 CV_EXPORTS_W std::vector<VideoCaptureAPIs> getCameraBackends();
 
-/** @brief Returns list of available backends which works via `cv::VideoCapture(filename)` */
+/** @brief Returns list of available backends which works via `ncvslideio::VideoCapture(filename)` */
 CV_EXPORTS_W std::vector<VideoCaptureAPIs> getStreamBackends();
 
-/** @brief Returns list of available backends which works via `cv::VideoWriter()` */
+/** @brief Returns list of available backends which works via `ncvslideio::VideoWriter()` */
 CV_EXPORTS_W std::vector<VideoCaptureAPIs> getWriterBackends();
 
 /** @brief Returns true if backend is available */

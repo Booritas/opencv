@@ -7,7 +7,7 @@
 #include <opencv2/objdetect/aruco_dictionary.hpp>
 #include <opencv2/objdetect/aruco_board.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 //! @addtogroup objdetect_aruco
@@ -281,7 +281,7 @@ public:
      * @param detectorParams marker detection parameters
      * @param refineParams marker refine detection parameters
      */
-    CV_WRAP ArucoDetector(const Dictionary &dictionary = getPredefinedDictionary(cv::aruco::DICT_4X4_50),
+    CV_WRAP ArucoDetector(const Dictionary &dictionary = getPredefinedDictionary(ncvslideio::aruco::DICT_4X4_50),
                           const DetectorParameters &detectorParams = DetectorParameters(),
                           const RefineParameters& refineParams = RefineParameters());
 
@@ -289,7 +289,7 @@ public:
      *
      * @param image input image
      * @param corners vector of detected marker corners. For each marker, its four corners
-     * are provided, (e.g std::vector<std::vector<cv::Point2f> > ). For N detected markers,
+     * are provided, (e.g std::vector<std::vector<ncvslideio::Point2f> > ). For N detected markers,
      * the dimensions of this array is Nx4. The order of the corners is clockwise.
      * @param ids vector of identifiers of the detected markers. The identifier is of type int
      * (e.g. std::vector<int>). For N detected markers, the size of ids is also N.
@@ -365,7 +365,7 @@ protected:
  *
  * @param image input/output image. It must have 1 or 3 channels. The number of channels is not altered.
  * @param corners positions of marker corners on input image.
- * (e.g std::vector<std::vector<cv::Point2f> > ). For N detected markers, the dimensions of
+ * (e.g std::vector<std::vector<ncvslideio::Point2f> > ). For N detected markers, the dimensions of
  * this array should be Nx4. The order of the corners should be clockwise.
  * @param ids vector of identifiers for markers in markersCorners .
  * Optional, if not provided, ids are not painted.

@@ -12,7 +12,7 @@
 
 #define TH_API
 
-#define THError(...) CV_Error(cv::Error::StsError, cv::format(__VA_ARGS__))
+#define THError(...) CV_Error(ncvslideio::Error::StsError, ncvslideio::format(__VA_ARGS__))
 #define THArgCheck(cond, ...) CV_Assert(cond)
 
 #define THAlloc malloc

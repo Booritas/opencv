@@ -49,7 +49,7 @@ namespace opencv_test { namespace {
 #  define EXPECT_NULL(ptr) EXPECT_TRUE(ptr == NULL)
 #endif
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 
@@ -384,7 +384,7 @@ struct SpeciallyDeletable
 
 } // namespace
 
-namespace cv {
+namespace ncvslideio {
 template<> struct DefaultDeleter<SpeciallyDeletable>
 {
     void operator()(SpeciallyDeletable * obj) const { obj->deleted = true; }

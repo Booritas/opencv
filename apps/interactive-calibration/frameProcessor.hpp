@@ -20,7 +20,7 @@ protected:
 
 public:
     virtual ~FrameProcessor();
-    virtual cv::Mat processFrame(const cv::Mat& frame) = 0;
+    virtual ncvslideio::Mat processFrame(const ncvslideio::Mat& frame) = 0;
     virtual bool isProcessed() const = 0;
     virtual void resetState() = 0;
 };
@@ -28,19 +28,19 @@ public:
 class CalibProcessor : public FrameProcessor
 {
 protected:
-    cv::Ptr<calibrationData> mCalibData;
+    ncvslideio::Ptr<calibrationData> mCalibData;
     TemplateType mBoardType;
-    cv::Size mBoardSizeUnits;
-    cv::Size mBoardSizeInnerCorners;
-    std::vector<cv::Point2f> mTemplateLocations;
-    std::vector<cv::Point2f> mCurrentImagePoints;
-    cv::Mat mCurrentCharucoCorners;
-    cv::Mat mCurrentCharucoIds;
+    ncvslideio::Size mBoardSizeUnits;
+    ncvslideio::Size mBoardSizeInnerCorners;
+    std::vector<ncvslideio::Point2f> mTemplateLocations;
+    std::vector<ncvslideio::Point2f> mCurrentImagePoints;
+    ncvslideio::Mat mCurrentCharucoCorners;
+    ncvslideio::Mat mCurrentCharucoIds;
 
-    cv::Ptr<cv::SimpleBlobDetector> mBlobDetectorPtr;
-    cv::aruco::Dictionary mArucoDictionary;
-    cv::Ptr<cv::aruco::CharucoBoard> mCharucoBoard;
-    cv::Ptr<cv::aruco::CharucoDetector> detector;
+    ncvslideio::Ptr<ncvslideio::SimpleBlobDetector> mBlobDetectorPtr;
+    ncvslideio::aruco::Dictionary mArucoDictionary;
+    ncvslideio::Ptr<ncvslideio::aruco::CharucoBoard> mCharucoBoard;
+    ncvslideio::Ptr<ncvslideio::aruco::CharucoDetector> detector;
 
     int mNeededFramesNum;
     unsigned mDelayBetweenCaptures;
@@ -51,18 +51,18 @@ protected:
     bool mSaveFrames;
     float mZoom;
 
-    bool detectAndParseChessboard(const cv::Mat& frame);
-    bool detectAndParseChAruco(const cv::Mat& frame);
-    bool detectAndParseCircles(const cv::Mat& frame);
-    bool detectAndParseACircles(const cv::Mat& frame);
-    bool detectAndParseDualACircles(const cv::Mat& frame);
+    bool detectAndParseChessboard(const ncvslideio::Mat& frame);
+    bool detectAndParseChAruco(const ncvslideio::Mat& frame);
+    bool detectAndParseCircles(const ncvslideio::Mat& frame);
+    bool detectAndParseACircles(const ncvslideio::Mat& frame);
+    bool detectAndParseDualACircles(const ncvslideio::Mat& frame);
     void saveFrameData();
-    void showCaptureMessage(const cv::Mat &frame, const std::string& message);
+    void showCaptureMessage(const ncvslideio::Mat &frame, const std::string& message);
     bool checkLastFrame();
 
 public:
-    CalibProcessor(cv::Ptr<calibrationData> data, captureParameters& capParams);
-    virtual cv::Mat processFrame(const cv::Mat& frame) CV_OVERRIDE;
+    CalibProcessor(ncvslideio::Ptr<calibrationData> data, captureParameters& capParams);
+    virtual ncvslideio::Mat processFrame(const ncvslideio::Mat& frame) CV_OVERRIDE;
     virtual bool isProcessed() const CV_OVERRIDE;
     virtual void resetState() CV_OVERRIDE;
     ~CalibProcessor() CV_OVERRIDE;
@@ -73,19 +73,19 @@ enum visualisationMode {Grid, Window};
 class ShowProcessor : public FrameProcessor
 {
 protected:
-    cv::Ptr<calibrationData> mCalibdata;
-    cv::Ptr<calibController> mController;
+    ncvslideio::Ptr<calibrationData> mCalibdata;
+    ncvslideio::Ptr<calibController> mController;
     TemplateType mBoardType;
     visualisationMode mVisMode;
     bool mNeedUndistort;
     double mGridViewScale;
     double mTextSize;
 
-    void drawBoard(cv::Mat& img, cv::InputArray points);
-    void drawGridPoints(const cv::Mat& frame);
+    void drawBoard(ncvslideio::Mat& img, ncvslideio::InputArray points);
+    void drawGridPoints(const ncvslideio::Mat& frame);
 public:
-    ShowProcessor(cv::Ptr<calibrationData> data, cv::Ptr<calibController> controller, TemplateType board);
-    virtual cv::Mat processFrame(const cv::Mat& frame) CV_OVERRIDE;
+    ShowProcessor(ncvslideio::Ptr<calibrationData> data, ncvslideio::Ptr<calibController> controller, TemplateType board);
+    virtual ncvslideio::Mat processFrame(const ncvslideio::Mat& frame) CV_OVERRIDE;
     virtual bool isProcessed() const CV_OVERRIDE;
     virtual void resetState() CV_OVERRIDE;
 

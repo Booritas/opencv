@@ -88,7 +88,7 @@ TEST_P(Imgproc_FindContours_Modes1, rectangle)
 
     for (size_t i = 0; i < ITER; ++i)
     {
-        SCOPED_TRACE(cv::format("i=%zu", i));
+        SCOPED_TRACE(ncvslideio::format("i=%zu", i));
         const Size sz(rng.uniform(640, 1920), rng.uniform(480, 1080));
         Mat img(sz, CV_8UC1, Scalar::all(0));
         Mat img32s(sz, CV_32SC1, Scalar::all(0));
@@ -514,7 +514,7 @@ TEST_P(Imgproc_FindContours_Modes2, approx)
             // 86 - some black speckles on white
             // 128 - 50/50 black/white
             // 170 - some white speckles on black
-            cv::threshold(fimg, timg, level, 255, THRESH_BINARY);
+            ncvslideio::threshold(fimg, timg, level, 255, THRESH_BINARY);
         }
         else
         {
@@ -574,7 +574,7 @@ TEST(Imgproc_FindContours, link_runs)
     boxFilter(img, fimg, CV_8U, Size(5, 5));
 
     const int level = 135;
-    cv::threshold(fimg, img, level, 255, THRESH_BINARY);
+    ncvslideio::threshold(fimg, img, level, 255, THRESH_BINARY);
 
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;

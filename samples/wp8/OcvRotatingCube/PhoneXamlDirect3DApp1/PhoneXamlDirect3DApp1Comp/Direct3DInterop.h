@@ -67,13 +67,13 @@ private:
     BasicTimer^ m_timer;
     Windows::Foundation::Size m_renderResolution;
 
-    void ApplyGrayFilter(const cv::Mat& image);
-    void ApplyCannyFilter(const cv::Mat& image);
-    void ApplySepiaFilter(const cv::Mat& image);
+    void ApplyGrayFilter(const ncvslideio::Mat& image);
+    void ApplyCannyFilter(const ncvslideio::Mat& image);
+    void ApplySepiaFilter(const ncvslideio::Mat& image);
 
-    void UpdateImage(const cv::Mat& image);
+    void UpdateImage(const ncvslideio::Mat& image);
 
-    cv::Mat Lena;
+    ncvslideio::Mat Lena;
     unsigned int frameWidth, frameHeight;
 };
 

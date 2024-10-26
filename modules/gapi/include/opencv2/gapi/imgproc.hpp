@@ -33,10 +33,10 @@ void validateFindingContoursMeta(const int depth, const int chan, const int mode
     GAPI_Assert(chan == 1);
     switch (mode)
     {
-    case cv::RETR_CCOMP:
+    case ncvslideio::RETR_CCOMP:
         GAPI_Assert(depth == CV_8U || depth == CV_32S);
         break;
-    case cv::RETR_FLOODFILL:
+    case ncvslideio::RETR_FLOODFILL:
         GAPI_Assert(depth == CV_32S);
         break;
     default:
@@ -46,7 +46,7 @@ void validateFindingContoursMeta(const int depth, const int chan, const int mode
 }
 } // anonymous namespace
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 /**
  * @brief This namespace contains G-API Operation Types for OpenCV
@@ -152,7 +152,7 @@ namespace imgproc {
     };
 
     G_TYPED_KERNEL(GGoodFeatures,
-                   <cv::GArray<cv::Point2f>(GMat,int,double,double,Mat,int,bool,double)>,
+                   <ncvslideio::GArray<ncvslideio::Point2f>(GMat,int,double,double,Mat,int,bool,double)>,
                    "org.opencv.imgproc.feature.goodFeaturesToTrack") {
         static GArrayDesc outMeta(GMatDesc, int, double, double, const Mat&, int, bool, double) {
             return empty_array_desc();
@@ -433,20 +433,20 @@ namespace imgproc {
         }
     };
 
-    G_TYPED_KERNEL(GBayerGR2RGB, <cv::GMat(cv::GMat)>, "org.opencv.imgproc.colorconvert.bayergr2rgb") {
-        static cv::GMatDesc outMeta(cv::GMatDesc in) {
+    G_TYPED_KERNEL(GBayerGR2RGB, <ncvslideio::GMat(ncvslideio::GMat)>, "org.opencv.imgproc.colorconvert.bayergr2rgb") {
+        static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in) {
             return in.withType(CV_8U, 3);
         }
     };
 
-    G_TYPED_KERNEL(GRGB2HSV, <cv::GMat(cv::GMat)>, "org.opencv.imgproc.colorconvert.rgb2hsv") {
-        static cv::GMatDesc outMeta(cv::GMatDesc in) {
+    G_TYPED_KERNEL(GRGB2HSV, <ncvslideio::GMat(ncvslideio::GMat)>, "org.opencv.imgproc.colorconvert.rgb2hsv") {
+        static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in) {
             return in;
         }
     };
 
-    G_TYPED_KERNEL(GRGB2YUV422, <cv::GMat(cv::GMat)>, "org.opencv.imgproc.colorconvert.rgb2yuv422") {
-        static cv::GMatDesc outMeta(cv::GMatDesc in) {
+    G_TYPED_KERNEL(GRGB2YUV422, <ncvslideio::GMat(ncvslideio::GMat)>, "org.opencv.imgproc.colorconvert.rgb2yuv422") {
+        static ncvslideio::GMatDesc outMeta(ncvslideio::GMatDesc in) {
             GAPI_Assert(in.depth == CV_8U);
             GAPI_Assert(in.chan == 3);
             return in.withType(in.depth, 2);
@@ -517,7 +517,7 @@ namespace imgproc {
             GAPI_Assert(in.depth == CV_8U);
             GAPI_Assert(in.chan == 3);
             GAPI_Assert(in.planar);
-            GAPI_Assert(interp == cv::INTER_LINEAR);
+            GAPI_Assert(interp == ncvslideio::INTER_LINEAR);
             return in.withSize(sz);
         }
     };
@@ -552,7 +552,7 @@ when ddepth=-1, the output image will have the same depth as the source)
 @param anchor Anchor position within the kernel. The default value \f$(-1,-1)\f$ means that the anchor
 is at the kernel center.
 @param delta Value added to the filtered results before storing them.
-@param borderType Pixel extrapolation method, see cv::BorderTypes
+@param borderType Pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa  boxFilter, gaussianBlur, medianBlur
  */
@@ -589,7 +589,7 @@ separate color planes using split and process them individually.
 the kernel; the anchor should lie within the kernel; default value (-1,-1) means that the anchor
 is at the kernel center.
 @param delta optional value added to the filtered pixels before storing them in dst.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa  sepFilter
  */
@@ -609,7 +609,7 @@ where
 
 Unnormalized box filter is useful for computing various integral characteristics over each pixel
 neighborhood, such as covariance matrices of image derivatives (used in dense optical flow
-algorithms, and so on). If you need to compute pixel sums over variable-size windows, use cv::integral.
+algorithms, and so on). If you need to compute pixel sums over variable-size windows, use ncvslideio::integral.
 
 Supported input matrix data types are @ref CV_8UC1, @ref CV_8UC3, @ref CV_16UC1, @ref CV_16SC1, @ref CV_32FC1.
 Output image must have the same type, size, and number of channels as the input image.
@@ -623,7 +623,7 @@ Output image must have the same type, size, and number of channels as the input 
 @param anchor Anchor position within the kernel. The default value \f$(-1,-1)\f$ means that the anchor
 is at the kernel center.
 @param normalize flag, specifying whether the kernel is normalized by its area or not.
-@param borderType Pixel extrapolation method, see cv::BorderTypes
+@param borderType Pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa  sepFilter, gaussianBlur, medianBlur, integral
  */
@@ -650,7 +650,7 @@ Output image must have the same type, size, and number of channels as the input 
 @param ksize blurring kernel size.
 @param anchor anchor point; default value Point(-1,-1) means that the anchor is at the kernel
 center.
-@param borderType border mode used to extrapolate pixels outside of the image, see cv::BorderTypes
+@param borderType border mode used to extrapolate pixels outside of the image, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa  boxFilter, bilateralFilter, GaussianBlur, medianBlur
  */
@@ -680,10 +680,10 @@ positive and odd. Or, they can be zero's and then they are computed from sigma.
 @param sigmaX Gaussian kernel standard deviation in X direction.
 @param sigmaY Gaussian kernel standard deviation in Y direction; if sigmaY is zero, it is set to be
 equal to sigmaX, if both sigmas are zeros, they are computed from ksize.width and ksize.height,
-respectively (see cv::getGaussianKernel for details); to fully control the result regardless of
+respectively (see ncvslideio::getGaussianKernel for details); to fully control the result regardless of
 possible future modifications of all this semantics, it is recommended to specify all of ksize,
 sigmaX, and sigmaY.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa  sepFilter, boxFilter, medianBlur
  */
@@ -697,7 +697,7 @@ The function smoothes an image using the median filter with the \f$\texttt{ksize
 Output image must have the same type, size, and number of channels as the input image.
 @note
  - Rounding to nearest even is procedeed if hardware supports it, if not - to nearest.
-The median filter uses cv::BORDER_REPLICATE internally to cope with border pixels, see cv::BorderTypes
+The median filter uses ncvslideio::BORDER_REPLICATE internally to cope with border pixels, see ncvslideio::BorderTypes
  - Function textual ID is "org.opencv.imgproc.filters.medianBlur"
 
 @param src input matrix (image)
@@ -726,7 +726,7 @@ structuring element is used. Kernel can be created using getStructuringElement.
 @param anchor position of the anchor within the element; default value (-1, -1) means that the
 anchor is at the element center.
 @param iterations number of times erosion is applied.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of a constant border
 @sa  dilate, morphologyEx
  */
@@ -746,7 +746,7 @@ Output image must have the same type, size, and number of channels as the input 
 
 @param src input image
 @param iterations number of times erosion is applied.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of a constant border
 @sa  erode, dilate3x3
  */
@@ -773,7 +773,7 @@ structuring element is used. Kernel can be created using getStructuringElement
 @param anchor position of the anchor within the element; default value (-1, -1) means that the
 anchor is at the element center.
 @param iterations number of times dilation is applied.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of a constant border
 @sa  erode, morphologyEx, getStructuringElement
  */
@@ -796,7 +796,7 @@ Output image must have the same type, size, and number of channels as the input 
 
 @param src input image.
 @param iterations number of times dilation is applied.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of a constant border
 @sa  dilate, erode3x3
  */
@@ -877,9 +877,9 @@ The second case corresponds to a kernel of:
 @param dy order of the derivative y.
 @param ksize size of the extended Sobel kernel; it must be odd.
 @param scale optional scale factor for the computed derivative values; by default, no scaling is
-applied (see cv::getDerivKernels for details).
+applied (see ncvslideio::getDerivKernels for details).
 @param delta optional delta value that is added to the results prior to storing them in dst.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa filter2D, gaussianBlur, cartToPolar
  */
@@ -928,9 +928,9 @@ The second case corresponds to a kernel of:
 @param order order of the derivatives.
 @param ksize size of the extended Sobel kernel; it must be odd.
 @param scale optional scale factor for the computed derivative values; by default, no scaling is
-applied (see cv::getDerivKernels for details).
+applied (see ncvslideio::getDerivKernels for details).
 @param delta optional delta value that is added to the results prior to storing them in dst.
-@param borderType pixel extrapolation method, see cv::BorderTypes
+@param borderType pixel extrapolation method, see ncvslideio::BorderTypes
 @param borderValue border value in case of constant border type
 @sa filter2D, gaussianBlur, cartToPolar
  */
@@ -1156,7 +1156,7 @@ context.
 
 @return
  - GArray of detected contours. Each contour is stored as a GArray of points.
- - Optional output GArray of cv::Vec4i, containing information about the image topology.
+ - Optional output GArray of ncvslideio::Vec4i, containing information about the image topology.
 It has as many elements as the number of contours. For each i-th contour contours[i], the elements
 hierarchy[i][0] , hierarchy[i][1] , hierarchy[i][2] , and hierarchy[i][3] are set to 0-based
 indices in contours of the next and previous contours at the same hierarchical level, the first
@@ -1197,7 +1197,7 @@ Calculates the up-right bounding rectangle of a point set.
 
 @note Function textual ID is "org.opencv.imgproc.shape.boundingRectVector32S"
 
-@param src Input 2D point set, stored in std::vector<cv::Point2i>.
+@param src Input 2D point set, stored in std::vector<ncvslideio::Point2i>.
  */
 GAPI_EXPORTS_W GOpaque<Rect> boundingRect(const GArray<Point2i>& src);
 
@@ -1207,7 +1207,7 @@ Calculates the up-right bounding rectangle of a point set.
 
 @note Function textual ID is "org.opencv.imgproc.shape.boundingRectVector32F"
 
-@param src Input 2D point set, stored in std::vector<cv::Point2f>.
+@param src Input 2D point set, stored in std::vector<ncvslideio::Point2f>.
  */
 GAPI_EXPORTS_W GOpaque<Rect> boundingRect(const GArray<Point2f>& src);
 
@@ -1239,7 +1239,7 @@ weights \f$w_i\f$ are adjusted to be inversely proportional to \f$\rho(r_i)\f$ .
 or column if there are N channels, or have N columns if there is a single channel.
 
 @param src Input set of 2D points stored in one of possible containers: Mat,
-std::vector<cv::Point2i>, std::vector<cv::Point2f>, std::vector<cv::Point2d>.
+std::vector<ncvslideio::Point2i>, std::vector<ncvslideio::Point2f>, std::vector<ncvslideio::Point2d>.
 @param distType Distance used by the M-estimator, see #DistanceTypes. @ref DIST_USER
 and @ref DIST_C are not supported.
 @param param Numerical parameter ( C ) for some types of distances. If it is 0, an optimal value
@@ -1311,7 +1311,7 @@ weights \f$w_i\f$ are adjusted to be inversely proportional to \f$\rho(r_i)\f$ .
 or column if there are N channels, or have N columns if there is a single channel.
 
 @param src Input set of 3D points stored in one of possible containers: Mat,
-std::vector<cv::Point3i>, std::vector<cv::Point3f>, std::vector<cv::Point3d>.
+std::vector<ncvslideio::Point3i>, std::vector<ncvslideio::Point3f>, std::vector<ncvslideio::Point3d>.
 @param distType Distance used by the M-estimator, see #DistanceTypes. @ref DIST_USER
 and @ref DIST_C are not supported.
 @param param Numerical parameter ( C ) for some types of distances. If it is 0, an optimal value
@@ -1724,8 +1724,8 @@ way:
     // specify fx and fy and let the function compute the destination image size.
     resize(src, dst, Size(), 0.5, 0.5, interpolation);
 @endcode
-To shrink an image, it will generally look best with cv::INTER_AREA interpolation, whereas to
-enlarge an image, it will generally look best with cv::INTER_CUBIC (slow) or cv::INTER_LINEAR
+To shrink an image, it will generally look best with ncvslideio::INTER_AREA interpolation, whereas to
+enlarge an image, it will generally look best with ncvslideio::INTER_CUBIC (slow) or ncvslideio::INTER_LINEAR
 (faster but still looks OK).
 
 @note Function textual ID is "org.opencv.imgproc.transform.resize"
@@ -1738,7 +1738,7 @@ enlarge an image, it will generally look best with cv::INTER_CUBIC (slow) or cv:
 \f[\texttt{(double)dsize.width/src.cols}\f]
 @param fy scale factor along the vertical axis; when it equals 0, it is computed as
 \f[\texttt{(double)dsize.height/src.rows}\f]
-@param interpolation interpolation method, see cv::InterpolationFlags
+@param interpolation interpolation method, see ncvslideio::InterpolationFlags
 
 @sa  warpAffine, warpPerspective, remap, resizeP
  */
@@ -1756,14 +1756,14 @@ Output image size will have the size dsize, the depth of output is the same as o
 
 @param src input image, must be of @ref CV_8UC1 type;
 @param dsize output image size;
-@param interpolation interpolation method, only cv::INTER_LINEAR is supported at the moment
+@param interpolation interpolation method, only ncvslideio::INTER_LINEAR is supported at the moment
 
 @sa  warpAffine, warpPerspective, remap, resize
  */
-GAPI_EXPORTS GMatP resizeP(const GMatP& src, const Size& dsize, int interpolation = cv::INTER_LINEAR);
+GAPI_EXPORTS GMatP resizeP(const GMatP& src, const Size& dsize, int interpolation = ncvslideio::INTER_LINEAR);
 
 //! @} gapi_transform
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio
 
 #endif // OPENCV_GAPI_IMGPROC_HPP

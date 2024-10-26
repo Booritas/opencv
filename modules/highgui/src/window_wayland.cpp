@@ -68,7 +68,7 @@ class cv_wl_core;
 
 using std::weak_ptr;
 using std::shared_ptr;
-using namespace cv::Error;
+using namespace ncvslideio::Error;
 namespace ch = std::chrono;
 
 #define throw_system_error(errmsg, errnum) \
@@ -84,7 +84,7 @@ static int xkb_keysym_to_ascii(xkb_keysym_t keysym) {
     return static_cast<int>(keysym & 0xff);
 }
 
-static void write_mat_to_xrgb8888(cv::Mat const &img_, void *data) {
+static void write_mat_to_xrgb8888(ncvslideio::Mat const &img_, void *data) {
     // Validate destination data.
     CV_CheckFalse((data == nullptr), "Destination Address must not be nullptr.");
 
@@ -106,7 +106,7 @@ static void write_mat_to_xrgb8888(cv::Mat const &img_, void *data) {
     );
 
     // Convert to CV_8U
-    cv::Mat img;
+    ncvslideio::Mat img;
     const int mtype = CV_MAKE_TYPE(CV_8U, ncn);
     switch(CV_MAT_DEPTH(depth))
     {
@@ -138,14 +138,14 @@ static void write_mat_to_xrgb8888(cv::Mat const &img_, void *data) {
 
     // XRGB8888 in Little Endian(Wayland Request) = [B8:G8:R8:X8] in data array.
     // X is not used to show. So we can use cvtColor() with GRAY2BGRA or BGR2BGRA or copyTo().
-    cv::Mat dst(img.size(), CV_MAKE_TYPE(CV_8U, 4), (uint8_t*)data);
+    ncvslideio::Mat dst(img.size(), CV_MAKE_TYPE(CV_8U, 4), (uint8_t*)data);
     if(ncn == 1)
     {
-        cvtColor(img, dst, cv::COLOR_GRAY2BGRA);
+        cvtColor(img, dst, ncvslideio::COLOR_GRAY2BGRA);
     }
     else if(ncn == 3)
     {
-        cvtColor(img, dst, cv::COLOR_BGR2BGRA);
+        cvtColor(img, dst, ncvslideio::COLOR_BGR2BGRA);
     }
     else
     {
@@ -446,20 +446,20 @@ public:
 
     bool is_busy() const;
 
-    cv::Size size() const;
+    ncvslideio::Size size() const;
 
     bool is_allocated() const;
 
     char *data();
 
-    void create_shm(struct wl_shm *shm, cv::Size size, uint32_t format);
+    void create_shm(struct wl_shm *shm, ncvslideio::Size size, uint32_t format);
 
     void attach_to_surface(struct wl_surface *surface, int32_t x, int32_t y);
 
 private:
     int fd_ = -1;
     bool busy_ = false;
-    cv::Size size_{0, 0};
+    ncvslideio::Size size_{0, 0};
     struct wl_buffer *buffer_ = nullptr;
     struct wl_buffer_listener buffer_listener_{
             &handle_buffer_release
@@ -533,7 +533,7 @@ public:
 
     /* Return the size the last time when we did drawing */
     /* draw method must update the last_size_ */
-    virtual cv::Size get_last_size() const {
+    virtual ncvslideio::Size get_last_size() const {
         return last_size_;
     }
 
@@ -541,17 +541,17 @@ public:
 
     virtual void get_preferred_height_for_width(int width, int &minimum, int &natural) const = 0;
 
-    virtual void on_mouse(int event, cv::Point const &p, int flag) {
+    virtual void on_mouse(int event, ncvslideio::Point const &p, int flag) {
         CV_UNUSED(event);
         CV_UNUSED(p);
         CV_UNUSED(flag);
     }
 
     /* Return: The area widget rendered, if not rendered at all, set as width=height=0 */
-    virtual cv::Rect draw(void *data, cv::Size const &, bool force) = 0;
+    virtual ncvslideio::Rect draw(void *data, ncvslideio::Size const &, bool force) = 0;
 
 protected:
-    cv::Size last_size_{0, 0};
+    ncvslideio::Size last_size_{0, 0};
     cv_wl_window *window_;
 };
 
@@ -572,23 +572,23 @@ public:
 
     void get_preferred_height_for_width(int width, int &minimum, int &natural) const override;
 
-    void on_mouse(int event, cv::Point const &p, int flag) override;
+    void on_mouse(int event, ncvslideio::Point const &p, int flag) override;
 
-    void calc_button_geometry(cv::Size const &size);
+    void calc_button_geometry(ncvslideio::Size const &size);
 
-    cv::Rect draw(void *data, cv::Size const &size, bool force) override;
+    ncvslideio::Rect draw(void *data, ncvslideio::Size const &size, bool force) override;
 
 private:
-    cv::Mat buf_;
-    cv::Rect btn_close_, btn_max_, btn_min_;
-    cv::Scalar const line_color_ = CV_RGB(0xff, 0xff, 0xff);
-    cv::Scalar const bg_color_ = CV_RGB(0x2d, 0x2d, 0x2d);
-    cv::Scalar const border_color_ = CV_RGB(0x53, 0x63, 0x53);
+    ncvslideio::Mat buf_;
+    ncvslideio::Rect btn_close_, btn_max_, btn_min_;
+    ncvslideio::Scalar const line_color_ = CV_RGB(0xff, 0xff, 0xff);
+    ncvslideio::Scalar const bg_color_ = CV_RGB(0x2d, 0x2d, 0x2d);
+    ncvslideio::Scalar const border_color_ = CV_RGB(0x53, 0x63, 0x53);
 
     std::string last_title_;
 
     struct {
-        int face = cv::FONT_HERSHEY_TRIPLEX;
+        int face = ncvslideio::FONT_HERSHEY_TRIPLEX;
         double scale = 0.4;
         int thickness = 1;
         int baseline = 0;
@@ -605,7 +605,7 @@ public:
 
     int get_flags() const { return flags_; }
 
-    void set_image(cv::Mat const &image);
+    void set_image(ncvslideio::Mat const &image);
 
     void set_mouse_callback(CvMouseCallback callback, void *param);
 
@@ -613,18 +613,18 @@ public:
 
     void get_preferred_height_for_width(int width, int &minimum, int &natural) const override;
 
-    void on_mouse(int event, cv::Point const &p, int flag) override;
+    void on_mouse(int event, ncvslideio::Point const &p, int flag) override;
 
-    cv::Rect draw(void *data, cv::Size const &, bool force) override;
+    ncvslideio::Rect draw(void *data, ncvslideio::Size const &, bool force) override;
 
 private:
     int flags_;
-    cv::Mat image_;
-    cv::Rect last_img_area_;
+    ncvslideio::Mat image_;
+    ncvslideio::Rect last_img_area_;
     bool image_changed_ = false;
 
     int real_img_width = 0;
-    cv::Scalar const outarea_color_ = CV_RGB(0, 0, 0);
+    ncvslideio::Scalar const outarea_color_ = CV_RGB(0, 0, 0);
 
     void *param_ = nullptr;
     CvMouseCallback callback_ = nullptr;
@@ -647,14 +647,14 @@ public:
 
     void get_preferred_height_for_width(int width, int &minimum, int &natural) const override;
 
-    void on_mouse(int event, cv::Point const &p, int flag) override;
+    void on_mouse(int event, ncvslideio::Point const &p, int flag) override;
 
-    cv::Rect draw(void *data, cv::Size const &size, bool force) override;
+    ncvslideio::Rect draw(void *data, ncvslideio::Size const &size, bool force) override;
 
 private:
     std::string name_;
     int count_;
-    cv::Size size_;
+    ncvslideio::Size size_;
 
     struct {
         int *value;
@@ -667,19 +667,19 @@ private:
     } on_change_{};
 
     struct {
-        cv::Scalar bg = CV_RGB(0xa4, 0xa4, 0xa4);
-        cv::Scalar fg = CV_RGB(0xf0, 0xf0, 0xf0);
+        ncvslideio::Scalar bg = CV_RGB(0xa4, 0xa4, 0xa4);
+        ncvslideio::Scalar fg = CV_RGB(0xf0, 0xf0, 0xf0);
     } color_;
 
     struct {
-        int fontface = cv::FONT_HERSHEY_COMPLEX_SMALL;
+        int fontface = ncvslideio::FONT_HERSHEY_COMPLEX_SMALL;
         double fontscale = 0.6;
         int font_thickness = 1;
-        cv::Size text_size;
-        cv::Point text_orig;
+        ncvslideio::Size text_size;
+        ncvslideio::Point text_orig;
 
         int margin = 10, thickness = 5;
-        cv::Point right, left;
+        ncvslideio::Point right, left;
 
         int length() const { return right.x - left.x; }
     } bar_;
@@ -687,24 +687,24 @@ private:
     struct {
         int value = 0;
         int radius = 7;
-        cv::Point pos;
+        ncvslideio::Point pos;
         bool drag = false;
     } slider_;
 
     bool slider_moved_ = true;
-    cv::Mat data_;
+    ncvslideio::Mat data_;
 
     void prepare_to_draw();
 };
 
 struct cv_wl_mouse_callback {
     bool drag = false;
-    cv::Point last{0, 0};
+    ncvslideio::Point last{0, 0};
     cv_wl_mouse::button button = cv_wl_mouse::button::NONE;
 
     void reset() {
         drag = false;
-        last = cv::Point(0, 0);
+        last = ncvslideio::Point(0, 0);
         button = cv_wl_mouse::button::NONE;
     }
 };
@@ -718,7 +718,7 @@ struct cv_wl_window_state {
         maximized = fullscreen = resizing = focused = false;
     }
 
-    cv::Size prev_size_{0, 0};
+    ncvslideio::Size prev_size_{0, 0};
     bool maximized{}, fullscreen{}, resizing{}, focused{};
 };
 
@@ -732,7 +732,7 @@ public:
 
     ~cv_wl_window();
 
-    cv::Size get_size() const;
+    ncvslideio::Size get_size() const;
 
     std::string const &get_title() const;
 
@@ -740,21 +740,21 @@ public:
 
     cv_wl_window_state const &state() const;
 
-    void show_image(cv::Mat const &image);
+    void show_image(ncvslideio::Mat const &image);
 
     int create_trackbar(std::string const &name, int *value, int count, CvTrackbarCallback2 on_change, void *userdata);
 
     weak_ptr<cv_wl_trackbar> get_trackbar(std::string const &) const;
 
-    void mouse_enter(cv::Point const &p, uint32_t serial);
+    void mouse_enter(ncvslideio::Point const &p, uint32_t serial);
 
     void mouse_leave();
 
-    void mouse_motion(uint32_t time, cv::Point const &p);
+    void mouse_motion(uint32_t time, ncvslideio::Point const &p);
 
     void mouse_button(uint32_t time, uint32_t button, wl_pointer_button_state state, uint32_t serial);
 
-    void update_cursor(cv::Point const &p, bool grab = false);
+    void update_cursor(ncvslideio::Point const &p, bool grab = false);
 
     void interactive_move();
 
@@ -764,10 +764,10 @@ public:
 
     void set_maximized(bool maximize = true);
 
-    void show(cv::Size const &new_size = cv::Size(0, 0));
+    void show(ncvslideio::Size const &new_size = ncvslideio::Size(0, 0));
 
 private:
-    cv::Size size_{640, 480};
+    ncvslideio::Size size_{640, 480};
     std::string title_;
 
     shared_ptr<cv_wl_display> display_;
@@ -801,12 +801,12 @@ private:
     struct {
         bool repaint_request = false;  /* we need to redraw as soon as possible (some states are changed) */
         bool resize_request = false;
-        cv::Size size{0, 0};
+        ncvslideio::Size size{0, 0};
     } pending_;
 
     shared_ptr<cv_wl_viewer> viewer_;
     std::vector<shared_ptr<cv_wl_widget>> widgets_;
-    std::vector<cv::Rect> widget_geometries_;
+    std::vector<ncvslideio::Rect> widget_geometries_;
 
     cv_wl_mouse_callback on_mouse_;
 
@@ -819,11 +819,11 @@ private:
 
     cv_wl_buffer *next_buffer();
 
-    void commit_buffer(cv_wl_buffer *buffer, cv::Rect const &);
+    void commit_buffer(cv_wl_buffer *buffer, ncvslideio::Rect const &);
 
-    void deliver_mouse_event(int event, cv::Point const &p, int flag);
+    void deliver_mouse_event(int event, ncvslideio::Point const &p, int flag);
 
-    std::tuple<cv::Size, std::vector<cv::Rect>> manage_widget_geometry(cv::Size const &new_size);
+    std::tuple<ncvslideio::Size, std::vector<ncvslideio::Rect>> manage_widget_geometry(ncvslideio::Size const &new_size);
 
     static void handle_surface_configure(void *data, struct xdg_surface *surface, uint32_t serial);
 
@@ -1056,7 +1056,7 @@ void cv_wl_mouse::handle_pointer_enter(void *data, struct wl_pointer *pointer,
     auto *window = reinterpret_cast<cv_wl_window *>(wl_surface_get_user_data(surface));
 
     mouse->focus_window_ = window;
-    mouse->focus_window_->mouse_enter(cv::Point(x, y), serial);
+    mouse->focus_window_->mouse_enter(ncvslideio::Point(x, y), serial);
 }
 
 void cv_wl_mouse::handle_pointer_leave(void *data,
@@ -1078,7 +1078,7 @@ void cv_wl_mouse::handle_pointer_motion(void *data,
     int y = wl_fixed_to_int(sy);
     auto *mouse = reinterpret_cast<cv_wl_mouse *>(data);
 
-    mouse->focus_window_->mouse_motion(time, cv::Point(x, y));
+    mouse->focus_window_->mouse_motion(time, ncvslideio::Point(x, y));
 }
 
 void cv_wl_mouse::handle_pointer_button(void *data, struct wl_pointer *wl_pointer,
@@ -1324,7 +1324,7 @@ bool cv_wl_buffer::is_busy() const {
     return busy_;
 }
 
-cv::Size cv_wl_buffer::size() const {
+ncvslideio::Size cv_wl_buffer::size() const {
     return size_;
 }
 
@@ -1336,7 +1336,7 @@ char *cv_wl_buffer::data() {
     return (char *) shm_data_;
 }
 
-void cv_wl_buffer::create_shm(struct wl_shm *shm, cv::Size size, uint32_t format) {
+void cv_wl_buffer::create_shm(struct wl_shm *shm, ncvslideio::Size size, uint32_t format) {
     this->destroy();
 
     size_ = size;
@@ -1507,9 +1507,9 @@ void cv_wl_titlebar::get_preferred_height_for_width(int width, int &minimum, int
     minimum = natural = titlebar_min_height;
 }
 
-void cv_wl_titlebar::on_mouse(int event, cv::Point const &p, int flag) {
+void cv_wl_titlebar::on_mouse(int event, ncvslideio::Point const &p, int flag) {
     CV_UNUSED(flag);
-    if (event == cv::EVENT_LBUTTONDOWN) {
+    if (event == ncvslideio::EVENT_LBUTTONDOWN) {
         if (btn_close_.contains(p)) {
             exit(EXIT_SUCCESS);
         } else if (btn_max_.contains(p)) {
@@ -1523,52 +1523,52 @@ void cv_wl_titlebar::on_mouse(int event, cv::Point const &p, int flag) {
     }
 }
 
-void cv_wl_titlebar::calc_button_geometry(cv::Size const &size) {
+void cv_wl_titlebar::calc_button_geometry(ncvslideio::Size const &size) {
     /* Basic button geoemetries */
-    cv::Size btn_size = cv::Size(btn_width, size.height);
-    btn_close_ = cv::Rect(cv::Point(size.width - 5 - btn_size.width, 0), btn_size);
-    btn_max_ = cv::Rect(cv::Point(btn_close_.x - btn_size.width, 0), btn_size);
-    btn_min_ = cv::Rect(cv::Point(btn_max_.x - btn_size.width, 0), btn_size);
+    ncvslideio::Size btn_size = ncvslideio::Size(btn_width, size.height);
+    btn_close_ = ncvslideio::Rect(ncvslideio::Point(size.width - 5 - btn_size.width, 0), btn_size);
+    btn_max_ = ncvslideio::Rect(ncvslideio::Point(btn_close_.x - btn_size.width, 0), btn_size);
+    btn_min_ = ncvslideio::Rect(ncvslideio::Point(btn_max_.x - btn_size.width, 0), btn_size);
 }
 
-cv::Rect cv_wl_titlebar::draw(void *data, cv::Size const &size, bool force) {
-    auto damage = cv::Rect(0, 0, 0, 0);
+ncvslideio::Rect cv_wl_titlebar::draw(void *data, ncvslideio::Size const &size, bool force) {
+    auto damage = ncvslideio::Rect(0, 0, 0, 0);
 
     if (force || last_size_ != size || last_title_ != window_->get_title()) {
-        buf_ = cv::Mat(size, CV_8UC3, bg_color_);
+        buf_ = ncvslideio::Mat(size, CV_8UC3, bg_color_);
         this->calc_button_geometry(size);
 
-        auto const margin = cv::Point(btn_max_x, btn_max_y);
-        auto const btn_cls = cv::Rect(btn_close_.tl() + margin, btn_close_.br() - margin);
-        auto const btn_max = cv::Rect(btn_max_.tl() + margin, btn_max_.br() - margin);
-        auto title_area = cv::Rect(0, 0, size.width - titlebar_min_width, size.height);
+        auto const margin = ncvslideio::Point(btn_max_x, btn_max_y);
+        auto const btn_cls = ncvslideio::Rect(btn_close_.tl() + margin, btn_close_.br() - margin);
+        auto const btn_max = ncvslideio::Rect(btn_max_.tl() + margin, btn_max_.br() - margin);
+        auto title_area = ncvslideio::Rect(0, 0, size.width - titlebar_min_width, size.height);
 
-        auto text = cv::getTextSize(window_->get_title(), title_.face, title_.scale, title_.thickness,
+        auto text = ncvslideio::getTextSize(window_->get_title(), title_.face, title_.scale, title_.thickness,
                                     &title_.baseline);
         if (text.area() <= title_area.area()) {
-            auto origin = cv::Point(0, (size.height + text.height) / 2);
+            auto origin = ncvslideio::Point(0, (size.height + text.height) / 2);
             origin.x = ((title_area.width >= (size.width + text.width) / 2) ?
                         (size.width - text.width) / 2 : (title_area.width - text.width) / 2);
-            cv::putText(
+            ncvslideio::putText(
                     buf_, window_->get_title(),
                     origin, title_.face, title_.scale,
-                    CV_RGB(0xff, 0xff, 0xff), title_.thickness, cv::LINE_AA
+                    CV_RGB(0xff, 0xff, 0xff), title_.thickness, ncvslideio::LINE_AA
             );
         }
 
-        buf_(cv::Rect(btn_min_.tl(), cv::Size(titlebar_min_width, size.height))) = bg_color_;
-        cv::line(buf_, btn_cls.tl(), btn_cls.br(), line_color_, 1, cv::LINE_AA);
-        cv::line(buf_, btn_cls.tl() + cv::Point(btn_cls.width, 0), btn_cls.br() - cv::Point(btn_cls.width, 0),
-                 line_color_, 1, cv::LINE_AA);
-        cv::rectangle(buf_, btn_max.tl(), btn_max.br(), line_color_, 1, cv::LINE_AA);
-        cv::line(buf_, cv::Point(btn_min_.x + 8, btn_min_.height / 2),
-                 cv::Point(btn_min_.x + btn_min_.width - 8, btn_min_.height / 2), line_color_, 1, cv::LINE_AA);
-        cv::line(buf_, cv::Point(0, 0), cv::Point(buf_.size().width, 0), border_color_, 1, cv::LINE_AA);
+        buf_(ncvslideio::Rect(btn_min_.tl(), ncvslideio::Size(titlebar_min_width, size.height))) = bg_color_;
+        ncvslideio::line(buf_, btn_cls.tl(), btn_cls.br(), line_color_, 1, ncvslideio::LINE_AA);
+        ncvslideio::line(buf_, btn_cls.tl() + ncvslideio::Point(btn_cls.width, 0), btn_cls.br() - ncvslideio::Point(btn_cls.width, 0),
+                 line_color_, 1, ncvslideio::LINE_AA);
+        ncvslideio::rectangle(buf_, btn_max.tl(), btn_max.br(), line_color_, 1, ncvslideio::LINE_AA);
+        ncvslideio::line(buf_, ncvslideio::Point(btn_min_.x + 8, btn_min_.height / 2),
+                 ncvslideio::Point(btn_min_.x + btn_min_.width - 8, btn_min_.height / 2), line_color_, 1, ncvslideio::LINE_AA);
+        ncvslideio::line(buf_, ncvslideio::Point(0, 0), ncvslideio::Point(buf_.size().width, 0), border_color_, 1, ncvslideio::LINE_AA);
 
         write_mat_to_xrgb8888(buf_, data);
         last_size_ = size;
         last_title_ = window_->get_title();
-        damage = cv::Rect(cv::Point(0, 0), size);
+        damage = ncvslideio::Rect(ncvslideio::Point(0, 0), size);
     }
 
     return damage;
@@ -1582,7 +1582,7 @@ cv_wl_viewer::cv_wl_viewer(cv_wl_window *window, int flags)
         : cv_wl_widget(window), flags_(flags) {
 }
 
-void cv_wl_viewer::set_image(cv::Mat const &image) {
+void cv_wl_viewer::set_image(ncvslideio::Mat const &image) {
     image_ = image.clone();
     image_changed_ = true;
 
@@ -1604,7 +1604,7 @@ void cv_wl_viewer::set_image(cv::Mat const &image) {
                        0,                    // bottom
                        0,                    // left
                        margin,               // right
-                       cv::BORDER_CONSTANT,  // borderType
+                       ncvslideio::BORDER_CONSTANT,  // borderType
                        outarea_color_ );     // value(color)
     }
 }
@@ -1619,27 +1619,27 @@ void cv_wl_viewer::get_preferred_width(int &minimum, int &natural) const {
         minimum = natural = 0;
     } else {
         natural = image_.size().width;
-        minimum = (flags_ == cv::WINDOW_AUTOSIZE ? natural : 0);
+        minimum = (flags_ == ncvslideio::WINDOW_AUTOSIZE ? natural : 0);
     }
 }
 
-static double aspect_ratio(cv::Size const &size) {
+static double aspect_ratio(ncvslideio::Size const &size) {
     return (double) size.height / (double) size.width;
 }
 
 void cv_wl_viewer::get_preferred_height_for_width(int width, int &minimum, int &natural) const {
     if (image_.size().area() == 0) {
         minimum = natural = 0;
-    } else if (flags_ == cv::WINDOW_AUTOSIZE) {
+    } else if (flags_ == ncvslideio::WINDOW_AUTOSIZE) {
         CV_Assert(width == image_.size().width);
         minimum = natural = image_.size().height;
     } else {
         natural = static_cast<int>(width * aspect_ratio(image_.size()));
-        minimum = (flags_ & cv::WINDOW_FREERATIO ? 0 : natural);
+        minimum = (flags_ & ncvslideio::WINDOW_FREERATIO ? 0 : natural);
     }
 }
 
-void cv_wl_viewer::on_mouse(int event, cv::Point const &p, int flag) {
+void cv_wl_viewer::on_mouse(int event, ncvslideio::Point const &p, int flag) {
     // Make sure the first mouse event is delivered to clients
     static int last_event = ~event, last_flag = ~flag;
     static auto last_event_time = ch::steady_clock::now();
@@ -1660,28 +1660,28 @@ void cv_wl_viewer::on_mouse(int event, cv::Point const &p, int flag) {
             int y = static_cast<int>((p.y - last_img_area_.y) *
                                      ((double) image_.size().height / last_img_area_.height));
 
-            x = cv::min(x, real_img_width);
+            x = ncvslideio::min(x, real_img_width);
             callback_(event, x, y, flag, param_);
         }
     }
 }
 
-cv::Rect cv_wl_viewer::draw(void *data, cv::Size const &size, bool force) {
+ncvslideio::Rect cv_wl_viewer::draw(void *data, ncvslideio::Size const &size, bool force) {
     if ((!force && !image_changed_ && last_size_ == size) || image_.size().area() == 0 || size.area() == 0)
         return {0, 0, 0, 0};
 
-    last_img_area_ = cv::Rect(cv::Point(0, 0), size);
+    last_img_area_ = ncvslideio::Rect(ncvslideio::Point(0, 0), size);
 
-    if (flags_ == cv::WINDOW_AUTOSIZE || image_.size() == size) {
+    if (flags_ == ncvslideio::WINDOW_AUTOSIZE || image_.size() == size) {
         CV_Assert(image_.size() == size);
         write_mat_to_xrgb8888(image_, data);
     } else {
-        if (flags_ & cv::WINDOW_FREERATIO) {
-            cv::Mat resized;
-            cv::resize(image_, resized, size);
+        if (flags_ & ncvslideio::WINDOW_FREERATIO) {
+            ncvslideio::Mat resized;
+            ncvslideio::resize(image_, resized, size);
             write_mat_to_xrgb8888(resized, data);
-        } else /* cv::WINDOW_KEEPRATIO */ {
-            auto rect = cv::Rect(cv::Point(0, 0), size);
+        } else /* ncvslideio::WINDOW_KEEPRATIO */ {
+            auto rect = ncvslideio::Rect(ncvslideio::Point(0, 0), size);
             if (aspect_ratio(size) >= aspect_ratio(image_.size())) {
                 rect.height = static_cast<int>(image_.size().height * ((double) rect.width / image_.size().width));
             } else {
@@ -1691,9 +1691,9 @@ cv::Rect cv_wl_viewer::draw(void *data, cv::Size const &size, bool force) {
             rect.x = (size.width - rect.width) / 2;
             rect.y = (size.height - rect.height) / 2;
 
-            auto buf = cv::Mat(size, image_.type(), CV_RGB(0xa4, 0xa4, 0xa4));
+            auto buf = ncvslideio::Mat(size, image_.type(), CV_RGB(0xa4, 0xa4, 0xa4));
             auto resized = buf(rect);
-            cv::resize(image_, resized, rect.size());
+            ncvslideio::resize(image_, resized, rect.size());
             write_mat_to_xrgb8888(buf, data);
 
             last_img_area_ = rect;
@@ -1770,19 +1770,19 @@ void cv_wl_trackbar::get_preferred_height_for_width(int width, int &minimum, int
 }
 
 void cv_wl_trackbar::prepare_to_draw() {
-    bar_.text_size = cv::getTextSize(
+    bar_.text_size = ncvslideio::getTextSize(
             name_ + ": " + std::to_string(count_), bar_.fontface,
             bar_.fontscale, bar_.font_thickness, nullptr);
-    bar_.text_orig = cv::Point(2, (size_.height + bar_.text_size.height) / 2);
-    bar_.left = cv::Point(bar_.text_size.width + 10, size_.height / 2);
-    bar_.right = cv::Point(size_.width - bar_.margin - 1, size_.height / 2);
+    bar_.text_orig = ncvslideio::Point(2, (size_.height + bar_.text_size.height) / 2);
+    bar_.left = ncvslideio::Point(bar_.text_size.width + 10, size_.height / 2);
+    bar_.right = ncvslideio::Point(size_.width - bar_.margin - 1, size_.height / 2);
 
     int slider_pos_x = static_cast<int>(((double) bar_.length() / count_ * slider_.value));
-    slider_.pos = cv::Point(bar_.left.x + slider_pos_x, bar_.left.y);
+    slider_.pos = ncvslideio::Point(bar_.left.x + slider_pos_x, bar_.left.y);
 }
 
-cv::Rect cv_wl_trackbar::draw(void *data, cv::Size const &size, bool force) {
-    auto damage = cv::Rect(0, 0, 0, 0);
+ncvslideio::Rect cv_wl_trackbar::draw(void *data, ncvslideio::Size const &size, bool force) {
+    auto damage = ncvslideio::Rect(0, 0, 0, 0);
 
     if (slider_moved_) {
         on_change_.update(slider_.value);
@@ -1795,44 +1795,44 @@ cv::Rect cv_wl_trackbar::draw(void *data, cv::Size const &size, bool force) {
         if (size_ == data_.size())
             data_ = CV_RGB(0xde, 0xde, 0xde);
         else
-            data_ = cv::Mat(size_, CV_8UC3, CV_RGB(0xde, 0xde, 0xde));
+            data_ = ncvslideio::Mat(size_, CV_8UC3, CV_RGB(0xde, 0xde, 0xde));
 
         this->prepare_to_draw();
-        cv::putText(
+        ncvslideio::putText(
                 data_,
                 (name_ + ": " + std::to_string(slider_.value)),
                 bar_.text_orig, bar_.fontface, bar_.fontscale,
-                CV_RGB(0x00, 0x00, 0x00), bar_.font_thickness, cv::LINE_AA);
+                CV_RGB(0x00, 0x00, 0x00), bar_.font_thickness, ncvslideio::LINE_AA);
 
-        cv::line(data_, bar_.left, bar_.right, color_.bg, bar_.thickness + 3, cv::LINE_AA);
-        cv::line(data_, bar_.left, bar_.right, color_.fg, bar_.thickness, cv::LINE_AA);
-        cv::circle(data_, slider_.pos, slider_.radius, color_.fg, -1, cv::LINE_AA);
-        cv::circle(data_, slider_.pos, slider_.radius, color_.bg, 1, cv::LINE_AA);
+        ncvslideio::line(data_, bar_.left, bar_.right, color_.bg, bar_.thickness + 3, ncvslideio::LINE_AA);
+        ncvslideio::line(data_, bar_.left, bar_.right, color_.fg, bar_.thickness, ncvslideio::LINE_AA);
+        ncvslideio::circle(data_, slider_.pos, slider_.radius, color_.fg, -1, ncvslideio::LINE_AA);
+        ncvslideio::circle(data_, slider_.pos, slider_.radius, color_.bg, 1, ncvslideio::LINE_AA);
 
         write_mat_to_xrgb8888(data_, data);
-        damage = cv::Rect(cv::Point(0, 0), size);
+        damage = ncvslideio::Rect(ncvslideio::Point(0, 0), size);
         slider_moved_ = false;
     }
 
     return damage;
 }
 
-void cv_wl_trackbar::on_mouse(int event, cv::Point const &p, int flag) {
+void cv_wl_trackbar::on_mouse(int event, ncvslideio::Point const &p, int flag) {
     switch (event) {
-        case cv::EVENT_LBUTTONDOWN:
+        case ncvslideio::EVENT_LBUTTONDOWN:
             slider_.drag = true;
             window_->update_cursor(p, true);
             break;
-        case cv::EVENT_MOUSEMOVE:
-            if (!(flag & cv::EVENT_FLAG_LBUTTON))
+        case ncvslideio::EVENT_MOUSEMOVE:
+            if (!(flag & ncvslideio::EVENT_FLAG_LBUTTON))
                 break;
             break;
-        case cv::EVENT_LBUTTONUP:
+        case ncvslideio::EVENT_LBUTTONUP:
             if (slider_.drag && bar_.left.x <= p.x && p.x <= bar_.right.x) {
                 slider_.value = static_cast<int>((double) (p.x - bar_.left.x) / bar_.length() * count_);
                 slider_moved_ = true;
                 window_->show();
-                slider_.drag = (event != cv::EVENT_LBUTTONUP);
+                slider_.drag = (event != ncvslideio::EVENT_LBUTTONUP);
             }
             break;
         default:
@@ -1879,7 +1879,7 @@ cv_wl_window::~cv_wl_window() {
     wl_surface_destroy(surface_);
 }
 
-cv::Size cv_wl_window::get_size() const {
+ncvslideio::Size cv_wl_window::get_size() const {
     return size_;
 }
 
@@ -1918,11 +1918,11 @@ void cv_wl_window::set_minimized() {
 void cv_wl_window::set_maximized(bool maximize) {
     if (!maximize)
         xdg_toplevel_unset_maximized(xdg_toplevel_);
-    else if (viewer_->get_flags() != cv::WINDOW_AUTOSIZE)
+    else if (viewer_->get_flags() != ncvslideio::WINDOW_AUTOSIZE)
         xdg_toplevel_set_maximized(xdg_toplevel_);
 }
 
-void cv_wl_window::show_image(cv::Mat const &image) {
+void cv_wl_window::show_image(ncvslideio::Mat const &image) {
     viewer_->set_image(image);
     this->show();
 }
@@ -1954,8 +1954,8 @@ weak_ptr<cv_wl_trackbar> cv_wl_window::get_trackbar(std::string const &trackbar_
                                 : std::static_pointer_cast<cv_wl_trackbar>(*it);
 }
 
-static void calculate_damage(cv::Rect &surface_damage,
-                             cv::Rect const &widget_geometry, cv::Rect const &w_damage) {
+static void calculate_damage(ncvslideio::Rect &surface_damage,
+                             ncvslideio::Rect const &widget_geometry, ncvslideio::Rect const &w_damage) {
     if (w_damage.area() == 0)
         return;
 
@@ -1966,7 +1966,7 @@ static void calculate_damage(cv::Rect &surface_damage,
     if (surface_damage.area() == 0) {
         surface_damage = widget_damage;
     } else {
-        auto damage = cv::Rect(0, 0, 0, 0);
+        auto damage = ncvslideio::Rect(0, 0, 0, 0);
         damage.x = std::min(surface_damage.x, widget_damage.x);
         damage.y = std::min(surface_damage.y, widget_damage.y);
         damage.width =
@@ -1978,9 +1978,9 @@ static void calculate_damage(cv::Rect &surface_damage,
     }
 }
 
-std::tuple<cv::Size, std::vector<cv::Rect>>
-cv_wl_window::manage_widget_geometry(cv::Size const &new_size) {
-    std::vector<cv::Rect> geometries;
+std::tuple<ncvslideio::Size, std::vector<ncvslideio::Rect>>
+cv_wl_window::manage_widget_geometry(ncvslideio::Size const &new_size) {
+    std::vector<ncvslideio::Rect> geometries;
 
     std::vector<int> min_widths, nat_widths;
     int min_width, nat_width, min_height, nat_height;
@@ -2011,7 +2011,7 @@ cv_wl_window::manage_widget_geometry(cv::Size const &new_size) {
         total_height += height;
     };
 
-    if (viewer_->get_flags() == cv::WINDOW_AUTOSIZE) {
+    if (viewer_->get_flags() == ncvslideio::WINDOW_AUTOSIZE) {
         final_width = nat_widths[0];
         calc_geometries = calc_autosize_geo;
     } else {
@@ -2026,10 +2026,10 @@ cv_wl_window::manage_widget_geometry(cv::Size const &new_size) {
         for (auto &widget: widgets_)
             calc_total_min_height(widget);
 
-        auto min_size = cv::Size(max_min_width, total_min_height);
+        auto min_size = ncvslideio::Size(max_min_width, total_min_height);
         if (new_size.width < min_size.width || new_size.height < min_size.height) {
             /* The new_size is smaller than the minimum size */
-            return std::make_tuple(cv::Size(0, 0), geometries);
+            return std::make_tuple(ncvslideio::Size(0, 0), geometries);
         } else {
             final_width = new_size.width;
             calc_geometries = calc_normal_geo;
@@ -2040,10 +2040,10 @@ cv_wl_window::manage_widget_geometry(cv::Size const &new_size) {
         calc_geometries(widget, final_width, false);
     calc_geometries(viewer_, final_width, true);
 
-    return std::make_tuple(cv::Size(final_width, total_height), geometries);
+    return std::make_tuple(ncvslideio::Size(final_width, total_height), geometries);
 }
 
-void cv_wl_window::show(cv::Size const &size) {
+void cv_wl_window::show(ncvslideio::Size const &size) {
     if (wait_for_configure_) {
         pending_.repaint_request = true;
         return;
@@ -2071,8 +2071,8 @@ void cv_wl_window::show(cv::Size const &size) {
     if (!buffer->is_allocated() || buffer_size_changed)
         buffer->create_shm(display_->shm(), new_size, WL_SHM_FORMAT_XRGB8888);
 
-    auto surface_damage = cv::Rect(0, 0, 0, 0);
-    auto draw_widget = [&](shared_ptr<cv_wl_widget> const &widget, cv::Rect const &rect) {
+    auto surface_damage = ncvslideio::Rect(0, 0, 0, 0);
+    auto draw_widget = [&](shared_ptr<cv_wl_widget> const &widget, ncvslideio::Rect const &rect) {
         auto widget_damage = widget->draw(
                 buffer->data() + ((new_size.width * rect.y + rect.x) * 4),
                 rect.size(),
@@ -2091,7 +2091,7 @@ void cv_wl_window::show(cv::Size const &size) {
     size_ = new_size;
 }
 
-void cv_wl_window::commit_buffer(cv_wl_buffer *buffer, cv::Rect const &damage) {
+void cv_wl_window::commit_buffer(cv_wl_buffer *buffer, ncvslideio::Rect const &damage) {
     if (!buffer)
         return;
 
@@ -2126,7 +2126,7 @@ void cv_wl_window::handle_frame_callback(void *data, struct wl_callback *cb, uin
 
 #define EDGE_AREA_MARGIN 7
 
-static std::string get_cursor_name(int x, int y, cv::Size const &size, bool grab) {
+static std::string get_cursor_name(int x, int y, ncvslideio::Size const &size, bool grab) {
     std::string cursor;
 
     if (grab) {
@@ -2171,7 +2171,7 @@ static xdg_toplevel_resize_edge cursor_name_to_enum(std::string const &cursor) {
     else return XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 }
 
-void cv_wl_window::update_cursor(cv::Point const &p, bool grab) {
+void cv_wl_window::update_cursor(ncvslideio::Point const &p, bool grab) {
     auto cursor_name = get_cursor_name(p.x, p.y, size_, grab);
     if (cursor_.current_name == cursor_name)
         return;
@@ -2198,16 +2198,16 @@ static int get_kb_modifiers_flag(const weak_ptr<cv_wl_keyboard> &kb) {
     auto modifiers = kb.lock()->get_modifiers();
 
     if (modifiers & cv_wl_keyboard::MOD_CONTROL_MASK)
-        flag |= cv::EVENT_FLAG_CTRLKEY;
+        flag |= ncvslideio::EVENT_FLAG_CTRLKEY;
     if (modifiers & cv_wl_keyboard::MOD_ALT_MASK)
-        flag |= cv::EVENT_FLAG_ALTKEY;
+        flag |= ncvslideio::EVENT_FLAG_ALTKEY;
     if (modifiers & cv_wl_keyboard::MOD_SHIFT_MASK)
-        flag |= cv::EVENT_FLAG_SHIFTKEY;
+        flag |= ncvslideio::EVENT_FLAG_SHIFTKEY;
 
     return flag;
 }
 
-void cv_wl_window::deliver_mouse_event(int event, cv::Point const &p, int flag) {
+void cv_wl_window::deliver_mouse_event(int event, ncvslideio::Point const &p, int flag) {
     flag |= get_kb_modifiers_flag(display_->input().lock()->keyboard());
 
     for (size_t i = 0; i < widgets_.size(); ++i) {
@@ -2221,12 +2221,12 @@ void cv_wl_window::deliver_mouse_event(int event, cv::Point const &p, int flag) 
         viewer_->on_mouse(event, p - rect.tl(), flag);
 }
 
-void cv_wl_window::mouse_enter(cv::Point const &p, uint32_t serial) {
+void cv_wl_window::mouse_enter(ncvslideio::Point const &p, uint32_t serial) {
     on_mouse_.last = p;
     mouse_enter_serial_ = serial;
 
     this->update_cursor(p);
-    this->deliver_mouse_event(cv::EVENT_MOUSEMOVE, p, 0);
+    this->deliver_mouse_event(ncvslideio::EVENT_MOUSEMOVE, p, 0);
 }
 
 void cv_wl_window::mouse_leave() {
@@ -2234,7 +2234,7 @@ void cv_wl_window::mouse_leave() {
     cursor_.current_name.clear();
 }
 
-void cv_wl_window::mouse_motion(uint32_t time, cv::Point const &p) {
+void cv_wl_window::mouse_motion(uint32_t time, ncvslideio::Point const &p) {
     CV_UNUSED(time);
     int flag = 0;
     on_mouse_.last = p;
@@ -2242,13 +2242,13 @@ void cv_wl_window::mouse_motion(uint32_t time, cv::Point const &p) {
     if (on_mouse_.drag) {
         switch (on_mouse_.button) {
             case cv_wl_mouse::LBUTTON:
-                flag = cv::EVENT_FLAG_LBUTTON;
+                flag = ncvslideio::EVENT_FLAG_LBUTTON;
                 break;
             case cv_wl_mouse::RBUTTON:
-                flag = cv::EVENT_FLAG_RBUTTON;
+                flag = ncvslideio::EVENT_FLAG_RBUTTON;
                 break;
             case cv_wl_mouse::MBUTTON:
-                flag = cv::EVENT_FLAG_MBUTTON;
+                flag = ncvslideio::EVENT_FLAG_MBUTTON;
                 break;
             default:
                 break;
@@ -2256,9 +2256,9 @@ void cv_wl_window::mouse_motion(uint32_t time, cv::Point const &p) {
     }
 
     bool grabbing =
-            (cursor_.current_name == "grabbing" && (flag & cv::EVENT_FLAG_LBUTTON));
+            (cursor_.current_name == "grabbing" && (flag & ncvslideio::EVENT_FLAG_LBUTTON));
     this->update_cursor(p, grabbing);
-    this->deliver_mouse_event(cv::EVENT_MOUSEMOVE, p, flag);
+    this->deliver_mouse_event(ncvslideio::EVENT_MOUSEMOVE, p, flag);
 }
 
 void cv_wl_window::mouse_button(uint32_t time, uint32_t button, wl_pointer_button_state state, uint32_t serial) {
@@ -2270,7 +2270,7 @@ void cv_wl_window::mouse_button(uint32_t time, uint32_t button, wl_pointer_butto
     /* Start a user-driven, interactive resize of the surface */
     if (!on_mouse_.drag &&
         button == cv_wl_mouse::LBUTTON && cursor_.current_name != "left_ptr" &&
-        viewer_->get_flags() != cv::WINDOW_AUTOSIZE) {
+        viewer_->get_flags() != ncvslideio::WINDOW_AUTOSIZE) {
         xdg_toplevel_resize(
                 xdg_toplevel_,
                 display_->input().lock()->seat(),
@@ -2285,16 +2285,16 @@ void cv_wl_window::mouse_button(uint32_t time, uint32_t button, wl_pointer_butto
 
     switch (button) {
         case cv_wl_mouse::LBUTTON:
-            event = on_mouse_.drag ? cv::EVENT_LBUTTONDOWN : cv::EVENT_LBUTTONUP;
-            flag = cv::EVENT_FLAG_LBUTTON;
+            event = on_mouse_.drag ? ncvslideio::EVENT_LBUTTONDOWN : ncvslideio::EVENT_LBUTTONUP;
+            flag = ncvslideio::EVENT_FLAG_LBUTTON;
             break;
         case cv_wl_mouse::RBUTTON:
-            event = on_mouse_.drag ? cv::EVENT_RBUTTONDOWN : cv::EVENT_RBUTTONUP;
-            flag = cv::EVENT_FLAG_RBUTTON;
+            event = on_mouse_.drag ? ncvslideio::EVENT_RBUTTONDOWN : ncvslideio::EVENT_RBUTTONUP;
+            flag = ncvslideio::EVENT_FLAG_RBUTTON;
             break;
         case cv_wl_mouse::MBUTTON:
-            event = on_mouse_.drag ? cv::EVENT_MBUTTONDOWN : cv::EVENT_MBUTTONUP;
-            flag = cv::EVENT_FLAG_MBUTTON;
+            event = on_mouse_.drag ? ncvslideio::EVENT_MBUTTONDOWN : ncvslideio::EVENT_MBUTTONUP;
+            flag = ncvslideio::EVENT_FLAG_MBUTTON;
             break;
         default:
             break;
@@ -2320,7 +2320,7 @@ void cv_wl_window::handle_toplevel_configure(
         void *data, struct xdg_toplevel *toplevel,
         int32_t width, int32_t height, struct wl_array *states) {
     CV_UNUSED(toplevel);
-    cv::Size size = cv::Size(width, height);
+    ncvslideio::Size size = ncvslideio::Size(width, height);
     auto *window = reinterpret_cast<cv_wl_window *>(data);
 
     auto old_state = window->state_;
@@ -2492,7 +2492,7 @@ CV_IMPL void cvMoveWindow(const char *name, int x, int y) {
 
 CV_IMPL void cvResizeWindow(const char *name, int width, int height) {
     if (auto window = CvWlCore::getInstance().get_window(name))
-        window->show(cv::Size(width, height));
+        window->show(ncvslideio::Size(width, height));
     else
         throw_system_error("Could not get window name", errno)
 }
@@ -2572,16 +2572,16 @@ CV_IMPL void cvShowImage(const char *name, const CvArr *arr) {
      */
     auto window = CvWlCore::getInstance().get_window(name);
     if (!window) {
-        CvWlCore::getInstance().create_window(name, cv::WINDOW_AUTOSIZE);
+        CvWlCore::getInstance().create_window(name, ncvslideio::WINDOW_AUTOSIZE);
         if (!(window = CvWlCore::getInstance().get_window(name)))
             CV_Error_(StsNoMem, ("Failed to create window: %s", name));
     }
 
-    cv::Mat mat = cv::cvarrToMat(arr, true);
+    ncvslideio::Mat mat = ncvslideio::cvarrToMat(arr, true);
     window->show_image(mat);
 }
 
-void setWindowTitle_WAYLAND(const cv::String &winname, const cv::String &title) {
+void setWindowTitle_WAYLAND(const ncvslideio::String &winname, const ncvslideio::String &title) {
     if (auto window = CvWlCore::getInstance().get_window(winname))
         window->set_title(title);
 }

@@ -11,7 +11,7 @@
 #include "streaming/onevpl/onevpl_export.hpp"
 #include "streaming/onevpl/engine/engine_session.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -34,6 +34,6 @@ struct vpp_pp_session {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // VPP_PREPROC_ENGINE
 #endif // HAVE_ONEVPL

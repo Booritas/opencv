@@ -9,13 +9,13 @@ trainingData = np.matrix([[501, 10], [255, 10], [501, 255], [10, 501]], dtype=np
 
 # Train the SVM
 ## [init]
-svm = cv.ml.SVM_create()
-svm.setType(cv.ml.SVM_C_SVC)
-svm.setKernel(cv.ml.SVM_LINEAR)
-svm.setTermCriteria((cv.TERM_CRITERIA_MAX_ITER, 100, 1e-6))
+svm = ncvslideio.ml.SVM_create()
+svm.setType(ncvslideio.ml.SVM_C_SVC)
+svm.setKernel(ncvslideio.ml.SVM_LINEAR)
+svm.setTermCriteria((ncvslideio.TERM_CRITERIA_MAX_ITER, 100, 1e-6))
 ## [init]
 ## [train]
-svm.train(trainingData, cv.ml.ROW_SAMPLE, labels)
+svm.train(trainingData, ncvslideio.ml.ROW_SAMPLE, labels)
 ## [train]
 
 # Data for visual representation
@@ -53,7 +53,7 @@ thickness = 2
 sv = svm.getUncompressedSupportVectors()
 
 for i in range(sv.shape[0]):
-    cv.circle(image, (int(sv[i,0]), int(sv[i,1])), 6, (128, 128, 128), thickness)
+    ncvslideio.circle(image, (int(sv[i,0]), int(sv[i,1])), 6, (128, 128, 128), thickness)
 ## [show_vectors]
 
 cv.imwrite('result.png', image) # save the image

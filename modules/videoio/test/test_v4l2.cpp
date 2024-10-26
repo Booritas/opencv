@@ -47,7 +47,7 @@
 #endif
 
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace opencv_test { namespace {
 
@@ -120,7 +120,7 @@ TEST_P(videoio_v4l2, formats)
             // V4L2 flag for big-endian formats
             if(params.pixel_format & (1 << 31))
                 img_name += "-BE";
-            cv::imwrite(img_name + ".png", img);
+            ncvslideio::imwrite(img_name + ".png", img);
 #endif
         }
     }

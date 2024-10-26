@@ -27,7 +27,7 @@ public class BarcodeDetectorTest extends OpenCVTestCase {
     }
 
     public void testDetectAndDecode() {
-        Mat img = Imgcodecs.imread(testDataPath + "/cv/barcode/multiple/4_barcodes.jpg");
+        Mat img = Imgcodecs.imread(testDataPath + "/ncvslideio/barcode/multiple/4_barcodes.jpg");
         assertFalse(img.empty());
         BarcodeDetector detector = new BarcodeDetector();
         assertNotNull(detector);

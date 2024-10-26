@@ -7,7 +7,7 @@
 #include "stat.hpp"
 #include <opencv2/core/hal/hal.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 
 template<typename _Tp, typename _Rt>
@@ -262,7 +262,7 @@ struct BatchDistInvoker : public ParallelLoopBody
 
 }
 
-void cv::batchDistance( InputArray _src1, InputArray _src2,
+void ncvslideio::batchDistance( InputArray _src1, InputArray _src2,
                         OutputArray _dist, int dtype, OutputArray _nidx,
                         int normType, int K, InputArray _mask,
                         int update, bool crosscheck )
@@ -377,7 +377,7 @@ void cv::batchDistance( InputArray _src1, InputArray _src2,
     }
 
     if( func == 0 )
-        CV_Error_(cv::Error::StsUnsupportedFormat,
+        CV_Error_(ncvslideio::Error::StsUnsupportedFormat,
                   ("The combination of type=%d, dtype=%d and normType=%d is not supported",
                    type, dtype, normType));
 

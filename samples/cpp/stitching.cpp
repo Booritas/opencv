@@ -6,7 +6,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 bool divide_images = false;
 Stitcher::Mode mode = Stitcher::PANORAMA;

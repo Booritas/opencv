@@ -14,7 +14,7 @@ def main(argv):
     filename = argv[0] if len(argv) > 0 else 'chicky_512.png'
 
     # Load the image
-    src = cv.imread(cv.samples.findFile(filename))
+    src = ncvslideio.imread(ncvslideio.samples.findFile(filename))
 
     # Check if image is loaded fine
     if src is None:
@@ -26,25 +26,25 @@ def main(argv):
     while 1:
         rows, cols, _channels = map(int, src.shape)
         ## [show_image]
-        cv.imshow('Pyramids Demo', src)
+        ncvslideio.imshow('Pyramids Demo', src)
         ## [show_image]
-        k = cv.waitKey(0)
+        k = ncvslideio.waitKey(0)
 
         if k == 27:
             break
             ## [pyrup]
         elif chr(k) == 'i':
-            src = cv.pyrUp(src, dstsize=(2 * cols, 2 * rows))
+            src = ncvslideio.pyrUp(src, dstsize=(2 * cols, 2 * rows))
             print ('** Zoom In: Image x 2')
             ## [pyrup]
             ## [pyrdown]
         elif chr(k) == 'o':
-            src = cv.pyrDown(src, dstsize=(cols // 2, rows // 2))
+            src = ncvslideio.pyrDown(src, dstsize=(cols // 2, rows // 2))
             print ('** Zoom Out: Image / 2')
             ## [pyrdown]
     ## [loop]
 
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()
     return 0
 
 if __name__ == "__main__":

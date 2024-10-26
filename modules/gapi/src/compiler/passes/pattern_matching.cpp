@@ -9,7 +9,7 @@
 #include "pattern_matching.hpp"
 
 namespace  {
-using Graph = cv::gimpl::GModel::Graph;
+using Graph = ncvslideio::gimpl::GModel::Graph;
 using Metadata = typename Graph::CMetadataT;
 using VisitedMatchings = std::list<std::pair<ade::NodeHandle, ade::NodeHandle>>;
 
@@ -49,12 +49,12 @@ bool compareDataNodes(const ade::NodeHandle& first, const std::vector<std::size_
                       const Metadata& firstMeta,
                       const ade::NodeHandle& second, const std::vector<std::size_t>& secondPorts,
                       const Metadata& secondMeta) {
-    if (secondMeta.get<cv::gimpl::NodeType>().t != cv::gimpl::NodeType::DATA) {
+    if (secondMeta.get<ncvslideio::gimpl::NodeType>().t != ncvslideio::gimpl::NodeType::DATA) {
         throw std::logic_error("NodeType of passed node as second argument"
                                "shall be NodeType::DATA!");
     }
 
-    if (firstMeta.get<cv::gimpl::Data>().shape != secondMeta.get<cv::gimpl::Data>().shape) {
+    if (firstMeta.get<ncvslideio::gimpl::Data>().shape != secondMeta.get<ncvslideio::gimpl::Data>().shape) {
         return false;
     }
 
@@ -97,7 +97,7 @@ bool compareOpNodes(const VisitedMatchings& matchedVisitedNodes,
                     const ade::NodeHandle& second, std::vector<std::size_t> secondPorts,
                     const Metadata& secondMeta,
                     bool& isAlreadyVisited) {
-    if (secondMeta.get<cv::gimpl::NodeType>().t != cv::gimpl::NodeType::OP) {
+    if (secondMeta.get<ncvslideio::gimpl::NodeType>().t != ncvslideio::gimpl::NodeType::OP) {
         throw std::logic_error("NodeType of passed node as second argument shall be NodeType::OP!");
     }
 
@@ -105,7 +105,7 @@ bool compareOpNodes(const VisitedMatchings& matchedVisitedNodes,
     // output DATA nodes counts from kernels are the same.
     // Assuming that if kernels names are the same then
     // input DATA nodes counts to kernels are the same.
-    if (firstMeta.get<cv::gimpl::Op>().k.name != secondMeta.get<cv::gimpl::Op>().k.name) {
+    if (firstMeta.get<ncvslideio::gimpl::Op>().k.name != secondMeta.get<ncvslideio::gimpl::Op>().k.name) {
         return false;
     }
 
@@ -162,11 +162,11 @@ std::size_t labelOf (const ade::NodeHandle& node, // reader node
                      const Graph& graph) // graph containing node and edge
                                         {
 
-    if (graph.metadata(node).get<cv::gimpl::NodeType>().t == cv::gimpl::NodeType::OP) {
-        return graph.metadata(edge).get<cv::gimpl::Input>().port;
+    if (graph.metadata(node).get<ncvslideio::gimpl::NodeType>().t == ncvslideio::gimpl::NodeType::OP) {
+        return graph.metadata(edge).get<ncvslideio::gimpl::Input>().port;
     }
     else {
-        return graph.metadata(edge).get<cv::gimpl::Output>().port;
+        return graph.metadata(edge).get<ncvslideio::gimpl::Output>().port;
     }
 }
 
@@ -182,9 +182,9 @@ inline bool IS_ENDPOINT(const ade::NodeHandle& nh){
 }  // anonymous namespace
 
 // Routine relies on the logic that 1 DATA node may have only 1 input edge.
-cv::gimpl::SubgraphMatch
-cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
-                       const cv::gimpl::GModel::Graph& testGraph) {
+ncvslideio::gimpl::SubgraphMatch
+ncvslideio::gimpl::findMatches(const ncvslideio::gimpl::GModel::Graph& patternGraph,
+                       const ncvslideio::gimpl::GModel::Graph& testGraph) {
 
     //TODO: Possibly, we may add N^2 check whether this graph may match or not at all.
     //      Check that all pattern OP nodes exist in computational graph.
@@ -193,8 +193,8 @@ cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
     // Identify operations which start and end our pattern
     SubgraphMatch::S patternStartOpNodes, patternEndOpNodes;
 
-    const auto& patternInputDataNodes = patternGraph.metadata().get<cv::gimpl::Protocol>().in_nhs;
-    const auto& patternOutputDataNodes = patternGraph.metadata().get<cv::gimpl::Protocol>().out_nhs;
+    const auto& patternInputDataNodes = patternGraph.metadata().get<ncvslideio::gimpl::Protocol>().in_nhs;
+    const auto& patternOutputDataNodes = patternGraph.metadata().get<ncvslideio::gimpl::Protocol>().out_nhs;
 
     for (const auto& node : patternInputDataNodes) {
         auto opNodes = node->outNodes();
@@ -220,8 +220,8 @@ cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
     auto testOpNodes = ade::util::filter(testGraph.nodes(),
                                          [&](const ade::NodeHandle& node) {
                                              return testGraph.metadata(node).
-                                                        get<cv::gimpl::NodeType>().t
-                                                    == cv::gimpl::NodeType::OP;
+                                                        get<ncvslideio::gimpl::NodeType>().t
+                                                    == ncvslideio::gimpl::NodeType::OP;
                                          });
     for (const auto& patternStartOpNode : patternStartOpNodes) {
         const auto& patternOpMeta = patternGraph.metadata(patternStartOpNode);
@@ -355,15 +355,15 @@ cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
                                            std::vector<std::size_t>>& testNode) {
                         const auto& testNodeMeta = testGraph.metadata(testNode.first);
 
-                        auto patternNodeType = patternNodeMeta.get<cv::gimpl::NodeType>().t;
+                        auto patternNodeType = patternNodeMeta.get<ncvslideio::gimpl::NodeType>().t;
 
                         switch(patternNodeType) {
-                        case cv::gimpl::NodeType::DATA:
+                        case ncvslideio::gimpl::NodeType::DATA:
                             return compareDataNodes(patternNode.first, patternNode.second,
                                                     patternNodeMeta,
                                                     testNode.first, testNode.second,
                                                     testNodeMeta);
-                        case cv::gimpl::NodeType::OP:
+                        case ncvslideio::gimpl::NodeType::OP:
                             return compareOpNodes(matchedVisitedNodes,
                                                   patternNode.first, patternNode.second,
                                                   patternNodeMeta,
@@ -465,12 +465,12 @@ cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
                 }
 
                 auto patternInputPort =
-                        patternGraph.metadata(patternInEdge).get<cv::gimpl::Input>().port;
+                        patternGraph.metadata(patternInEdge).get<ncvslideio::gimpl::Input>().port;
 
                 auto matchedIt = std::find_if(testInputEdges.begin(), testInputEdges.end(),
                     [&](const ade::EdgeHandle& testInEdge) -> bool {
                     auto testInputPort =
-                            testGraph.metadata(testInEdge).get<cv::gimpl::Input>().port;
+                            testGraph.metadata(testInEdge).get<ncvslideio::gimpl::Input>().port;
 
                     if (patternInputPort != testInputPort) {
                         return false;
@@ -532,12 +532,12 @@ cv::gimpl::findMatches(const cv::gimpl::GModel::Graph& patternGraph,
                 }
 
                 auto patternOutputPort =
-                        patternGraph.metadata(patternOutEdge).get<cv::gimpl::Output>().port;
+                        patternGraph.metadata(patternOutEdge).get<ncvslideio::gimpl::Output>().port;
 
                 auto matchedIt = std::find_if(testOutputEdges.begin(), testOutputEdges.end(),
                     [&](const ade::EdgeHandle& testOutEdge) -> bool {
                     auto testOutputPort =
-                            testGraph.metadata(testOutEdge).get<cv::gimpl::Output>().port;
+                            testGraph.metadata(testOutEdge).get<ncvslideio::gimpl::Output>().port;
 
                     if (patternOutputPort != testOutputPort) {
                         return false;

@@ -6,7 +6,7 @@
 #include "contours_common.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 //==============================================================================
@@ -378,7 +378,7 @@ void LinkRunner::process(Mat& image)
 
 //==============================================================================
 
-void cv::findContoursLinkRuns(InputArray _image,
+void ncvslideio::findContoursLinkRuns(InputArray _image,
                               OutputArrayOfArrays _contours,
                               OutputArray _hierarchy)
 {
@@ -408,7 +408,7 @@ void cv::findContoursLinkRuns(InputArray _image,
 }
 
 
-void cv::findContoursLinkRuns(InputArray _image, OutputArrayOfArrays _contours)
+void ncvslideio::findContoursLinkRuns(InputArray _image, OutputArrayOfArrays _contours)
 {
     CV_INSTRUMENT_REGION();
     findContoursLinkRuns(_image, _contours, noArray());

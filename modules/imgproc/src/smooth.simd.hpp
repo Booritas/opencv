@@ -51,7 +51,7 @@
 
 #include "opencv2/core/softfloat.hpp"
 
-namespace cv {
+namespace ncvslideio {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations
 template <typename RFT>

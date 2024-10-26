@@ -43,7 +43,7 @@
 #ifndef OPENCV_IMGPROC_FILTER_HPP
 #define OPENCV_IMGPROC_FILTER_HPP
 
-namespace cv
+namespace ncvslideio
 {
 #ifdef HAVE_OPENCL
 bool ocl_sepFilter2D(

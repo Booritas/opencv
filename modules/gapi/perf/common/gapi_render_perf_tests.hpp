@@ -17,27 +17,27 @@ namespace opencv_test
 
 using namespace perf;
 
-class RenderTestFTexts : public TestPerfParams<tuple<std::wstring, cv::Size, cv::Point,
-                                                     int, cv::Scalar, cv::GCompileArgs>> {};
-class RenderTestTexts : public TestPerfParams<tuple<std::string, cv::Size, cv::Point,
-                                                    int, cv::Scalar, int, int,
-                                                    bool, cv::GCompileArgs>> {};
-class RenderTestRects : public TestPerfParams<tuple<cv::Size, cv::Rect, cv::Scalar,
-                                                    int, int, int, cv::GCompileArgs>> {};
-class RenderTestCircles : public TestPerfParams<tuple<cv::Size, cv::Point, int,
-                                                      cv::Scalar, int, int, int,
-                                                      cv::GCompileArgs>> {};
-class RenderTestLines : public TestPerfParams<tuple<cv::Size, cv::Point, cv::Point,
-                                                    cv::Scalar, int, int, int,
-                                                    cv::GCompileArgs>> {};
-class RenderTestMosaics : public TestPerfParams<tuple<cv::Size, cv::Rect, int, int,
-                                                      cv::GCompileArgs>> {};
-class RenderTestImages : public TestPerfParams<tuple<cv::Size, cv::Rect, cv::Scalar, double,
-                                                     cv::GCompileArgs>> {};
-class RenderTestPolylines : public TestPerfParams<tuple<cv::Size, std::vector<cv::Point>,
-                                                        cv::Scalar, int, int, int,
-                                                        cv::GCompileArgs>> {};
-class RenderTestPolyItems : public TestPerfParams<tuple<cv::Size, int, int, int, cv::GCompileArgs>> {};
+class RenderTestFTexts : public TestPerfParams<tuple<std::wstring, ncvslideio::Size, ncvslideio::Point,
+                                                     int, ncvslideio::Scalar, ncvslideio::GCompileArgs>> {};
+class RenderTestTexts : public TestPerfParams<tuple<std::string, ncvslideio::Size, ncvslideio::Point,
+                                                    int, ncvslideio::Scalar, int, int,
+                                                    bool, ncvslideio::GCompileArgs>> {};
+class RenderTestRects : public TestPerfParams<tuple<ncvslideio::Size, ncvslideio::Rect, ncvslideio::Scalar,
+                                                    int, int, int, ncvslideio::GCompileArgs>> {};
+class RenderTestCircles : public TestPerfParams<tuple<ncvslideio::Size, ncvslideio::Point, int,
+                                                      ncvslideio::Scalar, int, int, int,
+                                                      ncvslideio::GCompileArgs>> {};
+class RenderTestLines : public TestPerfParams<tuple<ncvslideio::Size, ncvslideio::Point, ncvslideio::Point,
+                                                    ncvslideio::Scalar, int, int, int,
+                                                    ncvslideio::GCompileArgs>> {};
+class RenderTestMosaics : public TestPerfParams<tuple<ncvslideio::Size, ncvslideio::Rect, int, int,
+                                                      ncvslideio::GCompileArgs>> {};
+class RenderTestImages : public TestPerfParams<tuple<ncvslideio::Size, ncvslideio::Rect, ncvslideio::Scalar, double,
+                                                     ncvslideio::GCompileArgs>> {};
+class RenderTestPolylines : public TestPerfParams<tuple<ncvslideio::Size, std::vector<ncvslideio::Point>,
+                                                        ncvslideio::Scalar, int, int, int,
+                                                        ncvslideio::GCompileArgs>> {};
+class RenderTestPolyItems : public TestPerfParams<tuple<ncvslideio::Size, int, int, int, ncvslideio::GCompileArgs>> {};
 
 }
 #endif //OPENCV_GAPI_RENDER_PERF_TESTS_HPP

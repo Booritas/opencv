@@ -19,17 +19,17 @@
 
 #include "compiler/gmodel.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gimpl {
 
-    inline cv::Mat asMat(RMat::View& v) {
+    inline ncvslideio::Mat asMat(RMat::View& v) {
 #if !defined(GAPI_STANDALONE)
         if (v.dims().empty()) {
-            return cv::Mat(v.rows(), v.cols(), v.type(), v.ptr(), v.step());
+            return ncvslideio::Mat(v.rows(), v.cols(), v.type(), v.ptr(), v.step());
         } else {
-            cv::Mat m(v.dims(), v.type(), v.ptr(), v.steps().data());
+            ncvslideio::Mat m(v.dims(), v.type(), v.ptr(), v.steps().data());
             if (v.dims().size() == 1) {
-                // FIXME: cv::Mat() constructor will set m.dims to 2;
+                // FIXME: ncvslideio::Mat() constructor will set m.dims to 2;
                 // To obtain 1D Mat, we have to set m.dims back to 1 manually
                 m.dims = 1;
             }
@@ -37,8 +37,8 @@ namespace gimpl {
         }
 #else
         // FIXME: add a check that steps are default
-        return v.dims().empty() ? cv::Mat(v.rows(), v.cols(), v.type(), v.ptr(), v.step())
-                                : cv::Mat(v.dims(), v.type(), v.ptr());
+        return v.dims().empty() ? ncvslideio::Mat(v.rows(), v.cols(), v.type(), v.ptr(), v.step())
+                                : ncvslideio::Mat(v.dims(), v.type(), v.ptr());
 
 #endif
     }
@@ -48,34 +48,34 @@ namespace gimpl {
         for (int i = 0; i < m.dims; i++) {
             steps[i] = m.step[i];
         }
-        return RMat::View(cv::descr_of(m), m.data, steps, std::move(cb));
+        return RMat::View(ncvslideio::descr_of(m), m.data, steps, std::move(cb));
 #else
         return m.dims.empty()
-            ? RMat::View(cv::descr_of(m), m.data, m.step, std::move(cb))
+            ? RMat::View(ncvslideio::descr_of(m), m.data, m.step, std::move(cb))
             // Own Mat doesn't support n-dimensional steps so default ones are used in this case
-            : RMat::View(cv::descr_of(m), m.data, RMat::View::stepsT{}, std::move(cb));
+            : RMat::View(ncvslideio::descr_of(m), m.data, RMat::View::stepsT{}, std::move(cb));
 #endif
     }
 
     class RMatOnMat : public RMat::IAdapter {
-        cv::Mat m_mat;
+        ncvslideio::Mat m_mat;
     public:
         const void* data() const { return m_mat.data; }
-        RMatOnMat(cv::Mat m) : m_mat(m) {}
+        RMatOnMat(ncvslideio::Mat m) : m_mat(m) {}
         virtual RMat::View access(RMat::Access) override { return asView(m_mat); }
-        virtual cv::GMatDesc desc() const override { return cv::descr_of(m_mat); }
+        virtual ncvslideio::GMatDesc desc() const override { return ncvslideio::descr_of(m_mat); }
     };
 
     // Forward declarations
     struct Data;
     struct RcDesc;
 
-    struct GAPI_EXPORTS RMatMediaFrameAdapter final: public cv::RMat::IAdapter
+    struct GAPI_EXPORTS RMatMediaFrameAdapter final: public ncvslideio::RMat::IAdapter
     {
-        using MapDescF = std::function<cv::GMatDesc(const GFrameDesc&)>;
-        using MapDataF = std::function<cv::Mat(const GFrameDesc&, const cv::MediaFrame::View&)>;
+        using MapDescF = std::function<ncvslideio::GMatDesc(const GFrameDesc&)>;
+        using MapDataF = std::function<ncvslideio::Mat(const GFrameDesc&, const ncvslideio::MediaFrame::View&)>;
 
-        RMatMediaFrameAdapter(const cv::MediaFrame& frame,
+        RMatMediaFrameAdapter(const ncvslideio::MediaFrame& frame,
                               const MapDescF& frameDescToMatDesc,
                               const MapDataF& frameViewToMat) :
             m_frame(frame),
@@ -84,35 +84,35 @@ namespace gimpl {
             m_frameViewToMat(frameViewToMat)
         { }
 
-        virtual cv::RMat::View access(cv::RMat::Access a) override
+        virtual ncvslideio::RMat::View access(ncvslideio::RMat::Access a) override
         {
-            auto rmatToFrameAccess = [](cv::RMat::Access rmatAccess) {
+            auto rmatToFrameAccess = [](ncvslideio::RMat::Access rmatAccess) {
                 switch(rmatAccess) {
-                    case cv::RMat::Access::R:
-                        return cv::MediaFrame::Access::R;
-                    case cv::RMat::Access::W:
-                        return cv::MediaFrame::Access::W;
+                    case ncvslideio::RMat::Access::R:
+                        return ncvslideio::MediaFrame::Access::R;
+                    case ncvslideio::RMat::Access::W:
+                        return ncvslideio::MediaFrame::Access::W;
                     default:
-                        cv::util::throw_error(std::logic_error("cv::RMat::Access::R or "
-                            "cv::RMat::Access::W can only be mapped to cv::MediaFrame::Access!"));
+                        ncvslideio::util::throw_error(std::logic_error("ncvslideio::RMat::Access::R or "
+                            "ncvslideio::RMat::Access::W can only be mapped to ncvslideio::MediaFrame::Access!"));
                 }
             };
 
             auto fv = m_frame.access(rmatToFrameAccess(a));
 
-            auto fvHolder = std::make_shared<cv::MediaFrame::View>(std::move(fv));
+            auto fvHolder = std::make_shared<ncvslideio::MediaFrame::View>(std::move(fv));
             auto callback = [fvHolder]() mutable { fvHolder.reset(); };
 
             return asView(m_frameViewToMat(m_frame.desc(), *fvHolder), callback);
         }
 
-        virtual cv::GMatDesc desc() const override
+        virtual ncvslideio::GMatDesc desc() const override
         {
             return m_frameDescToMatDesc(m_frameDesc);
         }
 
-        cv::MediaFrame m_frame;
-        cv::GFrameDesc m_frameDesc;
+        ncvslideio::MediaFrame m_frame;
+        ncvslideio::GFrameDesc m_frameDesc;
         MapDescF m_frameDescToMatDesc;
         MapDataF m_frameViewToMat;
     };
@@ -147,15 +147,15 @@ namespace magazine {
 
 } // namespace magazine
 
-using Mag = magazine::Class< cv::Mat
-                           , cv::Scalar
-                           , cv::detail::VectorRef
-                           , cv::detail::OpaqueRef
-                           , cv::RMat
-                           , cv::RMat::View
-                           , cv::MediaFrame
+using Mag = magazine::Class< ncvslideio::Mat
+                           , ncvslideio::Scalar
+                           , ncvslideio::detail::VectorRef
+                           , ncvslideio::detail::OpaqueRef
+                           , ncvslideio::RMat
+                           , ncvslideio::RMat::View
+                           , ncvslideio::MediaFrame
 #if !defined(GAPI_STANDALONE)
-                           , cv::UMat
+                           , ncvslideio::UMat
 #endif
                            >;
 
@@ -165,7 +165,7 @@ namespace magazine
     // Extracts a memory object from GRunArg, stores it in appropriate slot in a magazine
     // Note:
     // Only RMats are expected here as a memory object for GMat shape.
-    // If handleRMat is BIND, RMat will be accessed, and RMat::View and wrapping cv::Mat
+    // If handleRMat is BIND, RMat will be accessed, and RMat::View and wrapping ncvslideio::Mat
     // will be placed into the magazine.
     // If handleRMat is SKIP, this function skips'RMat handling assuming that backend will do it on its own.
     // FIXME?
@@ -178,11 +178,11 @@ namespace magazine
     void GAPI_EXPORTS bindOutArg(Mag& mag, const RcDesc &rc, const GRunArgP &arg, HandleRMat handleRMat = HandleRMat::BIND);
 
     void         resetInternalData(Mag& mag, const Data &d);
-    cv::GRunArg  getArg    (const Mag& mag, const RcDesc &ref);
-    cv::GRunArgP getObjPtr (      Mag& mag, const RcDesc &rc, bool is_umat = false);
+    ncvslideio::GRunArg  getArg    (const Mag& mag, const RcDesc &ref);
+    ncvslideio::GRunArgP getObjPtr (      Mag& mag, const RcDesc &rc, bool is_umat = false);
     void         writeBack (const Mag& mag, const RcDesc &rc, GRunArgP &g_arg);
 
-    // A mandatory clean-up procedure to force proper lifetime of wrappers (cv::Mat, cv::RMat::View)
+    // A mandatory clean-up procedure to force proper lifetime of wrappers (ncvslideio::Mat, ncvslideio::RMat::View)
     // over not-owned data
     // FIXME? Add an RAII wrapper for that?
     // Or put objects which need to be cleaned-up into a separate stack allocated magazine?
@@ -214,12 +214,12 @@ struct GRuntimeArgs
 };
 
 template<typename T>
-inline cv::util::optional<T> getCompileArg(const cv::GCompileArgs &args)
+inline ncvslideio::util::optional<T> getCompileArg(const ncvslideio::GCompileArgs &args)
 {
-    return cv::gapi::getCompileArg<T>(args);
+    return ncvslideio::gapi::getCompileArg<T>(args);
 }
 
-void GAPI_EXPORTS createMat(const cv::GMatDesc& desc, cv::Mat& mat);
+void GAPI_EXPORTS createMat(const ncvslideio::GMatDesc& desc, ncvslideio::Mat& mat);
 
 inline void convertInt64ToInt32(const int64_t* src, int* dst, size_t size)
 {
@@ -233,6 +233,6 @@ inline void convertInt32ToInt64(const int* src, int64_t* dst, size_t size)
                    [](int el) { return static_cast<int64_t>(el); });
 }
 
-}} // cv::gimpl
+}} // ncvslideio::gimpl
 
 #endif // OPENCV_GAPI_GBACKEND_HPP

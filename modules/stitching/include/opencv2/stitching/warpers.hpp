@@ -46,7 +46,7 @@
 #include "opencv2/stitching/detail/warpers.hpp"
 #include <string>
 
-namespace cv {
+namespace ncvslideio {
     class CV_EXPORTS_W PyRotationWarper
     {
         Ptr<detail::RotationWarper> rw;
@@ -272,6 +272,6 @@ public:
 
 //! @} stitching_warp
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_STITCHING_WARPER_CREATORS_HPP

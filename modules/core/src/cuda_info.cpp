@@ -42,10 +42,10 @@
 
 #include "precomp.hpp"
 
-using namespace cv;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::cuda;
 
-int cv::cuda::getCudaEnabledDeviceCount()
+int ncvslideio::cuda::getCudaEnabledDeviceCount()
 {
 #ifndef HAVE_CUDA
     return 0;
@@ -64,7 +64,7 @@ int cv::cuda::getCudaEnabledDeviceCount()
 #endif
 }
 
-void cv::cuda::setDevice(int device)
+void ncvslideio::cuda::setDevice(int device)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(device);
@@ -75,7 +75,7 @@ void cv::cuda::setDevice(int device)
 #endif
 }
 
-int cv::cuda::getDevice()
+int ncvslideio::cuda::getDevice()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -86,7 +86,7 @@ int cv::cuda::getDevice()
 #endif
 }
 
-void cv::cuda::resetDevice()
+void ncvslideio::cuda::resetDevice()
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -95,7 +95,7 @@ void cv::cuda::resetDevice()
 #endif
 }
 
-bool cv::cuda::deviceSupports(FeatureSet feature_set)
+bool ncvslideio::cuda::deviceSupports(FeatureSet feature_set)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(feature_set);
@@ -224,7 +224,7 @@ namespace
 
 #endif
 
-bool cv::cuda::TargetArchs::builtWith(cv::cuda::FeatureSet feature_set)
+bool ncvslideio::cuda::TargetArchs::builtWith(ncvslideio::cuda::FeatureSet feature_set)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(feature_set);
@@ -234,7 +234,7 @@ bool cv::cuda::TargetArchs::builtWith(cv::cuda::FeatureSet feature_set)
 #endif
 }
 
-bool cv::cuda::TargetArchs::hasPtx(int major, int minor)
+bool ncvslideio::cuda::TargetArchs::hasPtx(int major, int minor)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(major);
@@ -245,7 +245,7 @@ bool cv::cuda::TargetArchs::hasPtx(int major, int minor)
 #endif
 }
 
-bool cv::cuda::TargetArchs::hasBin(int major, int minor)
+bool ncvslideio::cuda::TargetArchs::hasBin(int major, int minor)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(major);
@@ -256,7 +256,7 @@ bool cv::cuda::TargetArchs::hasBin(int major, int minor)
 #endif
 }
 
-bool cv::cuda::TargetArchs::hasEqualOrLessPtx(int major, int minor)
+bool ncvslideio::cuda::TargetArchs::hasEqualOrLessPtx(int major, int minor)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(major);
@@ -267,7 +267,7 @@ bool cv::cuda::TargetArchs::hasEqualOrLessPtx(int major, int minor)
 #endif
 }
 
-bool cv::cuda::TargetArchs::hasEqualOrGreaterPtx(int major, int minor)
+bool ncvslideio::cuda::TargetArchs::hasEqualOrGreaterPtx(int major, int minor)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(major);
@@ -278,7 +278,7 @@ bool cv::cuda::TargetArchs::hasEqualOrGreaterPtx(int major, int minor)
 #endif
 }
 
-bool cv::cuda::TargetArchs::hasEqualOrGreaterBin(int major, int minor)
+bool ncvslideio::cuda::TargetArchs::hasEqualOrGreaterBin(int major, int minor)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(major);
@@ -338,7 +338,7 @@ namespace
 
 #endif
 
-const char* cv::cuda::DeviceInfo::name() const
+const char* ncvslideio::cuda::DeviceInfo::name() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -347,7 +347,7 @@ const char* cv::cuda::DeviceInfo::name() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::totalGlobalMem() const
+size_t ncvslideio::cuda::DeviceInfo::totalGlobalMem() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -356,7 +356,7 @@ size_t cv::cuda::DeviceInfo::totalGlobalMem() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::sharedMemPerBlock() const
+size_t ncvslideio::cuda::DeviceInfo::sharedMemPerBlock() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -365,7 +365,7 @@ size_t cv::cuda::DeviceInfo::sharedMemPerBlock() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::regsPerBlock() const
+int ncvslideio::cuda::DeviceInfo::regsPerBlock() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -374,7 +374,7 @@ int cv::cuda::DeviceInfo::regsPerBlock() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::warpSize() const
+int ncvslideio::cuda::DeviceInfo::warpSize() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -383,7 +383,7 @@ int cv::cuda::DeviceInfo::warpSize() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::memPitch() const
+size_t ncvslideio::cuda::DeviceInfo::memPitch() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -392,7 +392,7 @@ size_t cv::cuda::DeviceInfo::memPitch() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxThreadsPerBlock() const
+int ncvslideio::cuda::DeviceInfo::maxThreadsPerBlock() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -401,7 +401,7 @@ int cv::cuda::DeviceInfo::maxThreadsPerBlock() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxThreadsDim() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxThreadsDim() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -410,7 +410,7 @@ Vec3i cv::cuda::DeviceInfo::maxThreadsDim() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxGridSize() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxGridSize() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -419,7 +419,7 @@ Vec3i cv::cuda::DeviceInfo::maxGridSize() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::clockRate() const
+int ncvslideio::cuda::DeviceInfo::clockRate() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -428,7 +428,7 @@ int cv::cuda::DeviceInfo::clockRate() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::totalConstMem() const
+size_t ncvslideio::cuda::DeviceInfo::totalConstMem() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -437,7 +437,7 @@ size_t cv::cuda::DeviceInfo::totalConstMem() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::majorVersion() const
+int ncvslideio::cuda::DeviceInfo::majorVersion() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -446,7 +446,7 @@ int cv::cuda::DeviceInfo::majorVersion() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::minorVersion() const
+int ncvslideio::cuda::DeviceInfo::minorVersion() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -455,7 +455,7 @@ int cv::cuda::DeviceInfo::minorVersion() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::textureAlignment() const
+size_t ncvslideio::cuda::DeviceInfo::textureAlignment() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -464,7 +464,7 @@ size_t cv::cuda::DeviceInfo::textureAlignment() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::texturePitchAlignment() const
+size_t ncvslideio::cuda::DeviceInfo::texturePitchAlignment() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -473,7 +473,7 @@ size_t cv::cuda::DeviceInfo::texturePitchAlignment() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::multiProcessorCount() const
+int ncvslideio::cuda::DeviceInfo::multiProcessorCount() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -482,7 +482,7 @@ int cv::cuda::DeviceInfo::multiProcessorCount() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::kernelExecTimeoutEnabled() const
+bool ncvslideio::cuda::DeviceInfo::kernelExecTimeoutEnabled() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -491,7 +491,7 @@ bool cv::cuda::DeviceInfo::kernelExecTimeoutEnabled() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::integrated() const
+bool ncvslideio::cuda::DeviceInfo::integrated() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -500,7 +500,7 @@ bool cv::cuda::DeviceInfo::integrated() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::canMapHostMemory() const
+bool ncvslideio::cuda::DeviceInfo::canMapHostMemory() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -509,7 +509,7 @@ bool cv::cuda::DeviceInfo::canMapHostMemory() const
 #endif
 }
 
-DeviceInfo::ComputeMode cv::cuda::DeviceInfo::computeMode() const
+DeviceInfo::ComputeMode ncvslideio::cuda::DeviceInfo::computeMode() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -526,7 +526,7 @@ DeviceInfo::ComputeMode cv::cuda::DeviceInfo::computeMode() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxTexture1D() const
+int ncvslideio::cuda::DeviceInfo::maxTexture1D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -535,7 +535,7 @@ int cv::cuda::DeviceInfo::maxTexture1D() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxTexture1DMipmap() const
+int ncvslideio::cuda::DeviceInfo::maxTexture1DMipmap() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -549,7 +549,7 @@ int cv::cuda::DeviceInfo::maxTexture1DMipmap() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxTexture1DLinear() const
+int ncvslideio::cuda::DeviceInfo::maxTexture1DLinear() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -558,7 +558,7 @@ int cv::cuda::DeviceInfo::maxTexture1DLinear() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxTexture2D() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxTexture2D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -567,7 +567,7 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2D() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxTexture2DMipmap() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxTexture2DMipmap() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -581,7 +581,7 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2DMipmap() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxTexture2DLinear() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxTexture2DLinear() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -590,7 +590,7 @@ Vec3i cv::cuda::DeviceInfo::maxTexture2DLinear() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxTexture2DGather() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxTexture2DGather() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -599,7 +599,7 @@ Vec2i cv::cuda::DeviceInfo::maxTexture2DGather() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxTexture3D() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxTexture3D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -608,7 +608,7 @@ Vec3i cv::cuda::DeviceInfo::maxTexture3D() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxTextureCubemap() const
+int ncvslideio::cuda::DeviceInfo::maxTextureCubemap() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -617,7 +617,7 @@ int cv::cuda::DeviceInfo::maxTextureCubemap() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxTexture1DLayered() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxTexture1DLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -626,7 +626,7 @@ Vec2i cv::cuda::DeviceInfo::maxTexture1DLayered() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxTexture2DLayered() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxTexture2DLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -635,7 +635,7 @@ Vec3i cv::cuda::DeviceInfo::maxTexture2DLayered() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxTextureCubemapLayered() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxTextureCubemapLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -644,7 +644,7 @@ Vec2i cv::cuda::DeviceInfo::maxTextureCubemapLayered() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxSurface1D() const
+int ncvslideio::cuda::DeviceInfo::maxSurface1D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -653,7 +653,7 @@ int cv::cuda::DeviceInfo::maxSurface1D() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxSurface2D() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxSurface2D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -662,7 +662,7 @@ Vec2i cv::cuda::DeviceInfo::maxSurface2D() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxSurface3D() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxSurface3D() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -671,7 +671,7 @@ Vec3i cv::cuda::DeviceInfo::maxSurface3D() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxSurface1DLayered() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxSurface1DLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -680,7 +680,7 @@ Vec2i cv::cuda::DeviceInfo::maxSurface1DLayered() const
 #endif
 }
 
-Vec3i cv::cuda::DeviceInfo::maxSurface2DLayered() const
+Vec3i ncvslideio::cuda::DeviceInfo::maxSurface2DLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -689,7 +689,7 @@ Vec3i cv::cuda::DeviceInfo::maxSurface2DLayered() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxSurfaceCubemap() const
+int ncvslideio::cuda::DeviceInfo::maxSurfaceCubemap() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -698,7 +698,7 @@ int cv::cuda::DeviceInfo::maxSurfaceCubemap() const
 #endif
 }
 
-Vec2i cv::cuda::DeviceInfo::maxSurfaceCubemapLayered() const
+Vec2i ncvslideio::cuda::DeviceInfo::maxSurfaceCubemapLayered() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -707,7 +707,7 @@ Vec2i cv::cuda::DeviceInfo::maxSurfaceCubemapLayered() const
 #endif
 }
 
-size_t cv::cuda::DeviceInfo::surfaceAlignment() const
+size_t ncvslideio::cuda::DeviceInfo::surfaceAlignment() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -716,7 +716,7 @@ size_t cv::cuda::DeviceInfo::surfaceAlignment() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::concurrentKernels() const
+bool ncvslideio::cuda::DeviceInfo::concurrentKernels() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -725,7 +725,7 @@ bool cv::cuda::DeviceInfo::concurrentKernels() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::ECCEnabled() const
+bool ncvslideio::cuda::DeviceInfo::ECCEnabled() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -734,7 +734,7 @@ bool cv::cuda::DeviceInfo::ECCEnabled() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::pciBusID() const
+int ncvslideio::cuda::DeviceInfo::pciBusID() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -743,7 +743,7 @@ int cv::cuda::DeviceInfo::pciBusID() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::pciDeviceID() const
+int ncvslideio::cuda::DeviceInfo::pciDeviceID() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -752,7 +752,7 @@ int cv::cuda::DeviceInfo::pciDeviceID() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::pciDomainID() const
+int ncvslideio::cuda::DeviceInfo::pciDomainID() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -761,7 +761,7 @@ int cv::cuda::DeviceInfo::pciDomainID() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::tccDriver() const
+bool ncvslideio::cuda::DeviceInfo::tccDriver() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -770,7 +770,7 @@ bool cv::cuda::DeviceInfo::tccDriver() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::asyncEngineCount() const
+int ncvslideio::cuda::DeviceInfo::asyncEngineCount() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -779,7 +779,7 @@ int cv::cuda::DeviceInfo::asyncEngineCount() const
 #endif
 }
 
-bool cv::cuda::DeviceInfo::unifiedAddressing() const
+bool ncvslideio::cuda::DeviceInfo::unifiedAddressing() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -788,7 +788,7 @@ bool cv::cuda::DeviceInfo::unifiedAddressing() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::memoryClockRate() const
+int ncvslideio::cuda::DeviceInfo::memoryClockRate() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -797,7 +797,7 @@ int cv::cuda::DeviceInfo::memoryClockRate() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::memoryBusWidth() const
+int ncvslideio::cuda::DeviceInfo::memoryBusWidth() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -806,7 +806,7 @@ int cv::cuda::DeviceInfo::memoryBusWidth() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::l2CacheSize() const
+int ncvslideio::cuda::DeviceInfo::l2CacheSize() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -815,7 +815,7 @@ int cv::cuda::DeviceInfo::l2CacheSize() const
 #endif
 }
 
-int cv::cuda::DeviceInfo::maxThreadsPerMultiProcessor() const
+int ncvslideio::cuda::DeviceInfo::maxThreadsPerMultiProcessor() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -824,7 +824,7 @@ int cv::cuda::DeviceInfo::maxThreadsPerMultiProcessor() const
 #endif
 }
 
-void cv::cuda::DeviceInfo::queryMemory(size_t& _totalMemory, size_t& _freeMemory) const
+void ncvslideio::cuda::DeviceInfo::queryMemory(size_t& _totalMemory, size_t& _freeMemory) const
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(_totalMemory);
@@ -842,7 +842,7 @@ void cv::cuda::DeviceInfo::queryMemory(size_t& _totalMemory, size_t& _freeMemory
 #endif
 }
 
-bool cv::cuda::DeviceInfo::isCompatible() const
+bool ncvslideio::cuda::DeviceInfo::isCompatible() const
 {
 #ifndef HAVE_CUDA
     throw_no_cuda();
@@ -891,7 +891,7 @@ namespace
 
 #endif
 
-void cv::cuda::printCudaDeviceInfo(int device)
+void ncvslideio::cuda::printCudaDeviceInfo(int device)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(device);
@@ -977,7 +977,7 @@ void cv::cuda::printCudaDeviceInfo(int device)
 #endif
 }
 
-void cv::cuda::printShortCudaDeviceInfo(int device)
+void ncvslideio::cuda::printShortCudaDeviceInfo(int device)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(device);
@@ -1178,12 +1178,12 @@ namespace
 
     const size_t cu_errors_num = sizeof(cu_errors) / sizeof(cu_errors[0]);
 
-    cv::String getErrorString(int code, const ErrorEntry* errors, size_t n)
+    ncvslideio::String getErrorString(int code, const ErrorEntry* errors, size_t n)
     {
         size_t idx = std::find_if(errors, errors + n, ErrorEntryComparer(code)) - errors;
 
         const char* msg = (idx != n) ? errors[idx].str : "Unknown error code";
-        cv::String str = cv::format("%s [Code = %d]", msg, code);
+        ncvslideio::String str = ncvslideio::format("%s [Code = %d]", msg, code);
 
         return str;
     }
@@ -1191,7 +1191,7 @@ namespace
 
 #endif
 
-String cv::cuda::getNppErrorMessage(int code)
+String ncvslideio::cuda::getNppErrorMessage(int code)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(code);
@@ -1201,7 +1201,7 @@ String cv::cuda::getNppErrorMessage(int code)
 #endif
 }
 
-String cv::cuda::getCudaDriverApiErrorMessage(int code)
+String ncvslideio::cuda::getCudaDriverApiErrorMessage(int code)
 {
 #ifndef HAVE_CUDA
     CV_UNUSED(code);

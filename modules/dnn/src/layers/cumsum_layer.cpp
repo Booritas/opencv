@@ -9,7 +9,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {

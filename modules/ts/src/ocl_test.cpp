@@ -46,22 +46,22 @@
 namespace cvtest {
 namespace ocl {
 
-using namespace cv;
+using namespace ncvslideio;
 
 int test_loop_times = 1; // TODO Read from command line / environment
 
 Mat TestUtils::readImage(const String &fileName, int flags)
 {
-    return cv::imread(cvtest::TS::ptr()->get_data_path() + fileName, flags);
+    return ncvslideio::imread(cvtest::TS::ptr()->get_data_path() + fileName, flags);
 }
 
 Mat TestUtils::readImageType(const String &fname, int type)
 {
-    Mat src = readImage(fname, CV_MAT_CN(type) == 1 ? cv::IMREAD_GRAYSCALE : cv::IMREAD_COLOR);
+    Mat src = readImage(fname, CV_MAT_CN(type) == 1 ? ncvslideio::IMREAD_GRAYSCALE : ncvslideio::IMREAD_COLOR);
     if (CV_MAT_CN(type) == 4)
     {
         Mat temp;
-        cv::cvtColor(src, temp, cv::COLOR_BGR2BGRA);
+        ncvslideio::cvtColor(src, temp, ncvslideio::COLOR_BGR2BGRA);
         swap(src, temp);
     }
     src.convertTo(src, CV_MAT_DEPTH(type));
@@ -81,7 +81,7 @@ double TestUtils::checkNorm2(InputArray m1, InputArray m2, InputArray mask)
 double TestUtils::checkSimilarity(InputArray m1, InputArray m2)
 {
     Mat diff;
-    matchTemplate(m1.getMat(), m2.getMat(), diff, cv::TM_CCORR_NORMED);
+    matchTemplate(m1.getMat(), m2.getMat(), diff, ncvslideio::TM_CCORR_NORMED);
     return std::abs(diff.at<float>(0, 0) - 1.f);
 }
 
@@ -97,29 +97,29 @@ double TestUtils::checkRectSimilarity(const Size & sz, std::vector<Rect>& ob1, s
     {
         if (sz1 == 0 && sz2 == 0)
             return 0;
-        cv::Mat cpu_result(sz, CV_8UC1);
+        ncvslideio::Mat cpu_result(sz, CV_8UC1);
         cpu_result.setTo(0);
 
         for (vector<Rect>::const_iterator r = ob1.begin(); r != ob1.end(); ++r)
         {
-            cv::Mat cpu_result_roi(cpu_result, *r);
+            ncvslideio::Mat cpu_result_roi(cpu_result, *r);
             cpu_result_roi.setTo(1);
             cpu_result.copyTo(cpu_result);
         }
-        int cpu_area = cv::countNonZero(cpu_result > 0);
+        int cpu_area = ncvslideio::countNonZero(cpu_result > 0);
 
-        cv::Mat gpu_result(sz, CV_8UC1);
+        ncvslideio::Mat gpu_result(sz, CV_8UC1);
         gpu_result.setTo(0);
         for(vector<Rect>::const_iterator r2 = ob2.begin(); r2 != ob2.end(); ++r2)
         {
-            cv::Mat gpu_result_roi(gpu_result, *r2);
+            ncvslideio::Mat gpu_result_roi(gpu_result, *r2);
             gpu_result_roi.setTo(1);
             gpu_result.copyTo(gpu_result);
         }
 
-        cv::Mat result_;
+        ncvslideio::Mat result_;
         multiply(cpu_result, gpu_result, result_);
-        int result = cv::countNonZero(result_ > 0);
+        int result = ncvslideio::countNonZero(result_ > 0);
         if (cpu_area!=0 && result!=0)
             final_test_result = 1.0 - (double)result/(double)cpu_area;
         else if(cpu_area==0 && result!=0)
@@ -135,9 +135,9 @@ void TestUtils::showDiff(InputArray _src, InputArray _gold, InputArray _actual, 
     Mat diff, diff_thresh;
     absdiff(gold, actual, diff);
     diff.convertTo(diff, CV_32F);
-    threshold(diff, diff_thresh, eps, 255.0, cv::THRESH_BINARY);
+    threshold(diff, diff_thresh, eps, 255.0, ncvslideio::THRESH_BINARY);
 
-    if (alwaysShow || cv::countNonZero(diff_thresh.reshape(1)) > 0)
+    if (alwaysShow || ncvslideio::countNonZero(diff_thresh.reshape(1)) > 0)
     {
 #if 0
         std::cout << "Source: " << std::endl << src << std::endl;
@@ -155,7 +155,7 @@ void TestUtils::showDiff(InputArray _src, InputArray _gold, InputArray _actual, 
         imshow("actual", actual);
         imshow("diff", diff);
 
-        cv::waitKey();
+        ncvslideio::waitKey();
     }
 }
 

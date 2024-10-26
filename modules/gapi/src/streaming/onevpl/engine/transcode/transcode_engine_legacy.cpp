@@ -22,7 +22,7 @@
 
 #define ALIGN16(value)           (((value + 15) >> 4) << 4)
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -346,7 +346,7 @@ VPLLegacyTranscodeEngine::initialize_session(mfxSession mfx_session,
     // and have abundant RAM size then increase `CfgParam::vpp_frames_pool_size_name()`
     // to keep more free surfaces in a round. Otherwise VPL decode pipeline will be waiting
     // till application is freeing unusable surface on its side.
-     cv::optional<size_t> preallocated_frames_count_cfg;
+     ncvslideio::optional<size_t> preallocated_frames_count_cfg;
     extract_optional_param_by_name(CfgParam::vpp_frames_pool_size_name(),
                                    cfg_params,
                                    preallocated_frames_count_cfg);
@@ -457,7 +457,7 @@ void VPLLegacyTranscodeEngine::on_frame_ready(LegacyTranscodeSession& sess,
     VPLAccelerationPolicy::FrameConstructorArgs args{ready_surface, sess.session};
     auto frame_adapter = acceleration_policy->create_frame_adapter(sess.vpp_out_pool_id,
                                                                    args);
-    ready_frames.emplace(cv::MediaFrame(std::move(frame_adapter)), sess.generate_frame_meta());
+    ready_frames.emplace(ncvslideio::MediaFrame(std::move(frame_adapter)), sess.generate_frame_meta());
 
     // pop away synced out object
     sess.vpp_queue.pop();
@@ -465,5 +465,5 @@ void VPLLegacyTranscodeEngine::on_frame_ready(LegacyTranscodeSession& sess,
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

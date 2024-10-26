@@ -23,7 +23,7 @@
 #ifdef HAVE_ONEVPL
 #include "streaming/onevpl/onevpl_export.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -32,7 +32,7 @@ namespace onevpl {
 struct GAPI_EXPORTS DecoderParams {
     std::shared_ptr<IDataProvider::mfx_bitstream> stream;
     mfxVideoParam param;
-    cv::util::optional<size_t> preallocated_frames_count;
+    ncvslideio::util::optional<size_t> preallocated_frames_count;
 };
 
 struct GAPI_EXPORTS TranscoderParams {
@@ -58,7 +58,7 @@ struct GAPI_EXPORTS EngineSession {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // HAVE_ONEVPL
 #endif // GAPI_STREAMING_ONEVPL_ENGINE_ENGINE_SESSION_HPP

@@ -127,8 +127,8 @@ void randu(InputOutputArray dst);
 
 inline void safeFinish()
 {
-    if (cv::ocl::useOpenCL())
-        cv::ocl::finish();
+    if (ncvslideio::ocl::useOpenCL())
+        ncvslideio::ocl::finish();
 }
 
 } // namespace perf

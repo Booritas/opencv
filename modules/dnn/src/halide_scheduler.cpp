@@ -9,7 +9,7 @@
 #include "halide_scheduler.hpp"
 #include "op_halide.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -129,7 +129,7 @@ static void applyStoreAt(const FileNode& directive, Halide::Func& func,
     {
         const std::string targetFuncName = funcNode.name();
         if (funcsMap.find(targetFuncName) == funcsMap.end())
-            CV_Error(cv::Error::StsParseError, "Function " + targetFuncName +
+            CV_Error(ncvslideio::Error::StsParseError, "Function " + targetFuncName +
                      " is not represented in Halide pipeline");
         Halide::Func targetFunc = funcsMap[targetFuncName];
         func.store_at(targetFunc, (std::string)funcNode);
@@ -144,7 +144,7 @@ static void applyComputeAt(const FileNode& directive, Halide::Func& func,
     {
         const std::string targetFuncName = funcNode.name();
         if (funcsMap.find(targetFuncName) == funcsMap.end())
-            CV_Error(cv::Error::StsParseError, "Function " + targetFuncName +
+            CV_Error(ncvslideio::Error::StsParseError, "Function " + targetFuncName +
                      " is not represented in Halide pipeline");
         Halide::Func targetFunc = funcsMap[targetFuncName];
         func.compute_at(targetFunc, (std::string)funcNode);
@@ -252,7 +252,7 @@ bool HalideScheduler::process(Ptr<BackendNode>& node)
 
     const FileNode& scheduleNode = fs["scheduling"];
     if (scheduleNode.empty())
-        CV_Error(cv::Error::StsParseError, "Scheduling file should has scheduling node");
+        CV_Error(ncvslideio::Error::StsParseError, "Scheduling file should has scheduling node");
 
     std::string str;
     std::map<std::string, Halide::Func> funcsMap;  // Scheduled functions.
@@ -276,7 +276,7 @@ bool HalideScheduler::process(Ptr<BackendNode>& node)
             {
                 funcNode["pattern"] >> str;
                 if (fs["patterns"][str].empty())
-                    CV_Error(cv::Error::StsParseError, "Scheduling pattern " + str +
+                    CV_Error(ncvslideio::Error::StsParseError, "Scheduling pattern " + str +
                                                        " is not defined");
                 apply(fs["patterns"][str], func, funcsMap, funcNode["params"]);
             }
@@ -298,4 +298,4 @@ bool HalideScheduler::process(Ptr<BackendNode>& node)
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

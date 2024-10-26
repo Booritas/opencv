@@ -84,13 +84,13 @@ OCL_TEST_P(UMatExpr, WithUsageFlags)
     {
         generateTestData();
 
-        UMat u0 = UMat::zeros(size, type, cv::USAGE_ALLOCATE_HOST_MEMORY);
-        UMat u1 = UMat::ones(size, type, cv::USAGE_ALLOCATE_HOST_MEMORY);
-        UMat u8 = UMat::eye(size, type, cv::USAGE_ALLOCATE_HOST_MEMORY);
+        UMat u0 = UMat::zeros(size, type, ncvslideio::USAGE_ALLOCATE_HOST_MEMORY);
+        UMat u1 = UMat::ones(size, type, ncvslideio::USAGE_ALLOCATE_HOST_MEMORY);
+        UMat u8 = UMat::eye(size, type, ncvslideio::USAGE_ALLOCATE_HOST_MEMORY);
 
-        EXPECT_EQ(cv::USAGE_ALLOCATE_HOST_MEMORY, u0.usageFlags);
-        EXPECT_EQ(cv::USAGE_ALLOCATE_HOST_MEMORY, u1.usageFlags);
-        EXPECT_EQ(cv::USAGE_ALLOCATE_HOST_MEMORY, u8.usageFlags);
+        EXPECT_EQ(ncvslideio::USAGE_ALLOCATE_HOST_MEMORY, u0.usageFlags);
+        EXPECT_EQ(ncvslideio::USAGE_ALLOCATE_HOST_MEMORY, u1.usageFlags);
+        EXPECT_EQ(ncvslideio::USAGE_ALLOCATE_HOST_MEMORY, u8.usageFlags);
     }
 }
 

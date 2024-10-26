@@ -24,22 +24,22 @@ void Tracklet::ClearTrajectory() {
     trajectory_filtered.clear();
 }
 
-void Tracklet::InitTrajectory(const cv::Rect2f &bounding_box) {
+void Tracklet::InitTrajectory(const ncvslideio::Rect2f &bounding_box) {
     trajectory.push_back(bounding_box);
     trajectory_filtered.push_back(bounding_box);
 }
 
-void Tracklet::AddUpdatedTrajectory(const cv::Rect2f &bounding_box, const cv::Rect2f &corrected_box) {
+void Tracklet::AddUpdatedTrajectory(const ncvslideio::Rect2f &bounding_box, const ncvslideio::Rect2f &corrected_box) {
     trajectory.push_back(bounding_box);
     trajectory_filtered.push_back(corrected_box);
 }
 
-void Tracklet::UpdateLatestTrajectory(const cv::Rect2f &bounding_box, const cv::Rect2f &corrected_box) {
+void Tracklet::UpdateLatestTrajectory(const ncvslideio::Rect2f &bounding_box, const ncvslideio::Rect2f &corrected_box) {
     trajectory.back() = bounding_box;
     trajectory_filtered.back() = corrected_box;
 }
 
-void Tracklet::RenewTrajectory(const cv::Rect2f &bounding_box) {
+void Tracklet::RenewTrajectory(const ncvslideio::Rect2f &bounding_box) {
     ClearTrajectory();
     trajectory.push_back(bounding_box);
     trajectory_filtered.push_back(bounding_box);
@@ -97,7 +97,7 @@ std::string Tracklet::Serialize() const {
 #endif
 }
 
-std::deque<cv::Mat> *Tracklet::GetRgbFeatures() {
+std::deque<ncvslideio::Mat> *Tracklet::GetRgbFeatures() {
     return nullptr;
 }
 
@@ -107,10 +107,10 @@ ZeroTermImagelessTracklet::ZeroTermImagelessTracklet() : Tracklet(), birth_count
 ZeroTermImagelessTracklet::~ZeroTermImagelessTracklet() {
 }
 
-void ZeroTermImagelessTracklet::RenewTrajectory(const cv::Rect2f &bounding_box) {
+void ZeroTermImagelessTracklet::RenewTrajectory(const ncvslideio::Rect2f &bounding_box) {
     float velo_x = bounding_box.x - trajectory.back().x;
     float velo_y = bounding_box.y - trajectory.back().y;
-    cv::Rect rect_predict(int(bounding_box.x + velo_x / 3), int(bounding_box.y + velo_y / 3),
+    ncvslideio::Rect rect_predict(int(bounding_box.x + velo_x / 3), int(bounding_box.y + velo_y / 3),
                           int(bounding_box.width), int(bounding_box.height));
 
     ClearTrajectory();
@@ -128,10 +128,10 @@ ShortTermImagelessTracklet::ShortTermImagelessTracklet() : Tracklet() {
 ShortTermImagelessTracklet::~ShortTermImagelessTracklet() {
 }
 
-void ShortTermImagelessTracklet::RenewTrajectory(const cv::Rect2f &bounding_box) {
+void ShortTermImagelessTracklet::RenewTrajectory(const ncvslideio::Rect2f &bounding_box) {
     float velo_x = bounding_box.x - trajectory.back().x;
     float velo_y = bounding_box.y - trajectory.back().y;
-    cv::Rect rect_predict(int(bounding_box.x + velo_x / 3), int(bounding_box.y + velo_y / 3),
+    ncvslideio::Rect rect_predict(int(bounding_box.x + velo_x / 3), int(bounding_box.y + velo_y / 3),
                           int(bounding_box.width), int(bounding_box.height));
 
     ClearTrajectory();

@@ -30,7 +30,7 @@ Implementation of Tensorflow models parser
 #include "tf_graph_simplifier.hpp"
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -864,8 +864,8 @@ void TFImporter::parseConvolution(tensorflow::GraphDef& net, const tensorflow::N
             const int slice = height * width * inCh;
             for (int i = 0; i < outCh; i += 2)
             {
-                cv::Mat src(1, slice, CV_32F, layerParams.blobs[0].ptr<float>(i));
-                cv::Mat dst(1, slice, CV_32F, layerParams.blobs[0].ptr<float>(i + 1));
+                ncvslideio::Mat src(1, slice, CV_32F, layerParams.blobs[0].ptr<float>(i));
+                ncvslideio::Mat dst(1, slice, CV_32F, layerParams.blobs[0].ptr<float>(i + 1));
                 std::swap_ranges(src.begin<float>(), src.end<float>(), dst.begin<float>());
             }
         }
@@ -1057,8 +1057,8 @@ void TFImporter::parseMatMul(tensorflow::GraphDef& net, const tensorflow::NodeDe
         CV_Assert(layerParams.blobs[0].dims == 2);
         for (int i = 0; i < layerParams.blobs[0].size[0]; i += 2)
         {
-            cv::Mat src = layerParams.blobs[0].row(i);
-            cv::Mat dst = layerParams.blobs[0].row(i + 1);
+            ncvslideio::Mat src = layerParams.blobs[0].row(i);
+            ncvslideio::Mat dst = layerParams.blobs[0].row(i + 1);
             std::swap_ranges(src.begin<float>(), src.end<float>(), dst.begin<float>());
         }
     }
@@ -2240,7 +2240,7 @@ void TFImporter::parseL2Normalize(tensorflow::GraphDef& net, const tensorflow::N
         for (int i = 0; i < numAxes; ++i)
             reductionIndices.at<int>(i) = toNCHW(reductionIndices.at<int>(i));
 
-    cv::sort(reductionIndices, reductionIndices, SORT_ASCENDING);
+    ncvslideio::sort(reductionIndices, reductionIndices, SORT_ASCENDING);
     for (int i = 1; i < numAxes; ++i)
     {
         CV_Assert(reductionIndices.at<int>(i) == reductionIndices.at<int>(i - 1) + 1);
@@ -2355,7 +2355,7 @@ void TFImporter::parseMean(tensorflow::GraphDef& net, const tensorflow::NodeDef&
     const std::string& name = layer.name();
     const std::string& type = layer.op();
     const int num_inputs = layer.input_size();
-    std::string pool_type = cv::toLowerCase(type);
+    std::string pool_type = ncvslideio::toLowerCase(type);
     DataLayout layout = getDataLayout(name, data_layouts);
 
     if (pool_type == "mean")
@@ -3044,14 +3044,14 @@ void TFImporter::populateNet()
     CV_Assert(netBinSize || netTxtSize);
 
     CV_LOG_INFO(NULL, "DNN/TF: parsing model"
-        << (netBin.has_versions() ? cv::format(" produced by TF v%d (min_consumer=%d)", (int)netBin.versions().producer(), (int)netBin.versions().min_consumer()) : cv::String(" (N/A version info)"))
+        << (netBin.has_versions() ? ncvslideio::format(" produced by TF v%d (min_consumer=%d)", (int)netBin.versions().producer(), (int)netBin.versions().min_consumer()) : ncvslideio::String(" (N/A version info)"))
         << ". Number of nodes = " << netBin.node_size()
     );
 
     if (netTxtSize)
     {
         CV_LOG_INFO(NULL, "DNN/TF: parsing config"
-            << (netTxt.has_versions() ? cv::format(" produced by TF v%d (min_consumer=%d)", (int)netTxt.versions().producer(), (int)netTxt.versions().min_consumer()) : cv::String(" (N/A version info)"))
+            << (netTxt.has_versions() ? ncvslideio::format(" produced by TF v%d (min_consumer=%d)", (int)netTxt.versions().producer(), (int)netTxt.versions().min_consumer()) : ncvslideio::String(" (N/A version info)"))
             << ". Number of nodes = " << netTxt.node_size()
         );
 
@@ -3151,7 +3151,7 @@ void TFImporter::populateNet()
         const tensorflow::NodeDef& layer = net.node(li);
 
         CV_LOG_DEBUG(NULL, "DNN/TF: processing node (" << li << "/" << layersSize << ") with " << layer.input_size() << " inputs: "
-                                                           << cv::format("[%s]:(%s)", layer.op().c_str(), layer.name().c_str()));
+                                                           << ncvslideio::format("[%s]:(%s)", layer.op().c_str(), layer.name().c_str()));
 
         parseNode(layer);
     }

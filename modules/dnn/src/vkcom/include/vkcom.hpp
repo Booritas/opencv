@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -41,7 +41,7 @@ bool isAvailable();
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #include "buffer.hpp"
 #include "tensor.hpp"

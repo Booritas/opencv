@@ -433,7 +433,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
         }
 
         // delegate image processing to the delegate
-        cv::Mat image((int)height, (int)width, format_opencv, bufferAddress, bytesPerRow);
+        ncvslideio::Mat image((int)height, (int)width, format_opencv, bufferAddress, bytesPerRow);
 
         CGImage* dstImage;
 
@@ -482,7 +482,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
             NSData *data = [NSData dataWithBytes:image.data length:image.elemSize()*image.total()];
             CGDataProviderRef provider = CGDataProviderCreateWithCFData((__bridge CFDataRef)data);
 
-            // Creating CGImage from cv::Mat
+            // Creating CGImage from ncvslideio::Mat
             dstImage = CGImageCreate(image.cols,                                 // width
                                      image.rows,                                 // height
                                      8,                                          // bits per component

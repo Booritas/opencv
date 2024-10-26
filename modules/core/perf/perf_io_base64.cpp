@@ -4,7 +4,7 @@ namespace opencv_test
 {
 using namespace perf;
 
-typedef tuple<cv::Size, MatType, String> Size_MatType_Str_t;
+typedef tuple<ncvslideio::Size, MatType, String> Size_MatType_Str_t;
 typedef TestBaseWithParam<Size_MatType_Str_t> Size_Mat_StrType;
 
 #define MAT_SIZES      ::perf::sz1080p/*, ::perf::sz4320p*/
@@ -27,18 +27,18 @@ PERF_TEST_P(Size_Mat_StrType, DISABLED_fs_text,
 
     declare.in(src, WARMUP_RNG).out(dst);
 
-    cv::String file_name = cv::tempfile(ext.c_str());
-    cv::String key       = "test_mat";
+    ncvslideio::String file_name = ncvslideio::tempfile(ext.c_str());
+    ncvslideio::String key       = "test_mat";
 
     TEST_CYCLE_MULTIRUN(2)
     {
         {
-            FileStorage fs(file_name, cv::FileStorage::WRITE);
+            FileStorage fs(file_name, ncvslideio::FileStorage::WRITE);
             fs << key << src;
             fs.release();
         }
         {
-            FileStorage fs(file_name, cv::FileStorage::READ);
+            FileStorage fs(file_name, ncvslideio::FileStorage::READ);
             fs[key] >> dst;
             fs.release();
         }
@@ -61,19 +61,19 @@ PERF_TEST_P(Size_Mat_StrType, DISABLED_fs_base64,
     Mat src(size.height, size.width, type);
     Mat dst = src.clone();
 
-    cv::String file_name = cv::tempfile(ext.c_str());
-    cv::String key       = "test_mat";
+    ncvslideio::String file_name = ncvslideio::tempfile(ext.c_str());
+    ncvslideio::String key       = "test_mat";
 
     declare.in(src, WARMUP_RNG).out(dst);
     TEST_CYCLE_MULTIRUN(2)
     {
         {
-            FileStorage fs(file_name, cv::FileStorage::WRITE_BASE64);
+            FileStorage fs(file_name, ncvslideio::FileStorage::WRITE_BASE64);
             fs << key << src;
             fs.release();
         }
         {
-            FileStorage fs(file_name, cv::FileStorage::READ);
+            FileStorage fs(file_name, ncvslideio::FileStorage::READ);
             fs[key] >> dst;
             fs.release();
         }

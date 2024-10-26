@@ -30,7 +30,7 @@
 
 #include <opencv2/gapi/util/variant.hpp>
 
-namespace cv { namespace gimpl { namespace parallel {
+namespace ncvslideio { namespace gimpl { namespace parallel {
 
 // simple wrapper to allow copies of std::atomic
 template<typename  count_t>
@@ -103,7 +103,7 @@ using prio_items_queue_t = tbb::concurrent_priority_queue<tile_node*, tile_node_
 void execute(prio_items_queue_t& q);
 void execute(prio_items_queue_t& q, tbb::task_arena& arena);
 
-}}} // namespace cv::gimpl::parallel
+}}} // namespace ncvslideio::gimpl::parallel
 
 #endif // TBB_INTERFACE_VERSION
 #endif // HAVE_TBB

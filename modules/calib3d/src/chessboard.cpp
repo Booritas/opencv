@@ -10,11 +10,11 @@
 //#define CV_DETECTORS_CHESSBOARD_DEBUG
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
 #include <opencv2/highgui.hpp>
-static cv::Mat debug_image;
+static ncvslideio::Mat debug_image;
 #endif
 
 using namespace std;
-namespace cv {
+namespace ncvslideio {
 namespace details {
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,20 +32,20 @@ static const int MAX_SYMMETRY_ERRORS = 5;                       // maximal numbe
 /////////////////////////////////////////////////////////////////////////////
 
 // some helper methods
-static float calcSharpness(cv::InputArray _values,float rise_distance);
-static bool isPointOnLine(cv::Point2f l1,cv::Point2f l2,cv::Point2f pt,float min_angle);
-static int testPointSymmetry(const cv::Mat& mat,cv::Point2f pt,float dist,float max_error);
+static float calcSharpness(ncvslideio::InputArray _values,float rise_distance);
+static bool isPointOnLine(ncvslideio::Point2f l1,ncvslideio::Point2f l2,ncvslideio::Point2f pt,float min_angle);
+static int testPointSymmetry(const ncvslideio::Mat& mat,ncvslideio::Point2f pt,float dist,float max_error);
 static float calcSubpixel(const float &x_l,const float &x,const float &x_r);
 static float calcSubPos(const float &x_l,const float &x,const float &x_r);
 static void polyfit(const Mat& src_x, const Mat& src_y, Mat& dst, int order);
-static float calcSignedDistance(const cv::Vec2f &n,const cv::Point2f &a,const cv::Point2f &pt);
-static void normalizePoints1D(cv::InputArray _points,cv::OutputArray _T,cv::OutputArray _new_points);
-static cv::Mat findHomography1D(cv::InputArray _src,cv::InputArray _dst);
-static cv::Mat normalizeVector(cv::InputArray _points);
+static float calcSignedDistance(const ncvslideio::Vec2f &n,const ncvslideio::Point2f &a,const ncvslideio::Point2f &pt);
+static void normalizePoints1D(ncvslideio::InputArray _points,ncvslideio::OutputArray _T,ncvslideio::OutputArray _new_points);
+static ncvslideio::Mat findHomography1D(ncvslideio::InputArray _src,ncvslideio::InputArray _dst);
+static ncvslideio::Mat normalizeVector(ncvslideio::InputArray _points);
 
-cv::Mat normalizeVector(cv::InputArray _points)
+ncvslideio::Mat normalizeVector(ncvslideio::InputArray _points)
 {
-    cv::Mat points = _points.getMat();
+    ncvslideio::Mat points = _points.getMat();
     if(points.cols > 1)
     {
         if(points.rows == 1)
@@ -58,10 +58,10 @@ cv::Mat normalizeVector(cv::InputArray _points)
     return points;
 }
 
-float calcSharpness(cv::InputArray _values,float rise_distance)
+float calcSharpness(ncvslideio::InputArray _values,float rise_distance)
 {
     CV_CheckTypeEQ(_values.type(),CV_8UC1, "values must be of the type CV_8UC1");
-    cv::Mat values = normalizeVector(_values);
+    ncvslideio::Mat values = normalizeVector(_values);
     if(values.empty())
         return 0;
     if(values.rows != 1 && values.cols != 1)
@@ -70,9 +70,9 @@ float calcSharpness(cv::InputArray _values,float rise_distance)
         CV_Error(Error::StsBadArg, "rise_distance must lie in th interval ]0..1]");
 
     // find global min max
-    cv::Point min_loc,max_loc;
+    ncvslideio::Point min_loc,max_loc;
     double min_val,max_val;
-    cv::minMaxLoc(values,&min_val,&max_val,&min_loc,&max_loc);
+    ncvslideio::minMaxLoc(values,&min_val,&max_val,&min_loc,&max_loc);
     int max_pos = std::max(max_loc.x,max_loc.y);
     int min_pos = std::max(min_loc.x,min_loc.y);
     if(max_pos == min_pos)
@@ -130,28 +130,28 @@ float calcSharpness(cv::InputArray _values,float rise_distance)
 }
 
 
-void normalizePoints1D(cv::InputArray _points,cv::OutputArray _T,cv::OutputArray _new_points)
+void normalizePoints1D(ncvslideio::InputArray _points,ncvslideio::OutputArray _T,ncvslideio::OutputArray _new_points)
 {
-    cv::Mat points = _points.getMat();
+    ncvslideio::Mat points = _points.getMat();
     if(points.cols > 1 && points.rows == 1)
         points = points.reshape(1,points.cols);
     CV_CheckChannelsEQ(points.channels(), 1, "points must have only one channel");
 
     // calc centroid
-    double centroid= cv::mean(points)[0];
+    double centroid= ncvslideio::mean(points)[0];
 
     // shift origin to centroid
-    cv::Mat new_points = points-centroid;
+    ncvslideio::Mat new_points = points-centroid;
 
     // calc mean distance
-    double mean_dist = cv::mean(cv::abs(new_points))[0];
+    double mean_dist = ncvslideio::mean(ncvslideio::abs(new_points))[0];
     if(mean_dist<= DBL_EPSILON)
         CV_Error(Error::StsBadArg, "all given points are identical");
     double scale = 1.0/mean_dist;
 
 
     // generate transformation
-    cv::Matx22d Tx(
+    ncvslideio::Matx22d Tx(
         scale, -scale*centroid,
         0,     1
     );
@@ -165,7 +165,7 @@ void normalizePoints1D(cv::InputArray _points,cv::OutputArray _T,cv::OutputArray
     case CV_32FC1:
         for(int i=0;i < points.rows;++i)
         {
-            cv::Vec2d p(points.at<float>(i), 1.0);
+            ncvslideio::Vec2d p(points.at<float>(i), 1.0);
             p = Tx*p;
             new_points.at<float>(i) = float(p(0)/p(1));
         }
@@ -173,7 +173,7 @@ void normalizePoints1D(cv::InputArray _points,cv::OutputArray _T,cv::OutputArray
     case CV_64FC1:
         for(int i=0;i < points.rows;++i)
         {
-            cv::Vec2d p(points.at<double>(i), 1.0);
+            ncvslideio::Vec2d p(points.at<double>(i), 1.0);
             p = Tx*p;
             new_points.at<double>(i) = p(0)/p(1);
         }
@@ -183,11 +183,11 @@ void normalizePoints1D(cv::InputArray _points,cv::OutputArray _T,cv::OutputArray
     }
 }
 
-cv::Mat findHomography1D(cv::InputArray _src,cv::InputArray _dst)
+ncvslideio::Mat findHomography1D(ncvslideio::InputArray _src,ncvslideio::InputArray _dst)
 {
     // check inputs
-    cv::Mat src = _src.getMat();
-    cv::Mat dst = _dst.getMat();
+    ncvslideio::Mat src = _src.getMat();
+    ncvslideio::Mat dst = _dst.getMat();
     if(src.cols > 1 && src.rows == 1)
         src = src.reshape(1,src.cols);
     if(dst.cols > 1 && dst.rows == 1)
@@ -199,13 +199,13 @@ cv::Mat findHomography1D(cv::InputArray _src,cv::InputArray _dst)
     CV_Check(src.rows, src.rows >= 3,"at least three point pairs are needed");
 
     // normalize points
-    cv::Mat src_T,dst_T, src_n,dst_n;
+    ncvslideio::Mat src_T,dst_T, src_n,dst_n;
     normalizePoints1D(src,src_T,src_n);
     normalizePoints1D(dst,dst_T,dst_n);
 
     int count = src_n.rows;
-    cv::Mat A = cv::Mat::zeros(count,3,CV_64FC1);
-    cv::Mat b = cv::Mat::zeros(count,1,CV_64FC1);
+    ncvslideio::Mat A = ncvslideio::Mat::zeros(count,3,CV_64FC1);
+    ncvslideio::Mat b = ncvslideio::Mat::zeros(count,1,CV_64FC1);
 
     // fill A;b and perform singular value decomposition
     // it is assumed that w is one for both coordinates
@@ -238,22 +238,22 @@ cv::Mat findHomography1D(cv::InputArray _src,cv::InputArray _dst)
         CV_Error(Error::StsUnsupportedFormat,"unsupported type");
     }
 
-    cv::Mat u,d,vt;
-    cv::SVD::compute(A,d,u,vt);
-    cv::Mat b_ = u.t()*b;
+    ncvslideio::Mat u,d,vt;
+    ncvslideio::SVD::compute(A,d,u,vt);
+    ncvslideio::Mat b_ = u.t()*b;
 
-    cv::Mat y(b_.rows,1,CV_64FC1);
+    ncvslideio::Mat y(b_.rows,1,CV_64FC1);
     for(int i=0;i<b_.rows;++i)
         y.at<double>(i) = b_.at<double>(i)/d.at<double>(i);
 
-    cv::Mat x = vt.t()*y;
-    cv::Matx22d H_(x.at<double>(0), x.at<double>(1), x.at<double>(2), 1.0);
+    ncvslideio::Mat x = vt.t()*y;
+    ncvslideio::Matx22d H_(x.at<double>(0), x.at<double>(1), x.at<double>(2), 1.0);
 
     // denormalize
     Mat H = dst_T.inv()*Mat(H_, false)*src_T;
 
     // enforce frobeniusnorm of one
-    double scale = cv::norm(H);
+    double scale = ncvslideio::norm(H);
     CV_Assert(fabs(scale) > DBL_EPSILON);
     scale = 1.0 / scale;
     return H*scale;
@@ -271,48 +271,48 @@ void polyfit(const Mat& src_x, const Mat& src_y, Mat& dst, int order)
         for (int x = 1; x < A.cols; ++x)
             A.at<double>(y,x) = srcX.at<double>(y)*A.at<double>(y,x-1);
     }
-    cv::Mat w;
+    ncvslideio::Mat w;
     solve(A,srcY,w,DECOMP_SVD);
     w.convertTo(dst, ((src_x.depth() == CV_64F || src_y.depth() == CV_64F) ? CV_64F : CV_32F));
 }
 
-float calcSignedDistance(const cv::Vec2f &n,const cv::Point2f &a,const cv::Point2f &pt)
+float calcSignedDistance(const ncvslideio::Vec2f &n,const ncvslideio::Point2f &a,const ncvslideio::Point2f &pt)
 {
-    cv::Vec3f v1(n[0],n[1],0);
-    cv::Vec3f v2(pt.x-a.x,pt.y-a.y,0);
+    ncvslideio::Vec3f v1(n[0],n[1],0);
+    ncvslideio::Vec3f v2(pt.x-a.x,pt.y-a.y,0);
     return v1.cross(v2)[2];
 }
 
-bool isPointOnLine(cv::Point2f l1,cv::Point2f l2,cv::Point2f pt,float min_angle)
+bool isPointOnLine(ncvslideio::Point2f l1,ncvslideio::Point2f l2,ncvslideio::Point2f pt,float min_angle)
 {
-    cv::Vec2f vec1(l1-pt);
-    cv::Vec2f vec2(pt-l2);
-    if(vec1.dot(vec2) < min_angle*cv::norm(vec1)*cv::norm(vec2))
+    ncvslideio::Vec2f vec1(l1-pt);
+    ncvslideio::Vec2f vec2(pt-l2);
+    if(vec1.dot(vec2) < min_angle*ncvslideio::norm(vec1)*ncvslideio::norm(vec2))
         return false;
     return true;
 }
 
 // returns how many tests fails out of 10
-int testPointSymmetry(const cv::Mat &mat,cv::Point2f pt,float dist,float max_error)
+int testPointSymmetry(const ncvslideio::Mat &mat,ncvslideio::Point2f pt,float dist,float max_error)
 {
-    cv::Rect image_rect(int(0.5*dist),int(0.5*dist),int(mat.cols-0.5*dist),int(mat.rows-0.5*dist));
-    cv::Size size(int(0.5*dist),int(0.5*dist));
+    ncvslideio::Rect image_rect(int(0.5*dist),int(0.5*dist),int(mat.cols-0.5*dist),int(mat.rows-0.5*dist));
+    ncvslideio::Size size(int(0.5*dist),int(0.5*dist));
     int count = 0;
-    cv::Mat patch1,patch2;
-    cv::Point2f center1,center2;
+    ncvslideio::Mat patch1,patch2;
+    ncvslideio::Point2f center1,center2;
     for (int angle_i = 0; angle_i < 10; angle_i++)
     {
         double angle = angle_i * (CV_PI * 0.1);
-        cv::Point2f n(float(cos(angle)),float(-sin(angle)));
+        ncvslideio::Point2f n(float(cos(angle)),float(-sin(angle)));
         center1 = pt+dist*n;
         if(!image_rect.contains(center1))
             return false;
         center2 = pt-dist*n;
         if(!image_rect.contains(center2))
             return false;
-        cv::getRectSubPix(mat,size,center1,patch1);
-        cv::getRectSubPix(mat,size,center2,patch2);
-        if(fabs(cv::mean(patch1)[0]-cv::mean(patch2)[0]) > max_error)
+        ncvslideio::getRectSubPix(mat,size,center1,patch1);
+        ncvslideio::getRectSubPix(mat,size,center2,patch2);
+        if(fabs(ncvslideio::mean(patch1)[0]-ncvslideio::mean(patch2)[0]) > max_error)
             ++count;
     }
     return count;
@@ -362,7 +362,7 @@ void FastX::reconfigure(const Parameters &para)
 }
 
 // rotates the image around its center
-void FastX::rotate(float angle,cv::InputArray img,cv::Size size,cv::OutputArray out)const
+void FastX::rotate(float angle,ncvslideio::InputArray img,ncvslideio::Size size,ncvslideio::OutputArray out)const
 {
     if(angle == 0)
     {
@@ -371,10 +371,10 @@ void FastX::rotate(float angle,cv::InputArray img,cv::Size size,cv::OutputArray 
     }
     else
     {
-        cv::Matx23d m = cv::getRotationMatrix2D(cv::Point2f(float(img.cols()*0.5),float(img.rows()*0.5)),float(angle/CV_PI*180),1);
+        ncvslideio::Matx23d m = ncvslideio::getRotationMatrix2D(ncvslideio::Point2f(float(img.cols()*0.5),float(img.rows()*0.5)),float(angle/CV_PI*180),1);
         m(0,2) += 0.5*(size.width-img.cols());
         m(1,2) += 0.5*(size.height-img.rows());
-        cv::warpAffine(img,out,m,size);
+        ncvslideio::warpAffine(img,out,m,size);
     }
 }
 
@@ -399,7 +399,7 @@ void FastX::calcFeatureMap(const Mat &images,Mat& out)const
         CV_Error(Error::StsBadArg,"images must have at least four channels");
 
     // for each pixel
-    out = cv::Mat::zeros(images.rows,images.cols,CV_32FC1);
+    out = ncvslideio::Mat::zeros(images.rows,images.cols,CV_32FC1);
     const float *pout_end = reinterpret_cast<const float*>(out.dataend);
     for(float *pout=out.ptr<float>(0,0);pout != pout_end;++pout)
     {
@@ -459,12 +459,12 @@ void FastX::calcFeatureMap(const Mat &images,Mat& out)const
     }
 }
 
-std::vector<std::vector<float> > FastX::calcAngles(const std::vector<cv::Mat> &rotated_images,std::vector<cv::KeyPoint> &keypoints)const
+std::vector<std::vector<float> > FastX::calcAngles(const std::vector<ncvslideio::Mat> &rotated_images,std::vector<ncvslideio::KeyPoint> &keypoints)const
 {
     // validate rotated_images
     if(rotated_images.empty())
         CV_Error(Error::StsBadArg,"no rotated images");
-    std::vector<cv::Mat>::const_iterator iter = rotated_images.begin();
+    std::vector<ncvslideio::Mat>::const_iterator iter = rotated_images.begin();
     for(;iter != rotated_images.end();++iter)
     {
         if(iter->empty())
@@ -487,14 +487,14 @@ std::vector<std::vector<float> > FastX::calcAngles(const std::vector<cv::Mat> &r
         float angle;
         float val1,val2,val3,wrap_around;
         const unsigned char *pimages1,*pimages2,*pimages3,*pimages4;
-        std::vector<cv::KeyPoint>::iterator pt_iter = keypoints.begin()+range.start;
-        std::vector<cv::KeyPoint>::iterator pt_end = keypoints.begin()+range.end;
+        std::vector<ncvslideio::KeyPoint>::iterator pt_iter = keypoints.begin()+range.start;
+        std::vector<ncvslideio::KeyPoint>::iterator pt_end = keypoints.begin()+range.end;
         for(int id=range.start ;pt_iter != pt_end;++pt_iter,++id)
         {
             int scale_id = pt_iter->octave - parameters.min_scale;
             if(scale_id>= int(rotated_images.size()) ||scale_id < 0)
                 CV_Error(Error::StsBadArg,"no rotated image for requested keypoint octave");
-            const cv::Mat &s_rotated_images = rotated_images[scale_id];
+            const ncvslideio::Mat &s_rotated_images = rotated_images[scale_id];
 
             float x2 = pt_iter->pt.x*scale;
             float y2 = pt_iter->pt.y*scale;
@@ -573,7 +573,7 @@ std::vector<std::vector<float> > FastX::calcAngles(const std::vector<cv::Mat> &r
     return angles;
 }
 
-void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<KeyPoint>& keypoints,const Mat& _mask) const
+void FastX::findKeyPoints(const std::vector<ncvslideio::Mat> &feature_maps, std::vector<KeyPoint>& keypoints,const Mat& _mask) const
 {
     //TODO check that all feature_maps have the same size
     int num_scales = parameters.max_scale-parameters.min_scale;
@@ -585,11 +585,11 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
     }
     keypoints.clear();
 
-    cv::Mat mask;
+    ncvslideio::Mat mask;
     if(!_mask.empty())
         mask = _mask;
     else
-        mask = cv::Mat::ones(feature_maps.front().size(),CV_8UC1);
+        mask = ncvslideio::Mat::ones(feature_maps.front().size(),CV_8UC1);
 
     int super_res = int(parameters.super_resolution);
     int super_scale = super_res+1;
@@ -598,9 +598,9 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
     // for each scale
     float strength = parameters.strength;
     std::vector<int> windows;
-    cv::Point pt,pt2;
+    ncvslideio::Point pt,pt2;
     double min,max;
-    cv::Mat src;
+    ncvslideio::Mat src;
     for(int scale=parameters.max_scale;scale>=parameters.min_scale;--scale)
     {
         int window_size = (1 << (scale + super_res)) + 1;
@@ -608,7 +608,7 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
         float window_size4 = 0.25F*window_size;
         int window_size2i = cvRound(window_size2);
 
-        const cv::Mat &feature_map = feature_maps[scale-parameters.min_scale];
+        const ncvslideio::Mat &feature_map = feature_maps[scale-parameters.min_scale];
         int y = ((feature_map.rows)/window_size)-2;
         int x = ((feature_map.cols)/window_size)-2;
         for(int row=1;row<y;++row)
@@ -617,17 +617,17 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
             {
                 Rect rect(col*window_size,row*window_size,window_size,window_size);
                 src = feature_map(rect);
-                cv::minMaxLoc(src,&min,&max,NULL,&pt);
+                ncvslideio::minMaxLoc(src,&min,&max,NULL,&pt);
                 if(min == max || max < strength)
                     continue;
 
-                cv::Point pos(pt.x+rect.x,pt.y+rect.y);
+                ncvslideio::Point pos(pt.x+rect.x,pt.y+rect.y);
                 if(mask.at<unsigned char>(pos.y,pos.x) == 0)
                     continue;
 
                 Rect rect2(int(pos.x-window_size2),int(pos.y-window_size2),window_size,window_size);
                 src = feature_map(rect2);
-                cv::minMaxLoc(src,NULL,NULL,NULL,&pt2);
+                ncvslideio::minMaxLoc(src,NULL,NULL,NULL,&pt2);
                 if(pos.x == pt2.x+rect2.x && pos.y == pt2.y+rect2.y)
                 {
                     // the point is the best one on the current scale
@@ -637,7 +637,7 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
                     //parameters.min_scale;
                     for(;scale2>=parameters.min_scale;--scale2)
                     {
-                        cv::minMaxLoc(feature_maps[scale2-parameters.min_scale](rect),NULL,&max2,NULL,NULL);
+                        ncvslideio::minMaxLoc(feature_maps[scale2-parameters.min_scale](rect),NULL,&max2,NULL,NULL);
                         if(max2 > max)
                             break;
                     }
@@ -649,12 +649,12 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
                         float sub_y = float(calcSubpixel(feature_map.at<float>(pos.y-1,pos.x),
                                 feature_map.at<float>(pos.y,pos.x),
                                 feature_map.at<float>(pos.y+1,pos.x)));
-                        cv::KeyPoint kpt(sub_x+pos.x,sub_y+pos.y,float(window_size),0.F,float(max),scale);
+                        ncvslideio::KeyPoint kpt(sub_x+pos.x,sub_y+pos.y,float(window_size),0.F,float(max),scale);
                         int x2 = std::max(0,int(kpt.pt.x-window_size4));
                         int y2 = std::max(0,int(kpt.pt.y-window_size4));
                         int w = std::min(int(mask.cols-x2),window_size2i);
                         int h = std::min(int(mask.rows-y2),window_size2i);
-                        mask(cv::Rect(x2,y2,w,h)) = 0.0;
+                        mask(ncvslideio::Rect(x2,y2,w,h)) = 0.0;
                         if(super_scale != 1)
                         {
                             kpt.pt.x /= super_scale;
@@ -671,8 +671,8 @@ void FastX::findKeyPoints(const std::vector<cv::Mat> &feature_maps, std::vector<
     }
 }
 
-void FastX::detectAndCompute(cv::InputArray image,cv::InputArray mask,std::vector<cv::KeyPoint>& keypoints,
-        cv::OutputArray _descriptors,bool useProvidedKeyPoints)
+void FastX::detectAndCompute(ncvslideio::InputArray image,ncvslideio::InputArray mask,std::vector<ncvslideio::KeyPoint>& keypoints,
+        ncvslideio::OutputArray _descriptors,bool useProvidedKeyPoints)
 {
     useProvidedKeyPoints = false;
     detectImpl(image.getMat(),keypoints,mask.getMat());
@@ -681,8 +681,8 @@ void FastX::detectAndCompute(cv::InputArray image,cv::InputArray mask,std::vecto
 
     // generate descriptors based on their position
     _descriptors.create(int(keypoints.size()),2,CV_32FC1);
-    cv::Mat descriptors = _descriptors.getMat();
-    std::vector<cv::KeyPoint>::const_iterator iter = keypoints.begin();
+    ncvslideio::Mat descriptors = _descriptors.getMat();
+    std::vector<ncvslideio::KeyPoint>::const_iterator iter = keypoints.begin();
     for(int row=0;iter != keypoints.end();++iter,++row)
     {
         descriptors.at<float>(row,0) = iter->pt.x;
@@ -693,27 +693,27 @@ void FastX::detectAndCompute(cv::InputArray image,cv::InputArray mask,std::vecto
     return;
 }
 
-void FastX::detectImpl(const cv::Mat& _gray_image,
-        std::vector<cv::Mat> &rotated_images,
-        std::vector<cv::Mat> &feature_maps,
-        const cv::Mat &_mask)const
+void FastX::detectImpl(const ncvslideio::Mat& _gray_image,
+        std::vector<ncvslideio::Mat> &rotated_images,
+        std::vector<ncvslideio::Mat> &feature_maps,
+        const ncvslideio::Mat &_mask)const
 {
     if(!_mask.empty())
         CV_Error(Error::StsBadSize, "Mask is not supported");
     CV_CheckTypeEQ(_gray_image.type(), CV_8UC1, "Unsupported image type");
 
     // up-sample if needed
-    cv::UMat gray_image;
+    ncvslideio::UMat gray_image;
     const int super_res = int(parameters.super_resolution);
     if(super_res)
-        cv::resize(_gray_image,gray_image,cv::Size(),2,2);
+        ncvslideio::resize(_gray_image,gray_image,ncvslideio::Size(),2,2);
     else
         _gray_image.copyTo(gray_image);
 
     //for each scale
     const int num_scales = parameters.max_scale-parameters.min_scale+1;
     const int diag = int(sqrt(gray_image.rows*gray_image.rows+gray_image.cols*gray_image.cols));
-    const cv::Size size(diag,diag);
+    const ncvslideio::Size size(diag,diag);
     const int num = int(0.5001*CV_PI/parameters.resolution);
 
     rotated_images.resize(num_scales);
@@ -727,23 +727,23 @@ void FastX::detectImpl(const cv::Mat& _gray_image,
             int scale_id = scale-parameters.min_scale;
             int scale_size = int(pow(2.0,scale+1+super_res));
             int scale_size2 = int((scale_size/7)*2+1);
-            std::vector<cv::UMat> images;
+            std::vector<ncvslideio::UMat> images;
             images.resize(2*num);
-            cv::UMat rotated,filtered_h,filtered_v;
-            cv::boxFilter(gray_image,images[0],-1,cv::Size(scale_size,scale_size2));
-            cv::boxFilter(gray_image,images[num],-1,cv::Size(scale_size2,scale_size));
+            ncvslideio::UMat rotated,filtered_h,filtered_v;
+            ncvslideio::boxFilter(gray_image,images[0],-1,ncvslideio::Size(scale_size,scale_size2));
+            ncvslideio::boxFilter(gray_image,images[num],-1,ncvslideio::Size(scale_size2,scale_size));
             for(int i=1;i<num;++i)
             {
                 float angle = parameters.resolution*i;
                 rotate(-angle,gray_image,size,rotated);
-                cv::boxFilter(rotated,filtered_h,-1,cv::Size(scale_size,scale_size2));
-                cv::boxFilter(rotated,filtered_v,-1,cv::Size(scale_size2,scale_size));
+                ncvslideio::boxFilter(rotated,filtered_h,-1,ncvslideio::Size(scale_size,scale_size2));
+                ncvslideio::boxFilter(rotated,filtered_v,-1,ncvslideio::Size(scale_size2,scale_size));
 
                 // rotate filtered images back
                 rotate(angle,filtered_h,gray_image.size(),images[i]);
                 rotate(angle,filtered_v,gray_image.size(),images[i+num]);
             }
-            cv::merge(images,rotated_images[scale_id]);
+            ncvslideio::merge(images,rotated_images[scale_id]);
 
             // calc feature map
             calcFeatureMap(rotated_images[scale_id],feature_maps[scale_id]);
@@ -751,32 +751,32 @@ void FastX::detectImpl(const cv::Mat& _gray_image,
             // filter feature map to improve impulse responses
             if(parameters.filter)
             {
-                cv::Mat high,low;
-                cv::boxFilter(feature_maps[scale_id],low,-1,cv::Size(scale_size,scale_size));
+                ncvslideio::Mat high,low;
+                ncvslideio::boxFilter(feature_maps[scale_id],low,-1,ncvslideio::Size(scale_size,scale_size));
                 int scale2 = int((scale_size/6))*2+1;
-                cv::boxFilter(feature_maps[scale_id],high,-1,cv::Size(scale2,scale2));
+                ncvslideio::boxFilter(feature_maps[scale_id],high,-1,ncvslideio::Size(scale2,scale2));
                 feature_maps[scale_id] = high-0.8*low;
             }
         }
     });
 }
 
-void FastX::detectImpl(const cv::Mat& image,std::vector<cv::KeyPoint>& keypoints,std::vector<cv::Mat> &feature_maps,const cv::Mat &mask)const
+void FastX::detectImpl(const ncvslideio::Mat& image,std::vector<ncvslideio::KeyPoint>& keypoints,std::vector<ncvslideio::Mat> &feature_maps,const ncvslideio::Mat &mask)const
 {
-    std::vector<cv::Mat> rotated_images;
+    std::vector<ncvslideio::Mat> rotated_images;
     detectImpl(image,rotated_images,feature_maps,mask);
     findKeyPoints(feature_maps,keypoints,mask);
 }
 
 void FastX::detectImpl(InputArray image, std::vector<KeyPoint>& keypoints, InputArray mask)const
 {
-    std::vector<cv::Mat> feature_maps;
+    std::vector<ncvslideio::Mat> feature_maps;
     detectImpl(image.getMat(),keypoints,feature_maps,mask.getMat());
 }
 
 void FastX::detectImpl(const Mat& src, std::vector<KeyPoint>& keypoints, const Mat& mask)const
 {
-    std::vector<cv::Mat> feature_maps;
+    std::vector<ncvslideio::Mat> feature_maps;
     detectImpl(src,keypoints,feature_maps,mask);
 }
 
@@ -788,7 +788,7 @@ Ellipse::Ellipse():
 {
 }
 
-Ellipse::Ellipse(const cv::Point2f &_center, const cv::Size2f &_axes, float _angle):
+Ellipse::Ellipse(const ncvslideio::Point2f &_center, const ncvslideio::Size2f &_axes, float _angle):
     center(_center),
     axes(_axes),
     angle(_angle),
@@ -797,24 +797,24 @@ Ellipse::Ellipse(const cv::Point2f &_center, const cv::Size2f &_axes, float _ang
 {
 }
 
-const cv::Size2f &Ellipse::getAxes()const
+const ncvslideio::Size2f &Ellipse::getAxes()const
 {
     return axes;
 }
 
-cv::Point2f Ellipse::getCenter()const
+ncvslideio::Point2f Ellipse::getCenter()const
 {
     return center;
 }
 
-void Ellipse::draw(cv::InputOutputArray img,const cv::Scalar &color)const
+void Ellipse::draw(ncvslideio::InputOutputArray img,const ncvslideio::Scalar &color)const
 {
-    cv::ellipse(img,center,axes,360-angle/CV_PI*180,0,360,color);
+    ncvslideio::ellipse(img,center,axes,360-angle/CV_PI*180,0,360,color);
 }
 
-bool Ellipse::contains(const cv::Point2f &pt)const
+bool Ellipse::contains(const ncvslideio::Point2f &pt)const
 {
-    cv::Point2f ptc = pt-center;
+    ncvslideio::Point2f ptc = pt-center;
     float x = cosf*ptc.x+sinf*ptc.y;
     float y = -sinf*ptc.x+cosf*ptc.y;
     if(x*x/(axes.width*axes.width)+y*y/(axes.height*axes.height) <= 1.0)
@@ -824,29 +824,29 @@ bool Ellipse::contains(const cv::Point2f &pt)const
 
 
 // returns false if the angle from the line pt1-pt2 to the line pt3-pt4 is negative
-static bool checkOrientation(const cv::Point2f &pt1,const cv::Point2f &pt2,
-        const cv::Point2f &pt3,const cv::Point2f &pt4)
+static bool checkOrientation(const ncvslideio::Point2f &pt1,const ncvslideio::Point2f &pt2,
+        const ncvslideio::Point2f &pt3,const ncvslideio::Point2f &pt4)
 {
-    cv::Point3f p1(pt2.x-pt1.x,pt2.y-pt1.y,0);
-    cv::Point3f p2(pt4.x-pt3.x,pt4.y-pt3.y,0);
+    ncvslideio::Point3f p1(pt2.x-pt1.x,pt2.y-pt1.y,0);
+    ncvslideio::Point3f p2(pt4.x-pt3.x,pt4.y-pt3.y,0);
     return p1.cross(p2).z > 0;
 }
 
-static bool sortKeyPoint(const cv::KeyPoint &pt1,const cv::KeyPoint &pt2)
+static bool sortKeyPoint(const ncvslideio::KeyPoint &pt1,const ncvslideio::KeyPoint &pt2)
 {
     // used as comparison function for partial sort
     // the keypoints with the best score should be first
     return pt1.response > pt2.response;
 }
 
-cv::Mat Chessboard::getObjectPoints(const cv::Size &pattern_size,float cell_size)
+ncvslideio::Mat Chessboard::getObjectPoints(const ncvslideio::Size &pattern_size,float cell_size)
 {
-    cv::Mat result(pattern_size.width*pattern_size.height,1,CV_32FC3);
+    ncvslideio::Mat result(pattern_size.width*pattern_size.height,1,CV_32FC3);
     for(int row=0;row < pattern_size.height;++row)
     {
         for(int col=0;col< pattern_size.width;++col)
         {
-            cv::Point3f &pt = *result.ptr<cv::Point3f>(row*pattern_size.width+col);
+            ncvslideio::Point3f &pt = *result.ptr<ncvslideio::Point3f>(row*pattern_size.width+col);
             pt.x = cell_size*col;
             pt.y = cell_size*row;
             pt.z = 0;
@@ -855,7 +855,7 @@ cv::Mat Chessboard::getObjectPoints(const cv::Size &pattern_size,float cell_size
     return result;
 }
 
-bool Chessboard::Board::Cell::isInside(const cv::Point2f &pt)const
+bool Chessboard::Board::Cell::isInside(const ncvslideio::Point2f &pt)const
 {
     if(empty())
         return false;
@@ -892,11 +892,11 @@ int Chessboard::Board::Cell::getRow()const
     return row;
 }
 
-cv::Point2f Chessboard::Board::Cell::getCenter()const
+ncvslideio::Point2f Chessboard::Board::Cell::getCenter()const
 {
     if(empty())
         CV_Error(Error::StsBadArg,"Cell is empty");
-    cv::Point2f center = *top_left+*top_right+*bottom_left+*bottom_right;
+    ncvslideio::Point2f center = *top_left+*top_right+*bottom_left+*bottom_right;
     center.x /=4;
     center.y /=4;
     return center;
@@ -944,7 +944,7 @@ bool Chessboard::Board::PointIter::valid()const
 
 bool Chessboard::Board::PointIter::isNaN()const
 {
-    const cv::Point2f *pt = operator*();
+    const ncvslideio::Point2f *pt = operator*();
     if(pt->x != pt->x || pt->y != pt->y)        // NaN check
         return true;
     return false;
@@ -1182,7 +1182,7 @@ bool Chessboard::Board::PointIter::bottom(bool check_empty)
 }
 
 
-const cv::Point2f* Chessboard::Board::PointIter::operator*()const
+const ncvslideio::Point2f* Chessboard::Board::PointIter::operator*()const
 {
     switch(corner_index)
     {
@@ -1198,18 +1198,18 @@ const cv::Point2f* Chessboard::Board::PointIter::operator*()const
     CV_Assert(false);
 }
 
-const cv::Point2f* Chessboard::Board::PointIter::operator->()const
+const ncvslideio::Point2f* Chessboard::Board::PointIter::operator->()const
 {
     return operator*();
 }
 
-cv::Point2f* Chessboard::Board::PointIter::operator*()
+ncvslideio::Point2f* Chessboard::Board::PointIter::operator*()
 {
-    const cv::Point2f *pt = const_cast<const PointIter*>(this)->operator*();
-    return const_cast<cv::Point2f*>(pt);
+    const ncvslideio::Point2f *pt = const_cast<const PointIter*>(this)->operator*();
+    return const_cast<ncvslideio::Point2f*>(pt);
 }
 
-cv::Point2f* Chessboard::Board::PointIter::operator->()
+ncvslideio::Point2f* Chessboard::Board::PointIter::operator->()
 {
     return operator*();
 }
@@ -1232,7 +1232,7 @@ Chessboard::Board::Board(const Chessboard::Board &other):
     *this = other;
 }
 
-Chessboard::Board::Board(const cv::Size &size, const std::vector<cv::Point2f> &points,float _white_angle,float _black_angle):
+Chessboard::Board::Board(const ncvslideio::Size &size, const std::vector<ncvslideio::Point2f> &points,float _white_angle,float _black_angle):
     top_left(NULL),
     rows(0),
     cols(0),
@@ -1246,17 +1246,17 @@ Chessboard::Board::Board(const cv::Size &size, const std::vector<cv::Point2f> &p
 
     // init board with 3x3
     // TODO write function speeding up the copying
-    cv::Mat data = cv::Mat(points).reshape(2,size.height);
-    cv::Mat temp;
-    data(cv::Rect(0,0,3,3)).copyTo(temp);
-    std::vector<cv::Point2f> ipoints = temp.reshape(2,1);
+    ncvslideio::Mat data = ncvslideio::Mat(points).reshape(2,size.height);
+    ncvslideio::Mat temp;
+    data(ncvslideio::Rect(0,0,3,3)).copyTo(temp);
+    std::vector<ncvslideio::Point2f> ipoints = temp.reshape(2,1);
     if(!init(ipoints))
         return;
 
     // add all cols if more than 3
     for(int col=3 ; col< data.cols;++col)
     {
-        data(cv::Rect(col,0,1,3)).copyTo(temp);
+        data(ncvslideio::Rect(col,0,1,3)).copyTo(temp);
         ipoints = temp.reshape(2,1);
         addColumnRight(ipoints);
     }
@@ -1264,7 +1264,7 @@ Chessboard::Board::Board(const cv::Size &size, const std::vector<cv::Point2f> &p
     // add all rows if more than 3
     for(int row=3; row < data.rows;++row)
     {
-        data(cv::Rect(0,row,cols,1)).copyTo(temp);
+        data(ncvslideio::Rect(0,row,cols,1)).copyTo(temp);
         ipoints = temp.reshape(2,1);
         addRowBottom(ipoints);
     }
@@ -1288,13 +1288,13 @@ float Chessboard::Board::getAngle()const
     if(colCount() < 3)
         CV_Error(Error::StsBadArg,"Board is too small");
 
-    cv::Point2f delta = *(top_left->right->top_right)-*(top_left->top_left);
-    cv::Point3f pt(delta.x,delta.y,0);
+    ncvslideio::Point2f delta = *(top_left->right->top_right)-*(top_left->top_left);
+    ncvslideio::Point3f pt(delta.x,delta.y,0);
     float val;
     if(fabs(pt.x) > fabs(pt.y))
     {
-        cv::Point3f ptx(1,0,0);
-        val = float(ptx.dot(pt)/cv::norm(pt));
+        ncvslideio::Point3f ptx(1,0,0);
+        val = float(ptx.dot(pt)/ncvslideio::norm(pt));
         if(val < 0)
             val = -acos(val);
         else
@@ -1302,8 +1302,8 @@ float Chessboard::Board::getAngle()const
     }
     else
     {
-        cv::Point3f ptx(0,1,0);
-        val = float(ptx.dot(pt)/cv::norm(pt));
+        ncvslideio::Point3f ptx(0,1,0);
+        val = float(ptx.dot(pt)/ncvslideio::norm(pt));
         if(val < 0)
             val = float(-acos(val)+CV_PI/2);
         else
@@ -1320,9 +1320,9 @@ bool Chessboard::Board::isHorizontal()const
     return false;
 }
 
-cv::Mat Chessboard::Board::getObjectPoints(float cell_size)const
+ncvslideio::Mat Chessboard::Board::getObjectPoints(float cell_size)const
 {
-    cv::Mat points = Chessboard::getObjectPoints(getSize(),cell_size);
+    ncvslideio::Mat points = Chessboard::getObjectPoints(getSize(),cell_size);
 
     // check for any offset due to a found marker
     for(auto &&cell : cells)
@@ -1330,25 +1330,25 @@ cv::Mat Chessboard::Board::getObjectPoints(float cell_size)const
         if(cell->marker && !cell->black)
         {
             // apply offset
-            cv::Point3f offset(cell->getCol()*cell_size,cell->getRow()*cell_size,0);
+            ncvslideio::Point3f offset(cell->getCol()*cell_size,cell->getRow()*cell_size,0);
             for(int i =0;i < points.rows;++i)
-                points.at<cv::Point3f>(i) -= offset;
+                points.at<ncvslideio::Point3f>(i) -= offset;
             break;
         }
     }
     return points;
 }
 
-std::vector<cv::Point2f> Chessboard::Board::getCellCenters()const
+std::vector<ncvslideio::Point2f> Chessboard::Board::getCellCenters()const
 {
     int icols = int(colCount());
     int irows = int(rowCount());
     if(icols < 3 || irows < 3)
         CV_Error(Error::StsBadArg,"Chessboard must be at least consist of 3 rows and cols to calculate the cell centers");
 
-    std::vector<cv::Point2f> points;
-    cv::Matx33d H(estimateHomography(DUMMY_FIELD_SIZE));
-    cv::Vec3d pt1,pt2;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Matx33d H(estimateHomography(DUMMY_FIELD_SIZE));
+    ncvslideio::Vec3d pt1,pt2;
     pt1[2] = 1;
     for(int row = 0;row < irows;++row)
     {
@@ -1357,15 +1357,15 @@ std::vector<cv::Point2f> Chessboard::Board::getCellCenters()const
         {
             pt1[0] = (0.5+col)*DUMMY_FIELD_SIZE;
             pt2 = H*pt1;
-            points.push_back(cv::Point2f(float(pt2[0]/pt2[2]),float(pt2[1]/pt2[2])));
+            points.push_back(ncvslideio::Point2f(float(pt2[0]/pt2[2]),float(pt2[1]/pt2[2])));
         }
     }
     return points;
 }
 
-std::vector<cv::Mat> Chessboard::Board::getCells(float shrink_factor,bool bwhite,bool bblack) const
+std::vector<ncvslideio::Mat> Chessboard::Board::getCells(float shrink_factor,bool bwhite,bool bblack) const
 {
-    std::vector<cv::Mat> result;
+    std::vector<ncvslideio::Mat> result;
     int icols = int(colCount());
     int irows = int(rowCount());
     if(icols < 3 || irows < 3)
@@ -1380,19 +1380,19 @@ std::vector<cv::Mat> Chessboard::Board::getCells(float shrink_factor,bool bwhite
                 continue;
             if(!bblack && cell->black)
                 continue;
-            cv::Mat points = cv::Mat(4,1,CV_32FC2);
-            points.at<cv::Point2f>(0) = *cell->top_left;
-            points.at<cv::Point2f>(1) = *cell->top_right;
-            points.at<cv::Point2f>(2) = *cell->bottom_right;
-            points.at<cv::Point2f>(3) = *cell->bottom_left;
+            ncvslideio::Mat points = ncvslideio::Mat(4,1,CV_32FC2);
+            points.at<ncvslideio::Point2f>(0) = *cell->top_left;
+            points.at<ncvslideio::Point2f>(1) = *cell->top_right;
+            points.at<ncvslideio::Point2f>(2) = *cell->bottom_right;
+            points.at<ncvslideio::Point2f>(3) = *cell->bottom_left;
             if(shrink_factor != 1)
             {
-                cv::Point2f center = *cell->top_left+*cell->top_right+*cell->bottom_left+*cell->bottom_right;
+                ncvslideio::Point2f center = *cell->top_left+*cell->top_right+*cell->bottom_left+*cell->bottom_right;
                 center.x /=4;
                 center.y /=4;
                 for(int i=0;i<4;++i)
                 {
-                    auto &pt = points.at<cv::Point2f>(i);
+                    auto &pt = points.at<ncvslideio::Point2f>(i);
                     pt = center+(pt-center)*shrink_factor;
                 }
             }
@@ -1402,35 +1402,35 @@ std::vector<cv::Mat> Chessboard::Board::getCells(float shrink_factor,bool bwhite
     return result;
 }
 
-cv::Mat Chessboard::Board::warpImage(cv::InputArray image)const
+ncvslideio::Mat Chessboard::Board::warpImage(ncvslideio::InputArray image)const
 {
-    cv::Mat H = estimateHomography();
-    cv::Mat mat;
-    cv::Size size = getSize();
+    ncvslideio::Mat H = estimateHomography();
+    ncvslideio::Mat mat;
+    ncvslideio::Size size = getSize();
     size.width = (size.width+1)*DUMMY_FIELD_SIZE;
     size.height= (size.height+1)*DUMMY_FIELD_SIZE;
-    cv::warpPerspective(image,mat,H.inv(),size);
+    ncvslideio::warpPerspective(image,mat,H.inv(),size);
     return mat;
 }
 
-void Chessboard::Board::draw(cv::InputArray m,cv::OutputArray out,cv::InputArray _H)const
+void Chessboard::Board::draw(ncvslideio::InputArray m,ncvslideio::OutputArray out,ncvslideio::InputArray _H)const
 {
-    cv::Mat H = _H.getMat();
+    ncvslideio::Mat H = _H.getMat();
     if(H.empty())
         H = estimateHomography();
-    cv::Mat image = m.getMat().clone();
+    ncvslideio::Mat image = m.getMat().clone();
     if(image.type() == CV_32FC1)
     {
         double maxVal,minVal;
-        cv::minMaxLoc(image, &minVal, &maxVal);
+        ncvslideio::minMaxLoc(image, &minVal, &maxVal);
         double scale = 255.0/(maxVal-minVal);
         image.convertTo(image,CV_8UC1,scale,-scale*minVal);
-        cv::applyColorMap(image,image,cv::COLORMAP_JET);
+        ncvslideio::applyColorMap(image,image,ncvslideio::COLORMAP_JET);
     }
 
     // draw all points and search areas
-    std::vector<cv::Point2f> points = getCorners();
-    std::vector<cv::Point2f>::const_iterator iter1 = points.begin();
+    std::vector<ncvslideio::Point2f> points = getCorners();
+    std::vector<ncvslideio::Point2f>::const_iterator iter1 = points.begin();
     int icols = int(colCount());
     int irows = int(rowCount());
     int count=0;
@@ -1442,11 +1442,11 @@ void Chessboard::Board::draw(cv::InputArray m,cv::OutputArray out,cv::InputArray
             {
                 // draw search ellipse
                 Ellipse ellipse = estimateSearchArea(H,row,col,0.4F);
-                ellipse.draw(image,cv::Scalar::all(200));
+                ellipse.draw(image,ncvslideio::Scalar::all(200));
             }
             else
             {
-                cv::circle(image,*iter1,4,cv::Scalar(count*20,count*20,count*20,255),-1);
+                ncvslideio::circle(image,*iter1,4,ncvslideio::Scalar(count*20,count*20,count*20,255),-1);
                 ++count;
             }
         }
@@ -1458,7 +1458,7 @@ void Chessboard::Board::draw(cv::InputArray m,cv::OutputArray out,cv::InputArray
         for(int col=0;col<icols-1;++col)
         {
             const Cell *cell = getCell(row,col);
-            cv::Point2f center = cell->getCenter();
+            ncvslideio::Point2f center = cell->getCenter();
             int size = 4;
             if(row==0&&col==0)
                 size=8;
@@ -1468,31 +1468,31 @@ void Chessboard::Board::draw(cv::InputArray m,cv::OutputArray out,cv::InputArray
             if(cell->marker)
             {
                 if(cell->black)
-                    cv::circle(image,center,2,cv::Scalar::all(0),-1);
+                    ncvslideio::circle(image,center,2,ncvslideio::Scalar::all(0),-1);
                 else
                 {
-                    cv::circle(image,center,2,cv::Scalar::all(255),-1);
+                    ncvslideio::circle(image,center,2,ncvslideio::Scalar::all(255),-1);
                     // draw coordinate
                     if(col+1 < icols)
                     {
                         const Cell *cell2 = getCell(row,col+1);
-                        cv::Point2f center2 = cell2->getCenter();
-                        cv::line(image,center,center2,cv::Scalar::all(127),2);
+                        ncvslideio::Point2f center2 = cell2->getCenter();
+                        ncvslideio::line(image,center,center2,ncvslideio::Scalar::all(127),2);
                     }
                     if(row+1 < irows)
                     {
                         const Cell *cell2 = getCell(row+1,col);
-                        cv::Point2f center2 = cell2->getCenter();
-                        cv::line(image,center,center2,cv::Scalar::all(127),2);
+                        ncvslideio::Point2f center2 = cell2->getCenter();
+                        ncvslideio::line(image,center,center2,ncvslideio::Scalar::all(127),2);
                     }
                 }
             }
             else
             {
                 if(cell->black)
-                    cv::circle(image,center,size,cv::Scalar::all(255),-1);
+                    ncvslideio::circle(image,center,size,ncvslideio::Scalar::all(255),-1);
                 else
-                    cv::circle(image,center,size,cv::Scalar(0,0,10,255),-1);
+                    ncvslideio::circle(image,center,size,ncvslideio::Scalar(0,0,10,255),-1);
             }
         }
     }
@@ -1501,9 +1501,9 @@ void Chessboard::Board::draw(cv::InputArray m,cv::OutputArray out,cv::InputArray
     image.copyTo(out.getMat());
 }
 
-bool Chessboard::Board::estimatePose(const cv::Size2f &real_size,cv::InputArray _K,cv::OutputArray rvec,cv::OutputArray tvec)const
+bool Chessboard::Board::estimatePose(const ncvslideio::Size2f &real_size,ncvslideio::InputArray _K,ncvslideio::OutputArray rvec,ncvslideio::OutputArray tvec)const
 {
-    cv::Mat K = _K.getMat();
+    ncvslideio::Mat K = _K.getMat();
     CV_CheckTypeEQ(K.type(), CV_64FC1, "wrong K type");
     CV_CheckEQ(K.size(), Size(3, 3), "wrong K size");
     if(isEmpty())
@@ -1517,10 +1517,10 @@ bool Chessboard::Board::estimatePose(const cv::Size2f &real_size,cv::InputArray 
     int offset_x = int(-(icols-1)*field_width*0.5F);
     int offset_y = int(-(irows-1)*field_width*0.5F);
 
-    std::vector<cv::Point2f> image_points;
-    std::vector<cv::Point3f> object_points;
-    std::vector<cv::Point2f> corners_temp = getCorners(true);
-    std::vector<cv::Point2f>::const_iterator iter = corners_temp.begin();
+    std::vector<ncvslideio::Point2f> image_points;
+    std::vector<ncvslideio::Point3f> object_points;
+    std::vector<ncvslideio::Point2f> corners_temp = getCorners(true);
+    std::vector<ncvslideio::Point2f>::const_iterator iter = corners_temp.begin();
     for(int row = 0;row < irows;++row)
     {
         for(int col= 0;col<icols;++col,++iter)
@@ -1530,10 +1530,10 @@ bool Chessboard::Board::estimatePose(const cv::Size2f &real_size,cv::InputArray 
             if(iter->x != iter->x)      // NaN check
                 continue;
             image_points.push_back(*iter);
-            object_points.push_back(cv::Point3f(field_width*col-offset_x,field_height*row-offset_y,1.0));
+            object_points.push_back(ncvslideio::Point3f(field_width*col-offset_x,field_height*row-offset_y,1.0));
         }
     }
-    return cv::solvePnP(object_points,image_points,K,cv::Mat(),rvec,tvec);//,cv::SOLVEPNP_P3P);
+    return ncvslideio::solvePnP(object_points,image_points,K,ncvslideio::Mat(),rvec,tvec);//,ncvslideio::SOLVEPNP_P3P);
 }
 
 float Chessboard::Board::getBlackAngle()const
@@ -1570,12 +1570,12 @@ Chessboard::Board& Chessboard::Board::operator=(const Chessboard::Board &other)
     corners.reserve(other.corners.size());
 
     //copy all points and generate mapping
-    std::map<cv::Point2f*,cv::Point2f*> point_point_mapping;
+    std::map<ncvslideio::Point2f*,ncvslideio::Point2f*> point_point_mapping;
     point_point_mapping[NULL] = NULL;
-    std::vector<cv::Point2f*>::const_iterator iter = other.corners.begin();
+    std::vector<ncvslideio::Point2f*>::const_iterator iter = other.corners.begin();
     for(;iter != other.corners.end();++iter)
     {
-        cv::Point2f *pt = new cv::Point2f(**iter);
+        ncvslideio::Point2f *pt = new ncvslideio::Point2f(**iter);
         point_point_mapping[*iter] = pt;
         corners.push_back(pt);
     }
@@ -1669,10 +1669,10 @@ bool Chessboard::Board::normalizeMarkerOrientation()
 void Chessboard::Board::normalizeOrientation(bool bblack)
 {
     // fix ordering
-    cv::Point2f y = getCorner(0,1)-getCorner(2,1);
-    cv::Point2f x = getCorner(1,2)-getCorner(1,0);
-    cv::Point3f y3d(y.x,y.y,0);
-    cv::Point3f x3d(x.x,x.y,0);
+    ncvslideio::Point2f y = getCorner(0,1)-getCorner(2,1);
+    ncvslideio::Point2f x = getCorner(1,2)-getCorner(1,0);
+    ncvslideio::Point3f y3d(y.x,y.y,0);
+    ncvslideio::Point3f x3d(x.x,x.y,0);
     if(x3d.cross(y3d).z > 0)
         flipHorizontal();
 
@@ -1731,7 +1731,7 @@ void Chessboard::Board::rotateRight()
         (*iter)->top= (*iter)->left;
         (*iter)->left = temp;
 
-        cv::Point2f *ptemp = (*iter)->bottom_left;
+        ncvslideio::Point2f *ptemp = (*iter)->bottom_left;
         (*iter)->bottom_left= (*iter)->bottom_right;
         (*iter)->bottom_right= (*iter)->top_right;
         (*iter)->top_right= (*iter)->top_left;
@@ -1758,7 +1758,7 @@ void Chessboard::Board::rotateLeft()
         (*iter)->bottom= (*iter)->left;
         (*iter)->left = temp;
 
-        cv::Point2f *ptemp = (*iter)->top_left;
+        ncvslideio::Point2f *ptemp = (*iter)->top_left;
         (*iter)->top_left = (*iter)->top_right;
         (*iter)->top_right= (*iter)->bottom_right;
         (*iter)->bottom_right = (*iter)->bottom_left;
@@ -1782,7 +1782,7 @@ void Chessboard::Board::flipHorizontal()
         (*iter)->right= (*iter)->left;
         (*iter)->left = temp;
 
-        cv::Point2f *ptemp = (*iter)->top_left;
+        ncvslideio::Point2f *ptemp = (*iter)->top_left;
         (*iter)->top_left = (*iter)->top_right;
         (*iter)->top_right = ptemp;
 
@@ -1805,7 +1805,7 @@ void Chessboard::Board::flipVertical()
         (*iter)->top= (*iter)->bottom;
         (*iter)->bottom = temp;
 
-        cv::Point2f *ptemp = (*iter)->top_left;
+        ncvslideio::Point2f *ptemp = (*iter)->top_left;
         (*iter)->top_left = (*iter)->bottom_left;
         (*iter)->bottom_left = ptemp;
 
@@ -1819,7 +1819,7 @@ void Chessboard::Board::flipVertical()
 // returns the best found score
 // if NaN is returned for a point no point at all was found
 // if 0 is returned the point lies outside of the ellipse
-float Chessboard::Board::findMaxPoint(cv::flann::Index &index,const cv::Mat &data,const Ellipse &ellipse,float white_angle,float black_angle,cv::Point2f &point)
+float Chessboard::Board::findMaxPoint(ncvslideio::flann::Index &index,const ncvslideio::Mat &data,const Ellipse &ellipse,float white_angle,float black_angle,ncvslideio::Point2f &point)
 {
     // flann data type enriched with angles (third column)
     CV_CheckType(data.type(), CV_32FC1, "type of flann data is not supported");
@@ -1831,7 +1831,7 @@ float Chessboard::Board::findMaxPoint(cv::flann::Index &index,const cv::Mat &dat
     point = ellipse.getCenter();
     query[0] = point.x;
     query[1] = point.y;
-    index.knnSearch(query,indices,dists,4,cv::flann::SearchParams(64));
+    index.knnSearch(query,indices,dists,4,ncvslideio::flann::SearchParams(64));
     std::vector<int>::const_iterator iter = indices.begin();
     float best_score = -std::numeric_limits<float>::max();
     point.x = std::numeric_limits<float>::quiet_NaN();
@@ -1851,7 +1851,7 @@ float Chessboard::Board::findMaxPoint(cv::flann::Index &index,const cv::Mat &dat
             a2 = std::fabs(float(a2-CV_PI));
         if(a1  < MAX_ANGLE || a2 < MAX_ANGLE )
         {
-            cv::Point2f pt(val[0], val[1]);
+            ncvslideio::Point2f pt(val[0], val[1]);
             if(point.x != point.x)       // NaN check
                 point = pt;
             if(best_score < response && ellipse.contains(pt))
@@ -1874,7 +1874,7 @@ void Chessboard::Board::clear()
     for(;iter != cells.end();++iter)
         delete *iter;
     cells.clear();
-    std::vector<cv::Point2f*>::iterator iter2 = corners.begin();
+    std::vector<ncvslideio::Point2f*>::iterator iter2 = corners.begin();
     for(;iter2 != corners.end();++iter2)
         delete *iter2;
     corners.clear();
@@ -1883,7 +1883,7 @@ void Chessboard::Board::clear()
 // p0 p1 p2
 // p3 p4 p5
 // p6 p7 p8
-bool Chessboard::Board::init(const std::vector<cv::Point2f> points)
+bool Chessboard::Board::init(const std::vector<ncvslideio::Point2f> points)
 {
     clear();
     if(points.size() != 9)
@@ -1892,7 +1892,7 @@ bool Chessboard::Board::init(const std::vector<cv::Point2f> points)
     // generate cells
     corners.resize(9);
     for(int i=0;i < 9;++i)
-        corners[i] = new cv::Point2f(points[i]);
+        corners[i] = new ncvslideio::Point2f(points[i]);
     cells.resize(4);
     for(int i=0;i<4;++i)
         cells[i] = new Cell();
@@ -1935,9 +1935,9 @@ bool Chessboard::Board::init(const std::vector<cv::Point2f> points)
 
     // set initial cell colors
     Point2f pt1 = *(cells[0]->top_right)-*(cells[0]->bottom_left);
-    pt1 /= cv::norm(pt1);
-    cv::Point2f pt2(cos(white_angle),-sin(white_angle));
-    cv::Point2f pt3(cos(black_angle),-sin(black_angle));
+    pt1 /= ncvslideio::norm(pt1);
+    ncvslideio::Point2f pt2(cos(white_angle),-sin(white_angle));
+    ncvslideio::Point2f pt3(cos(black_angle),-sin(black_angle));
     if(fabs(pt1.dot(pt2)) < fabs(pt1.dot(pt3)))
     {
         cells[0]->black = false;
@@ -1956,15 +1956,15 @@ bool Chessboard::Board::init(const std::vector<cv::Point2f> points)
 }
 
 //TODO magic number
-bool Chessboard::Board::estimatePoint(const cv::Point2f &p0,const cv::Point2f &p1,const cv::Point2f &p2, cv::Point2f &p3)
+bool Chessboard::Board::estimatePoint(const ncvslideio::Point2f &p0,const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2, ncvslideio::Point2f &p3)
 {
     // use cross ration to find new point
     if(p0 == p1 || p0 == p2 || p1 == p2)
         return false;
-    cv::Point2f p01 = p1-p0;
-    cv::Point2f p12 = p2-p1;
-    float a = float(cv::norm(p01));
-    float b = float(cv::norm(p12));
+    ncvslideio::Point2f p01 = p1-p0;
+    ncvslideio::Point2f p12 = p2-p1;
+    float a = float(ncvslideio::norm(p01));
+    float b = float(ncvslideio::norm(p12));
     float t = (0.75F*a-0.25F*b);
     if(t <= 0)
         return false;
@@ -1987,37 +1987,37 @@ bool Chessboard::Board::estimatePoint(const cv::Point2f &p0,const cv::Point2f &p
     x[1] = b;
     x[2] = b+a;
     y[2] = calcSignedDistance(-p12,p2,p0);
-    cv::Mat dst;
-    polyfit(cv::Mat(x),cv::Mat(y),dst,2);
+    ncvslideio::Mat dst;
+    polyfit(ncvslideio::Mat(x),ncvslideio::Mat(y),dst,2);
     double d = dst.at<double>(0)-dst.at<double>(1)*c+dst.at<double>(2)*c*c;
-    cv::Vec3f v1(p12.x,p12.y,0);
-    cv::Vec3f v2(0,0,1);
-    cv::Vec3f v3 = v1.cross(v2);
-    cv::Point2f n2(v3[0],v3[1]);
+    ncvslideio::Vec3f v1(p12.x,p12.y,0);
+    ncvslideio::Vec3f v2(0,0,1);
+    ncvslideio::Vec3f v3 = v1.cross(v2);
+    ncvslideio::Point2f n2(v3[0],v3[1]);
     p3 += d*n2;
     return true;
 }
 
-bool Chessboard::Board::estimatePoint(const cv::Point2f &p0,const cv::Point2f &p1,const cv::Point2f &p2, const cv::Point2f &p3, cv::Point2f &p4)
+bool Chessboard::Board::estimatePoint(const ncvslideio::Point2f &p0,const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2, const ncvslideio::Point2f &p3, ncvslideio::Point2f &p4)
 {
     // use 1D homography to find fith point minimizing square error
     if(p0 == p1 || p0 == p2 || p0 == p3 || p1 == p2 || p1 == p3 || p2 == p3 )
         return false;
-    static const cv::Mat src = (cv::Mat_<double>(1,4) << 0,10,20,30);
-    cv::Point2f p01 = p1-p0;
-    cv::Point2f p02 = p2-p0;
-    cv::Point2f p03 = p3-p0;
-    float a = float(cv::norm(p01));
-    float b = float(cv::norm(p02));
-    float c = float(cv::norm(p03));
-    cv::Mat dst = (cv::Mat_<double>(1,4) << 0,a,b,c);
-    cv::Mat h = findHomography1D(src,dst);
+    static const ncvslideio::Mat src = (ncvslideio::Mat_<double>(1,4) << 0,10,20,30);
+    ncvslideio::Point2f p01 = p1-p0;
+    ncvslideio::Point2f p02 = p2-p0;
+    ncvslideio::Point2f p03 = p3-p0;
+    float a = float(ncvslideio::norm(p01));
+    float b = float(ncvslideio::norm(p02));
+    float c = float(ncvslideio::norm(p03));
+    ncvslideio::Mat dst = (ncvslideio::Mat_<double>(1,4) << 0,a,b,c);
+    ncvslideio::Mat h = findHomography1D(src,dst);
     float d = float((h.at<double>(0,0)*40+h.at<double>(0,1))/(h.at<double>(1,0)*40+h.at<double>(1,1)));
-    cv::Point2f p12 = p2-p1;
-    cv::Point2f p23 = p3-p2;
+    ncvslideio::Point2f p12 = p2-p1;
+    ncvslideio::Point2f p23 = p3-p2;
     p01 = p01/a;
-    p12 = p12/cv::norm(p12);
-    p23 = p23/cv::norm(p23);
+    p12 = p12/ncvslideio::norm(p12);
+    p23 = p23/ncvslideio::norm(p23);
     p4 = p3+(d-c)*p23;
 
     // compensate radial distortion by fitting polynom
@@ -2028,21 +2028,21 @@ bool Chessboard::Board::estimatePoint(const cv::Point2f &p0,const cv::Point2f &p
     x[3] = c;
     y[2] = calcSignedDistance(-p23,p3,p1);
     y[3] = calcSignedDistance(-p23,p3,p0);
-    polyfit(cv::Mat(x),cv::Mat(y),dst,2);
+    polyfit(ncvslideio::Mat(x),ncvslideio::Mat(y),dst,2);
     d = d-c;
     double e = dst.at<double>(0)-dst.at<double>(1)*fabs(d)+dst.at<double>(2)*d*d;
-    cv::Vec3f v1(p23.x,p23.y,0);
-    cv::Vec3f v2(0,0,1);
-    cv::Vec3f v3 = v1.cross(v2);
-    cv::Point2f n2(v3[0],v3[1]);
+    ncvslideio::Vec3f v1(p23.x,p23.y,0);
+    ncvslideio::Vec3f v2(0,0,1);
+    ncvslideio::Vec3f v3 = v1.cross(v2);
+    ncvslideio::Point2f n2(v3[0],v3[1]);
     p4 += e*n2;
     return true;
 }
 
 // H is describing the transformation from dummy to reality
-Ellipse Chessboard::Board::estimateSearchArea(cv::Mat _H,int row, int col,float p,int field_size)
+Ellipse Chessboard::Board::estimateSearchArea(ncvslideio::Mat _H,int row, int col,float p,int field_size)
 {
-    cv::Matx31d point1,point2,center;
+    ncvslideio::Matx31d point1,point2,center;
     center(0) = (1+col)*field_size;
     center(1) = (1+row)*field_size;
     center(2) = 1.0;
@@ -2053,26 +2053,26 @@ Ellipse Chessboard::Board::estimateSearchArea(cv::Mat _H,int row, int col,float 
     point2(1) = center(1)-p*field_size;
     point2(2) = center(2);
 
-    cv::Matx33d H(_H);
+    ncvslideio::Matx33d H(_H);
     point1 = H*point1;
     point2 = H*point2;
     center = H*center;
-    cv::Point2f pt(float(center(0)/center(2)),float(center(1)/center(2)));
-    cv::Point2f pt1(float(point1(0)/point1(2)),float(point1(1)/point1(2)));
-    cv::Point2f pt2(float(point2(0)/point2(2)),float(point2(1)/point2(2)));
+    ncvslideio::Point2f pt(float(center(0)/center(2)),float(center(1)/center(2)));
+    ncvslideio::Point2f pt1(float(point1(0)/point1(2)),float(point1(1)/point1(2)));
+    ncvslideio::Point2f pt2(float(point2(0)/point2(2)),float(point2(1)/point2(2)));
 
-    cv::Point2f p01(pt1-pt);
-    cv::Point2f p02(pt2-pt);
-    float norm1 = float(cv::norm(p01));
-    float norm2 = float(cv::norm(p02));
+    ncvslideio::Point2f p01(pt1-pt);
+    ncvslideio::Point2f p02(pt2-pt);
+    float norm1 = float(ncvslideio::norm(p01));
+    float norm2 = float(ncvslideio::norm(p02));
     float angle = float(acos(p01.dot(p02)/norm1/norm2));
-    cv::Size2f axes(norm1,norm2);
+    ncvslideio::Size2f axes(norm1,norm2);
     return Ellipse(pt,axes,angle);
 }
 
-bool Chessboard::Board::estimateSearchArea(const cv::Point2f &p1,const cv::Point2f &p2,const cv::Point2f &p3,float p,Ellipse &ellipse,const cv::Point2f *p0)
+bool Chessboard::Board::estimateSearchArea(const ncvslideio::Point2f &p1,const ncvslideio::Point2f &p2,const ncvslideio::Point2f &p3,float p,Ellipse &ellipse,const ncvslideio::Point2f *p0)
 {
-    cv::Point2f p4,n;
+    ncvslideio::Point2f p4,n;
     if(p0)
     {
         // use 1D homography
@@ -2087,19 +2087,19 @@ bool Chessboard::Board::estimateSearchArea(const cv::Point2f &p1,const cv::Point
             return false;
         n = p4-p1;
     }
-    float norm = float(cv::norm(n));
+    float norm = float(ncvslideio::norm(n));
     n = n/norm;
     float angle = acos(n.x);
     if(n.y > 0)
         angle = float(2.0F*CV_PI-angle);
     n = p4-p3;
-    norm = float(cv::norm(n));
+    norm = float(ncvslideio::norm(n));
     double delta = std::max(3.0F,p*norm);
-    ellipse = Ellipse(p4,cv::Size(int(delta),int(std::max(2.0,delta*ELLIPSE_WIDTH))),angle);
+    ellipse = Ellipse(p4,ncvslideio::Size(int(delta),int(std::max(2.0,delta*ELLIPSE_WIDTH))),angle);
     return true;
 }
 
-bool Chessboard::Board::checkRowColumn(const std::vector<cv::Point2f> &points)
+bool Chessboard::Board::checkRowColumn(const std::vector<ncvslideio::Point2f> &points)
 {
     if(points.size() < 4)
     {
@@ -2108,17 +2108,17 @@ bool Chessboard::Board::checkRowColumn(const std::vector<cv::Point2f> &points)
         else
             return false;
     }
-    std::vector<cv::Point2f>::const_iterator iter = points.begin();
-    std::vector<cv::Point2f>::const_iterator iter2 = iter+1;
-    std::vector<cv::Point2f>::const_iterator iter3 = iter2+1;
-    std::vector<cv::Point2f>::const_iterator iter4 = iter3+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin();
+    std::vector<ncvslideio::Point2f>::const_iterator iter2 = iter+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter3 = iter2+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter4 = iter3+1;
     Ellipse ellipse;
     if(!estimateSearchArea(*iter4,*iter3,*iter2,CORNERS_SEARCH*3,ellipse))
         return false;
     if(!ellipse.contains(*iter))
         return false;
 
-    std::vector<cv::Point2f>::const_iterator iter5 = iter4+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter5 = iter4+1;
     for(;iter5 != points.end();++iter5)
     {
         if(!estimateSearchArea(*iter2,*iter3,*iter4,CORNERS_SEARCH,ellipse,&(*iter)))
@@ -2133,7 +2133,7 @@ bool Chessboard::Board::checkRowColumn(const std::vector<cv::Point2f> &points)
     return true;
 }
 
-cv::Point2f &Chessboard::Board::getCorner(int _row,int _col)
+ncvslideio::Point2f &Chessboard::Board::getCorner(int _row,int _col)
 {
     int _rows = int(rowCount());
     int _cols = int(colCount());
@@ -2185,9 +2185,9 @@ bool Chessboard::Board::hasCellMarker(int row,int col)
     return getCell(row,col)->marker;
 }
 
-int Chessboard::Board::detectMarkers(cv::InputArray image)
+int Chessboard::Board::detectMarkers(ncvslideio::InputArray image)
 {
-    cv::Mat img = image.getMat();
+    ncvslideio::Mat img = image.getMat();
     CV_CheckTypeEQ(img.type(), CV_8UC1, "Unsupported source type");
     if(img.empty())
         CV_Error(Error::StsBadArg,"image is empty");
@@ -2195,31 +2195,31 @@ int Chessboard::Board::detectMarkers(cv::InputArray image)
         CV_Error(Error::StsBadArg,"board is is empty");
 
     // get undistorted board
-    cv::Mat board_image = warpImage(image);
+    ncvslideio::Mat board_image = warpImage(image);
 
-    cv::Mat mask = cv::Mat::zeros(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE,CV_8UC1);
-    cv::circle(mask,cv::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/7,cv::Scalar::all(255),-1);
-    int signal_size = cv::countNonZero(mask);
+    ncvslideio::Mat mask = ncvslideio::Mat::zeros(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE,CV_8UC1);
+    ncvslideio::circle(mask,ncvslideio::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/7,ncvslideio::Scalar::all(255),-1);
+    int signal_size = ncvslideio::countNonZero(mask);
     CV_Assert(signal_size > 0);
 
-    cv::Mat mask2 = cv::Mat::zeros(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE,CV_8UC1);
-    cv::circle(mask2,cv::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/2,cv::Scalar::all(255),-1);
-    cv::circle(mask2,cv::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/5,cv::Scalar::all(0),-1);
-    int noise_size = cv::countNonZero(mask2);
+    ncvslideio::Mat mask2 = ncvslideio::Mat::zeros(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE,CV_8UC1);
+    ncvslideio::circle(mask2,ncvslideio::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/2,ncvslideio::Scalar::all(255),-1);
+    ncvslideio::circle(mask2,ncvslideio::Point(DUMMY_FIELD_SIZE/2,DUMMY_FIELD_SIZE/2),DUMMY_FIELD_SIZE/5,ncvslideio::Scalar::all(0),-1);
+    int noise_size = ncvslideio::countNonZero(mask2);
     CV_Assert(noise_size > 0);
 
-    std::vector<cv::Point2f> dst,src;
-    dst.push_back(cv::Point2f(0.0F,0.0F));
-    dst.push_back(cv::Point2f(float(DUMMY_FIELD_SIZE),0.0F));
-    dst.push_back(cv::Point2f(float(DUMMY_FIELD_SIZE),float(DUMMY_FIELD_SIZE)));
-    dst.push_back(cv::Point2f(0.0F,float(DUMMY_FIELD_SIZE)));
+    std::vector<ncvslideio::Point2f> dst,src;
+    dst.push_back(ncvslideio::Point2f(0.0F,0.0F));
+    dst.push_back(ncvslideio::Point2f(float(DUMMY_FIELD_SIZE),0.0F));
+    dst.push_back(ncvslideio::Point2f(float(DUMMY_FIELD_SIZE),float(DUMMY_FIELD_SIZE)));
+    dst.push_back(ncvslideio::Point2f(0.0F,float(DUMMY_FIELD_SIZE)));
     src.resize(4);
 
     // check each field
     int icols = int(colCount()-1);
     int irows = int(rowCount()-1);
     int count = 0;
-    cv::Mat temp;
+    ncvslideio::Mat temp;
     for(int y=1;y<irows;++y)
     {
         for(int x=1;x<icols;++x)
@@ -2232,15 +2232,15 @@ int Chessboard::Board::detectMarkers(cv::InputArray image)
             src[1] = *cell->top_right;
             src[2] = *cell->bottom_right;
             src[3] = *cell->bottom_left;
-            cv::Mat H = cv::findHomography(src,dst,cv::LMEDS);
-            cv::Mat field;
-            cv::warpPerspective(image,field,H,cv::Size(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE));
+            ncvslideio::Mat H = ncvslideio::findHomography(src,dst,ncvslideio::LMEDS);
+            ncvslideio::Mat field;
+            ncvslideio::warpPerspective(image,field,H,ncvslideio::Size(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE));
 
             // calc signal and noise value
-            cv::bitwise_and(field,mask,temp);
-            double signal = cv::sum(temp)[0]/signal_size;
-            cv::bitwise_and(field,mask2,temp);
-            double noise= cv::sum(temp)[0]/noise_size;
+            ncvslideio::bitwise_and(field,mask,temp);
+            double signal = ncvslideio::sum(temp)[0]/signal_size;
+            ncvslideio::bitwise_and(field,mask2,temp);
+            double noise= ncvslideio::sum(temp)[0]/noise_size;
 
             // calc refrence value
             Cell *cell2 = getCell(y,abs(x-1));
@@ -2248,10 +2248,10 @@ int Chessboard::Board::detectMarkers(cv::InputArray image)
             src[1] = *cell2->top_right;
             src[2] = *cell2->bottom_right;
             src[3] = *cell2->bottom_left;
-            H = cv::findHomography(src,dst,cv::LMEDS);
-            cv::warpPerspective(image,field,H,cv::Size(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE));
-            cv::bitwise_and(field,mask2,temp);
-            double reference = cv::sum(temp)[0]/noise_size;
+            H = ncvslideio::findHomography(src,dst,ncvslideio::LMEDS);
+            ncvslideio::warpPerspective(image,field,H,ncvslideio::Size(DUMMY_FIELD_SIZE,DUMMY_FIELD_SIZE));
+            ncvslideio::bitwise_and(field,mask2,temp);
+            double reference = ncvslideio::sum(temp)[0]/noise_size;
             // check if marker is present
             if(cell->black)
                 cell->marker = signal-noise > (reference-noise)*0.5;
@@ -2302,9 +2302,9 @@ size_t Chessboard::Board::rowCount()const
     return rows;
 }
 
-cv::Size Chessboard::Board::getSize()const
+ncvslideio::Size Chessboard::Board::getSize()const
 {
-    return cv::Size(int(colCount()),int(rowCount()));
+    return ncvslideio::Size(int(colCount()),int(rowCount()));
 }
 
 void Chessboard::Board::drawEllipses(const std::vector<Ellipse> &ellipses)
@@ -2314,13 +2314,13 @@ void Chessboard::Board::drawEllipses(const std::vector<Ellipse> &ellipses)
     if(ellipses.empty())
         return;     //avoid compiler warning
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
-    cv::Mat img;
+    ncvslideio::Mat img;
     draw(debug_image,img);
     std::vector<Ellipse>::const_iterator iter = ellipses.begin();
     for(;iter != ellipses.end();++iter)
         iter->draw(img);
-    cv::imshow("chessboard",img);
-    cv::waitKey(-1);
+    ncvslideio::imshow("chessboard",img);
+    ncvslideio::waitKey(-1);
 #endif
 }
 
@@ -2419,16 +2419,16 @@ void Chessboard::Board::growLeft()
     if(isEmpty())
         CV_Error(Error::StsInternal,"Board is empty");
     PointIter iter(top_left,TOP_LEFT);
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.right();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.right();
-        cv::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p2 = *iter2;
         if(iter2.right())
             estimatePoint(**iter2,*p2,*p1,*p0,pt);
         else
@@ -2439,7 +2439,7 @@ void Chessboard::Board::growLeft()
     addColumnLeft(points);
 }
 
-bool Chessboard::Board::growLeft(const cv::Mat &map,cv::flann::Index &flann_index)
+bool Chessboard::Board::growLeft(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index)
 {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
     std::vector<Ellipse> ellipses;
@@ -2447,19 +2447,19 @@ bool Chessboard::Board::growLeft(const cv::Mat &map,cv::flann::Index &flann_inde
     if(isEmpty())
         CV_Error(Error::StsInternal,"growLeft: Board is empty");
     PointIter iter(top_left,TOP_LEFT);
-    std::vector<cv::Point2f> points;
+    std::vector<ncvslideio::Point2f> points;
     int count = 0;
     Ellipse ellipse;
-    cv::Point2f pt;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.right();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.right();
-        cv::Point2f *p2 = *iter2;
-        cv::Point2f *p3 = NULL;
+        ncvslideio::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p3 = NULL;
         if(iter2.right())
             p3 = *iter2;
         if(!estimateSearchArea(*p2,*p1,*p0,CORNERS_SEARCH,ellipse,p3))
@@ -2507,16 +2507,16 @@ void Chessboard::Board::growTop()
     if(isEmpty())
         CV_Error(Error::StsInternal,"Board is empty");
     PointIter iter(top_left,TOP_LEFT);
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.bottom();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.bottom();
-        cv::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p2 = *iter2;
         if(iter2.bottom())
             estimatePoint(**iter2,*p2,*p1,*p0,pt);
         else
@@ -2527,7 +2527,7 @@ void Chessboard::Board::growTop()
     addRowTop(points);
 }
 
-bool Chessboard::Board::growTop(const cv::Mat &map,cv::flann::Index &flann_index)
+bool Chessboard::Board::growTop(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index)
 {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
     std::vector<Ellipse> ellipses;
@@ -2536,19 +2536,19 @@ bool Chessboard::Board::growTop(const cv::Mat &map,cv::flann::Index &flann_index
         CV_Error(Error::StsInternal,"Board is empty");
 
     PointIter iter(top_left,TOP_LEFT);
-    std::vector<cv::Point2f> points;
+    std::vector<ncvslideio::Point2f> points;
     int count = 0;
     Ellipse ellipse;
-    cv::Point2f pt;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.bottom();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.bottom();
-        cv::Point2f *p2 = *iter2;
-        cv::Point2f *p3 = NULL;
+        ncvslideio::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p3 = NULL;
         if(iter2.bottom())
             p3 = *iter2;
         if(!estimateSearchArea(*p2,*p1,*p0,CORNERS_SEARCH,ellipse,p3))
@@ -2595,16 +2595,16 @@ void Chessboard::Board::growRight()
         CV_Error(Error::StsInternal,"Board is empty");
     PointIter iter(top_left,TOP_RIGHT);
     while(iter.right());
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.left();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.left();
-        cv::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p2 = *iter2;
         if(iter2.left())
             estimatePoint(**iter2,*p2,*p1,*p0,pt);
         else
@@ -2615,7 +2615,7 @@ void Chessboard::Board::growRight()
     addColumnRight(points);
 }
 
-bool Chessboard::Board::growRight(const cv::Mat &map,cv::flann::Index &flann_index)
+bool Chessboard::Board::growRight(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index)
 {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
     std::vector<Ellipse> ellipses;
@@ -2625,19 +2625,19 @@ bool Chessboard::Board::growRight(const cv::Mat &map,cv::flann::Index &flann_ind
 
     PointIter iter(top_left,TOP_RIGHT);
     while(iter.right());
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     Ellipse ellipse;
     int count = 0;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.left();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.left();
-        cv::Point2f *p2 = *iter2;
-        cv::Point2f *p3 = NULL;
+        ncvslideio::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p3 = NULL;
         if(iter2.left())
             p3 = *iter2;
         if(!estimateSearchArea(*p2,*p1,*p0,CORNERS_SEARCH,ellipse,p3))
@@ -2685,16 +2685,16 @@ void Chessboard::Board::growBottom()
 
     PointIter iter(top_left,BOTTOM_LEFT);
     while(iter.bottom());
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.top();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.top();
-        cv::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p2 = *iter2;
         if(iter2.top())
             estimatePoint(**iter2,*p2,*p1,*p0,pt);
         else
@@ -2705,7 +2705,7 @@ void Chessboard::Board::growBottom()
     addRowBottom(points);
 }
 
-bool Chessboard::Board::growBottom(const cv::Mat &map,cv::flann::Index &flann_index)
+bool Chessboard::Board::growBottom(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index)
 {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
     std::vector<Ellipse> ellipses;
@@ -2715,19 +2715,19 @@ bool Chessboard::Board::growBottom(const cv::Mat &map,cv::flann::Index &flann_in
 
     PointIter iter(top_left,BOTTOM_LEFT);
     while(iter.bottom());
-    std::vector<cv::Point2f> points;
-    cv::Point2f pt;
+    std::vector<ncvslideio::Point2f> points;
+    ncvslideio::Point2f pt;
     Ellipse ellipse;
     int count = 0;
     do
     {
         PointIter iter2(iter);
-        cv::Point2f *p0 = *iter2;
+        ncvslideio::Point2f *p0 = *iter2;
         iter2.top();
-        cv::Point2f *p1 = *iter2;
+        ncvslideio::Point2f *p1 = *iter2;
         iter2.top();
-        cv::Point2f *p2 = *iter2;
-        cv::Point2f *p3 = NULL;
+        ncvslideio::Point2f *p2 = *iter2;
+        ncvslideio::Point2f *p3 = NULL;
         if(iter2.top())
             p3 = *iter2;
         if(!estimateSearchArea(*p2,*p1,*p0,CORNERS_SEARCH,ellipse,p3))
@@ -2768,7 +2768,7 @@ bool Chessboard::Board::growBottom(const cv::Mat &map,cv::flann::Index &flann_in
     return true;
 }
 
-void Chessboard::Board::addColumnLeft(const std::vector<cv::Point2f> &points)
+void Chessboard::Board::addColumnLeft(const std::vector<ncvslideio::Point2f> &points)
 {
     if(points.empty() || points.size() != rowCount())
         CV_Error(Error::StsBadArg,"wrong number of points");
@@ -2777,10 +2777,10 @@ void Chessboard::Board::addColumnLeft(const std::vector<cv::Point2f> &points)
     cells.resize(offset+points.size()-1);
     for(int i = offset;i < (int) cells.size();++i)
         cells[i] = new Cell();
-    corners.push_back(new cv::Point2f(points.front()));
+    corners.push_back(new ncvslideio::Point2f(points.front()));
 
     Cell *cell = top_left;
-    std::vector<cv::Point2f>::const_iterator iter = points.begin()+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin()+1;
     for(int pos=offset;iter != points.end();++iter,cell = cell->bottom,++pos)
     {
         cell->left = cells[pos];
@@ -2791,7 +2791,7 @@ void Chessboard::Board::addColumnLeft(const std::vector<cv::Point2f> &points)
         if(pos +1 < (int)cells.size())
             cells[pos]->bottom= cells[pos+1];
         cells[pos]->top_left = corners.back();
-        corners.push_back(new cv::Point2f(*iter));
+        corners.push_back(new ncvslideio::Point2f(*iter));
         cells[pos]->bottom_left = corners.back();
         cells[pos]->top_right=cell->top_left;
         cells[pos]->bottom_right=cell->bottom_left;
@@ -2800,7 +2800,7 @@ void Chessboard::Board::addColumnLeft(const std::vector<cv::Point2f> &points)
     ++cols;
 }
 
-void Chessboard::Board::addRowTop(const std::vector<cv::Point2f> &points)
+void Chessboard::Board::addRowTop(const std::vector<ncvslideio::Point2f> &points)
 {
     if(points.empty() || points.size() != colCount())
         CV_Error(Error::StsBadArg,"wrong number of points");
@@ -2809,10 +2809,10 @@ void Chessboard::Board::addRowTop(const std::vector<cv::Point2f> &points)
     cells.resize(offset+points.size()-1);
     for(int i = offset;i < (int) cells.size();++i)
         cells[i] = new Cell();
-    corners.push_back(new cv::Point2f(points.front()));
+    corners.push_back(new ncvslideio::Point2f(points.front()));
 
     Cell *cell = top_left;
-    std::vector<cv::Point2f>::const_iterator iter = points.begin()+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin()+1;
     for(int pos=offset;iter != points.end();++iter,cell = cell->right,++pos)
     {
         cell->top = cells[pos];
@@ -2824,7 +2824,7 @@ void Chessboard::Board::addRowTop(const std::vector<cv::Point2f> &points)
             cells[pos]->right= cells[pos+1];
 
         cells[pos]->top_left = corners.back();
-        corners.push_back(new cv::Point2f(*iter));
+        corners.push_back(new ncvslideio::Point2f(*iter));
         cells[pos]->top_right = corners.back();
         cells[pos]->bottom_left = cell->top_left;
         cells[pos]->bottom_right = cell->top_right;
@@ -2833,7 +2833,7 @@ void Chessboard::Board::addRowTop(const std::vector<cv::Point2f> &points)
     ++rows;
 }
 
-void Chessboard::Board::addColumnRight(const std::vector<cv::Point2f> &points)
+void Chessboard::Board::addColumnRight(const std::vector<ncvslideio::Point2f> &points)
 {
     if(points.empty() || points.size() != rowCount())
         CV_Error(Error::StsBadArg,"wrong number of points");
@@ -2842,11 +2842,11 @@ void Chessboard::Board::addColumnRight(const std::vector<cv::Point2f> &points)
     cells.resize(offset+points.size()-1);
     for(int i = offset;i < (int) cells.size();++i)
         cells[i] = new Cell();
-    corners.push_back(new cv::Point2f(points.front()));
+    corners.push_back(new ncvslideio::Point2f(points.front()));
 
     Cell *cell = top_left;
     for(;cell->right;cell = cell->right);
-    std::vector<cv::Point2f>::const_iterator iter = points.begin()+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin()+1;
     for(int pos=offset;iter != points.end();++iter,cell = cell->bottom,++pos)
     {
         cell->right = cells[pos];
@@ -2858,7 +2858,7 @@ void Chessboard::Board::addColumnRight(const std::vector<cv::Point2f> &points)
             cells[pos]->bottom= cells[pos+1];
 
         cells[pos]->top_right = corners.back();
-        corners.push_back(new cv::Point2f(*iter));
+        corners.push_back(new ncvslideio::Point2f(*iter));
         cells[pos]->bottom_right = corners.back();
         cells[pos]->top_left =cell->top_right;
         cells[pos]->bottom_left =cell->bottom_right;
@@ -2866,7 +2866,7 @@ void Chessboard::Board::addColumnRight(const std::vector<cv::Point2f> &points)
     ++cols;
 }
 
-void Chessboard::Board::addRowBottom(const std::vector<cv::Point2f> &points)
+void Chessboard::Board::addRowBottom(const std::vector<ncvslideio::Point2f> &points)
 {
     if(points.empty() || points.size() != colCount())
         CV_Error(Error::StsBadArg,"wrong number of points");
@@ -2875,11 +2875,11 @@ void Chessboard::Board::addRowBottom(const std::vector<cv::Point2f> &points)
     cells.resize(offset+points.size()-1);
     for(int i = offset;i < (int) cells.size();++i)
         cells[i] = new Cell();
-    corners.push_back(new cv::Point2f(points.front()));
+    corners.push_back(new ncvslideio::Point2f(points.front()));
 
     Cell *cell = top_left;
     for(;cell->bottom;cell = cell->bottom);
-    std::vector<cv::Point2f>::const_iterator iter = points.begin()+1;
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin()+1;
     for(int pos=offset;iter != points.end();++iter,cell = cell->right,++pos)
     {
         cell->bottom = cells[pos];
@@ -2891,7 +2891,7 @@ void Chessboard::Board::addRowBottom(const std::vector<cv::Point2f> &points)
             cells[pos]->right= cells[pos+1];
 
         cells[pos]->bottom_left = corners.back();
-        corners.push_back(new cv::Point2f(*iter));
+        corners.push_back(new ncvslideio::Point2f(*iter));
         cells[pos]->bottom_right = corners.back();
         cells[pos]->top_left = cell->bottom_left;
         cells[pos]->top_right = cell->bottom_right;
@@ -2901,11 +2901,11 @@ void Chessboard::Board::addRowBottom(const std::vector<cv::Point2f> &points)
 
 bool Chessboard::Board::checkUnique()const
 {
-    std::vector<cv::Point2f> points = getCorners(false);
-    std::vector<cv::Point2f>::const_iterator iter = points.begin();
+    std::vector<ncvslideio::Point2f> points = getCorners(false);
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin();
     for(;iter != points.end();++iter)
     {
-        std::vector<cv::Point2f>::const_iterator iter2 = iter+1;
+        std::vector<ncvslideio::Point2f>::const_iterator iter2 = iter+1;
         for(;iter2 != points.end();++iter2)
         {
             if(*iter == *iter2)
@@ -2915,7 +2915,7 @@ bool Chessboard::Board::checkUnique()const
     return true;
 }
 
-int Chessboard::Board::validateCorners(const cv::Mat &data,cv::flann::Index &flann_index,const cv::Mat &h,float min_response)
+int Chessboard::Board::validateCorners(const ncvslideio::Mat &data,ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &h,float min_response)
 {
     // TODO check input
     if(isEmpty() || h.empty())
@@ -2923,7 +2923,7 @@ int Chessboard::Board::validateCorners(const cv::Mat &data,cv::flann::Index &fla
     int count = 0; int icol = 0;
     // first row
     PointIter iter(top_left,TOP_LEFT);
-    cv::Point2f point;
+    ncvslideio::Point2f point;
     do
     {
         if((*iter)->x == (*iter)->x)
@@ -2968,12 +2968,12 @@ int Chessboard::Board::validateCorners(const cv::Mat &data,cv::flann::Index &fla
     }while(row);
 
     // check that there are no points with the same coordinate
-    std::vector<cv::Point2f> points = getCorners(false);
-    std::vector<cv::Point2f>::const_iterator iter1 = points.begin();
+    std::vector<ncvslideio::Point2f> points = getCorners(false);
+    std::vector<ncvslideio::Point2f>::const_iterator iter1 = points.begin();
     for(;iter1 != points.end();++iter1)
     {
         // we do not have to check for NaN because of getCorners(false)
-        std::vector<cv::Point2f>::const_iterator iter2 = iter1+1;
+        std::vector<ncvslideio::Point2f>::const_iterator iter2 = iter1+1;
         for(;iter2 != points.end();++iter2)
             if(*iter1 == *iter2)
                 return -1;  // one corner is there twice -> not valid configuration
@@ -2983,19 +2983,19 @@ int Chessboard::Board::validateCorners(const cv::Mat &data,cv::flann::Index &fla
 
 bool Chessboard::Board::validateContour()const
 {
-    std::vector<cv::Point2f> contour = getContour();
+    std::vector<ncvslideio::Point2f> contour = getContour();
     if(contour.size() != 4)
     {
         return false;
     }
-    cv::Point2f n1 = contour[1]-contour[0];
-    cv::Point2f n2 = contour[2]-contour[1];
-    cv::Point2f n3 = contour[3]-contour[2];
-    cv::Point2f n4 = contour[0]-contour[3];
-    n1 = n1/cv::norm(n1);
-    n2 = n2/cv::norm(n2);
-    n3 = n3/cv::norm(n3);
-    n4 = n4/cv::norm(n4);
+    ncvslideio::Point2f n1 = contour[1]-contour[0];
+    ncvslideio::Point2f n2 = contour[2]-contour[1];
+    ncvslideio::Point2f n3 = contour[3]-contour[2];
+    ncvslideio::Point2f n4 = contour[0]-contour[3];
+    n1 = n1/ncvslideio::norm(n1);
+    n2 = n2/ncvslideio::norm(n2);
+    n3 = n3/ncvslideio::norm(n3);
+    n4 = n4/ncvslideio::norm(n4);
     // a > b => cos(a) < cos(b)
     if(fabs(n1.dot(n2)) > MIN_COS_ANGLE||
             fabs(n2.dot(n3)) > MIN_COS_ANGLE||
@@ -3005,9 +3005,9 @@ bool Chessboard::Board::validateContour()const
     return true;
 }
 
-std::vector<cv::Point2f> Chessboard::Board::getContour()const
+std::vector<ncvslideio::Point2f> Chessboard::Board::getContour()const
 {
-    std::vector<cv::Point2f> points;
+    std::vector<ncvslideio::Point2f> points;
     if(isEmpty())
         return points;
 
@@ -3031,7 +3031,7 @@ std::vector<cv::Point2f> Chessboard::Board::getContour()const
         return points;
 
     // trace contour
-    const cv::Point2f *start_pt = *iter;
+    const ncvslideio::Point2f *start_pt = *iter;
     int mode = 2; int last = -1;
     do
     {
@@ -3086,26 +3086,26 @@ std::vector<cv::Point2f> Chessboard::Board::getContour()const
     return points;
 }
 
-void Chessboard::Board::maskImage(cv::InputOutputArray img,const cv::Scalar &color)const
+void Chessboard::Board::maskImage(ncvslideio::InputOutputArray img,const ncvslideio::Scalar &color)const
 {
     Chessboard::Board temp(*this);
     temp.growLeft();
     temp.growRight();
     temp.growTop();
     temp.growBottom();
-    cv::Mat contour;
-    cv::Mat(temp.getContour()).convertTo(contour,CV_32S);
-    std::vector<cv::Mat> contours;
+    ncvslideio::Mat contour;
+    ncvslideio::Mat(temp.getContour()).convertTo(contour,CV_32S);
+    std::vector<ncvslideio::Mat> contours;
     contours.push_back(contour);
-    cv::drawContours(img,contours,0,color,-1);
+    ncvslideio::drawContours(img,contours,0,color,-1);
 }
 
-cv::Mat Chessboard::Board::estimateHomography(cv::Rect rect,int field_size)const
+ncvslideio::Mat Chessboard::Board::estimateHomography(ncvslideio::Rect rect,int field_size)const
 {
     int _rows = int(rowCount());
     int _cols = int(colCount());
     if(_rows < 3  || _cols < 3)
-        return cv::Mat();
+        return ncvslideio::Mat();
     if(rect.width <= 0)
         rect.width= _cols;
     if(rect.height <= 0)
@@ -3113,55 +3113,55 @@ cv::Mat Chessboard::Board::estimateHomography(cv::Rect rect,int field_size)const
 
     int col_end = std::min(rect.x+rect.width,_cols);
     int row_end = std::min(rect.y+rect.height,_rows);
-    std::vector<cv::Point2f> points = getCorners(true);
+    std::vector<ncvslideio::Point2f> points = getCorners(true);
 
     // build src and dst
-    std::vector<cv::Point2f> src,dst;
+    std::vector<ncvslideio::Point2f> src,dst;
     for(int row =rect.y;row < row_end;++row)
     {
         for(int col=rect.x;col <col_end;++col)
         {
-            const cv::Point2f &pt = points[row*_rows+col];
+            const ncvslideio::Point2f &pt = points[row*_rows+col];
             if(pt.x != pt.x)    // NaN check
                 continue;
-            src.push_back(cv::Point2f(float(field_size)*(col+1),float(field_size)*(row+1)));
+            src.push_back(ncvslideio::Point2f(float(field_size)*(col+1),float(field_size)*(row+1)));
             dst.push_back(pt);
         }
     }
     if(dst.size() < 4)
-        return cv::Mat();
-    return cv::findHomography(src, dst,cv::LMEDS);
+        return ncvslideio::Mat();
+    return ncvslideio::findHomography(src, dst,ncvslideio::LMEDS);
 }
 
-cv::Mat Chessboard::Board::estimateHomography(int field_size)const
+ncvslideio::Mat Chessboard::Board::estimateHomography(int field_size)const
 {
     int _rows = int(rowCount());
     int _cols = int(colCount());
     if(_rows < 3  || _cols < 3)
-        return cv::Mat();
-    std::vector<cv::Point2f> src,dst;
-    std::vector<cv::Point2f> points = getCorners(true);
-    std::vector<cv::Point2f>::const_iterator iter = points.begin();
+        return ncvslideio::Mat();
+    std::vector<ncvslideio::Point2f> src,dst;
+    std::vector<ncvslideio::Point2f> points = getCorners(true);
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin();
     for(int row =0;row < _rows;++row)
     {
         for(int col=0;col <_cols;++col,++iter)
         {
-            const cv::Point2f &pt = *iter;
+            const ncvslideio::Point2f &pt = *iter;
             if(pt.x == pt.x)
             {
-                src.push_back(cv::Point2f(float(field_size)*(col+1),float(field_size)*(row+1)));
+                src.push_back(ncvslideio::Point2f(float(field_size)*(col+1),float(field_size)*(row+1)));
                 dst.push_back(pt);
             }
         }
     }
     if(dst.size() < 4)
-        return cv::Mat();
-    return cv::findHomography(src, dst);
+        return ncvslideio::Mat();
+    return ncvslideio::findHomography(src, dst);
 }
 
-bool Chessboard::Board::findNextPoint(cv::flann::Index &index,const cv::Mat &data,
-        const cv::Point2f &pt1,const cv::Point2f &pt2, const cv::Point2f &pt3,
-        float white_angle,float black_angle,float min_response,cv::Point2f &point)
+bool Chessboard::Board::findNextPoint(ncvslideio::flann::Index &index,const ncvslideio::Mat &data,
+        const ncvslideio::Point2f &pt1,const ncvslideio::Point2f &pt2, const ncvslideio::Point2f &pt3,
+        float white_angle,float black_angle,float min_response,ncvslideio::Point2f &point)
 {
     Ellipse ellipse;
     if(!estimateSearchArea(pt1,pt2,pt3,0.4F,ellipse))
@@ -3171,7 +3171,7 @@ bool Chessboard::Board::findNextPoint(cv::flann::Index &index,const cv::Mat &dat
     return true;
 }
 
-int Chessboard::Board::grow(const cv::Mat &map,cv::flann::Index &flann_index)
+int Chessboard::Board::grow(const ncvslideio::Mat &map,ncvslideio::flann::Index &flann_index)
 {
     if(isEmpty())
         CV_Error(Error::StsInternal,"Board is empty");
@@ -3227,8 +3227,8 @@ int Chessboard::Board::grow(const cv::Mat &map,cv::flann::Index &flann_index)
 std::map<int,int> Chessboard::Board::getMapping()const
 {
     std::map<int,int> map;
-    std::vector<cv::Point2f> points = getCorners();
-    std::vector<cv::Point2f>::iterator iter = points.begin();
+    std::vector<ncvslideio::Point2f> points = getCorners();
+    std::vector<ncvslideio::Point2f>::iterator iter = points.begin();
     for(int idx1=0,idx2=0;iter != points.end();++iter,++idx1)
     {
         if(iter->x != iter->x)  // NaN check
@@ -3238,9 +3238,9 @@ std::map<int,int> Chessboard::Board::getMapping()const
     return map;
 }
 
-std::vector<cv::Point2f> Chessboard::Board::getCorners(bool ball)const
+std::vector<ncvslideio::Point2f> Chessboard::Board::getCorners(bool ball)const
 {
-    std::vector<cv::Point2f> points;
+    std::vector<ncvslideio::Point2f> points;
     if(isEmpty())
         return points;
 
@@ -3267,20 +3267,20 @@ std::vector<cv::Point2f> Chessboard::Board::getCorners(bool ball)const
     return points;
 }
 
-std::vector<cv::KeyPoint> Chessboard::Board::getKeyPoints(bool ball)const
+std::vector<ncvslideio::KeyPoint> Chessboard::Board::getKeyPoints(bool ball)const
 {
-    std::vector<cv::KeyPoint> keypoints;
-    std::vector<cv::Point2f> points = getCorners(ball);
-    std::vector<cv::Point2f>::const_iterator iter = points.begin();
+    std::vector<ncvslideio::KeyPoint> keypoints;
+    std::vector<ncvslideio::Point2f> points = getCorners(ball);
+    std::vector<ncvslideio::Point2f>::const_iterator iter = points.begin();
     for(;iter != points.end();++iter)
-        keypoints.push_back(cv::KeyPoint(iter->x,iter->y,1));
+        keypoints.push_back(ncvslideio::KeyPoint(iter->x,iter->y,1));
     return keypoints;
 }
 
 
-cv::Scalar Chessboard::Board::calcEdgeSharpness(cv::InputArray _img,float rise_distance,bool vertical,cv::OutputArray _sharpness)
+ncvslideio::Scalar Chessboard::Board::calcEdgeSharpness(ncvslideio::InputArray _img,float rise_distance,bool vertical,ncvslideio::OutputArray _sharpness)
 {
-    cv::Mat img = _img.getMat();
+    ncvslideio::Mat img = _img.getMat();
     if(img.empty())
         CV_Error(Error::StsBadArg,"image is empty");
     if(img.type() != CV_8UC1)
@@ -3288,19 +3288,19 @@ cv::Scalar Chessboard::Board::calcEdgeSharpness(cv::InputArray _img,float rise_d
 
     int tcols = int(colCount());
     int trows = int(rowCount());
-    std::vector<cv::Point2f> centers = getCellCenters();
+    std::vector<ncvslideio::Point2f> centers = getCellCenters();
 
     if(int(centers.size()) != trows*tcols)
         CV_Error(Error::StsInternal,"internal error - size mismatch");
 
     // build horizontal lines
-    std::vector<std::pair<cv::Point2f,cv::Point2f> > pairs;
+    std::vector<std::pair<ncvslideio::Point2f,ncvslideio::Point2f> > pairs;
     if(vertical)
     {
         for(int row = 1;row < trows-1;++row)
         {
-            std::vector<cv::Point2f>::const_iterator iter1 = centers.begin()+row*tcols;
-            std::vector<cv::Point2f>::const_iterator iter2 = iter1+1;
+            std::vector<ncvslideio::Point2f>::const_iterator iter1 = centers.begin()+row*tcols;
+            std::vector<ncvslideio::Point2f>::const_iterator iter2 = iter1+1;
             for(int col= 0;col< tcols-1;++col,++iter1,++iter2)
                 pairs.push_back(std::make_pair(*iter1,*iter2));
         }
@@ -3321,38 +3321,38 @@ cv::Scalar Chessboard::Board::calcEdgeSharpness(cv::InputArray _img,float rise_d
     }
 
     // calc edge response for each line
-    cv::Rect rect(0,0,img.cols,img.rows);
-    std::vector<std::pair<cv::Point2f,cv::Point2f> >::const_iterator iter =  pairs.begin();
+    ncvslideio::Rect rect(0,0,img.cols,img.rows);
+    std::vector<std::pair<ncvslideio::Point2f,ncvslideio::Point2f> >::const_iterator iter =  pairs.begin();
     int count = 0;
     float sharpness = 0;
     float max_val= 0;
     float min_val= 0;
     double dmin,dmax;
-    cv::Mat data = cv::Mat::zeros(int(pairs.size()),5,CV_32FC1);
+    ncvslideio::Mat data = ncvslideio::Mat::zeros(int(pairs.size()),5,CV_32FC1);
     for(;iter != pairs.end();++iter)
     {
         // get values from the image
         if(!rect.contains(iter->first) || !rect.contains(iter->second))
             continue;
-        int delta = int(cv::norm(iter->second-iter->first));
+        int delta = int(ncvslideio::norm(iter->second-iter->first));
         if(delta < 10)
             continue;
 
         float dx = (iter->second.x-iter->first.x)/delta;
         float dy = (iter->second.y-iter->first.y)/delta;
         std::vector<uint8_t> values;
-        cv::Mat patch;
+        ncvslideio::Mat patch;
         for(int i=0;i<delta;++i)
         {
             int count2 = 0;
             float value = 0;
-            cv::Point2f p0(iter->first.x+dx*i,iter->first.y+dy*i);
+            ncvslideio::Point2f p0(iter->first.x+dx*i,iter->first.y+dy*i);
             for(int num=-1;num < 2;++num)
             {
-                cv::Point2f p1(p0.x+dy*num,p0.y-dx*num);
+                ncvslideio::Point2f p1(p0.x+dy*num,p0.y-dx*num);
                 if(!rect.contains(p1))
                     continue;
-                cv::getRectSubPix(img,cv::Size(1,1),p1,patch);
+                ncvslideio::getRectSubPix(img,ncvslideio::Size(1,1),p1,patch);
                 value += patch.at<uint8_t>(0,0);
                 ++count2;
             }
@@ -3361,7 +3361,7 @@ cv::Scalar Chessboard::Board::calcEdgeSharpness(cv::InputArray _img,float rise_d
 
         float val = calcSharpness(values,rise_distance);
         sharpness += val;
-        cv::minMaxLoc(values,&dmin,&dmax);
+        ncvslideio::minMaxLoc(values,&dmin,&dmax);
         max_val+= float(dmax);
         min_val += float(dmin);
         data.at<float>(count,0) = iter->first.x+(iter->second.x-iter->first.x)/2;
@@ -3374,14 +3374,14 @@ cv::Scalar Chessboard::Board::calcEdgeSharpness(cv::InputArray _img,float rise_d
     if(count == 0)
     {
         CV_LOG_DEBUG(NULL, "calcEdgeSharpness: checkerboard too small for calculation.");
-        return cv::Scalar::all(9999);
+        return ncvslideio::Scalar::all(9999);
     }
     sharpness = sharpness/float(count);
     max_val = max_val/float(count);
     min_val = min_val/float(count);
     if(_sharpness.needed())
         data.copyTo(_sharpness);
-    return cv::Scalar(sharpness,min_val,max_val);
+    return ncvslideio::Scalar(sharpness,min_val,max_val);
 }
 
 
@@ -3404,8 +3404,8 @@ Chessboard::~Chessboard()
 {
 }
 
-void Chessboard::findKeyPoints(const cv::Mat& image, std::vector<KeyPoint>& keypoints,std::vector<cv::Mat> &feature_maps,
-        std::vector<std::vector<float> > &angles ,const cv::Mat& mask)const
+void Chessboard::findKeyPoints(const ncvslideio::Mat& image, std::vector<KeyPoint>& keypoints,std::vector<ncvslideio::Mat> &feature_maps,
+        std::vector<std::vector<float> > &angles ,const ncvslideio::Mat& mask)const
 {
     keypoints.clear();
     angles.clear();
@@ -3421,7 +3421,7 @@ void Chessboard::findKeyPoints(const cv::Mat& image, std::vector<KeyPoint>& keyp
     para.max_scale = parameters.max_scale;
 
     FastX detector(para);
-    std::vector<cv::Mat> rotated_images;
+    std::vector<ncvslideio::Mat> rotated_images;
     detector.detectImpl(image,rotated_images,feature_maps,mask);
 
     //calculate seed chessboard corners
@@ -3442,7 +3442,7 @@ void Chessboard::findKeyPoints(const cv::Mat& image, std::vector<KeyPoint>& keyp
     std::vector<std::vector<float> >::const_iterator iter2 = angles_temp.begin();
     for(;iter1 != keypoints_temp.end();++iter1,++iter2)
     {
-        cv::KeyPoint &pt = *iter1;
+        ncvslideio::KeyPoint &pt = *iter1;
         const std::vector<float> &angles_i3 = *iter2;
         if(angles_i3.size() != 2)// || pt.response < noise)
             continue;
@@ -3456,10 +3456,10 @@ void Chessboard::findKeyPoints(const cv::Mat& image, std::vector<KeyPoint>& keyp
     }
 }
 
-cv::Mat Chessboard::buildData(const std::vector<KeyPoint>& keypoints)const
+ncvslideio::Mat Chessboard::buildData(const std::vector<KeyPoint>& keypoints)const
 {
-    cv::Mat data(int(keypoints.size()),4,CV_32FC1);       // x + y + angle + strength
-    std::vector<cv::KeyPoint>::const_iterator iter = keypoints.begin();
+    ncvslideio::Mat data(int(keypoints.size()),4,CV_32FC1);       // x + y + angle + strength
+    std::vector<ncvslideio::KeyPoint>::const_iterator iter = keypoints.begin();
     float *val = reinterpret_cast<float*>(data.data);
     for(;iter != keypoints.end();++iter)
     {
@@ -3471,7 +3471,7 @@ cv::Mat Chessboard::buildData(const std::vector<KeyPoint>& keypoints)const
     return data;
 }
 
-std::vector<cv::KeyPoint> Chessboard::getInitialPoints(cv::flann::Index &flann_index,const cv::Mat &data,const cv::KeyPoint &center,float white_angle,float black_angle,float min_response)const
+std::vector<ncvslideio::KeyPoint> Chessboard::getInitialPoints(ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &data,const ncvslideio::KeyPoint &center,float white_angle,float black_angle,float min_response)const
 {
     CV_CheckTypeEQ(data.type(), CV_32FC1, "Unsupported source type");
     if(data.cols != 4)
@@ -3480,10 +3480,10 @@ std::vector<cv::KeyPoint> Chessboard::getInitialPoints(cv::flann::Index &flann_i
     std::vector<float> query,dists;
     std::vector<int> indices;
     query.resize(2); query[0] = center.pt.x; query[1] = center.pt.y;
-    flann_index.knnSearch(query,indices,dists,21,cv::flann::SearchParams(32));
+    flann_index.knnSearch(query,indices,dists,21,ncvslideio::flann::SearchParams(32));
 
     // collect all points having a similar angle and response
-    std::vector<cv::KeyPoint> points;
+    std::vector<ncvslideio::KeyPoint> points;
     std::vector<int>::const_iterator ids_iter = indices.begin()+1; // first point is center
     points.push_back(center);
     for(;ids_iter != indices.end();++ids_iter)
@@ -3505,58 +3505,58 @@ std::vector<cv::KeyPoint> Chessboard::getInitialPoints(cv::flann::Index &flann_i
             if(angle_temp >MAX_ANGLE)
                 continue;
         }
-        points.push_back(cv::KeyPoint(data.at<float>(*ids_iter,0),data.at<float>(*ids_iter,1),center.size,angle,response));
+        points.push_back(ncvslideio::KeyPoint(data.at<float>(*ids_iter,0),data.at<float>(*ids_iter,1),center.size,angle,response));
     }
     return points;
 }
 
-Chessboard::BState Chessboard::generateBoards(cv::flann::Index &flann_index,const cv::Mat &data,
-        const cv::KeyPoint &center,float white_angle,float black_angle,float min_response,const cv::Mat& img,
+Chessboard::BState Chessboard::generateBoards(ncvslideio::flann::Index &flann_index,const ncvslideio::Mat &data,
+        const ncvslideio::KeyPoint &center,float white_angle,float black_angle,float min_response,const ncvslideio::Mat& img,
         std::vector<Chessboard::Board> &boards)const
 {
     // collect all points having a similar angle
-    std::vector<cv::KeyPoint> kpoints= getInitialPoints(flann_index,data,center,white_angle,black_angle,min_response);
+    std::vector<ncvslideio::KeyPoint> kpoints= getInitialPoints(flann_index,data,center,white_angle,black_angle,min_response);
     if(kpoints.size() < 5)
         return MISSING_POINTS;
 
     if(!img.empty())
     {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
-        cv::Mat out;
-        cv::drawKeypoints(img,kpoints,out,cv::Scalar(0,0,255,255),4);
-        std::vector<cv::KeyPoint> temp;
+        ncvslideio::Mat out;
+        ncvslideio::drawKeypoints(img,kpoints,out,ncvslideio::Scalar(0,0,255,255),4);
+        std::vector<ncvslideio::KeyPoint> temp;
         temp.push_back(kpoints.front());
-        cv::drawKeypoints(out,temp,out,cv::Scalar(0,255,0,255),4);
-        cv::imshow("chessboard",out);
-        cv::waitKey(-1);
+        ncvslideio::drawKeypoints(out,temp,out,ncvslideio::Scalar(0,255,0,255),4);
+        ncvslideio::imshow("chessboard",out);
+        ncvslideio::waitKey(-1);
 #endif
     }
 
     // use angles to filter out points
-    std::vector<cv::KeyPoint> points;
-    cv::Vec2f n1(cos(white_angle),-sin(white_angle));
-    cv::Vec2f n2(cos(black_angle),-sin(black_angle));
-    std::vector<cv::KeyPoint>::const_iterator iter1 = kpoints.begin()+1; // first point is center
+    std::vector<ncvslideio::KeyPoint> points;
+    ncvslideio::Vec2f n1(cos(white_angle),-sin(white_angle));
+    ncvslideio::Vec2f n2(cos(black_angle),-sin(black_angle));
+    std::vector<ncvslideio::KeyPoint>::const_iterator iter1 = kpoints.begin()+1; // first point is center
     for(;iter1 != kpoints.end();++iter1)
     {
         // calc angle
-        cv::Vec2f vec(iter1->pt-center.pt);
-        vec = vec/cv::norm(vec);
+        ncvslideio::Vec2f vec(iter1->pt-center.pt);
+        vec = vec/ncvslideio::norm(vec);
         if(fabs(vec.dot(n1)) < 0.96 && fabs(vec.dot(n2)) < 0.96)   //check that angle is bigger than 15°
             points.push_back(*iter1);
     }
 
     // generate pairs those connection goes through the center
-    std::vector<std::pair<cv::KeyPoint,cv::KeyPoint> > pairs;
+    std::vector<std::pair<ncvslideio::KeyPoint,ncvslideio::KeyPoint> > pairs;
     iter1 = points.begin();
     for(;iter1 != points.end();++iter1)
     {
-        std::vector<cv::KeyPoint>::const_iterator iter2 = iter1+1;
+        std::vector<ncvslideio::KeyPoint>::const_iterator iter2 = iter1+1;
         for(;iter2 != points.end();++iter2)
         {
             if(isPointOnLine(iter1->pt,iter2->pt,center.pt,0.97F))
             {
-                if(cv::norm(iter1->pt) < cv::norm(iter2->pt))
+                if(ncvslideio::norm(iter1->pt) < ncvslideio::norm(iter2->pt))
                     pairs.push_back(std::make_pair(*iter1,*iter2));
                 else
                     pairs.push_back(std::make_pair(*iter2,*iter1));
@@ -3567,18 +3567,18 @@ Chessboard::BState Chessboard::generateBoards(cv::flann::Index &flann_index,cons
     // generate all possible combinations consisting of two pairs
     if(pairs.size() < 2)
         return MISSING_PAIRS;
-    std::vector<std::pair<cv::KeyPoint,cv::KeyPoint> >::iterator iter_pair1 = pairs.begin();
+    std::vector<std::pair<ncvslideio::KeyPoint,ncvslideio::KeyPoint> >::iterator iter_pair1 = pairs.begin();
 
     BState best_state = MISSING_PAIRS;
     for(;iter_pair1 != pairs.end();++iter_pair1)
     {
-        cv::Point2f p1 = iter_pair1->second.pt-iter_pair1->first.pt;
-        p1 = p1/cv::norm(p1);
-        std::vector<std::pair<cv::KeyPoint,cv::KeyPoint> >::iterator iter_pair2 = iter_pair1+1;
+        ncvslideio::Point2f p1 = iter_pair1->second.pt-iter_pair1->first.pt;
+        p1 = p1/ncvslideio::norm(p1);
+        std::vector<std::pair<ncvslideio::KeyPoint,ncvslideio::KeyPoint> >::iterator iter_pair2 = iter_pair1+1;
         for(;iter_pair2 != pairs.end();++iter_pair2)
         {
-            cv::Point2f p2 = iter_pair2->second.pt-iter_pair2->first.pt;
-            p2 = p2/cv::norm(p2);
+            ncvslideio::Point2f p2 = iter_pair2->second.pt-iter_pair2->first.pt;
+            p2 = p2/ncvslideio::norm(p2);
             if(p2.dot(p1) > 0.95)
             {
                 if(best_state < WRONG_PAIR_ANGLE)
@@ -3591,8 +3591,8 @@ Chessboard::BState Chessboard::generateBoards(cv::flann::Index &flann_index,cons
                     std::swap(iter_pair2->first,iter_pair2->second);
 
                 // minimal case
-                std::vector<cv::Point2f> board_points;
-                board_points.resize(9,cv::Point2f(std::numeric_limits<float>::quiet_NaN(),
+                std::vector<ncvslideio::Point2f> board_points;
+                board_points.resize(9,ncvslideio::Point2f(std::numeric_limits<float>::quiet_NaN(),
                             std::numeric_limits<float>::quiet_NaN()));
 
                 board_points[1] = iter_pair2->first.pt;
@@ -3600,7 +3600,7 @@ Chessboard::BState Chessboard::generateBoards(cv::flann::Index &flann_index,cons
                 board_points[4] = center.pt;
                 board_points[5] = iter_pair1->second.pt;
                 board_points[7] = iter_pair2->second.pt;
-                boards.push_back(Board(cv::Size(3,3),board_points,white_angle,black_angle));
+                boards.push_back(Board(ncvslideio::Size(3,3),board_points,white_angle,black_angle));
                 Board &board = boards.back();
 
                 if(board.isEmpty())
@@ -3625,14 +3625,14 @@ void Chessboard::detectImpl(const Mat& image, vector<KeyPoint>& keypoints,std::v
     return;
 }
 
-Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &feature_maps,const Mat& mask)const
+Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<ncvslideio::Mat> &feature_maps,const Mat& mask)const
 {
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
     debug_image = gray;
 #endif
     CV_CheckTypeEQ(gray.type(),CV_8UC1, "Unsupported image type");
 
-    cv::Size chessboard_size2(parameters.chessboard_size.height,parameters.chessboard_size.width);
+    ncvslideio::Size chessboard_size2(parameters.chessboard_size.height,parameters.chessboard_size.width);
     std::vector<KeyPoint> keypoints_seed;
     std::vector<std::vector<float> > angles;
     findKeyPoints(gray,keypoints_seed,feature_maps,angles,mask);
@@ -3655,18 +3655,18 @@ Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &f
     }
     // just add dummy points or flann will fail during knnSearch
     if(keypoints_seed.size() < 21)
-        keypoints_seed.resize(21, cv::KeyPoint(-99999.0F,-99999.0F,0.0F,0.0F,0.0F));
+        keypoints_seed.resize(21, ncvslideio::KeyPoint(-99999.0F,-99999.0F,0.0F,0.0F,0.0F));
 
     //build kd tree
-    cv::Mat data = buildData(keypoints_seed);
-    cv::Mat flann_data(data.rows,2,CV_32FC1);
-    data(cv::Rect(0,0,2,data.rows)).copyTo(flann_data);
-    cv::flann::Index flann_index(flann_data,cv::flann::KDTreeIndexParams(1),cvflann::FLANN_DIST_EUCLIDEAN);
+    ncvslideio::Mat data = buildData(keypoints_seed);
+    ncvslideio::Mat flann_data(data.rows,2,CV_32FC1);
+    data(ncvslideio::Rect(0,0,2,data.rows)).copyTo(flann_data);
+    ncvslideio::flann::Index flann_index(flann_data,ncvslideio::flann::KDTreeIndexParams(1),cvflann::FLANN_DIST_EUCLIDEAN);
 
     // for each point
     std::vector<std::vector<float> >::const_iterator angles_iter = angles.begin();
-    std::vector<cv::KeyPoint>::const_iterator points_iter = keypoints_seed.begin();
-    cv::Rect bounding_box(5,5,gray.cols-10,gray.rows-10);
+    std::vector<ncvslideio::KeyPoint>::const_iterator points_iter = keypoints_seed.begin();
+    ncvslideio::Rect bounding_box(5,5,gray.cols-10,gray.rows-10);
     int max_tests = std::min(parameters.max_tests,int(keypoints_seed.size()));
     for(count=0;count < max_tests;++angles_iter,++points_iter,++count)
     {
@@ -3691,7 +3691,7 @@ Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &f
             for(int i=range.start;i <range.end;++i)
             {
                 auto iter_boards = boards.begin()+i;
-                cv::Mat h = iter_boards->estimateHomography();
+                ncvslideio::Mat h = iter_boards->estimateHomography();
                 int size = iter_boards->validateCorners(data,flann_index,h,min_response);
                 if(size != 9 || !iter_boards->validateContour())
                 {
@@ -3707,8 +3707,8 @@ Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &f
                 }
 
                 // check bounding box
-                std::vector<cv::Point2f> contour = iter_boards->getContour();
-                std::vector<cv::Point2f>::const_iterator iter = contour.begin();
+                std::vector<ncvslideio::Point2f> contour = iter_boards->getContour();
+                std::vector<ncvslideio::Point2f>::const_iterator iter = contour.begin();
                 for(;iter != contour.end();++iter)
                 {
                     if(!bounding_box.contains(*iter))
@@ -3732,10 +3732,10 @@ Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &f
                             iter_boards->rotateRight();
                     }
 #ifdef CV_DETECTORS_CHESSBOARD_DEBUG
-                    cv::Mat img;
+                    ncvslideio::Mat img;
                     iter_boards->draw(debug_image,img);
-                    cv::imshow("chessboard",img);
-                    cv::waitKey(-1);
+                    ncvslideio::imshow("chessboard",img);
+                    ncvslideio::waitKey(-1);
 #endif
                 }
                 else
@@ -3808,12 +3808,12 @@ Chessboard::Board Chessboard::detectImpl(const Mat& gray,std::vector<cv::Mat> &f
     return Chessboard::Board();
 }
 
-void Chessboard::detectAndCompute(cv::InputArray image,cv::InputArray mask,std::vector<cv::KeyPoint>& keypoints,
-        cv::OutputArray descriptors,bool useProvidedKeyPoints)
+void Chessboard::detectAndCompute(ncvslideio::InputArray image,ncvslideio::InputArray mask,std::vector<ncvslideio::KeyPoint>& keypoints,
+        ncvslideio::OutputArray descriptors,bool useProvidedKeyPoints)
 {
     descriptors.clear();
     useProvidedKeyPoints=false;
-    std::vector<cv::Mat> maps;
+    std::vector<ncvslideio::Mat> maps;
     detectImpl(image.getMat(),keypoints,maps,mask.getMat());
     if(!useProvidedKeyPoints)        // suppress compiler warning
         return;
@@ -3822,7 +3822,7 @@ void Chessboard::detectAndCompute(cv::InputArray image,cv::InputArray mask,std::
 
 void Chessboard::detectImpl(const Mat& image, vector<KeyPoint>& keypoints,const Mat& mask)const
 {
-    std::vector<cv::Mat> maps;
+    std::vector<ncvslideio::Mat> maps;
     detectImpl(image,keypoints,maps,mask);
 }
 
@@ -3835,8 +3835,8 @@ void Chessboard::detectImpl(InputArray image, std::vector<KeyPoint>& keypoints, 
 
 
 // public API
-bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
-                             cv::OutputArray corners_, int flags, cv::OutputArray meta_)
+bool findChessboardCornersSB(ncvslideio::InputArray image_, ncvslideio::Size pattern_size,
+                             ncvslideio::OutputArray corners_, int flags, ncvslideio::OutputArray meta_)
 {
     CV_INSTRUMENT_REGION();
     int type = image_.type(), depth = CV_MAT_DEPTH(type), cn = CV_MAT_CN(type);
@@ -3867,7 +3867,7 @@ bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
     if(flags & CALIB_CB_NORMALIZE_IMAGE)
     {
         Mat tmp;
-        cv::equalizeHist(img, tmp);
+        ncvslideio::equalizeHist(img, tmp);
         swap(img, tmp);
         flags ^= CALIB_CB_NORMALIZE_IMAGE;
     }
@@ -3894,13 +3894,13 @@ bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
         flags ^= CALIB_CB_MARKER;
     }
     if(flags)
-        CV_Error(Error::StsOutOfRange, cv::format("Invalid remaining flags %d", (int)flags));
+        CV_Error(Error::StsOutOfRange, ncvslideio::format("Invalid remaining flags %d", (int)flags));
 
-    std::vector<cv::KeyPoint> corners;
+    std::vector<ncvslideio::KeyPoint> corners;
     details::Chessboard detector(para);
 
-    std::vector<cv::Mat> maps;
-    details::Chessboard::Board board = detector.detectImpl(img,maps,cv::Mat());
+    std::vector<ncvslideio::Mat> maps;
+    details::Chessboard::Board board = detector.detectImpl(img,maps,ncvslideio::Mat());
     corners = board.getKeyPoints();
     if(corners.empty())
     {
@@ -3909,7 +3909,7 @@ bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
             meta_.release();
         return false;
     }
-    std::vector<cv::Point2f> points;
+    std::vector<ncvslideio::Point2f> points;
     KeyPoint::convert(corners,points);
     Mat(points).copyTo(corners_);
 
@@ -3917,8 +3917,8 @@ bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
     if(meta_.needed())
     {
         meta_.create(int(board.rowCount()),int(board.colCount()),CV_8UC1);
-        cv::Mat meta = meta_.getMat();
-        meta.setTo(cv::Scalar::all(0));
+        ncvslideio::Mat meta = meta_.getMat();
+        meta.setTo(ncvslideio::Scalar::all(0));
         for(int row =0;row < meta.rows-1;++row)
         {
             for(int col=0;col< meta.cols-1;++col)
@@ -3944,8 +3944,8 @@ bool findChessboardCornersSB(cv::InputArray image_, cv::Size pattern_size,
 }
 
 // public API
-cv::Scalar estimateChessboardSharpness(InputArray image_, Size patternSize, InputArray corners_,
-                                       float rise_distance,bool vertical, cv::OutputArray sharpness)
+ncvslideio::Scalar estimateChessboardSharpness(InputArray image_, Size patternSize, InputArray corners_,
+                                       float rise_distance,bool vertical, ncvslideio::OutputArray sharpness)
 {
     CV_INSTRUMENT_REGION();
     int type = image_.type(), depth = CV_MAT_DEPTH(type), cn = CV_MAT_CN(type);
@@ -3954,8 +3954,8 @@ cv::Scalar estimateChessboardSharpness(InputArray image_, Size patternSize, Inpu
     if(patternSize.width <= 2 || patternSize.height <= 2)
         CV_Error(Error::StsOutOfRange, "Both width and height of the pattern should have bigger than 2");
 
-    cv::Mat corners = details::normalizeVector(corners_);
-    std::vector<cv::Point2f> points;
+    ncvslideio::Mat corners = details::normalizeVector(corners_);
+    std::vector<ncvslideio::Point2f> points;
     corners.reshape(2,corners.rows).convertTo(points,CV_32FC2);
     if(int(points.size()) != patternSize.width * patternSize.height)
         CV_Error(Error::StsBadArg, "Size mismatch between patternSize and number of provided corners.");
@@ -3971,4 +3971,4 @@ cv::Scalar estimateChessboardSharpness(InputArray image_, Size patternSize, Inpu
 }
 
 
-} // namespace cv
+} // namespace ncvslideio

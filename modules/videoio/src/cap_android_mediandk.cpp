@@ -25,7 +25,7 @@
 #define COLOR_FormatYUV420SemiPlanar 21
 #define COLOR_FormatSurface 0x7f000789 //See https://developer.android.com/reference/android/media/MediaCodecInfo.CodecCapabilities for codes
 
-using namespace cv;
+using namespace ncvslideio;
 
 #define TAG "NativeCodec"
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
@@ -160,9 +160,9 @@ public:
         Mat yuv(frameHeight + frameHeight/2, frameStride, CV_8UC1, buffer.data());
 
         if (colorFormat == COLOR_FormatYUV420Planar) {
-            cv::cvtColor(yuv, frame, cv::COLOR_YUV2BGR_YV12);
+            ncvslideio::cvtColor(yuv, frame, ncvslideio::COLOR_YUV2BGR_YV12);
         } else if (colorFormat == COLOR_FormatYUV420SemiPlanar) {
-            cv::cvtColor(yuv, frame, cv::COLOR_YUV2BGR_NV21);
+            ncvslideio::cvtColor(yuv, frame, ncvslideio::COLOR_YUV2BGR_NV21);
         } else {
             LOGE("Unsupported video format: %d", colorFormat);
             return false;
@@ -172,7 +172,7 @@ public:
         out.assign(croppedFrame);
 
         if (videoOrientationAuto && -1 != videoRotationCode) {
-            cv::rotate(out, out, videoRotationCode);
+            ncvslideio::rotate(out, out, videoRotationCode);
         }
 
         return true;
@@ -184,11 +184,11 @@ public:
         {
             case CAP_PROP_FRAME_WIDTH:
                 return (( videoOrientationAuto &&
-                         (cv::ROTATE_90_CLOCKWISE == videoRotationCode || cv::ROTATE_90_COUNTERCLOCKWISE == videoRotationCode))
+                         (ncvslideio::ROTATE_90_CLOCKWISE == videoRotationCode || ncvslideio::ROTATE_90_COUNTERCLOCKWISE == videoRotationCode))
                         ? videoHeight : videoWidth);
             case CAP_PROP_FRAME_HEIGHT:
                 return (( videoOrientationAuto &&
-                         (cv::ROTATE_90_CLOCKWISE == videoRotationCode || cv::ROTATE_90_COUNTERCLOCKWISE == videoRotationCode))
+                         (ncvslideio::ROTATE_90_CLOCKWISE == videoRotationCode || ncvslideio::ROTATE_90_COUNTERCLOCKWISE == videoRotationCode))
                         ? videoWidth : videoHeight);
             case CAP_PROP_FPS: return videoFrameRate;
             case CAP_PROP_FRAME_COUNT: return videoFrameCount;
@@ -291,15 +291,15 @@ public:
 
                 switch(videoRotation) {
                     case 90:
-                        videoRotationCode = cv::ROTATE_90_CLOCKWISE;
+                        videoRotationCode = ncvslideio::ROTATE_90_CLOCKWISE;
                         break;
 
                     case 180:
-                        videoRotationCode = cv::ROTATE_180;
+                        videoRotationCode = ncvslideio::ROTATE_180;
                         break;
 
                     case 270:
-                        videoRotationCode = cv::ROTATE_90_COUNTERCLOCKWISE;
+                        videoRotationCode = ncvslideio::ROTATE_90_COUNTERCLOCKWISE;
                         break;
 
                     default:
@@ -333,7 +333,7 @@ public:
 
 
 class AndroidMediaNdkVideoWriter CV_FINAL :
-    public cv::IVideoWriter
+    public ncvslideio::IVideoWriter
 {
     typedef struct {
         int fourcc;
@@ -458,7 +458,7 @@ class AndroidMediaNdkVideoWriter CV_FINAL :
     #endif
 
 public:
-    AndroidMediaNdkVideoWriter(const cv::String& filename, int fourcc, double fps, cv::Size frameSize, const VideoWriterParameters& params)
+    AndroidMediaNdkVideoWriter(const ncvslideio::String& filename, int fourcc, double fps, ncvslideio::Size frameSize, const VideoWriterParameters& params)
         : format(NULL),
           encoder(NULL),
           muxer(NULL),
@@ -475,9 +475,9 @@ public:
     }
     virtual ~AndroidMediaNdkVideoWriter() { close(); }
 
-    virtual int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_ANDROID; }
+    virtual int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_ANDROID; }
 
-    virtual void write(cv::InputArray image_ ) CV_OVERRIDE
+    virtual void write(ncvslideio::InputArray image_ ) CV_OVERRIDE
     {
         if (!image_.isMat()) {
             LOGE("Support only Mat input");
@@ -534,7 +534,7 @@ public:
         frameIndex++;
     }
 
-    virtual bool open( const cv::String& filename, int fourcc, double fps, cv::Size frameSize, const VideoWriterParameters& params )
+    virtual bool open( const ncvslideio::String& filename, int fourcc, double fps, ncvslideio::Size frameSize, const VideoWriterParameters& params )
     {
         media_status_t status;
 
@@ -668,7 +668,7 @@ const AndroidMediaNdkVideoWriter::FourCCInfo AndroidMediaNdkVideoWriter::FOURCC_
 
 /****************** Implementation of interface functions ********************/
 
-Ptr<IVideoCapture> cv::createAndroidCapture_file(const std::string &filename) {
+Ptr<IVideoCapture> ncvslideio::createAndroidCapture_file(const std::string &filename) {
     Ptr<AndroidMediaNdkCapture> res = makePtr<AndroidMediaNdkCapture>();
     if (res && res->initCapture(filename.c_str()))
         return res;
@@ -676,9 +676,9 @@ Ptr<IVideoCapture> cv::createAndroidCapture_file(const std::string &filename) {
 }
 
 
-Ptr<IVideoWriter> cv::createAndroidVideoWriter(
+Ptr<IVideoWriter> ncvslideio::createAndroidVideoWriter(
     const std::string& filename, int fourcc,
-    double fps, const cv::Size& frameSize,
+    double fps, const ncvslideio::Size& frameSize,
     const VideoWriterParameters& params) {
     Ptr<AndroidMediaNdkVideoWriter> writer = makePtr<AndroidMediaNdkVideoWriter>(filename, fourcc, fps, frameSize, params);
     if (writer && writer->isOpened())

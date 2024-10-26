@@ -22,10 +22,10 @@ Implementation of Scale layer.
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/scale_shift.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -591,4 +591,4 @@ Ptr<DataAugmentationLayer> DataAugmentationLayer::create(const LayerParams& para
 }
 
 }  // namespace dnn
-}  // namespace cv
+}  // namespace ncvslideio

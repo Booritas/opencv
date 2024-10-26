@@ -127,7 +127,7 @@ namespace opencv_test { namespace {
         // compute the min/max range for the input image (even if multichannel)
 
         // TODO cvtest
-        cv::minMaxLoc( src.reshape(1), &minValSrc, &maxValSrc );
+        ncvslideio::minMaxLoc( src.reshape(1), &minValSrc, &maxValSrc );
         if(std::abs(minValSrc - maxValSrc) < FLT_EPSILON)
         {
             src.copyTo(dst);
@@ -136,8 +136,8 @@ namespace opencv_test { namespace {
 
         // temporary copy of the image with borders for easy processing
         Mat temp;
-        cv::copyMakeBorder( src, temp, radius, radius, radius, radius, borderType );
-        cv::patchNaNs(temp);
+        ncvslideio::copyMakeBorder( src, temp, radius, radius, radius, radius, borderType );
+        ncvslideio::patchNaNs(temp);
 
         // allocate lookup tables
         vector<float> _space_weight(d*d);

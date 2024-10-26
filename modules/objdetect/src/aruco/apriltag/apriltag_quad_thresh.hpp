@@ -23,7 +23,7 @@
 #include "zmaxheap.hpp"
 #include "zarray.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 static inline uint32_t u64hash_2(uint64_t x) {

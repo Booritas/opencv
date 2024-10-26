@@ -11,10 +11,10 @@ namespace opencv_test
 {
 
 namespace {
-void create_rand_mats(const cv::Size &size, MatType type, cv::Mat &ref_mat, cv::Mat &gapi_mat)
+void create_rand_mats(const ncvslideio::Size &size, MatType type, ncvslideio::Mat &ref_mat, ncvslideio::Mat &gapi_mat)
 {
     ref_mat.create(size, type);
-    cv::randu(ref_mat, cv::Scalar::all(0), cv::Scalar::all(255));
+    ncvslideio::randu(ref_mat, ncvslideio::Scalar::all(0), ncvslideio::Scalar::all(255));
     ref_mat.copyTo(gapi_mat);
 }
 
@@ -23,26 +23,26 @@ void create_rand_mats(const cv::Size &size, MatType type, cv::Mat &ref_mat, cv::
 PERF_TEST_P_(RenderTestFTexts, RenderFTextsPerformanceBGROCVTest)
 {
     std::wstring text;
-    cv::Size sz;
-    cv::Point org;
+    ncvslideio::Size sz;
+    ncvslideio::Point org;
     int fh = 0;
-    cv::Scalar color;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Scalar color;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(text ,sz ,org ,fh ,color, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::FText{text, org, fh, color});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::FText{text, org, fh, color});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -58,39 +58,39 @@ PERF_TEST_P_(RenderTestFTexts, RenderFTextsPerformanceBGROCVTest)
 PERF_TEST_P_(RenderTestFTexts, RenderFTextsPerformanceNV12OCVTest)
 {
     std::wstring text;
-    cv::Size sz;
-    cv::Point org;
+    ncvslideio::Size sz;
+    ncvslideio::Point org;
     int fh = 0;
-    cv::Scalar color;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Scalar color;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(text ,sz ,org ,fh ,color, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::FText{text, org, fh, color});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::FText{text, org, fh, color});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -98,31 +98,31 @@ PERF_TEST_P_(RenderTestFTexts, RenderFTextsPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestTexts, RenderTextsPerformanceBGROCVTest)
 {
-    cv::Point org;
+    ncvslideio::Point org;
     int ff = 0;
     int thick = 0;
     int lt = 0;
     double fs = 2.0;
-    cv::Scalar color;
+    ncvslideio::Scalar color;
     bool blo = false;
     std::string text;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(text, sz, org, ff, color, thick, lt, blo, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Text{text, org, ff, fs, color, thick, lt, blo});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Text{text, org, ff, fs, color, thick, lt, blo});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -137,44 +137,44 @@ PERF_TEST_P_(RenderTestTexts, RenderTextsPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestTexts, RenderTextsPerformanceNV12OCVTest)
 {
-    cv::Point org;
+    ncvslideio::Point org;
     int ff = 0;
     int thick = 0;
     int lt = 0;
     double fs = 2.0;
-    cv::Scalar color;
+    ncvslideio::Scalar color;
     bool blo = false;
     std::string text;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(text, sz, org, ff, color, thick, lt, blo, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Text{text, org, ff, fs, color, thick, lt, blo});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Text{text, org, ff, fs, color, thick, lt, blo});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -182,28 +182,28 @@ PERF_TEST_P_(RenderTestTexts, RenderTextsPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestRects, RenderRectsPerformanceBGROCVTest)
 {
-    cv::Rect rect;
-    cv::Scalar color;
+    ncvslideio::Rect rect;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rect, color, thick, lt, shift, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Rect{rect, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Rect{rect, color, thick, lt, shift});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -218,41 +218,41 @@ PERF_TEST_P_(RenderTestRects, RenderRectsPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestRects, RenderRectsPerformanceNV12OCVTest)
 {
-    cv::Rect rect;
-    cv::Scalar color;
+    ncvslideio::Rect rect;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rect, color, thick, lt, shift, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Rect{rect, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Rect{rect, color, thick, lt, shift});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -260,30 +260,30 @@ PERF_TEST_P_(RenderTestRects, RenderRectsPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestCircles, RenderCirclesPerformanceBGROCVTest)
 {
-    cv::Point center;
+    ncvslideio::Point center;
     int radius;
-    cv::Scalar color;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, center, radius, color, thick, lt, shift, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Circle{center, radius, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Circle{center, radius, color, thick, lt, shift});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -298,43 +298,43 @@ PERF_TEST_P_(RenderTestCircles, RenderCirclesPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestCircles, RenderCirclesPerformanceNV12OCVTest)
 {
-    cv::Point center;
+    ncvslideio::Point center;
     int radius;
-    cv::Scalar color;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, center, radius, color, thick, lt, shift, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Circle{center, radius, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Circle{center, radius, color, thick, lt, shift});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -342,31 +342,31 @@ PERF_TEST_P_(RenderTestCircles, RenderCirclesPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestLines, RenderLinesPerformanceBGROCVTest)
 {
-    cv::Point pt1;
-    cv::Point pt2;
-    cv::Scalar color;
+    ncvslideio::Point pt1;
+    ncvslideio::Point pt2;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
     compare_f cmpF;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, pt1, pt2, color, thick, lt, shift, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Line{pt1, pt2, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Line{pt1, pt2, color, thick, lt, shift});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -381,44 +381,44 @@ PERF_TEST_P_(RenderTestLines, RenderLinesPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestLines, RenderLinesPerformanceNV12OCVTest)
 {
-    cv::Point pt1;
-    cv::Point pt2;
-    cv::Scalar color;
+    ncvslideio::Point pt1;
+    ncvslideio::Point pt2;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
     compare_f cmpF;
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, pt1, pt2, color, thick, lt, shift, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Line{pt1, pt2, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Line{pt1, pt2, color, thick, lt, shift});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -426,27 +426,27 @@ PERF_TEST_P_(RenderTestLines, RenderLinesPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestMosaics, RenderMosaicsPerformanceBGROCVTest)
 {
-    cv::Rect mos;
+    ncvslideio::Rect mos;
     int cellsz = 0;
     int decim = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, mos, cellsz, decim, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Mosaic{mos, cellsz, decim});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Mosaic{mos, cellsz, decim});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -462,40 +462,40 @@ PERF_TEST_P_(RenderTestMosaics, RenderMosaicsPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestMosaics, RenderMosaicsPerformanceNV12OCVTest)
 {
-    cv::Rect mos;
+    ncvslideio::Rect mos;
     int cellsz = 0;
     int decim = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, mos, cellsz, decim, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Mosaic{mos, cellsz, decim});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Mosaic{mos, cellsz, decim});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -503,33 +503,33 @@ PERF_TEST_P_(RenderTestMosaics, RenderMosaicsPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestImages, RenderImagesPerformanceBGROCVTest)
 {
-    cv::Rect rect;
-    cv::Scalar color;
+    ncvslideio::Rect rect;
+    ncvslideio::Scalar color;
     double transparency = 0.0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rect, color, transparency, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
-    cv::Mat img(rect.size(), CV_8UC3, color);
-    cv::Mat alpha(rect.size(), CV_32FC1, transparency);
+    ncvslideio::Mat img(rect.size(), CV_8UC3, color);
+    ncvslideio::Mat alpha(rect.size(), CV_32FC1, transparency);
     auto tl = rect.tl();
-    cv::Point org = {tl.x, tl.y + rect.size().height};
+    ncvslideio::Point org = {tl.x, tl.y + rect.size().height};
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Image{org, img, alpha});
-    cv::gapi::wip::draw::render(gapi_mat, prims);
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Image{org, img, alpha});
+    ncvslideio::gapi::wip::draw::render(gapi_mat, prims);
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -544,45 +544,45 @@ PERF_TEST_P_(RenderTestImages, RenderImagesPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestImages, RenderImagesPerformanceNV12OCVTest)
 {
-    cv::Rect rect;
-    cv::Scalar color;
+    ncvslideio::Rect rect;
+    ncvslideio::Scalar color;
     double transparency = 0.0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rect, color, transparency, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
-    cv::Mat img(rect.size(), CV_8UC3, color);
-    cv::Mat alpha(rect.size(), CV_32FC1, transparency);
+    ncvslideio::Mat img(rect.size(), CV_8UC3, color);
+    ncvslideio::Mat alpha(rect.size(), CV_32FC1, transparency);
     auto tl = rect.tl();
-    cv::Point org = {tl.x, tl.y + rect.size().height};
+    ncvslideio::Point org = {tl.x, tl.y + rect.size().height};
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Image{org, img, alpha});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Image{org, img, alpha});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -590,29 +590,29 @@ PERF_TEST_P_(RenderTestImages, RenderImagesPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestPolylines, RenderPolylinesPerformanceBGROCVTest)
 {
-    std::vector<cv::Point> points;
-    cv::Scalar color;
+    std::vector<ncvslideio::Point> points;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, points, color, thick, lt, shift, comp_args) = GetParam();
 
     MatType type =  CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Poly{points, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Poly{points, color, thick, lt, shift});
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_mat), std::move(comp_args));
@@ -627,42 +627,42 @@ PERF_TEST_P_(RenderTestPolylines, RenderPolylinesPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestPolylines, RenderPolylinesPerformanceNV12OCVTest)
 {
-    std::vector<cv::Point> points;
-    cv::Scalar color;
+    std::vector<ncvslideio::Point> points;
+    ncvslideio::Scalar color;
     int thick = 0;
     int lt = 0;
     int shift = 0;
 
-    cv::Size sz;
-    cv::GCompileArgs comp_args;
+    ncvslideio::Size sz;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, points, color, thick, lt, shift, comp_args) = GetParam();
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
-    prims.emplace_back(cv::gapi::wip::draw::Poly{points, color, thick, lt, shift});
+    ncvslideio::gapi::wip::draw::Prims prims;
+    prims.emplace_back(ncvslideio::gapi::wip::draw::Poly{points, color, thick, lt, shift});
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();
@@ -670,39 +670,39 @@ PERF_TEST_P_(RenderTestPolylines, RenderPolylinesPerformanceNV12OCVTest)
 
 PERF_TEST_P_(RenderTestPolyItems, RenderPolyItemsPerformanceBGROCVTest)
 {
-    cv::Size sz;
+    ncvslideio::Size sz;
     int rects_num = 0;
     int text_num = 0;
     int image_num = 0;
-    cv::GCompileArgs comp_args;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rects_num, text_num, image_num, comp_args) = GetParam();
 
     int thick = 2;
     int lt = LINE_8;
-    cv::Scalar color(100, 50, 150);
+    ncvslideio::Scalar color(100, 50, 150);
 
     MatType type = CV_8UC3;
-    cv::Mat gapi_mat, ref_mat;
+    ncvslideio::Mat gapi_mat, ref_mat;
     create_rand_mats(sz, type, ref_mat, gapi_mat);
-    cv::Mat gapi_out_mat(sz, type);
+    ncvslideio::Mat gapi_out_mat(sz, type);
     gapi_mat.copyTo(gapi_out_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
+    ncvslideio::gapi::wip::draw::Prims prims;
 
     // Rects
     int shift = 0;
     for (int i = 0; i < rects_num; ++i) {
-        cv::Rect rect(200 + i, 200 + i, 200, 200);
-        prims.emplace_back(cv::gapi::wip::draw::Rect(rect, color, thick, lt, shift));
+        ncvslideio::Rect rect(200 + i, 200 + i, 200, 200);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Rect(rect, color, thick, lt, shift));
     }
 
     // Mosaic
     int cellsz = 25;
     int decim = 0;
     for (int i = 0; i < rects_num; ++i) {
-        cv::Rect mos(200 + i, 200 + i, 200, 200);
-        prims.emplace_back(cv::gapi::wip::draw::Mosaic(mos, cellsz, decim));
+        ncvslideio::Rect mos(200 + i, 200 + i, 200, 200);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Mosaic(mos, cellsz, decim));
     }
 
     // Text
@@ -711,27 +711,27 @@ PERF_TEST_P_(RenderTestPolyItems, RenderPolyItemsPerformanceBGROCVTest)
     double fs = 2.0;
     bool blo = false;
     for (int i = 0; i < text_num; ++i) {
-        cv::Point org(200 + i, 200 + i);
-        prims.emplace_back(cv::gapi::wip::draw::Text(text, org, ff, fs, color, thick, lt, blo));
+        ncvslideio::Point org(200 + i, 200 + i);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Text(text, org, ff, fs, color, thick, lt, blo));
     }
 
     // Image
     double transparency = 1.0;
-    cv::Rect rect_img(0 ,0 , 50, 50);
-    cv::Mat img(rect_img.size(), CV_8UC3, color);
-    cv::Mat alpha(rect_img.size(), CV_32FC1, transparency);
+    ncvslideio::Rect rect_img(0 ,0 , 50, 50);
+    ncvslideio::Mat img(rect_img.size(), CV_8UC3, color);
+    ncvslideio::Mat alpha(rect_img.size(), CV_32FC1, transparency);
     auto tl = rect_img.tl();
     for (int i = 0; i < image_num; ++i) {
-        cv::Point org_img = {tl.x + i, tl.y + rect_img.size().height + i};
+        ncvslideio::Point org_img = {tl.x + i, tl.y + rect_img.size().height + i};
 
-        prims.emplace_back(cv::gapi::wip::draw::Image({org_img, img, alpha}));
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Image({org_img, img, alpha}));
     }
 
-    cv::GMat in;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
+    ncvslideio::GMat in;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
 
-    cv::GComputation comp(cv::GIn(in, arr),
-                          cv::GOut(cv::gapi::wip::draw::render3ch(in, arr)));
+    ncvslideio::GComputation comp(ncvslideio::GIn(in, arr),
+                          ncvslideio::GOut(ncvslideio::gapi::wip::draw::render3ch(in, arr)));
 
     // Warm-up graph engine:
     comp.apply(gin(gapi_mat, prims), gout(gapi_out_mat), std::move(comp_args));
@@ -746,41 +746,41 @@ PERF_TEST_P_(RenderTestPolyItems, RenderPolyItemsPerformanceBGROCVTest)
 
 PERF_TEST_P_(RenderTestPolyItems, RenderPolyItemsPerformanceNV12OCVTest)
 {
-    cv::Size sz;
+    ncvslideio::Size sz;
     int rects_num = 0;
     int text_num = 0;
     int image_num = 0;
-    cv::GCompileArgs comp_args;
+    ncvslideio::GCompileArgs comp_args;
     std::tie(sz, rects_num, text_num, image_num, comp_args) = GetParam();
 
     int thick = 2;
     int lt = LINE_8;
-    cv::Scalar color(100, 50, 150);
+    ncvslideio::Scalar color(100, 50, 150);
 
-    cv::Mat y_ref_mat, uv_ref_mat;
+    ncvslideio::Mat y_ref_mat, uv_ref_mat;
 
-    cv::Mat y_in_gapi_mat, uv_in_gapi_mat,
+    ncvslideio::Mat y_in_gapi_mat, uv_in_gapi_mat,
             y_out_gapi_mat, uv_out_gapi_mat;
 
     create_rand_mats(sz, CV_8UC1, y_ref_mat, y_in_gapi_mat);
     create_rand_mats(sz / 2, CV_8UC2, uv_ref_mat, uv_in_gapi_mat);
 
     // G-API code //////////////////////////////////////////////////////////////
-    cv::gapi::wip::draw::Prims prims;
+    ncvslideio::gapi::wip::draw::Prims prims;
 
     // Rects
     int shift = 0;
     for (int i = 0; i < rects_num; ++i) {
-        cv::Rect rect(200 + i, 200 + i, 200, 200);
-        prims.emplace_back(cv::gapi::wip::draw::Rect(rect, color, thick, lt, shift));
+        ncvslideio::Rect rect(200 + i, 200 + i, 200, 200);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Rect(rect, color, thick, lt, shift));
     }
 
     // Mosaic
     int cellsz = 25;
     int decim = 0;
     for (int i = 0; i < rects_num; ++i) {
-        cv::Rect mos(200 + i, 200 + i, 200, 200);
-        prims.emplace_back(cv::gapi::wip::draw::Mosaic(mos, cellsz, decim));
+        ncvslideio::Rect mos(200 + i, 200 + i, 200, 200);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Mosaic(mos, cellsz, decim));
     }
 
     // Text
@@ -789,36 +789,36 @@ PERF_TEST_P_(RenderTestPolyItems, RenderPolyItemsPerformanceNV12OCVTest)
     double fs = 2.0;
     bool blo = false;
     for (int i = 0; i < text_num; ++i) {
-        cv::Point org(200 + i, 200 + i);
-        prims.emplace_back(cv::gapi::wip::draw::Text(text, org, ff, fs, color, thick, lt, blo));
+        ncvslideio::Point org(200 + i, 200 + i);
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Text(text, org, ff, fs, color, thick, lt, blo));
     }
 
     // Image
     double transparency = 1.0;
-    cv::Rect rect_img(0 ,0 , 50, 50);
-    cv::Mat img(rect_img.size(), CV_8UC3, color);
-    cv::Mat alpha(rect_img.size(), CV_32FC1, transparency);
+    ncvslideio::Rect rect_img(0 ,0 , 50, 50);
+    ncvslideio::Mat img(rect_img.size(), CV_8UC3, color);
+    ncvslideio::Mat alpha(rect_img.size(), CV_32FC1, transparency);
     auto tl = rect_img.tl();
     for (int i = 0; i < image_num; ++i) {
-        cv::Point org_img = {tl.x + i, tl.y + rect_img.size().height + i};
+        ncvslideio::Point org_img = {tl.x + i, tl.y + rect_img.size().height + i};
 
-        prims.emplace_back(cv::gapi::wip::draw::Image({org_img, img, alpha}));
+        prims.emplace_back(ncvslideio::gapi::wip::draw::Image({org_img, img, alpha}));
     }
 
-    cv::GMat y_in, uv_in, y_out, uv_out;
-    cv::GArray<cv::gapi::wip::draw::Prim> arr;
-    std::tie(y_out, uv_out) = cv::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
+    ncvslideio::GMat y_in, uv_in, y_out, uv_out;
+    ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim> arr;
+    std::tie(y_out, uv_out) = ncvslideio::gapi::wip::draw::renderNV12(y_in, uv_in, arr);
 
-    cv::GComputation comp(cv::GIn(y_in, uv_in, arr), cv::GOut(y_out, uv_out));
+    ncvslideio::GComputation comp(ncvslideio::GIn(y_in, uv_in, arr), ncvslideio::GOut(y_out, uv_out));
 
     // Warm-up graph engine:
-    comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-               cv::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
+    comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+               ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat), std::move(comp_args));
 
     TEST_CYCLE()
     {
-        comp.apply(cv::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
-                   cv::gout(y_out_gapi_mat, uv_out_gapi_mat));
+        comp.apply(ncvslideio::gin(y_in_gapi_mat, uv_in_gapi_mat, prims),
+                   ncvslideio::gout(y_out_gapi_mat, uv_out_gapi_mat));
     }
 
     SANITY_CHECK_NOTHING();

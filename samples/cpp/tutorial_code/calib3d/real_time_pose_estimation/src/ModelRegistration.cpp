@@ -17,7 +17,7 @@ ModelRegistration::~ModelRegistration()
     // TODO Auto-generated destructor stub
 }
 
-void ModelRegistration::registerPoint(const cv::Point2f &point2d, const cv::Point3f &point3d)
+void ModelRegistration::registerPoint(const ncvslideio::Point2f &point2d, const ncvslideio::Point3f &point3d)
 {
     // add correspondence at the end of the vector
     list_points2d_.push_back(point2d);

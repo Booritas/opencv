@@ -7,11 +7,11 @@
 
 #include "detail/tracker_feature_haar.impl.hpp"
 
-namespace cv {
+namespace ncvslideio {
 inline namespace tracking {
 namespace impl {
 
-using cv::detail::tracking::internal::TrackerFeatureHAAR;
+using ncvslideio::detail::tracking::internal::TrackerFeatureHAAR;
 
 
 class TrackerMILImpl CV_FINAL : public TrackerMIL
@@ -224,4 +224,4 @@ Ptr<TrackerMIL> TrackerMIL::create(const TrackerMIL::Params& parameters)
     return makePtr<tracking::impl::TrackerMILImpl>(parameters);
 }
 
-}  // namespace cv
+}  // namespace ncvslideio

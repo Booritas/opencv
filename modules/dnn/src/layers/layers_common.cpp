@@ -43,7 +43,7 @@
 #include "../precomp.hpp"
 #include "layers_common.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -103,14 +103,14 @@ bool getParameter(const LayerParams &params, const std::string& nameBase, const 
 void getKernelSize(const LayerParams &params, std::vector<size_t>& kernel)
 {
     if (!util::getParameter(params, "kernel", "kernel_size", kernel))
-        CV_Error(cv::Error::StsBadArg, "kernel_size (or kernel_h and kernel_w) not specified");
+        CV_Error(ncvslideio::Error::StsBadArg, "kernel_size (or kernel_h and kernel_w) not specified");
 
     for (int i = 0; i < kernel.size(); i++)
         CV_Assert(kernel[i] > 0);
 }
 
 void getStrideAndPadding(const LayerParams &params, std::vector<size_t>& pads_begin, std::vector<size_t>& pads_end,
-                         std::vector<size_t>& strides, cv::String& padMode, size_t kernel_size = 2)
+                         std::vector<size_t>& strides, ncvslideio::String& padMode, size_t kernel_size = 2)
 {
     if (params.has("pad_l") && params.has("pad_t") && params.has("pad_r") && params.has("pad_b")) {
         CV_Assert(params.get<int>("pad_t") >= 0 && params.get<int>("pad_l") >= 0 &&
@@ -146,7 +146,7 @@ void getStrideAndPadding(const LayerParams &params, std::vector<size_t>& pads_be
 
 void getPoolingKernelParams(const LayerParams &params, std::vector<size_t>& kernel, std::vector<bool>& globalPooling,
                             std::vector<size_t>& pads_begin, std::vector<size_t>& pads_end,
-                            std::vector<size_t>& strides, cv::String &padMode)
+                            std::vector<size_t>& strides, ncvslideio::String &padMode)
 {
     bool is_global = params.get<bool>("global_pooling", false);
     globalPooling.assign({
@@ -162,7 +162,7 @@ void getPoolingKernelParams(const LayerParams &params, std::vector<size_t>& kern
             (globalPooling[1] && params.has("kernel_h")) ||
             (globalPooling[2] && params.has("kernel_w")) ||
             params.has("kernel_size")) {
-            CV_Error(cv::Error::StsBadArg, "In global_pooling mode, kernel_size (or kernel_h and kernel_w) cannot be specified");
+            CV_Error(ncvslideio::Error::StsBadArg, "In global_pooling mode, kernel_size (or kernel_h and kernel_w) cannot be specified");
         }
 
         kernel.resize(3);
@@ -172,11 +172,11 @@ void getPoolingKernelParams(const LayerParams &params, std::vector<size_t>& kern
 
         for (int i = 0, j = globalPooling.size() - pads_begin.size(); i < pads_begin.size(); i++, j++) {
             if ((pads_begin[i] != 0 || pads_end[i] != 0) && globalPooling[j])
-                CV_Error(cv::Error::StsBadArg, "In global_pooling mode, pads must be = 0");
+                CV_Error(ncvslideio::Error::StsBadArg, "In global_pooling mode, pads must be = 0");
         }
         for (int i = 0, j = globalPooling.size() - strides.size(); i < strides.size(); i++, j++) {
             if (strides[i] != 1 && globalPooling[j])
-                CV_Error(cv::Error::StsBadArg, "In global_pooling mode, strides must be = 1");
+                CV_Error(ncvslideio::Error::StsBadArg, "In global_pooling mode, strides must be = 1");
         }
     }
     else
@@ -188,7 +188,7 @@ void getPoolingKernelParams(const LayerParams &params, std::vector<size_t>& kern
 
 void getConvolutionKernelParams(const LayerParams &params, std::vector<size_t>& kernel, std::vector<size_t>& pads_begin,
                                 std::vector<size_t>& pads_end, std::vector<size_t>& strides,
-                                std::vector<size_t>& dilations, cv::String &padMode, std::vector<size_t>& adjust_pads,
+                                std::vector<size_t>& dilations, ncvslideio::String &padMode, std::vector<size_t>& adjust_pads,
                                 bool& useWinograd)
 {
     util::getKernelSize(params, kernel);
@@ -257,7 +257,7 @@ double getWeightScale(const Mat& weightsMat)
 {
     double realMin, realMax;
 
-    cv::minMaxIdx(weightsMat, &realMin, &realMax);
+    ncvslideio::minMaxIdx(weightsMat, &realMin, &realMax);
     realMin = std::min(realMin, 0.0);
     realMax = std::max(realMax, 0.0);
 

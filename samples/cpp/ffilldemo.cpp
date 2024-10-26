@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** argv)
@@ -74,7 +74,7 @@ static void onMouse( int event, int x, int y, int, void* )
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser (argc, argv,
+    ncvslideio::CommandLineParser parser (argc, argv,
         "{help h | | show help message}{@image|fruits.jpg| input image}"
     );
     if (parser.has("help"))

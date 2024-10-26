@@ -8,12 +8,12 @@ using namespace std;
 
 namespace opencv_test { namespace {
 
-typedef TestWithParam<cv::VideoCaptureAPIs> VideoCaptureAPITests;
+typedef TestWithParam<ncvslideio::VideoCaptureAPIs> VideoCaptureAPITests;
 
 // related issue: https://github.com/opencv/opencv/issues/15499
 TEST_P(VideoCaptureAPITests, mp4_orientation_meta_auto)
 {
-    cv::VideoCaptureAPIs api = GetParam();
+    ncvslideio::VideoCaptureAPIs api = GetParam();
     if (!videoio_registry::hasBackend(api))
         throw SkipTestException("backend " + std::to_string(int(api)) + " was not found");
 
@@ -45,7 +45,7 @@ TEST_P(VideoCaptureAPITests, mp4_orientation_meta_auto)
 // related issue: https://github.com/opencv/opencv/issues/15499
 TEST_P(VideoCaptureAPITests, mp4_orientation_no_rotation)
 {
-    cv::VideoCaptureAPIs api = GetParam();
+    ncvslideio::VideoCaptureAPIs api = GetParam();
     if (!videoio_registry::hasBackend(api))
         throw SkipTestException("backend " + std::to_string(int(api)) + " was not found");
 

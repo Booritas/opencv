@@ -27,7 +27,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     namespace tensor_ops {
 
@@ -653,6 +653,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
 #endif
     };
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_TENSOR_OPS_HPP */

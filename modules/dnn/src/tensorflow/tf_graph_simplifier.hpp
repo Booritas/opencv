@@ -12,7 +12,7 @@
 
 #include "tf_io.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
 void RemoveIdentityOps(tensorflow::GraphDef& net);
@@ -28,7 +28,7 @@ void sortByExecutionOrder(tensorflow::GraphDef& net);
 void removePhaseSwitches(tensorflow::GraphDef& net);
 
 CV__DNN_INLINE_NS_END
-}}  // namespace dnn, namespace cv
+}}  // namespace dnn, namespace ncvslideio
 
 #endif  // HAVE_PROTOBUF
 #endif  // __OPENCV_DNN_TF_SIMPLIFIER_HPP__

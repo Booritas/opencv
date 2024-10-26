@@ -17,7 +17,7 @@
 #include <memory>
 #include <utility>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     /* @brief smart device pointer with allocation/deallocation methods
      *
@@ -298,6 +298,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
         void *ptr;
     };
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_MEMORY_HPP */

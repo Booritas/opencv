@@ -17,7 +17,7 @@
 #include <opencv2/gapi/gcompiled.hpp>
 #include <opencv2/gapi/gstreaming.hpp>
 
-namespace cv {
+namespace ncvslideio {
 
 namespace detail
 {
@@ -69,11 +69,11 @@ namespace s11n {
  * @snippet samples/cpp/tutorial_code/gapi/doc_snippets/api_ref_snippets.cpp graph_cap_full
  *
  * Input/output data objects on which a call graph should be
- * reconstructed are passed using special wrappers cv::GIn and
- * cv::GOut. G-API will track automatically which operations form a
+ * reconstructed are passed using special wrappers ncvslideio::GIn and
+ * ncvslideio::GOut. G-API will track automatically which operations form a
  * path from inputs to outputs and build the execution graph appropriately.
  *
- * Note that cv::GComputation doesn't take ownership on data objects
+ * Note that ncvslideio::GComputation doesn't take ownership on data objects
  * it is defined. Moreover, multiple GComputation objects may be
  * defined on the same expressions, e.g. a smaller pipeline which
  * expects that image gradients are already pre-calculated may be
@@ -83,7 +83,7 @@ namespace s11n {
  *
  * The resulting graph would expect two inputs and produce one
  * output. In this case, it doesn't matter if gx/gy data objects are
- * results of cv::gapi::Sobel operators -- G-API will stop unrolling
+ * results of ncvslideio::gapi::Sobel operators -- G-API will stop unrolling
  * expressions and building the underlying graph one reaching this
  * data objects.
  *
@@ -95,20 +95,20 @@ namespace s11n {
  * In the above example, sobelEdge expects one Mat on input and
  * produces one Mat; while sobelEdgeSub expects two Mats on input and
  * produces one Mat. GComputation's protocol defines how other
- * computation methods should be used -- cv::GComputation::compile() and
- * cv::GComputation::apply(). For example, if a graph is defined on
- * two GMat inputs, two cv::Mat objects have to be passed to apply()
+ * computation methods should be used -- ncvslideio::GComputation::compile() and
+ * ncvslideio::GComputation::apply(). For example, if a graph is defined on
+ * two GMat inputs, two ncvslideio::Mat objects have to be passed to apply()
  * for execution. GComputation checks protocol correctness in runtime
  * so passing a different number of objects in apply() or passing
- * cv::Scalar instead of cv::Mat there would compile well as a C++
+ * ncvslideio::Scalar instead of ncvslideio::Mat there would compile well as a C++
  * source but raise an exception in run-time. G-API also comes with a
- * typed wrapper cv::GComputationT<> which introduces this type-checking in
+ * typed wrapper ncvslideio::GComputationT<> which introduces this type-checking in
  * compile-time.
  *
- * cv::GComputation itself is a thin object which just captures what
+ * ncvslideio::GComputation itself is a thin object which just captures what
  * the graph is. The compiled graph (which actually process data) is
  * represented by class GCompiled. Use compile() method to generate a
- * compiled graph with given compile options. cv::GComputation can
+ * compiled graph with given compile options. ncvslideio::GComputation can
  * also be used to process data with implicit graph compilation
  * on-the-fly, see apply() for details.
  *
@@ -133,12 +133,12 @@ public:
      *
      * @snippet samples/cpp/tutorial_code/gapi/doc_snippets/api_ref_snippets.cpp graph_gen
      *
-     * This may be useful since all temporary objects (cv::GMats) and
+     * This may be useful since all temporary objects (ncvslideio::GMats) and
      * namespaces can be localized to scope of lambda, without
      * contaminating the parent scope with probably unnecessary objects
      * and information.
      *
-     * @param gen generator function which returns a cv::GComputation,
+     * @param gen generator function which returns a ncvslideio::GComputation,
      * see Generator.
      */
     GComputation(const Generator& gen);                // Generator
@@ -156,7 +156,7 @@ public:
      * @param outs Output data vector.
      *
      * @note Don't construct GProtoInputArgs/GProtoOutputArgs objects
-     * directly, use cv::GIn()/cv::GOut() wrapper functions instead.
+     * directly, use ncvslideio::GIn()/ncvslideio::GOut() wrapper functions instead.
      *
      * @sa @ref gapi_data_objects
      */
@@ -226,14 +226,14 @@ public:
      * the inputs data vectors.
      *
      * Number of input/output data objects must match GComputation's
-     * protocol, also types of host data objects (cv::Mat, cv::Scalar)
-     * must match the shapes of data objects from protocol (cv::GMat,
-     * cv::GScalar). If there's a mismatch, a run-time exception will
+     * protocol, also types of host data objects (ncvslideio::Mat, ncvslideio::Scalar)
+     * must match the shapes of data objects from protocol (ncvslideio::GMat,
+     * ncvslideio::GScalar). If there's a mismatch, a run-time exception will
      * be generated.
      *
-     * Internally, a cv::GCompiled object is created for the given
+     * Internally, a ncvslideio::GCompiled object is created for the given
      * input format configuration, which then is executed on the input
-     * data immediately. cv::GComputation caches compiled objects
+     * data immediately. ncvslideio::GComputation caches compiled objects
      * produced within apply() -- if this method would be called next
      * time with the same input parameters (image formats, image
      * resolution, etc), the underlying compiled graph will be reused
@@ -245,26 +245,26 @@ public:
      * been cached via apply() or not.
      *
      * @param ins vector of input data to process. Don't create
-     * GRunArgs object manually, use cv::gin() wrapper instead.
-     * @param outs vector of output data to fill results in. cv::Mat
+     * GRunArgs object manually, use ncvslideio::gin() wrapper instead.
+     * @param outs vector of output data to fill results in. ncvslideio::Mat
      * objects may be empty in this vector, G-API will automatically
      * initialize it with the required format & dimensions. Don't
-     * create GRunArgsP object manually, use cv::gout() wrapper instead.
+     * create GRunArgsP object manually, use ncvslideio::gout() wrapper instead.
      * @param args a list of compilation arguments to pass to the
      * underlying compilation process. Don't create GCompileArgs
-     * object manually, use cv::compile_args() wrapper instead.
+     * object manually, use ncvslideio::compile_args() wrapper instead.
      *
      * @sa @ref gapi_data_objects, @ref gapi_compile_args
      */
     void apply(GRunArgs &&ins, GRunArgsP &&outs, GCompileArgs &&args = {});       // Arg-to-arg overload
 
     /// @private -- Exclude this function from OpenCV documentation
-    GAPI_WRAP GRunArgs apply(const cv::detail::ExtractArgsCallback  &callback,
+    GAPI_WRAP GRunArgs apply(const ncvslideio::detail::ExtractArgsCallback  &callback,
                                    GCompileArgs                    &&args = {});
 
     /// @private -- Exclude this function from OpenCV documentation
-    void apply(const std::vector<cv::Mat>& ins,                                   // Compatibility overload
-               const std::vector<cv::Mat>& outs,
+    void apply(const std::vector<ncvslideio::Mat>& ins,                                   // Compatibility overload
+               const std::vector<ncvslideio::Mat>& outs,
                GCompileArgs &&args = {});
 
     // 2. Syntax sugar and compatibility overloads
@@ -273,56 +273,56 @@ public:
      * @brief Execute an unary computation (with compilation on the fly)
      *
      * @overload
-     * @param in input cv::Mat for unary computation
-     * @param out output cv::Mat for unary computation
+     * @param in input ncvslideio::Mat for unary computation
+     * @param out output ncvslideio::Mat for unary computation
      * @param args compilation arguments for underlying compilation
      * process.
      */
-    void apply(cv::Mat in, cv::Mat &out, GCompileArgs &&args = {}); // Unary overload
+    void apply(ncvslideio::Mat in, ncvslideio::Mat &out, GCompileArgs &&args = {}); // Unary overload
 
     /**
      * @brief Execute an unary computation (with compilation on the fly)
      *
      * @overload
-     * @param in input cv::Mat for unary computation
-     * @param out output cv::Scalar for unary computation
+     * @param in input ncvslideio::Mat for unary computation
+     * @param out output ncvslideio::Scalar for unary computation
      * @param args compilation arguments for underlying compilation
      * process.
      */
-    void apply(cv::Mat in, cv::Scalar &out, GCompileArgs &&args = {}); // Unary overload (scalar)
+    void apply(ncvslideio::Mat in, ncvslideio::Scalar &out, GCompileArgs &&args = {}); // Unary overload (scalar)
 
     /**
      * @brief Execute a binary computation (with compilation on the fly)
      *
      * @overload
-     * @param in1 first input cv::Mat for binary computation
-     * @param in2 second input cv::Mat for binary computation
-     * @param out output cv::Mat for binary computation
+     * @param in1 first input ncvslideio::Mat for binary computation
+     * @param in2 second input ncvslideio::Mat for binary computation
+     * @param out output ncvslideio::Mat for binary computation
      * @param args compilation arguments for underlying compilation
      * process.
      */
-    void apply(cv::Mat in1, cv::Mat in2, cv::Mat &out, GCompileArgs &&args = {}); // Binary overload
+    void apply(ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Mat &out, GCompileArgs &&args = {}); // Binary overload
 
     /**
      * @brief Execute an binary computation (with compilation on the fly)
      *
      * @overload
-     * @param in1 first input cv::Mat for binary computation
-     * @param in2 second input cv::Mat for binary computation
-     * @param out output cv::Scalar for binary computation
+     * @param in1 first input ncvslideio::Mat for binary computation
+     * @param in2 second input ncvslideio::Mat for binary computation
+     * @param out output ncvslideio::Scalar for binary computation
      * @param args compilation arguments for underlying compilation
      * process.
      */
-    void apply(cv::Mat in1, cv::Mat in2, cv::Scalar &out, GCompileArgs &&args = {}); // Binary overload (scalar)
+    void apply(ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Scalar &out, GCompileArgs &&args = {}); // Binary overload (scalar)
 
     /**
      * @brief Execute a computation with arbitrary number of
      * inputs/outputs (with compilation on-the-fly).
      *
      * @overload
-     * @param ins vector of input cv::Mat objects to process by the
+     * @param ins vector of input ncvslideio::Mat objects to process by the
      * computation.
-     * @param outs vector of output cv::Mat objects to produce by the
+     * @param outs vector of output ncvslideio::Mat objects to produce by the
      * computation.
      * @param args compilation arguments for underlying compilation
      * process.
@@ -330,8 +330,8 @@ public:
      * Numbers of elements in ins/outs vectors must match numbers of
      * inputs/outputs which were used to define this GComputation.
      */
-    void apply(const std::vector<cv::Mat>& ins,         // Compatibility overload
-                     std::vector<cv::Mat>& outs,
+    void apply(const std::vector<ncvslideio::Mat>& ins,         // Compatibility overload
+                     std::vector<ncvslideio::Mat>& outs,
                GCompileArgs &&args = {});
 #endif // !defined(GAPI_STANDALONE)
     // Various versions of compile(): //////////////////////////////////////////
@@ -345,8 +345,8 @@ public:
      * computation will generate a run-time exception.
      *
      * @param in_metas vector of input metadata configuration. Grab
-     * metadata from real data objects (like cv::Mat or cv::Scalar)
-     * using cv::descr_of(), or create it on your own.
+     * metadata from real data objects (like ncvslideio::Mat or ncvslideio::Scalar)
+     * using ncvslideio::descr_of(), or create it on your own.
      * @param args compilation arguments for this compilation
      * process. Compilation arguments directly affect what kind of
      * executable object would be produced, e.g. which kernels (and
@@ -424,8 +424,8 @@ public:
      * exception.
      *
      * @param in_metas vector of input metadata configuration. Grab
-     * metadata from real data objects (like cv::Mat or cv::Scalar)
-     * using cv::descr_of(), or create it on your own.
+     * metadata from real data objects (like ncvslideio::Mat or ncvslideio::Scalar)
+     * using ncvslideio::descr_of(), or create it on your own.
      *
      * @param args compilation arguments for this compilation
      * process. Compilation arguments directly affect what kind of
@@ -462,7 +462,7 @@ public:
     GAPI_WRAP GStreamingCompiled compileStreaming(GCompileArgs &&args = {});
 
     /// @private -- Exclude this function from OpenCV documentation
-    GAPI_WRAP GStreamingCompiled compileStreaming(const cv::detail::ExtractMetaCallback &callback,
+    GAPI_WRAP GStreamingCompiled compileStreaming(const ncvslideio::detail::ExtractMetaCallback &callback,
                                                         GCompileArgs                   &&args = {});
 
     // 2. Direct metadata version
@@ -513,9 +513,9 @@ public:
     /// @private
     const Priv& priv() const;
     /// @private
-    explicit GComputation(cv::gapi::s11n::IIStream &);
+    explicit GComputation(ncvslideio::gapi::s11n::IIStream &);
     /// @private
-    void serialize(cv::gapi::s11n::IOStream &) const;
+    void serialize(ncvslideio::gapi::s11n::IOStream &) const;
 
 protected:
 
@@ -564,18 +564,18 @@ namespace gapi
      * ends.
      *
      * The way how an island is defined is similar to how
-     * cv::GComputation is defined on input/output data objects.
+     * ncvslideio::GComputation is defined on input/output data objects.
      * Same rules apply here as well -- if there's no functional
      * dependency between inputs and outputs or there's not enough
      * input data objects were specified to properly calculate all
      * outputs, an exception is thrown.
      *
-     * Use cv::GIn() / cv::GOut() to specify input/output vectors.
+     * Use ncvslideio::GIn() / ncvslideio::GOut() to specify input/output vectors.
      */
     void GAPI_EXPORTS island(const std::string &name,
                              GProtoInputArgs  &&ins,
                              GProtoOutputArgs &&outs);
 } // namespace gapi
 
-} // namespace cv
+} // namespace ncvslideio
 #endif // OPENCV_GAPI_GCOMPUTATION_HPP

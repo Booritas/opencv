@@ -83,7 +83,7 @@ class DetectedObject {
      * @param[in] input_rect Rectangle of input object.
      * @param[in] input_class_label Class label of input object.
      */
-    DetectedObject(const cv::Rect &input_rect, int32_t input_class_label)
+    DetectedObject(const ncvslideio::Rect &input_rect, int32_t input_class_label)
         : rect(input_rect), class_label(input_class_label) {
     }
 
@@ -91,7 +91,7 @@ class DetectedObject {
     /**
      * Object rectangle.
      */
-    cv::Rect rect;
+    ncvslideio::Rect rect;
 
     /**
      * Input class label.
@@ -114,7 +114,7 @@ class Object {
     /**
      * Object rectangle.
      */
-    cv::Rect rect;
+    ncvslideio::Rect rect;
 
     /**
      * Tracking ID.
@@ -176,9 +176,9 @@ VAS_EXPORT std::ostream &operator<<(std::ostream &os, const Object &object);
  * Following sample code shows how to use short term tracking type.
  * Objects are added to ObjectTracker at the beginnning of tracking and in the middle of tracking periodically as well.
  * @code
-    cv::VideoCapture video("/path/to/video/source");
-    cv::Mat frame;
-    cv::Mat first_frame;
+    ncvslideio::VideoCapture video("/path/to/video/source");
+    ncvslideio::Mat frame;
+    ncvslideio::Mat first_frame;
     video >> first_frame;
 
     vas::ot::ObjectTracker::Builder ot_builder;
@@ -229,8 +229,8 @@ VAS_EXPORT std::ostream &operator<<(std::ostream &os, const Object &object);
  * In this sample, pvd runs for each input frame.
  * After pvd generates results, ot runs with the results and object IDs are preserved.
  * @code
-    cv::VideoCapture video("/path/to/video/source");
-    cv::Mat frame;
+    ncvslideio::VideoCapture video("/path/to/video/source");
+    ncvslideio::Mat frame;
 
     vas::ot::ObjectTracker::Builder ot_builder;
     auto ot = ot_builder.Build(vas::ot::TrackingType::ZERO_TERM);
@@ -294,7 +294,7 @@ class ObjectTracker {
      * @exception std::invalid_argument Input frame is invalid.
      */
     VAS_EXPORT std::vector<Object>
-    Track(const cv::Mat &frame, const std::vector<DetectedObject> &detected_objects = std::vector<DetectedObject>());
+    Track(const ncvslideio::Mat &frame, const std::vector<DetectedObject> &detected_objects = std::vector<DetectedObject>());
 
     /**
      * This function is to set a parameter indicating 'delta time' between now and last call to Track() in seconds.

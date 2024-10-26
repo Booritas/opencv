@@ -15,7 +15,7 @@
 #include <opencv2/gapi/garray.hpp>    // GArray<T>
 #include <opencv2/gapi/gopaque.hpp>   // GOpaque<T>
 
-namespace cv {
+namespace ncvslideio {
 
 struct GKernel;
 
@@ -34,7 +34,7 @@ public:
     template<typename... Ts>
     GCall& pass(Ts&&... args)
     {
-        setArgs({cv::GArg(std::move(args))...});
+        setArgs({ncvslideio::GArg(std::move(args))...});
         return *this;
     }
 
@@ -61,7 +61,7 @@ public:
     // GKernel and params can be modified, it's needed for infer<Generic>,
     // because information about output shapes doesn't exist in compile time
     GKernel& kernel();
-    cv::util::any& params();
+    ncvslideio::util::any& params();
 
     void setArgs(std::vector<GArg> &&args);
 
@@ -73,6 +73,6 @@ protected:
     detail::GOpaqueU yieldOpaque(int output = 0);
 };
 
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_GCALL_HPP

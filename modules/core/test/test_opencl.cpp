@@ -11,7 +11,7 @@ namespace ocl {
 static
 testing::internal::ParamGenerator<std::string> getOpenCLTestConfigurations()
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         return testing::ValuesIn(std::vector<std::string>());
     }
@@ -29,19 +29,19 @@ static void executeUMatCall(bool requireOpenCL = true)
 {
     UMat a(100, 100, CV_8UC1, Scalar::all(0));
     UMat b;
-    cv::add(a, Scalar::all(1), b);
+    ncvslideio::add(a, Scalar::all(1), b);
     Mat b_cpu = b.getMat(ACCESS_READ);
-    EXPECT_EQ(0, cv::norm(b_cpu - 1, NORM_INF));
+    EXPECT_EQ(0, ncvslideio::norm(b_cpu - 1, NORM_INF));
 
     if (requireOpenCL)
     {
-        EXPECT_TRUE(cv::ocl::useOpenCL());
+        EXPECT_TRUE(ncvslideio::ocl::useOpenCL());
     }
 }
 
 TEST(OCL_Context, createFromDevice)
 {
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     OpenCLExecutionContext ctx = OpenCLExecutionContext::getCurrent();
 
@@ -64,7 +64,7 @@ TEST(OCL_Context, createFromDevice)
 
 TEST(OCL_OpenCLExecutionContextDefault, basic)
 {
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     OpenCLExecutionContext ctx = OpenCLExecutionContext::getCurrent();
 
@@ -91,7 +91,7 @@ TEST(OCL_OpenCLExecutionContextDefault, basic)
 
 TEST(OCL_OpenCLExecutionContextDefault, createAndBind)
 {
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     OpenCLExecutionContext ctx = OpenCLExecutionContext::getCurrent();
 
@@ -127,7 +127,7 @@ typedef testing::TestWithParam<std::string> OCL_OpenCLExecutionContext_P;
 
 TEST_P(OCL_OpenCLExecutionContext_P, multipleBindAndExecute)
 {
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     OpenCLExecutionContext ctx = OpenCLExecutionContext::getCurrent();
 
@@ -169,7 +169,7 @@ TEST_P(OCL_OpenCLExecutionContext_P, multipleBindAndExecute)
 
 TEST_P(OCL_OpenCLExecutionContext_P, ScopeTest)
 {
-    bool useOCL = cv::ocl::useOpenCL();
+    bool useOCL = ncvslideio::ocl::useOpenCL();
 
     OpenCLExecutionContext ctx = OpenCLExecutionContext::getCurrent();
 
@@ -213,16 +213,16 @@ INSTANTIATE_TEST_CASE_P(/*nothing*/, OCL_OpenCLExecutionContext_P, getOpenCLTest
 typedef testing::TestWithParam<UMatUsageFlags> UsageFlagsFixture;
 OCL_TEST_P(UsageFlagsFixture, UsageFlagsRetained)
 {
-    if (!cv::ocl::useOpenCL())
+    if (!ncvslideio::ocl::useOpenCL())
     {
         throw SkipTestException("OpenCL is not available / disabled");
     }
 
     const UMatUsageFlags usage = GetParam();
-    cv::UMat flip_in(10, 10, CV_32F, usage);
-    cv::UMat flip_out(usage);
-    cv::flip(flip_in, flip_out, 1);
-    cv::ocl::finish();
+    ncvslideio::UMat flip_in(10, 10, CV_32F, usage);
+    ncvslideio::UMat flip_out(usage);
+    ncvslideio::flip(flip_in, flip_out, 1);
+    ncvslideio::ocl::finish();
 
     ASSERT_EQ(usage, flip_in.usageFlags);
     ASSERT_EQ(usage, flip_out.usageFlags);

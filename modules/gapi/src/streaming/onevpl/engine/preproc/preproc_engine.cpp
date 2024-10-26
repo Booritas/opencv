@@ -21,7 +21,7 @@
 
 #define ALIGN16(value)           (((value + 15) >> 4) << 4)
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -35,9 +35,9 @@ bool FrameInfoComparator::equal_to(const mfxFrameInfo& lhs, const mfxFrameInfo& 
 }
 
 static void apply_roi(mfxFrameSurface1* surface_handle,
-                      const cv::util::optional<cv::Rect> &opt_roi) {
+                      const ncvslideio::util::optional<ncvslideio::Rect> &opt_roi) {
     if (opt_roi.has_value()) {
-        const cv::Rect &roi = opt_roi.value();
+        const ncvslideio::Rect &roi = opt_roi.value();
         surface_handle->Info.CropX = static_cast<mfxU16>(roi.x);
         surface_handle->Info.CropY = static_cast<mfxU16>(roi.y);
         surface_handle->Info.CropW = static_cast<mfxU16>(roi.width);
@@ -155,13 +155,13 @@ VPPPreprocEngine::VPPPreprocEngine(std::unique_ptr<VPLAccelerationPolicy>&& acce
     );
 }
 
-cv::util::optional<pp_params> VPPPreprocEngine::is_applicable(const cv::MediaFrame& in_frame) {
+ncvslideio::util::optional<pp_params> VPPPreprocEngine::is_applicable(const ncvslideio::MediaFrame& in_frame) {
     // TODO consider something smarter than RTI
-    cv::util::optional<pp_params> ret;
+    ncvslideio::util::optional<pp_params> ret;
     BaseFrameAdapter *vpl_adapter = in_frame.get<BaseFrameAdapter>();
     GAPI_LOG_DEBUG(nullptr, "validate VPP preprocessing is applicable for frame");
     if (vpl_adapter) {
-        ret = cv::util::make_optional<pp_params>(
+        ret = ncvslideio::util::make_optional<pp_params>(
                         pp_params::create<vpp_pp_params>(vpl_adapter->get_session_handle(),
                                                          vpl_adapter->get_surface()->get_info(),
                                                          vpl_adapter));
@@ -326,7 +326,7 @@ void VPPPreprocEngine::on_frame_ready(session_type& sess,
     VPLAccelerationPolicy::FrameConstructorArgs args{ready_surface, sess.session};
     auto frame_adapter = acceleration_policy->create_frame_adapter(sess.vpp_pool_id,
                                                                    args);
-    ready_frames.emplace(cv::MediaFrame(std::move(frame_adapter)), sess.generate_frame_meta());
+    ready_frames.emplace(ncvslideio::MediaFrame(std::move(frame_adapter)), sess.generate_frame_meta());
 
     // pop away synced out object
     sess.vpp_out_queue.pop();
@@ -339,8 +339,8 @@ VPPPreprocEngine::initialize_session(mfxSession,
     return {};
 }
 
-cv::MediaFrame VPPPreprocEngine::run_sync(const pp_session& sess, const cv::MediaFrame& in_frame,
-                                          const cv::util::optional<cv::Rect> &roi) {
+ncvslideio::MediaFrame VPPPreprocEngine::run_sync(const pp_session& sess, const ncvslideio::MediaFrame& in_frame,
+                                          const ncvslideio::util::optional<ncvslideio::Rect> &roi) {
     vpp_pp_session pp_sess_impl = sess.get<vpp_pp_session>();
     if (!pp_sess_impl.handle) {
         // bypass case
@@ -383,11 +383,11 @@ cv::MediaFrame VPPPreprocEngine::run_sync(const pp_session& sess, const cv::Medi
         throw;
     }
     // obtain new frame is available
-    cv::gapi::wip::Data data;
+    ncvslideio::gapi::wip::Data data;
     get_frame(data);
     preprocessed_frames_count++;
     GAPI_LOG_DEBUG(nullptr, "processed frames count: " << preprocessed_frames_count);
-    return cv::util::get<cv::MediaFrame>(data);
+    return ncvslideio::util::get<ncvslideio::MediaFrame>(data);
 }
 
 ProcessingEngineBase::ExecutionStatus VPPPreprocEngine::process_error(mfxStatus status, session_type& sess) {
@@ -469,5 +469,5 @@ ProcessingEngineBase::ExecutionStatus VPPPreprocEngine::process_error(mfxStatus 
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

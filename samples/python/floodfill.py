@@ -26,21 +26,21 @@ class App():
 
     def update(self, dummy=None):
         if self.seed_pt is None:
-            cv.imshow('floodfill', self.img)
+            ncvslideio.imshow('floodfill', self.img)
             return
         flooded = self.img.copy()
         self.mask[:] = 0
-        lo = cv.getTrackbarPos('lo', 'floodfill')
-        hi = cv.getTrackbarPos('hi', 'floodfill')
+        lo = ncvslideio.getTrackbarPos('lo', 'floodfill')
+        hi = ncvslideio.getTrackbarPos('hi', 'floodfill')
         flags = self.connectivity
         if self.fixed_range:
-            flags |= cv.FLOODFILL_FIXED_RANGE
-        cv.floodFill(flooded, self.mask, self.seed_pt, (255, 255, 255), (lo,)*3, (hi,)*3, flags)
-        cv.circle(flooded, self.seed_pt, 2, (0, 0, 255), -1)
-        cv.imshow('floodfill', flooded)
+            flags |= ncvslideio.FLOODFILL_FIXED_RANGE
+        ncvslideio.floodFill(flooded, self.mask, self.seed_pt, (255, 255, 255), (lo,)*3, (hi,)*3, flags)
+        ncvslideio.circle(flooded, self.seed_pt, 2, (0, 0, 255), -1)
+        ncvslideio.imshow('floodfill', flooded)
 
     def onmouse(self, event, x, y, flags, param):
-        if flags & cv.EVENT_FLAG_LBUTTON:
+        if flags & ncvslideio.EVENT_FLAG_LBUTTON:
             self.seed_pt = x, y
             self.update()
 
@@ -50,7 +50,7 @@ class App():
         except:
             fn = 'fruits.jpg'
 
-        self.img = cv.imread(cv.samples.findFile(fn))
+        self.img = ncvslideio.imread(ncvslideio.samples.findFile(fn))
         if self.img is None:
             print('Failed to load image file:', fn)
             sys.exit(1)
@@ -62,12 +62,12 @@ class App():
         self.connectivity = 4
 
         self.update()
-        cv.setMouseCallback('floodfill', self.onmouse)
-        cv.createTrackbar('lo', 'floodfill', 20, 255, self.update)
-        cv.createTrackbar('hi', 'floodfill', 20, 255, self.update)
+        ncvslideio.setMouseCallback('floodfill', self.onmouse)
+        ncvslideio.createTrackbar('lo', 'floodfill', 20, 255, self.update)
+        ncvslideio.createTrackbar('hi', 'floodfill', 20, 255, self.update)
 
         while True:
-            ch = cv.waitKey()
+            ch = ncvslideio.waitKey()
             if ch == 27:
                 break
             if ch == ord('f'):
@@ -85,4 +85,4 @@ class App():
 if __name__ == '__main__':
     print(__doc__)
     App().run()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

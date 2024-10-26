@@ -126,16 +126,16 @@ public:
     void step();
     enum { DONE=0, STARTED=1, CALC_J=2, CHECK_ERR=3 };
 
-    cv::Ptr<CvMat> mask;
-    cv::Ptr<CvMat> prevParam;
-    cv::Ptr<CvMat> param;
-    cv::Ptr<CvMat> J;
-    cv::Ptr<CvMat> err;
-    cv::Ptr<CvMat> JtJ;
-    cv::Ptr<CvMat> JtJN;
-    cv::Ptr<CvMat> JtErr;
-    cv::Ptr<CvMat> JtJV;
-    cv::Ptr<CvMat> JtJW;
+    ncvslideio::Ptr<CvMat> mask;
+    ncvslideio::Ptr<CvMat> prevParam;
+    ncvslideio::Ptr<CvMat> param;
+    ncvslideio::Ptr<CvMat> J;
+    ncvslideio::Ptr<CvMat> err;
+    ncvslideio::Ptr<CvMat> JtJ;
+    ncvslideio::Ptr<CvMat> JtJN;
+    ncvslideio::Ptr<CvMat> JtErr;
+    ncvslideio::Ptr<CvMat> JtJV;
+    ncvslideio::Ptr<CvMat> JtJW;
     double prevErrNorm, errNorm;
     int lambdaLg10;
     CvTermCriteria criteria;

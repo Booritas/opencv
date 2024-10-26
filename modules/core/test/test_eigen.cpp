@@ -59,7 +59,7 @@ namespace opencv_test { namespace {
 #define MESSAGE_ERROR_ORDER "Eigen values are not sorted in descending order."
 
 const int COUNT_NORM_TYPES = 3;
-const int NORM_TYPE[COUNT_NORM_TYPES] = {cv::NORM_L1, cv::NORM_L2, cv::NORM_INF};
+const int NORM_TYPE[COUNT_NORM_TYPES] = {ncvslideio::NORM_L1, ncvslideio::NORM_L2, ncvslideio::NORM_INF};
 
 enum TASK_TYPE_EIGEN {VALUES, VECTORS};
 
@@ -72,7 +72,7 @@ public:
 
 protected:
 
-    bool test_values(const cv::Mat& src);												// complex test for eigen without vectors
+    bool test_values(const ncvslideio::Mat& src);												// complex test for eigen without vectors
     bool check_full(int type);													// complex test for symmetric matrix
     virtual void run (int) = 0;													// main testing method
 
@@ -82,13 +82,13 @@ protected:
     float eps_val_64, eps_vec_64;
     int ntests;
 
-    bool check_pair_count(const cv::Mat& src, const cv::Mat& evalues, int low_index = -1, int high_index = -1);
-    bool check_pair_count(const cv::Mat& src, const cv::Mat& evalues, const cv::Mat& evectors, int low_index = -1, int high_index = -1);
-    bool check_pairs_order(const cv::Mat& eigen_values);											// checking order of eigen values & vectors (it should be none up)
-    bool check_orthogonality(const cv::Mat& U);												// checking is matrix of eigen vectors orthogonal
-    bool test_pairs(const cv::Mat& src);													// complex test for eigen with vectors
+    bool check_pair_count(const ncvslideio::Mat& src, const ncvslideio::Mat& evalues, int low_index = -1, int high_index = -1);
+    bool check_pair_count(const ncvslideio::Mat& src, const ncvslideio::Mat& evalues, const ncvslideio::Mat& evectors, int low_index = -1, int high_index = -1);
+    bool check_pairs_order(const ncvslideio::Mat& eigen_values);											// checking order of eigen values & vectors (it should be none up)
+    bool check_orthogonality(const ncvslideio::Mat& U);												// checking is matrix of eigen vectors orthogonal
+    bool test_pairs(const ncvslideio::Mat& src);													// complex test for eigen with vectors
 
-    void print_information(const size_t norm_idx, const cv::Mat& src, double diff, double max_diff);
+    void print_information(const size_t norm_idx, const ncvslideio::Mat& src, double diff, double max_diff);
 };
 
 class Core_EigenTest_Scalar : public Core_EigenTest
@@ -141,8 +141,8 @@ void Core_EigenTest_Scalar_32::run(int)
 {
     for (int i = 0; i < ntests; ++i)
     {
-        float value = cv::randu<float>();
-        cv::Mat src(1, 1, CV_32FC1, Scalar::all((float)value));
+        float value = ncvslideio::randu<float>();
+        ncvslideio::Mat src(1, 1, CV_32FC1, Scalar::all((float)value));
         test_values(src);
     }
 }
@@ -151,8 +151,8 @@ void Core_EigenTest_Scalar_64::run(int)
 {
     for (int i = 0; i < ntests; ++i)
     {
-        float value = cv::randu<float>();
-        cv::Mat src(1, 1, CV_64FC1, Scalar::all((double)value));
+        float value = ncvslideio::randu<float>();
+        ncvslideio::Mat src(1, 1, CV_64FC1, Scalar::all((double)value));
         test_values(src);
     }
 }
@@ -165,7 +165,7 @@ Core_EigenTest::Core_EigenTest()
   eps_val_64(1e-4f), eps_vec_64(1e-4f), ntests(100) {}
 Core_EigenTest::~Core_EigenTest() {}
 
-bool Core_EigenTest::check_pair_count(const cv::Mat& src, const cv::Mat& evalues, int low_index, int high_index)
+bool Core_EigenTest::check_pair_count(const ncvslideio::Mat& src, const ncvslideio::Mat& evalues, int low_index, int high_index)
 {
     int n = src.rows, s = sign(high_index);
     if (!( (evalues.rows == n - max<int>(0, low_index) - ((int)((n/2.0)*(s*s-s)) + (1+s-s*s)*(n - (high_index+1)))) && (evalues.cols == 1)))
@@ -178,7 +178,7 @@ bool Core_EigenTest::check_pair_count(const cv::Mat& src, const cv::Mat& evalues
     return true;
 }
 
-bool Core_EigenTest::check_pair_count(const cv::Mat& src, const cv::Mat& evalues, const cv::Mat& evectors, int low_index, int high_index)
+bool Core_EigenTest::check_pair_count(const ncvslideio::Mat& src, const ncvslideio::Mat& evalues, const ncvslideio::Mat& evectors, int low_index, int high_index)
 {
     int n = src.rows, s = sign(high_index);
     int right_eigen_pair_count = n - max<int>(0, low_index) - ((int)((n/2.0)*(s*s-s)) + (1+s-s*s)*(n - (high_index+1)));
@@ -202,13 +202,13 @@ bool Core_EigenTest::check_pair_count(const cv::Mat& src, const cv::Mat& evalues
     return true;
 }
 
-void Core_EigenTest::print_information(const size_t norm_idx, const cv::Mat& src, double diff, double max_diff)
+void Core_EigenTest::print_information(const size_t norm_idx, const ncvslideio::Mat& src, double diff, double max_diff)
 {
     switch (NORM_TYPE[norm_idx])
     {
-    case cv::NORM_L1: std::cout << "L1"; break;
-    case cv::NORM_L2: std::cout << "L2"; break;
-    case cv::NORM_INF: std::cout << "INF"; break;
+    case ncvslideio::NORM_L1: std::cout << "L1"; break;
+    case ncvslideio::NORM_L2: std::cout << "L2"; break;
+    case ncvslideio::NORM_INF: std::cout << "INF"; break;
     default: break;
     }
 
@@ -218,17 +218,17 @@ void Core_EigenTest::print_information(const size_t norm_idx, const cv::Mat& src
     cout << "Maximum allowed difference: " << max_diff << endl; cout << endl;
 }
 
-bool Core_EigenTest::check_orthogonality(const cv::Mat& U)
+bool Core_EigenTest::check_orthogonality(const ncvslideio::Mat& U)
 {
     int type = U.type();
     double eps_vec = type == CV_32FC1 ? eps_vec_32 : eps_vec_64;
-    cv::Mat UUt; cv::mulTransposed(U, UUt, false);
+    ncvslideio::Mat UUt; ncvslideio::mulTransposed(U, UUt, false);
 
-    cv::Mat E = Mat::eye(U.rows, U.cols, type);
+    ncvslideio::Mat E = Mat::eye(U.rows, U.cols, type);
 
     for (int i = 0; i < COUNT_NORM_TYPES; ++i)
     {
-        double diff = cvtest::norm(UUt, E, NORM_TYPE[i] | cv::NORM_RELATIVE);
+        double diff = cvtest::norm(UUt, E, NORM_TYPE[i] | ncvslideio::NORM_RELATIVE);
         if (diff > eps_vec)
         {
             std::cout << endl; std::cout << "Checking orthogonality of matrix " << U << ": ";
@@ -240,7 +240,7 @@ bool Core_EigenTest::check_orthogonality(const cv::Mat& U)
     return true;
 }
 
-bool Core_EigenTest::check_pairs_order(const cv::Mat& eigen_values)
+bool Core_EigenTest::check_pairs_order(const ncvslideio::Mat& eigen_values)
 {
     switch (eigen_values.type())
     {
@@ -278,14 +278,14 @@ bool Core_EigenTest::check_pairs_order(const cv::Mat& eigen_values)
     return true;
 }
 
-bool Core_EigenTest::test_pairs(const cv::Mat& src)
+bool Core_EigenTest::test_pairs(const ncvslideio::Mat& src)
 {
     int type = src.type();
     double eps_vec = type == CV_32FC1 ? eps_vec_32 : eps_vec_64;
 
-    cv::Mat eigen_values, eigen_vectors;
+    ncvslideio::Mat eigen_values, eigen_vectors;
 
-    cv::eigen(src, eigen_values, eigen_vectors);
+    ncvslideio::eigen(src, eigen_values, eigen_vectors);
 
     if (!check_pair_count(src, eigen_values, eigen_vectors))
         return false;
@@ -296,12 +296,12 @@ bool Core_EigenTest::test_pairs(const cv::Mat& src)
     if (!check_pairs_order(eigen_values))
         return false;
 
-    cv::Mat eigen_vectors_t; cv::transpose(eigen_vectors, eigen_vectors_t);
+    ncvslideio::Mat eigen_vectors_t; ncvslideio::transpose(eigen_vectors, eigen_vectors_t);
 
     // Check:
     // src * eigenvector = eigenval * eigenvector
-    cv::Mat lhs(src.rows, src.cols, type);
-    cv::Mat rhs(src.rows, src.cols, type);
+    ncvslideio::Mat lhs(src.rows, src.cols, type);
+    ncvslideio::Mat rhs(src.rows, src.cols, type);
 
     lhs = src*eigen_vectors_t;
 
@@ -313,13 +313,13 @@ bool Core_EigenTest::test_pairs(const cv::Mat& src)
         case CV_32FC1: eigenval = eigen_values.at<float>(i, 0); break;
         case CV_64FC1: eigenval = eigen_values.at<double>(i, 0); break;
         }
-        cv::Mat rhs_v = eigenval * eigen_vectors_t.col(i);
+        ncvslideio::Mat rhs_v = eigenval * eigen_vectors_t.col(i);
         rhs_v.copyTo(rhs.col(i));
     }
 
     for (int i = 0; i < COUNT_NORM_TYPES; ++i)
     {
-        double diff = cvtest::norm(lhs, rhs, NORM_TYPE[i] | cv::NORM_RELATIVE);
+        double diff = cvtest::norm(lhs, rhs, NORM_TYPE[i] | ncvslideio::NORM_RELATIVE);
         if (diff > eps_vec)
         {
             std::cout << endl; std::cout << "Checking accuracy of eigen vectors computing for matrix " << src << ": ";
@@ -331,23 +331,23 @@ bool Core_EigenTest::test_pairs(const cv::Mat& src)
     return true;
 }
 
-bool Core_EigenTest::test_values(const cv::Mat& src)
+bool Core_EigenTest::test_values(const ncvslideio::Mat& src)
 {
     int type = src.type();
     double eps_val = type == CV_32FC1 ? eps_val_32 : eps_val_64;
 
-    cv::Mat eigen_values_1, eigen_values_2, eigen_vectors;
+    ncvslideio::Mat eigen_values_1, eigen_values_2, eigen_vectors;
 
     if (!test_pairs(src)) return false;
 
-    cv::eigen(src, eigen_values_1, eigen_vectors);
-    cv::eigen(src, eigen_values_2);
+    ncvslideio::eigen(src, eigen_values_1, eigen_vectors);
+    ncvslideio::eigen(src, eigen_values_2);
 
     if (!check_pair_count(src, eigen_values_2)) return false;
 
     for (int i = 0; i < COUNT_NORM_TYPES; ++i)
     {
-        double diff = cvtest::norm(eigen_values_1, eigen_values_2, NORM_TYPE[i] | cv::NORM_RELATIVE);
+        double diff = cvtest::norm(eigen_values_1, eigen_values_2, NORM_TYPE[i] | ncvslideio::NORM_RELATIVE);
         if (diff > eps_val)
         {
             std::cout << endl; std::cout << "Checking accuracy of eigen values computing for matrix " << src << ": ";
@@ -363,18 +363,18 @@ bool Core_EigenTest::check_full(int type)
 {
     const int MAX_DEGREE = 7;
 
-    RNG rng = cv::theRNG(); // fix the seed
+    RNG rng = ncvslideio::theRNG(); // fix the seed
 
     for (int i = 0; i < ntests; ++i)
     {
         int src_size = (int)(std::pow(2.0, (rng.uniform(0, MAX_DEGREE) + 1.)));
 
-        cv::Mat src(src_size, src_size, type);
+        ncvslideio::Mat src(src_size, src_size, type);
 
         for (int j = 0; j < src.rows; ++j)
             for (int k = j; k < src.cols; ++k)
-                if (type == CV_32FC1)  src.at<float>(k, j) = src.at<float>(j, k) = cv::randu<float>();
-        else	src.at<double>(k, j) = src.at<double>(j, k) = cv::randu<double>();
+                if (type == CV_32FC1)  src.at<float>(k, j) = src.at<float>(j, k) = ncvslideio::randu<float>();
+        else	src.at<double>(k, j) = src.at<double>(j, k) = ncvslideio::randu<double>();
 
         if (!test_values(src)) return false;
     }
@@ -390,7 +390,7 @@ TEST(Core_Eigen, vector_64) { Core_EigenTest_64 test; test.safe_run(); }
 template<typename T>
 static void testEigen(const Mat_<T>& src, const Mat_<T>& expected_eigenvalues, bool runSymmetric = false)
 {
-    SCOPED_TRACE(runSymmetric ? "cv::eigen" : "cv::eigenNonSymmetric");
+    SCOPED_TRACE(runSymmetric ? "ncvslideio::eigen" : "ncvslideio::eigenNonSymmetric");
 
     int type = traits::Type<T>::value;
     const T eps = src.type() == CV_32F ? 1e-4f : 1e-6f;
@@ -399,13 +399,13 @@ static void testEigen(const Mat_<T>& src, const Mat_<T>& expected_eigenvalues, b
 
     if (runSymmetric)
     {
-        cv::eigen(src, eigenvalues0, noArray());
-        cv::eigen(src, eigenvalues, eigenvectors);
+        ncvslideio::eigen(src, eigenvalues0, noArray());
+        ncvslideio::eigen(src, eigenvalues, eigenvectors);
     }
     else
     {
-        cv::eigenNonSymmetric(src, eigenvalues0, noArray());
-        cv::eigenNonSymmetric(src, eigenvalues, eigenvectors);
+        ncvslideio::eigenNonSymmetric(src, eigenvalues0, noArray());
+        ncvslideio::eigenNonSymmetric(src, eigenvalues, eigenvectors);
     }
 #if 0
     std::cout << "src = " << src << std::endl;
@@ -529,10 +529,10 @@ TEST(Core_EigenNonSymmetric, convergence)
     // eigen values are complex, algorithm doesn't converge
     try
     {
-        cv::eigenNonSymmetric(m, eigenvalues, eigenvectors);
+        ncvslideio::eigenNonSymmetric(m, eigenvalues, eigenvectors);
         std::cout << Mat(eigenvalues.t()) << std::endl;
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_EQ(Error::StsNoConv, e.code) << e.what();
     }

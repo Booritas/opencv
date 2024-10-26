@@ -8,7 +8,7 @@
 #include "opencv2/video/detail/tracking.detail.hpp"
 #include "tracking_online_mil.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -82,6 +82,6 @@ private:
     ConfidenceMap currentConfidenceMap;
 };
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking
 
 #endif

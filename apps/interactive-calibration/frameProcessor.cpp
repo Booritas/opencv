@@ -18,9 +18,9 @@ using namespace calib;
 #define VIDEO_TEXT_SIZE 4
 #define POINT_SIZE 5
 
-static cv::SimpleBlobDetector::Params getDetectorParams()
+static ncvslideio::SimpleBlobDetector::Params getDetectorParams()
 {
-    cv::SimpleBlobDetector::Params detectorParams;
+    ncvslideio::SimpleBlobDetector::Params detectorParams;
 
     detectorParams.thresholdStep = 40;
     detectorParams.minThreshold = 20;
@@ -55,31 +55,31 @@ FrameProcessor::~FrameProcessor()
 
 }
 
-bool CalibProcessor::detectAndParseChessboard(const cv::Mat &frame)
+bool CalibProcessor::detectAndParseChessboard(const ncvslideio::Mat &frame)
 {
-    int chessBoardFlags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FAST_CHECK;
-    bool isTemplateFound = cv::findChessboardCorners(frame, mBoardSizeInnerCorners, mCurrentImagePoints, chessBoardFlags);
+    int chessBoardFlags = ncvslideio::CALIB_CB_ADAPTIVE_THRESH | ncvslideio::CALIB_CB_NORMALIZE_IMAGE | ncvslideio::CALIB_CB_FAST_CHECK;
+    bool isTemplateFound = ncvslideio::findChessboardCorners(frame, mBoardSizeInnerCorners, mCurrentImagePoints, chessBoardFlags);
 
     if (isTemplateFound) {
-        cv::Mat viewGray;
-        cv::cvtColor(frame, viewGray, cv::COLOR_BGR2GRAY);
-        cv::cornerSubPix(viewGray, mCurrentImagePoints, cv::Size(11,11),
-            cv::Size(-1,-1), cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::COUNT, 30, 0.1 ));
-        cv::drawChessboardCorners(frame, mBoardSizeInnerCorners, cv::Mat(mCurrentImagePoints), isTemplateFound);
+        ncvslideio::Mat viewGray;
+        ncvslideio::cvtColor(frame, viewGray, ncvslideio::COLOR_BGR2GRAY);
+        ncvslideio::cornerSubPix(viewGray, mCurrentImagePoints, ncvslideio::Size(11,11),
+            ncvslideio::Size(-1,-1), ncvslideio::TermCriteria( ncvslideio::TermCriteria::EPS+ncvslideio::TermCriteria::COUNT, 30, 0.1 ));
+        ncvslideio::drawChessboardCorners(frame, mBoardSizeInnerCorners, ncvslideio::Mat(mCurrentImagePoints), isTemplateFound);
         mTemplateLocations.insert(mTemplateLocations.begin(), mCurrentImagePoints[0]);
     }
     return isTemplateFound;
 }
 
-bool CalibProcessor::detectAndParseChAruco(const cv::Mat &frame)
+bool CalibProcessor::detectAndParseChAruco(const ncvslideio::Mat &frame)
 {
-    cv::Ptr<cv::aruco::Board> board = mCharucoBoard.staticCast<cv::aruco::Board>();
+    ncvslideio::Ptr<ncvslideio::aruco::Board> board = mCharucoBoard.staticCast<ncvslideio::aruco::Board>();
 
-    std::vector<std::vector<cv::Point2f> > corners;
+    std::vector<std::vector<ncvslideio::Point2f> > corners;
     std::vector<int> ids;
-    cv::Mat currentCharucoCorners, currentCharucoIds;
+    ncvslideio::Mat currentCharucoCorners, currentCharucoIds;
     detector->detectBoard(frame, currentCharucoCorners, currentCharucoIds, corners, ids);
-    if(ids.size() > 0) cv::aruco::drawDetectedMarkers(frame, corners);
+    if(ids.size() > 0) ncvslideio::aruco::drawDetectedMarkers(frame, corners);
 
     if(currentCharucoCorners.total() > 3) {
         float centerX = 0, centerY = 0;
@@ -90,8 +90,8 @@ bool CalibProcessor::detectAndParseChAruco(const cv::Mat &frame)
         centerX /= currentCharucoCorners.size[0];
         centerY /= currentCharucoCorners.size[0];
 
-        mTemplateLocations.insert(mTemplateLocations.begin(), cv::Point2f(centerX, centerY));
-        cv::aruco::drawDetectedCornersCharuco(frame, currentCharucoCorners, currentCharucoIds);
+        mTemplateLocations.insert(mTemplateLocations.begin(), ncvslideio::Point2f(centerX, centerY));
+        ncvslideio::aruco::drawDetectedCornersCharuco(frame, currentCharucoCorners, currentCharucoIds);
         mCurrentCharucoCorners = currentCharucoCorners;
         mCurrentCharucoIds = currentCharucoIds;
         return true;
@@ -99,44 +99,44 @@ bool CalibProcessor::detectAndParseChAruco(const cv::Mat &frame)
     return false;
 }
 
-bool CalibProcessor::detectAndParseCircles(const cv::Mat &frame)
+bool CalibProcessor::detectAndParseCircles(const ncvslideio::Mat &frame)
 {
-    bool isTemplateFound = findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, cv::CALIB_CB_SYMMETRIC_GRID, mBlobDetectorPtr);
+    bool isTemplateFound = findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, ncvslideio::CALIB_CB_SYMMETRIC_GRID, mBlobDetectorPtr);
     if(isTemplateFound) {
         mTemplateLocations.insert(mTemplateLocations.begin(), mCurrentImagePoints[0]);
-        cv::drawChessboardCorners(frame, mBoardSizeUnits, cv::Mat(mCurrentImagePoints), isTemplateFound);
+        ncvslideio::drawChessboardCorners(frame, mBoardSizeUnits, ncvslideio::Mat(mCurrentImagePoints), isTemplateFound);
     }
     return isTemplateFound;
 }
 
-bool CalibProcessor::detectAndParseACircles(const cv::Mat &frame)
+bool CalibProcessor::detectAndParseACircles(const ncvslideio::Mat &frame)
 {
-    bool isTemplateFound = findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, cv::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
+    bool isTemplateFound = findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, ncvslideio::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
     if(isTemplateFound) {
         mTemplateLocations.insert(mTemplateLocations.begin(), mCurrentImagePoints[0]);
-        cv::drawChessboardCorners(frame, mBoardSizeUnits, cv::Mat(mCurrentImagePoints), isTemplateFound);
+        ncvslideio::drawChessboardCorners(frame, mBoardSizeUnits, ncvslideio::Mat(mCurrentImagePoints), isTemplateFound);
     }
     return isTemplateFound;
 }
 
-bool CalibProcessor::detectAndParseDualACircles(const cv::Mat &frame)
+bool CalibProcessor::detectAndParseDualACircles(const ncvslideio::Mat &frame)
 {
-    std::vector<cv::Point2f> blackPointbuf;
+    std::vector<ncvslideio::Point2f> blackPointbuf;
 
-    cv::Mat invertedView;
-    cv::bitwise_not(frame, invertedView);
-    bool isWhiteGridFound = cv::findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, cv::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
+    ncvslideio::Mat invertedView;
+    ncvslideio::bitwise_not(frame, invertedView);
+    bool isWhiteGridFound = ncvslideio::findCirclesGrid(frame, mBoardSizeUnits, mCurrentImagePoints, ncvslideio::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
     if(!isWhiteGridFound)
         return false;
-    bool isBlackGridFound = cv::findCirclesGrid(invertedView, mBoardSizeUnits, blackPointbuf, cv::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
+    bool isBlackGridFound = ncvslideio::findCirclesGrid(invertedView, mBoardSizeUnits, blackPointbuf, ncvslideio::CALIB_CB_ASYMMETRIC_GRID, mBlobDetectorPtr);
 
     if(!isBlackGridFound)
     {
         mCurrentImagePoints.clear();
         return false;
     }
-    cv::drawChessboardCorners(frame, mBoardSizeUnits, cv::Mat(mCurrentImagePoints), isWhiteGridFound);
-    cv::drawChessboardCorners(frame, mBoardSizeUnits, cv::Mat(blackPointbuf), isBlackGridFound);
+    ncvslideio::drawChessboardCorners(frame, mBoardSizeUnits, ncvslideio::Mat(mCurrentImagePoints), isWhiteGridFound);
+    ncvslideio::drawChessboardCorners(frame, mBoardSizeUnits, ncvslideio::Mat(blackPointbuf), isBlackGridFound);
     mCurrentImagePoints.insert(mCurrentImagePoints.end(), blackPointbuf.begin(), blackPointbuf.end());
     mTemplateLocations.insert(mTemplateLocations.begin(), mCurrentImagePoints[0]);
 
@@ -145,8 +145,8 @@ bool CalibProcessor::detectAndParseDualACircles(const cv::Mat &frame)
 
 void CalibProcessor::saveFrameData()
 {
-    std::vector<cv::Point3f> objectPoints;
-    std::vector<cv::Point2f> imagePoints;
+    std::vector<ncvslideio::Point3f> objectPoints;
+    std::vector<ncvslideio::Point2f> imagePoints;
 
     switch(mBoardType)
     {
@@ -154,7 +154,7 @@ void CalibProcessor::saveFrameData()
         objectPoints.reserve(mBoardSizeInnerCorners.height*mBoardSizeInnerCorners.width);
         for( int i = 0; i < mBoardSizeInnerCorners.height; ++i )
             for( int j = 0; j < mBoardSizeInnerCorners.width; ++j )
-                objectPoints.push_back(cv::Point3f(j*mSquareSize, i*mSquareSize, 0));
+                objectPoints.push_back(ncvslideio::Point3f(j*mSquareSize, i*mSquareSize, 0));
         mCalibData->imagePoints.push_back(mCurrentImagePoints);
         mCalibData->objectPoints.push_back(objectPoints);
         break;
@@ -171,7 +171,7 @@ void CalibProcessor::saveFrameData()
         objectPoints.reserve(mBoardSizeUnits.height*mBoardSizeUnits.width);
         for( int i = 0; i < mBoardSizeUnits.height; i++ )
             for( int j = 0; j < mBoardSizeUnits.width; j++ )
-                objectPoints.push_back(cv::Point3f(j*mSquareSize, i*mSquareSize, 0));
+                objectPoints.push_back(ncvslideio::Point3f(j*mSquareSize, i*mSquareSize, 0));
         mCalibData->imagePoints.push_back(mCurrentImagePoints);
         mCalibData->objectPoints.push_back(objectPoints);
         break;
@@ -179,7 +179,7 @@ void CalibProcessor::saveFrameData()
         objectPoints.reserve(mBoardSizeUnits.height*mBoardSizeUnits.width);
         for( int i = 0; i < mBoardSizeUnits.height; i++ )
             for( int j = 0; j < mBoardSizeUnits.width; j++ )
-                objectPoints.push_back(cv::Point3f((2*j + i % 2)*mSquareSize, i*mSquareSize, 0));
+                objectPoints.push_back(ncvslideio::Point3f((2*j + i % 2)*mSquareSize, i*mSquareSize, 0));
         mCalibData->imagePoints.push_back(mCurrentImagePoints);
         mCalibData->objectPoints.push_back(objectPoints);
         break;
@@ -193,14 +193,14 @@ void CalibProcessor::saveFrameData()
         for( int i = 0; i < mBoardSizeUnits.height; i++ )
             for( int j = 0; j < mBoardSizeUnits.width; j++ )
                 objectPoints.push_back(
-                            cv::Point3f(-float((2*j + i % 2)*mSquareSize + mTemplDist +
+                            ncvslideio::Point3f(-float((2*j + i % 2)*mSquareSize + mTemplDist +
                                                (2*(mBoardSizeUnits.width - 1) + 1)*mSquareSize - gridCenterX),
                                         -float(i*mSquareSize) - gridCenterY,
                                         0));
         //black part
         for( int i = 0; i < mBoardSizeUnits.height; i++ )
             for( int j = 0; j < mBoardSizeUnits.width; j++ )
-                objectPoints.push_back(cv::Point3f(-float((2*j + i % 2)*mSquareSize - gridCenterX),
+                objectPoints.push_back(ncvslideio::Point3f(-float((2*j + i % 2)*mSquareSize - gridCenterX),
                                           -float(i*mSquareSize) - gridCenterY, 0));
 
         mCalibData->imagePoints.push_back(mCurrentImagePoints);
@@ -210,33 +210,33 @@ void CalibProcessor::saveFrameData()
     }
 }
 
-void CalibProcessor::showCaptureMessage(const cv::Mat& frame, const std::string &message)
+void CalibProcessor::showCaptureMessage(const ncvslideio::Mat& frame, const std::string &message)
 {
-    cv::Point textOrigin(100, 100);
+    ncvslideio::Point textOrigin(100, 100);
     double textSize = VIDEO_TEXT_SIZE * frame.cols / (double) IMAGE_MAX_WIDTH;
-    cv::bitwise_not(frame, frame);
-    cv::putText(frame, message, textOrigin, 1, textSize, cv::Scalar(0,0,255), 2, cv::LINE_AA);
-    cv::Mat resized;
+    ncvslideio::bitwise_not(frame, frame);
+    ncvslideio::putText(frame, message, textOrigin, 1, textSize, ncvslideio::Scalar(0,0,255), 2, ncvslideio::LINE_AA);
+    ncvslideio::Mat resized;
     if (std::fabs(mZoom - 1.) > 0.001f)
     {
-        cv::resize(frame, resized, cv::Size(), mZoom, mZoom);
+        ncvslideio::resize(frame, resized, ncvslideio::Size(), mZoom, mZoom);
     }
     else
     {
         resized = frame;
     }
-    cv::imshow(mainWindowName, resized);
-    cv::waitKey(300);
+    ncvslideio::imshow(mainWindowName, resized);
+    ncvslideio::waitKey(300);
 }
 
 bool CalibProcessor::checkLastFrame()
 {
     bool isFrameBad = false;
-    cv::Mat tmpCamMatrix;
+    ncvslideio::Mat tmpCamMatrix;
     const double badAngleThresh = 40;
 
     if(!mCalibData->cameraMatrix.total()) {
-        tmpCamMatrix = cv::Mat::eye(3, 3, CV_64F);
+        tmpCamMatrix = ncvslideio::Mat::eye(3, 3, CV_64F);
         tmpCamMatrix.at<double>(0,0) = 20000;
         tmpCamMatrix.at<double>(1,1) = 20000;
         tmpCamMatrix.at<double>(0,2) = mCalibData->imageSize.height/2;
@@ -245,8 +245,8 @@ bool CalibProcessor::checkLastFrame()
     else
         mCalibData->cameraMatrix.copyTo(tmpCamMatrix);
 
-    cv::Mat r, t, angles;
-    cv::solvePnP(mCalibData->objectPoints.back(), mCalibData->imagePoints.back(), tmpCamMatrix, mCalibData->distCoeffs, r, t);
+    ncvslideio::Mat r, t, angles;
+    ncvslideio::solvePnP(mCalibData->objectPoints.back(), mCalibData->imagePoints.back(), tmpCamMatrix, mCalibData->distCoeffs, r, t);
     RodriguesToEuler(r, angles, CALIB_DEGREES);
     if(fabs(angles.at<double>(0)) > badAngleThresh || fabs(angles.at<double>(1)) > badAngleThresh) {
         mCalibData->objectPoints.pop_back();
@@ -260,7 +260,7 @@ bool CalibProcessor::checkLastFrame()
     return isFrameBad;
 }
 
-CalibProcessor::CalibProcessor(cv::Ptr<calibrationData> data, captureParameters &capParams) :
+CalibProcessor::CalibProcessor(ncvslideio::Ptr<calibrationData> data, captureParameters &capParams) :
     mCalibData(data), mBoardType(capParams.board), mBoardSizeUnits(capParams.boardSizeUnits),
     mBoardSizeInnerCorners(capParams.boardSizeInnerCorners)
 {
@@ -273,7 +273,7 @@ CalibProcessor::CalibProcessor(cv::Ptr<calibrationData> data, captureParameters 
     mTemplDist = capParams.templDst;
     mSaveFrames = capParams.saveFrames;
     mZoom = capParams.zoom;
-    cv::aruco::CharucoParameters charucoParameters;
+    ncvslideio::aruco::CharucoParameters charucoParameters;
     charucoParameters.tryRefineMarkers = true;
 
     switch(mBoardType)
@@ -281,33 +281,33 @@ CalibProcessor::CalibProcessor(cv::Ptr<calibrationData> data, captureParameters 
     case ChArUco:
         if (capParams.charucoDictFile != "None") {
             std::string filename = capParams.charucoDictFile;
-            cv::FileStorage dict_file(filename, cv::FileStorage::Mode::READ);
-            cv::FileNode fn(dict_file.root());
+            ncvslideio::FileStorage dict_file(filename, ncvslideio::FileStorage::Mode::READ);
+            ncvslideio::FileNode fn(dict_file.root());
             mArucoDictionary.readDictionary(fn);
         }
         else {
-            mArucoDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PredefinedDictionaryType(capParams.charucoDictName));
+            mArucoDictionary = ncvslideio::aruco::getPredefinedDictionary(ncvslideio::aruco::PredefinedDictionaryType(capParams.charucoDictName));
         }
-        mCharucoBoard = cv::makePtr<cv::aruco::CharucoBoard>(cv::Size(mBoardSizeUnits.width, mBoardSizeUnits.height), capParams.charucoSquareLength,
+        mCharucoBoard = ncvslideio::makePtr<ncvslideio::aruco::CharucoBoard>(ncvslideio::Size(mBoardSizeUnits.width, mBoardSizeUnits.height), capParams.charucoSquareLength,
                                 capParams.charucoMarkerSize, mArucoDictionary);
-        detector = cv::makePtr<cv::aruco::CharucoDetector>(cv::aruco::CharucoDetector(*mCharucoBoard, charucoParameters));
+        detector = ncvslideio::makePtr<ncvslideio::aruco::CharucoDetector>(ncvslideio::aruco::CharucoDetector(*mCharucoBoard, charucoParameters));
         break;
     case CirclesGrid:
     case AcirclesGrid:
-        mBlobDetectorPtr = cv::SimpleBlobDetector::create();
+        mBlobDetectorPtr = ncvslideio::SimpleBlobDetector::create();
         break;
     case DoubleAcirclesGrid:
-        mBlobDetectorPtr = cv::SimpleBlobDetector::create(getDetectorParams());
+        mBlobDetectorPtr = ncvslideio::SimpleBlobDetector::create(getDetectorParams());
         break;
     case Chessboard:
         break;
     }
 }
 
-cv::Mat CalibProcessor::processFrame(const cv::Mat &frame)
+ncvslideio::Mat CalibProcessor::processFrame(const ncvslideio::Mat &frame)
 {
-    cv::Mat frameCopy;
-    cv::Mat frameCopyToSave;
+    ncvslideio::Mat frameCopy;
+    ncvslideio::Mat frameCopyToSave;
     frame.copyTo(frameCopy);
     bool isTemplateFound = false;
     mCurrentImagePoints.clear();
@@ -337,11 +337,11 @@ cv::Mat CalibProcessor::processFrame(const cv::Mat &frame)
     if(mTemplateLocations.size() > mDelayBetweenCaptures)
         mTemplateLocations.pop_back();
     if(mTemplateLocations.size() == mDelayBetweenCaptures && isTemplateFound) {
-        if(cv::norm(mTemplateLocations.front() - mTemplateLocations.back()) < mMaxTemplateOffset) {
+        if(ncvslideio::norm(mTemplateLocations.front() - mTemplateLocations.back()) < mMaxTemplateOffset) {
             saveFrameData();
             bool isFrameBad = checkLastFrame();
             if (!isFrameBad) {
-                std::string displayMessage = cv::format("Frame # %zu captured", std::max(mCalibData->imagePoints.size(),
+                std::string displayMessage = ncvslideio::format("Frame # %zu captured", std::max(mCalibData->imagePoints.size(),
                                                                                         mCalibData->allCharucoCorners.size()));
                 if(!showOverlayMessage(displayMessage))
                     showCaptureMessage(frame, displayMessage);
@@ -385,33 +385,33 @@ CalibProcessor::~CalibProcessor()
 
 ////////////////////////////////////////////
 
-void ShowProcessor::drawBoard(cv::Mat &img, cv::InputArray points)
+void ShowProcessor::drawBoard(ncvslideio::Mat &img, ncvslideio::InputArray points)
 {
-    cv::Mat tmpView = cv::Mat::zeros(img.rows, img.cols, CV_8UC3);
-    std::vector<cv::Point2f> templateHull;
-    std::vector<cv::Point> poly;
-    cv::convexHull(points, templateHull);
+    ncvslideio::Mat tmpView = ncvslideio::Mat::zeros(img.rows, img.cols, CV_8UC3);
+    std::vector<ncvslideio::Point2f> templateHull;
+    std::vector<ncvslideio::Point> poly;
+    ncvslideio::convexHull(points, templateHull);
     poly.resize(templateHull.size());
     for(size_t i=0; i<templateHull.size();i++)
-        poly[i] = cv::Point((int)(templateHull[i].x*mGridViewScale), (int)(templateHull[i].y*mGridViewScale));
-    cv::fillConvexPoly(tmpView, poly, cv::Scalar(0, 255, 0), cv::LINE_AA);
-    cv::addWeighted(tmpView, .2, img, 1, 0, img);
+        poly[i] = ncvslideio::Point((int)(templateHull[i].x*mGridViewScale), (int)(templateHull[i].y*mGridViewScale));
+    ncvslideio::fillConvexPoly(tmpView, poly, ncvslideio::Scalar(0, 255, 0), ncvslideio::LINE_AA);
+    ncvslideio::addWeighted(tmpView, .2, img, 1, 0, img);
 }
 
-void ShowProcessor::drawGridPoints(const cv::Mat &frame)
+void ShowProcessor::drawGridPoints(const ncvslideio::Mat &frame)
 {
     if(mBoardType != ChArUco)
-        for(std::vector<std::vector<cv::Point2f> >::iterator it = mCalibdata->imagePoints.begin(); it != mCalibdata->imagePoints.end(); ++it)
-            for(std::vector<cv::Point2f>::iterator pointIt = (*it).begin(); pointIt != (*it).end(); ++pointIt)
-                cv::circle(frame, *pointIt, POINT_SIZE, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
+        for(std::vector<std::vector<ncvslideio::Point2f> >::iterator it = mCalibdata->imagePoints.begin(); it != mCalibdata->imagePoints.end(); ++it)
+            for(std::vector<ncvslideio::Point2f>::iterator pointIt = (*it).begin(); pointIt != (*it).end(); ++pointIt)
+                ncvslideio::circle(frame, *pointIt, POINT_SIZE, ncvslideio::Scalar(0, 255, 0), 1, ncvslideio::LINE_AA);
     else
-        for(std::vector<cv::Mat>::iterator it = mCalibdata->allCharucoCorners.begin(); it != mCalibdata->allCharucoCorners.end(); ++it)
+        for(std::vector<ncvslideio::Mat>::iterator it = mCalibdata->allCharucoCorners.begin(); it != mCalibdata->allCharucoCorners.end(); ++it)
             for(int i = 0; i < (*it).size[0]; i++)
-                cv::circle(frame, cv::Point((int)(*it).at<float>(i, 0), (int)(*it).at<float>(i, 1)),
-                           POINT_SIZE, cv::Scalar(0, 255, 0), 1, cv::LINE_AA);
+                ncvslideio::circle(frame, ncvslideio::Point((int)(*it).at<float>(i, 0), (int)(*it).at<float>(i, 1)),
+                           POINT_SIZE, ncvslideio::Scalar(0, 255, 0), 1, ncvslideio::LINE_AA);
 }
 
-ShowProcessor::ShowProcessor(cv::Ptr<calibrationData> data, cv::Ptr<calibController> controller, TemplateType board) :
+ShowProcessor::ShowProcessor(ncvslideio::Ptr<calibrationData> data, ncvslideio::Ptr<calibController> controller, TemplateType board) :
     mCalibdata(data), mController(controller), mBoardType(board)
 {
     mNeedUndistort = true;
@@ -420,22 +420,22 @@ ShowProcessor::ShowProcessor(cv::Ptr<calibrationData> data, cv::Ptr<calibControl
     mTextSize = VIDEO_TEXT_SIZE;
 }
 
-cv::Mat ShowProcessor::processFrame(const cv::Mat &frame)
+ncvslideio::Mat ShowProcessor::processFrame(const ncvslideio::Mat &frame)
 {
     if (!mCalibdata->cameraMatrix.empty() && !mCalibdata->distCoeffs.empty())
     {
         mTextSize = VIDEO_TEXT_SIZE * (double) frame.cols / IMAGE_MAX_WIDTH;
-        cv::Scalar textColor = cv::Scalar(0,0,255);
-        cv::Mat frameCopy;
+        ncvslideio::Scalar textColor = ncvslideio::Scalar(0,0,255);
+        ncvslideio::Mat frameCopy;
 
         if (mNeedUndistort && mController->getFramesNumberState()) {
             if(mVisMode == Grid)
                 drawGridPoints(frame);
-            cv::remap(frame, frameCopy, mCalibdata->undistMap1, mCalibdata->undistMap2, cv::INTER_LINEAR);
+            ncvslideio::remap(frame, frameCopy, mCalibdata->undistMap1, mCalibdata->undistMap2, ncvslideio::INTER_LINEAR);
             int baseLine = 100;
-            cv::Size textSize = cv::getTextSize("Undistorted view", 1, mTextSize, 2, &baseLine);
-            cv::Point textOrigin(baseLine, frame.rows - (int)(2.5*textSize.height));
-            cv::putText(frameCopy, "Undistorted view", textOrigin, 1, mTextSize, textColor, 2, cv::LINE_AA);
+            ncvslideio::Size textSize = ncvslideio::getTextSize("Undistorted view", 1, mTextSize, 2, &baseLine);
+            ncvslideio::Point textOrigin(baseLine, frame.rows - (int)(2.5*textSize.height));
+            ncvslideio::putText(frameCopy, "Undistorted view", textOrigin, 1, mTextSize, textColor, 2, ncvslideio::LINE_AA);
         }
         else {
             frame.copyTo(frameCopy);
@@ -444,41 +444,41 @@ cv::Mat ShowProcessor::processFrame(const cv::Mat &frame)
         }
         std::string displayMessage;
         if(mCalibdata->stdDeviations.at<double>(0) == 0)
-            displayMessage = cv::format("F = %d RMS = %.3f", (int)mCalibdata->cameraMatrix.at<double>(0,0), mCalibdata->totalAvgErr);
+            displayMessage = ncvslideio::format("F = %d RMS = %.3f", (int)mCalibdata->cameraMatrix.at<double>(0,0), mCalibdata->totalAvgErr);
         else
-            displayMessage = cv::format("Fx = %d Fy = %d RMS = %.3f", (int)mCalibdata->cameraMatrix.at<double>(0,0),
+            displayMessage = ncvslideio::format("Fx = %d Fy = %d RMS = %.3f", (int)mCalibdata->cameraMatrix.at<double>(0,0),
                                             (int)mCalibdata->cameraMatrix.at<double>(1,1), mCalibdata->totalAvgErr);
         if(mController->getRMSState() && mController->getFramesNumberState())
             displayMessage.append(" OK");
 
         int baseLine = 100;
-        cv::Size textSize = cv::getTextSize(displayMessage, 1, mTextSize - 1, 2, &baseLine);
-        cv::Point textOrigin = cv::Point(baseLine, 2*textSize.height);
-        cv::putText(frameCopy, displayMessage, textOrigin, 1, mTextSize - 1, textColor, 2, cv::LINE_AA);
+        ncvslideio::Size textSize = ncvslideio::getTextSize(displayMessage, 1, mTextSize - 1, 2, &baseLine);
+        ncvslideio::Point textOrigin = ncvslideio::Point(baseLine, 2*textSize.height);
+        ncvslideio::putText(frameCopy, displayMessage, textOrigin, 1, mTextSize - 1, textColor, 2, ncvslideio::LINE_AA);
 
         if(mCalibdata->stdDeviations.at<double>(0) == 0)
-            displayMessage = cv::format("DF = %.2f", mCalibdata->stdDeviations.at<double>(1)*sigmaMult);
+            displayMessage = ncvslideio::format("DF = %.2f", mCalibdata->stdDeviations.at<double>(1)*sigmaMult);
         else
-            displayMessage = cv::format("DFx = %.2f DFy = %.2f", mCalibdata->stdDeviations.at<double>(0)*sigmaMult,
+            displayMessage = ncvslideio::format("DFx = %.2f DFy = %.2f", mCalibdata->stdDeviations.at<double>(0)*sigmaMult,
                                                     mCalibdata->stdDeviations.at<double>(1)*sigmaMult);
         if(mController->getConfidenceIntrervalsState() && mController->getFramesNumberState())
             displayMessage.append(" OK");
-        cv::putText(frameCopy, displayMessage, cv::Point(baseLine, 4*textSize.height), 1, mTextSize - 1, textColor, 2, cv::LINE_AA);
+        ncvslideio::putText(frameCopy, displayMessage, ncvslideio::Point(baseLine, 4*textSize.height), 1, mTextSize - 1, textColor, 2, ncvslideio::LINE_AA);
 
         if(mController->getCommonCalibrationState()) {
-            displayMessage = cv::format("Calibration is done");
-            cv::putText(frameCopy, displayMessage, cv::Point(baseLine, 6*textSize.height), 1, mTextSize - 1, textColor, 2, cv::LINE_AA);
+            displayMessage = ncvslideio::format("Calibration is done");
+            ncvslideio::putText(frameCopy, displayMessage, ncvslideio::Point(baseLine, 6*textSize.height), 1, mTextSize - 1, textColor, 2, ncvslideio::LINE_AA);
         }
         int calibFlags = mController->getNewFlags();
         displayMessage = "";
-        if(!(calibFlags & cv::CALIB_FIX_ASPECT_RATIO))
-            displayMessage.append(cv::format("AR=%.3f ", mCalibdata->cameraMatrix.at<double>(0,0)/mCalibdata->cameraMatrix.at<double>(1,1)));
-        if(calibFlags & cv::CALIB_ZERO_TANGENT_DIST)
+        if(!(calibFlags & ncvslideio::CALIB_FIX_ASPECT_RATIO))
+            displayMessage.append(ncvslideio::format("AR=%.3f ", mCalibdata->cameraMatrix.at<double>(0,0)/mCalibdata->cameraMatrix.at<double>(1,1)));
+        if(calibFlags & ncvslideio::CALIB_ZERO_TANGENT_DIST)
             displayMessage.append("TD=0 ");
-        displayMessage.append(cv::format("K1=%.2f K2=%.2f K3=%.2f", mCalibdata->distCoeffs.at<double>(0), mCalibdata->distCoeffs.at<double>(1),
+        displayMessage.append(ncvslideio::format("K1=%.2f K2=%.2f K3=%.2f", mCalibdata->distCoeffs.at<double>(0), mCalibdata->distCoeffs.at<double>(1),
                                          mCalibdata->distCoeffs.at<double>(4)));
-        cv::putText(frameCopy, displayMessage, cv::Point(baseLine, frameCopy.rows - (int)(1.5*textSize.height)),
-                    1, mTextSize - 1, textColor, 2, cv::LINE_AA);
+        ncvslideio::putText(frameCopy, displayMessage, ncvslideio::Point(baseLine, frameCopy.rows - (int)(1.5*textSize.height)),
+                    1, mTextSize - 1, textColor, 2, ncvslideio::LINE_AA);
         return frameCopy;
     }
 
@@ -508,36 +508,36 @@ void ShowProcessor::switchVisualizationMode()
     }
     else {
         mVisMode = Grid;
-        cv::destroyWindow(gridWindowName);
+        ncvslideio::destroyWindow(gridWindowName);
     }
 }
 
 void ShowProcessor::clearBoardsView()
 {
-    cv::imshow(gridWindowName, cv::Mat());
+    ncvslideio::imshow(gridWindowName, ncvslideio::Mat());
 }
 
 void ShowProcessor::updateBoardsView()
 {
     if(mVisMode == Window) {
-        cv::Size originSize = mCalibdata->imageSize;
-        cv::Mat altGridView = cv::Mat::zeros((int)(originSize.height*mGridViewScale), (int)(originSize.width*mGridViewScale), CV_8UC3);
+        ncvslideio::Size originSize = mCalibdata->imageSize;
+        ncvslideio::Mat altGridView = ncvslideio::Mat::zeros((int)(originSize.height*mGridViewScale), (int)(originSize.width*mGridViewScale), CV_8UC3);
         if(mBoardType != ChArUco)
-            for(std::vector<std::vector<cv::Point2f> >::iterator it = mCalibdata->imagePoints.begin(); it != mCalibdata->imagePoints.end(); ++it)
+            for(std::vector<std::vector<ncvslideio::Point2f> >::iterator it = mCalibdata->imagePoints.begin(); it != mCalibdata->imagePoints.end(); ++it)
                 if(mBoardType != DoubleAcirclesGrid)
                     drawBoard(altGridView, *it);
                 else {
                     size_t pointsNum = (*it).size()/2;
-                    std::vector<cv::Point2f> points(pointsNum);
+                    std::vector<ncvslideio::Point2f> points(pointsNum);
                     std::copy((*it).begin(), (*it).begin() + pointsNum, points.begin());
                     drawBoard(altGridView, points);
                     std::copy((*it).begin() + pointsNum, (*it).begin() + 2*pointsNum, points.begin());
                     drawBoard(altGridView, points);
                 }
         else
-            for(std::vector<cv::Mat>::iterator it = mCalibdata->allCharucoCorners.begin(); it != mCalibdata->allCharucoCorners.end(); ++it)
+            for(std::vector<ncvslideio::Mat>::iterator it = mCalibdata->allCharucoCorners.begin(); it != mCalibdata->allCharucoCorners.end(); ++it)
                 drawBoard(altGridView, *it);
-        cv::imshow(gridWindowName, altGridView);
+        ncvslideio::imshow(gridWindowName, altGridView);
     }
 }
 

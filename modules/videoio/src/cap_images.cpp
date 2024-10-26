@@ -60,7 +60,7 @@
 #define CV_WARN(message) CV_LOG_INFO(NULL, "CAP_IMAGES warning: %s (%s:%d)" << message)
 #endif
 
-namespace cv {
+namespace ncvslideio {
 
 class CvCapture_Images: public IVideoCapture
 {
@@ -92,7 +92,7 @@ public:
     virtual bool grabFrame() CV_OVERRIDE;
     virtual bool retrieveFrame(int, OutputArray) CV_OVERRIDE;
     virtual bool isOpened() const CV_OVERRIDE;
-    virtual int getCaptureDomain() /*const*/ CV_OVERRIDE { return cv::CAP_IMAGES; }
+    virtual int getCaptureDomain() /*const*/ CV_OVERRIDE { return ncvslideio::CAP_IMAGES; }
 
     bool open(const String&);
     void close();
@@ -113,7 +113,7 @@ void CvCapture_Images::close()
 
 bool CvCapture_Images::grabFrame()
 {
-    cv::String filename;
+    ncvslideio::String filename;
     if (length == 1)
         if (currentframe < length)
             filename = filename_pattern;
@@ -122,7 +122,7 @@ bool CvCapture_Images::grabFrame()
             return false;
         }
     else
-        filename = cv::format(filename_pattern.c_str(), (int)(firstframe + currentframe));
+        filename = ncvslideio::format(filename_pattern.c_str(), (int)(firstframe + currentframe));
     CV_Assert(!filename.empty());
 
     if (grabbedInOpen)
@@ -151,23 +151,23 @@ double CvCapture_Images::getProperty(int id) const
 {
     switch(id)
     {
-    case cv::CAP_PROP_POS_MSEC:
+    case ncvslideio::CAP_PROP_POS_MSEC:
         CV_WARN("collections of images don't have framerates");
         return 0;
-    case cv::CAP_PROP_POS_FRAMES:
+    case ncvslideio::CAP_PROP_POS_FRAMES:
         return currentframe;
-    case cv::CAP_PROP_FRAME_COUNT:
+    case ncvslideio::CAP_PROP_FRAME_COUNT:
         return length;
-    case cv::CAP_PROP_POS_AVI_RATIO:
+    case ncvslideio::CAP_PROP_POS_AVI_RATIO:
         return (double)currentframe / (double)(length - 1);
-    case cv::CAP_PROP_FRAME_WIDTH:
+    case ncvslideio::CAP_PROP_FRAME_WIDTH:
         return frame.cols;
-    case cv::CAP_PROP_FRAME_HEIGHT:
+    case ncvslideio::CAP_PROP_FRAME_HEIGHT:
         return frame.rows;
-    case cv::CAP_PROP_FPS:
+    case ncvslideio::CAP_PROP_FPS:
         CV_WARN("collections of images don't have framerates");
         return 1;
-    case cv::CAP_PROP_FOURCC:
+    case ncvslideio::CAP_PROP_FOURCC:
         CV_WARN("collections of images don't have 4-character codes");
         return 0;
     }
@@ -178,8 +178,8 @@ bool CvCapture_Images::setProperty(int id, double value)
 {
     switch(id)
     {
-    case cv::CAP_PROP_POS_MSEC:
-    case cv::CAP_PROP_POS_FRAMES:
+    case ncvslideio::CAP_PROP_POS_MSEC:
+    case ncvslideio::CAP_PROP_POS_FRAMES:
         if(value < 0) {
             CV_WARN("seeking to negative positions does not work - clamping");
             value = 0;
@@ -192,7 +192,7 @@ bool CvCapture_Images::setProperty(int id, double value)
         if (currentframe != 0)
             grabbedInOpen = false; // grabbed frame is not valid anymore
         return true;
-    case cv::CAP_PROP_POS_AVI_RATIO:
+    case ncvslideio::CAP_PROP_POS_AVI_RATIO:
         if(value > 1) {
             CV_WARN("seeking beyond end of sequence - clamping");
             value = 1;
@@ -283,7 +283,7 @@ std::string icvExtractPattern(const std::string& filename, unsigned *offset)
         std::string result;
         if (pos0 > 0)
             result += filename.substr(0, pos0);
-        result += cv::format("%%0%dd", number_str_size);
+        result += ncvslideio::format("%%0%dd", number_str_size);
         if (pos < len)
             result += filename.substr(pos);
         CV_LOG_INFO(NULL, "Pattern: " << result << " @ " << number);
@@ -321,7 +321,7 @@ bool CvCapture_Images::open(const std::string& _filename)
         // determine the length of the sequence
         for (length = 0; ;)
         {
-            cv::String filename = cv::format(filename_pattern.c_str(), (int)(offset + length));
+            ncvslideio::String filename = ncvslideio::format(filename_pattern.c_str(), (int)(offset + length));
             if (!utils::fs::exists(filename))
             {
                 if (length == 0 && offset == 0) // allow starting with 0 or 1
@@ -383,7 +383,7 @@ public:
     bool setProperty( int, double ) CV_OVERRIDE; // FIXIT doesn't work: IVideoWriter interface only!
     bool isOpened() const CV_OVERRIDE { return !filename_pattern.empty(); }
     void write( InputArray ) CV_OVERRIDE;
-    int getCaptureDomain() const CV_OVERRIDE { return cv::CAP_IMAGES; }
+    int getCaptureDomain() const CV_OVERRIDE { return ncvslideio::CAP_IMAGES; }
 protected:
     std::string filename_pattern;
     unsigned currentframe;
@@ -393,15 +393,15 @@ protected:
 void CvVideoWriter_Images::write(InputArray image)
 {
     CV_Assert(!filename_pattern.empty());
-    cv::String filename = cv::format(filename_pattern.c_str(), (int)currentframe);
+    ncvslideio::String filename = ncvslideio::format(filename_pattern.c_str(), (int)currentframe);
     CV_Assert(!filename.empty());
 
     std::vector<int> image_params = params;
     image_params.push_back(0); // append parameters 'stop' mark
     image_params.push_back(0);
 
-    cv::Mat img = image.getMat();
-    cv::imwrite(filename, img, image_params);
+    ncvslideio::Mat img = image.getMat();
+    ncvslideio::imwrite(filename, img, image_params);
     currentframe++;
 }
 
@@ -421,8 +421,8 @@ CvVideoWriter_Images::CvVideoWriter_Images(const std::string & _filename)
     filename_pattern = icvExtractPattern(_filename, &offset);
     CV_Assert(!filename_pattern.empty());
 
-    cv::String filename = cv::format(filename_pattern.c_str(), (int)currentframe);
-    if (!cv::haveImageWriter(filename))
+    ncvslideio::String filename = ncvslideio::format(filename_pattern.c_str(), (int)currentframe);
+    if (!ncvslideio::haveImageWriter(filename))
     {
         close();
     }
@@ -434,9 +434,9 @@ CvVideoWriter_Images::CvVideoWriter_Images(const std::string & _filename)
 
 bool CvVideoWriter_Images::setProperty( int id, double value )
 {
-    if (id >= cv::CAP_PROP_IMAGES_BASE && id < cv::CAP_PROP_IMAGES_LAST)
+    if (id >= ncvslideio::CAP_PROP_IMAGES_BASE && id < ncvslideio::CAP_PROP_IMAGES_LAST)
     {
-        params.push_back( id - cv::CAP_PROP_IMAGES_BASE );
+        params.push_back( id - ncvslideio::CAP_PROP_IMAGES_BASE );
         params.push_back( static_cast<int>( value ) );
         return true;
     }
@@ -444,9 +444,9 @@ bool CvVideoWriter_Images::setProperty( int id, double value )
 }
 
 Ptr<IVideoWriter> create_Images_writer(const std::string &filename, int, double, const Size &,
-                                       const cv::VideoWriterParameters&)
+                                       const ncvslideio::VideoWriterParameters&)
 {
     return makePtr<CvVideoWriter_Images>(filename);
 }
 
-} // cv::
+} // ncvslideio::

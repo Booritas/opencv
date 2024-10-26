@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "fast_norm.hpp"
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 void fastNorm(const Mat &input, Mat &output, float epsilon, size_t normalized_axis, bool normalize_variance) {
     const auto input_shape = shape(input);
@@ -205,4 +205,4 @@ void fastNormGroup(const Mat &input, const Mat &scale, const Mat &bias, Mat &out
     parallel_for_(Range(0, loops), fn, nstripes);
 }
 
-}} // cv::dnn
+}} // ncvslideio::dnn

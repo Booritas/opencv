@@ -50,7 +50,7 @@
                              Sobel & Scharr Derivative Filters
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 static void getScharrKernels( OutputArray _kx, OutputArray _ky,
@@ -101,7 +101,7 @@ static void getSobelKernels( OutputArray _kx, OutputArray _ky,
     Mat ky = _ky.getMat();
 
     if( _ksize % 2 == 0 || _ksize > 31 )
-        CV_Error( cv::Error::StsOutOfRange, "The kernel size must be odd and not larger than 31" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "The kernel size must be odd and not larger than 31" );
     std::vector<int> kerI(std::max(ksizeX, ksizeY) + 1);
 
     CV_Assert( dx >= 0 && dy >= 0 && dx+dy > 0 );
@@ -163,7 +163,7 @@ static void getSobelKernels( OutputArray _kx, OutputArray _ky,
 
 }
 
-void cv::getDerivKernels( OutputArray kx, OutputArray ky, int dx, int dy,
+void ncvslideio::getDerivKernels( OutputArray kx, OutputArray ky, int dx, int dy,
                           int ksize, bool normalize, int ktype )
 {
     if( ksize <= 0 )
@@ -173,7 +173,7 @@ void cv::getDerivKernels( OutputArray kx, OutputArray ky, int dx, int dy,
 }
 
 
-cv::Ptr<cv::FilterEngine> cv::createDerivFilter(int srcType, int dstType,
+ncvslideio::Ptr<ncvslideio::FilterEngine> ncvslideio::createDerivFilter(int srcType, int dstType,
                                                 int dx, int dy, int ksize, int borderType )
 {
     Mat kx, ky;
@@ -183,7 +183,7 @@ cv::Ptr<cv::FilterEngine> cv::createDerivFilter(int srcType, int dstType,
 }
 
 #ifdef HAVE_OPENVX
-namespace cv
+namespace ncvslideio
 {
     namespace ovx {
         template <> inline bool skipSmallImages<VX_KERNEL_SOBEL_3x3>(int w, int h) { return w*h < 320 * 240; }
@@ -261,7 +261,7 @@ namespace cv
 #endif
 
 #if 0 //defined HAVE_IPP
-namespace cv
+namespace ncvslideio
 {
 
 static bool ipp_Deriv(InputArray _src, OutputArray _dst, int dx, int dy, int ksize, double scale, double delta, int borderType)
@@ -352,7 +352,7 @@ static bool ipp_Deriv(InputArray _src, OutputArray _dst, int dx, int dy, int ksi
 #endif
 
 #ifdef HAVE_OPENCL
-namespace cv
+namespace ncvslideio
 {
 static bool ocl_sepFilter3x3_8UC1(InputArray _src, OutputArray _dst, int ddepth,
                                   InputArray _kernelX, InputArray _kernelY, double delta, int borderType)
@@ -388,7 +388,7 @@ static bool ocl_sepFilter3x3_8UC1(InputArray _src, OutputArray _dst, int ddepth,
             ocl::kernelToStr(kernelX, CV_32F, "KERNEL_MATRIX_X").c_str(),
             ocl::kernelToStr(kernelY, CV_32F, "KERNEL_MATRIX_Y").c_str());
 
-    ocl::Kernel kernel("sepFilter3x3_8UC1_cols16_rows2", cv::ocl::imgproc::sepFilter3x3_oclsrc, build_opts);
+    ocl::Kernel kernel("sepFilter3x3_8UC1_cols16_rows2", ncvslideio::ocl::imgproc::sepFilter3x3_oclsrc, build_opts);
     if (kernel.empty())
         return false;
 
@@ -411,7 +411,7 @@ static bool ocl_sepFilter3x3_8UC1(InputArray _src, OutputArray _dst, int ddepth,
 }
 #endif
 
-void cv::Sobel( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
+void ncvslideio::Sobel( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
                 int ksize, double scale, double delta, int borderType )
 {
     CV_INSTRUMENT_REGION();
@@ -465,7 +465,7 @@ void cv::Sobel( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
 }
 
 
-void cv::Scharr( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
+void ncvslideio::Scharr( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
                  double scale, double delta, int borderType )
 {
     CV_INSTRUMENT_REGION();
@@ -518,7 +518,7 @@ void cv::Scharr( InputArray _src, OutputArray _dst, int ddepth, int dx, int dy,
 
 #ifdef HAVE_OPENCL
 
-namespace cv {
+namespace ncvslideio {
 
 #define LAPLACIAN_LOCAL_MEM(tileX, tileY, ksize, elsize) (((tileX) + 2 * (int)((ksize) / 2)) * (3 * (tileY) + 2 * (int)((ksize) / 2)) * elsize)
 
@@ -582,7 +582,7 @@ static bool ocl_Laplacian5(InputArray _src, OutputArray _dst,
         const char * const borderMap[] = { "BORDER_CONSTANT", "BORDER_REPLICATE", "BORDER_REFLECT", "BORDER_WRAP",
                                            "BORDER_REFLECT_101" };
 
-        String opts = cv::format("-D BLK_X=%d -D BLK_Y=%d -D RADIUS=%d%s%s"
+        String opts = ncvslideio::format("-D BLK_X=%d -D BLK_Y=%d -D RADIUS=%d%s%s"
                                  " -D CONVERT_TO_WT=%s -D CONVERT_TO_DT=%s"
                                  " -D %s -D SRC_T1=%s -D DST_T1=%s -D WT1=%s"
                                  " -D SRC_T=%s -D DST_T=%s -D WT=%s"
@@ -687,7 +687,7 @@ static bool ocl_Laplacian3_8UC1(InputArray _src, OutputArray _dst, int ddepth,
     snprintf(build_opts, sizeof(build_opts), "-D %s %s", borderMap[borderType],
             ocl::kernelToStr(kernel, CV_32F, "KERNEL_MATRIX").c_str());
 
-    ocl::Kernel k("laplacian3_8UC1_cols16_rows2", cv::ocl::imgproc::laplacian3_oclsrc, build_opts);
+    ocl::Kernel k("laplacian3_8UC1_cols16_rows2", ncvslideio::ocl::imgproc::laplacian3_oclsrc, build_opts);
     if (k.empty())
         return false;
 
@@ -712,7 +712,7 @@ static bool ocl_Laplacian3_8UC1(InputArray _src, OutputArray _dst, int ddepth,
 #endif
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 
 static bool ipp_Laplacian(InputArray _src, OutputArray _dst, int ksize, double scale, double delta, int borderType)
@@ -784,7 +784,7 @@ static bool ipp_Laplacian(InputArray _src, OutputArray _dst, int ksize, double s
 #endif
 
 
-void cv::Laplacian( InputArray _src, OutputArray _dst, int ddepth, int ksize,
+void ncvslideio::Laplacian( InputArray _src, OutputArray _dst, int ddepth, int ksize,
                     double scale, double delta, int borderType )
 {
     CV_INSTRUMENT_REGION();
@@ -812,7 +812,7 @@ void cv::Laplacian( InputArray _src, OutputArray _dst, int ddepth, int ksize,
                    ocl_Laplacian3_8UC1(_src, _dst, ddepth, kernel, delta, borderType));
     }
 
-    CV_IPP_RUN(!(cv::ocl::isOpenCLActivated() && _dst.isUMat()), ipp_Laplacian(_src, _dst, ksize, scale, delta, borderType));
+    CV_IPP_RUN(!(ncvslideio::ocl::isOpenCLActivated() && _dst.isUMat()), ipp_Laplacian(_src, _dst, ksize, scale, delta, borderType));
 
     if( ksize == 1 || ksize == 3 )
     {
@@ -880,11 +880,11 @@ void cv::Laplacian( InputArray _src, OutputArray _dst, int ddepth, int ksize,
 CV_IMPL void
 cvSobel( const void* srcarr, void* dstarr, int dx, int dy, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.size() == dst.size() && src.channels() == dst.channels() );
 
-    cv::Sobel( src, dst, dst.depth(), dx, dy, aperture_size, 1, 0, cv::BORDER_REPLICATE );
+    ncvslideio::Sobel( src, dst, dst.depth(), dx, dy, aperture_size, 1, 0, ncvslideio::BORDER_REPLICATE );
     if( CV_IS_IMAGE(srcarr) && ((IplImage*)srcarr)->origin && dy % 2 != 0 )
         dst *= -1;
 }
@@ -893,11 +893,11 @@ cvSobel( const void* srcarr, void* dstarr, int dx, int dy, int aperture_size )
 CV_IMPL void
 cvLaplace( const void* srcarr, void* dstarr, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.size() == dst.size() && src.channels() == dst.channels() );
 
-    cv::Laplacian( src, dst, dst.depth(), aperture_size, 1, 0, cv::BORDER_REPLICATE );
+    ncvslideio::Laplacian( src, dst, dst.depth(), aperture_size, 1, 0, ncvslideio::BORDER_REPLICATE );
 }
 
 /* End of file. */

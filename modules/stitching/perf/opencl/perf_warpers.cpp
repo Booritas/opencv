@@ -151,7 +151,7 @@ OCL_PERF_TEST_P(StitchingWarpersFixture, StitchingWarpers_Warp,
     imshow("src", src);
     imshow("dst", dst);
     std::cout << dst.size() << " " << dst.size().area() << std::endl;
-    cv::waitKey();
+    ncvslideio::waitKey();
 #endif
 
     SANITY_CHECK(dst, 1e-5);

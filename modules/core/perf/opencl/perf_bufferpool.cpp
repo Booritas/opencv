@@ -20,7 +20,7 @@ struct BufferPoolState
     BufferPoolState(BufferPoolController* c, bool enable)
         : controller_(c)
     {
-        if (!cv::ocl::useOpenCL())
+        if (!ncvslideio::ocl::useOpenCL())
         {
             throw ::perf::TestBase::PerfSkipTestException();
         }
@@ -49,7 +49,7 @@ typedef TestBaseWithParam<bool> BufferPoolFixture;
 
 OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCreation100, Bool())
 {
-    BufferPoolState s(cv::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
+    BufferPoolState s(ncvslideio::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
 
     Size sz(1920, 1080);
 
@@ -66,7 +66,7 @@ OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCreation100, Bool())
 
 OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCountNonZero100, Bool())
 {
-    BufferPoolState s(cv::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
+    BufferPoolState s(ncvslideio::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
 
     Size sz(1920, 1080);
 
@@ -84,7 +84,7 @@ OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCountNonZero100, Bool())
 
 OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCanny10, Bool())
 {
-    BufferPoolState s(cv::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
+    BufferPoolState s(ncvslideio::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
 
     Size sz(1920, 1080);
 
@@ -109,7 +109,7 @@ OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatCanny10, Bool())
 
 OCL_PERF_TEST_P(BufferPoolFixture, BufferPool_UMatIntegral10, Bool())
 {
-    BufferPoolState s(cv::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
+    BufferPoolState s(ncvslideio::ocl::getOpenCLAllocator()->getBufferPoolController(), GetParam());
 
     Size sz(1920, 1080);
 

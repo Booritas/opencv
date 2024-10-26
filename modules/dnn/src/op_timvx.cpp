@@ -11,7 +11,7 @@
 #include "op_timvx.hpp"
 #include "net_impl.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -510,12 +510,12 @@ void TimVXGraph::forward()
     if (!this->isCompiled)
     {
         if (!graph->Compile())
-            CV_Error(cv::Error::StsBadArg, " Fail to compile TimVX graph!");
+            CV_Error(ncvslideio::Error::StsBadArg, " Fail to compile TimVX graph!");
         this->isCompiled = true;
     }
 
     if (!graph->Run())
-        CV_Error(cv::Error::StsBadArg, " Fail to run TimVX graph!");
+        CV_Error(ncvslideio::Error::StsBadArg, " Fail to run TimVX graph!");
 }
 
 // *********************** TimVXBackendNode ********************
@@ -928,4 +928,4 @@ bool haveTimVX()
 #endif
 }
 } // namespace dnn
-} // namespace cv
+} // namespace ncvslideio

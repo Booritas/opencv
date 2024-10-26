@@ -24,11 +24,11 @@
 #include <stdlib.h>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int argc, char* argv[])
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||show help message}{@image|lena.jpg|input image}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{help h||show help message}{@image|lena.jpg|input image}");
     if (parser.has("help"))
     {
         parser.printMessage();

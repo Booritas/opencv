@@ -18,7 +18,7 @@
 
 #include <sstream>
 
-namespace cv { namespace gimpl { namespace passes {
+namespace ncvslideio { namespace gimpl { namespace passes {
 namespace
 {
 using Graph = GModel::Graph;
@@ -65,7 +65,7 @@ void checkCompatibility(const Graph& pattern,
 // Tries to substitute __single__ pattern with substitute in the given graph
 bool tryToSubstitute(ade::Graph& main,
                      const std::unique_ptr<ade::Graph>& patternG,
-                     const cv::GComputation& substitute)
+                     const ncvslideio::GComputation& substitute)
 {
     GModel::Graph gm(main);
 
@@ -76,8 +76,8 @@ bool tryToSubstitute(ade::Graph& main,
     }
 
     // 2. build substitute graph inside the main graph
-    cv::gimpl::GModelBuilder builder(main);
-    auto expr = cv::util::get<cv::GComputation::Priv::Expr>(substitute.priv().m_shape);
+    ncvslideio::gimpl::GModelBuilder builder(main);
+    auto expr = ncvslideio::util::get<ncvslideio::GComputation::Priv::Expr>(substitute.priv().m_shape);
     const auto& proto_slots = builder.put(expr.m_ins, expr.m_outs);
     Protocol substituteP;
     std::tie(substituteP.inputs, substituteP.outputs, substituteP.in_nhs, substituteP.out_nhs) =
@@ -137,4 +137,4 @@ void applyTransformations(ade::passes::PassContext& ctx,
 }
 }  // namespace passes
 }  // namespace gimpl
-}  // namespace cv
+}  // namespace ncvslideio

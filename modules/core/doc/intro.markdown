@@ -41,7 +41,7 @@ API Concepts
 ### cv Namespace
 
 All the OpenCV classes and functions are placed into the `cv` namespace. Therefore, to access this
-functionality from your code, use the `cv::` specifier or `using namespace cv;` directive:
+functionality from your code, use the `cv::` specifier or `using namespace ncvslideio;` directive:
 
 ```.cpp
 #include "opencv2/core.hpp"
@@ -52,7 +52,7 @@ cv::Mat H = cv::findHomography(points1, points2, cv::RANSAC, 5);
 or :
 ```.cpp
     #include "opencv2/core.hpp"
-    using namespace cv;
+    using namespace ncvslideio;
     ...
     Mat H = findHomography(points1, points2, RANSAC, 5 );
     ...
@@ -136,7 +136,7 @@ Example:
     #include "opencv2/imgproc.hpp"
     #include "opencv2/highgui.hpp"
 
-    using namespace cv;
+    using namespace ncvslideio;
 
     int main(int, char**)
     {

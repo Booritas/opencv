@@ -4,23 +4,23 @@
 #include "precomp.hpp"
 #include "opencv2/core/core_c.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 class epnp {
  public:
-  epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints);
+  epnp(const ncvslideio::Mat& cameraMatrix, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints);
   ~epnp();
 
   void add_correspondence(const double X, const double Y, const double Z,
               const double u, const double v);
 
-  void compute_pose(cv::Mat& R, cv::Mat& t);
+  void compute_pose(ncvslideio::Mat& R, ncvslideio::Mat& t);
  private:
   epnp(const epnp &); // copy disabled
   epnp& operator=(const epnp &); // assign disabled
   template <typename T>
-  void init_camera_parameters(const cv::Mat& cameraMatrix)
+  void init_camera_parameters(const ncvslideio::Mat& cameraMatrix)
   {
     uc = cameraMatrix.at<T> (0, 2);
     vc = cameraMatrix.at<T> (1, 2);
@@ -28,7 +28,7 @@ class epnp {
     fv = cameraMatrix.at<T> (1, 1);
   }
   template <typename OpointType, typename IpointType>
-  void init_points(const cv::Mat& opoints, const cv::Mat& ipoints)
+  void init_points(const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints)
   {
       for(int i = 0; i < number_of_correspondences; i++)
       {

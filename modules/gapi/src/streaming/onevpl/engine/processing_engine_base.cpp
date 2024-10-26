@@ -13,7 +13,7 @@
 #include "streaming/onevpl/accelerators/accel_policy_interface.hpp"
 #include "logger.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -43,7 +43,7 @@ ProcessingEngineBase::ExecutionStatus ProcessingEngineBase::process(mfxSession s
     {
         exec_data.op_id = 0;
     }
-    cv::util::suppress_unused_warning(old_op_id);
+    ncvslideio::util::suppress_unused_warning(old_op_id);
     GAPI_LOG_DEBUG(nullptr, "[" << session << "] finish op id: " << old_op_id <<
                             ", " << processing_session->error_code_to_str() <<
                             ", " << ProcessingEngineBase::status_to_string(status) <<
@@ -106,5 +106,5 @@ VPLAccelerationPolicy* ProcessingEngineBase::get_accel() {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

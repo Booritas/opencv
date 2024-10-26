@@ -13,13 +13,13 @@ PERF_TEST_P(Size_MatType, bitwise_not, TYPICAL_MATS_BITW_ARITHM)
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
 
-    cv::Mat a = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, WARMUP_RNG).out(c);
     declare.iterations(200);
 
-    TEST_CYCLE() cv::bitwise_not(a, c);
+    TEST_CYCLE() ncvslideio::bitwise_not(a, c);
 
     SANITY_CHECK(c);
 }
@@ -28,9 +28,9 @@ PERF_TEST_P(Size_MatType, bitwise_and, TYPICAL_MATS_BITW_ARITHM)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     declare.time(100);
@@ -44,9 +44,9 @@ PERF_TEST_P(Size_MatType, bitwise_or, TYPICAL_MATS_BITW_ARITHM)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     declare.time(100);
@@ -60,9 +60,9 @@ PERF_TEST_P(Size_MatType, bitwise_xor, TYPICAL_MATS_BITW_ARITHM)
 {
     Size sz = get<0>(GetParam());
     int type = get<1>(GetParam());
-    cv::Mat a = Mat(sz, type);
-    cv::Mat b = Mat(sz, type);
-    cv::Mat c = Mat(sz, type);
+    ncvslideio::Mat a = Mat(sz, type);
+    ncvslideio::Mat b = Mat(sz, type);
+    ncvslideio::Mat c = Mat(sz, type);
 
     declare.in(a, b, WARMUP_RNG).out(c);
     declare.time(100);

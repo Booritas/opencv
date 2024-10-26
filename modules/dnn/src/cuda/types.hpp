@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
     /* For indices, we can use 32bit variables or 64bit variables. The GPU registers are 32 bits in size.
      * Hence, a 64bit variable requires two registers and is significantly slower than the 32bit versions.
@@ -22,6 +22,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace de
     using index_type = std::int32_t;
 #endif
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_TYPES_HPP */

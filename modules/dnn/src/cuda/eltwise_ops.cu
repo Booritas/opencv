@@ -18,10 +18,10 @@
 
 #include <opencv2/core.hpp>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
 namespace raw {
     template <class T, class EltwiseOp, std::size_t N>
@@ -378,4 +378,4 @@ void eltwise_pow_2(const Stream& stream, TensorSpan<T> output, TensorView<T> x, 
     template void eltwise_min_2(const Stream& stream, TensorSpan<float> output, TensorView<float> x, TensorView<float> y);
     template void eltwise_pow_2(const Stream& stream, TensorSpan<float> output, TensorView<float> x, TensorView<float> y);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

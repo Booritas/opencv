@@ -5,7 +5,7 @@
 #include "../precomp.hpp"
 #include "../usac.hpp"
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 class HomographyEstimatorImpl : public HomographyEstimator {
 private:
     const Ptr<MinimalSolver> min_solver;

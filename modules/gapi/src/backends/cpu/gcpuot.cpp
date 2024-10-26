@@ -10,7 +10,7 @@
 
 #include <vas/ot.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace gapi
 {
@@ -19,7 +19,7 @@ namespace ot
 
 // Helper functions for OT kernels
 namespace {
-void GTrackImplSetup(cv::GArrayDesc, cv::GArrayDesc, float,
+void GTrackImplSetup(ncvslideio::GArrayDesc, ncvslideio::GArrayDesc, float,
                      std::shared_ptr<vas::ot::ObjectTracker>& state,
                      const ObjectTrackerParams& params) {
     vas::ot::ObjectTracker::Builder ot_builder;
@@ -30,7 +30,7 @@ void GTrackImplSetup(cv::GArrayDesc, cv::GArrayDesc, float,
     state = ot_builder.Build(vas::ot::TrackingType::ZERO_TERM_IMAGELESS);
 }
 
-void GTrackImplPrepare(const std::vector<cv::Rect>& in_rects,
+void GTrackImplPrepare(const std::vector<ncvslideio::Rect>& in_rects,
                        const std::vector<int32_t>& in_class_labels,
                        float delta,
                        std::vector<vas::ot::DetectedObject>& detected_objs,
@@ -38,7 +38,7 @@ void GTrackImplPrepare(const std::vector<cv::Rect>& in_rects,
 {
     if (in_rects.size() != in_class_labels.size())
     {
-        cv::util::throw_error(std::invalid_argument("Track() implementation run() method: in_rects and in_class_labels "
+        ncvslideio::util::throw_error(std::invalid_argument("Track() implementation run() method: in_rects and in_class_labels "
                                                     "sizes are different."));
     }
 
@@ -53,23 +53,23 @@ void GTrackImplPrepare(const std::vector<cv::Rect>& in_rects,
 }
 } // anonymous namespace
 
-GAPI_OCV_KERNEL_ST(GTrackFromMatImpl, cv::gapi::ot::GTrackFromMat, vas::ot::ObjectTracker)
+GAPI_OCV_KERNEL_ST(GTrackFromMatImpl, ncvslideio::gapi::ot::GTrackFromMat, vas::ot::ObjectTracker)
 {
-    static void setup(cv::GMatDesc, cv::GArrayDesc rects_desc,
-                      cv::GArrayDesc labels_desc, float delta,
+    static void setup(ncvslideio::GMatDesc, ncvslideio::GArrayDesc rects_desc,
+                      ncvslideio::GArrayDesc labels_desc, float delta,
                       std::shared_ptr<vas::ot::ObjectTracker>& state,
-                      const cv::GCompileArgs& compile_args)
+                      const ncvslideio::GCompileArgs& compile_args)
     {
-        auto params = cv::gapi::getCompileArg<ObjectTrackerParams>(compile_args)
+        auto params = ncvslideio::gapi::getCompileArg<ObjectTrackerParams>(compile_args)
             .value_or(ObjectTrackerParams{});
 
-        GAPI_Assert(params.input_image_format == 0 && "Only BGR input as cv::GMat is supported for now");
+        GAPI_Assert(params.input_image_format == 0 && "Only BGR input as ncvslideio::GMat is supported for now");
         GTrackImplSetup(rects_desc, labels_desc, delta, state, params);
     }
 
-    static void run(const cv::Mat& in_mat, const std::vector<cv::Rect>& in_rects,
+    static void run(const ncvslideio::Mat& in_mat, const std::vector<ncvslideio::Rect>& in_rects,
                     const std::vector<int32_t>& in_class_labels, float delta,
-                    std::vector<cv::Rect>& out_tr_rects,
+                    std::vector<ncvslideio::Rect>& out_tr_rects,
                     std::vector<int32_t>& out_rects_classes,
                     std::vector<uint64_t>& out_tr_ids,
                     std::vector<int>& out_tr_statuses,
@@ -92,23 +92,23 @@ GAPI_OCV_KERNEL_ST(GTrackFromMatImpl, cv::gapi::ot::GTrackFromMat, vas::ot::Obje
     }
 };
 
-GAPI_OCV_KERNEL_ST(GTrackFromFrameImpl, cv::gapi::ot::GTrackFromFrame, vas::ot::ObjectTracker)
+GAPI_OCV_KERNEL_ST(GTrackFromFrameImpl, ncvslideio::gapi::ot::GTrackFromFrame, vas::ot::ObjectTracker)
 {
-    static void setup(cv::GFrameDesc, cv::GArrayDesc rects_desc,
-                      cv::GArrayDesc labels_desc, float delta,
+    static void setup(ncvslideio::GFrameDesc, ncvslideio::GArrayDesc rects_desc,
+                      ncvslideio::GArrayDesc labels_desc, float delta,
                       std::shared_ptr<vas::ot::ObjectTracker>& state,
-                      const cv::GCompileArgs& compile_args)
+                      const ncvslideio::GCompileArgs& compile_args)
     {
-        auto params = cv::gapi::getCompileArg<ObjectTrackerParams>(compile_args)
+        auto params = ncvslideio::gapi::getCompileArg<ObjectTrackerParams>(compile_args)
             .value_or(ObjectTrackerParams{});
 
-        GAPI_Assert(params.input_image_format == 1 && "Only NV12 input as cv::GFrame is supported for now");
+        GAPI_Assert(params.input_image_format == 1 && "Only NV12 input as ncvslideio::GFrame is supported for now");
         GTrackImplSetup(rects_desc, labels_desc, delta, state, params);
     }
 
-    static void run(const cv::MediaFrame& in_frame, const std::vector<cv::Rect>& in_rects,
+    static void run(const ncvslideio::MediaFrame& in_frame, const std::vector<ncvslideio::Rect>& in_rects,
                     const std::vector<int32_t>& in_class_labels, float delta,
-                    std::vector<cv::Rect>& out_tr_rects,
+                    std::vector<ncvslideio::Rect>& out_tr_rects,
                     std::vector<int32_t>& out_rects_classes,
                     std::vector<uint64_t>& out_tr_ids,
                     std::vector<int>& out_tr_statuses,
@@ -117,23 +117,23 @@ GAPI_OCV_KERNEL_ST(GTrackFromFrameImpl, cv::gapi::ot::GTrackFromFrame, vas::ot::
         std::vector<vas::ot::DetectedObject> detected_objs;
         GTrackImplPrepare(in_rects, in_class_labels, delta, detected_objs, state);
 
-        // Extract metadata from MediaFrame and construct cv::Mat atop of it
-        cv::MediaFrame::View view = in_frame.access(cv::MediaFrame::Access::R);
+        // Extract metadata from MediaFrame and construct ncvslideio::Mat atop of it
+        ncvslideio::MediaFrame::View view = in_frame.access(ncvslideio::MediaFrame::Access::R);
         auto ptrs = view.ptr;
         auto strides = view.stride;
         auto desc = in_frame.desc();
 
-        GAPI_Assert((desc.fmt == cv::MediaFormat::NV12 || desc.fmt == cv::MediaFormat::BGR) \
+        GAPI_Assert((desc.fmt == ncvslideio::MediaFormat::NV12 || desc.fmt == ncvslideio::MediaFormat::BGR) \
                     && "Input frame is not in NV12 or BGR format");
 
-        cv::Mat in;
-        if (desc.fmt == cv::MediaFormat::NV12) {
+        ncvslideio::Mat in;
+        if (desc.fmt == ncvslideio::MediaFormat::NV12) {
             GAPI_Assert(ptrs[0] != nullptr && "Y plane pointer is empty");
             GAPI_Assert(ptrs[1] != nullptr && "UV plane pointer is empty");
             if (strides[0] > 0) {
-                in = cv::Mat(desc.size, CV_8UC1, ptrs[0], strides[0]);
+                in = ncvslideio::Mat(desc.size, CV_8UC1, ptrs[0], strides[0]);
             } else {
-                in = cv::Mat(desc.size, CV_8UC1, ptrs[0]);
+                in = ncvslideio::Mat(desc.size, CV_8UC1, ptrs[0]);
             }
         }
 
@@ -149,9 +149,9 @@ GAPI_OCV_KERNEL_ST(GTrackFromFrameImpl, cv::gapi::ot::GTrackFromFrame, vas::ot::
     }
 };
 
-cv::gapi::GKernelPackage cpu::kernels()
+ncvslideio::gapi::GKernelPackage cpu::kernels()
 {
-    return cv::gapi::kernels
+    return ncvslideio::gapi::kernels
         <
           GTrackFromFrameImpl,
           GTrackFromMatImpl
@@ -160,4 +160,4 @@ cv::gapi::GKernelPackage cpu::kernels()
 
 }   // namespace ot
 }   // namespace gapi
-}   // namespace cv
+}   // namespace ncvslideio

@@ -59,23 +59,23 @@ PERF_TEST_P(Sz_Depth_Cn, CUDA_GpuMat_SetTo,
                     Values(CV_8U, CV_16U, CV_32F, CV_64F),
                     CUDA_CHANNELS_1_3_4))
 {
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int channels = GET_PARAM(2);
 
     const int type = CV_MAKE_TYPE(depth, channels);
 
-    const cv::Scalar val(1, 2, 3, 4);
+    const ncvslideio::Scalar val(1, 2, 3, 4);
 
     if (PERF_RUN_CUDA())
     {
-        cv::cuda::GpuMat dst(size, type);
+        ncvslideio::cuda::GpuMat dst(size, type);
 
         TEST_CYCLE() dst.setTo(val);
     }
     else
     {
-        cv::Mat dst(size, type);
+        ncvslideio::Mat dst(size, type);
 
         TEST_CYCLE() dst.setTo(val);
     }
@@ -91,28 +91,28 @@ PERF_TEST_P(Sz_Depth_Cn, CUDA_GpuMat_SetToMasked,
                     Values(CV_8U, CV_16U, CV_32F, CV_64F),
                     CUDA_CHANNELS_1_3_4))
 {
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int channels = GET_PARAM(2);
 
     const int type = CV_MAKE_TYPE(depth, channels);
 
-    cv::Mat src(size, type);
-    cv::Mat mask(size, CV_8UC1);
+    ncvslideio::Mat src(size, type);
+    ncvslideio::Mat mask(size, CV_8UC1);
     declare.in(src, mask, WARMUP_RNG);
 
-    const cv::Scalar val(1, 2, 3, 4);
+    const ncvslideio::Scalar val(1, 2, 3, 4);
 
     if (PERF_RUN_CUDA())
     {
-        cv::cuda::GpuMat dst(src);
-        const cv::cuda::GpuMat d_mask(mask);
+        ncvslideio::cuda::GpuMat dst(src);
+        const ncvslideio::cuda::GpuMat d_mask(mask);
 
         TEST_CYCLE() dst.setTo(val, d_mask);
     }
     else
     {
-        cv::Mat dst = src;
+        ncvslideio::Mat dst = src;
 
         TEST_CYCLE() dst.setTo(val, mask);
     }
@@ -128,27 +128,27 @@ PERF_TEST_P(Sz_Depth_Cn, CUDA_GpuMat_CopyToMasked,
                     Values(CV_8U, CV_16U, CV_32F, CV_64F),
                     CUDA_CHANNELS_1_3_4))
 {
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth = GET_PARAM(1);
     const int channels = GET_PARAM(2);
 
     const int type = CV_MAKE_TYPE(depth, channels);
 
-    cv::Mat src(size, type);
-    cv::Mat mask(size, CV_8UC1);
+    ncvslideio::Mat src(size, type);
+    ncvslideio::Mat mask(size, CV_8UC1);
     declare.in(src, mask, WARMUP_RNG);
 
     if (PERF_RUN_CUDA())
     {
-        const cv::cuda::GpuMat d_src(src);
-        const cv::cuda::GpuMat d_mask(mask);
-        cv::cuda::GpuMat dst(d_src.size(), d_src.type(), cv::Scalar::all(0));
+        const ncvslideio::cuda::GpuMat d_src(src);
+        const ncvslideio::cuda::GpuMat d_mask(mask);
+        ncvslideio::cuda::GpuMat dst(d_src.size(), d_src.type(), ncvslideio::Scalar::all(0));
 
         TEST_CYCLE() d_src.copyTo(dst, d_mask);
     }
     else
     {
-        cv::Mat dst(src.size(), src.type(), cv::Scalar::all(0));
+        ncvslideio::Mat dst(src.size(), src.type(), ncvslideio::Scalar::all(0));
 
         TEST_CYCLE() src.copyTo(dst, mask);
     }
@@ -159,18 +159,18 @@ PERF_TEST_P(Sz_Depth_Cn, CUDA_GpuMat_CopyToMasked,
 //////////////////////////////////////////////////////////////////////
 // ConvertTo
 
-DEF_PARAM_TEST(Sz_2Depth, cv::Size, MatDepth, MatDepth);
+DEF_PARAM_TEST(Sz_2Depth, ncvslideio::Size, MatDepth, MatDepth);
 
 PERF_TEST_P(Sz_2Depth, CUDA_GpuMat_ConvertTo,
             Combine(CUDA_TYPICAL_MAT_SIZES,
                     Values(CV_8U, CV_16U, CV_32F, CV_64F),
                     Values(CV_8U, CV_16U, CV_32F, CV_64F)))
 {
-    const cv::Size size = GET_PARAM(0);
+    const ncvslideio::Size size = GET_PARAM(0);
     const int depth1 = GET_PARAM(1);
     const int depth2 = GET_PARAM(2);
 
-    cv::Mat src(size, depth1);
+    ncvslideio::Mat src(size, depth1);
     declare.in(src, WARMUP_RNG);
 
     const double a = 0.5;
@@ -178,14 +178,14 @@ PERF_TEST_P(Sz_2Depth, CUDA_GpuMat_ConvertTo,
 
     if (PERF_RUN_CUDA())
     {
-        const cv::cuda::GpuMat d_src(src);
-        cv::cuda::GpuMat dst;
+        const ncvslideio::cuda::GpuMat d_src(src);
+        ncvslideio::cuda::GpuMat dst;
 
         TEST_CYCLE() d_src.convertTo(dst, depth2, a, b);
     }
     else
     {
-        cv::Mat dst;
+        ncvslideio::Mat dst;
 
         TEST_CYCLE() src.convertTo(dst, depth2, a, b);
     }

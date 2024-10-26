@@ -5,7 +5,7 @@
 #include "precomp.hpp"
 
 
-namespace cv {
+namespace ncvslideio {
 namespace dnn {
 CV__DNN_INLINE_NS_BEGIN
 
@@ -100,4 +100,4 @@ Net readNetFromModelOptimizer(
 
 
 CV__DNN_INLINE_NS_END
-}}  // namespace cv::dnn
+}}  // namespace ncvslideio::dnn

@@ -20,7 +20,7 @@
 #endif
 
 // For text
-const int fontFace = cv::FONT_ITALIC;
+const int fontFace = ncvslideio::FONT_ITALIC;
 const double fontScale = 0.75;
 const int thickness_font = 2;
 
@@ -29,62 +29,62 @@ const int lineType = 8;
 const int radius = 4;
 
 // Draw a text with the question point
-void drawQuestion(cv::Mat image, cv::Point3f point, cv::Scalar color)
+void drawQuestion(ncvslideio::Mat image, ncvslideio::Point3f point, ncvslideio::Scalar color)
 {
     std::string x = IntToString((int)point.x);
     std::string y = IntToString((int)point.y);
     std::string z = IntToString((int)point.z);
 
     std::string text = " Where is point (" + x + ","  + y + "," + z + ") ?";
-    cv::putText(image, text, cv::Point(25,50), fontFace, fontScale, color, thickness_font, 8);
+    ncvslideio::putText(image, text, ncvslideio::Point(25,50), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw a text with the number of entered points
-void drawText(cv::Mat image, std::string text, cv::Scalar color)
+void drawText(ncvslideio::Mat image, std::string text, ncvslideio::Scalar color)
 {
-    cv::putText(image, text, cv::Point(25,50), fontFace, fontScale, color, thickness_font, 8);
+    ncvslideio::putText(image, text, ncvslideio::Point(25,50), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw a text with the number of entered points
-void drawText2(cv::Mat image, std::string text, cv::Scalar color)
+void drawText2(ncvslideio::Mat image, std::string text, ncvslideio::Scalar color)
 {
-    cv::putText(image, text, cv::Point(25,75), fontFace, fontScale, color, thickness_font, 8);
+    ncvslideio::putText(image, text, ncvslideio::Point(25,75), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw a text with the frame ratio
-void drawFPS(cv::Mat image, double fps, cv::Scalar color)
+void drawFPS(ncvslideio::Mat image, double fps, ncvslideio::Scalar color)
 {
-    std::string fps_str = cv::format("%.2f FPS", fps);
-    cv::putText(image, fps_str, cv::Point(500,50), fontFace, fontScale, color, thickness_font, 8);
+    std::string fps_str = ncvslideio::format("%.2f FPS", fps);
+    ncvslideio::putText(image, fps_str, ncvslideio::Point(500,50), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw a text with the frame ratio
-void drawConfidence(cv::Mat image, double confidence, cv::Scalar color)
+void drawConfidence(ncvslideio::Mat image, double confidence, ncvslideio::Scalar color)
 {
     std::string conf_str = IntToString((int)confidence);
     std::string text = conf_str + " %";
-    cv::putText(image, text, cv::Point(500,75), fontFace, fontScale, color, thickness_font, 8);
+    ncvslideio::putText(image, text, ncvslideio::Point(500,75), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw a text with the number of entered points
-void drawCounter(cv::Mat image, int n, int n_max, cv::Scalar color)
+void drawCounter(ncvslideio::Mat image, int n, int n_max, ncvslideio::Scalar color)
 {
     std::string n_str = IntToString(n);
     std::string n_max_str = IntToString(n_max);
     std::string text = n_str + " of " + n_max_str + " points";
-    cv::putText(image, text, cv::Point(500,50), fontFace, fontScale, color, thickness_font, 8);
+    ncvslideio::putText(image, text, ncvslideio::Point(500,50), fontFace, fontScale, color, thickness_font, 8);
 }
 
 // Draw the points and the coordinates
-void drawPoints(cv::Mat image, std::vector<cv::Point2f> &list_points_2d, std::vector<cv::Point3f> &list_points_3d, cv::Scalar color)
+void drawPoints(ncvslideio::Mat image, std::vector<ncvslideio::Point2f> &list_points_2d, std::vector<ncvslideio::Point3f> &list_points_3d, ncvslideio::Scalar color)
 {
     for (unsigned int i = 0; i < list_points_2d.size(); ++i)
     {
-        cv::Point2f point_2d = list_points_2d[i];
-        cv::Point3f point_3d = list_points_3d[i];
+        ncvslideio::Point2f point_2d = list_points_2d[i];
+        ncvslideio::Point3f point_3d = list_points_3d[i];
 
         // Draw Selected points
-        cv::circle(image, point_2d, radius, color, -1, lineType );
+        ncvslideio::circle(image, point_2d, radius, color, -1, lineType );
 
         std::string idx = IntToString(i+1);
         std::string x = IntToString((int)point_3d.x);
@@ -94,27 +94,27 @@ void drawPoints(cv::Mat image, std::vector<cv::Point2f> &list_points_2d, std::ve
 
         point_2d.x = point_2d.x + 10;
         point_2d.y = point_2d.y - 10;
-        cv::putText(image, text, point_2d, fontFace, fontScale*0.5, color, thickness_font, 8);
+        ncvslideio::putText(image, text, point_2d, fontFace, fontScale*0.5, color, thickness_font, 8);
     }
 }
 
 // Draw only the 2D points
-void draw2DPoints(cv::Mat image, std::vector<cv::Point2f> &list_points, cv::Scalar color)
+void draw2DPoints(ncvslideio::Mat image, std::vector<ncvslideio::Point2f> &list_points, ncvslideio::Scalar color)
 {
     for( size_t i = 0; i < list_points.size(); i++)
     {
-        cv::Point2f point_2d = list_points[i];
+        ncvslideio::Point2f point_2d = list_points[i];
 
         // Draw Selected points
-        cv::circle(image, point_2d, radius, color, -1, lineType );
+        ncvslideio::circle(image, point_2d, radius, color, -1, lineType );
     }
 }
 
 // Draw an arrow into the image
-void drawArrow(cv::Mat image, cv::Point2i p, cv::Point2i q, cv::Scalar color, int arrowMagnitude, int thickness, int line_type, int shift)
+void drawArrow(ncvslideio::Mat image, ncvslideio::Point2i p, ncvslideio::Point2i q, ncvslideio::Scalar color, int arrowMagnitude, int thickness, int line_type, int shift)
 {
     //Draw the principle line
-    cv::line(image, p, q, color, thickness, line_type, shift);
+    ncvslideio::line(image, p, q, color, thickness, line_type, shift);
     const double PI = CV_PI;
     //compute the angle alpha
     double angle = atan2((double)p.y-q.y, (double)p.x-q.x);
@@ -122,78 +122,78 @@ void drawArrow(cv::Mat image, cv::Point2i p, cv::Point2i q, cv::Scalar color, in
     p.x = (int) ( q.x +  arrowMagnitude * cos(angle + PI/4));
     p.y = (int) ( q.y +  arrowMagnitude * sin(angle + PI/4));
     //Draw the first segment
-    cv::line(image, p, q, color, thickness, line_type, shift);
+    ncvslideio::line(image, p, q, color, thickness, line_type, shift);
     //compute the coordinates of the second segment
     p.x = (int) ( q.x +  arrowMagnitude * cos(angle - PI/4));
     p.y = (int) ( q.y +  arrowMagnitude * sin(angle - PI/4));
     //Draw the second segment
-    cv::line(image, p, q, color, thickness, line_type, shift);
+    ncvslideio::line(image, p, q, color, thickness, line_type, shift);
 }
 
 // Draw the 3D coordinate axes
-void draw3DCoordinateAxes(cv::Mat image, const std::vector<cv::Point2f> &list_points2d)
+void draw3DCoordinateAxes(ncvslideio::Mat image, const std::vector<ncvslideio::Point2f> &list_points2d)
 {
-    cv::Scalar red(0, 0, 255);
-    cv::Scalar green(0,255,0);
-    cv::Scalar blue(255,0,0);
-    cv::Scalar black(0,0,0);
+    ncvslideio::Scalar red(0, 0, 255);
+    ncvslideio::Scalar green(0,255,0);
+    ncvslideio::Scalar blue(255,0,0);
+    ncvslideio::Scalar black(0,0,0);
 
-    cv::Point2i origin = list_points2d[0];
-    cv::Point2i pointX = list_points2d[1];
-    cv::Point2i pointY = list_points2d[2];
-    cv::Point2i pointZ = list_points2d[3];
+    ncvslideio::Point2i origin = list_points2d[0];
+    ncvslideio::Point2i pointX = list_points2d[1];
+    ncvslideio::Point2i pointY = list_points2d[2];
+    ncvslideio::Point2i pointZ = list_points2d[3];
 
     drawArrow(image, origin, pointX, red, 9, 2);
     drawArrow(image, origin, pointY, green, 9, 2);
     drawArrow(image, origin, pointZ, blue, 9, 2);
-    cv::circle(image, origin, radius/2, black, -1, lineType );
+    ncvslideio::circle(image, origin, radius/2, black, -1, lineType );
 }
 
 // Draw the object mesh
-void drawObjectMesh(cv::Mat image, const Mesh *mesh, PnPProblem *pnpProblem, cv::Scalar color)
+void drawObjectMesh(ncvslideio::Mat image, const Mesh *mesh, PnPProblem *pnpProblem, ncvslideio::Scalar color)
 {
     std::vector<std::vector<int> > list_triangles = mesh->getTrianglesList();
     for( size_t i = 0; i < list_triangles.size(); i++)
     {
         std::vector<int> tmp_triangle = list_triangles.at(i);
 
-        cv::Point3f point_3d_0 = mesh->getVertex(tmp_triangle[0]);
-        cv::Point3f point_3d_1 = mesh->getVertex(tmp_triangle[1]);
-        cv::Point3f point_3d_2 = mesh->getVertex(tmp_triangle[2]);
+        ncvslideio::Point3f point_3d_0 = mesh->getVertex(tmp_triangle[0]);
+        ncvslideio::Point3f point_3d_1 = mesh->getVertex(tmp_triangle[1]);
+        ncvslideio::Point3f point_3d_2 = mesh->getVertex(tmp_triangle[2]);
 
-        cv::Point2f point_2d_0 = pnpProblem->backproject3DPoint(point_3d_0);
-        cv::Point2f point_2d_1 = pnpProblem->backproject3DPoint(point_3d_1);
-        cv::Point2f point_2d_2 = pnpProblem->backproject3DPoint(point_3d_2);
+        ncvslideio::Point2f point_2d_0 = pnpProblem->backproject3DPoint(point_3d_0);
+        ncvslideio::Point2f point_2d_1 = pnpProblem->backproject3DPoint(point_3d_1);
+        ncvslideio::Point2f point_2d_2 = pnpProblem->backproject3DPoint(point_3d_2);
 
-        cv::line(image, point_2d_0, point_2d_1, color, 1);
-        cv::line(image, point_2d_1, point_2d_2, color, 1);
-        cv::line(image, point_2d_2, point_2d_0, color, 1);
+        ncvslideio::line(image, point_2d_0, point_2d_1, color, 1);
+        ncvslideio::line(image, point_2d_1, point_2d_2, color, 1);
+        ncvslideio::line(image, point_2d_2, point_2d_0, color, 1);
     }
 }
 
 // Computes the norm of the translation error
-double get_translation_error(const cv::Mat &t_true, const cv::Mat &t)
+double get_translation_error(const ncvslideio::Mat &t_true, const ncvslideio::Mat &t)
 {
-    return cv::norm( t_true - t );
+    return ncvslideio::norm( t_true - t );
 }
 
 // Computes the norm of the rotation error
-double get_rotation_error(const cv::Mat &R_true, const cv::Mat &R)
+double get_rotation_error(const ncvslideio::Mat &R_true, const ncvslideio::Mat &R)
 {
-    cv::Mat error_vec, error_mat;
+    ncvslideio::Mat error_vec, error_mat;
     error_mat = -R_true * R.t();
-    cv::Rodrigues(error_mat, error_vec);
+    ncvslideio::Rodrigues(error_mat, error_vec);
 
-    return cv::norm(error_vec);
+    return ncvslideio::norm(error_vec);
 }
 
 // Converts a given Rotation Matrix to Euler angles
 // Convention used is Y-Z-X Tait-Bryan angles
 // Reference code implementation:
 // https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToEuler/index.htm
-cv::Mat rot2euler(const cv::Mat & rotationMatrix)
+ncvslideio::Mat rot2euler(const ncvslideio::Mat & rotationMatrix)
 {
-    cv::Mat euler(3,1,CV_64F);
+    ncvslideio::Mat euler(3,1,CV_64F);
 
     double m00 = rotationMatrix.at<double>(0,0);
     double m02 = rotationMatrix.at<double>(0,2);
@@ -234,9 +234,9 @@ cv::Mat rot2euler(const cv::Mat & rotationMatrix)
 // Convention used is Y-Z-X Tait-Bryan angles
 // Reference:
 // https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
-cv::Mat euler2rot(const cv::Mat & euler)
+ncvslideio::Mat euler2rot(const ncvslideio::Mat & euler)
 {
-    cv::Mat rotationMatrix(3,3,CV_64F);
+    ncvslideio::Mat rotationMatrix(3,3,CV_64F);
 
     double bank = euler.at<double>(0);
     double attitude = euler.at<double>(1);
@@ -299,84 +299,84 @@ std::string IntToString ( int Number )
     return ss.str();
 }
 
-void createFeatures(const std::string &featureName, int numKeypoints, cv::Ptr<cv::Feature2D> &detector, cv::Ptr<cv::Feature2D> &descriptor)
+void createFeatures(const std::string &featureName, int numKeypoints, ncvslideio::Ptr<ncvslideio::Feature2D> &detector, ncvslideio::Ptr<ncvslideio::Feature2D> &descriptor)
 {
     if (featureName == "ORB")
     {
-        detector = cv::ORB::create(numKeypoints);
-        descriptor = cv::ORB::create(numKeypoints);
+        detector = ncvslideio::ORB::create(numKeypoints);
+        descriptor = ncvslideio::ORB::create(numKeypoints);
     }
     else if (featureName == "KAZE")
     {
-        detector = cv::KAZE::create();
-        descriptor = cv::KAZE::create();
+        detector = ncvslideio::KAZE::create();
+        descriptor = ncvslideio::KAZE::create();
     }
     else if (featureName == "AKAZE")
     {
-        detector = cv::AKAZE::create();
-        descriptor = cv::AKAZE::create();
+        detector = ncvslideio::AKAZE::create();
+        descriptor = ncvslideio::AKAZE::create();
     }
     else if (featureName == "BRISK")
     {
-        detector = cv::BRISK::create();
-        descriptor = cv::BRISK::create();
+        detector = ncvslideio::BRISK::create();
+        descriptor = ncvslideio::BRISK::create();
     }
     else if (featureName == "SIFT")
     {
-        detector = cv::SIFT::create();
-        descriptor = cv::SIFT::create();
+        detector = ncvslideio::SIFT::create();
+        descriptor = ncvslideio::SIFT::create();
     }
     else if (featureName == "SURF")
     {
 #if defined (OPENCV_ENABLE_NONFREE) && defined (HAVE_OPENCV_XFEATURES2D)
-        detector = cv::xfeatures2d::SURF::create(100, 4, 3, true);   //extended=true
-        descriptor = cv::xfeatures2d::SURF::create(100, 4, 3, true); //extended=true
+        detector = ncvslideio::xfeatures2d::SURF::create(100, 4, 3, true);   //extended=true
+        descriptor = ncvslideio::xfeatures2d::SURF::create(100, 4, 3, true); //extended=true
 #else
         std::cout << "xfeatures2d module is not available or nonfree is not enabled." << std::endl;
         std::cout << "Default to ORB." << std::endl;
-        detector = cv::ORB::create(numKeypoints);
-        descriptor = cv::ORB::create(numKeypoints);
+        detector = ncvslideio::ORB::create(numKeypoints);
+        descriptor = ncvslideio::ORB::create(numKeypoints);
 #endif
     }
     else if (featureName == "BINBOOST")
     {
 #if defined (HAVE_OPENCV_XFEATURES2D)
-        detector = cv::KAZE::create();
-        descriptor = cv::xfeatures2d::BoostDesc::create();
+        detector = ncvslideio::KAZE::create();
+        descriptor = ncvslideio::xfeatures2d::BoostDesc::create();
 #else
         std::cout << "xfeatures2d module is not available." << std::endl;
         std::cout << "Default to ORB." << std::endl;
-        detector = cv::ORB::create(numKeypoints);
-        descriptor = cv::ORB::create(numKeypoints);
+        detector = ncvslideio::ORB::create(numKeypoints);
+        descriptor = ncvslideio::ORB::create(numKeypoints);
 #endif
     }
     else if (featureName == "VGG")
     {
 #if defined (HAVE_OPENCV_XFEATURES2D)
-        detector = cv::KAZE::create();
-        descriptor = cv::xfeatures2d::VGG::create();
+        detector = ncvslideio::KAZE::create();
+        descriptor = ncvslideio::xfeatures2d::VGG::create();
 #else
         std::cout << "xfeatures2d module is not available." << std::endl;
         std::cout << "Default to ORB." << std::endl;
-        detector = cv::ORB::create(numKeypoints);
-        descriptor = cv::ORB::create(numKeypoints);
+        detector = ncvslideio::ORB::create(numKeypoints);
+        descriptor = ncvslideio::ORB::create(numKeypoints);
 #endif
     }
 }
 
-cv::Ptr<cv::DescriptorMatcher> createMatcher(const std::string &featureName, bool useFLANN)
+ncvslideio::Ptr<ncvslideio::DescriptorMatcher> createMatcher(const std::string &featureName, bool useFLANN)
 {
     if (featureName == "ORB" || featureName == "BRISK" || featureName == "AKAZE" || featureName == "BINBOOST")
     {
         if (useFLANN)
         {
-            cv::Ptr<cv::flann::IndexParams> indexParams = cv::makePtr<cv::flann::LshIndexParams>(6, 12, 1); // instantiate LSH index parameters
-            cv::Ptr<cv::flann::SearchParams> searchParams = cv::makePtr<cv::flann::SearchParams>(50);       // instantiate flann search parameters
-            return cv::makePtr<cv::FlannBasedMatcher>(indexParams, searchParams);
+            ncvslideio::Ptr<ncvslideio::flann::IndexParams> indexParams = ncvslideio::makePtr<ncvslideio::flann::LshIndexParams>(6, 12, 1); // instantiate LSH index parameters
+            ncvslideio::Ptr<ncvslideio::flann::SearchParams> searchParams = ncvslideio::makePtr<ncvslideio::flann::SearchParams>(50);       // instantiate flann search parameters
+            return ncvslideio::makePtr<ncvslideio::FlannBasedMatcher>(indexParams, searchParams);
         }
         else
         {
-            return cv::DescriptorMatcher::create("BruteForce-Hamming");
+            return ncvslideio::DescriptorMatcher::create("BruteForce-Hamming");
         }
 
     }
@@ -384,11 +384,11 @@ cv::Ptr<cv::DescriptorMatcher> createMatcher(const std::string &featureName, boo
     {
         if (useFLANN)
         {
-            return cv::DescriptorMatcher::create("FlannBased");
+            return ncvslideio::DescriptorMatcher::create("FlannBased");
         }
         else
         {
-            return cv::DescriptorMatcher::create("BruteForce");
+            return ncvslideio::DescriptorMatcher::create("BruteForce");
         }
     }
 }

@@ -49,7 +49,7 @@
 #include "accum.simd_declarations.hpp"
 #include "opencv2/core/openvx/ovx_defs.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 typedef void(*AccFunc)(const uchar*, uchar*, const uchar*, int, int);
@@ -166,7 +166,7 @@ static bool ocl_accumulate( InputArray _src, InputArray _src2, InputOutputArray 
 }
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_accumulate(InputArray _src, InputOutputArray _dst, InputArray _mask)
 {
@@ -232,7 +232,7 @@ static bool ipp_accumulate(InputArray _src, InputOutputArray _dst, InputArray _m
 #endif
 
 #ifdef HAVE_OPENVX
-namespace cv
+namespace ncvslideio
 {
 enum
 {
@@ -305,7 +305,7 @@ static bool openvx_accumulate(InputArray _src, InputOutputArray _dst, InputArray
 }
 #endif
 
-void cv::accumulate( InputArray _src, InputOutputArray _dst, InputArray _mask )
+void ncvslideio::accumulate( InputArray _src, InputOutputArray _dst, InputArray _mask )
 {
     CV_INSTRUMENT_REGION();
 
@@ -341,7 +341,7 @@ void cv::accumulate( InputArray _src, InputOutputArray _dst, InputArray _mask )
 }
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_accumulate_square(InputArray _src, InputOutputArray _dst, InputArray _mask)
 {
@@ -404,7 +404,7 @@ static bool ipp_accumulate_square(InputArray _src, InputOutputArray _dst, InputA
 }
 #endif
 
-void cv::accumulateSquare( InputArray _src, InputOutputArray _dst, InputArray _mask )
+void ncvslideio::accumulateSquare( InputArray _src, InputOutputArray _dst, InputArray _mask )
 {
     CV_INSTRUMENT_REGION();
 
@@ -439,7 +439,7 @@ void cv::accumulateSquare( InputArray _src, InputOutputArray _dst, InputArray _m
 }
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_accumulate_product(InputArray _src1, InputArray _src2,
                             InputOutputArray _dst, InputArray _mask)
@@ -508,7 +508,7 @@ static bool ipp_accumulate_product(InputArray _src1, InputArray _src2,
 
 
 
-void cv::accumulateProduct( InputArray _src1, InputArray _src2,
+void ncvslideio::accumulateProduct( InputArray _src1, InputArray _src2,
                             InputOutputArray _dst, InputArray _mask )
 {
     CV_INSTRUMENT_REGION();
@@ -542,7 +542,7 @@ void cv::accumulateProduct( InputArray _src1, InputArray _src2,
 }
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_accumulate_weighted( InputArray _src, InputOutputArray _dst,
                              double alpha, InputArray _mask )
@@ -608,7 +608,7 @@ static bool ipp_accumulate_weighted( InputArray _src, InputOutputArray _dst,
 }
 #endif
 
-void cv::accumulateWeighted( InputArray _src, InputOutputArray _dst,
+void ncvslideio::accumulateWeighted( InputArray _src, InputOutputArray _dst,
                              double alpha, InputArray _mask )
 {
     CV_INSTRUMENT_REGION();
@@ -647,39 +647,39 @@ void cv::accumulateWeighted( InputArray _src, InputOutputArray _dst,
 CV_IMPL void
 cvAcc( const void* arr, void* sumarr, const void* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(arr), dst = cv::cvarrToMat(sumarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(arr), dst = ncvslideio::cvarrToMat(sumarr), mask;
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::accumulate( src, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::accumulate( src, dst, mask );
 }
 
 CV_IMPL void
 cvSquareAcc( const void* arr, void* sumarr, const void* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(arr), dst = cv::cvarrToMat(sumarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(arr), dst = ncvslideio::cvarrToMat(sumarr), mask;
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::accumulateSquare( src, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::accumulateSquare( src, dst, mask );
 }
 
 CV_IMPL void
 cvMultiplyAcc( const void* arr1, const void* arr2,
                void* sumarr, const void* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(arr1), src2 = cv::cvarrToMat(arr2);
-    cv::Mat dst = cv::cvarrToMat(sumarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(arr1), src2 = ncvslideio::cvarrToMat(arr2);
+    ncvslideio::Mat dst = ncvslideio::cvarrToMat(sumarr), mask;
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::accumulateProduct( src1, src2, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::accumulateProduct( src1, src2, dst, mask );
 }
 
 CV_IMPL void
 cvRunningAvg( const void* arr, void* sumarr, double alpha, const void* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(arr), dst = cv::cvarrToMat(sumarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(arr), dst = ncvslideio::cvarrToMat(sumarr), mask;
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::accumulateWeighted( src, dst, alpha, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::accumulateWeighted( src, dst, alpha, mask );
 }
 
 /* End of file. */

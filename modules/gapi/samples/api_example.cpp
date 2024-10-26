@@ -6,29 +6,29 @@
 
 int main(int argc, char *argv[])
 {
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
     if (argc > 1) cap.open(argv[1]);
     else cap.open(0);
     CV_Assert(cap.isOpened());
 
-    cv::GMat in;
-    cv::GMat vga      = cv::gapi::resize(in, cv::Size(), 0.5, 0.5);
-    cv::GMat gray     = cv::gapi::BGR2Gray(vga);
-    cv::GMat blurred  = cv::gapi::blur(gray, cv::Size(5,5));
-    cv::GMat edges    = cv::gapi::Canny(blurred, 32, 128, 3);
-    cv::GMat b,g,r;
-    std::tie(b,g,r)   = cv::gapi::split3(vga);
-    cv::GMat out      = cv::gapi::merge3(b, g | edges, r);
-    cv::GComputation ac(in, out);
+    ncvslideio::GMat in;
+    ncvslideio::GMat vga      = ncvslideio::gapi::resize(in, ncvslideio::Size(), 0.5, 0.5);
+    ncvslideio::GMat gray     = ncvslideio::gapi::BGR2Gray(vga);
+    ncvslideio::GMat blurred  = ncvslideio::gapi::blur(gray, ncvslideio::Size(5,5));
+    ncvslideio::GMat edges    = ncvslideio::gapi::Canny(blurred, 32, 128, 3);
+    ncvslideio::GMat b,g,r;
+    std::tie(b,g,r)   = ncvslideio::gapi::split3(vga);
+    ncvslideio::GMat out      = ncvslideio::gapi::merge3(b, g | edges, r);
+    ncvslideio::GComputation ac(in, out);
 
-    cv::Mat input_frame;
-    cv::Mat output_frame;
+    ncvslideio::Mat input_frame;
+    ncvslideio::Mat output_frame;
     CV_Assert(cap.read(input_frame));
     do
     {
         ac.apply(input_frame, output_frame);
-        cv::imshow("output", output_frame);
-    } while (cap.read(input_frame) && cv::waitKey(30) < 0);
+        ncvslideio::imshow("output", output_frame);
+    } while (cap.read(input_frame) && ncvslideio::waitKey(30) < 0);
 
     return 0;
 }

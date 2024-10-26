@@ -54,7 +54,7 @@ TEST_P(EstimateAffine2D, test3Points)
     for (size_t i = 0; i < 500; ++i)
     {
         Mat aff(2, 3, CV_64F);
-        cv::randu(aff, 1., 3.);
+        ncvslideio::randu(aff, 1., 3.);
 
         Mat fpts(1, 3, CV_32FC2);
         Mat tpts(1, 3, CV_32FC2);
@@ -82,7 +82,7 @@ TEST_P(EstimateAffine2D, testNPoints)
     for (size_t i = 0; i < 500; ++i)
     {
         Mat aff(2, 3, CV_64F);
-        cv::randu(aff, -2., 2.);
+        ncvslideio::randu(aff, -2., 2.);
         const int method = GetParam();
         const int n = 100;
         int m;
@@ -126,7 +126,7 @@ TEST_P(EstimateAffine2D, testNPoints)
 TEST_P(EstimateAffine2D, testConversion)
 {
     Mat aff(2, 3, CV_32S);
-    cv::randu(aff, 1., 3.);
+    ncvslideio::randu(aff, 1., 3.);
 
     std::vector<Point> fpts(3);
     std::vector<Point> tpts(3);
@@ -179,7 +179,7 @@ TEST(EstimateAffine2D, issue_14259_dont_change_inputs)
 
     Mat inliers;
 
-    cv::Mat A = cv::estimateAffine2D(pts0, pts1, inliers);
+    ncvslideio::Mat A = ncvslideio::estimateAffine2D(pts0, pts1, inliers);
 
     for(int i = 0; i < pts0.rows; ++i)
     {

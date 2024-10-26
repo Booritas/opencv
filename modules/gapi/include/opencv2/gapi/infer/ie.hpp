@@ -22,7 +22,7 @@
 #include <opencv2/gapi/infer.hpp>   // Generic
 #include <opencv2/gapi/streaming/onevpl/accel_types.hpp> // Preproc Dev & Ctx
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 // FIXME: introduce a new sub-namespace for NN?
 
@@ -32,12 +32,12 @@ namespace gapi {
  */
 namespace ie {
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 /**
  * Specifies how G-API and IE should trait input data
  *
- * In OpenCV, the same cv::Mat is used to represent both
+ * In OpenCV, the same ncvslideio::Mat is used to represent both
  * image and tensor data. Sometimes those are hardly distinguishable,
  * so this extra parameter is used to give G-API a hint.
  *
@@ -46,8 +46,8 @@ GAPI_EXPORTS cv::gapi::GBackend backend();
  */
 enum class TraitAs: int
 {
-    TENSOR, //!< G-API traits an associated cv::Mat as a raw tensor and passes dimensions as-is
-    IMAGE   //!< G-API traits an associated cv::Mat as an image so creates an "image" blob (NCHW/NHWC, etc)
+    TENSOR, //!< G-API traits an associated ncvslideio::Mat as a raw tensor and passes dimensions as-is
+    IMAGE   //!< G-API traits an associated ncvslideio::Mat as an image so creates an "image" blob (NCHW/NHWC, etc)
 };
 
 using IEConfig = std::map<std::string, std::string>;
@@ -62,11 +62,11 @@ using AttrMap = std::map<std::string, T>;
 // attributes such as precision, layout, shape etc.
 //
 // User can provide attributes either:
-// 1. cv::util::monostate - No value specified explicitly.
+// 1. ncvslideio::util::monostate - No value specified explicitly.
 // 2. Attr - value specified explicitly that should be broadcasted to all layers.
 // 3. AttrMap[str->T] - map specifies value for particular layer.
 template <typename Attr>
-using LayerVariantAttr = cv::util::variant< cv::util::monostate
+using LayerVariantAttr = ncvslideio::util::variant< ncvslideio::util::monostate
                                           , AttrMap<Attr>
                                           , Attr>;
 
@@ -78,7 +78,7 @@ struct ParamDesc {
     std::vector<std::string> input_names;
     std::vector<std::string> output_names;
 
-    using ConstInput = std::pair<cv::Mat, TraitAs>;
+    using ConstInput = std::pair<ncvslideio::Mat, TraitAs>;
     std::unordered_map<std::string, ConstInput> const_inputs;
 
     std::size_t num_in;
@@ -96,26 +96,26 @@ struct ParamDesc {
     size_t nireq;
 
     // NB: An optional config to setup RemoteContext for IE
-    cv::util::any context_config;
+    ncvslideio::util::any context_config;
 
     // NB: batch_size can't be equal to 1 by default, because some of models
     // have 2D (Layout::NC) input and if the first dimension not equal to 1
     // net.setBatchSize(1) will overwrite it.
-    cv::optional<size_t> batch_size;
+    ncvslideio::optional<size_t> batch_size;
 
-    cv::optional<cv::gapi::wip::onevpl::Device> vpl_preproc_device;
-    cv::optional<cv::gapi::wip::onevpl::Context> vpl_preproc_ctx;
+    ncvslideio::optional<ncvslideio::gapi::wip::onevpl::Device> vpl_preproc_device;
+    ncvslideio::optional<ncvslideio::gapi::wip::onevpl::Context> vpl_preproc_ctx;
 
     InferMode mode;
 
     using PrecisionT = int;
     using PrecisionMapT = std::unordered_map<std::string, PrecisionT>;
     // NB: This parameter can contain:
-    // 1. cv::util::monostate - Don't specify precision, but use default from IR/Blob.
+    // 1. ncvslideio::util::monostate - Don't specify precision, but use default from IR/Blob.
     // 2. PrecisionT (CV_8U, CV_32F, ...) - Specifies precision for all output layers.
     // 3. PrecisionMapT ({{"layer0", CV_32F}, {"layer1", CV_16F}} - Specifies precision for certain output layer.
-    // cv::util::monostate is default value that means precision wasn't specified.
-    using PrecisionVariantT = cv::util::variant<cv::util::monostate,
+    // ncvslideio::util::monostate is default value that means precision wasn't specified.
+    using PrecisionVariantT = ncvslideio::util::variant<ncvslideio::util::monostate,
                                                 PrecisionT,
                                                 PrecisionMapT>;
 
@@ -206,7 +206,7 @@ public:
 
     /** @brief Specifies sequence of network input layers names for inference.
 
-    The function is used to associate cv::gapi::infer<> inputs with the model inputs.
+    The function is used to associate ncvslideio::gapi::infer<> inputs with the model inputs.
     Number of names has to match the number of network inputs as defined in G_API_NET().
     In case a network has only single input layer, there is no need to specify name manually.
 
@@ -224,7 +224,7 @@ public:
 
     /** @brief Specifies sequence of network output layers names for inference.
 
-    The function is used to associate cv::gapi::infer<> outputs with the model outputs.
+    The function is used to associate ncvslideio::gapi::infer<> outputs with the model outputs.
     Number of names has to match the number of network outputs as defined in G_API_NET().
     In case a network has only single output layer, there is no need to specify name manually.
 
@@ -247,12 +247,12 @@ public:
     network layer which will receive provided data.
 
     @param layer_name Name of network layer.
-    @param data cv::Mat that contains data which will be associated with network layer.
-    @param hint Input type @sa cv::gapi::ie::TraitAs.
+    @param data ncvslideio::Mat that contains data which will be associated with network layer.
+    @param hint Input type @sa ncvslideio::gapi::ie::TraitAs.
     @return reference to this parameter structure.
     */
     Params<Net>& constInput(const std::string &layer_name,
-                            const cv::Mat &data,
+                            const ncvslideio::Mat &data,
                             TraitAs hint = TraitAs::TENSOR) {
         desc.const_inputs[layer_name] = {data, hint};
         return *this;
@@ -286,12 +286,12 @@ public:
     /** @brief Specifies configuration for RemoteContext in InferenceEngine.
 
     When RemoteContext is configured the backend imports the networks using the context.
-    It also expects cv::MediaFrames to be actually remote, to operate with blobs via the context.
+    It also expects ncvslideio::MediaFrames to be actually remote, to operate with blobs via the context.
 
-    @param ctx_cfg cv::util::any value which holds InferenceEngine::ParamMap.
+    @param ctx_cfg ncvslideio::util::any value which holds InferenceEngine::ParamMap.
     @return reference to this parameter structure.
     */
-    Params& cfgContextParams(const cv::util::any& ctx_cfg) {
+    Params& cfgContextParams(const ncvslideio::util::any& ctx_cfg) {
         desc.context_config = ctx_cfg;
         return *this;
     }
@@ -299,10 +299,10 @@ public:
     /** @overload
     Function with an rvalue parameter.
 
-    @param ctx_cfg cv::util::any value which holds InferenceEngine::ParamMap.
+    @param ctx_cfg ncvslideio::util::any value which holds InferenceEngine::ParamMap.
     @return reference to this parameter structure.
     */
-    Params& cfgContextParams(cv::util::any&& ctx_cfg) {
+    Params& cfgContextParams(ncvslideio::util::any&& ctx_cfg) {
         desc.context_config = std::move(ctx_cfg);
         return *this;
     }
@@ -385,14 +385,14 @@ public:
     @return reference to this parameter structure.
     */
     Params<Net>& cfgBatchSize(const size_t size) {
-        desc.batch_size = cv::util::make_optional(size);
+        desc.batch_size = ncvslideio::util::make_optional(size);
         return *this;
     }
 
-    Params<Net>& cfgPreprocessingParams(const cv::gapi::wip::onevpl::Device &device,
-                                        const cv::gapi::wip::onevpl::Context &ctx) {
-        desc.vpl_preproc_device = cv::util::make_optional(device);
-        desc.vpl_preproc_ctx = cv::util::make_optional(ctx);
+    Params<Net>& cfgPreprocessingParams(const ncvslideio::gapi::wip::onevpl::Device &device,
+                                        const ncvslideio::gapi::wip::onevpl::Context &ctx) {
+        desc.vpl_preproc_device = ncvslideio::util::make_optional(device);
+        desc.vpl_preproc_ctx = ncvslideio::util::make_optional(ctx);
         return *this;
     }
 
@@ -512,9 +512,9 @@ public:
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend()    const { return cv::gapi::ie::backend();  }
+    GBackend      backend()    const { return ncvslideio::gapi::ie::backend();  }
     std::string   tag()        const { return Net::tag(); }
-    cv::util::any params()     const { return { desc }; }
+    ncvslideio::util::any params()     const { return { desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -527,7 +527,7 @@ protected:
 * @see struct Generic
 */
 template<>
-class Params<cv::gapi::Generic> {
+class Params<ncvslideio::gapi::Generic> {
 public:
     /** @brief Class constructor.
 
@@ -581,7 +581,7 @@ public:
 
     /** @see ie::Params::constInput. */
     Params& constInput(const std::string &layer_name,
-                       const cv::Mat &data,
+                       const ncvslideio::Mat &data,
                        TraitAs hint = TraitAs::TENSOR) {
         desc.const_inputs[layer_name] = {data, hint};
         return *this;
@@ -632,7 +632,7 @@ public:
 
     /** @see ie::Params::cfgBatchSize */
     Params& cfgBatchSize(const size_t size) {
-        desc.batch_size = cv::util::make_optional(size);
+        desc.batch_size = ncvslideio::util::make_optional(size);
         return *this;
     }
 
@@ -694,9 +694,9 @@ public:
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend()    const { return cv::gapi::ie::backend();  }
+    GBackend      backend()    const { return ncvslideio::gapi::ie::backend();  }
     std::string   tag()        const { return m_tag; }
-    cv::util::any params()     const { return { desc }; }
+    ncvslideio::util::any params()     const { return { desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -706,6 +706,6 @@ protected:
 
 } // namespace ie
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_INFER_IE_HPP

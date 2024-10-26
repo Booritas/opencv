@@ -4,18 +4,18 @@
 #include "cv2.hpp"
 #include "opencv2/core.hpp"
 
-class NumpyAllocator : public cv::MatAllocator
+class NumpyAllocator : public ncvslideio::MatAllocator
 {
 public:
-    NumpyAllocator() { stdAllocator = cv::Mat::getStdAllocator(); }
+    NumpyAllocator() { stdAllocator = ncvslideio::Mat::getStdAllocator(); }
     ~NumpyAllocator() {}
 
-    cv::UMatData* allocate(PyObject* o, int dims, const int* sizes, int type, size_t* step) const;
-    cv::UMatData* allocate(int dims0, const int* sizes, int type, void* data, size_t* step, cv::AccessFlag flags, cv::UMatUsageFlags usageFlags) const CV_OVERRIDE;
-    bool allocate(cv::UMatData* u, cv::AccessFlag accessFlags, cv::UMatUsageFlags usageFlags) const CV_OVERRIDE;
-    void deallocate(cv::UMatData* u) const CV_OVERRIDE;
+    ncvslideio::UMatData* allocate(PyObject* o, int dims, const int* sizes, int type, size_t* step) const;
+    ncvslideio::UMatData* allocate(int dims0, const int* sizes, int type, void* data, size_t* step, ncvslideio::AccessFlag flags, ncvslideio::UMatUsageFlags usageFlags) const CV_OVERRIDE;
+    bool allocate(ncvslideio::UMatData* u, ncvslideio::AccessFlag accessFlags, ncvslideio::UMatUsageFlags usageFlags) const CV_OVERRIDE;
+    void deallocate(ncvslideio::UMatData* u) const CV_OVERRIDE;
 
-    const cv::MatAllocator* stdAllocator;
+    const ncvslideio::MatAllocator* stdAllocator;
 };
 
 inline NumpyAllocator& GetNumpyAllocator() {static NumpyAllocator gNumpyAllocator;return gNumpyAllocator;}

@@ -794,7 +794,7 @@ protected:
         //check for fixed-type disparity data type
         Mat_<float> fixedFloatDisp;
         bm->compute( leftImg, rightImg, fixedFloatDisp );
-        EXPECT_LT(cvtest::norm(fixedFloatDisp, leftDisp, cv::NORM_L2 | cv::NORM_RELATIVE),
+        EXPECT_LT(cvtest::norm(fixedFloatDisp, leftDisp, ncvslideio::NORM_L2 | ncvslideio::NORM_RELATIVE),
                   0.005 + DBL_EPSILON);
 
         if (params.mindisp != 0)

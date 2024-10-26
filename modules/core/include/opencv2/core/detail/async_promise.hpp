@@ -9,7 +9,7 @@
 
 #include "exception_ptr.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 /** @addtogroup core_async
 @{
@@ -50,7 +50,7 @@ public:
     /** Stores exception.
     @param[in] exception exception to be raised in AsyncArray
     */
-    void setException(const cv::Exception& exception);
+    void setException(const ncvslideio::Exception& exception);
 
     explicit AsyncPromise(AsyncPromise&& o) { p = o.p; o.p = NULL; }
     AsyncPromise& operator=(AsyncPromise&& o) CV_NOEXCEPT { std::swap(p, o.p); return *this; }

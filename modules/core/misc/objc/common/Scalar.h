@@ -25,7 +25,7 @@ CV_EXPORTS @interface Scalar : NSObject
 
 @property(readonly) NSArray<NSNumber*>* val;
 #ifdef __cplusplus
-@property(readonly) cv::Scalar& nativeRef;
+@property(readonly) ncvslideio::Scalar& nativeRef;
 #endif
 
 #pragma mark - Constructors
@@ -36,7 +36,7 @@ CV_EXPORTS @interface Scalar : NSObject
 - (instancetype)initWithV0:(double)v0 v1:(double)v1 NS_SWIFT_NAME(init(_:_:));
 - (instancetype)initWithV0:(double)v0 NS_SWIFT_NAME(init(_:));
 #ifdef __cplusplus
-+ (instancetype)fromNative:(cv::Scalar&)nativeScalar;
++ (instancetype)fromNative:(ncvslideio::Scalar&)nativeScalar;
 #endif
 
 #pragma mark - Methods

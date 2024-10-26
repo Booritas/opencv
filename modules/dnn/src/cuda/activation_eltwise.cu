@@ -13,10 +13,10 @@
 #include "../cuda4dnn/csl/stream.hpp"
 #include "../cuda4dnn/csl/span.hpp"
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
 namespace raw {
 
@@ -118,4 +118,4 @@ template void mish_eltwise_sum_2_inplace<float>(const Stream&, Span<float>, View
 template void sigmoid_eltwise_sum_2_inplace<float>(const Stream&, Span<float>, View<float>);
 template void power_eltwise_sum_2_inplace<float>(const Stream&, Span<float>, View<float>, float, float, float);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

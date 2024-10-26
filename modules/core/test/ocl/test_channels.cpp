@@ -136,8 +136,8 @@ OCL_TEST_P(Merge, Accuracy)
     {
         generateTestData();
 
-        OCL_OFF(cv::merge(src_roi, dst_roi));
-        OCL_ON(cv::merge(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::merge(src_roi, dst_roi));
+        OCL_ON(ncvslideio::merge(usrc_roi, udst_roi));
 
         Near();
     }
@@ -214,8 +214,8 @@ OCL_TEST_P(Split, Accuracy)
     {
         generateTestData();
 
-        OCL_OFF(cv::split(src_roi, dst_roi));
-        OCL_ON(cv::split(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::split(src_roi, dst_roi));
+        OCL_ON(ncvslideio::split(usrc_roi, udst_roi));
 
         for (int i = 0; i < cn; ++i)
         {
@@ -353,8 +353,8 @@ OCL_TEST_P(MixChannels, Accuracy)
     {
         generateTestData();
 
-        OCL_OFF(cv::mixChannels(src_roi, dst_roi, fromTo));
-        OCL_ON(cv::mixChannels(usrc_roi, udst_roi, fromTo));
+        OCL_OFF(ncvslideio::mixChannels(src_roi, dst_roi, fromTo));
+        OCL_ON(ncvslideio::mixChannels(usrc_roi, udst_roi, fromTo));
 
         for (size_t i = 0, size = dst_roi.size(); i < size; ++i)
         {
@@ -403,8 +403,8 @@ OCL_TEST_P(InsertChannel, Accuracy)
     {
         generateTestData();
 
-        OCL_OFF(cv::insertChannel(src_roi, dst_roi, coi));
-        OCL_ON(cv::insertChannel(usrc_roi, udst_roi, coi));
+        OCL_OFF(ncvslideio::insertChannel(src_roi, dst_roi, coi));
+        OCL_ON(ncvslideio::insertChannel(usrc_roi, udst_roi, coi));
 
         OCL_EXPECT_MATS_NEAR(dst, 0);
     }
@@ -449,8 +449,8 @@ OCL_TEST_P(ExtractChannel, Accuracy)
     {
         generateTestData();
 
-        OCL_OFF(cv::extractChannel(src_roi, dst_roi, coi));
-        OCL_ON(cv::extractChannel(usrc_roi, udst_roi, coi));
+        OCL_OFF(ncvslideio::extractChannel(src_roi, dst_roi, coi));
+        OCL_ON(ncvslideio::extractChannel(usrc_roi, udst_roi, coi));
 
         OCL_EXPECT_MATS_NEAR(dst, 0);
     }

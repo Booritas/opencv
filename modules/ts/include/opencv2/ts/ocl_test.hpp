@@ -54,7 +54,7 @@
 namespace cvtest {
 namespace ocl {
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace testing;
 
 inline std::vector<UMat> ToUMat(const std::vector<Mat>& src)
@@ -129,10 +129,10 @@ do \
     ASSERT_EQ(name ## _roi.size(), u ## name ## _roi.size()); \
     Mat diff, binary, binary_8; \
     absdiff(name ## _roi, u ## name ## _roi, diff); \
-    Mat mask(diff.size(), CV_8UC(dst.channels()), cv::Scalar::all(255)); \
+    Mat mask(diff.size(), CV_8UC(dst.channels()), ncvslideio::Scalar::all(255)); \
     if (mask.cols > 2 && mask.rows > 2) \
-        mask(cv::Rect(1, 1, mask.cols - 2, mask.rows - 2)).setTo(0); \
-    cv::threshold(diff, binary, (double)eps, 255, cv::THRESH_BINARY); \
+        mask(ncvslideio::Rect(1, 1, mask.cols - 2, mask.rows - 2)).setTo(0); \
+    ncvslideio::threshold(diff, binary, (double)eps, 255, ncvslideio::THRESH_BINARY); \
     EXPECT_LE(countNonZero(binary.reshape(1)), (int)(binary.cols*binary.rows*5/1000)) \
         << "Size: " << name ## _roi.size() << std::endl; \
     binary.convertTo(binary_8, mask.type()); \
@@ -213,11 +213,11 @@ using perf::MatType;
 
 struct TestUtils
 {
-    cv::RNG rng;
+    ncvslideio::RNG rng;
 
     TestUtils()
     {
-        rng = cv::RNG(OCL_RNG_SEED);
+        rng = ncvslideio::RNG(OCL_RNG_SEED);
     }
 
     int randomInt(int minVal, int maxVal)
@@ -243,18 +243,18 @@ struct TestUtils
     Size randomSize(int minVal, int maxVal)
     {
 #if 1
-        return cv::Size((int)randomDoubleLog(minVal, maxVal), (int)randomDoubleLog(minVal, maxVal));
+        return ncvslideio::Size((int)randomDoubleLog(minVal, maxVal), (int)randomDoubleLog(minVal, maxVal));
 #else
-        return cv::Size(randomInt(minVal, maxVal), randomInt(minVal, maxVal));
+        return ncvslideio::Size(randomInt(minVal, maxVal), randomInt(minVal, maxVal));
 #endif
     }
 
     Size randomSize(int minValX, int maxValX, int minValY, int maxValY)
     {
 #if 1
-        return cv::Size((int)randomDoubleLog(minValX, maxValX), (int)randomDoubleLog(minValY, maxValY));
+        return ncvslideio::Size((int)randomDoubleLog(minValX, maxValX), (int)randomDoubleLog(minValY, maxValY));
 #else
-        return cv::Size(randomInt(minVal, maxVal), randomInt(minVal, maxVal));
+        return ncvslideio::Size(randomInt(minVal, maxVal), randomInt(minVal, maxVal));
 #endif
     }
 
@@ -295,11 +295,11 @@ struct TestUtils
     // If the two vectors are not equal, it will return the difference in vector size
     // Else it will return (total diff of each 1 and 2 rects covered pixels)/(total 1 rects covered pixels)
     // The smaller, the better matched
-    static double checkRectSimilarity(const cv::Size & sz, std::vector<cv::Rect>& ob1, std::vector<cv::Rect>& ob2);
+    static double checkRectSimilarity(const ncvslideio::Size & sz, std::vector<ncvslideio::Rect>& ob1, std::vector<ncvslideio::Rect>& ob2);
 
     //! read image from testdata folder.
-    static cv::Mat readImage(const String &fileName, int flags = cv::IMREAD_COLOR);
-    static cv::Mat readImageType(const String &fname, int type);
+    static ncvslideio::Mat readImage(const String &fileName, int flags = ncvslideio::IMREAD_COLOR);
+    static ncvslideio::Mat readImageType(const String &fname, int type);
 
     static double checkNorm1(InputArray m, InputArray mask = noArray());
     static double checkNorm2(InputArray m1, InputArray m2, InputArray mask = noArray());
@@ -308,17 +308,17 @@ struct TestUtils
 
     static inline double checkNormRelative(InputArray m1, InputArray m2, InputArray mask = noArray())
     {
-        return cvtest::norm(m1.getMat(), m2.getMat(), cv::NORM_INF, mask) /
+        return cvtest::norm(m1.getMat(), m2.getMat(), ncvslideio::NORM_INF, mask) /
                 std::max((double)std::numeric_limits<float>::epsilon(),
-                         (double)std::max(cvtest::norm(m1.getMat(), cv::NORM_INF), cvtest::norm(m2.getMat(), cv::NORM_INF)));
+                         (double)std::max(cvtest::norm(m1.getMat(), ncvslideio::NORM_INF), cvtest::norm(m2.getMat(), ncvslideio::NORM_INF)));
     }
 
     static inline double checkNormRelativeSparse(InputArray m1, InputArray m2, InputArray mask = noArray())
     {
-        double norm_inf = cvtest::norm(m1.getMat(), m2.getMat(), cv::NORM_INF, mask);
+        double norm_inf = cvtest::norm(m1.getMat(), m2.getMat(), ncvslideio::NORM_INF, mask);
         double norm_rel = norm_inf /
                 std::max((double)std::numeric_limits<float>::epsilon(),
-                         (double)std::max(cvtest::norm(m1.getMat(), cv::NORM_INF), cvtest::norm(m2.getMat(), cv::NORM_INF)));
+                         (double)std::max(cvtest::norm(m1.getMat(), ncvslideio::NORM_INF), cvtest::norm(m2.getMat(), ncvslideio::NORM_INF)));
         return std::min(norm_inf, norm_rel);
     }
 
@@ -368,8 +368,8 @@ IMPLEMENT_PARAM_CLASS(Channels, int)
 #define OCL_TEST_F(name, ...) typedef name OCL_##name; TEST_F(OCL_##name, __VA_ARGS__)
 #define OCL_TEST(name, ...) TEST(OCL_##name, __VA_ARGS__)
 
-#define OCL_OFF(...) cv::ocl::setUseOpenCL(false); __VA_ARGS__ ;
-#define OCL_ON(...) cv::ocl::setUseOpenCL(true); __VA_ARGS__ ;
+#define OCL_OFF(...) ncvslideio::ocl::setUseOpenCL(false); __VA_ARGS__ ;
+#define OCL_ON(...) ncvslideio::ocl::setUseOpenCL(true); __VA_ARGS__ ;
 
 #define OCL_ALL_DEPTHS Values(CV_8U, CV_8S, CV_16U, CV_16S, CV_32S, CV_32F, CV_64F)
 #define OCL_ALL_DEPTHS_16F Values(CV_8U, CV_8S, CV_16U, CV_16S, CV_32S, CV_32F, CV_64F, CV_16F)

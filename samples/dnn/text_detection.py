@@ -60,8 +60,8 @@ def fourPointsTransform(frame, vertices):
         [outputSize[0] - 1, 0],
         [outputSize[0] - 1, outputSize[1] - 1]], dtype="float32")
 
-    rotationMatrix = cv.getPerspectiveTransform(vertices, targetVertices)
-    result = cv.warpPerspective(frame, rotationMatrix, outputSize)
+    rotationMatrix = ncvslideio.getPerspectiveTransform(vertices, targetVertices)
+    result = ncvslideio.warpPerspective(frame, rotationMatrix, outputSize)
     return result
 
 
@@ -149,25 +149,25 @@ def main():
     modelRecognition = args.ocr
 
     # Load network
-    detector = cv.dnn.readNet(modelDetector)
-    recognizer = cv.dnn.readNet(modelRecognition)
+    detector = ncvslideio.dnn.readNet(modelDetector)
+    recognizer = ncvslideio.dnn.readNet(modelRecognition)
 
     # Create a new named window
     kWinName = "EAST: An Efficient and Accurate Scene Text Detector"
-    cv.namedWindow(kWinName, cv.WINDOW_NORMAL)
+    ncvslideio.namedWindow(kWinName, ncvslideio.WINDOW_NORMAL)
     outNames = []
     outNames.append("feature_fusion/Conv_7/Sigmoid")
     outNames.append("feature_fusion/concat_3")
 
     # Open a video file or an image file or a camera stream
-    cap = cv.VideoCapture(args.input if args.input else 0)
+    cap = ncvslideio.VideoCapture(args.input if args.input else 0)
 
-    tickmeter = cv.TickMeter()
-    while cv.waitKey(1) < 0:
+    tickmeter = ncvslideio.TickMeter()
+    while ncvslideio.waitKey(1) < 0:
         # Read frame
         hasFrame, frame = cap.read()
         if not hasFrame:
-            cv.waitKey()
+            ncvslideio.waitKey()
             break
 
         # Get frame height and width
@@ -177,7 +177,7 @@ def main():
         rH = height_ / float(inpHeight)
 
         # Create a 4D blob from frame.
-        blob = cv.dnn.blobFromImage(frame, 1.0, (inpWidth, inpHeight), (123.68, 116.78, 103.94), True, False)
+        blob = ncvslideio.dnn.blobFromImage(frame, 1.0, (inpWidth, inpHeight), (123.68, 116.78, 103.94), True, False)
 
         # Run the detection model
         detector.setInput(blob)
@@ -192,10 +192,10 @@ def main():
         [boxes, confidences] = decodeBoundingBoxes(scores, geometry, confThreshold)
 
         # Apply NMS
-        indices = cv.dnn.NMSBoxesRotated(boxes, confidences, confThreshold, nmsThreshold)
+        indices = ncvslideio.dnn.NMSBoxesRotated(boxes, confidences, confThreshold, nmsThreshold)
         for i in indices:
             # get 4 corners of the rotated rect
-            vertices = cv.boxPoints(boxes[i])
+            vertices = ncvslideio.boxPoints(boxes[i])
             # scale the bounding box coordinates based on the respective ratios
             for j in range(4):
                 vertices[j][0] *= rW
@@ -205,10 +205,10 @@ def main():
             # get cropped image using perspective transform
             if modelRecognition:
                 cropped = fourPointsTransform(frame, vertices)
-                cropped = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
+                cropped = ncvslideio.cvtColor(cropped, ncvslideio.COLOR_BGR2GRAY)
 
                 # Create a 4D blob from cropped image
-                blob = cv.dnn.blobFromImage(cropped, size=(100, 32), mean=127.5, scalefactor=1 / 127.5)
+                blob = ncvslideio.dnn.blobFromImage(cropped, size=(100, 32), mean=127.5, scalefactor=1 / 127.5)
                 recognizer.setInput(blob)
 
                 # Run the recognition model
@@ -218,20 +218,20 @@ def main():
 
                 # decode the result into text
                 wordRecognized = decodeText(result)
-                cv.putText(frame, wordRecognized, (int(vertices[1][0]), int(vertices[1][1])), cv.FONT_HERSHEY_SIMPLEX,
+                ncvslideio.putText(frame, wordRecognized, (int(vertices[1][0]), int(vertices[1][1])), ncvslideio.FONT_HERSHEY_SIMPLEX,
                            0.5, (255, 0, 0))
 
             for j in range(4):
                 p1 = (int(vertices[j][0]), int(vertices[j][1]))
                 p2 = (int(vertices[(j + 1) % 4][0]), int(vertices[(j + 1) % 4][1]))
-                cv.line(frame, p1, p2, (0, 255, 0), 1)
+                ncvslideio.line(frame, p1, p2, (0, 255, 0), 1)
 
         # Put efficiency information
         label = 'Inference time: %.2f ms' % (tickmeter.getTimeMilli())
-        cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+        ncvslideio.putText(frame, label, (0, 15), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
         # Display the frame
-        cv.imshow(kWinName, frame)
+        ncvslideio.imshow(kWinName, frame)
         tickmeter.reset()
 
 

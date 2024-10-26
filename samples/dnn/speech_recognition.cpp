@@ -10,7 +10,7 @@
 #include <cmath>
 #include <random>
 #include <numeric>
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 class FilterbankFeatures {

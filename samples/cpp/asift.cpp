@@ -7,7 +7,7 @@
 #include <iomanip>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {
@@ -31,7 +31,7 @@ static double timer()
 int main(int argc, char** argv)
 {
     vector<String> fileName;
-    cv::CommandLineParser parser(argc, argv,
+    ncvslideio::CommandLineParser parser(argc, argv,
         "{help h ||}"
         "{feature|brisk|}"
         "{flann||}"
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 
     cout << "visualizing..." << endl;
     vector<int> indices(inliers);
-    cv::sortIdx(distances, indices, SORT_EVERY_ROW+SORT_ASCENDING);
+    ncvslideio::sortIdx(distances, indices, SORT_EVERY_ROW+SORT_ASCENDING);
 
     // explore_match
     int h1 = img1.size().height;

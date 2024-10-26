@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <iterator>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
 
     /** @brief maintains a single block of reusable device memory
      *
@@ -161,6 +161,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
         std::size_t bytes_remaining;
     };
 
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_WORKSPACE_HPP */

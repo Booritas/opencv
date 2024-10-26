@@ -15,7 +15,7 @@
 #define _OPENCV_ZARRAY_HPP_
 
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 
 

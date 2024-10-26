@@ -12,7 +12,7 @@
 
 namespace
 {
-#define VIDEO_CPU [] () { return cv::compile_args(cv::gapi::video::cpu::kernels()); }
+#define VIDEO_CPU [] () { return ncvslideio::compile_args(ncvslideio::gapi::video::cpu::kernels()); }
 
 #ifdef HAVE_OPENCV_VIDEO
 #define WITH_VIDEO(X) X
@@ -28,8 +28,8 @@ namespace opencv_test
 {
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildOptFlowPyramidTestCPU), BuildOptFlowPyramidTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_1.bmp",
-                                             "cv/optflow/frames/1080p_01.png"),
+                                      Values("ncvslideio/optflow/rock_1.bmp",
+                                             "ncvslideio/optflow/frames/1080p_01.png"),
                                       Values(7, 11),
                                       Values(1000),
                                       testing::Bool(),
@@ -40,7 +40,7 @@ INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildOptFlowPyramidTestCPU), BuildOptFl
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildOptFlowPyramidInternalTestCPU),
                               BuildOptFlowPyramidTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_1.bmp"),
+                                      Values("ncvslideio/optflow/rock_1.bmp"),
                                       Values(15),
                                       Values(3),
                                       Values(true),
@@ -50,42 +50,42 @@ INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildOptFlowPyramidInternalTestCPU),
 
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(OptFlowLKTestCPU), OptFlowLKTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_%01d.bmp",
-                                             "cv/optflow/frames/1080p_%02d.png"),
+                                      Values("ncvslideio/optflow/rock_%01d.bmp",
+                                             "ncvslideio/optflow/frames/1080p_%02d.png"),
                                       Values(1, 3, 4),
                                       Values(std::make_tuple(9, 9), std::make_tuple(15, 15)),
                                       Values(7, 11),
-                                      Values(cv::TermCriteria(cv::TermCriteria::COUNT |
-                                                              cv::TermCriteria::EPS,
+                                      Values(ncvslideio::TermCriteria(ncvslideio::TermCriteria::COUNT |
+                                                              ncvslideio::TermCriteria::EPS,
                                                               30, 0.01))));
 
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(OptFlowLKTestForPyrCPU), OptFlowLKTestForPyr,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_%01d.bmp",
-                                             "cv/optflow/frames/1080p_%02d.png"),
+                                      Values("ncvslideio/optflow/rock_%01d.bmp",
+                                             "ncvslideio/optflow/frames/1080p_%02d.png"),
                                       Values(1, 3, 4),
                                       Values(std::make_tuple(9, 9), std::make_tuple(15, 15)),
                                       Values(7, 11),
-                                      Values(cv::TermCriteria(cv::TermCriteria::COUNT |
-                                                              cv::TermCriteria::EPS,
+                                      Values(ncvslideio::TermCriteria(ncvslideio::TermCriteria::COUNT |
+                                                              ncvslideio::TermCriteria::EPS,
                                                               30, 0.01)),
                                       testing::Bool()));
 
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(OptFlowLKInternalTestCPU), OptFlowLKTestForPyr,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_%01d.bmp"),
+                                      Values("ncvslideio/optflow/rock_%01d.bmp"),
                                       Values(1),
                                       Values(std::make_tuple(10, 10)),
                                       Values(15),
-                                      Values(cv::TermCriteria(cv::TermCriteria::COUNT |
-                                                              cv::TermCriteria::EPS,
+                                      Values(ncvslideio::TermCriteria(ncvslideio::TermCriteria::COUNT |
+                                                              ncvslideio::TermCriteria::EPS,
                                                               21, 0.05)),
                                       Values(true)));
 
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildPyr_CalcOptFlow_PipelineTestCPU),
                               BuildPyr_CalcOptFlow_PipelineTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/frames/1080p_%02d.png"),
+                                      Values("ncvslideio/optflow/frames/1080p_%02d.png"),
                                       Values(7, 11),
                                       Values(1000),
                                       testing::Bool()));
@@ -93,7 +93,7 @@ INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildPyr_CalcOptFlow_PipelineTestCPU),
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildPyr_CalcOptFlow_PipelineInternalTestCPU),
                               BuildPyr_CalcOptFlow_PipelineTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values("cv/optflow/rock_%01d.bmp"),
+                                      Values("ncvslideio/optflow/rock_%01d.bmp"),
                                       Values(15),
                                       Values(3),
                                       Values(true)));
@@ -102,14 +102,14 @@ INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BuildPyr_CalcOptFlow_PipelineInternalTe
 INSTANTIATE_TEST_CASE_MACRO_P(WITH_VIDEO(BackgroundSubtractorTestCPU),
                               BackgroundSubtractorTest,
                               Combine(Values(VIDEO_CPU),
-                                      Values(std::make_tuple(cv::gapi::video::TYPE_BS_MOG2, 16),
-                                             std::make_tuple(cv::gapi::video::TYPE_BS_MOG2, 8),
-                                             std::make_tuple(cv::gapi::video::TYPE_BS_KNN, 400),
-                                             std::make_tuple(cv::gapi::video::TYPE_BS_KNN, 200)),
+                                      Values(std::make_tuple(ncvslideio::gapi::video::TYPE_BS_MOG2, 16),
+                                             std::make_tuple(ncvslideio::gapi::video::TYPE_BS_MOG2, 8),
+                                             std::make_tuple(ncvslideio::gapi::video::TYPE_BS_KNN, 400),
+                                             std::make_tuple(ncvslideio::gapi::video::TYPE_BS_KNN, 200)),
                                              Values(500, 50),
                                              testing::Bool(),
                                              Values(-1, 0, 0.5, 1),
-                                             Values("cv/video/768x576.avi"),
+                                             Values("ncvslideio/video/768x576.avi"),
                                              Values(3)));
 
 INSTANTIATE_TEST_CASE_MACRO_P(KalmanFilterTestCPU,

@@ -44,7 +44,7 @@
 #include "opencv2/imgproc.hpp"
 #include "hdr_common.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 inline void log_(const Mat& src, Mat& dst)

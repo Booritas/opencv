@@ -22,12 +22,12 @@ protected:
     bool loadFromFile(const std::string& inputFileName);
 public:
     parametersController();
-    parametersController(cv::Ptr<captureParameters> params);
+    parametersController(ncvslideio::Ptr<captureParameters> params);
 
     captureParameters getCaptureParameters() const;
     internalParameters getInternalParameters() const;
 
-    bool loadFromParser(cv::CommandLineParser& parser);
+    bool loadFromParser(ncvslideio::CommandLineParser& parser);
 };
 
 }

@@ -73,8 +73,8 @@ namespace PhoneXamlDirect3DApp1Comp
         std::lock_guard<std::mutex> lock(m_mutex);
         if(m_backFrame == nullptr)
         {
-            m_backFrame = std::shared_ptr<cv::Mat> (new cv::Mat(height, width, CV_8UC4));
-            m_frontFrame = std::shared_ptr<cv::Mat> (new cv::Mat(height, width, CV_8UC4));
+            m_backFrame = std::shared_ptr<ncvslideio::Mat> (new ncvslideio::Mat(height, width, CV_8UC4));
+            m_frontFrame = std::shared_ptr<ncvslideio::Mat> (new ncvslideio::Mat(height, width, CV_8UC4));
         }
 
         memcpy(m_backFrame.get()->data, buffer, 4 * height*width);
@@ -88,7 +88,7 @@ namespace PhoneXamlDirect3DApp1Comp
         {
             if (m_renderer)
             {
-                cv::Mat* mat = m_frontFrame.get();
+                ncvslideio::Mat* mat = m_frontFrame.get();
 
                 switch (m_algorithm)
                 {
@@ -133,44 +133,44 @@ namespace PhoneXamlDirect3DApp1Comp
         }
     }
 
-    void Direct3DInterop::ApplyGrayFilter(cv::Mat* mat)
+    void Direct3DInterop::ApplyGrayFilter(ncvslideio::Mat* mat)
     {
-        cv::Mat intermediateMat;
-        cv::cvtColor(*mat, intermediateMat, COLOR_RGBA2GRAY);
-        cv::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::cvtColor(*mat, intermediateMat, COLOR_RGBA2GRAY);
+        ncvslideio::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
     }
 
-    void Direct3DInterop::ApplyCannyFilter(cv::Mat* mat)
+    void Direct3DInterop::ApplyCannyFilter(ncvslideio::Mat* mat)
     {
-        cv::Mat intermediateMat;
-        cv::Canny(*mat, intermediateMat, 80, 90);
-        cv::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::Canny(*mat, intermediateMat, 80, 90);
+        ncvslideio::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
     }
 
-    void Direct3DInterop::ApplyBlurFilter(cv::Mat* mat)
+    void Direct3DInterop::ApplyBlurFilter(ncvslideio::Mat* mat)
     {
-        cv::Mat intermediateMat;
-        //	cv::Blur(image, intermediateMat, 80, 90);
-        cv::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
+        ncvslideio::Mat intermediateMat;
+        //	ncvslideio::Blur(image, intermediateMat, 80, 90);
+        ncvslideio::cvtColor(intermediateMat, *mat, COLOR_GRAY2BGRA);
     }
 
-    void Direct3DInterop::ApplyFindFeaturesFilter(cv::Mat* mat)
+    void Direct3DInterop::ApplyFindFeaturesFilter(ncvslideio::Mat* mat)
     {
-        cv::Mat intermediateMat;
-        cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(50);
-        std::vector<cv::KeyPoint> features;
+        ncvslideio::Mat intermediateMat;
+        ncvslideio::Ptr<ncvslideio::FastFeatureDetector> detector = ncvslideio::FastFeatureDetector::create(50);
+        std::vector<ncvslideio::KeyPoint> features;
 
-        cv::cvtColor(*mat, intermediateMat, COLOR_RGBA2GRAY);
+        ncvslideio::cvtColor(*mat, intermediateMat, COLOR_RGBA2GRAY);
         detector->detect(intermediateMat, features);
 
         for( unsigned int i = 0; i < std::min(features.size(), (size_t)50); i++ )
         {
-            const cv::KeyPoint& kp = features[i];
-            cv::circle(*mat, cv::Point((int)kp.pt.x, (int)kp.pt.y), 10, cv::Scalar(255,0,0,255));
+            const ncvslideio::KeyPoint& kp = features[i];
+            ncvslideio::circle(*mat, ncvslideio::Point((int)kp.pt.x, (int)kp.pt.y), 10, ncvslideio::Scalar(255,0,0,255));
         }
     }
 
-    void Direct3DInterop::ApplySepiaFilter(cv::Mat* mat)
+    void Direct3DInterop::ApplySepiaFilter(ncvslideio::Mat* mat)
     {
         const float SepiaKernelData[16] =
         {
@@ -180,8 +180,8 @@ namespace PhoneXamlDirect3DApp1Comp
             /* A */0.000f, 0.000f, 0.000f, 1.f
         };
 
-        const cv::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
-        cv::transform(*mat, *mat, SepiaKernel);
+        const ncvslideio::Mat SepiaKernel(4, 4, CV_32FC1, (void*)SepiaKernelData);
+        ncvslideio::transform(*mat, *mat, SepiaKernel);
     }
 
     IDrawingSurfaceContentProvider^ Direct3DInterop::CreateContentProvider()

@@ -380,7 +380,7 @@ void  cvReprojectImageTo3D( const CvArr* disparityImage,
                             int handleMissingValues CV_DEFAULT(0) );
 
 /** @brief Transforms the input image to compensate lens distortion
-@see cv::undistort
+@see ncvslideio::undistort
 */
 void cvUndistort2( const CvArr* src, CvArr* dst,
                    const CvMat* camera_matrix,
@@ -395,7 +395,7 @@ void cvInitUndistortMap( const CvMat* camera_matrix,
                          CvArr* mapx, CvArr* mapy );
 
 /** @brief Computes undistortion+rectification map for a head of stereo camera
-@see cv::initUndistortRectifyMap
+@see ncvslideio::initUndistortRectifyMap
 */
 void cvInitUndistortRectifyMap( const CvMat* camera_matrix,
                                 const CvMat* dist_coeffs,
@@ -404,7 +404,7 @@ void cvInitUndistortRectifyMap( const CvMat* camera_matrix,
 
 /** @brief Computes the original (undistorted) feature coordinates
    from the observed (distorted) coordinates
-@see cv::undistortPoints
+@see ncvslideio::undistortPoints
 */
 void cvUndistortPoints( const CvMat* src, CvMat* dst,
                         const CvMat* camera_matrix,

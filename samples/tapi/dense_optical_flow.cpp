@@ -14,7 +14,7 @@
 #include "opencv2/video.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static Mat getVisibleFlow(InputArray flow)
 {

@@ -48,7 +48,7 @@
 
 #include "opencv2/core/utils/logger.hpp"
 
-namespace cv { namespace dnn { namespace ocl4dnn {
+namespace ncvslideio { namespace dnn { namespace ocl4dnn {
 
 enum gemm_data_type_t
 {
@@ -604,7 +604,7 @@ bool ocl4dnnGEMV<float>(const CBLAS_TRANSPOSE TransA,
     if (TransA == CblasNoTrans)
     {
         String kname = format("matvec_mul4_%s", use_half ? "half" : "float");
-        ocl::Kernel k(kname.c_str(), cv::ocl::dnn::matvec_mul_oclsrc, opts);
+        ocl::Kernel k(kname.c_str(), ncvslideio::ocl::dnn::matvec_mul_oclsrc, opts);
         if (k.empty())
             return false;
 
@@ -635,7 +635,7 @@ bool ocl4dnnGEMV<float>(const CBLAS_TRANSPOSE TransA,
         if (row_size < 4 || ((row_size % 4) != 0 && ret))
         {
             String kname = format("matvec_mul1_%s", use_half ? "half" : "float");
-            ocl::Kernel k_1(kname.c_str(), cv::ocl::dnn::matvec_mul_oclsrc, opts);
+            ocl::Kernel k_1(kname.c_str(), ncvslideio::ocl::dnn::matvec_mul_oclsrc, opts);
             size_t localsize[] = { 128 };
             size_t globalsize[] = { row_size % 4 * localsize[0] };
             uint row_offset = row_size - (row_size % 4);
@@ -673,7 +673,7 @@ bool ocl4dnnAXPY(const int32_t N, const Dtype alpha,
         opts = "-DDtype=float -DDtype4=float4 -Dconvert_Dtype=convert_float";
 
     String kname = format("axpy_%s", use_half ? "half" : "float");
-    ocl::Kernel oclk_axpy(kname.c_str(), cv::ocl::dnn::math_oclsrc, opts);
+    ocl::Kernel oclk_axpy(kname.c_str(), ncvslideio::ocl::dnn::math_oclsrc, opts);
     if (oclk_axpy.empty())
         return false;
 
@@ -695,4 +695,4 @@ template bool ocl4dnnAXPY<float>(const int32_t N, const float alpha,
                                  const UMat X, const int32_t offX,
                                  UMat Y, const int32_t offY);
 
-}}} // namespace cv::dnn::ocl4dnn
+}}} // namespace ncvslideio::dnn::ocl4dnn

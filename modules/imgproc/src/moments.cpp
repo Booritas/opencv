@@ -43,7 +43,7 @@
 #include "opencl_kernels_imgproc.hpp"
 #include "opencv2/core/hal/intrin.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 // The function calculates center of gravity and the central second order moments
@@ -561,9 +561,9 @@ static bool ipp_moments(Mat &src, Moments &m )
 
 }
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
-static int moments(const cv::Mat& src, bool binary, cv::Moments& m)
+static int moments(const ncvslideio::Mat& src, bool binary, ncvslideio::Moments& m)
 {
     CV_INSTRUMENT_REGION();
 
@@ -579,12 +579,12 @@ static int moments(const cv::Mat& src, bool binary, cv::Moments& m)
 
     if (status == CV_HAL_ERROR_OK)
     {
-        m = cv::Moments(m_data[0], m_data[1], m_data[2], m_data[3], m_data[4],
+        m = ncvslideio::Moments(m_data[0], m_data[1], m_data[2], m_data[3], m_data[4],
                         m_data[5], m_data[6], m_data[7], m_data[8], m_data[9]);
     }
     else if (status != CV_HAL_ERROR_NOT_IMPLEMENTED)
     {
-        CV_Error_(cv::Error::StsInternal,
+        CV_Error_(ncvslideio::Error::StsInternal,
             ("HAL implementation moments ==> " CVAUX_STR(cv_hal_imageMoments) " returned %d (0x%08x)", status, status));
     }
 
@@ -592,7 +592,7 @@ static int moments(const cv::Mat& src, bool binary, cv::Moments& m)
 }
 }}
 
-cv::Moments cv::moments( InputArray _src, bool binary )
+ncvslideio::Moments ncvslideio::moments( InputArray _src, bool binary )
 {
     CV_INSTRUMENT_REGION();
 
@@ -619,7 +619,7 @@ cv::Moments cv::moments( InputArray _src, bool binary )
         return contourMoments(mat);
 
     if( cn > 1 )
-        CV_Error( cv::Error::StsBadArg, "Invalid image type (must be single-channel)" );
+        CV_Error( ncvslideio::Error::StsBadArg, "Invalid image type (must be single-channel)" );
 
     CV_IPP_RUN(!binary, ipp_moments(mat, m), m);
 
@@ -634,7 +634,7 @@ cv::Moments cv::moments( InputArray _src, bool binary )
     else if( depth == CV_64F )
         func = momentsInTile<double, double, double>;
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 
     Mat src0(mat);
 
@@ -646,12 +646,12 @@ cv::Moments cv::moments( InputArray _src, bool binary )
         for( int x = 0; x < size.width; x += TILE_SIZE )
         {
             tileSize.width = std::min(TILE_SIZE, size.width - x);
-            Mat src(src0, cv::Rect(x, y, tileSize.width, tileSize.height));
+            Mat src(src0, ncvslideio::Rect(x, y, tileSize.width, tileSize.height));
 
             if( binary )
             {
-                cv::Mat tmp(tileSize, CV_8U, nzbuf);
-                cv::compare( src, 0, tmp, cv::CMP_NE );
+                ncvslideio::Mat tmp(tileSize, CV_8U, nzbuf);
+                ncvslideio::compare( src, 0, tmp, ncvslideio::CMP_NE );
                 src = tmp;
             }
 
@@ -706,7 +706,7 @@ cv::Moments cv::moments( InputArray _src, bool binary )
 }
 
 
-void cv::HuMoments( const Moments& m, double hu[7] )
+void ncvslideio::HuMoments( const Moments& m, double hu[7] )
 {
     CV_INSTRUMENT_REGION();
 
@@ -735,7 +735,7 @@ void cv::HuMoments( const Moments& m, double hu[7] )
     hu[6] = q1 * t0 - q0 * t1;
 }
 
-void cv::HuMoments( const Moments& m, OutputArray _hu )
+void ncvslideio::HuMoments( const Moments& m, OutputArray _hu )
 {
     CV_INSTRUMENT_REGION();
 
@@ -749,12 +749,12 @@ void cv::HuMoments( const Moments& m, OutputArray _hu )
 CV_IMPL void cvMoments( const CvArr* arr, CvMoments* moments, int binary )
 {
     const IplImage* img = (const IplImage*)arr;
-    cv::Mat src;
+    ncvslideio::Mat src;
     if( CV_IS_IMAGE(arr) && img->roi && img->roi->coi > 0 )
-        cv::extractImageCOI(arr, src, img->roi->coi-1);
+        ncvslideio::extractImageCOI(arr, src, img->roi->coi-1);
     else
-        src = cv::cvarrToMat(arr);
-    cv::Moments m = cv::moments(src, binary != 0);
+        src = ncvslideio::cvarrToMat(arr);
+    ncvslideio::Moments m = ncvslideio::moments(src, binary != 0);
     CV_Assert( moments != 0 );
     *moments = cvMoments(m);
 }
@@ -765,9 +765,9 @@ CV_IMPL double cvGetSpatialMoment( CvMoments * moments, int x_order, int y_order
     int order = x_order + y_order;
 
     if( !moments )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
     if( (x_order | y_order) < 0 || order > 3 )
-        CV_Error( cv::Error::StsOutOfRange, "" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "" );
 
     return (&(moments->m00))[order + (order >> 1) + (order > 2) * 2 + y_order];
 }
@@ -778,9 +778,9 @@ CV_IMPL double cvGetCentralMoment( CvMoments * moments, int x_order, int y_order
     int order = x_order + y_order;
 
     if( !moments )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
     if( (x_order | y_order) < 0 || order > 3 )
-        CV_Error( cv::Error::StsOutOfRange, "" );
+        CV_Error( ncvslideio::Error::StsOutOfRange, "" );
 
     return order >= 2 ? (&(moments->m00))[4 + order * 3 + y_order] :
     order == 0 ? moments->m00 : 0;
@@ -803,7 +803,7 @@ CV_IMPL double cvGetNormalizedCentralMoment( CvMoments * moments, int x_order, i
 CV_IMPL void cvGetHuMoments( CvMoments * mState, CvHuMoments * HuState )
 {
     if( !mState || !HuState )
-        CV_Error( cv::Error::StsNullPtr, "" );
+        CV_Error( ncvslideio::Error::StsNullPtr, "" );
 
     double m00s = mState->inv_sqrt_m00, m00 = m00s * m00s, s2 = m00 * m00, s3 = s2 * m00s;
 

@@ -6,7 +6,7 @@
 #include <string>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 static void help(char** argv)
 {

@@ -15,14 +15,14 @@ protected:
     -1, 5), Point3f pmax = Point3f(1, 1, 10));
     void generateCameraMatrix(Mat& cameraMatrix);
     void generateDistCoeffs(Mat& distCoeffs, int count);
-    cv::Mat generateRotationVector();
+    ncvslideio::Mat generateRotationVector();
 
     double thresh = 1.0e-2;
 };
 
 void UndistortPointsTest::generate3DPointCloud(vector<Point3f>& points, Point3f pmin, Point3f pmax)
 {
-    RNG rng_Point = cv::theRNG(); // fix the seed to use "fixed" input 3D points
+    RNG rng_Point = ncvslideio::theRNG(); // fix the seed to use "fixed" input 3D points
     for (size_t i = 0; i < points.size(); i++)
     {
         float _x = rng_Point.uniform(pmin.x, pmax.x);
@@ -52,7 +52,7 @@ void UndistortPointsTest::generateDistCoeffs(Mat& distCoeffs, int count)
         distCoeffs.at<double>(i,0) = theRNG().uniform(-0.1, 0.1);
 }
 
-cv::Mat UndistortPointsTest::generateRotationVector()
+ncvslideio::Mat UndistortPointsTest::generateRotationVector()
 {
     Mat rvec(1, 3, CV_64F);
     theRNG().fill(rvec, RNG::UNIFORM, -0.2, 0.2);
@@ -70,7 +70,7 @@ TEST_F(UndistortPointsTest, accuracy)
 
     Mat rvec = generateRotationVector();
     Mat R;
-    cv::Rodrigues(rvec, R);
+    ncvslideio::Rodrigues(rvec, R);
 
 
     int modelMembersCount[] = {4,5,8};
@@ -154,7 +154,7 @@ TEST_F(UndistortPointsTest, stop_criteria)
     std::vector<Point2d> pt_undist_vec;
     Mat rVec = Mat(Matx31d(0.1, -0.2, 0.2));
     Mat R;
-    cv::Rodrigues(rVec, R);
+    ncvslideio::Rodrigues(rVec, R);
 
     undistortPoints(pt_distorted_vec, pt_undist_vec, cameraMatrix, distCoeffs, R, noArray(), criteria);
 
@@ -179,17 +179,17 @@ TEST_F(UndistortPointsTest, regression_14583)
         0.0f, 438.8216f, 273.7163f,
         0.0f, 0.0f,      1.0f
     };
-    cv::Mat camera_interior(3, 3, CV_32F, camera_matrix_value);
+    ncvslideio::Mat camera_interior(3, 3, CV_32F, camera_matrix_value);
 
     float camera_distort_value[] = {-0.34329f, 0.11431f, 0.0f, 0.0f, -0.017375f};
-    cv::Mat camera_distort(1, 5, CV_32F, camera_distort_value);
+    ncvslideio::Mat camera_distort(1, 5, CV_32F, camera_distort_value);
 
     float distort_points_value[] = {col, 0.};
-    cv::Mat distort_pt(1, 1, CV_32FC2, distort_points_value);
+    ncvslideio::Mat distort_pt(1, 1, CV_32FC2, distort_points_value);
 
-    cv::Mat undistort_pt;
-    cv::undistortPoints(distort_pt, undistort_pt, camera_interior,
-                        camera_distort, cv::Mat(), camera_interior);
+    ncvslideio::Mat undistort_pt;
+    ncvslideio::undistortPoints(distort_pt, undistort_pt, camera_interior,
+                        camera_distort, ncvslideio::Mat(), camera_interior);
 
     EXPECT_NEAR(distort_pt.at<Vec2f>(0)[0], undistort_pt.at<Vec2f>(0)[0], col / 2)
         << "distort point: " << distort_pt << std::endl

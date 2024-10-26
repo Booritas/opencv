@@ -5,7 +5,7 @@ from tests_common import NewOpenCVTests
 
 class knearest_test(NewOpenCVTests):
     def test_load(self):
-        k_nearest = cv.ml.KNearest_load(self.find_file("ml/opencv_ml_knn.xml"))
+        k_nearest = ncvslideio.ml.KNearest_load(self.find_file("ml/opencv_ml_knn.xml"))
         self.assertFalse(k_nearest.empty())
         self.assertTrue(k_nearest.isTrained())
 

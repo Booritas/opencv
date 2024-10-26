@@ -8,7 +8,7 @@ namespace opencv_test {
 
 PERF_TEST(PerfHoughCircles, Basic)
 {
-    string filename = getDataPath("cv/imgproc/stuff.jpg");
+    string filename = getDataPath("ncvslideio/imgproc/stuff.jpg");
     const double dp = 1.0;
     double minDist = 20;
     double edgeThreshold = 20;
@@ -26,7 +26,7 @@ PERF_TEST(PerfHoughCircles, Basic)
 
     TEST_CYCLE()
     {
-        HoughCircles(img, circles, cv::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
+        HoughCircles(img, circles, ncvslideio::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
     }
 
     SANITY_CHECK_NOTHING();
@@ -34,7 +34,7 @@ PERF_TEST(PerfHoughCircles, Basic)
 
 PERF_TEST(PerfHoughCircles2, ManySmallCircles)
 {
-    string filename = getDataPath("cv/imgproc/beads.jpg");
+    string filename = getDataPath("ncvslideio/imgproc/beads.jpg");
     const double dp = 1.0;
     double minDist = 10;
     double edgeThreshold = 90;
@@ -50,7 +50,7 @@ PERF_TEST(PerfHoughCircles2, ManySmallCircles)
 
     TEST_CYCLE()
     {
-        HoughCircles(img, circles, cv::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
+        HoughCircles(img, circles, ncvslideio::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
     }
 
     SANITY_CHECK_NOTHING();
@@ -58,7 +58,7 @@ PERF_TEST(PerfHoughCircles2, ManySmallCircles)
 
 PERF_TEST(PerfHoughCircles4f, Basic)
 {
-    string filename = getDataPath("cv/imgproc/stuff.jpg");
+    string filename = getDataPath("ncvslideio/imgproc/stuff.jpg");
     const double dp = 1.0;
     double minDist = 20;
     double edgeThreshold = 20;
@@ -76,7 +76,7 @@ PERF_TEST(PerfHoughCircles4f, Basic)
 
     TEST_CYCLE()
     {
-        HoughCircles(img, circles, cv::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
+        HoughCircles(img, circles, ncvslideio::HOUGH_GRADIENT, dp, minDist, edgeThreshold, accumThreshold, minRadius, maxRadius);
     }
 
     SANITY_CHECK_NOTHING();

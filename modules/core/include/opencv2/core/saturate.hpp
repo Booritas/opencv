@@ -49,7 +49,7 @@
 #include <climits>
 #include "opencv2/core/fast_math.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 //! @addtogroup core_utils

@@ -5,7 +5,7 @@
 #include <opencv2/highgui.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace
 {
@@ -76,7 +76,7 @@ const char* params
 
 int main(int argc, char *argv[])
 {
-    cv::RNG rng( 0xFFFFFFFF );
+    ncvslideio::RNG rng( 0xFFFFFFFF );
     CommandLineParser parser(argc, argv, params);
 
     if (parser.has("help"))

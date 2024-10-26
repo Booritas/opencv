@@ -44,9 +44,9 @@
 
 #include "opencv2/core/opencl/ocl_defs.hpp"
 
-using namespace cv;
-using namespace cv::detail;
-using namespace cv::cuda;
+using namespace ncvslideio;
+using namespace ncvslideio::detail;
+using namespace ncvslideio::cuda;
 
 #ifdef HAVE_OPENCV_CUDAIMGPROC
 #  include "opencv2/cudaimgproc.hpp"
@@ -71,11 +71,11 @@ struct MatchPairsBody : ParallelLoopBody
 
     void operator ()(const Range &r) const CV_OVERRIDE
     {
-        cv::RNG rng = cv::theRNG(); // save entry rng state
+        ncvslideio::RNG rng = ncvslideio::theRNG(); // save entry rng state
         const int num_images = static_cast<int>(features.size());
         for (int i = r.start; i < r.end; ++i)
         {
-            cv::theRNG() = cv::RNG(rng.state + i); // force "stable" RNG seed for each processed pair
+            ncvslideio::theRNG() = ncvslideio::RNG(rng.state + i); // force "stable" RNG seed for each processed pair
 
             int from = near_pairs[i].first;
             int to = near_pairs[i].second;
@@ -155,7 +155,7 @@ void CpuMatcher::match(const ImageFeatures &features1, const ImageFeatures &feat
 
     matches_info.matches.clear();
 
-    Ptr<cv::DescriptorMatcher> matcher;
+    Ptr<ncvslideio::DescriptorMatcher> matcher;
 #if 0 // TODO check this
     if (ocl::isOpenCLActivated())
     {
@@ -276,7 +276,7 @@ void GpuMatcher::collectGarbage()
 } // namespace
 
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 void computeImageFeatures(
@@ -527,7 +527,7 @@ void AffineBestOf2NearestMatcher::match(const ImageFeatures &features1, const Im
     Mat dst_points(1, static_cast<int>(matches_info.matches.size()), CV_32FC2);
     for (size_t i = 0; i < matches_info.matches.size(); ++i)
     {
-        const cv::DMatch &m = matches_info.matches[i];
+        const ncvslideio::DMatch &m = matches_info.matches[i];
         src_points.at<Point2f>(0, static_cast<int>(i)) = features1.keypoints[m.queryIdx].pt;
         dst_points.at<Point2f>(0, static_cast<int>(i)) = features2.keypoints[m.trainIdx].pt;
     }
@@ -566,4 +566,4 @@ void AffineBestOf2NearestMatcher::match(const ImageFeatures &features1, const Im
 
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

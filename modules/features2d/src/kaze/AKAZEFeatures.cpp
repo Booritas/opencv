@@ -16,7 +16,7 @@
 #include <iostream>
 
 // Namespaces
-namespace cv
+namespace ncvslideio
 {
 using namespace std;
 
@@ -611,7 +611,7 @@ public:
     {
       Evolution<MatType> &e = (*evolution_)[i];
 
-      // we cannot use cv:Scharr here, because we need to handle also
+      // we cannot use ncvslideio:Scharr here, because we need to handle also
       // kernel sizes other than 3, by default we are using 9x9, 5x5 and 7x7
 
       // compute kernels

@@ -8,7 +8,7 @@
 #include "cap_interface.hpp"
 #include "opencv2/videoio/registry.hpp"
 
-namespace cv {
+namespace ncvslideio {
 
 // TODO: move to public interface
 // TODO: allow runtime backend registration
@@ -18,7 +18,7 @@ public:
     virtual ~IBackend() {}
     virtual Ptr<IVideoCapture> createCapture(int camera, const VideoCaptureParameters& params) const = 0;
     virtual Ptr<IVideoCapture> createCapture(const std::string &filename, const VideoCaptureParameters& params) const = 0;
-    virtual Ptr<IVideoWriter> createWriter(const std::string& filename, int fourcc, double fps, const cv::Size& sz,
+    virtual Ptr<IVideoWriter> createWriter(const std::string& filename, int fourcc, double fps, const ncvslideio::Size& sz,
                                            const VideoWriterParameters& params) const = 0;
 };
 
@@ -60,6 +60,6 @@ std::string getWriterPluginVersion(
     CV_OUT int& version_API
 );
 
-} // namespace cv::
+} // namespace ncvslideio::
 
 #endif // BACKEND_HPP_DEFINED

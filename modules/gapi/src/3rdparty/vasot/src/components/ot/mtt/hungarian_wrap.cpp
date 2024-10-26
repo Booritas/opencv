@@ -16,7 +16,7 @@ const float kHungarianValueScale = 1024.0f;
 namespace vas {
 namespace ot {
 
-HungarianAlgo::HungarianAlgo(const cv::Mat_<float> &cost_map)
+HungarianAlgo::HungarianAlgo(const ncvslideio::Mat_<float> &cost_map)
     : size_width_(cost_map.cols), size_height_(cost_map.rows), int_cost_map_rows_(), int_cost_map_(), problem_() {
     // Convert float 2D cost matrix into int32_t** 2D array with scaling
     int_cost_map_rows_.resize(size_height_, nullptr);
@@ -33,11 +33,11 @@ HungarianAlgo::~HungarianAlgo() {
     FreeHungarian();
 }
 
-cv::Mat_<uint8_t> HungarianAlgo::Solve() {
+ncvslideio::Mat_<uint8_t> HungarianAlgo::Solve() {
     ETHROW(size_height_ > 0 && size_width_ > 0, invalid_argument, "Initialized with invalid cost_map size in Solve");
 
     // Initialize the gungarian_problem using the cost matrix
-    cv::Mat_<uint8_t> assignment_map;
+    ncvslideio::Mat_<uint8_t> assignment_map;
     int32_t matrix_size = InitHungarian(kHungarianModeMinimizeCost);
 
     // Solve the assignement problem

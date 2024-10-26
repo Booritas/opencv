@@ -56,7 +56,7 @@ namespace opencv_test
 namespace
 {
 
-struct EmptyDataProvider : public cv::gapi::wip::onevpl::IDataProvider {
+struct EmptyDataProvider : public ncvslideio::gapi::wip::onevpl::IDataProvider {
 
     bool empty() const override {
         return true;
@@ -69,7 +69,7 @@ struct EmptyDataProvider : public cv::gapi::wip::onevpl::IDataProvider {
     }
 };
 
-struct TestProcessingSession : public cv::gapi::wip::onevpl::EngineSession {
+struct TestProcessingSession : public ncvslideio::gapi::wip::onevpl::EngineSession {
     TestProcessingSession(mfxSession mfx_session) :
         EngineSession(mfx_session) {
     }
@@ -80,13 +80,13 @@ struct TestProcessingSession : public cv::gapi::wip::onevpl::EngineSession {
     }
 };
 
-struct TestProcessingEngine: public cv::gapi::wip::onevpl::ProcessingEngineBase {
+struct TestProcessingEngine: public ncvslideio::gapi::wip::onevpl::ProcessingEngineBase {
 
     int pipeline_stage_num = 0;
 
-    TestProcessingEngine(std::unique_ptr<cv::gapi::wip::onevpl::VPLAccelerationPolicy>&& accel) :
-        cv::gapi::wip::onevpl::ProcessingEngineBase(std::move(accel)) {
-        using cv::gapi::wip::onevpl::EngineSession;
+    TestProcessingEngine(std::unique_ptr<ncvslideio::gapi::wip::onevpl::VPLAccelerationPolicy>&& accel) :
+        ncvslideio::gapi::wip::onevpl::ProcessingEngineBase(std::move(accel)) {
+        using ncvslideio::gapi::wip::onevpl::EngineSession;
         create_pipeline(
             // 0)
             [this] (EngineSession&) -> ExecutionStatus
@@ -110,16 +110,16 @@ struct TestProcessingEngine: public cv::gapi::wip::onevpl::ProcessingEngineBase 
             [this] (EngineSession&) -> ExecutionStatus
             {
                 pipeline_stage_num = 3;
-                ready_frames.emplace(cv::MediaFrame());
+                ready_frames.emplace(ncvslideio::MediaFrame());
                 return ExecutionStatus::Processed;
             }
         );
     }
 
-    std::shared_ptr<cv::gapi::wip::onevpl::EngineSession>
+    std::shared_ptr<ncvslideio::gapi::wip::onevpl::EngineSession>
             initialize_session(mfxSession mfx_session,
-                               const std::vector<cv::gapi::wip::onevpl::CfgParam>&,
-                               std::shared_ptr<cv::gapi::wip::onevpl::IDataProvider>) override {
+                               const std::vector<ncvslideio::gapi::wip::onevpl::CfgParam>&,
+                               std::shared_ptr<ncvslideio::gapi::wip::onevpl::IDataProvider>) override {
 
         return register_session<TestProcessingSession>(mfx_session);
     }
@@ -176,15 +176,15 @@ create_test_allocator(mfxMemId mid, LockProcessor lock_p, UnlockProcessor unlock
     return TestLockableAllocator<LockProcessor, UnlockProcessor> {allocator};
 }
 
-cv::gapi::wip::onevpl::surface_ptr_t create_test_surface(std::shared_ptr<void> out_buf_ptr,
+ncvslideio::gapi::wip::onevpl::surface_ptr_t create_test_surface(std::shared_ptr<void> out_buf_ptr,
                                                  size_t, size_t) {
     std::unique_ptr<mfxFrameSurface1> handle(new mfxFrameSurface1{});
-    return cv::gapi::wip::onevpl::Surface::create_surface(std::move(handle), out_buf_ptr);
+    return ncvslideio::gapi::wip::onevpl::Surface::create_surface(std::move(handle), out_buf_ptr);
 }
 
 TEST(OneVPL_Source_Surface, InitSurface)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     // create raw MFX handle
     std::unique_ptr<mfxFrameSurface1> handle(new mfxFrameSurface1{});
@@ -206,7 +206,7 @@ TEST(OneVPL_Source_Surface, InitSurface)
 
 TEST(OneVPL_Source_Surface, ConcurrentLock)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     // create raw MFX handle
     std::unique_ptr<mfxFrameSurface1> handle(new mfxFrameSurface1{});
@@ -246,7 +246,7 @@ TEST(OneVPL_Source_Surface, ConcurrentLock)
 
 TEST(OneVPL_Source_Surface, MemoryLifeTime)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     // create preallocate surface memory
     std::unique_ptr<char> preallocated_memory_ptr(new char);
@@ -309,7 +309,7 @@ TEST(OneVPL_Source_Surface, MemoryLifeTime)
 
 TEST(OneVPL_Source_CPU_FrameAdapter, InitFrameAdapter)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     // create raw MFX handle
     std::unique_ptr<mfxFrameSurface1> handle(new mfxFrameSurface1{});
@@ -331,7 +331,7 @@ TEST(OneVPL_Source_CPU_FrameAdapter, InitFrameAdapter)
 
 TEST(OneVPL_Source_Default_Source_With_OCL_Backend, Accuracy)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     auto create_from_string = [](const std::string& line){
         std::string::size_type name_endline_pos = line.find(':');
@@ -346,43 +346,43 @@ TEST(OneVPL_Source_Default_Source_With_OCL_Backend, Accuracy)
     // Create VPL-based source
     std::shared_ptr<IDeviceSelector> default_device_selector = getDefaultDeviceSelector(source_cfgs);
 
-    cv::gapi::wip::IStreamSource::Ptr source;
-    cv::gapi::wip::IStreamSource::Ptr source_cpu;
+    ncvslideio::gapi::wip::IStreamSource::Ptr source;
+    ncvslideio::gapi::wip::IStreamSource::Ptr source_cpu;
 
-    auto input = findDataFile("cv/video/768x576.avi");
+    auto input = findDataFile("ncvslideio/video/768x576.avi");
     try {
-        source = cv::gapi::wip::make_onevpl_src(input, source_cfgs, default_device_selector);
-        source_cpu = cv::gapi::wip::make_onevpl_src(input, source_cfgs, default_device_selector);
+        source = ncvslideio::gapi::wip::make_onevpl_src(input, source_cfgs, default_device_selector);
+        source_cpu = ncvslideio::gapi::wip::make_onevpl_src(input, source_cfgs, default_device_selector);
     } catch(...) {
         throw SkipTestException("Video file can not be opened");
     }
 
     // Build the graph w/ OCL backend
-    cv::GFrame in; // input frame from VPL source
-    auto bgr_gmat = cv::gapi::streaming::BGR(in); // conversion from VPL source frame to BGR UMat
-    auto out = cv::gapi::blur(bgr_gmat, cv::Size(4,4)); // ocl kernel of blur operation
+    ncvslideio::GFrame in; // input frame from VPL source
+    auto bgr_gmat = ncvslideio::gapi::streaming::BGR(in); // conversion from VPL source frame to BGR UMat
+    auto out = ncvslideio::gapi::blur(bgr_gmat, ncvslideio::Size(4,4)); // ocl kernel of blur operation
 
-    cv::GStreamingCompiled pipeline = cv::GComputation(cv::GIn(in), cv::GOut(out))
-        .compileStreaming(std::move(cv::compile_args(cv::gapi::core::ocl::kernels())));
+    ncvslideio::GStreamingCompiled pipeline = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out))
+        .compileStreaming(std::move(ncvslideio::compile_args(ncvslideio::gapi::core::ocl::kernels())));
     pipeline.setSource(std::move(source));
 
-    cv::GStreamingCompiled pipeline_cpu = cv::GComputation(cv::GIn(in), cv::GOut(out))
-        .compileStreaming(std::move(cv::compile_args(cv::gapi::core::cpu::kernels())));
+    ncvslideio::GStreamingCompiled pipeline_cpu = ncvslideio::GComputation(ncvslideio::GIn(in), ncvslideio::GOut(out))
+        .compileStreaming(std::move(ncvslideio::compile_args(ncvslideio::gapi::core::cpu::kernels())));
     pipeline_cpu.setSource(std::move(source_cpu));
 
     // The execution part
-    cv::Mat out_mat;
-    std::vector<cv::Mat> ocl_mats, cpu_mats;
+    ncvslideio::Mat out_mat;
+    std::vector<ncvslideio::Mat> ocl_mats, cpu_mats;
 
     // Run the pipelines
     pipeline.start();
-    while (pipeline.pull(cv::gout(out_mat)))
+    while (pipeline.pull(ncvslideio::gout(out_mat)))
     {
         ocl_mats.push_back(out_mat);
     }
 
     pipeline_cpu.start();
-    while (pipeline_cpu.pull(cv::gout(out_mat)))
+    while (pipeline_cpu.pull(ncvslideio::gout(out_mat)))
     {
         cpu_mats.push_back(out_mat);
     }
@@ -397,9 +397,9 @@ TEST(OneVPL_Source_Default_Source_With_OCL_Backend, Accuracy)
 
 TEST(OneVPL_Source_CPU_Accelerator, InitDestroy)
 {
-    using cv::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
-    using cv::gapi::wip::onevpl::VPLAccelerationPolicy;
-    using cv::gapi::wip::onevpl::CfgParamDeviceSelector;
+    using ncvslideio::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::VPLAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::CfgParamDeviceSelector;
 
     auto acceleration_policy =
             std::make_shared<VPLCPUAccelerationPolicy>(std::make_shared<CfgParamDeviceSelector>());
@@ -429,10 +429,10 @@ TEST(OneVPL_Source_CPU_Accelerator, InitDestroy)
 
 TEST(OneVPL_Source_CPU_Accelerator, PoolProduceConsume)
 {
-    using cv::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
-    using cv::gapi::wip::onevpl::VPLAccelerationPolicy;
-    using cv::gapi::wip::onevpl::CfgParamDeviceSelector;
-    using cv::gapi::wip::onevpl::Surface;
+    using ncvslideio::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::VPLAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::CfgParamDeviceSelector;
+    using ncvslideio::gapi::wip::onevpl::Surface;
 
     auto acceleration_policy =
             std::make_shared<VPLCPUAccelerationPolicy>(std::make_shared<CfgParamDeviceSelector>());
@@ -487,10 +487,10 @@ TEST(OneVPL_Source_CPU_Accelerator, PoolProduceConsume)
 
 TEST(OneVPL_Source_CPU_Accelerator, PoolProduceConcurrentConsume)
 {
-    using cv::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
-    using cv::gapi::wip::onevpl::VPLAccelerationPolicy;
-    using cv::gapi::wip::onevpl::CfgParamDeviceSelector;
-    using cv::gapi::wip::onevpl::Surface;
+    using ncvslideio::gapi::wip::onevpl::VPLCPUAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::VPLAccelerationPolicy;
+    using ncvslideio::gapi::wip::onevpl::CfgParamDeviceSelector;
+    using ncvslideio::gapi::wip::onevpl::Surface;
 
     auto acceleration_policy =
             std::make_shared<VPLCPUAccelerationPolicy>(std::make_shared<CfgParamDeviceSelector>());
@@ -554,7 +554,7 @@ TEST(OneVPL_Source_CPU_Accelerator, PoolProduceConcurrentConsume)
 
 TEST(OneVPL_Source_ProcessingEngine, Init)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     std::unique_ptr<VPLAccelerationPolicy> accel;
     TestProcessingEngine engine(std::move(accel));
 
@@ -584,7 +584,7 @@ TEST(OneVPL_Source_ProcessingEngine, Init)
     EXPECT_EQ(3, engine.pipeline_stage_num);
     EXPECT_TRUE(1 == engine.get_ready_frames_count());
 
-    cv::gapi::wip::Data frame;
+    ncvslideio::gapi::wip::Data frame;
     engine.get_frame(frame);
 }
 
@@ -592,7 +592,7 @@ TEST(OneVPL_Source_ProcessingEngine, Init)
 #ifdef HAVE_D3D11
 TEST(OneVPL_Source_DX11_Accel, Init)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     std::vector<CfgParam> cfg_params_w_dx11;
     cfg_params_w_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
@@ -679,7 +679,7 @@ TEST(OneVPL_Source_DX11_Accel, Init)
 #if defined(HAVE_VA) || defined(HAVE_VA_INTEL)
 TEST(OneVPL_Source_VAAPI_Accel, Init)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     std::vector<CfgParam> cfg_params_w_vaapi;
     cfg_params_w_vaapi.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_VAAPI));
@@ -766,7 +766,7 @@ TEST(OneVPL_Source_VAAPI_Accel, Init)
 #ifdef HAVE_D3D11
 TEST(OneVPL_Source_DX11_Accel_VPL, Init)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     std::vector<CfgParam> cfg_params_w_dx11;
     cfg_params_w_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
@@ -969,7 +969,7 @@ TEST(OneVPL_Source_DX11_Accel_VPL, Init)
 
 TEST(OneVPL_Source_DX11_Accel_VPL, preproc)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
 
     std::vector<CfgParam> cfg_params_w_dx11;
     cfg_params_w_dx11.push_back(CfgParam::create_acceleration_mode(MFX_ACCEL_MODE_VIA_D3D11));
@@ -1187,7 +1187,7 @@ TEST(OneVPL_Source_DX11_Accel_VPL, preproc)
 
 TEST(OneVPL_Source_DX11_FrameLockable, LockUnlock_without_Adaptee)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     mfxMemId mid = 0;
     int lock_counter = 0;
     int unlock_counter = 0;
@@ -1221,7 +1221,7 @@ TEST(OneVPL_Source_DX11_FrameLockable, LockUnlock_without_Adaptee)
 
 TEST(OneVPL_Source_DX11_FrameLockable, LockUnlock_with_Adaptee)
 {
-    using namespace cv::gapi::wip::onevpl;
+    using namespace ncvslideio::gapi::wip::onevpl;
     mfxMemId mid = 0;
     int r_lock_counter = 0;
     int r_unlock_counter = 0;

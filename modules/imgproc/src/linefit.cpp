@@ -40,7 +40,7 @@
 //M*/
 #include "precomp.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static const double eps = 1e-6;
@@ -331,26 +331,26 @@ static void fitLine2D( const Point2f * points, int count, int dist,
 
     switch (dist)
     {
-    case cv::DIST_L2:
+    case ncvslideio::DIST_L2:
         return fitLine2D_wods( points, count, 0, line );
 
-    case cv::DIST_L1:
+    case ncvslideio::DIST_L1:
         calc_weights = weightL1;
         break;
 
-    case cv::DIST_L12:
+    case ncvslideio::DIST_L12:
         calc_weights = weightL12;
         break;
 
-    case cv::DIST_FAIR:
+    case ncvslideio::DIST_FAIR:
         calc_weights_param = weightFair;
         break;
 
-    case cv::DIST_WELSCH:
+    case ncvslideio::DIST_WELSCH:
         calc_weights_param = weightWelsch;
         break;
 
-    case cv::DIST_HUBER:
+    case ncvslideio::DIST_HUBER:
         calc_weights_param = weightHuber;
         break;
 
@@ -358,7 +358,7 @@ static void fitLine2D( const Point2f * points, int count, int dist,
      calc_weights = (void ( * )(float *, int, float *)) _PFP.fp;
      break;*/
     default:
-        CV_Error(cv::Error::StsBadArg, "Unknown distance type");
+        CV_Error(ncvslideio::Error::StsBadArg, "Unknown distance type");
     }
 
     AutoBuffer<float> wr(count*2);
@@ -475,31 +475,31 @@ static void fitLine3D( Point3f * points, int count, int dist,
 
     switch (dist)
     {
-    case cv::DIST_L2:
+    case ncvslideio::DIST_L2:
         return fitLine3D_wods( points, count, 0, line );
 
-    case cv::DIST_L1:
+    case ncvslideio::DIST_L1:
         calc_weights = weightL1;
         break;
 
-    case cv::DIST_L12:
+    case ncvslideio::DIST_L12:
         calc_weights = weightL12;
         break;
 
-    case cv::DIST_FAIR:
+    case ncvslideio::DIST_FAIR:
         calc_weights_param = weightFair;
         break;
 
-    case cv::DIST_WELSCH:
+    case ncvslideio::DIST_WELSCH:
         calc_weights_param = weightWelsch;
         break;
 
-    case cv::DIST_HUBER:
+    case ncvslideio::DIST_HUBER:
         calc_weights_param = weightHuber;
         break;
 
     default:
-        CV_Error(cv::Error::StsBadArg, "Unknown distance");
+        CV_Error(ncvslideio::Error::StsBadArg, "Unknown distance");
     }
 
     AutoBuffer<float> buf(count*2);
@@ -604,7 +604,7 @@ static void fitLine3D( Point3f * points, int count, int dist,
 
 }
 
-void cv::fitLine( InputArray _points, OutputArray _line, int distType,
+void ncvslideio::fitLine( InputArray _points, OutputArray _line, int distType,
                  double param, double reps, double aeps )
 {
     CV_INSTRUMENT_REGION();
@@ -641,11 +641,11 @@ cvFitLine( const CvArr* array, int dist, double param,
 {
     CV_Assert(line != 0);
 
-    cv::AutoBuffer<double> buf;
-    cv::Mat points = cv::cvarrToMat(array, false, false, 0, &buf);
-    cv::Mat linemat(points.checkVector(2) >= 0 ? 4 : 6, 1, CV_32F, line);
+    ncvslideio::AutoBuffer<double> buf;
+    ncvslideio::Mat points = ncvslideio::cvarrToMat(array, false, false, 0, &buf);
+    ncvslideio::Mat linemat(points.checkVector(2) >= 0 ? 4 : 6, 1, CV_32F, line);
 
-    cv::fitLine(points, linemat, dist, param, reps, aeps);
+    ncvslideio::fitLine(points, linemat, dist, param, reps, aeps);
 }
 
 /* End of file. */

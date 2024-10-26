@@ -83,7 +83,7 @@ Make sure to add and connect the IBOutlets and IBActions to the corresponding Vi
 We add a camera controller to the view controller and initialize it when the view has loaded:
 @code{.objc}
 #import <opencv2/videoio/cap_ios.h>
-using namespace cv;
+using namespace ncvslideio;
 
 
 @interface ViewController : UIViewController

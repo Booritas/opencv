@@ -56,9 +56,9 @@ protected:
     void run_func();
 
 private:
-    cv::Size img_size;
-    cv::Mat camera_mat;
-    cv::Mat new_camera_mat;
+    ncvslideio::Size img_size;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat new_camera_mat;
 
     int matrix_type;
 
@@ -121,7 +121,7 @@ int CV_DefaultNewCameraMatrixTest::prepare_test_case(int test_case_idx)
 
 void CV_DefaultNewCameraMatrixTest::run_func()
 {
-    new_camera_mat = cv::getDefaultNewCameraMatrix(camera_mat,img_size,center_principal_point);
+    new_camera_mat = ncvslideio::getDefaultNewCameraMatrix(camera_mat,img_size,center_principal_point);
 }
 
 void CV_DefaultNewCameraMatrixTest::prepare_to_validation( int /*test_case_idx*/ )
@@ -168,11 +168,11 @@ protected:
     void run_func();
 
 private:
-    cv::Mat camera_mat;
-    cv::Mat distortion_coeffs;
-    cv::Mat new_camera_mat;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat distortion_coeffs;
+    ncvslideio::Mat new_camera_mat;
 
-    cv::Size img_size;
+    ncvslideio::Size img_size;
     double alpha;
     bool center_principal_point;
 
@@ -240,7 +240,7 @@ int CV_GetOptimalNewCameraMatrixNoDistortionTest::prepare_test_case(int test_cas
 
 void CV_GetOptimalNewCameraMatrixNoDistortionTest::run_func()
 {
-    new_camera_mat = cv::getOptimalNewCameraMatrix(camera_mat, distortion_coeffs, img_size, alpha, img_size, NULL, center_principal_point);
+    new_camera_mat = ncvslideio::getOptimalNewCameraMatrix(camera_mat, distortion_coeffs, img_size, alpha, img_size, NULL, center_principal_point);
 }
 
 void CV_GetOptimalNewCameraMatrixNoDistortionTest::prepare_to_validation(int /*test_case_idx*/)
@@ -278,15 +278,15 @@ private:
     bool zero_distortion;
     bool zero_R;
 
-    cv::Size img_size;
-    cv::Mat dst_points_mat;
+    ncvslideio::Size img_size;
+    ncvslideio::Mat dst_points_mat;
 
-    cv::Mat camera_mat;
-    cv::Mat R;
-    cv::Mat P;
-    cv::Mat distortion_coeffs;
-    cv::Mat src_points;
-    std::vector<cv::Point2f> dst_points;
+    ncvslideio::Mat camera_mat;
+    ncvslideio::Mat R;
+    ncvslideio::Mat P;
+    ncvslideio::Mat distortion_coeffs;
+    ncvslideio::Mat src_points;
+    std::vector<ncvslideio::Point2f> dst_points;
 };
 
 CV_UndistortPointsTest::CV_UndistortPointsTest()
@@ -527,20 +527,20 @@ void CV_UndistortPointsTest::prepare_to_validation(int /*test_case_idx*/)
 
 void CV_UndistortPointsTest::run_func()
 {
-    cv::Mat input2,input3,input4;
-    input2 = zero_distortion ? cv::Mat() : cv::Mat(test_mat[INPUT][2]);
-    input3 = zero_R ? cv::Mat() : cv::Mat(test_mat[INPUT][3]);
-    input4 = zero_new_cam ? cv::Mat() : cv::Mat(test_mat[INPUT][4]);
+    ncvslideio::Mat input2,input3,input4;
+    input2 = zero_distortion ? ncvslideio::Mat() : ncvslideio::Mat(test_mat[INPUT][2]);
+    input3 = zero_R ? ncvslideio::Mat() : ncvslideio::Mat(test_mat[INPUT][3]);
+    input4 = zero_new_cam ? ncvslideio::Mat() : ncvslideio::Mat(test_mat[INPUT][4]);
 
     if (useDstMat)
     {
-        //cv::undistortPoints(src_points,dst_points_mat,camera_mat,distortion_coeffs,R,P);
-        cv::undistortPoints(src_points,dst_points_mat,camera_mat,input2,input3,input4);
+        //ncvslideio::undistortPoints(src_points,dst_points_mat,camera_mat,distortion_coeffs,R,P);
+        ncvslideio::undistortPoints(src_points,dst_points_mat,camera_mat,input2,input3,input4);
     }
     else
     {
-        //cv::undistortPoints(src_points,dst_points,camera_mat,distortion_coeffs,R,P);
-        cv::undistortPoints(src_points,dst_points,camera_mat,input2,input3,input4);
+        //ncvslideio::undistortPoints(src_points,dst_points,camera_mat,distortion_coeffs,R,P);
+        ncvslideio::undistortPoints(src_points,dst_points,camera_mat,input2,input3,input4);
     }
 }
 
@@ -645,7 +645,7 @@ private:
     bool zero_distortion;
     bool zero_R;
 
-    cv::Size img_size;
+    ncvslideio::Size img_size;
     int map_type;
 };
 
@@ -795,8 +795,8 @@ int CV_InitUndistortRectifyMapTest::prepare_test_case(int test_case_idx)
 void CV_InitUndistortRectifyMapTest::prepare_to_validation(int/* test_case_idx*/)
 {
     cvtest::initUndistortMap(test_mat[INPUT][0],
-                             zero_distortion ? cv::Mat() : test_mat[INPUT][1],
-                             zero_R ? cv::Mat() : test_mat[INPUT][2],
+                             zero_distortion ? ncvslideio::Mat() : test_mat[INPUT][1],
+                             zero_R ? ncvslideio::Mat() : test_mat[INPUT][2],
                              zero_new_cam ? test_mat[INPUT][0] : test_mat[INPUT][3],
                              img_size, test_mat[REF_OUTPUT][0], test_mat[REF_OUTPUT][1],
                              test_mat[REF_OUTPUT][0].type());
@@ -804,12 +804,12 @@ void CV_InitUndistortRectifyMapTest::prepare_to_validation(int/* test_case_idx*/
 
 void CV_InitUndistortRectifyMapTest::run_func()
 {
-    cv::Mat camera_mat = test_mat[INPUT][0];
-    cv::Mat dist = zero_distortion ? cv::Mat() : test_mat[INPUT][1];
-    cv::Mat R = zero_R ? cv::Mat() : test_mat[INPUT][2];
-    cv::Mat new_cam = zero_new_cam ? cv::Mat() : test_mat[INPUT][3];
-    cv::Mat& mapx = test_mat[OUTPUT][0], &mapy = test_mat[OUTPUT][1];
-    cv::initUndistortRectifyMap(camera_mat,dist,R,new_cam,img_size,map_type,mapx,mapy);
+    ncvslideio::Mat camera_mat = test_mat[INPUT][0];
+    ncvslideio::Mat dist = zero_distortion ? ncvslideio::Mat() : test_mat[INPUT][1];
+    ncvslideio::Mat R = zero_R ? ncvslideio::Mat() : test_mat[INPUT][2];
+    ncvslideio::Mat new_cam = zero_new_cam ? ncvslideio::Mat() : test_mat[INPUT][3];
+    ncvslideio::Mat& mapx = test_mat[OUTPUT][0], &mapy = test_mat[OUTPUT][1];
+    ncvslideio::initUndistortRectifyMap(camera_mat,dist,R,new_cam,img_size,map_type,mapx,mapy);
 }
 
 double CV_InitUndistortRectifyMapTest::get_success_error_level( int /*test_case_idx*/, int /*i*/, int /*j*/ )
@@ -837,7 +837,7 @@ private:
     bool zero_distortion;
     bool zero_R;
 
-    cv::Size img_size;
+    ncvslideio::Size img_size;
     int map_type;
 };
 
@@ -990,8 +990,8 @@ void CV_InitInverseRectificationMapTest::prepare_to_validation(int/* test_case_i
 {
     // Configure Parameters
     Mat _a0 = test_mat[INPUT][0];
-    Mat _d0 = zero_distortion ? cv::Mat() : test_mat[INPUT][1];
-    Mat _R0 = zero_R ? cv::Mat() : test_mat[INPUT][2];
+    Mat _d0 = zero_distortion ? ncvslideio::Mat() : test_mat[INPUT][1];
+    Mat _R0 = zero_R ? ncvslideio::Mat() : test_mat[INPUT][2];
     Mat _new_cam0 = zero_new_cam ? test_mat[INPUT][0] : test_mat[INPUT][3];
     Mat _mapx(img_size, CV_32F), _mapy(img_size, CV_32F);
 
@@ -1073,12 +1073,12 @@ void CV_InitInverseRectificationMapTest::prepare_to_validation(int/* test_case_i
 
 void CV_InitInverseRectificationMapTest::run_func()
 {
-    cv::Mat camera_mat = test_mat[INPUT][0];
-    cv::Mat dist = zero_distortion ? cv::Mat() : test_mat[INPUT][1];
-    cv::Mat R = zero_R ? cv::Mat() : test_mat[INPUT][2];
-    cv::Mat new_cam = zero_new_cam ? cv::Mat() : test_mat[INPUT][3];
-    cv::Mat& mapx = test_mat[OUTPUT][0], &mapy = test_mat[OUTPUT][1];
-    cv::initInverseRectificationMap(camera_mat,dist,R,new_cam,img_size,map_type,mapx,mapy);
+    ncvslideio::Mat camera_mat = test_mat[INPUT][0];
+    ncvslideio::Mat dist = zero_distortion ? ncvslideio::Mat() : test_mat[INPUT][1];
+    ncvslideio::Mat R = zero_R ? ncvslideio::Mat() : test_mat[INPUT][2];
+    ncvslideio::Mat new_cam = zero_new_cam ? ncvslideio::Mat() : test_mat[INPUT][3];
+    ncvslideio::Mat& mapx = test_mat[OUTPUT][0], &mapy = test_mat[OUTPUT][1];
+    ncvslideio::initInverseRectificationMap(camera_mat,dist,R,new_cam,img_size,map_type,mapx,mapy);
 }
 
 double CV_InitInverseRectificationMapTest::get_success_error_level( int /*test_case_idx*/, int /*i*/, int /*j*/ )
@@ -1097,7 +1097,7 @@ TEST(DISABLED_Calib3d_InitInverseRectificationMap, accuracy) { CV_InitInverseRec
 ////////////////////////////// undistort /////////////////////////////////
 
 static void test_remap( const Mat& src, Mat& dst, const Mat& mapx, const Mat& mapy,
-                        Mat* mask=0, int interpolation=cv::INTER_LINEAR )
+                        Mat* mask=0, int interpolation=ncvslideio::INTER_LINEAR )
 {
     int x, y, k;
     int drows = dst.rows, dcols = dst.cols;
@@ -1108,7 +1108,7 @@ static void test_remap( const Mat& src, Mat& dst, const Mat& mapx, const Mat& ma
     int step = (int)(src.step / CV_ELEM_SIZE(depth));
     int delta;
 
-    if( interpolation != cv::INTER_CUBIC )
+    if( interpolation != ncvslideio::INTER_CUBIC )
     {
         delta = 0;
         scols -= 1; srows -= 1;
@@ -1219,7 +1219,7 @@ public:
     CV_ImgWarpBaseTest( bool warp_matrix );
 
 protected:
-    int read_params( const cv::FileStorage& fs );
+    int read_params( const ncvslideio::FileStorage& fs );
     int prepare_test_case( int test_case_idx );
     void get_test_array_types_and_sizes( int test_case_idx, vector<vector<Size> >& sizes, vector<vector<int> >& types );
     void get_minmax_bounds( int i, int j, int type, Scalar& low, Scalar& high );
@@ -1246,7 +1246,7 @@ CV_ImgWarpBaseTest::CV_ImgWarpBaseTest( bool warp_matrix )
 }
 
 
-int CV_ImgWarpBaseTest::read_params( const cv::FileStorage& fs )
+int CV_ImgWarpBaseTest::read_params( const ncvslideio::FileStorage& fs )
 {
     int code = cvtest::ArrayTest::read_params( fs );
     return code;
@@ -1359,8 +1359,8 @@ int CV_ImgWarpBaseTest::prepare_test_case( int test_case_idx )
         default:
             CV_Assert(0);
         }*/
-        cv::Mat src(1, cols*cn, CV_32F, &buffer[0]);
-        cv::Mat dst(1, cols*cn, depth, ptr);
+        ncvslideio::Mat src(1, cols*cn, CV_32F, &buffer[0]);
+        ncvslideio::Mat dst(1, cols*cn, depth, ptr);
         src.convertTo(dst, dst.type());
     }
 
@@ -1382,11 +1382,11 @@ protected:
     void fill_array( int test_case_idx, int i, int j, Mat& arr );
 
 private:
-    cv::Mat input0;
-    cv::Mat input1;
-    cv::Mat input2;
-    cv::Mat input_new_cam;
-    cv::Mat input_output;
+    ncvslideio::Mat input0;
+    ncvslideio::Mat input1;
+    ncvslideio::Mat input2;
+    ncvslideio::Mat input_new_cam;
+    ncvslideio::Mat input_output;
 
     bool zero_new_cam;
     bool zero_distortion;
@@ -1417,7 +1417,7 @@ void CV_UndistortTest::get_test_array_types_and_sizes( int test_case_idx, vector
     sizes[INPUT][2] = cvtest::randInt(rng)%2 ? cvSize(4,1) : cvSize(1,4);
     types[INPUT][3] =  types[INPUT][1];
     sizes[INPUT][3] = sizes[INPUT][1];
-    interpolation = cv::INTER_LINEAR;
+    interpolation = ncvslideio::INTER_LINEAR;
 }
 
 
@@ -1432,11 +1432,11 @@ void CV_UndistortTest::run_func()
 {
     if (zero_distortion)
     {
-        cv::undistort(input0,input_output,input1,cv::Mat());
+        ncvslideio::undistort(input0,input_output,input1,ncvslideio::Mat());
     }
     else
     {
-        cv::undistort(input0,input_output,input1,input2);
+        ncvslideio::undistort(input0,input_output,input1,input2);
     }
 }
 
@@ -1587,13 +1587,13 @@ void CV_UndistortMapTest::fill_array( int test_case_idx, int i, int j, Mat& arr 
 
 void CV_UndistortMapTest::run_func()
 {
-    cv::Mat a = test_mat[INPUT][0], k = test_mat[INPUT][1];
-    cv::Mat &mapx = test_mat[OUTPUT][0], &mapy = !dualChannel ? test_mat[OUTPUT][1] : mapx;
-    cv::Size mapsz = test_mat[OUTPUT][0].size();
+    ncvslideio::Mat a = test_mat[INPUT][0], k = test_mat[INPUT][1];
+    ncvslideio::Mat &mapx = test_mat[OUTPUT][0], &mapy = !dualChannel ? test_mat[OUTPUT][1] : mapx;
+    ncvslideio::Size mapsz = test_mat[OUTPUT][0].size();
 
-    cv::initUndistortRectifyMap(a, k, cv::Mat(), a,
+    ncvslideio::initUndistortRectifyMap(a, k, ncvslideio::Mat(), a,
         mapsz, dualChannel ? CV_32FC2 : CV_32FC1,
-        mapx, !dualChannel ? cv::_InputOutputArray(mapy) : cv::noArray());
+        mapx, !dualChannel ? ncvslideio::_InputOutputArray(mapy) : ncvslideio::noArray());
 }
 
 
@@ -1655,7 +1655,7 @@ void CV_UndistortMapTest::prepare_to_validation( int )
     else
     {
         Mat p[2] = {mapx, mapy};
-        cv::merge(p, 2, test_mat[REF_OUTPUT][0]);
+        ncvslideio::merge(p, 2, test_mat[REF_OUTPUT][0]);
     }
 }
 
@@ -1873,7 +1873,7 @@ TEST(Imgproc_undistort, regression_15286)
     Mat img_undist;
     undistort(img, img_undist, kmat, dist_coeffs);
 
-    ASSERT_EQ(0.0, cvtest::norm(img_undist, ref, cv::NORM_INF));
+    ASSERT_EQ(0.0, cvtest::norm(img_undist, ref, ncvslideio::NORM_INF));
 }
 
 TEST(Calib3d_initUndistortRectifyMap, regression_14467)

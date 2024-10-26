@@ -8,9 +8,9 @@
 #include <limits>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
-void cv::contourTreeToResults(CTree& tree,
+void ncvslideio::contourTreeToResults(CTree& tree,
                               int res_type,
                               OutputArrayOfArrays& _contours,
                               OutputArray& _hierarchy)

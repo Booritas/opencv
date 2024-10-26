@@ -2,7 +2,7 @@
 // Sample demonstrating interoperability of OpenCV UMat with OpenGL texture.
 // At first, the data obtained from video file or camera and placed onto
 // OpenGL texture, following mapping of this OpenGL texture to OpenCV UMat
-// and call cv::Blur function. The result is mapped back to OpenGL texture
+// and call ncvslideio::Blur function. The result is mapped back to OpenGL texture
 // and rendered through OpenGL API.
 */
 #if defined(_WIN32)
@@ -36,15 +36,15 @@ public:
         MODE_GPU
     };
 
-    GLWinApp(int width, int height, std::string& window_name, cv::VideoCapture& cap) :
+    GLWinApp(int width, int height, std::string& window_name, ncvslideio::VideoCapture& cap) :
         WinApp(width, height, window_name)
     {
         m_shutdown        = false;
         m_use_buffer      = false;
         m_demo_processing = true;
         m_mode            = MODE_CPU;
-        m_modeStr[0]      = cv::String("Processing on CPU");
-        m_modeStr[1]      = cv::String("Processing on GPU");
+        m_modeStr[0]      = ncvslideio::String("Processing on CPU");
+        m_modeStr[1]      = ncvslideio::String("Processing on GPU");
         m_cap             = cap;
     }
 
@@ -176,34 +176,34 @@ public:
 
         glViewport(0, 0, m_width, m_height);
 
-        if (cv::ocl::haveOpenCL())
+        if (ncvslideio::ocl::haveOpenCL())
         {
-            (void) cv::ogl::ocl::initializeContextFromGL();
+            (void) ncvslideio::ogl::ocl::initializeContextFromGL();
         }
 
-        m_oclDevName = cv::ocl::useOpenCL() ?
-            cv::ocl::Context::getDefault().device(0).name() :
+        m_oclDevName = ncvslideio::ocl::useOpenCL() ?
+            ncvslideio::ocl::Context::getDefault().device(0).name() :
             (char*) "No OpenCL device";
 
         return EXIT_SUCCESS;
     } // init()
 
-    int get_frame(cv::ogl::Texture2D& texture, cv::ogl::Buffer& buffer, bool do_buffer)
+    int get_frame(ncvslideio::ogl::Texture2D& texture, ncvslideio::ogl::Buffer& buffer, bool do_buffer)
     {
         if (!m_cap.read(m_frame_bgr))
             return EXIT_FAILURE;
 
-        cv::cvtColor(m_frame_bgr, m_frame_rgba, cv::COLOR_RGB2RGBA);
+        ncvslideio::cvtColor(m_frame_bgr, m_frame_rgba, ncvslideio::COLOR_RGB2RGBA);
 
         if (do_buffer)
-            buffer.copyFrom(m_frame_rgba, cv::ogl::Buffer::PIXEL_UNPACK_BUFFER, true);
+            buffer.copyFrom(m_frame_rgba, ncvslideio::ogl::Buffer::PIXEL_UNPACK_BUFFER, true);
         else
             texture.copyFrom(m_frame_rgba, true);
 
         return EXIT_SUCCESS;
     }
 
-    void print_info(MODE mode, double time, cv::String& oclDevName)
+    void print_info(MODE mode, double time, ncvslideio::String& oclDevName)
     {
 #if defined(_WIN32)
         HDC hDC = m_hDC;
@@ -257,8 +257,8 @@ public:
                 return EXIT_SUCCESS;
 
             int r;
-            cv::ogl::Texture2D texture;
-            cv::ogl::Buffer buffer;
+            ncvslideio::ogl::Texture2D texture;
+            ncvslideio::ogl::Buffer buffer;
 
             texture.setAutoRelease(true);
             buffer.setAutoRelease(true);
@@ -285,7 +285,7 @@ public:
 
             if (do_buffer) // buffer -> texture
             {
-                cv::Mat m(m_height, m_width, CV_8UC4);
+                ncvslideio::Mat m(m_height, m_width, CV_8UC4);
                 buffer.copyTo(m);
                 texture.copyFrom(m, true);
             }
@@ -319,7 +319,7 @@ public:
         }
 
 
-        catch (const cv::Exception& e)
+        catch (const ncvslideio::Exception& e)
         {
             std::cerr << "Exception: " << e.what() << std::endl;
             return 10;
@@ -330,9 +330,9 @@ public:
 
 protected:
 
-    void processFrameCPU(cv::ogl::Texture2D& texture, cv::ogl::Buffer& buffer, bool do_buffer)
+    void processFrameCPU(ncvslideio::ogl::Texture2D& texture, ncvslideio::ogl::Buffer& buffer, bool do_buffer)
     {
-        cv::Mat m(m_height, m_width, CV_8UC4);
+        ncvslideio::Mat m(m_height, m_width, CV_8UC4);
 
         m_timer.reset();
         m_timer.start();
@@ -345,39 +345,39 @@ protected:
         if (m_demo_processing)
         {
             // blur texture image with OpenCV on CPU
-            cv::blur(m, m, cv::Size(15, 15));
+            ncvslideio::blur(m, m, ncvslideio::Size(15, 15));
         }
 
         if (do_buffer)
-            buffer.copyFrom(m, cv::ogl::Buffer::PIXEL_UNPACK_BUFFER, true);
+            buffer.copyFrom(m, ncvslideio::ogl::Buffer::PIXEL_UNPACK_BUFFER, true);
         else
             texture.copyFrom(m, true);
 
         m_timer.stop();
     }
 
-    void processFrameGPU(cv::ogl::Texture2D& texture, cv::ogl::Buffer& buffer, bool do_buffer)
+    void processFrameGPU(ncvslideio::ogl::Texture2D& texture, ncvslideio::ogl::Buffer& buffer, bool do_buffer)
     {
-        cv::UMat u;
+        ncvslideio::UMat u;
 
         m_timer.reset();
         m_timer.start();
 
         if (do_buffer)
-            u = cv::ogl::mapGLBuffer(buffer);
+            u = ncvslideio::ogl::mapGLBuffer(buffer);
         else
-            cv::ogl::convertFromGLTexture2D(texture, u);
+            ncvslideio::ogl::convertFromGLTexture2D(texture, u);
 
         if (m_demo_processing)
         {
             // blur texture image with OpenCV on GPU with OpenCL
-            cv::blur(u, u, cv::Size(15, 15));
+            ncvslideio::blur(u, u, ncvslideio::Size(15, 15));
         }
 
         if (do_buffer)
-            cv::ogl::unmapGLBuffer(u);
+            ncvslideio::ogl::unmapGLBuffer(u);
         else
-            cv::ogl::convertToGLTexture2D(u, texture);
+            ncvslideio::ogl::convertToGLTexture2D(u, texture);
 
         m_timer.stop();
     }
@@ -446,17 +446,17 @@ private:
     bool               m_use_buffer;
     bool               m_demo_processing;
     MODE               m_mode;
-    cv::String         m_modeStr[2];
+    ncvslideio::String         m_modeStr[2];
 #if defined(_WIN32)
     HDC                m_hDC;
     HGLRC              m_hRC;
 #elif defined(__linux__)
     GLXContext         m_glctx;
 #endif
-    cv::VideoCapture   m_cap;
-    cv::Mat            m_frame_bgr;
-    cv::Mat            m_frame_rgba;
-    cv::String         m_oclDevName;
+    ncvslideio::VideoCapture   m_cap;
+    ncvslideio::Mat            m_frame_bgr;
+    ncvslideio::Mat            m_frame_rgba;
+    ncvslideio::String         m_oclDevName;
 };
 
 static const char* keys =
@@ -465,12 +465,12 @@ static const char* keys =
     "{f file   |       | movie file name  }"
 };
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv, keys);
+    ncvslideio::CommandLineParser parser(argc, argv, keys);
     int    camera_id = parser.get<int>("camera");
     string file      = parser.get<string>("file");
 
@@ -485,7 +485,7 @@ int main(int argc, char** argv)
 
     parser.printMessage();
 
-    cv::VideoCapture cap;
+    ncvslideio::VideoCapture cap;
 
     if (file.empty())
         cap.open(camera_id);
@@ -514,7 +514,7 @@ int main(int argc, char** argv)
         app.create();
         return app.run();
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         cerr << "Exception: " << e.what() << endl;
         return 10;

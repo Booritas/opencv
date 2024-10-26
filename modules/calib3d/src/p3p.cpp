@@ -13,7 +13,7 @@ void p3p::init_inverse_parameters()
     cy_fy = cy / fy;
 }
 
-p3p::p3p(cv::Mat cameraMatrix)
+p3p::p3p(ncvslideio::Mat cameraMatrix)
 {
     if (cameraMatrix.depth() == CV_32F)
         init_camera_parameters<float>(cameraMatrix);
@@ -31,7 +31,7 @@ p3p::p3p(double _fx, double _fy, double _cx, double _cy)
     init_inverse_parameters();
 }
 
-bool p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
+bool p3p::solve(ncvslideio::Mat& R, ncvslideio::Mat& tvec, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints)
 {
     CV_INSTRUMENT_REGION();
 
@@ -40,26 +40,26 @@ bool p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat
     if (opoints.depth() == ipoints.depth())
     {
         if (opoints.depth() == CV_32F)
-            extract_points<cv::Point3f,cv::Point2f>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3f,ncvslideio::Point2f>(opoints, ipoints, points);
         else
-            extract_points<cv::Point3d,cv::Point2d>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3d,ncvslideio::Point2d>(opoints, ipoints, points);
     }
     else if (opoints.depth() == CV_32F)
-        extract_points<cv::Point3f,cv::Point2d>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3f,ncvslideio::Point2d>(opoints, ipoints, points);
     else
-        extract_points<cv::Point3d,cv::Point2f>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3d,ncvslideio::Point2f>(opoints, ipoints, points);
 
     bool result = solve(rotation_matrix, translation,
                         points[0], points[1], points[2], points[3], points[4],
                         points[5], points[6], points[7], points[8], points[9],
                         points[10], points[11], points[12], points[13], points[14],
                         points[15], points[16], points[17], points[18], points[19]);
-    cv::Mat(3, 1, CV_64F, translation).copyTo(tvec);
-    cv::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
+    ncvslideio::Mat(3, 1, CV_64F, translation).copyTo(tvec);
+    ncvslideio::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
     return result;
 }
 
-int p3p::solve(std::vector<cv::Mat>& Rs, std::vector<cv::Mat>& tvecs, const cv::Mat& opoints, const cv::Mat& ipoints)
+int p3p::solve(std::vector<ncvslideio::Mat>& Rs, std::vector<ncvslideio::Mat>& tvecs, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints)
 {
     CV_INSTRUMENT_REGION();
 
@@ -68,14 +68,14 @@ int p3p::solve(std::vector<cv::Mat>& Rs, std::vector<cv::Mat>& tvecs, const cv::
     if (opoints.depth() == ipoints.depth())
     {
         if (opoints.depth() == CV_32F)
-            extract_points<cv::Point3f,cv::Point2f>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3f,ncvslideio::Point2f>(opoints, ipoints, points);
         else
-            extract_points<cv::Point3d,cv::Point2d>(opoints, ipoints, points);
+            extract_points<ncvslideio::Point3d,ncvslideio::Point2d>(opoints, ipoints, points);
     }
     else if (opoints.depth() == CV_32F)
-        extract_points<cv::Point3f,cv::Point2d>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3f,ncvslideio::Point2d>(opoints, ipoints, points);
     else
-        extract_points<cv::Point3d,cv::Point2f>(opoints, ipoints, points);
+        extract_points<ncvslideio::Point3d,ncvslideio::Point2f>(opoints, ipoints, points);
 
     const bool p4p = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F)) == 4;
     int solutions = solve(rotation_matrix, translation,
@@ -86,9 +86,9 @@ int p3p::solve(std::vector<cv::Mat>& Rs, std::vector<cv::Mat>& tvecs, const cv::
                           p4p);
 
     for (int i = 0; i < solutions; i++) {
-        cv::Mat R, tvec;
-        cv::Mat(3, 1, CV_64F, translation[i]).copyTo(tvec);
-        cv::Mat(3, 3, CV_64F, rotation_matrix[i]).copyTo(R);
+        ncvslideio::Mat R, tvec;
+        ncvslideio::Mat(3, 1, CV_64F, translation[i]).copyTo(tvec);
+        ncvslideio::Mat(3, 3, CV_64F, rotation_matrix[i]).copyTo(R);
 
         Rs.push_back(R);
         tvecs.push_back(tvec);

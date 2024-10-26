@@ -89,7 +89,7 @@ PERF_TEST_P(Size_MatType_RMode, DISABLED_reduceArgMinMax, testing::Combine(
 
     declare.in(src, WARMUP_RNG).out(dst);
 
-    TEST_CYCLE() cv::reduceArgMin(src, dst, axis, true);
+    TEST_CYCLE() ncvslideio::reduceArgMin(src, dst, axis, true);
 
     SANITY_CHECK_NOTHING();
 }

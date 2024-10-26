@@ -7,5 +7,5 @@
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/ImageIO.h>
 
-CV_EXPORTS CGImageRef MatToCGImage(const cv::Mat& image) CF_RETURNS_RETAINED;
-CV_EXPORTS void CGImageToMat(const CGImageRef image, cv::Mat& m, bool alphaExist);
+CV_EXPORTS CGImageRef MatToCGImage(const ncvslideio::Mat& image) CF_RETURNS_RETAINED;
+CV_EXPORTS void CGImageToMat(const CGImageRef image, ncvslideio::Mat& m, bool alphaExist);

@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 const int SZ = 20;  // size of each digit is SZ x SZ
@@ -137,7 +137,7 @@ static void evaluate_model(const vector<float>& predictions, const vector<Mat>& 
 
     err /= predictions.size();
 
-    cout << cv::format("error: %.2f %%", err * 100) << endl;
+    cout << ncvslideio::format("error: %.2f %%", err * 100) << endl;
 
     int confusion[10][10] = {};
 
@@ -151,7 +151,7 @@ static void evaluate_model(const vector<float>& predictions, const vector<Mat>& 
     {
         for (int j = 0; j < 10; j++)
         {
-            cout << cv::format("%2d ", confusion[i][j]);
+            cout << ncvslideio::format("%2d ", confusion[i][j]);
         }
         cout << endl;
     }

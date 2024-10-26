@@ -9,7 +9,7 @@
 #include "bitstrm.hpp"
 
 #ifdef HAVE_IMGCODEC_PFM
-namespace cv
+namespace ncvslideio
 {
 
 class PFMDecoder CV_FINAL : public BaseImageDecoder

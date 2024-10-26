@@ -42,8 +42,8 @@ from common import nothing
 
 def blur_edge(img, d=31):
     h, w  = img.shape[:2]
-    img_pad = cv.copyMakeBorder(img, d, d, d, d, cv.BORDER_WRAP)
-    img_blur = cv.GaussianBlur(img_pad, (2*d+1, 2*d+1), -1)[d:-d,d:-d]
+    img_pad = ncvslideio.copyMakeBorder(img, d, d, d, d, ncvslideio.BORDER_WRAP)
+    img_blur = ncvslideio.GaussianBlur(img_pad, (2*d+1, 2*d+1), -1)[d:-d,d:-d]
     y, x = np.indices((h, w))
     dist = np.dstack([x, w-x-1, y, h-y-1]).min(-1)
     w = np.minimum(np.float32(dist)/d, 1.0)
@@ -55,12 +55,12 @@ def motion_kernel(angle, d, sz=65):
     A = np.float32([[c, -s, 0], [s, c, 0]])
     sz2 = sz // 2
     A[:,2] = (sz2, sz2) - np.dot(A[:,:2], ((d-1)*0.5, 0))
-    kern = cv.warpAffine(kern, A, (sz, sz), flags=cv.INTER_CUBIC)
+    kern = ncvslideio.warpAffine(kern, A, (sz, sz), flags=ncvslideio.INTER_CUBIC)
     return kern
 
 def defocus_kernel(d, sz=65):
     kern = np.zeros((sz, sz), np.uint8)
-    cv.circle(kern, (sz, sz), d, 255, -1, cv.LINE_AA, shift=1)
+    ncvslideio.circle(kern, (sz, sz), d, 255, -1, ncvslideio.LINE_AA, shift=1)
     kern = np.float32(kern) / 255.0
     return kern
 
@@ -76,52 +76,52 @@ def main():
 
     win = 'deconvolution'
 
-    img = cv.imread(cv.samples.findFile(fn), cv.IMREAD_GRAYSCALE)
+    img = ncvslideio.imread(ncvslideio.samples.findFile(fn), ncvslideio.IMREAD_GRAYSCALE)
     if img is None:
         print('Failed to load file:', fn)
         sys.exit(1)
 
     img = np.float32(img)/255.0
-    cv.imshow('input', img)
+    ncvslideio.imshow('input', img)
 
     img = blur_edge(img)
-    IMG = cv.dft(img, flags=cv.DFT_COMPLEX_OUTPUT)
+    IMG = ncvslideio.dft(img, flags=ncvslideio.DFT_COMPLEX_OUTPUT)
 
     defocus = '--circle' in opts
 
     def update(_):
-        ang = np.deg2rad( cv.getTrackbarPos('angle', win) )
-        d = cv.getTrackbarPos('d', win)
-        noise = 10**(-0.1*cv.getTrackbarPos('SNR (db)', win))
+        ang = np.deg2rad( ncvslideio.getTrackbarPos('angle', win) )
+        d = ncvslideio.getTrackbarPos('d', win)
+        noise = 10**(-0.1*ncvslideio.getTrackbarPos('SNR (db)', win))
 
         if defocus:
             psf = defocus_kernel(d)
         else:
             psf = motion_kernel(ang, d)
-        cv.imshow('psf', psf)
+        ncvslideio.imshow('psf', psf)
 
         psf /= psf.sum()
         psf_pad = np.zeros_like(img)
         kh, kw = psf.shape
         psf_pad[:kh, :kw] = psf
-        PSF = cv.dft(psf_pad, flags=cv.DFT_COMPLEX_OUTPUT, nonzeroRows = kh)
+        PSF = ncvslideio.dft(psf_pad, flags=ncvslideio.DFT_COMPLEX_OUTPUT, nonzeroRows = kh)
         PSF2 = (PSF**2).sum(-1)
         iPSF = PSF / (PSF2 + noise)[...,np.newaxis]
-        RES = cv.mulSpectrums(IMG, iPSF, 0)
-        res = cv.idft(RES, flags=cv.DFT_SCALE | cv.DFT_REAL_OUTPUT )
+        RES = ncvslideio.mulSpectrums(IMG, iPSF, 0)
+        res = ncvslideio.idft(RES, flags=ncvslideio.DFT_SCALE | ncvslideio.DFT_REAL_OUTPUT )
         res = np.roll(res, -kh//2, 0)
         res = np.roll(res, -kw//2, 1)
-        cv.imshow(win, res)
+        ncvslideio.imshow(win, res)
 
-    cv.namedWindow(win)
-    cv.namedWindow('psf', 0)
-    cv.createTrackbar('angle', win, int(opts.get('--angle', 135)), 180, update)
-    cv.createTrackbar('d', win, int(opts.get('--d', 22)), 50, update)
-    cv.createTrackbar('SNR (db)', win, int(opts.get('--snr', 25)), 50, update)
+    ncvslideio.namedWindow(win)
+    ncvslideio.namedWindow('psf', 0)
+    ncvslideio.createTrackbar('angle', win, int(opts.get('--angle', 135)), 180, update)
+    ncvslideio.createTrackbar('d', win, int(opts.get('--d', 22)), 50, update)
+    ncvslideio.createTrackbar('SNR (db)', win, int(opts.get('--snr', 25)), 50, update)
     update(None)
 
     while True:
-        ch = cv.waitKey()
+        ch = ncvslideio.waitKey()
         if ch == 27:
             break
         if ch == ord(' '):
@@ -134,4 +134,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -7,7 +7,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Pose estimation using a ChArUco board";
@@ -129,12 +129,12 @@ int main(int argc, char *argv[]) {
 
         if(charucoIds.size() > 0) {
             //! [drawDetectedCornersCharuco]
-            aruco::drawDetectedCornersCharuco(imageCopy, charucoCorners, charucoIds, cv::Scalar(255, 0, 0));
+            aruco::drawDetectedCornersCharuco(imageCopy, charucoCorners, charucoIds, ncvslideio::Scalar(255, 0, 0));
             //! [drawDetectedCornersCharuco]
         }
 
         if(validPose)
-            cv::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvec, tvec, axisLength);
+            ncvslideio::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvec, tvec, axisLength);
 
         imshow("out", imageCopy);
         if(waitKey(waitTime) == 27) break;

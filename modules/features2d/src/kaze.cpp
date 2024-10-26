@@ -50,7 +50,7 @@ http://www.robesafe.com/personal/pablo.alcantarilla/papers/Alcantarilla12eccv.pd
 #include "precomp.hpp"
 #include "kaze/KAZEFeatures.h"
 
-namespace cv
+namespace ncvslideio
 {
 
     class KAZE_Impl CV_FINAL : public KAZE
@@ -112,7 +112,7 @@ namespace cv
         {
             CV_INSTRUMENT_REGION();
 
-            cv::Mat img = image.getMat();
+            ncvslideio::Mat img = image.getMat();
             if (img.channels() > 1)
                 cvtColor(image, img, COLOR_BGR2GRAY);
 
@@ -146,7 +146,7 @@ namespace cv
 
             if (!mask.empty())
             {
-                cv::KeyPointsFilter::runByPixelsMask(keypoints, mask.getMat());
+                ncvslideio::KeyPointsFilter::runByPixelsMask(keypoints, mask.getMat());
             }
 
             if( descriptors.needed() )

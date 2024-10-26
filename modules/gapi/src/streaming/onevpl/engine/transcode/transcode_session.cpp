@@ -15,7 +15,7 @@
 #include "streaming/onevpl/utils.hpp"
 
 #include "logger.hpp"
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -51,5 +51,5 @@ const mfxFrameInfo& LegacyTranscodeSession::get_video_param() const {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_ONEVPL

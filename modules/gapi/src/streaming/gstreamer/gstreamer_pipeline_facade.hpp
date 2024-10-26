@@ -16,7 +16,7 @@
 #ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace gst {
@@ -84,6 +84,6 @@ private:
 } // namespace gst
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // HAVE_GSTREAMER
 #endif // OPENCV_GAPI_STREAMING_GSTREAMER_GSTREAMER_PIPELINE_FACADE_HPP

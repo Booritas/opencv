@@ -8,7 +8,7 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 bool help_showed = false;
@@ -141,7 +141,7 @@ Params Params::read(int argc, char** argv)
 App::App(const Params& params)
     : p(params), running(false)
 {
-    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+    ncvslideio::cuda::printShortCudaDeviceInfo(ncvslideio::cuda::getDevice());
 
     cout << "stereo_match_gpu sample\n";
     cout << "\nControls:\n"
@@ -175,7 +175,7 @@ void App::run()
     // Set common parameters
     bm = cuda::createStereoBM(p.ndisp);
     bp = cuda::createStereoBeliefPropagation(p.ndisp);
-    csbp = cv::cuda::createStereoConstantSpaceBP(p.ndisp);
+    csbp = ncvslideio::cuda::createStereoConstantSpaceBP(p.ndisp);
 
     // Prepare disparity map of specified type
     Mat disp(left.size(), CV_8U);
@@ -293,9 +293,9 @@ void App::handleKey(char key)
             switch (bm->getPreFilterType())
             {
             case 0:
-                bm->setPreFilterType(cv::StereoBM::PREFILTER_XSOBEL);
+                bm->setPreFilterType(ncvslideio::StereoBM::PREFILTER_XSOBEL);
                 break;
-            case cv::StereoBM::PREFILTER_XSOBEL:
+            case ncvslideio::StereoBM::PREFILTER_XSOBEL:
                 bm->setPreFilterType(0);
                 break;
             }

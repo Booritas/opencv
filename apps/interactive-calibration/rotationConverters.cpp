@@ -12,12 +12,12 @@
 #define CALIB_PI 3.14159265358979323846
 #define CALIB_PI_2 1.57079632679489661923
 
-void calib::Euler(const cv::Mat& src, cv::Mat& dst, int argType)
+void calib::Euler(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType)
 {
     if((src.rows == 3) && (src.cols == 3))
     {
         //convert rotation matrix to 3 angles (pitch, yaw, roll)
-        dst = cv::Mat(3, 1, CV_64F);
+        dst = ncvslideio::Mat(3, 1, CV_64F);
         double pitch, yaw, roll;
 
         if(src.at<double>(0,2) < -0.998)
@@ -46,7 +46,7 @@ void calib::Euler(const cv::Mat& src, cv::Mat& dst, int argType)
             roll *= 180./CALIB_PI;
         }
         else if(argType != CALIB_RADIANS)
-            CV_Error(cv::Error::StsBadFlag, "Invalid argument type");
+            CV_Error(ncvslideio::Error::StsBadFlag, "Invalid argument type");
 
         dst.at<double>(0,0) = pitch;
         dst.at<double>(1,0) = yaw;
@@ -76,11 +76,11 @@ void calib::Euler(const cv::Mat& src, cv::Mat& dst, int argType)
             roll *= CALIB_PI / 180.;
         }
         else if(argType != CALIB_RADIANS)
-            CV_Error(cv::Error::StsBadFlag, "Invalid argument type");
+            CV_Error(ncvslideio::Error::StsBadFlag, "Invalid argument type");
 
-        dst = cv::Mat(3, 3, CV_64F);
-        cv::Mat M(3, 3, CV_64F);
-        cv::Mat i = cv::Mat::eye(3, 3, CV_64F);
+        dst = ncvslideio::Mat(3, 3, CV_64F);
+        ncvslideio::Mat M(3, 3, CV_64F);
+        ncvslideio::Mat i = ncvslideio::Mat::eye(3, 3, CV_64F);
         i.copyTo(dst);
         i.copyTo(M);
 
@@ -106,21 +106,21 @@ void calib::Euler(const cv::Mat& src, cv::Mat& dst, int argType)
         dst *= M;
     }
     else
-        CV_Error(cv::Error::StsBadFlag, "Input matrix must be 1x3, 3x1 or 3x3" );
+        CV_Error(ncvslideio::Error::StsBadFlag, "Input matrix must be 1x3, 3x1 or 3x3" );
 }
 
-void calib::RodriguesToEuler(const cv::Mat& src, cv::Mat& dst, int argType)
+void calib::RodriguesToEuler(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType)
 {
     CV_Assert((src.cols == 1 && src.rows == 3) || (src.cols == 3 && src.rows == 1));
-    cv::Mat R;
-    cv::Rodrigues(src, R);
+    ncvslideio::Mat R;
+    ncvslideio::Rodrigues(src, R);
     Euler(R, dst, argType);
 }
 
-void calib::EulerToRodrigues(const cv::Mat& src, cv::Mat& dst, int argType)
+void calib::EulerToRodrigues(const ncvslideio::Mat& src, ncvslideio::Mat& dst, int argType)
 {
     CV_Assert((src.cols == 1 && src.rows == 3) || (src.cols == 3 && src.rows == 1));
-    cv::Mat R;
+    ncvslideio::Mat R;
     Euler(src, R, argType);
-    cv::Rodrigues(R, dst);
+    ncvslideio::Rodrigues(R, dst);
 }

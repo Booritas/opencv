@@ -11,7 +11,7 @@
 #include "color_hsv.simd.hpp"
 #include "color_hsv.simd_declarations.hpp" // defines CV_CPU_DISPATCH_MODES_ALL=AVX2,...,BASELINE based on CMakeLists.txt content
 
-namespace cv {
+namespace ncvslideio {
 
 //
 // IPP functions
@@ -263,7 +263,7 @@ bool oclCvtColorBGR2HSV( InputArray _src, OutputArray _dst, int bidx, bool full 
 
     int hrange = _src.depth() == CV_32F ? 360 : (!full ? 180 : 256);
 
-    cv::String options = (_src.depth() == CV_8U ?
+    ncvslideio::String options = (_src.depth() == CV_8U ?
                           format("-D HRANGE=%d -D BIDX=%d -D DCN=3", hrange, bidx) :
                           format("-D HSCALE=%ff -D BIDX=%d -D DCN=3", hrange*(1.f/360.f), bidx));
 
@@ -355,4 +355,4 @@ void cvtColorHSV2BGR( InputArray _src, OutputArray _dst, int dcn, bool swapb, bo
 }
 
 
-} // namespace cv
+} // namespace ncvslideio

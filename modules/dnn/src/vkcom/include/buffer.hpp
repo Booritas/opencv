@@ -12,7 +12,7 @@
 #include <vulkan/vulkan.h>
 #endif // HAVE_VULKAN
 
-namespace cv { namespace dnn { namespace vkcom {
+namespace ncvslideio { namespace dnn { namespace vkcom {
 
 #ifdef HAVE_VULKAN
 
@@ -34,6 +34,6 @@ private:
 
 #endif // HAVE_VULKAN
 
-}}} // namespace cv::dnn::vkcom
+}}} // namespace ncvslideio::dnn::vkcom
 
 #endif // OPENCV_DNN_VKCOM_BUFFER_HPP

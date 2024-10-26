@@ -26,8 +26,8 @@ def main():
     except:
         fn = 'fruits.jpg'
 
-    fn = cv.samples.findFile(fn)
-    img = cv.imread(fn, cv.IMREAD_GRAYSCALE)
+    fn = ncvslideio.samples.findFile(fn)
+    img = ncvslideio.imread(fn, ncvslideio.IMREAD_GRAYSCALE)
     if img is None:
         print('Failed to load fn:', fn)
         sys.exit(1)
@@ -39,27 +39,27 @@ def main():
     def update(dummy=None):
         global need_update
         need_update = False
-        thrs = cv.getTrackbarPos('threshold', 'distrans')
-        mark = cv.Canny(img, thrs, 3*thrs)
-        dist, labels = cv.distanceTransformWithLabels(~mark, cv.DIST_L2, 5)
+        thrs = ncvslideio.getTrackbarPos('threshold', 'distrans')
+        mark = ncvslideio.Canny(img, thrs, 3*thrs)
+        dist, labels = ncvslideio.distanceTransformWithLabels(~mark, ncvslideio.DIST_L2, 5)
         if voronoi:
             vis = cm[np.uint8(labels)]
         else:
             vis = cm[np.uint8(dist*2)]
         vis[mark != 0] = 255
-        cv.imshow('distrans', vis)
+        ncvslideio.imshow('distrans', vis)
 
     def invalidate(dummy=None):
         global need_update
         need_update = True
 
-    cv.namedWindow('distrans')
-    cv.createTrackbar('threshold', 'distrans', 60, 255, invalidate)
+    ncvslideio.namedWindow('distrans')
+    ncvslideio.createTrackbar('threshold', 'distrans', 60, 255, invalidate)
     update()
 
 
     while True:
-        ch = cv.waitKey(50)
+        ch = ncvslideio.waitKey(50)
         if ch == 27:
             break
         if ch == ord('v'):
@@ -75,4 +75,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

@@ -46,7 +46,7 @@
 #include <list>
 #include "opencv2/core.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching
@@ -114,7 +114,7 @@ CV_EXPORTS_W int& stitchingLogLevel();
 //! @}
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #include "util_inl.hpp"
 

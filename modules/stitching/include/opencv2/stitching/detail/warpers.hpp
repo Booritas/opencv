@@ -48,7 +48,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/opencv_modules.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 //! @addtogroup stitching_warp
@@ -699,7 +699,7 @@ protected:
 //! @} stitching_warp
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio
 
 #include "warpers_inl.hpp"
 

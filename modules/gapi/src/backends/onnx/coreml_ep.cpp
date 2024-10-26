@@ -13,8 +13,8 @@
 #ifdef HAVE_ONNX_COREML
 #include "../providers/coreml/coreml_provider_factory.h"
 
-void cv::gimpl::onnx::addCoreMLExecutionProvider(Ort::SessionOptions *session_options,
-                                                 const cv::gapi::onnx::ep::CoreML &coreml_ep) {
+void ncvslideio::gimpl::onnx::addCoreMLExecutionProvider(Ort::SessionOptions *session_options,
+                                                 const ncvslideio::gapi::onnx::ep::CoreML &coreml_ep) {
     uint32_t flags = 0u;
     if (coreml_ep.use_cpu_only) {
         flags |= COREML_FLAG_USE_CPU_ONLY;
@@ -34,14 +34,14 @@ void cv::gimpl::onnx::addCoreMLExecutionProvider(Ort::SessionOptions *session_op
         std::stringstream ss;
         ss << "ONNX Backend: Failed to enable CoreML"
            << " Execution Provider: " << e.what();
-        cv::util::throw_error(std::runtime_error(ss.str()));
+        ncvslideio::util::throw_error(std::runtime_error(ss.str()));
     }
 }
 
 #else  // HAVE_ONNX_COREML
 
-void cv::gimpl::onnx::addCoreMLExecutionProvider(Ort::SessionOptions*,
-                                                 const cv::gapi::onnx::ep::CoreML&) {
+void ncvslideio::gimpl::onnx::addCoreMLExecutionProvider(Ort::SessionOptions*,
+                                                 const ncvslideio::gapi::onnx::ep::CoreML&) {
      util::throw_error(std::runtime_error("G-API has been compiled with ONNXRT"
                                           " without CoreML support"));
 }

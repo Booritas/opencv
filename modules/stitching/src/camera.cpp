@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 
 CameraParams::CameraParams() : focal(1), aspect(1), ppx(0), ppy(0),
@@ -70,4 +70,4 @@ Mat CameraParams::K() const
 }
 
 } // namespace detail
-} // namespace cv
+} // namespace ncvslideio

@@ -12,7 +12,7 @@ def loadExposureSeq(path):
         content = f.readlines()
     for line in content:
         tokens = line.split()
-        images.append(cv.imread(os.path.join(path, tokens[0])))
+        images.append(ncvslideio.imread(os.path.join(path, tokens[0])))
         times.append(1 / float(tokens[1]))
 
     return images, np.asarray(times, dtype=np.float32)
@@ -30,22 +30,22 @@ images, times = loadExposureSeq(args.input)
 ## [Load images and exposure times]
 
 ## [Estimate camera response]
-calibrate = cv.createCalibrateDebevec()
+calibrate = ncvslideio.createCalibrateDebevec()
 response = calibrate.process(images, times)
 ## [Estimate camera response]
 
 ## [Make HDR image]
-merge_debevec = cv.createMergeDebevec()
+merge_debevec = ncvslideio.createMergeDebevec()
 hdr = merge_debevec.process(images, times, response)
 ## [Make HDR image]
 
 ## [Tonemap HDR image]
-tonemap = cv.createTonemap(2.2)
+tonemap = ncvslideio.createTonemap(2.2)
 ldr = tonemap.process(hdr)
 ## [Tonemap HDR image]
 
 ## [Perform exposure fusion]
-merge_mertens = cv.createMergeMertens()
+merge_mertens = ncvslideio.createMergeMertens()
 fusion = merge_mertens.process(images)
 ## [Perform exposure fusion]
 

@@ -6,7 +6,7 @@
 //! @{
 
 //! @name Fast feature detector types
-//! @sa cv::FastFeatureDetector
+//! @sa ncvslideio::FastFeatureDetector
 //! @{
 #define CV_HAL_TYPE_5_8  0
 #define CV_HAL_TYPE_7_12 1
@@ -14,7 +14,7 @@
 //! @}
 
 //! @name Key point
-//! @sa cv::KeyPoint
+//! @sa ncvslideio::KeyPoint
 //! @{
 struct CV_EXPORTS cvhalKeyPoint
 {

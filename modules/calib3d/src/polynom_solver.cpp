@@ -65,7 +65,7 @@ int solve_deg3(double a, double b, double c, double d,
       return 3;
     }
     else {
-      double cube_root = cv::cubeRoot(2 * R);
+      double cube_root = ncvslideio::cubeRoot(2 * R);
       x0 = cube_root - b_a_3;
       return 1;
     }
@@ -88,7 +88,7 @@ int solve_deg3(double a, double b, double c, double d,
   double R_abs = fabs(R);
   if (R_abs > DBL_EPSILON)
   {
-    AD = cv::cubeRoot(R_abs + sqrt(D));
+    AD = ncvslideio::cubeRoot(R_abs + sqrt(D));
     AD = (R >= 0) ? AD : -AD;
     BD = -Q / AD;
   }

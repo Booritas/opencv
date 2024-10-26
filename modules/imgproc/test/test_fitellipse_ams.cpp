@@ -54,7 +54,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_1, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(94.4037f, 84.743f), Size2f(190.614f, 153.543f), 19.832f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(94.4037f, 84.743f), Size2f(190.614f, 153.543f), 19.832f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -92,7 +92,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_2, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(223.917f, 169.701f), Size2f(456.628f, 277.809f), -12.6378f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(223.917f, 169.701f), Size2f(456.628f, 277.809f), -12.6378f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -141,7 +141,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_3, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(266.796f, 260.167f), Size2f(580.374f, 469.465f), 50.3961f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(266.796f, 260.167f), Size2f(580.374f, 469.465f), 50.3961f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -209,7 +209,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_4, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(237.108f, 207.32f), Size2f(517.287f, 357.591f), -36.3653f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(237.108f, 207.32f), Size2f(517.287f, 357.591f), -36.3653f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -279,7 +279,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_5, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(265.252f, 451.597f), Size2f(503.386f, 174.674f), 5.31814f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(265.252f, 451.597f), Size2f(503.386f, 174.674f), 5.31814f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -347,7 +347,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_6, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(192.467f, 204.404f), Size2f(551.397f, 165.068f), 136.913f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(192.467f, 204.404f), Size2f(551.397f, 165.068f), 136.913f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];
@@ -415,7 +415,7 @@ TEST(Imgproc_FitEllipseAMS_Issue_7, accuracy) {
     bool AMSGoodQ;
     float tol = 0.01f;
 
-    RotatedRect     ellipseAMSTrue = cv::RotatedRect(Point2f(197.292f, 134.64f), Size2f(401.092f, 320.051f), 165.429f);
+    RotatedRect     ellipseAMSTrue = ncvslideio::RotatedRect(Point2f(197.292f, 134.64f), Size2f(401.092f, 320.051f), 165.429f);
     RotatedRect     ellipseAMSTest = fitEllipseAMS(pts);
     Point2f         ellipseAMSTrueVertices[4];
     Point2f         ellipseAMSTestVertices[4];

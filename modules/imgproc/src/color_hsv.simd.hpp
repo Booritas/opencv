@@ -18,7 +18,7 @@
 #define swap(a, b) {auto t = a; a = b; b = t;}
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace hal {
 CV_CPU_OPTIMIZATION_NAMESPACE_BEGIN
 // forward declarations

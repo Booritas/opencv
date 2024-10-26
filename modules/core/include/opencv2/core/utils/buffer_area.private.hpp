@@ -9,7 +9,7 @@
 #include <opencv2/core/utility.hpp>
 #include <vector>
 
-namespace cv { namespace utils {
+namespace ncvslideio { namespace utils {
 
 //! @addtogroup core_utils
 //! @{
@@ -27,7 +27,7 @@ Example of usage:
 @code
 int * buf1 = 0;
 double * buf2 = 0;
-cv::util::BufferArea area;
+ncvslideio::util::BufferArea area;
 area.allocate(buf1, 200); // buf1 = new int[200];
 area.allocate(buf2, 1000, 64); // buf2 = new double[1000]; - aligned by 64
 area.commit();
@@ -131,6 +131,6 @@ private:
 
 //! @}
 
-}} // cv::utils::
+}} // ncvslideio::utils::
 
 #endif

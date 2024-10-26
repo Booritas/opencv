@@ -9,7 +9,7 @@
 #include <vector>
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 
 int main(int args, char** argv) {
     std::string img_name1, img_name2;

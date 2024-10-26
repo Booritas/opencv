@@ -17,10 +17,10 @@
 
 #include <cuda_runtime.h>
 
-using namespace cv::dnn::cuda4dnn::csl;
-using namespace cv::dnn::cuda4dnn::csl::device;
+using namespace ncvslideio::dnn::cuda4dnn::csl;
+using namespace ncvslideio::dnn::cuda4dnn::csl::device;
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace kernels {
 
     namespace raw {
         template <class T, std::size_t CHANNELS_PER_ITER>
@@ -242,4 +242,4 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace kernels {
 #endif
     template void resize_bilinear<float>(const Stream&, TensorSpan<float>, TensorView<float>, float, float, bool);
 
-}}}} /* namespace cv::dnn::cuda4dnn::kernels */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::kernels */

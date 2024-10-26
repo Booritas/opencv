@@ -49,7 +49,7 @@
 
 #include <fstream>
 
-namespace cv
+namespace ncvslideio
 {
 
 class WebPDecoder CV_FINAL : public BaseImageDecoder

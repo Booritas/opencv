@@ -9,7 +9,7 @@
 #include <opencv2/objdetect/aruco_dictionary.hpp>
 #include <numeric>
 
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 using namespace std;
 
@@ -352,7 +352,7 @@ void CharucoBoardImpl::createCharucoBoard() {
         }
     }
     if (totalMarkers > 0 && nextId != totalMarkers)
-        CV_Error(cv::Error::StsBadSize, "Size of ids must be equal to the number of markers: "+std::to_string(nextId));
+        CV_Error(ncvslideio::Error::StsBadSize, "Size of ids must be equal to the number of markers: "+std::to_string(nextId));
 
     // now fill chessboardCorners
     chessboardCorners.clear();
@@ -389,7 +389,7 @@ void CharucoBoardImpl::calcNearestMarkerCorners() {
             double sqDistance;
             Point3f distVector = charucoCorner - center;
             sqDistance = distVector.x * distVector.x + distVector.y * distVector.y;
-            if(j == 0 || fabs(sqDistance - minDist) < cv::pow(0.01 * squareLength, 2)) {
+            if(j == 0 || fabs(sqDistance - minDist) < ncvslideio::pow(0.01 * squareLength, 2)) {
                 // if same minimum distance (or first iteration), add to nearestMarkerIdx vector
                 nearestMarkerIdx[i].push_back(j);
                 minDist = sqDistance;

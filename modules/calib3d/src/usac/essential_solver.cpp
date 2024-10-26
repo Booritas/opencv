@@ -10,7 +10,7 @@
 #include "opencv_lapack.h"
 #endif
 
-namespace cv { namespace usac {
+namespace ncvslideio { namespace usac {
 /*
 * H. Stewenius, C. Engels, and D. Nister. Recent developments on direct relative orientation.
 * ISPRS J. of Photogrammetry and Remote Sensing, 60:284,294, 2006
@@ -296,7 +296,7 @@ public:
                     models.emplace_back(model);
                 }
 #else
-            CV_Error(cv::Error::StsNotImplemented, "To run essential matrix estimation of Stewenius method you need to have either Eigen or LAPACK installed! Or switch to Nister algorithm");
+            CV_Error(ncvslideio::Error::StsNotImplemented, "To run essential matrix estimation of Stewenius method you need to have either Eigen or LAPACK installed! Or switch to Nister algorithm");
             return 0;
 #endif
         }

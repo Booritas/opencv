@@ -15,10 +15,10 @@ from tf_text_graph_common import readTextMessage
 from tf_text_graph_ssd import createSSDGraph
 from tf_text_graph_faster_rcnn import createFasterRCNNGraph
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-            cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD, cv.dnn.DNN_TARGET_HDDL,
-           cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+            ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD, ncvslideio.dnn.DNN_TARGET_HDDL,
+           ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--zoo', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models.yml'),
@@ -33,7 +33,7 @@ parser.add_argument('--framework', choices=['caffe', 'tensorflow', 'torch', 'dar
                          'Detect it automatically if it does not set.')
 parser.add_argument('--thr', type=float, default=0.5, help='Confidence threshold')
 parser.add_argument('--nms', type=float, default=0.4, help='Non-maximum suppression threshold')
-parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                     help="Choose one of computation backends: "
                          "%d: automatically (by default), "
                          "%d: Halide language (http://halide-lang.org/), "
@@ -41,7 +41,7 @@ parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DE
                          "%d: OpenCV implementation, "
                          "%d: VKCOM, "
                          "%d: CUDA" % backends)
-parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                     help='Choose one of target computation devices: '
                          '%d: CPU target (by default), '
                          '%d: OpenCL, '
@@ -87,7 +87,7 @@ if args.classes:
         classes = f.read().rstrip('\n').split('\n')
 
 # Load a network
-net = cv.dnn.readNet(args.model, args.config, args.framework)
+net = ncvslideio.dnn.readNet(args.model, args.config, args.framework)
 net.setPreferableBackend(args.backend)
 net.setPreferableTarget(args.target)
 outNames = net.getUnconnectedOutLayersNames()
@@ -101,7 +101,7 @@ def postprocess(frame, outs):
 
     def drawPred(classId, conf, left, top, right, bottom):
         # Draw a bounding box.
-        cv.rectangle(frame, (left, top), (right, bottom), (0, 255, 0))
+        ncvslideio.rectangle(frame, (left, top), (right, bottom), (0, 255, 0))
 
         label = '%.2f' % conf
 
@@ -110,10 +110,10 @@ def postprocess(frame, outs):
             assert(classId < len(classes))
             label = '%s: %s' % (classes[classId], label)
 
-        labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        labelSize, baseLine = ncvslideio.getTextSize(label, ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, 1)
         top = max(top, labelSize[1])
-        cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine), (255, 255, 255), cv.FILLED)
-        cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+        ncvslideio.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine), (255, 255, 255), ncvslideio.FILLED)
+        ncvslideio.putText(frame, label, (left, top), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     layerNames = net.getLayerNames()
     lastLayerId = net.getLayerId(layerNames[-1])
@@ -183,7 +183,7 @@ def postprocess(frame, outs):
 
     # NMS is used inside Region layer only on DNN_BACKEND_OPENCV for another backends we need NMS in sample
     # or NMS is required if number of outputs > 1
-    if len(outNames) > 1 or (lastLayer.type == 'Region' or args.postprocessing == 'yolov8') and args.backend != cv.dnn.DNN_BACKEND_OPENCV:
+    if len(outNames) > 1 or (lastLayer.type == 'Region' or args.postprocessing == 'yolov8') and args.backend != ncvslideio.dnn.DNN_BACKEND_OPENCV:
         indices = []
         classIds = np.array(classIds)
         boxes = np.array(boxes)
@@ -193,7 +193,7 @@ def postprocess(frame, outs):
             class_indices = np.where(classIds == cl)[0]
             conf = confidences[class_indices]
             box  = boxes[class_indices].tolist()
-            nms_indices = cv.dnn.NMSBoxes(box, conf, confThreshold, nmsThreshold)
+            nms_indices = ncvslideio.dnn.NMSBoxes(box, conf, confThreshold, nmsThreshold)
             indices.extend(class_indices[nms_indices])
     else:
         indices = np.arange(0, len(classIds))
@@ -208,7 +208,7 @@ def postprocess(frame, outs):
 
 # Process inputs
 winName = 'Deep learning object detection in OpenCV'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+cv.namedWindow(winName, ncvslideio.WINDOW_NORMAL)
 
 def callback(pos):
     global confThreshold
@@ -216,7 +216,7 @@ def callback(pos):
 
 cv.createTrackbar('Confidence threshold, %', winName, int(confThreshold * 100), 99, callback)
 
-cap = cv.VideoCapture(cv.samples.findFileOrKeep(args.input) if args.input else 0)
+cap = ncvslideio.VideoCapture(ncvslideio.samples.findFileOrKeep(args.input) if args.input else 0)
 
 class QueueFPS(queue.Queue):
     def __init__(self):
@@ -281,13 +281,13 @@ def processingThreadBody():
             # Create a 4D blob from a frame.
             inpWidth = args.width if args.width else frameWidth
             inpHeight = args.height if args.height else frameHeight
-            blob = cv.dnn.blobFromImage(frame, size=(inpWidth, inpHeight), swapRB=args.rgb, ddepth=cv.CV_8U)
+            blob = ncvslideio.dnn.blobFromImage(frame, size=(inpWidth, inpHeight), swapRB=args.rgb, ddepth=ncvslideio.CV_8U)
             processedFramesQueue.put(frame)
 
             # Run a model
             net.setInput(blob, scalefactor=args.scale, mean=args.mean)
             if net.getLayer(0).outputNameToIndex('im_info') != -1:  # Faster-RCNN or R-FCN
-                frame = cv.resize(frame, (inpWidth, inpHeight))
+                frame = ncvslideio.resize(frame, (inpWidth, inpHeight))
                 net.setInput(np.array([[inpHeight, inpWidth, 1.6]], dtype=np.float32), 'im_info')
 
             if args.asyncN:
@@ -312,7 +312,7 @@ processingThread.start()
 #
 # Postprocessing and rendering loop
 #
-while cv.waitKey(1) < 0:
+while ncvslideio.waitKey(1) < 0:
     try:
         # Request prediction first because they put after frames
         outs = predictionsQueue.get_nowait()
@@ -323,15 +323,15 @@ while cv.waitKey(1) < 0:
         # Put efficiency information.
         if predictionsQueue.counter > 1:
             label = 'Camera: %.2f FPS' % (framesQueue.getFPS())
-            cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+            ncvslideio.putText(frame, label, (0, 15), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
             label = 'Network: %.2f FPS' % (predictionsQueue.getFPS())
-            cv.putText(frame, label, (0, 30), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+            ncvslideio.putText(frame, label, (0, 30), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
             label = 'Skipped frames: %d' % (framesQueue.counter - predictionsQueue.counter)
-            cv.putText(frame, label, (0, 45), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+            ncvslideio.putText(frame, label, (0, 45), ncvslideio.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 
-        cv.imshow(winName, frame)
+        ncvslideio.imshow(winName, frame)
     except queue.Empty:
         pass
 

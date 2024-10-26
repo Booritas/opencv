@@ -79,15 +79,15 @@ void PhoneTutorial::MainPage::Process_Click(Platform::Object^ sender, Windows::U
     int width = m_bitmap->PixelWidth;
 
     // create a matrix the size and type of the image
-    cv::Mat mat(width, height, CV_8UC4);
+    ncvslideio::Mat mat(width, height, CV_8UC4);
     memcpy(mat.data, pPixels, 4 * height*width);
 
     // convert to grayscale
-    cv::Mat intermediateMat;
-    cv::cvtColor(mat, intermediateMat, COLOR_RGB2GRAY);
+    ncvslideio::Mat intermediateMat;
+    ncvslideio::cvtColor(mat, intermediateMat, COLOR_RGB2GRAY);
 
     // convert to BGRA
-    cv::cvtColor(intermediateMat, mat, COLOR_GRAY2BGRA);
+    ncvslideio::cvtColor(intermediateMat, mat, COLOR_GRAY2BGRA);
 
     // copy processed image back to the WriteableBitmap
     memcpy(pPixels, mat.data, 4 * height*width);

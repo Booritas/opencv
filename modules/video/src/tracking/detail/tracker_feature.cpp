@@ -5,7 +5,7 @@
 #include "../../precomp.hpp"
 #include "opencv2/video/detail/tracking.detail.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -22,4 +22,4 @@ void TrackerFeature::compute(const std::vector<Mat>& images, Mat& response)
     computeImpl(images, response);
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

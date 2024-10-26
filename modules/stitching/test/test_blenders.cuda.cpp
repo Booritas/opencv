@@ -45,7 +45,7 @@
 namespace opencv_test { namespace {
 #if defined(HAVE_OPENCV_CUDAARITHM) && defined(HAVE_OPENCV_CUDAWARPING)
 
-    void multiBandBlend(const cv::Mat& im1, const cv::Mat& im2, const cv::Mat& mask1, const cv::Mat& mask2, cv::Mat& result, bool try_cuda)
+    void multiBandBlend(const ncvslideio::Mat& im1, const ncvslideio::Mat& im2, const ncvslideio::Mat& mask1, const ncvslideio::Mat& mask2, ncvslideio::Mat& result, bool try_cuda)
     {
         detail::MultiBandBlender blender(try_cuda, 5);
 
@@ -64,8 +64,8 @@ namespace opencv_test { namespace {
 
 TEST(CUDA_MultiBandBlender, Accuracy)
 {
-    Mat image1 = imread(string(cvtest::TS::ptr()->get_data_path()) + "cv/shared/baboon.png");
-    Mat image2 = imread(string(cvtest::TS::ptr()->get_data_path()) + "cv/shared/lena.png");
+    Mat image1 = imread(string(cvtest::TS::ptr()->get_data_path()) + "ncvslideio/shared/baboon.png");
+    Mat image2 = imread(string(cvtest::TS::ptr()->get_data_path()) + "ncvslideio/shared/lena.png");
     ASSERT_EQ(image1.rows, image2.rows); ASSERT_EQ(image1.cols, image2.cols);
 
     Mat image1s, image2s;
@@ -80,10 +80,10 @@ TEST(CUDA_MultiBandBlender, Accuracy)
     mask2(Rect(0, 0, mask2.cols/2, mask2.rows)).setTo(0);
     mask2(Rect(mask2.cols/2, 0, mask2.cols - mask2.cols/2, mask2.rows)).setTo(255);
 
-    cv::Mat result;
+    ncvslideio::Mat result;
     multiBandBlend(image1s, image2s, mask1, mask2, result, false);
 
-    cv::Mat result_cuda;
+    ncvslideio::Mat result_cuda;
     multiBandBlend(image1s, image2s, mask1, mask2, result_cuda, true);
 
     EXPECT_MAT_NEAR(result, result_cuda, 3);

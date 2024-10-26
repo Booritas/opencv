@@ -19,21 +19,21 @@ using namespace perf;
 class BuildOptFlowPyramidPerfTest : public TestPerfParams<tuple<std::string,int,int,bool,int,int,
                                                                 bool,GCompileArgs>> {};
 class OptFlowLKPerfTest : public TestPerfParams<tuple<std::string,int,tuple<int,int>,int,
-                                                      cv::TermCriteria,cv::GCompileArgs>> {};
+                                                      ncvslideio::TermCriteria,ncvslideio::GCompileArgs>> {};
 class OptFlowLKForPyrPerfTest : public TestPerfParams<tuple<std::string,int,tuple<int,int>,int,
-                                                            cv::TermCriteria,bool,
-                                                            cv::GCompileArgs>> {};
+                                                            ncvslideio::TermCriteria,bool,
+                                                            ncvslideio::GCompileArgs>> {};
 class BuildPyr_CalcOptFlow_PipelinePerfTest : public TestPerfParams<tuple<std::string,int,int,bool,
-                                                                          cv::GCompileArgs>> {};
+                                                                          ncvslideio::GCompileArgs>> {};
 
 class BackgroundSubtractorPerfTest:
-    public TestPerfParams<tuple<cv::gapi::video::BackgroundSubtractorType, std::string,
-                                bool, double, std::size_t, cv::GCompileArgs, CompareMats>> {};
+    public TestPerfParams<tuple<ncvslideio::gapi::video::BackgroundSubtractorType, std::string,
+                                bool, double, std::size_t, ncvslideio::GCompileArgs, CompareMats>> {};
 
 class KalmanFilterControlPerfTest   :
-    public TestPerfParams<tuple<MatType2, int, int, size_t, bool, cv::GCompileArgs>> {};
+    public TestPerfParams<tuple<MatType2, int, int, size_t, bool, ncvslideio::GCompileArgs>> {};
 class KalmanFilterNoControlPerfTest :
-    public TestPerfParams<tuple<MatType2, int, int, size_t, bool, cv::GCompileArgs>> {};
+    public TestPerfParams<tuple<MatType2, int, int, size_t, bool, ncvslideio::GCompileArgs>> {};
 
 } // opencv_test
 

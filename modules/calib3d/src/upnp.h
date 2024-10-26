@@ -57,15 +57,15 @@
 class upnp
 {
 public:
-    upnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints);
+    upnp(const ncvslideio::Mat& cameraMatrix, const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints);
     ~upnp();
 
-    double compute_pose(cv::Mat& R, cv::Mat& t);
+    double compute_pose(ncvslideio::Mat& R, ncvslideio::Mat& t);
 private:
     upnp(const upnp &); // copy disabled
     upnp& operator=(const upnp &); // assign disabled
     template <typename T>
-      void init_camera_parameters(const cv::Mat& cameraMatrix)
+      void init_camera_parameters(const ncvslideio::Mat& cameraMatrix)
       {
         uc = cameraMatrix.at<T> (0, 2);
         vc = cameraMatrix.at<T> (1, 2);
@@ -73,7 +73,7 @@ private:
         fv = 1;
       }
       template <typename OpointType, typename IpointType>
-      void init_points(const cv::Mat& opoints, const cv::Mat& ipoints)
+      void init_points(const ncvslideio::Mat& opoints, const ncvslideio::Mat& ipoints)
       {
           for(int i = 0; i < number_of_correspondences; i++)
           {
@@ -89,18 +89,18 @@ private:
       double reprojection_error(const double R[3][3], const double t[3]);
       void choose_control_points();
       void compute_alphas();
-      void fill_M(cv::Mat * M, const int row, const double * alphas, const double u, const double v);
+      void fill_M(ncvslideio::Mat * M, const int row, const double * alphas, const double u, const double v);
       void compute_ccs(const double * betas, const double * ut);
       void compute_pcs(void);
 
       void solve_for_sign(void);
 
-      void find_betas_and_focal_approx_1(cv::Mat * Ut, cv::Mat * Rho, double * betas, double * efs);
-      void find_betas_and_focal_approx_2(cv::Mat * Ut, cv::Mat * Rho, double * betas, double * efs);
-      void qr_solve(cv::Mat * A, cv::Mat * b, cv::Mat * X);
+      void find_betas_and_focal_approx_1(ncvslideio::Mat * Ut, ncvslideio::Mat * Rho, double * betas, double * efs);
+      void find_betas_and_focal_approx_2(ncvslideio::Mat * Ut, ncvslideio::Mat * Rho, double * betas, double * efs);
+      void qr_solve(ncvslideio::Mat * A, ncvslideio::Mat * b, ncvslideio::Mat * X);
 
-      cv::Mat compute_constraint_distance_2param_6eq_2unk_f_unk(const cv::Mat& M1);
-      cv::Mat compute_constraint_distance_3param_6eq_6unk_f_unk(const cv::Mat& M1, const cv::Mat& M2);
+      ncvslideio::Mat compute_constraint_distance_2param_6eq_2unk_f_unk(const ncvslideio::Mat& M1);
+      ncvslideio::Mat compute_constraint_distance_3param_6eq_6unk_f_unk(const ncvslideio::Mat& M1, const ncvslideio::Mat& M2);
       void generate_all_possible_solutions_for_f_unk(const double betas[5], double solutions[18][3]);
 
       double sign(const double v);
@@ -112,9 +112,9 @@ private:
       void compute_rho(double * rho);
       void compute_L_6x12(const double * ut, double * l_6x12);
 
-      void gauss_newton(const cv::Mat * L_6x12, const cv::Mat * Rho, double current_betas[4], double * efs);
+      void gauss_newton(const ncvslideio::Mat * L_6x12, const ncvslideio::Mat * Rho, double current_betas[4], double * efs);
       void compute_A_and_b_gauss_newton(const double * l_6x12, const double * rho,
-                          const double cb[4], cv::Mat * A, cv::Mat * b, double const f);
+                          const double cb[4], ncvslideio::Mat * A, ncvslideio::Mat * b, double const f);
 
       double compute_R_and_t(const double * ut, const double * betas,
                    double R[3][3], double t[3]);

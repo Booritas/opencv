@@ -21,8 +21,8 @@
 #include <opencv2/core/utils/configuration.private.hpp>
 
 namespace IE = InferenceEngine;
-namespace giewrap = cv::gimpl::ie::wrap;
-using GIEParam = cv::gapi::ie::detail::ParamDesc;
+namespace giewrap = ncvslideio::gimpl::ie::wrap;
+using GIEParam = ncvslideio::gapi::ie::detail::ParamDesc;
 
 #if INF_ENGINE_RELEASE < 2020000000  // < 2020.1
 // Load extensions (taken from DNN module)
@@ -32,8 +32,8 @@ std::vector<std::string> giewrap::getExtensions(const GIEParam& params) {
     {
         const std::string suffixes[] = { "_avx2", "_sse4", ""};
         const bool haveFeature[] = {
-            cv::checkHardwareSupport(CPU_AVX2),
-            cv::checkHardwareSupport(CPU_SSE4_2),
+            ncvslideio::checkHardwareSupport(CPU_AVX2),
+            ncvslideio::checkHardwareSupport(CPU_SSE4_2),
             true
         };
         for (auto &&it : ade::util::zip(ade::util::toRange(suffixes),

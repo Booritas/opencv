@@ -77,25 +77,25 @@ std::string get_weights_path(const std::string &model_path) {
 }
 
 // TODO: It duplicates infer_single_roi sample
-cv::util::optional<cv::Rect> parse_roi(const std::string &rc) {
-    cv::Rect rv;
+ncvslideio::util::optional<ncvslideio::Rect> parse_roi(const std::string &rc) {
+    ncvslideio::Rect rv;
     char delim[3];
 
     std::stringstream is(rc);
     is >> rv.x >> delim[0] >> rv.y >> delim[1] >> rv.width >> delim[2] >> rv.height;
     if (is.bad()) {
-        return cv::util::optional<cv::Rect>(); // empty value
+        return ncvslideio::util::optional<ncvslideio::Rect>(); // empty value
     }
     const auto is_delim = [](char c) {
         return c == ',';
     };
     if (!std::all_of(std::begin(delim), std::end(delim), is_delim)) {
-        return cv::util::optional<cv::Rect>(); // empty value
+        return ncvslideio::util::optional<ncvslideio::Rect>(); // empty value
     }
     if (rv.x < 0 || rv.y < 0 || rv.width <= 0 || rv.height <= 0) {
-        return cv::util::optional<cv::Rect>(); // empty value
+        return ncvslideio::util::optional<ncvslideio::Rect>(); // empty value
     }
-    return cv::util::make_optional(std::move(rv));
+    return ncvslideio::util::make_optional(std::move(rv));
 }
 
 #ifdef HAVE_DIRECTX
@@ -150,29 +150,29 @@ AccelParamsType create_device_with_ctx(IDXGIAdapter* adapter) {
 } // anonymous namespace
 
 namespace custom {
-G_API_NET(FaceDetector,   <cv::GMat(cv::GMat)>, "face-detector");
+G_API_NET(FaceDetector,   <ncvslideio::GMat(ncvslideio::GMat)>, "face-detector");
 
-using GDetections = cv::GArray<cv::Rect>;
-using GRect       = cv::GOpaque<cv::Rect>;
-using GSize       = cv::GOpaque<cv::Size>;
-using GPrims      = cv::GArray<cv::gapi::wip::draw::Prim>;
+using GDetections = ncvslideio::GArray<ncvslideio::Rect>;
+using GRect       = ncvslideio::GOpaque<ncvslideio::Rect>;
+using GSize       = ncvslideio::GOpaque<ncvslideio::Size>;
+using GPrims      = ncvslideio::GArray<ncvslideio::gapi::wip::draw::Prim>;
 
-G_API_OP(ParseSSD, <GDetections(cv::GMat, GRect, GSize)>, "sample.custom.parse-ssd") {
-    static cv::GArrayDesc outMeta(const cv::GMatDesc &, const cv::GOpaqueDesc &, const cv::GOpaqueDesc &) {
-        return cv::empty_array_desc();
+G_API_OP(ParseSSD, <GDetections(ncvslideio::GMat, GRect, GSize)>, "sample.custom.parse-ssd") {
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GMatDesc &, const ncvslideio::GOpaqueDesc &, const ncvslideio::GOpaqueDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
 // TODO: It duplicates infer_single_roi sample
 G_API_OP(LocateROI, <GRect(GSize)>, "sample.custom.locate-roi") {
-    static cv::GOpaqueDesc outMeta(const cv::GOpaqueDesc &) {
-        return cv::empty_gopaque_desc();
+    static ncvslideio::GOpaqueDesc outMeta(const ncvslideio::GOpaqueDesc &) {
+        return ncvslideio::empty_gopaque_desc();
     }
 };
 
 G_API_OP(BBoxes, <GPrims(GDetections, GRect)>, "sample.custom.b-boxes") {
-    static cv::GArrayDesc outMeta(const cv::GArrayDesc &, const cv::GOpaqueDesc &) {
-        return cv::empty_array_desc();
+    static ncvslideio::GArrayDesc outMeta(const ncvslideio::GArrayDesc &, const ncvslideio::GOpaqueDesc &) {
+        return ncvslideio::empty_array_desc();
     }
 };
 
@@ -186,15 +186,15 @@ GAPI_OCV_KERNEL(OCVLocateROI, LocateROI) {
     // but only crops the input image to square (this is
     // the most convenient aspect ratio for detectors to use)
 
-    static void run(const cv::Size& in_size,
-                    cv::Rect &out_rect) {
+    static void run(const ncvslideio::Size& in_size,
+                    ncvslideio::Rect &out_rect) {
 
         // Identify the central point & square size (- some padding)
-        const auto center = cv::Point{in_size.width/2, in_size.height/2};
+        const auto center = ncvslideio::Point{in_size.width/2, in_size.height/2};
         auto sqside = std::min(in_size.width, in_size.height);
 
         // Now build the central square ROI
-        out_rect = cv::Rect{ center.x - sqside/2
+        out_rect = ncvslideio::Rect{ center.x - sqside/2
                              , center.y - sqside/2
                              , sqside
                              , sqside
@@ -205,12 +205,12 @@ GAPI_OCV_KERNEL(OCVLocateROI, LocateROI) {
 GAPI_OCV_KERNEL(OCVBBoxes, BBoxes) {
     // This kernel converts the rectangles into G-API's
     // rendering primitives
-    static void run(const std::vector<cv::Rect> &in_face_rcs,
-                    const             cv::Rect  &in_roi,
-                          std::vector<cv::gapi::wip::draw::Prim> &out_prims) {
+    static void run(const std::vector<ncvslideio::Rect> &in_face_rcs,
+                    const             ncvslideio::Rect  &in_roi,
+                          std::vector<ncvslideio::gapi::wip::draw::Prim> &out_prims) {
         out_prims.clear();
-        const auto cvt = [](const cv::Rect &rc, const cv::Scalar &clr) {
-            return cv::gapi::wip::draw::Rect(rc, clr, 2);
+        const auto cvt = [](const ncvslideio::Rect &rc, const ncvslideio::Scalar &clr) {
+            return ncvslideio::gapi::wip::draw::Rect(rc, clr, 2);
         };
         out_prims.emplace_back(cvt(in_roi, CV_RGB(0,255,255))); // cyan
         for (auto &&rc : in_face_rcs) {
@@ -220,10 +220,10 @@ GAPI_OCV_KERNEL(OCVBBoxes, BBoxes) {
 };
 
 GAPI_OCV_KERNEL(OCVParseSSD, ParseSSD) {
-    static void run(const cv::Mat &in_ssd_result,
-                    const cv::Rect &in_roi,
-                    const cv::Size &in_parent_size,
-                    std::vector<cv::Rect> &out_objects) {
+    static void run(const ncvslideio::Mat &in_ssd_result,
+                    const ncvslideio::Rect &in_roi,
+                    const ncvslideio::Size &in_parent_size,
+                    std::vector<ncvslideio::Rect> &out_objects) {
         const auto &in_ssd_dims = in_ssd_result.size;
         GAPI_Assert(in_ssd_dims.dims() == 4u);
 
@@ -231,8 +231,8 @@ GAPI_OCV_KERNEL(OCVParseSSD, ParseSSD) {
         const int OBJECT_SIZE   = in_ssd_dims[3];
         GAPI_Assert(OBJECT_SIZE  == 7); // fixed SSD object size
 
-        const cv::Size up_roi = in_roi.size();
-        const cv::Rect surface({0,0}, in_parent_size);
+        const ncvslideio::Size up_roi = in_roi.size();
+        const ncvslideio::Rect surface({0,0}, in_parent_size);
 
         out_objects.clear();
 
@@ -256,7 +256,7 @@ GAPI_OCV_KERNEL(OCVParseSSD, ParseSSD) {
 
             // map relative coordinates to the original image scale
             // taking the ROI into account
-            cv::Rect rc;
+            ncvslideio::Rect rc;
             rc.x      = static_cast<int>(rc_left   * up_roi.width);
             rc.y      = static_cast<int>(rc_top    * up_roi.height);
             rc.width  = static_cast<int>(rc_right  * up_roi.width)  - rc.x;
@@ -271,7 +271,7 @@ GAPI_OCV_KERNEL(OCVParseSSD, ParseSSD) {
 } // namespace custom
 
 namespace cfg {
-typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line);
+typename ncvslideio::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line);
 
 struct flow {
     flow(bool preproc, bool rctx) :
@@ -349,7 +349,7 @@ static void print_available_cfg(std::ostream &out,
 
 int main(int argc, char *argv[]) {
 
-    cv::CommandLineParser cmd(argc, argv, keys);
+    ncvslideio::CommandLineParser cmd(argc, argv, keys);
     cmd.about(about);
     if (cmd.has("help")) {
         cmd.printMessage();
@@ -386,7 +386,7 @@ int main(int argc, char *argv[]) {
 
     // get oneVPL cfg params from cmd
     std::stringstream params_list(cmd.get<std::string>("cfg_params"));
-    std::vector<cv::gapi::wip::onevpl::CfgParam> source_cfgs;
+    std::vector<ncvslideio::gapi::wip::onevpl::CfgParam> source_cfgs;
     try {
         std::string line;
         while (std::getline(params_list, line, ';')) {
@@ -399,13 +399,13 @@ int main(int argc, char *argv[]) {
 
     // apply VPL source optimization params
     if (source_decode_queue_capacity != 0) {
-        source_cfgs.push_back(cv::gapi::wip::onevpl::CfgParam::create_frames_pool_size(source_decode_queue_capacity));
+        source_cfgs.push_back(ncvslideio::gapi::wip::onevpl::CfgParam::create_frames_pool_size(source_decode_queue_capacity));
     }
     if (source_vpp_queue_capacity != 0) {
-        source_cfgs.push_back(cv::gapi::wip::onevpl::CfgParam::create_vpp_frames_pool_size(source_vpp_queue_capacity));
+        source_cfgs.push_back(ncvslideio::gapi::wip::onevpl::CfgParam::create_vpp_frames_pool_size(source_vpp_queue_capacity));
     }
 
-    auto face_net = cv::gapi::ie::Params<custom::FaceDetector> {
+    auto face_net = ncvslideio::gapi::ie::Params<custom::FaceDetector> {
         face_model_path,                 // path to topology IR
         get_weights_path(face_model_path),   // path to weights
         device_id
@@ -428,13 +428,13 @@ int main(int argc, char *argv[]) {
     // must share the same device & context instances
     //
     // - you must wrapping your available device & context instancs into thin
-    // `cv::gapi::wip::Device` & `cv::gapi::wip::Context`.
+    // `ncvslideio::gapi::wip::Device` & `ncvslideio::gapi::wip::Context`.
     // !!! Please pay attention that both objects are weak wrapper so you must ensure
     // that device & context would be alived before full pipeline created !!!
     //
     // - you should pass such wrappers as constructor arguments for each component in pipeline:
     //      a) use extended constructor for `onevpl::GSource` for activating predefined device & context
-    //      b) use `cfgContextParams` method of `cv::gapi::ie::Params` to enable `PreprocesingEngine`
+    //      b) use `cfgContextParams` method of `ncvslideio::gapi::ie::Params` to enable `PreprocesingEngine`
     // for predefined device & context
     //      c) use `InferenceEngine::ParamMap` to activate remote ctx in Inference Engine for given
     // device & context
@@ -444,10 +444,10 @@ int main(int argc, char *argv[]) {
     //// It is possible to make up mixed device approach.
     //// Please feel free to explore different configurations!
 
-    cv::util::optional<cv::gapi::wip::onevpl::Device> gpu_accel_device;
-    cv::util::optional<cv::gapi::wip::onevpl::Context> gpu_accel_ctx;
-    cv::gapi::wip::onevpl::Device cpu_accel_device = cv::gapi::wip::onevpl::create_host_device();
-    cv::gapi::wip::onevpl::Context cpu_accel_ctx = cv::gapi::wip::onevpl::create_host_context();
+    ncvslideio::util::optional<ncvslideio::gapi::wip::onevpl::Device> gpu_accel_device;
+    ncvslideio::util::optional<ncvslideio::gapi::wip::onevpl::Context> gpu_accel_ctx;
+    ncvslideio::gapi::wip::onevpl::Device cpu_accel_device = ncvslideio::gapi::wip::onevpl::create_host_device();
+    ncvslideio::gapi::wip::onevpl::Context cpu_accel_ctx = ncvslideio::gapi::wip::onevpl::create_host_context();
     // create GPU device if requested
     if (is_gpu(device_id)
         || is_gpu(source_device)
@@ -495,12 +495,12 @@ int main(int argc, char *argv[]) {
         }
 
         std::tie(dx11_dev, dx11_ctx) = create_device_with_ctx(intel_adapter.get());
-        gpu_accel_device = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_dx11_device(
+        gpu_accel_device = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_dx11_device(
                                                         reinterpret_cast<void*>(dx11_dev.release()),
                                                         "GPU"));
-        gpu_accel_ctx = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_dx11_context(
+        gpu_accel_ctx = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_dx11_context(
                                                         reinterpret_cast<void*>(dx11_ctx.release())));
 #endif // HAVE_D3D11
 #endif // HAVE_DIRECTX
@@ -553,11 +553,11 @@ int main(int argc, char *argv[]) {
             std::cerr << "Cannot create VAAPI device. Log:\n" << ss.str() << std::endl;
             return -1;
         }
-        gpu_accel_device = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_vaapi_device(reinterpret_cast<void*>(va_handle),
+        gpu_accel_device = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_vaapi_device(reinterpret_cast<void*>(va_handle),
                                                                        "GPU"));
-        gpu_accel_ctx = cv::util::make_optional(
-                            cv::gapi::wip::onevpl::create_vaapi_context(nullptr));
+        gpu_accel_ctx = ncvslideio::util::make_optional(
+                            ncvslideio::gapi::wip::onevpl::create_vaapi_context(nullptr));
 #endif // defined(HAVE_VA) || defined(HAVE_VA_INTEL)
 #endif // #ifdef __linux__
     }
@@ -593,27 +593,27 @@ int main(int argc, char *argv[]) {
         std::cout << "use InferenceEngine default preprocessing" << std::endl;
     }
 
-    auto kernels = cv::gapi::kernels
+    auto kernels = ncvslideio::gapi::kernels
         < custom::OCVLocateROI
         , custom::OCVParseSSD
         , custom::OCVBBoxes>();
-    auto networks = cv::gapi::networks(face_net);
-    auto face_detection_args = cv::compile_args(networks, kernels);
+    auto networks = ncvslideio::gapi::networks(face_net);
+    auto face_detection_args = ncvslideio::compile_args(networks, kernels);
     if (streaming_queue_capacity != 0) {
-        face_detection_args += cv::compile_args(cv::gapi::streaming::queue_capacity{ streaming_queue_capacity });
+        face_detection_args += ncvslideio::compile_args(ncvslideio::gapi::streaming::queue_capacity{ streaming_queue_capacity });
     }
 
     // Create source
-    cv::gapi::wip::IStreamSource::Ptr cap;
+    ncvslideio::gapi::wip::IStreamSource::Ptr cap;
     try {
         if (is_gpu(source_device)) {
             std::cout << "enforce VPL Source deconding on device: " << source_device << std::endl;
             // use special 'Device' constructor for `onevpl::GSource`
-            cap = cv::gapi::wip::make_onevpl_src(file_path, source_cfgs,
+            cap = ncvslideio::gapi::wip::make_onevpl_src(file_path, source_cfgs,
                                                  gpu_accel_device.value(),
                                                  gpu_accel_ctx.value());
         } else {
-            cap = cv::gapi::wip::make_onevpl_src(file_path, source_cfgs);
+            cap = ncvslideio::gapi::wip::make_onevpl_src(file_path, source_cfgs);
         }
         std::cout << "oneVPL source description: " << cap->descr_of() << std::endl;
     } catch (const std::exception& ex) {
@@ -621,15 +621,15 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    cv::GMetaArg descr = cap->descr_of();
-    auto frame_descr = cv::util::get<cv::GFrameDesc>(descr);
-    cv::GOpaque<cv::Rect> in_roi;
-    auto inputs = cv::gin(cap);
+    ncvslideio::GMetaArg descr = cap->descr_of();
+    auto frame_descr = ncvslideio::util::get<ncvslideio::GFrameDesc>(descr);
+    ncvslideio::GOpaque<ncvslideio::Rect> in_roi;
+    auto inputs = ncvslideio::gin(cap);
 
     // Now build the graph
-    cv::GFrame in;
-    auto size = cv::gapi::streaming::size(in);
-    auto graph_inputs = cv::GIn(in);
+    ncvslideio::GFrame in;
+    auto size = ncvslideio::gapi::streaming::size(in);
+    auto graph_inputs = ncvslideio::GIn(in);
     if (!opt_roi.has_value()) {
         // Automatically detect ROI to infer. Make it output parameter
         std::cout << "ROI is not set or invalid. Locating it automatically"
@@ -641,33 +641,33 @@ int main(int argc, char *argv[]) {
                   << opt_roi.value()
                   << " only"
                   << std::endl;
-        graph_inputs += cv::GIn(in_roi);
-        inputs += cv::gin(opt_roi.value());
+        graph_inputs += ncvslideio::GIn(in_roi);
+        inputs += ncvslideio::gin(opt_roi.value());
     }
-    auto blob = cv::gapi::infer<custom::FaceDetector>(in_roi, in);
-    cv::GArray<cv::Rect> rcs = custom::ParseSSD::on(blob, in_roi, size);
-    auto out_frame = cv::gapi::wip::draw::renderFrame(in, custom::BBoxes::on(rcs, in_roi));
-    auto out = cv::gapi::streaming::BGR(out_frame);
-    cv::GStreamingCompiled pipeline = cv::GComputation(std::move(graph_inputs), cv::GOut(out))   // and move here
+    auto blob = ncvslideio::gapi::infer<custom::FaceDetector>(in_roi, in);
+    ncvslideio::GArray<ncvslideio::Rect> rcs = custom::ParseSSD::on(blob, in_roi, size);
+    auto out_frame = ncvslideio::gapi::wip::draw::renderFrame(in, custom::BBoxes::on(rcs, in_roi));
+    auto out = ncvslideio::gapi::streaming::BGR(out_frame);
+    ncvslideio::GStreamingCompiled pipeline = ncvslideio::GComputation(std::move(graph_inputs), ncvslideio::GOut(out))   // and move here
                                         .compileStreaming(std::move(face_detection_args));
     // The execution part
     pipeline.setSource(std::move(inputs));
     pipeline.start();
 
     size_t frames = 0u;
-    cv::TickMeter tm;
-    cv::VideoWriter writer;
+    ncvslideio::TickMeter tm;
+    ncvslideio::VideoWriter writer;
     if (!output.empty() && !writer.isOpened()) {
-        const auto sz = cv::Size{frame_descr.size.width, frame_descr.size.height};
-        writer.open(output, cv::VideoWriter::fourcc('M','J','P','G'), 25.0, sz);
+        const auto sz = ncvslideio::Size{frame_descr.size.width, frame_descr.size.height};
+        writer.open(output, ncvslideio::VideoWriter::fourcc('M','J','P','G'), 25.0, sz);
         GAPI_Assert(writer.isOpened());
     }
 
-    cv::Mat outMat;
+    ncvslideio::Mat outMat;
     tm.start();
-    while (pipeline.pull(cv::gout(outMat))) {
-        cv::imshow("Out", outMat);
-        cv::waitKey(1);
+    while (pipeline.pull(ncvslideio::gout(outMat))) {
+        ncvslideio::imshow("Out", outMat);
+        ncvslideio::waitKey(1);
         if (!output.empty()) {
             writer << outMat;
         }
@@ -681,8 +681,8 @@ int main(int argc, char *argv[]) {
 
 
 namespace cfg {
-typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line) {
-    using namespace cv::gapi::wip;
+typename ncvslideio::gapi::wip::onevpl::CfgParam create_from_string(const std::string &line) {
+    using namespace ncvslideio::gapi::wip;
 
     if (line.empty()) {
         throw std::runtime_error("Cannot parse CfgParam from emply line");
@@ -697,7 +697,7 @@ typename cv::gapi::wip::onevpl::CfgParam create_from_string(const std::string &l
     std::string name = line.substr(0, name_endline_pos);
     std::string value = line.substr(name_endline_pos + 1);
 
-    return cv::gapi::wip::onevpl::CfgParam::create(name, value,
+    return ncvslideio::gapi::wip::onevpl::CfgParam::create(name, value,
                                                    /* vpp params strongly optional */
                                                    name.find("vpp.") == std::string::npos);
 }

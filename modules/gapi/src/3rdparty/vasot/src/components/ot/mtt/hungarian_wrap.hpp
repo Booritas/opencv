@@ -28,10 +28,10 @@ typedef struct {
 
 class HungarianAlgo {
   public:
-    explicit HungarianAlgo(const cv::Mat_<float> &cost_map);
+    explicit HungarianAlgo(const ncvslideio::Mat_<float> &cost_map);
     ~HungarianAlgo();
 
-    cv::Mat_<uint8_t> Solve();
+    ncvslideio::Mat_<uint8_t> Solve();
 
     HungarianAlgo() = delete;
     HungarianAlgo(const HungarianAlgo &) = delete;
@@ -60,7 +60,7 @@ class HungarianAlgo {
     const int32_t kIntMax = INT_MAX;
 
     std::vector<int32_t *> int_cost_map_rows_;
-    cv::Mat_<int32_t> int_cost_map_;
+    ncvslideio::Mat_<int32_t> int_cost_map_;
 
     hungarian_problem_t problem_;
 };

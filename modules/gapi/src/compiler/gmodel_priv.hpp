@@ -11,7 +11,7 @@
 #include "compiler/gmodel.hpp"
 #include "api/gproto_priv.hpp" // origin_of
 
-namespace cv { namespace gimpl {
+namespace ncvslideio { namespace gimpl {
 
 // The mapping between user-side GMat/GScalar/... objects
 // and its  appropriate nodes. Can be stored in graph optionally
@@ -43,10 +43,10 @@ namespace detail
 
 template<typename T> inline ade::NodeHandle dataNodeOf(const ConstLayoutGraph& g, T &&t)
 {
-    return detail::dataNodeOf(g, cv::gimpl::proto::origin_of(GProtoArg{t}));
+    return detail::dataNodeOf(g, ncvslideio::gimpl::proto::origin_of(GProtoArg{t}));
 }
 
-inline ade::NodeHandle producerOf(const cv::gimpl::GModel::Graph& gm, ade::NodeHandle dh)
+inline ade::NodeHandle producerOf(const ncvslideio::gimpl::GModel::Graph& gm, ade::NodeHandle dh)
 {
     GAPI_Assert(gm.metadata(dh).get<NodeType>().t == NodeType::DATA);
     auto ins = dh->inNodes();

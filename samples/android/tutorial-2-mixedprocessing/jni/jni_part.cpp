@@ -5,7 +5,7 @@
 #include <vector>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 extern "C" {
 JNIEXPORT void JNICALL Java_org_opencv_samples_tutorial2_Tutorial2Activity_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba);

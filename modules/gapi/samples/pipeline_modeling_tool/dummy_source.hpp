@@ -6,11 +6,11 @@
 #include <chrono>
 
 #include <opencv2/gapi.hpp>
-#include <opencv2/gapi/streaming/cap.hpp> // cv::gapi::wip::IStreamSource
+#include <opencv2/gapi/streaming/cap.hpp> // ncvslideio::gapi::wip::IStreamSource
 
 #include "utils.hpp"
 
-class DummySource final: public cv::gapi::wip::IStreamSource {
+class DummySource final: public ncvslideio::gapi::wip::IStreamSource {
 public:
     using WaitStrategy = std::function<void(std::chrono::microseconds)>;
     using Ptr = std::shared_ptr<DummySource>;
@@ -22,12 +22,12 @@ public:
                 const bool         drop_frames,
                 WaitStrategy&&     wait);
 
-    bool pull(cv::gapi::wip::Data& data) override;
-    cv::GMetaArg descr_of() const override;
+    bool pull(ncvslideio::gapi::wip::Data& data) override;
+    ncvslideio::GMetaArg descr_of() const override;
 
 private:
     int64_t       m_latency;
-    cv::Mat       m_mat;
+    ncvslideio::Mat       m_mat;
     bool          m_drop_frames;
     int64_t       m_next_tick_ts = -1;
     int64_t       m_curr_seq_id  = 0;
@@ -46,9 +46,9 @@ DummySource::DummySource(const DurationT    latency,
     utils::generateRandom(m_mat);
 }
 
-bool DummySource::pull(cv::gapi::wip::Data& data) {
+bool DummySource::pull(ncvslideio::gapi::wip::Data& data) {
     using namespace std::chrono;
-    using namespace cv::gapi::streaming;
+    using namespace ncvslideio::gapi::streaming;
 
     // NB: Wait m_latency before return the first frame.
     if (m_next_tick_ts == -1) {
@@ -96,7 +96,7 @@ bool DummySource::pull(cv::gapi::wip::Data& data) {
     }
     // NB: Just increase reference counter not to release mat memory
     // after assigning it to the data.
-    cv::Mat mat = m_mat;
+    ncvslideio::Mat mat = m_mat;
     data.meta[meta_tag::timestamp] = utils::timestamp<ts_t>();
     data.meta[meta_tag::seq_id] = m_curr_seq_id++;
     data = mat;
@@ -105,8 +105,8 @@ bool DummySource::pull(cv::gapi::wip::Data& data) {
     return true;
 }
 
-cv::GMetaArg DummySource::descr_of() const {
-    return cv::GMetaArg{cv::descr_of(m_mat)};
+ncvslideio::GMetaArg DummySource::descr_of() const {
+    return ncvslideio::GMetaArg{ncvslideio::descr_of(m_mat)};
 }
 
 #endif // OPENCV_GAPI_PIPELINE_MODELING_TOOL_DUMMY_SOURCE_HPP

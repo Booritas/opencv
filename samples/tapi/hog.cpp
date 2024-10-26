@@ -13,7 +13,7 @@
 #include <opencv2/imgproc.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 class App
 {
@@ -141,7 +141,7 @@ void App::run()
     // Create HOG descriptors and detectors here
 
     HOGDescriptor hog(win_size, Size(16, 16), Size(8, 8), Size(8, 8), 9, 1, -1,
-                          HOGDescriptor::L2Hys, 0.2, gamma_corr, cv::HOGDescriptor::DEFAULT_NLEVELS);
+                          HOGDescriptor::L2Hys, 0.2, gamma_corr, ncvslideio::HOGDescriptor::DEFAULT_NLEVELS);
     hog.setSVMDetector( HOGDescriptor::getDaimlerPeopleDetector() );
 
     while (running)
@@ -256,7 +256,7 @@ void App::handleKey(char key)
         break;
     case 'm':
     case 'M':
-        ocl::setUseOpenCL(!cv::ocl::useOpenCL());
+        ocl::setUseOpenCL(!ncvslideio::ocl::useOpenCL());
         cout << "Switched to " << (ocl::useOpenCL() ? "OpenCL enabled" : "CPU") << " mode\n";
         break;
     case 'g':

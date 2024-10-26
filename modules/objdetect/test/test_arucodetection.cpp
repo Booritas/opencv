@@ -80,7 +80,7 @@ void CV_ArucoDetectionSimple::run(int) {
             }
 
             for(int c = 0; c < 4; c++) {
-                double dist = cv::norm(groundTruthCorners[m][c] - corners[idx][c]);  // TODO cvtest
+                double dist = ncvslideio::norm(groundTruthCorners[m][c] - corners[idx][c]);  // TODO cvtest
                 if(dist > 0.001) {
                     ts->printf(cvtest::TS::LOG, "Incorrect marker corners position");
                     ts->set_failed_test_info(cvtest::TS::FAIL_BAD_ACCURACY);
@@ -292,7 +292,7 @@ void CV_ArucoDetectionPerspective::run(int) {
                     return;
                 }
                 for(int c = 0; c < 4; c++) {
-                    double dist = cv::norm(groundTruthCorners[c] - corners[0][c]);  // TODO cvtest
+                    double dist = ncvslideio::norm(groundTruthCorners[c] - corners[0][c]);  // TODO cvtest
                     if(dist > 5) {
                             ts->printf(cvtest::TS::LOG, "Incorrect marker corners position");
                             ts->set_failed_test_info(cvtest::TS::FAIL_BAD_ACCURACY);

@@ -50,7 +50,7 @@
 #include "precomp.hpp"
 #include "opencl_kernels_core.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /****************************************************************************************\
@@ -209,7 +209,7 @@ static void binary_op( InputArray _src1, InputArray _src2, OutputArray _dst,
             swap(sz1, sz2);
         }
         else if( !checkScalar(*psrc2, type1, kind2, kind1) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                       "The operation is neither 'array op array' (where arrays have the same size and type), "
                       "nor 'array op scalar', nor 'scalar op array'" );
         haveScalar = true;
@@ -331,10 +331,10 @@ static BinaryFuncC* getMaxTab()
 {
     static BinaryFuncC maxTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::max8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::max8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::max16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::max16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::max32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::max32f), (BinaryFuncC)cv::hal::max64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::max32f), (BinaryFuncC)ncvslideio::hal::max64f,
         0
     };
 
@@ -345,10 +345,10 @@ static BinaryFuncC* getMinTab()
 {
     static BinaryFuncC minTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::min8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::min8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::min16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::min16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::min32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::min32f), (BinaryFuncC)cv::hal::min64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::min32f), (BinaryFuncC)ncvslideio::hal::min64f,
         0
     };
 
@@ -357,53 +357,53 @@ static BinaryFuncC* getMinTab()
 
 }
 
-void cv::bitwise_and(InputArray a, InputArray b, OutputArray c, InputArray mask)
+void ncvslideio::bitwise_and(InputArray a, InputArray b, OutputArray c, InputArray mask)
 {
     CV_INSTRUMENT_REGION();
 
-    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(cv::hal::and8u);
+    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::and8u);
     binary_op(a, b, c, mask, &f, true, OCL_OP_AND);
 }
 
-void cv::bitwise_or(InputArray a, InputArray b, OutputArray c, InputArray mask)
+void ncvslideio::bitwise_or(InputArray a, InputArray b, OutputArray c, InputArray mask)
 {
     CV_INSTRUMENT_REGION();
 
-    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(cv::hal::or8u);
+    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::or8u);
     binary_op(a, b, c, mask, &f, true, OCL_OP_OR);
 }
 
-void cv::bitwise_xor(InputArray a, InputArray b, OutputArray c, InputArray mask)
+void ncvslideio::bitwise_xor(InputArray a, InputArray b, OutputArray c, InputArray mask)
 {
     CV_INSTRUMENT_REGION();
 
-    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(cv::hal::xor8u);
+    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::xor8u);
     binary_op(a, b, c, mask, &f, true, OCL_OP_XOR);
 }
 
-void cv::bitwise_not(InputArray a, OutputArray c, InputArray mask)
+void ncvslideio::bitwise_not(InputArray a, OutputArray c, InputArray mask)
 {
     CV_INSTRUMENT_REGION();
 
-    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(cv::hal::not8u);
+    BinaryFuncC f = (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::not8u);
     binary_op(a, a, c, mask, &f, true, OCL_OP_NOT);
 }
 
-void cv::max( InputArray src1, InputArray src2, OutputArray dst )
+void ncvslideio::max( InputArray src1, InputArray src2, OutputArray dst )
 {
     CV_INSTRUMENT_REGION();
 
     binary_op(src1, src2, dst, noArray(), getMaxTab(), false, OCL_OP_MAX );
 }
 
-void cv::min( InputArray src1, InputArray src2, OutputArray dst )
+void ncvslideio::min( InputArray src1, InputArray src2, OutputArray dst )
 {
     CV_INSTRUMENT_REGION();
 
     binary_op(src1, src2, dst, noArray(), getMinTab(), false, OCL_OP_MIN );
 }
 
-void cv::max(const Mat& src1, const Mat& src2, Mat& dst)
+void ncvslideio::max(const Mat& src1, const Mat& src2, Mat& dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -411,7 +411,7 @@ void cv::max(const Mat& src1, const Mat& src2, Mat& dst)
     binary_op(src1, src2, _dst, noArray(), getMaxTab(), false, OCL_OP_MAX );
 }
 
-void cv::min(const Mat& src1, const Mat& src2, Mat& dst)
+void ncvslideio::min(const Mat& src1, const Mat& src2, Mat& dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -419,7 +419,7 @@ void cv::min(const Mat& src1, const Mat& src2, Mat& dst)
     binary_op(src1, src2, _dst, noArray(), getMinTab(), false, OCL_OP_MIN );
 }
 
-void cv::max(const UMat& src1, const UMat& src2, UMat& dst)
+void ncvslideio::max(const UMat& src1, const UMat& src2, UMat& dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -427,7 +427,7 @@ void cv::max(const UMat& src1, const UMat& src2, UMat& dst)
     binary_op(src1, src2, _dst, noArray(), getMaxTab(), false, OCL_OP_MAX );
 }
 
-void cv::min(const UMat& src1, const UMat& src2, UMat& dst)
+void ncvslideio::min(const UMat& src1, const UMat& src2, UMat& dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -440,7 +440,7 @@ void cv::min(const UMat& src1, const UMat& src2, UMat& dst)
 *                                      add/subtract                                      *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 static int actualScalarDepth(const double* data, int len)
@@ -655,7 +655,7 @@ static void arithm_op(InputArray _src1, InputArray _src2, OutputArray _dst,
                 oclop = OCL_OP_RDIV_SCALE;
         }
         else if( !checkScalar(*psrc2, type1, kind2, kind1) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The operation is neither 'array op array' "
                      "(where arrays have the same size and the same number of channels), "
                      "nor 'array op scalar', nor 'scalar op array'" );
@@ -680,7 +680,7 @@ static void arithm_op(InputArray _src1, InputArray _src2, OutputArray _dst,
         else
         {
             if( !haveScalar && type1 != type2 )
-                CV_Error(cv::Error::StsBadArg,
+                CV_Error(ncvslideio::Error::StsBadArg,
                      "When the input arrays in add/subtract/multiply/divide functions have different types, "
                      "the output array type must be explicitly specified");
             dtype = type1;
@@ -910,10 +910,10 @@ static BinaryFuncC* getAddTab()
 {
     static BinaryFuncC addTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::add8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::add8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::add16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::add16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::add32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::add32f), (BinaryFuncC)cv::hal::add64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::add32f), (BinaryFuncC)ncvslideio::hal::add64f,
         0
     };
 
@@ -928,7 +928,7 @@ static int sub8u32fWrapper(const uchar* src1, size_t step1, const uchar* src2, s
         return res;
     else
     {
-        CV_Error_(cv::Error::StsInternal, ("HAL implementation sub8u32f ==> " CVAUX_STR(cv_hal_sub8u32f)
+        CV_Error_(ncvslideio::Error::StsInternal, ("HAL implementation sub8u32f ==> " CVAUX_STR(cv_hal_sub8u32f)
                                            " returned %d (0x%08x)", res, res));
     }
 }
@@ -941,7 +941,7 @@ static int sub8s32fWrapper(const uchar* src1, size_t step1, const uchar* src2, s
         return res;
     else
     {
-        CV_Error_(cv::Error::StsInternal, ("HAL implementation sub8s32f ==> " CVAUX_STR(cv_hal_sub8s32f)
+        CV_Error_(ncvslideio::Error::StsInternal, ("HAL implementation sub8s32f ==> " CVAUX_STR(cv_hal_sub8s32f)
                                            " returned %d (0x%08x)", res, res));
     }
 }
@@ -950,10 +950,10 @@ static BinaryFuncC* getSubTab()
 {
     static BinaryFuncC subTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::sub32f), (BinaryFuncC)cv::hal::sub64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::sub32f), (BinaryFuncC)ncvslideio::hal::sub64f,
         0
     };
 
@@ -980,10 +980,10 @@ static BinaryFuncC* getAbsDiffTab()
 {
     static BinaryFuncC absDiffTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::absdiff32f), (BinaryFuncC)cv::hal::absdiff64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::absdiff32f), (BinaryFuncC)ncvslideio::hal::absdiff64f,
         0
     };
 
@@ -992,7 +992,7 @@ static BinaryFuncC* getAbsDiffTab()
 
 }
 
-void cv::add( InputArray src1, InputArray src2, OutputArray dst,
+void ncvslideio::add( InputArray src1, InputArray src2, OutputArray dst,
           InputArray mask, int dtype )
 {
     CV_INSTRUMENT_REGION();
@@ -1007,7 +1007,7 @@ void cv::add( InputArray src1, InputArray src2, OutputArray dst,
     arithm_op(src1, src2, dst, mask, dtype, getAddTab(), false, 0, OCL_OP_ADD );
 }
 
-void cv::subtract( InputArray _src1, InputArray _src2, OutputArray _dst,
+void ncvslideio::subtract( InputArray _src1, InputArray _src2, OutputArray _dst,
                    InputArray mask, int dtype )
 {
     CV_INSTRUMENT_REGION();
@@ -1024,7 +1024,7 @@ void cv::subtract( InputArray _src1, InputArray _src2, OutputArray _dst,
               /* extendedFunc */ subExtFunc);
 }
 
-void cv::absdiff( InputArray src1, InputArray src2, OutputArray dst )
+void ncvslideio::absdiff( InputArray src1, InputArray src2, OutputArray dst )
 {
     CV_INSTRUMENT_REGION();
 
@@ -1038,7 +1038,7 @@ void cv::absdiff( InputArray src1, InputArray src2, OutputArray dst )
     arithm_op(src1, src2, dst, noArray(), -1, getAbsDiffTab(), false, 0, OCL_OP_ABSDIFF);
 }
 
-void cv::copyTo(InputArray _src, OutputArray _dst, InputArray _mask)
+void ncvslideio::copyTo(InputArray _src, OutputArray _dst, InputArray _mask)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1049,7 +1049,7 @@ void cv::copyTo(InputArray _src, OutputArray _dst, InputArray _mask)
 *                                    multiply/divide                                     *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 static int mul8u16uWrapper(const uchar* src1, size_t step1,
@@ -1063,7 +1063,7 @@ static int mul8u16uWrapper(const uchar* src1, size_t step1,
         return res;
     else
     {
-        CV_Error_(cv::Error::StsInternal, ("HAL implementation mul8u16u ==> " CVAUX_STR(cv_hal_mul8u16u)
+        CV_Error_(ncvslideio::Error::StsInternal, ("HAL implementation mul8u16u ==> " CVAUX_STR(cv_hal_mul8u16u)
                                            " returned %d (0x%08x)", res, res));
     }
 }
@@ -1079,7 +1079,7 @@ static int mul8s16sWrapper(const uchar* src1, size_t step1,
         return res;
     else
     {
-        CV_Error_(cv::Error::StsInternal, ("HAL implementation mul8s16s ==> " CVAUX_STR(cv_hal_mul8s16s)
+        CV_Error_(ncvslideio::Error::StsInternal, ("HAL implementation mul8s16s ==> " CVAUX_STR(cv_hal_mul8s16s)
                                            " returned %d (0x%08x)", res, res));
     }
 }
@@ -1088,9 +1088,9 @@ static BinaryFuncC* getMulTab()
 {
     static BinaryFuncC mulTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)cv::hal::mul8u, (BinaryFuncC)cv::hal::mul8s, (BinaryFuncC)cv::hal::mul16u,
-        (BinaryFuncC)cv::hal::mul16s, (BinaryFuncC)cv::hal::mul32s, (BinaryFuncC)cv::hal::mul32f,
-        (BinaryFuncC)cv::hal::mul64f, 0
+        (BinaryFuncC)ncvslideio::hal::mul8u, (BinaryFuncC)ncvslideio::hal::mul8s, (BinaryFuncC)ncvslideio::hal::mul16u,
+        (BinaryFuncC)ncvslideio::hal::mul16s, (BinaryFuncC)ncvslideio::hal::mul32s, (BinaryFuncC)ncvslideio::hal::mul32f,
+        (BinaryFuncC)ncvslideio::hal::mul64f, 0
     };
 
     return mulTab;
@@ -1116,9 +1116,9 @@ static BinaryFuncC* getDivTab()
 {
     static BinaryFuncC divTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)cv::hal::div8u, (BinaryFuncC)cv::hal::div8s, (BinaryFuncC)cv::hal::div16u,
-        (BinaryFuncC)cv::hal::div16s, (BinaryFuncC)cv::hal::div32s, (BinaryFuncC)cv::hal::div32f,
-        (BinaryFuncC)cv::hal::div64f, 0
+        (BinaryFuncC)ncvslideio::hal::div8u, (BinaryFuncC)ncvslideio::hal::div8s, (BinaryFuncC)ncvslideio::hal::div16u,
+        (BinaryFuncC)ncvslideio::hal::div16s, (BinaryFuncC)ncvslideio::hal::div32s, (BinaryFuncC)ncvslideio::hal::div32f,
+        (BinaryFuncC)ncvslideio::hal::div64f, 0
     };
 
     return divTab;
@@ -1128,9 +1128,9 @@ static BinaryFuncC* getRecipTab()
 {
     static BinaryFuncC recipTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)cv::hal::recip8u, (BinaryFuncC)cv::hal::recip8s, (BinaryFuncC)cv::hal::recip16u,
-        (BinaryFuncC)cv::hal::recip16s, (BinaryFuncC)cv::hal::recip32s, (BinaryFuncC)cv::hal::recip32f,
-        (BinaryFuncC)cv::hal::recip64f, 0
+        (BinaryFuncC)ncvslideio::hal::recip8u, (BinaryFuncC)ncvslideio::hal::recip8s, (BinaryFuncC)ncvslideio::hal::recip16u,
+        (BinaryFuncC)ncvslideio::hal::recip16s, (BinaryFuncC)ncvslideio::hal::recip32s, (BinaryFuncC)ncvslideio::hal::recip32f,
+        (BinaryFuncC)ncvslideio::hal::recip64f, 0
     };
 
     return recipTab;
@@ -1191,9 +1191,9 @@ static BinaryFuncC* getAddWeightedTab()
 {
     static BinaryFuncC addWeightedTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::addWeighted8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::addWeighted8s), (BinaryFuncC)GET_OPTIMIZED(cv::hal::addWeighted16u),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::addWeighted16s), (BinaryFuncC)GET_OPTIMIZED(cv::hal::addWeighted32s), (BinaryFuncC)cv::hal::addWeighted32f,
-        (BinaryFuncC)cv::hal::addWeighted64f, 0
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::addWeighted8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::addWeighted8s), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::addWeighted16u),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::addWeighted16s), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::addWeighted32s), (BinaryFuncC)ncvslideio::hal::addWeighted32f,
+        (BinaryFuncC)ncvslideio::hal::addWeighted64f, 0
     };
 
     return addWeightedTab;
@@ -1201,7 +1201,7 @@ static BinaryFuncC* getAddWeightedTab()
 
 }
 
-void cv::addWeighted( InputArray src1, double alpha, InputArray src2,
+void ncvslideio::addWeighted( InputArray src1, double alpha, InputArray src2,
                       double beta, double gamma, OutputArray dst, int dtype )
 {
     CV_INSTRUMENT_REGION();
@@ -1222,17 +1222,17 @@ void cv::addWeighted( InputArray src1, double alpha, InputArray src2,
 *                                          compare                                       *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 static BinaryFuncC getCmpFunc(int depth)
 {
     static BinaryFuncC cmpTab[CV_DEPTH_MAX] =
     {
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp8u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp8s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp16u), (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp16s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp32s),
-        (BinaryFuncC)GET_OPTIMIZED(cv::hal::cmp32f), (BinaryFuncC)cv::hal::cmp64f,
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp8u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp8s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp16u), (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp16s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp32s),
+        (BinaryFuncC)GET_OPTIMIZED(ncvslideio::hal::cmp32f), (BinaryFuncC)ncvslideio::hal::cmp64f,
         0
     };
 
@@ -1349,7 +1349,7 @@ static bool ocl_compare(InputArray _src1, InputArray _src2, OutputArray _dst, in
 
 }
 
-void cv::compare(InputArray _src1, InputArray _src2, OutputArray _dst, int op)
+void ncvslideio::compare(InputArray _src1, InputArray _src2, OutputArray _dst, int op)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1381,7 +1381,7 @@ void cv::compare(InputArray _src1, InputArray _src2, OutputArray _dst, int op)
             return;
         }
         else if(is_src1_scalar == is_src2_scalar)
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The operation is neither 'array op array' (where arrays have the same size and the same type), "
                      "nor 'array op scalar', nor 'scalar op array'" );
         haveScalar = true;
@@ -1495,7 +1495,7 @@ void cv::compare(InputArray _src1, InputArray _src2, OutputArray _dst, int op)
 *                                        inRange                                         *
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 template <typename T>
@@ -1790,7 +1790,7 @@ static bool ocl_inRange( InputArray _src, InputArray _lowerb,
         ssize != lsize || stype != ltype )
     {
         if( !checkScalar(_lowerb, stype, lkind, skind) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The lower boundary is neither an array of the same size and same type as src, nor a scalar");
         lbScalar = true;
     }
@@ -1799,7 +1799,7 @@ static bool ocl_inRange( InputArray _src, InputArray _lowerb,
         ssize != usize || stype != utype )
     {
         if( !checkScalar(_upperb, stype, ukind, skind) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The upper boundary is neither an array of the same size and same type as src, nor a scalar");
         ubScalar = true;
     }
@@ -1893,7 +1893,7 @@ static bool ocl_inRange( InputArray _src, InputArray _lowerb,
 
 }
 
-void cv::inRange(InputArray _src, InputArray _lowerb,
+void ncvslideio::inRange(InputArray _src, InputArray _lowerb,
                  InputArray _upperb, OutputArray _dst)
 {
     CV_INSTRUMENT_REGION();
@@ -1913,7 +1913,7 @@ void cv::inRange(InputArray _src, InputArray _lowerb,
         src.size != lb.size || src.type() != lb.type() )
     {
         if( !checkScalar(lb, src.type(), lkind, skind) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The lower boundary is neither an array of the same size and same type as src, nor a scalar");
         lbScalar = true;
     }
@@ -1922,7 +1922,7 @@ void cv::inRange(InputArray _src, InputArray _lowerb,
         src.size != ub.size || src.type() != ub.type() )
     {
         if( !checkScalar(ub, src.type(), ukind, skind) )
-            CV_Error( cv::Error::StsUnmatchedSizes,
+            CV_Error( ncvslideio::Error::StsUnmatchedSizes,
                      "The upper boundary is neither an array of the same size and same type as src, nor a scalar");
         ubScalar = true;
     }
@@ -2017,146 +2017,146 @@ void cv::inRange(InputArray _src, InputArray _lowerb,
 CV_IMPL void
 cvNot( const CvArr* srcarr, CvArr* dstarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
-    cv::bitwise_not( src, dst );
+    ncvslideio::bitwise_not( src, dst );
 }
 
 
 CV_IMPL void
 cvAnd( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_and( src1, src2, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_and( src1, src2, dst, mask );
 }
 
 
 CV_IMPL void
 cvOr( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_or( src1, src2, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_or( src1, src2, dst, mask );
 }
 
 
 CV_IMPL void
 cvXor( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_xor( src1, src2, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_xor( src1, src2, dst, mask );
 }
 
 
 CV_IMPL void
 cvAndS( const CvArr* srcarr, CvScalar s, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_and( src, (const cv::Scalar&)s, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_and( src, (const ncvslideio::Scalar&)s, dst, mask );
 }
 
 
 CV_IMPL void
 cvOrS( const CvArr* srcarr, CvScalar s, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_or( src, (const cv::Scalar&)s, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_or( src, (const ncvslideio::Scalar&)s, dst, mask );
 }
 
 
 CV_IMPL void
 cvXorS( const CvArr* srcarr, CvScalar s, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src.size == dst.size && src.type() == dst.type() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::bitwise_xor( src, (const cv::Scalar&)s, dst, mask );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::bitwise_xor( src, (const ncvslideio::Scalar&)s, dst, mask );
 }
 
 
 CV_IMPL void cvAdd( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::add( src1, src2, dst, mask, dst.type() );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::add( src1, src2, dst, mask, dst.type() );
 }
 
 
 CV_IMPL void cvSub( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::subtract( src1, src2, dst, mask, dst.type() );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::subtract( src1, src2, dst, mask, dst.type() );
 }
 
 
 CV_IMPL void cvAddS( const CvArr* srcarr1, CvScalar value, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::add( src1, (const cv::Scalar&)value, dst, mask, dst.type() );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::add( src1, (const ncvslideio::Scalar&)value, dst, mask, dst.type() );
 }
 
 
 CV_IMPL void cvSubRS( const CvArr* srcarr1, CvScalar value, CvArr* dstarr, const CvArr* maskarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
     if( maskarr )
-        mask = cv::cvarrToMat(maskarr);
-    cv::subtract( (const cv::Scalar&)value, src1, dst, mask, dst.type() );
+        mask = ncvslideio::cvarrToMat(maskarr);
+    ncvslideio::subtract( (const ncvslideio::Scalar&)value, src1, dst, mask, dst.type() );
 }
 
 
 CV_IMPL void cvMul( const CvArr* srcarr1, const CvArr* srcarr2,
                     CvArr* dstarr, double scale )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
-    cv::multiply( src1, src2, dst, scale, dst.type() );
+    ncvslideio::multiply( src1, src2, dst, scale, dst.type() );
 }
 
 
 CV_IMPL void cvDiv( const CvArr* srcarr1, const CvArr* srcarr2,
                     CvArr* dstarr, double scale )
 {
-    cv::Mat src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr), mask;
+    ncvslideio::Mat src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr), mask;
     CV_Assert( src2.size == dst.size && src2.channels() == dst.channels() );
 
     if( srcarr1 )
-        cv::divide( cv::cvarrToMat(srcarr1), src2, dst, scale, dst.type() );
+        ncvslideio::divide( ncvslideio::cvarrToMat(srcarr1), src2, dst, scale, dst.type() );
     else
-        cv::divide( scale, src2, dst, dst.type() );
+        ncvslideio::divide( scale, src2, dst, dst.type() );
 }
 
 
@@ -2165,30 +2165,30 @@ cvAddWeighted( const CvArr* srcarr1, double alpha,
                const CvArr* srcarr2, double beta,
                double gamma, CvArr* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), src2 = cv::cvarrToMat(srcarr2),
-        dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), src2 = ncvslideio::cvarrToMat(srcarr2),
+        dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.channels() == dst.channels() );
-    cv::addWeighted( src1, alpha, src2, beta, gamma, dst, dst.type() );
+    ncvslideio::addWeighted( src1, alpha, src2, beta, gamma, dst, dst.type() );
 }
 
 
 CV_IMPL  void
 cvAbsDiff( const CvArr* srcarr1, const CvArr* srcarr2, CvArr* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::absdiff( src1, cv::cvarrToMat(srcarr2), dst );
+    ncvslideio::absdiff( src1, ncvslideio::cvarrToMat(srcarr2), dst );
 }
 
 
 CV_IMPL void
 cvAbsDiffS( const CvArr* srcarr1, CvArr* dstarr, CvScalar scalar )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::absdiff( src1, (const cv::Scalar&)scalar, dst );
+    ncvslideio::absdiff( src1, (const ncvslideio::Scalar&)scalar, dst );
 }
 
 
@@ -2196,80 +2196,80 @@ CV_IMPL void
 cvInRange( const void* srcarr1, const void* srcarr2,
            const void* srcarr3, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && dst.type() == CV_8U );
 
-    cv::inRange( src1, cv::cvarrToMat(srcarr2), cv::cvarrToMat(srcarr3), dst );
+    ncvslideio::inRange( src1, ncvslideio::cvarrToMat(srcarr2), ncvslideio::cvarrToMat(srcarr3), dst );
 }
 
 
 CV_IMPL void
 cvInRangeS( const void* srcarr1, CvScalar lowerb, CvScalar upperb, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && dst.type() == CV_8U );
 
-    cv::inRange( src1, (const cv::Scalar&)lowerb, (const cv::Scalar&)upperb, dst );
+    ncvslideio::inRange( src1, (const ncvslideio::Scalar&)lowerb, (const ncvslideio::Scalar&)upperb, dst );
 }
 
 
 CV_IMPL void
 cvCmp( const void* srcarr1, const void* srcarr2, void* dstarr, int cmp_op )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && dst.type() == CV_8U );
 
-    cv::compare( src1, cv::cvarrToMat(srcarr2), dst, cmp_op );
+    ncvslideio::compare( src1, ncvslideio::cvarrToMat(srcarr2), dst, cmp_op );
 }
 
 
 CV_IMPL void
 cvCmpS( const void* srcarr1, double value, void* dstarr, int cmp_op )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && dst.type() == CV_8U );
 
-    cv::compare( src1, value, dst, cmp_op );
+    ncvslideio::compare( src1, value, dst, cmp_op );
 }
 
 
 CV_IMPL void
 cvMin( const void* srcarr1, const void* srcarr2, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::min( src1, cv::cvarrToMat(srcarr2), dst );
+    ncvslideio::min( src1, ncvslideio::cvarrToMat(srcarr2), dst );
 }
 
 
 CV_IMPL void
 cvMax( const void* srcarr1, const void* srcarr2, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::max( src1, cv::cvarrToMat(srcarr2), dst );
+    ncvslideio::max( src1, ncvslideio::cvarrToMat(srcarr2), dst );
 }
 
 
 CV_IMPL void
 cvMinS( const void* srcarr1, double value, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::min( src1, value, dst );
+    ncvslideio::min( src1, value, dst );
 }
 
 
 CV_IMPL void
 cvMaxS( const void* srcarr1, double value, void* dstarr )
 {
-    cv::Mat src1 = cv::cvarrToMat(srcarr1), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src1 = ncvslideio::cvarrToMat(srcarr1), dst = ncvslideio::cvarrToMat(dstarr);
     CV_Assert( src1.size == dst.size && src1.type() == dst.type() );
 
-    cv::max( src1, value, dst );
+    ncvslideio::max( src1, value, dst );
 }
 
 #endif  // OPENCV_EXCLUDE_C_API

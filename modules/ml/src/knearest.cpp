@@ -47,7 +47,7 @@
 *                              K-Nearest Neighbors Classifier                            *
 \****************************************************************************************/
 
-namespace cv {
+namespace ncvslideio {
 namespace ml {
 
 const String NAME_BRUTE_FORCE = "opencv_ml_knn";

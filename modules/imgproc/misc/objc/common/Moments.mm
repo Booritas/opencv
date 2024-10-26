@@ -7,10 +7,10 @@
 #import "Moments.h"
 
 @implementation Moments {
-    cv::Moments native;
+    ncvslideio::Moments native;
 }
 
--(cv::Moments&)nativeRef {
+-(ncvslideio::Moments&)nativeRef {
     return native;
 }
 
@@ -234,7 +234,7 @@
     return self;
 }
 
-+(instancetype)fromNative:(cv::Moments&)moments {
++(instancetype)fromNative:(ncvslideio::Moments&)moments {
     return [[Moments alloc] initWithM00:moments.m00 m10:moments.m10 m01:moments.m01 m20:moments.m20 m11:moments.m11 m02:moments.m02 m30:moments.m30 m21:moments.m21 m12:moments.m12 m03:moments.m03];
 }
 

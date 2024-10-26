@@ -62,7 +62,7 @@
 #pragma float_control(precise, on)
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 int LU(float* A, size_t astep, int m, float* b, size_t bstep, int n)
@@ -1191,7 +1191,7 @@ bool solve( InputArray _src, InputArray _src2arg, OutputArray _dst, int method )
     Mat dst = _dst.getMat();
 
     if( m < n )
-        CV_Error(cv::Error::StsBadArg, "The function can not solve under-determined linear systems" );
+        CV_Error(ncvslideio::Error::StsBadArg, "The function can not solve under-determined linear systems" );
 
     if( m == n )
         is_normal = false;
@@ -1354,32 +1354,32 @@ bool eigen( InputArray _src, OutputArray _evals, OutputArray _evects )
     if ( type == CV_64F )
     {
         Eigen::MatrixXd src_eig, zeros_eig;
-        cv::cv2eigen(src, src_eig);
+        ncvslideio::cv2eigen(src, src_eig);
 
         Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es;
         es.compute(src_eig, esOptions);
         if ( es.info() == Eigen::Success )
         {
-            cv::eigen2cv(es.eigenvalues().reverse().eval(), evals);
+            ncvslideio::eigen2cv(es.eigenvalues().reverse().eval(), evals);
             if ( evecNeeded )
             {
-                cv::Mat evects = _evects.getMat();
-                cv::eigen2cv(es.eigenvectors().rowwise().reverse().transpose().eval(), v);
+                ncvslideio::Mat evects = _evects.getMat();
+                ncvslideio::eigen2cv(es.eigenvectors().rowwise().reverse().transpose().eval(), v);
             }
             return true;
         }
     } else { // CV_32F
         Eigen::MatrixXf src_eig, zeros_eig;
-        cv::cv2eigen(src, src_eig);
+        ncvslideio::cv2eigen(src, src_eig);
 
         Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> es;
         es.compute(src_eig, esOptions);
         if ( es.info() == Eigen::Success )
         {
-            cv::eigen2cv(es.eigenvalues().reverse().eval(), evals);
+            ncvslideio::eigen2cv(es.eigenvalues().reverse().eval(), evals);
             if ( evecNeeded )
             {
-                cv::eigen2cv(es.eigenvectors().rowwise().reverse().transpose().eval(), v);
+                ncvslideio::eigen2cv(es.eigenvectors().rowwise().reverse().transpose().eval(), v);
             }
             return true;
         }
@@ -1515,7 +1515,7 @@ void SVD::backSubst( InputArray _w, InputArray _u, InputArray _vt,
                vt.ptr<double>(), vt.step, true, rhs.ptr<double>(), rhs.step, nb,
                dst.ptr<double>(), dst.step, buffer.data());
     else
-        CV_Error( cv::Error::StsUnsupportedFormat, "" );
+        CV_Error( ncvslideio::Error::StsUnsupportedFormat, "" );
 }
 
 
@@ -1534,14 +1534,14 @@ void SVD::backSubst( InputArray rhs, OutputArray dst ) const
 }
 
 
-void cv::SVDecomp(InputArray src, OutputArray w, OutputArray u, OutputArray vt, int flags)
+void ncvslideio::SVDecomp(InputArray src, OutputArray w, OutputArray u, OutputArray vt, int flags)
 {
     CV_INSTRUMENT_REGION();
 
     SVD::compute(src, w, u, vt, flags);
 }
 
-void cv::SVBackSubst(InputArray w, InputArray u, InputArray vt, InputArray rhs, OutputArray dst)
+void ncvslideio::SVBackSubst(InputArray w, InputArray u, InputArray vt, InputArray rhs, OutputArray dst)
 {
     CV_INSTRUMENT_REGION();
 
@@ -1582,34 +1582,34 @@ cvDet( const CvArr* arr )
                 return det3(Md);
         }
     }
-    return cv::determinant(cv::cvarrToMat(arr));
+    return ncvslideio::determinant(ncvslideio::cvarrToMat(arr));
 }
 
 
 CV_IMPL double
 cvInvert( const CvArr* srcarr, CvArr* dstarr, int method )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.type() == dst.type() && src.rows == dst.cols && src.cols == dst.rows );
-    return cv::invert( src, dst, method == CV_CHOLESKY ? cv::DECOMP_CHOLESKY :
-                      method == CV_SVD ? cv::DECOMP_SVD :
-                      method == CV_SVD_SYM ? cv::DECOMP_EIG : cv::DECOMP_LU );
+    return ncvslideio::invert( src, dst, method == CV_CHOLESKY ? ncvslideio::DECOMP_CHOLESKY :
+                      method == CV_SVD ? ncvslideio::DECOMP_SVD :
+                      method == CV_SVD_SYM ? ncvslideio::DECOMP_EIG : ncvslideio::DECOMP_LU );
 }
 
 
 CV_IMPL int
 cvSolve( const CvArr* Aarr, const CvArr* barr, CvArr* xarr, int method )
 {
-    cv::Mat A = cv::cvarrToMat(Aarr), b = cv::cvarrToMat(barr), x = cv::cvarrToMat(xarr);
+    ncvslideio::Mat A = ncvslideio::cvarrToMat(Aarr), b = ncvslideio::cvarrToMat(barr), x = ncvslideio::cvarrToMat(xarr);
 
     CV_Assert( A.type() == x.type() && A.cols == x.rows && x.cols == b.cols );
     bool is_normal = (method & CV_NORMAL) != 0;
     method &= ~CV_NORMAL;
-    return cv::solve( A, b, x, (method == CV_CHOLESKY ? cv::DECOMP_CHOLESKY :
-                                method == CV_SVD ? cv::DECOMP_SVD :
-                                method == CV_SVD_SYM ? cv::DECOMP_EIG :
-        A.rows > A.cols ? cv::DECOMP_QR : cv::DECOMP_LU) + (is_normal ? cv::DECOMP_NORMAL : 0) );
+    return ncvslideio::solve( A, b, x, (method == CV_CHOLESKY ? ncvslideio::DECOMP_CHOLESKY :
+                                method == CV_SVD ? ncvslideio::DECOMP_SVD :
+                                method == CV_SVD_SYM ? ncvslideio::DECOMP_EIG :
+        A.rows > A.cols ? ncvslideio::DECOMP_QR : ncvslideio::DECOMP_LU) + (is_normal ? ncvslideio::DECOMP_NORMAL : 0) );
 }
 
 
@@ -1617,10 +1617,10 @@ CV_IMPL void
 cvEigenVV( CvArr* srcarr, CvArr* evectsarr, CvArr* evalsarr, double,
            int, int )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), evals0 = cv::cvarrToMat(evalsarr), evals = evals0;
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), evals0 = ncvslideio::cvarrToMat(evalsarr), evals = evals0;
     if( evectsarr )
     {
-        cv::Mat evects0 = cv::cvarrToMat(evectsarr), evects = evects0;
+        ncvslideio::Mat evects0 = ncvslideio::cvarrToMat(evectsarr), evects = evects0;
         eigen(src, evals, evects);
         if( evects0.data != evects.data )
         {
@@ -1637,9 +1637,9 @@ cvEigenVV( CvArr* srcarr, CvArr* evectsarr, CvArr* evalsarr, double,
         if( evals0.size() == evals.size() )
             evals.convertTo(evals0, evals0.type());
         else if( evals0.type() == evals.type() )
-            cv::transpose(evals, evals0);
+            ncvslideio::transpose(evals, evals0);
         else
-            cv::Mat(evals.t()).convertTo(evals0, evals0.type());
+            ncvslideio::Mat(evals.t()).convertTo(evals0, evals0.type());
         CV_Assert( p == evals0.ptr() );
     }
 }
@@ -1648,43 +1648,43 @@ cvEigenVV( CvArr* srcarr, CvArr* evectsarr, CvArr* evalsarr, double,
 CV_IMPL void
 cvSVD( CvArr* aarr, CvArr* warr, CvArr* uarr, CvArr* varr, int flags )
 {
-    cv::Mat a = cv::cvarrToMat(aarr), w = cv::cvarrToMat(warr), u, v;
+    ncvslideio::Mat a = ncvslideio::cvarrToMat(aarr), w = ncvslideio::cvarrToMat(warr), u, v;
     int m = a.rows, n = a.cols, type = a.type(), mn = std::max(m, n), nm = std::min(m, n);
 
     CV_Assert( w.type() == type &&
-        (w.size() == cv::Size(nm,1) || w.size() == cv::Size(1, nm) ||
-        w.size() == cv::Size(nm, nm) || w.size() == cv::Size(n, m)) );
+        (w.size() == ncvslideio::Size(nm,1) || w.size() == ncvslideio::Size(1, nm) ||
+        w.size() == ncvslideio::Size(nm, nm) || w.size() == ncvslideio::Size(n, m)) );
 
-    cv::SVD svd;
+    ncvslideio::SVD svd;
 
-    if( w.size() == cv::Size(nm, 1) )
-        svd.w = cv::Mat(nm, 1, type, w.ptr() );
+    if( w.size() == ncvslideio::Size(nm, 1) )
+        svd.w = ncvslideio::Mat(nm, 1, type, w.ptr() );
     else if( w.isContinuous() )
         svd.w = w;
 
     if( uarr )
     {
-        u = cv::cvarrToMat(uarr);
+        u = ncvslideio::cvarrToMat(uarr);
         CV_Assert( u.type() == type );
         svd.u = u;
     }
 
     if( varr )
     {
-        v = cv::cvarrToMat(varr);
+        v = ncvslideio::cvarrToMat(varr);
         CV_Assert( v.type() == type );
         svd.vt = v;
     }
 
-    svd(a, ((flags & CV_SVD_MODIFY_A) ? cv::SVD::MODIFY_A : 0) |
-        ((!svd.u.data && !svd.vt.data) ? cv::SVD::NO_UV : 0) |
-        ((m != n && (svd.u.size() == cv::Size(mn, mn) ||
-        svd.vt.size() == cv::Size(mn, mn))) ? cv::SVD::FULL_UV : 0));
+    svd(a, ((flags & CV_SVD_MODIFY_A) ? ncvslideio::SVD::MODIFY_A : 0) |
+        ((!svd.u.data && !svd.vt.data) ? ncvslideio::SVD::NO_UV : 0) |
+        ((m != n && (svd.u.size() == ncvslideio::Size(mn, mn) ||
+        svd.vt.size() == ncvslideio::Size(mn, mn))) ? ncvslideio::SVD::FULL_UV : 0));
 
     if( !u.empty() )
     {
         if( flags & CV_SVD_U_T )
-            cv::transpose( svd.u, u );
+            ncvslideio::transpose( svd.u, u );
         else if( u.data != svd.u.data )
         {
             CV_Assert( u.size() == svd.u.size() );
@@ -1695,7 +1695,7 @@ cvSVD( CvArr* aarr, CvArr* warr, CvArr* uarr, CvArr* varr, int flags )
     if( !v.empty() )
     {
         if( !(flags & CV_SVD_V_T) )
-            cv::transpose( svd.vt, v );
+            ncvslideio::transpose( svd.vt, v );
         else if( v.data != svd.vt.data )
         {
             CV_Assert( v.size() == svd.vt.size() );
@@ -1709,8 +1709,8 @@ cvSVD( CvArr* aarr, CvArr* warr, CvArr* uarr, CvArr* varr, int flags )
             svd.w.copyTo(w);
         else
         {
-            w = cv::Scalar(0);
-            cv::Mat wd = w.diag();
+            w = ncvslideio::Scalar(0);
+            ncvslideio::Mat wd = w.diag();
             svd.w.copyTo(wd);
         }
     }
@@ -1722,25 +1722,25 @@ cvSVBkSb( const CvArr* warr, const CvArr* uarr,
           const CvArr* varr, const CvArr* rhsarr,
           CvArr* dstarr, int flags )
 {
-    cv::Mat w = cv::cvarrToMat(warr), u = cv::cvarrToMat(uarr),
-        v = cv::cvarrToMat(varr), rhs,
-        dst = cv::cvarrToMat(dstarr), dst0 = dst;
+    ncvslideio::Mat w = ncvslideio::cvarrToMat(warr), u = ncvslideio::cvarrToMat(uarr),
+        v = ncvslideio::cvarrToMat(varr), rhs,
+        dst = ncvslideio::cvarrToMat(dstarr), dst0 = dst;
     if( flags & CV_SVD_U_T )
     {
-        cv::Mat tmp;
+        ncvslideio::Mat tmp;
         transpose(u, tmp);
         u = tmp;
     }
     if( !(flags & CV_SVD_V_T) )
     {
-        cv::Mat tmp;
+        ncvslideio::Mat tmp;
         transpose(v, tmp);
         v = tmp;
     }
     if( rhsarr )
-        rhs = cv::cvarrToMat(rhsarr);
+        rhs = ncvslideio::cvarrToMat(rhsarr);
 
-    cv::SVD::backSubst(w, u, v, rhs, dst);
+    ncvslideio::SVD::backSubst(w, u, v, rhs, dst);
     CV_Assert( dst.data == dst0.data );
 }
 #endif  // OPENCV_EXCLUDE_C_API

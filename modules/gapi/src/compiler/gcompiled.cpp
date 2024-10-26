@@ -17,21 +17,21 @@
 #include "executor/gexecutor.hpp"
 
 // GCompiled private implementation ////////////////////////////////////////////
-void cv::GCompiled::Priv::setup(const GMetaArgs &_metaArgs,
+void ncvslideio::GCompiled::Priv::setup(const GMetaArgs &_metaArgs,
                                 const GMetaArgs &_outMetas,
-                                std::unique_ptr<cv::gimpl::GAbstractExecutor> &&_pE)
+                                std::unique_ptr<ncvslideio::gimpl::GAbstractExecutor> &&_pE)
 {
     m_metas    = _metaArgs;
     m_outMetas = _outMetas;
     m_exec     = std::move(_pE);
 }
 
-bool cv::GCompiled::Priv::isEmpty() const
+bool ncvslideio::GCompiled::Priv::isEmpty() const
 {
     return !m_exec;
 }
 
-void cv::GCompiled::Priv::run(cv::gimpl::GRuntimeArgs &&args)
+void ncvslideio::GCompiled::Priv::run(ncvslideio::gimpl::GRuntimeArgs &&args)
 {
     // Strip away types since ADE knows nothing about that
     // args will be taken by specific GBackendExecutables
@@ -39,17 +39,17 @@ void cv::GCompiled::Priv::run(cv::gimpl::GRuntimeArgs &&args)
     m_exec->run(std::move(args));
 }
 
-const cv::GMetaArgs& cv::GCompiled::Priv::metas() const
+const ncvslideio::GMetaArgs& ncvslideio::GCompiled::Priv::metas() const
 {
     return m_metas;
 }
 
-const cv::GMetaArgs& cv::GCompiled::Priv::outMetas() const
+const ncvslideio::GMetaArgs& ncvslideio::GCompiled::Priv::outMetas() const
 {
     return m_outMetas;
 }
 
-void cv::GCompiled::Priv::checkArgs(const cv::gimpl::GRuntimeArgs &args) const
+void ncvslideio::GCompiled::Priv::checkArgs(const ncvslideio::gimpl::GRuntimeArgs &args) const
 {
     if (!can_describe(m_metas, args.inObjs))
     {
@@ -65,111 +65,111 @@ void cv::GCompiled::Priv::checkArgs(const cv::gimpl::GRuntimeArgs &args) const
     // exist) are bypassed now.
 }
 
-bool cv::GCompiled::Priv::canReshape() const
+bool ncvslideio::GCompiled::Priv::canReshape() const
 {
     GAPI_Assert(m_exec);
     return m_exec->canReshape();
 }
 
-void cv::GCompiled::Priv::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
+void ncvslideio::GCompiled::Priv::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
 {
     GAPI_Assert(m_exec);
     m_exec->reshape(inMetas, args);
     m_metas = inMetas;
 }
 
-void cv::GCompiled::Priv::prepareForNewStream()
+void ncvslideio::GCompiled::Priv::prepareForNewStream()
 {
     GAPI_Assert(m_exec);
     m_exec->prepareForNewStream();
 }
 
-const cv::gimpl::GModel::Graph& cv::GCompiled::Priv::model() const
+const ncvslideio::gimpl::GModel::Graph& ncvslideio::GCompiled::Priv::model() const
 {
     GAPI_Assert(nullptr != m_exec);
     return m_exec->model();
 }
 
 // GCompiled public implementation /////////////////////////////////////////////
-cv::GCompiled::GCompiled()
+ncvslideio::GCompiled::GCompiled()
     : m_priv(new Priv())
 {
 }
 
-cv::GCompiled::operator bool() const
+ncvslideio::GCompiled::operator bool() const
 {
     return !m_priv->isEmpty();
 }
 
-void cv::GCompiled::operator() (GRunArgs &&ins, GRunArgsP &&outs)
+void ncvslideio::GCompiled::operator() (GRunArgs &&ins, GRunArgsP &&outs)
 {
     // FIXME: Check that <ins> matches the protocol!!!
     // FIXME: Check that <outs> matches the protocol
-    m_priv->run(cv::gimpl::GRuntimeArgs{std::move(ins),std::move(outs)});
+    m_priv->run(ncvslideio::gimpl::GRuntimeArgs{std::move(ins),std::move(outs)});
 }
 
 #if !defined(GAPI_STANDALONE)
-void cv::GCompiled::operator ()(cv::Mat in, cv::Mat &out)
+void ncvslideio::GCompiled::operator ()(ncvslideio::Mat in, ncvslideio::Mat &out)
 {
-    (*this)(cv::gin(in), cv::gout(out));
+    (*this)(ncvslideio::gin(in), ncvslideio::gout(out));
 }
 
-void cv::GCompiled::operator() (cv::Mat in, cv::Scalar &out)
+void ncvslideio::GCompiled::operator() (ncvslideio::Mat in, ncvslideio::Scalar &out)
 {
-    (*this)(cv::gin(in), cv::gout(out));
+    (*this)(ncvslideio::gin(in), ncvslideio::gout(out));
 }
 
-void cv::GCompiled::operator() (cv::Mat in1, cv::Mat in2, cv::Mat &out)
+void ncvslideio::GCompiled::operator() (ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Mat &out)
 {
-    (*this)(cv::gin(in1, in2), cv::gout(out));
+    (*this)(ncvslideio::gin(in1, in2), ncvslideio::gout(out));
 }
 
-void cv::GCompiled::operator() (cv::Mat in1, cv::Mat in2, cv::Scalar &out)
+void ncvslideio::GCompiled::operator() (ncvslideio::Mat in1, ncvslideio::Mat in2, ncvslideio::Scalar &out)
 {
-    (*this)(cv::gin(in1, in2), cv::gout(out));
+    (*this)(ncvslideio::gin(in1, in2), ncvslideio::gout(out));
 }
 
-void cv::GCompiled::operator ()(const std::vector<cv::Mat> &ins,
-                                const std::vector<cv::Mat> &outs)
+void ncvslideio::GCompiled::operator ()(const std::vector<ncvslideio::Mat> &ins,
+                                const std::vector<ncvslideio::Mat> &outs)
 {
     GRunArgs call_ins;
     GRunArgsP call_outs;
 
-    // Make a temporary copy of vector outs - cv::Mats are copies anyway
+    // Make a temporary copy of vector outs - ncvslideio::Mats are copies anyway
     auto tmp = outs;
-    for (const cv::Mat &m : ins) { call_ins.emplace_back(m);   }
-    for (      cv::Mat &m : tmp) { call_outs.emplace_back(&m); }
+    for (const ncvslideio::Mat &m : ins) { call_ins.emplace_back(m);   }
+    for (      ncvslideio::Mat &m : tmp) { call_outs.emplace_back(&m); }
 
     (*this)(std::move(call_ins), std::move(call_outs));
 }
 #endif // !defined(GAPI_STANDALONE)
 
-const cv::GMetaArgs& cv::GCompiled::metas() const
+const ncvslideio::GMetaArgs& ncvslideio::GCompiled::metas() const
 {
     return m_priv->metas();
 }
 
-const cv::GMetaArgs& cv::GCompiled::outMetas() const
+const ncvslideio::GMetaArgs& ncvslideio::GCompiled::outMetas() const
 {
     return m_priv->outMetas();
 }
 
-cv::GCompiled::Priv& cv::GCompiled::priv()
+ncvslideio::GCompiled::Priv& ncvslideio::GCompiled::priv()
 {
     return *m_priv;
 }
 
-bool cv::GCompiled::canReshape() const
+bool ncvslideio::GCompiled::canReshape() const
 {
     return m_priv->canReshape();
 }
 
-void cv::GCompiled::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
+void ncvslideio::GCompiled::reshape(const GMetaArgs& inMetas, const GCompileArgs& args)
 {
     m_priv->reshape(inMetas, args);
 }
 
-void cv::GCompiled::prepareForNewStream()
+void ncvslideio::GCompiled::prepareForNewStream()
 {
     m_priv->prepareForNewStream();
 }

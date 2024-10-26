@@ -49,7 +49,7 @@
 #include "opencv2/core/cvstd.hpp"
 #include "opencv2/core/hal/interface.h"
 
-namespace cv { namespace hal {
+namespace ncvslideio { namespace hal {
 
 //! @addtogroup core_hal_functions
 //! @{
@@ -255,6 +255,6 @@ CV_EXPORTS void invSqrt(const double* src, double* dst, int len);
 
 //! @endcond
 
-}} //cv::hal
+}} //ncvslideio::hal
 
 #endif //OPENCV_HAL_HPP

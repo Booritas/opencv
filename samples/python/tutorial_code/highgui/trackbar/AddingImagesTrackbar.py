@@ -10,8 +10,8 @@ title_window = 'Linear Blend'
 def on_trackbar(val):
     alpha = val / alpha_slider_max
     beta = ( 1.0 - alpha )
-    dst = cv.addWeighted(src1, alpha, src2, beta, 0.0)
-    cv.imshow(title_window, dst)
+    dst = ncvslideio.addWeighted(src1, alpha, src2, beta, 0.0)
+    ncvslideio.imshow(title_window, dst)
 ## [on_trackbar]
 
 parser = argparse.ArgumentParser(description='Code for Adding a Trackbar to our applications tutorial.')
@@ -21,8 +21,8 @@ args = parser.parse_args()
 
 ## [load]
 # Read images ( both have to be of the same size and type )
-src1 = cv.imread(cv.samples.findFile(args.input1))
-src2 = cv.imread(cv.samples.findFile(args.input2))
+src1 = ncvslideio.imread(ncvslideio.samples.findFile(args.input1))
+src2 = ncvslideio.imread(ncvslideio.samples.findFile(args.input2))
 ## [load]
 if src1 is None:
     print('Could not open or find the image: ', args.input1)

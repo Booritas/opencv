@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace sqpnp {
 
 
@@ -76,8 +76,8 @@ public:
 private:
     struct SQPSolution
     {
-        cv::Matx<double, 9, 1> r_hat;
-        cv::Matx<double, 3, 1> t;
+        ncvslideio::Matx<double, 9, 1> r_hat;
+        ncvslideio::Matx<double, 3, 1> t;
         double sq_error;
         SQPSolution() : sq_error(0) {}
     };
@@ -102,7 +102,7 @@ private:
     * @param e              The vector to test representing a 3x3 matrix in row-major order.
     * @return               The distance the matrix is from being orthogonal.
     */
-    static double orthogonalityError(const cv::Matx<double, 9, 1>& e);
+    static double orthogonalityError(const ncvslideio::Matx<double, 9, 1>& e);
 
     /*
     * @brief                Processes a solution and sorts it by error.
@@ -117,7 +117,7 @@ private:
     * @param e              Vector representing a 3x3 matrix stored in row-major order.
     * @return               The determinant of the matrix.
     */
-    static double det3x3(const cv::Matx<double, 9, 1>& e);
+    static double det3x3(const ncvslideio::Matx<double, 9, 1>& e);
 
     /*
     * @brief                Tests the cheirality on the mean object point for a given solution.
@@ -139,8 +139,8 @@ private:
     * @param e              The input 3x3 matrix stored in a vector in row-major order.
     * @param r              The nearest rotation matrix to the input e (again in row-major order).
     */
-    static void nearestRotationMatrixSVD(const cv::Matx<double, 9, 1>& e,
-        cv::Matx<double, 9, 1>& r);
+    static void nearestRotationMatrixSVD(const ncvslideio::Matx<double, 9, 1>& e,
+        ncvslideio::Matx<double, 9, 1>& r);
 
     /*
     * @brief                Determines the nearest rotation matrix to a given rotation matrix using the FOAM algorithm.
@@ -149,28 +149,28 @@ private:
     * @param e              The input 3x3 matrix stored in a vector in row-major order.
     * @param r              The nearest rotation matrix to the input e (again in row-major order).
     */
-    static void nearestRotationMatrixFOAM(const cv::Matx<double, 9, 1>& e,
-        cv::Matx<double, 9, 1>& r);
+    static void nearestRotationMatrixFOAM(const ncvslideio::Matx<double, 9, 1>& e,
+        ncvslideio::Matx<double, 9, 1>& r);
 
     /*
     * @brief                Runs the sequential quadratic programming on orthogonal matrices.
     * @param r0             The start point of the solver.
     */
-    SQPSolution runSQP(const cv::Matx<double, 9, 1>& r0);
+    SQPSolution runSQP(const ncvslideio::Matx<double, 9, 1>& r0);
 
     /*
     * @brief                Steps down the gradient for the given matrix r to solve the SQP system.
     * @param r              The current matrix step.
     * @param delta          The next step down the gradient.
     */
-    void solveSQPSystem(const cv::Matx<double, 9, 1>& r, cv::Matx<double, 9, 1>& delta);
+    void solveSQPSystem(const ncvslideio::Matx<double, 9, 1>& r, ncvslideio::Matx<double, 9, 1>& delta);
 
     /*
     * @brief                Inverse of SPD 3x3 A via lower triangular sqrt-free Cholesky: A = L*D*L'
     * @param A              The input matrix
     * @param A1             The inverse
     */
-    static bool invertSPD3x3(const cv::Matx<double, 3, 3>& A, cv::Matx<double, 3, 3>& A1);
+    static bool invertSPD3x3(const ncvslideio::Matx<double, 3, 3>& A, ncvslideio::Matx<double, 3, 3>& A1);
 
     /*
     * @brief                Analytically computes the inverse of a symmetric 3x3 matrix using the
@@ -179,8 +179,8 @@ private:
     * @param Qinv           The inverse of Q.
     * @param threshold      The threshold to determine if Q is singular and non-invertible.
     */
-    bool analyticalInverse3x3Symm(const cv::Matx<double, 3, 3>& Q,
-        cv::Matx<double, 3, 3>& Qinv,
+    bool analyticalInverse3x3Symm(const ncvslideio::Matx<double, 3, 3>& Q,
+        ncvslideio::Matx<double, 3, 3>& Qinv,
         const double& threshold = 1e-8);
 
     /*
@@ -194,10 +194,10 @@ private:
     * @param norm_threshold Threshold for column vector norm of Pn (the projection onto the null space
     *                       of the constraint Jacobian).
     */
-    void computeRowAndNullspace(const cv::Matx<double, 9, 1>& r,
-        cv::Matx<double, 9, 6>& H,
-        cv::Matx<double, 9, 3>& N,
-        cv::Matx<double, 6, 6>& K,
+    void computeRowAndNullspace(const ncvslideio::Matx<double, 9, 1>& r,
+        ncvslideio::Matx<double, 9, 6>& H,
+        ncvslideio::Matx<double, 9, 3>& N,
+        ncvslideio::Matx<double, 6, 6>& K,
         const double& norm_threshold = 0.1);
 
     static const double RANK_TOLERANCE;
@@ -210,11 +210,11 @@ private:
     static const int SQP_MAX_ITERATION;
     static const double SQRT3;
 
-    cv::Matx<double, 9, 9> omega_;
-    cv::Vec<double, 9> s_;
-    cv::Matx<double, 9, 9> u_;
-    cv::Matx<double, 3, 9> p_;
-    cv::Vec3d point_mean_;
+    ncvslideio::Matx<double, 9, 9> omega_;
+    ncvslideio::Vec<double, 9> s_;
+    ncvslideio::Matx<double, 9, 9> u_;
+    ncvslideio::Matx<double, 3, 9> p_;
+    ncvslideio::Vec3d point_mean_;
     int num_null_vectors_;
 
     SQPSolution solutions_[18];

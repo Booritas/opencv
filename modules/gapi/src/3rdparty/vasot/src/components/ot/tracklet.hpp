@@ -27,7 +27,7 @@ enum Status {
 };
 
 struct Detection {
-    cv::Rect2f rect;
+    ncvslideio::Rect2f rect;
     int32_t class_label = -1;
     int32_t index = -1;
 };
@@ -39,12 +39,12 @@ class Tracklet {
 
   public:
     void ClearTrajectory();
-    void InitTrajectory(const cv::Rect2f &bounding_box);
-    void AddUpdatedTrajectory(const cv::Rect2f &bounding_box, const cv::Rect2f &corrected_box);
-    void UpdateLatestTrajectory(const cv::Rect2f &bounding_box, const cv::Rect2f &corrected_box);
-    virtual void RenewTrajectory(const cv::Rect2f &bounding_box);
+    void InitTrajectory(const ncvslideio::Rect2f &bounding_box);
+    void AddUpdatedTrajectory(const ncvslideio::Rect2f &bounding_box, const ncvslideio::Rect2f &corrected_box);
+    void UpdateLatestTrajectory(const ncvslideio::Rect2f &bounding_box, const ncvslideio::Rect2f &corrected_box);
+    virtual void RenewTrajectory(const ncvslideio::Rect2f &bounding_box);
 
-    virtual std::deque<cv::Mat> *GetRgbFeatures();
+    virtual std::deque<ncvslideio::Mat> *GetRgbFeatures();
     virtual std::string Serialize() const; // Returns key:value with comma separated format
 
   public:
@@ -59,9 +59,9 @@ class Tracklet {
     float association_delta_t;
     int32_t association_fail_count;
 
-    std::deque<cv::Rect2f> trajectory;
-    std::deque<cv::Rect2f> trajectory_filtered;
-    cv::Rect2f predicted;                      // Result from Kalman prediction. It is for debugging (OTAV)
+    std::deque<ncvslideio::Rect2f> trajectory;
+    std::deque<ncvslideio::Rect2f> trajectory_filtered;
+    ncvslideio::Rect2f predicted;                      // Result from Kalman prediction. It is for debugging (OTAV)
     mutable std::vector<std::string> otav_msg; // Messages for OTAV
 };
 
@@ -70,7 +70,7 @@ class ZeroTermImagelessTracklet : public Tracklet {
     ZeroTermImagelessTracklet();
     virtual ~ZeroTermImagelessTracklet();
 
-    void RenewTrajectory(const cv::Rect2f &bounding_box) override;
+    void RenewTrajectory(const ncvslideio::Rect2f &bounding_box) override;
 
   public:
     int32_t birth_count;
@@ -82,7 +82,7 @@ class ShortTermImagelessTracklet : public Tracklet {
     ShortTermImagelessTracklet();
     virtual ~ShortTermImagelessTracklet();
 
-    void RenewTrajectory(const cv::Rect2f &bounding_box) override;
+    void RenewTrajectory(const ncvslideio::Rect2f &bounding_box) override;
 
   public:
     std::unique_ptr<KalmanFilterNoOpencv> kalman_filter;

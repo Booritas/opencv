@@ -9,7 +9,7 @@
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 Mat src_gray;

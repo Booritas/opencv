@@ -6,7 +6,7 @@
 #include "opencv2/video/detail/tracking.detail.hpp"
 #include "tracking_feature.hpp"
 
-namespace cv {
+namespace ncvslideio {
 namespace detail {
 inline namespace tracking {
 
@@ -120,7 +120,7 @@ CvHaarEvaluator::FeatureHaar::FeatureHaar(Size patchSize)
 
 void CvHaarEvaluator::FeatureHaar::generateRandomFeature(Size patchSize)
 {
-    cv::Point2i position;
+    ncvslideio::Point2i position;
     Size baseDim;
     Size sizeFactor;
     int area;
@@ -579,4 +579,4 @@ float CvHaarEvaluator::FeatureHaar::getSum(const Mat& image, Rect imageROI) cons
     return value;
 }
 
-}}}  // namespace cv::detail::tracking
+}}}  // namespace ncvslideio::detail::tracking

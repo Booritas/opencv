@@ -46,7 +46,7 @@
 namespace opencv_test { namespace {
 
 #ifdef HAVE_OPENCV_FLANN
-using namespace cv::flann;
+using namespace ncvslideio::flann;
 #endif
 
 //--------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ protected:
     virtual int findNeighbors( Mat& points, Mat& neighbors ) { return knnSearch( points, neighbors ); }
 };
 
-void CV_FlannSavedIndexTest::createModel(const cv::Mat &data)
+void CV_FlannSavedIndexTest::createModel(const ncvslideio::Mat &data)
 {
     switch ( cvtest::randInt(ts->get_rng()) % 2 )
     {

@@ -63,7 +63,7 @@ Created by: Puttemans Steven - April 2016
 #include <sstream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 struct rect_data{
     int x;

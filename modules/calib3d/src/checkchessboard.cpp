@@ -46,10 +46,10 @@
 #include <vector>
 #include <algorithm>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
-static void icvGetQuadrangleHypotheses(const std::vector<std::vector< cv::Point > > & contours, const std::vector< cv::Vec4i > & hierarchy, std::vector<std::pair<float, int> >& quads, int class_id)
+static void icvGetQuadrangleHypotheses(const std::vector<std::vector< ncvslideio::Point > > & contours, const std::vector< ncvslideio::Vec4i > & hierarchy, std::vector<std::pair<float, int> >& quads, int class_id)
 {
     const float min_aspect_ratio = 0.3f;
     const float max_aspect_ratio = 3.0f;
@@ -60,8 +60,8 @@ static void icvGetQuadrangleHypotheses(const std::vector<std::vector< cv::Point 
         if (hierarchy.at(i)[3] != -1)
             continue; // skip holes
 
-        const std::vector< cv::Point > & c = contours[i];
-        cv::RotatedRect box = cv::minAreaRect(c);
+        const std::vector< ncvslideio::Point > & c = contours[i];
+        ncvslideio::RotatedRect box = ncvslideio::minAreaRect(c);
 
         float box_size = MAX(box.size.width, box.size.height);
         if(box_size < min_box_size)
@@ -113,7 +113,7 @@ static void fillQuads(Mat & white, Mat & black, double white_thresh, double blac
     }
 }
 
-static bool checkQuads(vector<pair<float, int> > & quads, const cv::Size & size)
+static bool checkQuads(vector<pair<float, int> > & quads, const ncvslideio::Size & size)
 {
     const size_t min_quads_count = size.width*size.height/2;
     std::sort(quads.begin(), quads.end(), less_pred);
@@ -159,11 +159,11 @@ static bool checkQuads(vector<pair<float, int> > & quads, const cv::Size & size)
 // 0 if there is no chessboard, -1 in case of error
 int cvCheckChessboard(IplImage* src, CvSize size)
 {
-    cv::Mat img = cv::cvarrToMat(src);
-    return (int)cv::checkChessboard(img, size);
+    ncvslideio::Mat img = ncvslideio::cvarrToMat(src);
+    return (int)ncvslideio::checkChessboard(img, size);
 }
 
-bool cv::checkChessboard(InputArray _img, Size size)
+bool ncvslideio::checkChessboard(InputArray _img, Size size)
 {
     Mat img = _img.getMat();
     CV_Assert(img.channels() == 1 && img.depth() == CV_8U);
@@ -195,7 +195,7 @@ bool cv::checkChessboard(InputArray _img, Size size)
 // - size: chessboard size
 // Returns 1 if a chessboard can be in this image and findChessboardCorners should be called,
 // 0 if there is no chessboard, -1 in case of error
-int checkChessboardBinary(const cv::Mat & img, const cv::Size & size)
+int checkChessboardBinary(const ncvslideio::Mat & img, const ncvslideio::Size & size)
 {
     CV_Assert(img.channels() == 1 && img.depth() == CV_8U);
 

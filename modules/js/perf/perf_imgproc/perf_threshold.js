@@ -2,7 +2,7 @@ var isNodeJs = (typeof window) === 'undefined'? true : false;
 
 if　(isNodeJs)　{
   var Benchmark = require('benchmark');
-  var cv = require('../../opencv');
+  var ncvslideio = require('../../opencv');
   var HelpFunc = require('../perf_helpfunc');
   var Base = require('../base');
 } else {
@@ -15,7 +15,7 @@ function perf() {
 
   console.log('opencv.js loaded');
   if (isNodeJs) {
-    global.cv = cv;
+    global.ncvslideio = ncvslideio;
     global.combine = HelpFunc.combine;
     global.log = HelpFunc.log;
     global.decodeParams2Case = HelpFunc.decodeParams2Case;
@@ -39,9 +39,9 @@ function perf() {
   function addThresholdCase(suite, type) {
     suite.add('threshold', function() {
       if (type == "sizeonly") {
-        cv.threshold(src, dst, threshold, thresholdMax, cv.THRESH_BINARY|cv.THRESH_OTSU);
+        ncvslideio.threshold(src, dst, threshold, thresholdMax, ncvslideio.THRESH_BINARY|ncvslideio.THRESH_OTSU);
       } else {
-        cv.threshold(src, dst, threshold, thresholdMax, threshType);
+        ncvslideio.threshold(src, dst, threshold, thresholdMax, threshType);
       }
       }, {
         'setup': function() {
@@ -49,13 +49,13 @@ function perf() {
           let type =  this.params.modeType;
           let src, dst, matType, threshType;
           if (type == "sizeonly") {
-            src = new cv.Mat(matSize, cv.CV_8UC1);
-            dst = new cv.Mat(matSize, cv.CV_8UC1);
+            src = new ncvslideio.Mat(matSize, ncvslideio.CV_8UC1);
+            dst = new ncvslideio.Mat(matSize, ncvslideio.CV_8UC1);
           } else {
-            matType = cv[this.params.matType];
-            threshType = cv[this.params.threshType];
-            src = new cv.Mat(matSize, matType);
-            dst = new cv.Mat(matSize, matType);
+            matType = ncvslideio[this.params.matType];
+            threshType = ncvslideio[this.params.threshType];
+            src = new ncvslideio.Mat(matSize, matType);
+            dst = new ncvslideio.Mat(matSize, matType);
           }
           let threshold = 127.0;
           let thresholdMax = 210.0;
@@ -94,9 +94,9 @@ function perf() {
     let paramObjs = [];
     paramObjs.push({name:"size", value:"", reg:[""], index:0});
 
-    if (/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*THRESH\_\w+\)/g.test(paramsContent.toString())) {
-      params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*THRESH\_\w+\)/g)[0];
-      paramObjs.push({name:"matType", value:"", reg:["/CV\_[0-9]+[A-z][A-z][0-9]/"], index:1});
+    if (/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*THRESH\_\w+\)/g.test(paramsContent.toString())) {
+      params = paramsContent.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*THRESH\_\w+\)/g)[0];
+      paramObjs.push({name:"matType", value:"", reg:["/ncvslideio\_[0-9]+[A-z][A-z][0-9]/"], index:1});
       paramObjs.push({name:"threshType", value:"", reg:["/THRESH\_[A-z]+\_?[A-z]*/"], index:2});
     } else if (/[\ ]*[0-9]+x[0-9]+[\ ]*/g.test(paramsContent.toString())) {
       params = paramsContent.toString().match(/[\ ]*[0-9]+x[0-9]+[\ ]*/g)[0];
@@ -132,8 +132,8 @@ function perf() {
   if (isNodeJs) {
     const args = process.argv.slice(2);
     let paramsContent = '';
-    if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*THRESH\_\w+\)/g.test(args.toString())) {
-      paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*CV\_\w+,[\ ]*THRESH\_\w+\)/g)[0];
+    if (/--test_param_filter=\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*THRESH\_\w+\)/g.test(args.toString())) {
+      paramsContent = args.toString().match(/\([0-9]+x[0-9]+,[\ ]*ncvslideio\_\w+,[\ ]*THRESH\_\w+\)/g)[0];
     } else if (/--test_param_filter=[\ ]*[0-9]+x[0-9]+[\ ]*/g.test(args.toString())) {
       paramsContent = args.toString().match(/[\ ]*[0-9]+x[0-9]+[\ ]*/g)[0];
     }
@@ -150,11 +150,11 @@ function perf() {
 };
 
 async function main() {
-  if (cv instanceof Promise) {
-    cv = await cv;
+  if (ncvslideio instanceof Promise) {
+    ncvslideio = await ncvslideio;
     perf();
   } else {
-    cv.onRuntimeInitialized = perf;
+    ncvslideio.onRuntimeInitialized = perf;
   }
 }
 

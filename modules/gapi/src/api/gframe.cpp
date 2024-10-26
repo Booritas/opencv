@@ -12,34 +12,34 @@
 
 #include "api/gorigin.hpp"
 
-// cv::GFrame public implementation //////////////////////////////////////////////
-cv::GFrame::GFrame()
+// ncvslideio::GFrame public implementation //////////////////////////////////////////////
+ncvslideio::GFrame::GFrame()
     : m_priv(new GOrigin(GShape::GFRAME, GNode::Param())) {
 }
 
-cv::GFrame::GFrame(const GNode &n, std::size_t out)
+ncvslideio::GFrame::GFrame(const GNode &n, std::size_t out)
     : m_priv(new GOrigin(GShape::GFRAME, n, out)) {
 }
 
-cv::GOrigin& cv::GFrame::priv() {
+ncvslideio::GOrigin& ncvslideio::GFrame::priv() {
     return *m_priv;
 }
 
-const cv::GOrigin& cv::GFrame::priv() const {
+const ncvslideio::GOrigin& ncvslideio::GFrame::priv() const {
     return *m_priv;
 }
 
-namespace cv {
+namespace ncvslideio {
 
 bool GFrameDesc::operator== (const GFrameDesc &rhs) const {
     return fmt == rhs.fmt && size == rhs.size;
 }
 
-GFrameDesc descr_of(const cv::MediaFrame &frame) {
+GFrameDesc descr_of(const ncvslideio::MediaFrame &frame) {
     return frame.desc();
 }
 
-std::ostream& operator<<(std::ostream& os, const cv::GFrameDesc &d) {
+std::ostream& operator<<(std::ostream& os, const ncvslideio::GFrameDesc &d) {
     os << '[';
     switch (d.fmt) {
     case MediaFormat::BGR:  os << "BGR"; break;
@@ -51,4 +51,4 @@ std::ostream& operator<<(std::ostream& os, const cv::GFrameDesc &d) {
     return os;
 }
 
-} // namespace cv
+} // namespace ncvslideio

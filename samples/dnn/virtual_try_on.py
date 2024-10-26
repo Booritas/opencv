@@ -16,10 +16,10 @@ from numpy import linalg
 from common import findFile
 from human_parsing import parse_human
 
-backends = (cv.dnn.DNN_BACKEND_DEFAULT, cv.dnn.DNN_BACKEND_HALIDE, cv.dnn.DNN_BACKEND_INFERENCE_ENGINE, cv.dnn.DNN_BACKEND_OPENCV,
-            cv.dnn.DNN_BACKEND_VKCOM, cv.dnn.DNN_BACKEND_CUDA)
-targets = (cv.dnn.DNN_TARGET_CPU, cv.dnn.DNN_TARGET_OPENCL, cv.dnn.DNN_TARGET_OPENCL_FP16, cv.dnn.DNN_TARGET_MYRIAD, cv.dnn.DNN_TARGET_HDDL,
-           cv.dnn.DNN_TARGET_VULKAN, cv.dnn.DNN_TARGET_CUDA, cv.dnn.DNN_TARGET_CUDA_FP16)
+backends = (ncvslideio.dnn.DNN_BACKEND_DEFAULT, ncvslideio.dnn.DNN_BACKEND_HALIDE, ncvslideio.dnn.DNN_BACKEND_INFERENCE_ENGINE, ncvslideio.dnn.DNN_BACKEND_OPENCV,
+            ncvslideio.dnn.DNN_BACKEND_VKCOM, ncvslideio.dnn.DNN_BACKEND_CUDA)
+targets = (ncvslideio.dnn.DNN_TARGET_CPU, ncvslideio.dnn.DNN_TARGET_OPENCL, ncvslideio.dnn.DNN_TARGET_OPENCL_FP16, ncvslideio.dnn.DNN_TARGET_MYRIAD, ncvslideio.dnn.DNN_TARGET_HDDL,
+           ncvslideio.dnn.DNN_TARGET_VULKAN, ncvslideio.dnn.DNN_TARGET_CUDA, ncvslideio.dnn.DNN_TARGET_CUDA_FP16)
 
 parser = argparse.ArgumentParser(description='Use this script to run virtial try-on using CP-VTON',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -30,7 +30,7 @@ parser.add_argument('--tom_model', '-tom', default='cp_vton_tom.onnx', help='Pat
 parser.add_argument('--segmentation_model', default='lip_jppnet_384.pb', help='Path to cloth segmentation .pb model.')
 parser.add_argument('--openpose_proto', default='openpose_pose_coco.prototxt', help='Path to OpenPose .prototxt model was trained on COCO dataset.')
 parser.add_argument('--openpose_model', default='openpose_pose_coco.caffemodel', help='Path to OpenPose .caffemodel model was trained on COCO dataset.')
-parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DEFAULT, type=int,
+parser.add_argument('--backend', choices=backends, default=ncvslideio.dnn.DNN_BACKEND_DEFAULT, type=int,
                     help="Choose one of computation backends: "
                             "%d: automatically (by default), "
                             "%d: Halide language (http://halide-lang.org/), "
@@ -38,7 +38,7 @@ parser.add_argument('--backend', choices=backends, default=cv.dnn.DNN_BACKEND_DE
                             "%d: OpenCV implementation, "
                             "%d: VKCOM, "
                             "%d: CUDA" % backends)
-parser.add_argument('--target', choices=targets, default=cv.dnn.DNN_TARGET_CPU, type=int,
+parser.add_argument('--target', choices=targets, default=ncvslideio.dnn.DNN_TARGET_CPU, type=int,
                     help='Choose one of target computation devices: '
                             '%d: CPU target (by default), '
                             '%d: OpenCL, '
@@ -53,9 +53,9 @@ args, _ = parser.parse_known_args()
 
 def get_pose_map(image, proto_path, model_path, backend, target, height=256, width=192):
     radius = 5
-    inp = cv.dnn.blobFromImage(image, 1.0 / 255, (width, height))
+    inp = ncvslideio.dnn.blobFromImage(image, 1.0 / 255, (width, height))
 
-    net = cv.dnn.readNet(proto_path, model_path)
+    net = ncvslideio.dnn.readNet(proto_path, model_path)
     net.setPreferableBackend(backend)
     net.setPreferableTarget(target)
     net.setInput(inp)
@@ -68,7 +68,7 @@ def get_pose_map(image, proto_path, model_path, backend, target, height=256, wid
     for i in range(0, out.shape[1] - 1):
         heatMap = out[0, i, :, :]
         keypoint = np.full((height, width), -1)
-        _, conf, _, point = cv.minMaxLoc(heatMap)
+        _, conf, _, point = ncvslideio.minMaxLoc(heatMap)
         x = width * point[0] // out_w
         y = height * point[1] // out_h
         if conf > threshold and x > 0 and y > 0:
@@ -134,8 +134,8 @@ class BilinearFilter(object):
 class CpVton(object):
     def __init__(self, gmm_model, tom_model, backend, target):
         super(CpVton, self).__init__()
-        self.gmm_net = cv.dnn.readNet(gmm_model)
-        self.tom_net = cv.dnn.readNet(tom_model)
+        self.gmm_net = ncvslideio.dnn.readNet(gmm_model)
+        self.tom_net = ncvslideio.dnn.readNet(tom_model)
         self.gmm_net.setPreferableBackend(backend)
         self.gmm_net.setPreferableTarget(target)
         self.tom_net.setPreferableBackend(backend)
@@ -167,7 +167,7 @@ class CpVton(object):
         color2label = {val: key for key, val in palette.items()}
         head_labels = ['Hat', 'Hair', 'Sunglasses', 'Face', 'Pants', 'Skirt']
 
-        segm_image = cv.cvtColor(segm_image, cv.COLOR_BGR2RGB)
+        segm_image = ncvslideio.cvtColor(segm_image, ncvslideio.COLOR_BGR2RGB)
         phead = np.zeros((1, height, width), dtype=np.float32)
         pose_shape = np.zeros((height, width), dtype=np.uint8)
         for r in range(height):
@@ -179,16 +179,16 @@ class CpVton(object):
                     if color2label[pixel] != 'Background':
                         pose_shape[r, c] = 255
 
-        input_image = cv.dnn.blobFromImage(input_image, 1.0 / 127.5, (width, height), mean=(127.5, 127.5, 127.5), swapRB=True)
+        input_image = ncvslideio.dnn.blobFromImage(input_image, 1.0 / 127.5, (width, height), mean=(127.5, 127.5, 127.5), swapRB=True)
         input_image = input_image.squeeze(0)
 
         img_head = input_image * phead - (1 - phead)
 
         downsample = BilinearFilter()
         down = downsample.imaging_resample(pose_shape, width // 16, height // 16)
-        res_shape = cv.resize(down, (width, height), cv.INTER_LINEAR)
+        res_shape = ncvslideio.resize(down, (width, height), ncvslideio.INTER_LINEAR)
 
-        res_shape = cv.dnn.blobFromImage(res_shape, 1.0 / 127.5, mean=(127.5, 127.5, 127.5), swapRB=True)
+        res_shape = ncvslideio.dnn.blobFromImage(res_shape, 1.0 / 127.5, mean=(127.5, 127.5, 127.5), swapRB=True)
         res_shape = res_shape.squeeze(0)
 
         agnostic = np.concatenate((res_shape, img_head, pose_map), axis=0)
@@ -196,7 +196,7 @@ class CpVton(object):
         return agnostic.astype(np.float32)
 
     def get_warped_cloth(self, cloth_img, agnostic, height=256, width=192):
-        cloth = cv.dnn.blobFromImage(cloth_img, 1.0 / 127.5, (width, height), mean=(127.5, 127.5, 127.5), swapRB=True)
+        cloth = ncvslideio.dnn.blobFromImage(cloth_img, 1.0 / 127.5, (width, height), mean=(127.5, 127.5, 127.5), swapRB=True)
 
         self.gmm_net.setInput(agnostic, "input.1")
         self.gmm_net.setInput(cloth, "input.18")
@@ -216,7 +216,7 @@ class CpVton(object):
         m_composite = 1 / (1 + np.exp(-m_composite))
 
         p_tryon = warp_cloth * m_composite + p_rendered * (1 - m_composite)
-        rgb_p_tryon = cv.cvtColor(p_tryon.squeeze(0).transpose(1, 2, 0), cv.COLOR_BGR2RGB)
+        rgb_p_tryon = ncvslideio.cvtColor(p_tryon.squeeze(0).transpose(1, 2, 0), ncvslideio.COLOR_BGR2RGB)
         rgb_p_tryon = (rgb_p_tryon + 1) / 2
         return rgb_p_tryon
 
@@ -434,7 +434,7 @@ if __name__ == "__main__":
     if not os.path.isfile(findFile(args.openpose_model)):
         raise OSError("OpenPose model not exist")
 
-    person_img = cv.imread(args.input_image)
+    person_img = ncvslideio.imread(args.input_image)
     ratio = 256 / 192
     inp_h, inp_w, _ = person_img.shape
     current_ratio = inp_h / inp_w
@@ -451,22 +451,22 @@ if __name__ == "__main__":
         end = int(center_w + out_w // 2)
         person_img = person_img[:, start:end, :]
 
-    cloth_img = cv.imread(args.input_cloth)
+    cloth_img = ncvslideio.imread(args.input_cloth)
     pose = get_pose_map(person_img, findFile(args.openpose_proto),
                         findFile(args.openpose_model), args.backend, args.target)
     segm_image = parse_human(person_img, args.segmentation_model)
-    segm_image = cv.resize(segm_image, (192, 256), cv.INTER_LINEAR)
+    segm_image = ncvslideio.resize(segm_image, (192, 256), ncvslideio.INTER_LINEAR)
 
-    cv.dnn_registerLayer('Correlation', CorrelationLayer)
+    ncvslideio.dnn_registerLayer('Correlation', CorrelationLayer)
 
     model = CpVton(args.gmm_model, args.tom_model, args.backend, args.target)
     agnostic = model.prepare_agnostic(segm_image, person_img, pose)
     warped_cloth = model.get_warped_cloth(cloth_img, agnostic)
     output = model.get_tryon(agnostic, warped_cloth)
 
-    cv.dnn_unregisterLayer('Correlation')
+    ncvslideio.dnn_unregisterLayer('Correlation')
 
     winName = 'Virtual Try-On'
-    cv.namedWindow(winName, cv.WINDOW_AUTOSIZE)
-    cv.imshow(winName, output)
-    cv.waitKey()
+    ncvslideio.namedWindow(winName, ncvslideio.WINDOW_AUTOSIZE)
+    ncvslideio.imshow(winName, output)
+    ncvslideio.waitKey()

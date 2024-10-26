@@ -58,7 +58,7 @@
       (http://pascal.inrialpes.fr/soft/olt/)
 \****************************************************************************************/
 
-namespace cv
+namespace ncvslideio
 {
 
 #define NTHREADS 256
@@ -69,8 +69,8 @@ static int numPartsWithin(int size, int part_size, int stride)
     return (size - part_size + stride) / stride;
 }
 
-static Size numPartsWithin(cv::Size size, cv::Size part_size,
-                                                cv::Size stride)
+static Size numPartsWithin(ncvslideio::Size size, ncvslideio::Size part_size,
+                                                ncvslideio::Size stride)
 {
     return Size(numPartsWithin(size.width, part_size.width, stride.width),
         numPartsWithin(size.height, part_size.height, stride.height));
@@ -128,7 +128,7 @@ void HOGDescriptor::setSVMDetector(InputArray _svmDetector)
     Mat detector_reordered(1, (int)svmDetector.size(), CV_32FC1);
 
     size_t block_hist_size = getBlockHistogramSize(blockSize, cellSize, nbins);
-    cv::Size blocks_per_img = numPartsWithin(winSize, blockSize, blockStride);
+    ncvslideio::Size blocks_per_img = numPartsWithin(winSize, blockSize, blockStride);
 
     for (int i = 0; i < blocks_per_img.height; ++i)
         for (int j = 0; j < blocks_per_img.width; ++j)
@@ -1716,7 +1716,7 @@ static bool ocl_classify_hists(int win_height, int win_width, int block_stride_y
                                float free_coef, float threshold, UMat& labels, Size descr_size, int block_hist_size)
 {
     int nthreads;
-    cv::String opts;
+    ncvslideio::String opts;
 
     ocl::Kernel k;
     int idx = 0;
@@ -3325,9 +3325,9 @@ public:
     Mutex* mtx;
 };
 
-void HOGDescriptor::detectROI(InputArray _img, const std::vector<cv::Point> &locations,
-    CV_OUT std::vector<cv::Point>& foundLocations, CV_OUT std::vector<double>& confidences,
-    double hitThreshold, cv::Size winStride, cv::Size padding) const
+void HOGDescriptor::detectROI(InputArray _img, const std::vector<ncvslideio::Point> &locations,
+    CV_OUT std::vector<ncvslideio::Point>& foundLocations, CV_OUT std::vector<double>& confidences,
+    double hitThreshold, ncvslideio::Size winStride, ncvslideio::Size padding) const
 {
     CV_INSTRUMENT_REGION();
 
@@ -3423,7 +3423,7 @@ void HOGDescriptor::detectROI(InputArray _img, const std::vector<cv::Point> &loc
 }
 
 void HOGDescriptor::detectMultiScaleROI(InputArray _img,
-    CV_OUT std::vector<cv::Rect>& foundLocations, std::vector<DetectionROI>& locations,
+    CV_OUT std::vector<ncvslideio::Rect>& foundLocations, std::vector<DetectionROI>& locations,
     double hitThreshold, int groupThreshold) const
 {
     CV_INSTRUMENT_REGION();
@@ -3438,10 +3438,10 @@ void HOGDescriptor::detectMultiScaleROI(InputArray _img,
 
     foundLocations.resize(allCandidates.size());
     std::copy(allCandidates.begin(), allCandidates.end(), foundLocations.begin());
-    cv::groupRectangles(foundLocations, groupThreshold, 0.2);
+    ncvslideio::groupRectangles(foundLocations, groupThreshold, 0.2);
 }
 
-void HOGDescriptor::groupRectangles(std::vector<cv::Rect>& rectList, std::vector<double>& weights, int groupThreshold, double eps) const
+void HOGDescriptor::groupRectangles(std::vector<ncvslideio::Rect>& rectList, std::vector<double>& weights, int groupThreshold, double eps) const
 {
     CV_INSTRUMENT_REGION();
 
@@ -3455,7 +3455,7 @@ void HOGDescriptor::groupRectangles(std::vector<cv::Rect>& rectList, std::vector
     std::vector<int> labels;
     int nclasses = partition(rectList, labels, SimilarRects(eps));
 
-    std::vector<cv::Rect_<double> > rrects(nclasses);
+    std::vector<ncvslideio::Rect_<double> > rrects(nclasses);
     std::vector<int> numInClass(nclasses, 0);
     std::vector<double> foundWeights(nclasses, -std::numeric_limits<double>::max());
     int i, j, nlabels = (int)labels.size();
@@ -3474,12 +3474,12 @@ void HOGDescriptor::groupRectangles(std::vector<cv::Rect>& rectList, std::vector
     for( i = 0; i < nclasses; i++ )
     {
         // find the average of all ROI in the cluster
-        cv::Rect_<double> r = rrects[i];
+        ncvslideio::Rect_<double> r = rrects[i];
         double s = 1.0/numInClass[i];
-        rrects[i] = cv::Rect_<double>(cv::saturate_cast<double>(r.x*s),
-            cv::saturate_cast<double>(r.y*s),
-            cv::saturate_cast<double>(r.width*s),
-            cv::saturate_cast<double>(r.height*s));
+        rrects[i] = ncvslideio::Rect_<double>(ncvslideio::saturate_cast<double>(r.x*s),
+            ncvslideio::saturate_cast<double>(r.y*s),
+            ncvslideio::saturate_cast<double>(r.width*s),
+            ncvslideio::saturate_cast<double>(r.height*s));
     }
 
     rectList.clear();
@@ -3487,7 +3487,7 @@ void HOGDescriptor::groupRectangles(std::vector<cv::Rect>& rectList, std::vector
 
     for( i = 0; i < nclasses; i++ )
     {
-        cv::Rect r1 = rrects[i];
+        ncvslideio::Rect r1 = rrects[i];
         int n1 = numInClass[i];
         double w1 = foundWeights[i];
         if( n1 <= groupThreshold )
@@ -3500,10 +3500,10 @@ void HOGDescriptor::groupRectangles(std::vector<cv::Rect>& rectList, std::vector
             if( j == i || n2 <= groupThreshold )
                 continue;
 
-            cv::Rect r2 = rrects[j];
+            ncvslideio::Rect r2 = rrects[j];
 
-            int dx = cv::saturate_cast<int>( r2.width * eps );
-            int dy = cv::saturate_cast<int>( r2.height * eps );
+            int dx = ncvslideio::saturate_cast<int>( r2.width * eps );
+            int dy = ncvslideio::saturate_cast<int>( r2.height * eps );
 
             if( r1.x >= r2.x - dx &&
                 r1.y >= r2.y - dy &&

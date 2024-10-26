@@ -113,8 +113,8 @@ OCL_TEST_P(BlendLinear, Accuracy)
     {
         random_roi();
 
-        OCL_OFF(cv::blendLinear(src1_roi, src2_roi, weights1_roi, weights2_roi, dst_roi));
-        OCL_ON(cv::blendLinear(usrc1_roi, usrc2_roi, uweights1_roi, uweights2_roi, udst_roi));
+        OCL_OFF(ncvslideio::blendLinear(src1_roi, src2_roi, weights1_roi, weights2_roi, dst_roi));
+        OCL_ON(ncvslideio::blendLinear(usrc1_roi, usrc2_roi, uweights1_roi, uweights2_roi, udst_roi));
 
         Near(depth <= CV_32S ? 1.0 : 0.5);
     }

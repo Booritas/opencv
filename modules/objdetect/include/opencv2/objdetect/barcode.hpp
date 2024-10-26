@@ -9,13 +9,13 @@
 #include <opencv2/core.hpp>
 #include <opencv2/objdetect/graphical_code_detector.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace barcode {
 
 //! @addtogroup objdetect_barcode
 //! @{
 
-class CV_EXPORTS_W_SIMPLE BarcodeDetector : public cv::GraphicalCodeDetector
+class CV_EXPORTS_W_SIMPLE BarcodeDetector : public ncvslideio::GraphicalCodeDetector
 {
 public:
     /** @brief Initialize the BarcodeDetector.
@@ -106,6 +106,6 @@ public:
 };
 //! @}
 
-}} // cv::barcode::
+}} // ncvslideio::barcode::
 
 #endif // OPENCV_OBJDETECT_BARCODE_HPP

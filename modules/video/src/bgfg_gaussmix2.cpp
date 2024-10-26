@@ -85,7 +85,7 @@
 #include "precomp.hpp"
 #include "opencl_kernels_video.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /*
@@ -220,7 +220,7 @@ public:
 
             //make the array for keeping track of the used modes per pixel - all zeros at start
             u_bgmodelUsedModes.create(frameSize, CV_8UC1);
-            u_bgmodelUsedModes.setTo(cv::Scalar::all(0));
+            u_bgmodelUsedModes.setTo(ncvslideio::Scalar::all(0));
         }
         else
 #endif

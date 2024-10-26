@@ -108,8 +108,8 @@ OCL_TEST_P(Accumulate, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulate(src_roi, dst_roi));
-        OCL_ON(cv::accumulate(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::accumulate(src_roi, dst_roi));
+        OCL_ON(ncvslideio::accumulate(usrc_roi, udst_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-6);
     }
@@ -121,8 +121,8 @@ OCL_TEST_P(Accumulate, Mask)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulate(src_roi, dst_roi, mask_roi));
-        OCL_ON(cv::accumulate(usrc_roi, udst_roi, umask_roi));
+        OCL_OFF(ncvslideio::accumulate(src_roi, dst_roi, mask_roi));
+        OCL_ON(ncvslideio::accumulate(usrc_roi, udst_roi, umask_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-6);
     }
@@ -138,8 +138,8 @@ OCL_TEST_P(AccumulateSquare, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateSquare(src_roi, dst_roi));
-        OCL_ON(cv::accumulateSquare(usrc_roi, udst_roi));
+        OCL_OFF(ncvslideio::accumulateSquare(src_roi, dst_roi));
+        OCL_ON(ncvslideio::accumulateSquare(usrc_roi, udst_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }
@@ -151,8 +151,8 @@ OCL_TEST_P(AccumulateSquare, Mask)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateSquare(src_roi, dst_roi, mask_roi));
-        OCL_ON(cv::accumulateSquare(usrc_roi, udst_roi, umask_roi));
+        OCL_OFF(ncvslideio::accumulateSquare(src_roi, dst_roi, mask_roi));
+        OCL_ON(ncvslideio::accumulateSquare(usrc_roi, udst_roi, umask_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }
@@ -168,8 +168,8 @@ OCL_TEST_P(AccumulateProduct, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateProduct(src_roi, src2_roi, dst_roi));
-        OCL_ON(cv::accumulateProduct(usrc_roi, usrc2_roi, udst_roi));
+        OCL_OFF(ncvslideio::accumulateProduct(src_roi, src2_roi, dst_roi));
+        OCL_ON(ncvslideio::accumulateProduct(usrc_roi, usrc2_roi, udst_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }
@@ -181,8 +181,8 @@ OCL_TEST_P(AccumulateProduct, Mask)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateProduct(src_roi, src2_roi, dst_roi, mask_roi));
-        OCL_ON(cv::accumulateProduct(usrc_roi, usrc2_roi, udst_roi, umask_roi));
+        OCL_OFF(ncvslideio::accumulateProduct(src_roi, src2_roi, dst_roi, mask_roi));
+        OCL_ON(ncvslideio::accumulateProduct(usrc_roi, usrc2_roi, udst_roi, umask_roi));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }
@@ -198,8 +198,8 @@ OCL_TEST_P(AccumulateWeighted, Mat)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateWeighted(src_roi, dst_roi, alpha));
-        OCL_ON(cv::accumulateWeighted(usrc_roi, udst_roi, alpha));
+        OCL_OFF(ncvslideio::accumulateWeighted(src_roi, dst_roi, alpha));
+        OCL_ON(ncvslideio::accumulateWeighted(usrc_roi, udst_roi, alpha));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }
@@ -211,8 +211,8 @@ OCL_TEST_P(AccumulateWeighted, Mask)
     {
         random_roi();
 
-        OCL_OFF(cv::accumulateWeighted(src_roi, dst_roi, alpha));
-        OCL_ON(cv::accumulateWeighted(usrc_roi, udst_roi, alpha));
+        OCL_OFF(ncvslideio::accumulateWeighted(src_roi, dst_roi, alpha));
+        OCL_ON(ncvslideio::accumulateWeighted(usrc_roi, udst_roi, alpha));
 
         OCL_EXPECT_MATS_NEAR(dst, 1e-2);
     }

@@ -15,12 +15,12 @@ namespace opencv_test { namespace {
 static void test_readFrames(/*const*/ VideoCapture& capture, const int N = 100, Mat* lastFrame = NULL, bool testTimestamps = true)
 {
     Mat frame;
-    int64 time0 = cv::getTickCount();
+    int64 time0 = ncvslideio::getTickCount();
     int64 sysTimePrev = time0;
-    const double cvTickFreq = cv::getTickFrequency();
+    const double cvTickFreq = ncvslideio::getTickFrequency();
 
     double camTimePrev = 0.0;
-    const double fps = capture.get(cv::CAP_PROP_FPS);
+    const double fps = capture.get(ncvslideio::CAP_PROP_FPS);
     const double framePeriod = fps == 0.0 ? 1. : 1.0 / fps;
 
     const bool validTickAndFps = cvTickFreq != 0 && fps != 0.;
@@ -30,13 +30,13 @@ static void test_readFrames(/*const*/ VideoCapture& capture, const int N = 100, 
 
     for (int i = 0; i < N; i++)
     {
-        SCOPED_TRACE(cv::format("frame=%d", i));
+        SCOPED_TRACE(ncvslideio::format("frame=%d", i));
 
         capture >> frame;
         ASSERT_FALSE(frame.empty());
 
-        const int64 sysTimeCurr = cv::getTickCount();
-        double camTimeCurr = capture.get(cv::CAP_PROP_POS_MSEC);
+        const int64 sysTimeCurr = ncvslideio::getTickCount();
+        double camTimeCurr = capture.get(ncvslideio::CAP_PROP_POS_MSEC);
         if (i == 0)
             frame0ts = camTimeCurr;
         camTimeCurr -= frame0ts;  // normalized timestamp based on the first frame
@@ -66,7 +66,7 @@ static void test_readFrames(/*const*/ VideoCapture& capture, const int N = 100, 
         camTimePrev = camTimeCurr;
     }
 
-    int64 time1 = cv::getTickCount();
+    int64 time1 = ncvslideio::getTickCount();
     printf("Processed %d frames on %.2f FPS\n", N, (N * cvTickFreq) / (time1 - time0 + 1));
     if (lastFrame) *lastFrame = frame.clone();
 }
@@ -95,7 +95,7 @@ TEST(DISABLED_videoio_camera, dshow_convert_rgb_persistency)
     capture.set(CAP_PROP_FRAME_HEIGHT, 481);
     capture.set(CAP_PROP_FPS, 31);
     capture.set(CAP_PROP_CHANNEL, 1);
-    capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('Y', '1', '6', ' '));
+    capture.set(ncvslideio::CAP_PROP_FOURCC, ncvslideio::VideoWriter::fourcc('Y', '1', '6', ' '));
     std::cout << "Camera 0 via " << capture.getBackendName() << " backend" << std::endl;
     std::cout << "Frame width: " << capture.get(CAP_PROP_FRAME_WIDTH) << std::endl;
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
@@ -114,7 +114,7 @@ TEST(DISABLED_videoio_camera, v4l_read_mjpg)
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
     std::cout << "Capturing FPS: " << capture.get(CAP_PROP_FPS) << std::endl;
     int fourcc = (int)capture.get(CAP_PROP_FOURCC);
-    std::cout << "FOURCC code: " << cv::format("0x%8x", fourcc) << std::endl;
+    std::cout << "FOURCC code: " << ncvslideio::format("0x%8x", fourcc) << std::endl;
     test_readFrames(capture);
     capture.release();
 }
@@ -129,8 +129,8 @@ TEST(DISABLED_videoio_camera, msmf_read_yuyv)
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
     std::cout << "Capturing FPS: " << capture.get(CAP_PROP_FPS) << std::endl;
     int fourcc = (int)capture.get(CAP_PROP_FOURCC);
-    std::cout << "FOURCC code: " << cv::format("0x%8x", fourcc) << std::endl;
-    cv::Mat frame;
+    std::cout << "FOURCC code: " << ncvslideio::format("0x%8x", fourcc) << std::endl;
+    ncvslideio::Mat frame;
     for (int i = 0; i < 10; i++)
     {
         capture >> frame;
@@ -151,7 +151,7 @@ TEST(DISABLED_videoio_camera, v4l_open_mjpg)
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
     std::cout << "Capturing FPS: " << capture.get(CAP_PROP_FPS) << std::endl;
     int fourcc = (int)capture.get(CAP_PROP_FOURCC);
-    std::cout << "FOURCC code: " << cv::format("0x%8x", fourcc) << std::endl;
+    std::cout << "FOURCC code: " << ncvslideio::format("0x%8x", fourcc) << std::endl;
     test_readFrames(capture);
     capture.release();
 }
@@ -169,7 +169,7 @@ TEST(DISABLED_videoio_camera, v4l_open_mjpg_1280x720)
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
     std::cout << "Capturing FPS: " << capture.get(CAP_PROP_FPS) << std::endl;
     int fourcc = (int)capture.get(CAP_PROP_FOURCC);
-    std::cout << "FOURCC code: " << cv::format("0x%8x", fourcc) << std::endl;
+    std::cout << "FOURCC code: " << ncvslideio::format("0x%8x", fourcc) << std::endl;
     test_readFrames(capture);
     capture.release();
 }
@@ -197,7 +197,7 @@ TEST(DISABLED_videoio_camera, v4l_read_framesize)
     std::cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
     std::cout << "Capturing FPS: " << capture.get(CAP_PROP_FPS) << std::endl;
     int fourcc = (int)capture.get(CAP_PROP_FOURCC);
-    std::cout << "FOURCC code: " << cv::format("0x%8x", fourcc) << std::endl;
+    std::cout << "FOURCC code: " << ncvslideio::format("0x%8x", fourcc) << std::endl;
     test_readFrames(capture, 30);
 
     EXPECT_TRUE(capture.set(CAP_PROP_FRAME_WIDTH, 640));
@@ -230,18 +230,18 @@ TEST(DISABLED_videoio_camera, v4l_rgb_convert)
     std::cout << "Camera 0 via " << capture.getBackendName() << " backend" << std::endl;
     std::cout << " Frame width: " << capture.get(CAP_PROP_FRAME_WIDTH) << std::endl;
     std::cout << "      height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << std::endl;
-    std::cout << "Pixel format: " << capture.get(cv::CAP_PROP_FORMAT) << std::endl;
+    std::cout << "Pixel format: " << capture.get(ncvslideio::CAP_PROP_FORMAT) << std::endl;
     if (capture.get(CAP_PROP_FOURCC) != VideoWriter::fourcc('Y', 'U', 'Y', 'V'))
     {
         throw SkipTestException("Camera does not support YUYV format");
     }
-    capture.set(cv::CAP_PROP_CONVERT_RGB, 0);
-    std::cout << "New pixel format: " << capture.get(cv::CAP_PROP_FORMAT) << std::endl;
+    capture.set(ncvslideio::CAP_PROP_CONVERT_RGB, 0);
+    std::cout << "New pixel format: " << capture.get(ncvslideio::CAP_PROP_FORMAT) << std::endl;
 
-    cv::Mat frame;
+    ncvslideio::Mat frame;
     for (int i = 0; i < 10; i++)
     {
-        int pixel_type  = (int)capture.get(cv::CAP_PROP_FORMAT);
+        int pixel_type  = (int)capture.get(ncvslideio::CAP_PROP_FORMAT);
         int channels    = CV_MAT_CN(pixel_type);
         int pixel_bytes = CV_ELEM_SIZE(pixel_type);
 
@@ -277,7 +277,7 @@ TEST(DISABLED_videoio_camera, waitAny_V4L)
     for (size_t i = 0; i < cameraNames.size(); ++i)
     {
         const auto& name = cameraNames[i];
-        int fps = (int)utils::getConfigurationParameterSizeT(cv::format("OPENCV_TEST_CAMERA%d_FPS", (int)i).c_str(), (i & 1) ? fpsDefaultOdd : fpsDefaultEven);
+        int fps = (int)utils::getConfigurationParameterSizeT(ncvslideio::format("OPENCV_TEST_CAMERA%d_FPS", (int)i).c_str(), (i & 1) ? fpsDefaultOdd : fpsDefaultEven);
         std::cout << "Camera[" << i << "] = '" << name << "', fps=" << fps << std::endl;
         VideoCapture cap(name, CAP_V4L);
         ASSERT_TRUE(cap.isOpened()) << name;

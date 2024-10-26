@@ -4,7 +4,7 @@
 #include "aruco_samples_utility.hpp"
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 namespace {
 const char* about = "Basic marker detection";
@@ -81,8 +81,8 @@ int main(int argc, char *argv[]) {
     }
     //! [aruco_pose_estimation1]
     //! [aruco_detect_markers]
-    cv::aruco::ArucoDetector detector(dictionary, detectorParams);
-    cv::VideoCapture inputVideo;
+    ncvslideio::aruco::ArucoDetector detector(dictionary, detectorParams);
+    ncvslideio::VideoCapture inputVideo;
     int waitTime;
     if(!video.empty()) {
         inputVideo.open(video);
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     //! [aruco_pose_estimation2]
     // set coordinate system
-    cv::Mat objPoints(4, 1, CV_32FC3);
+    ncvslideio::Mat objPoints(4, 1, CV_32FC3);
     objPoints.ptr<Vec3f>(0)[0] = Vec3f(-markerLength/2.f, markerLength/2.f, 0);
     objPoints.ptr<Vec3f>(0)[1] = Vec3f(markerLength/2.f, markerLength/2.f, 0);
     objPoints.ptr<Vec3f>(0)[2] = Vec3f(markerLength/2.f, -markerLength/2.f, 0);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     //! [aruco_pose_estimation2]
 
     while(inputVideo.grab()) {
-        cv::Mat image, imageCopy;
+        ncvslideio::Mat image, imageCopy;
         inputVideo.retrieve(image);
 
         double tick = (double)getTickCount();
@@ -138,17 +138,17 @@ int main(int argc, char *argv[]) {
         // draw results
         image.copyTo(imageCopy);
         if(!ids.empty()) {
-            cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
+            ncvslideio::aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
             if(estimatePose) {
                 for(unsigned int i = 0; i < ids.size(); i++)
-                    cv::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 1.5f, 2);
+                    ncvslideio::drawFrameAxes(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i], markerLength * 1.5f, 2);
             }
         }
         //! [aruco_draw_pose_estimation]
 
         if(showRejected && !rejected.empty())
-            cv::aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
+            ncvslideio::aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
 
         imshow("out", imageCopy);
         char key = (char)waitKey(waitTime);

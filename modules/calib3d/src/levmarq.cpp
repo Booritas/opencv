@@ -74,7 +74,7 @@
    POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace cv
+namespace ncvslideio
 {
 
 class LMSolverImpl CV_FINAL : public LMSolver

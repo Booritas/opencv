@@ -21,7 +21,7 @@
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
 #include <opencv2/gapi/infer.hpp>   // Generic
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 
 /**
@@ -187,7 +187,7 @@ struct GAPI_EXPORTS_W_SIMPLE OpenVINO {
     GAPI_WRAP
     OpenVINO& cfgCacheDir(const std::string &dir) {
         if (!params_map.empty()) {
-            cv::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
+            ncvslideio::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
                                                    "created from the parameters map."));
         }
         cache_dir = dir;
@@ -205,7 +205,7 @@ struct GAPI_EXPORTS_W_SIMPLE OpenVINO {
     GAPI_WRAP
     OpenVINO& cfgNumThreads(size_t nthreads) {
         if (!params_map.empty()) {
-            cv::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
+            ncvslideio::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
                                                    "created from the parameters map."));
         }
         num_of_threads = nthreads;
@@ -222,7 +222,7 @@ struct GAPI_EXPORTS_W_SIMPLE OpenVINO {
     GAPI_WRAP
     OpenVINO& cfgEnableOpenCLThrottling() {
         if (!params_map.empty()) {
-            cv::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
+            ncvslideio::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
                                                    "created from the parameters map."));
         }
         enable_opencl_throttling = true;
@@ -242,7 +242,7 @@ struct GAPI_EXPORTS_W_SIMPLE OpenVINO {
     GAPI_WRAP
     OpenVINO& cfgEnableDynamicShapes() {
         if (!params_map.empty()) {
-            cv::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
+            ncvslideio::util::throw_error(std::logic_error("ep::OpenVINO cannot be changed if"
                                                    "created from the parameters map."));
         }
         enable_dynamic_shapes = true;
@@ -287,11 +287,11 @@ public:
     GAPI_WRAP
     explicit DirectML(const std::string &adapter_name) : ddesc(adapter_name) { };
 
-    using DeviceDesc = cv::util::variant<int, std::string>;
+    using DeviceDesc = ncvslideio::util::variant<int, std::string>;
     DeviceDesc ddesc;
 };
 
-using EP = cv::util::variant< cv::util::monostate
+using EP = ncvslideio::util::variant< ncvslideio::util::monostate
                             , OpenVINO
                             , DirectML
                             , CoreML
@@ -300,17 +300,17 @@ using EP = cv::util::variant< cv::util::monostate
 
 } // namespace ep
 
-GAPI_EXPORTS cv::gapi::GBackend backend();
+GAPI_EXPORTS ncvslideio::gapi::GBackend backend();
 
 enum class TraitAs: int {
-    TENSOR, //!< G-API traits an associated cv::Mat as a raw tensor
+    TENSOR, //!< G-API traits an associated ncvslideio::Mat as a raw tensor
             // and passes dimensions as-is
-    IMAGE   //!< G-API traits an associated cv::Mat as an image so
+    IMAGE   //!< G-API traits an associated ncvslideio::Mat as an image so
             // creates an "image" blob (NCHW/NHWC, etc)
 };
 
-using PostProc = std::function<void(const std::unordered_map<std::string, cv::Mat> &,
-                                          std::unordered_map<std::string, cv::Mat> &)>;
+using PostProc = std::function<void(const std::unordered_map<std::string, ncvslideio::Mat> &,
+                                          std::unordered_map<std::string, ncvslideio::Mat> &)>;
 
 namespace detail {
 /**
@@ -329,13 +329,13 @@ struct ParamDesc {
     std::vector<std::string> input_names; //!< Names of input network layers.
     std::vector<std::string> output_names; //!< Names of output network layers.
 
-    using ConstInput = std::pair<cv::Mat, TraitAs>;
+    using ConstInput = std::pair<ncvslideio::Mat, TraitAs>;
     std::unordered_map<std::string, ConstInput> const_inputs; //!< Map with pair of name of network layer and ConstInput which will be associated with this.
 
-    std::vector<cv::Scalar> mean; //!< Mean values for preprocessing.
-    std::vector<cv::Scalar> stdev; //!< Standard deviation values for preprocessing.
+    std::vector<ncvslideio::Scalar> mean; //!< Mean values for preprocessing.
+    std::vector<ncvslideio::Scalar> stdev; //!< Standard deviation values for preprocessing.
 
-    std::vector<cv::GMatDesc> out_metas; //!< Out meta information about your output (type, dimension).
+    std::vector<ncvslideio::GMatDesc> out_metas; //!< Out meta information about your output (type, dimension).
     PostProc custom_post_proc; //!< Post processing function.
 
     std::vector<bool> normalize; //!< Vector of bool values that enabled or disabled normalize of input data.
@@ -349,13 +349,13 @@ struct ParamDesc {
     // (as it was done for the OV IE backend)
     // These values are pushed into the respective vector<> fields above
     // when the generic infer parameters are unpacked (see GONNXBackendImpl::unpackKernel)
-    std::unordered_map<std::string, std::pair<cv::Scalar, cv::Scalar> > generic_mstd;
+    std::unordered_map<std::string, std::pair<ncvslideio::Scalar, ncvslideio::Scalar> > generic_mstd;
     std::unordered_map<std::string, bool> generic_norm;
 
     std::map<std::string, std::string> session_options;
-    std::vector<cv::gapi::onnx::ep::EP> execution_providers;
+    std::vector<ncvslideio::gapi::onnx::ep::EP> execution_providers;
     bool disable_mem_pattern;
-    cv::util::optional<int> opt_level;
+    ncvslideio::util::optional<int> opt_level;
 };
 } // namespace detail
 
@@ -368,7 +368,7 @@ struct PortCfg {
         < std::string
         , std::tuple_size<typename Net::OutArgs>::value >;
     using NormCoefs = std::array
-        < cv::Scalar
+        < ncvslideio::Scalar
         , std::tuple_size<typename Net::InArgs>::value >;
     using Normalize = std::array
         < bool
@@ -438,12 +438,12 @@ public:
     provide name of network layer which will receive provided data.
 
     @param layer_name Name of network layer.
-    @param data cv::Mat that contains data which will be associated with network layer.
+    @param data ncvslideio::Mat that contains data which will be associated with network layer.
     @param hint Type of input (TENSOR).
     @return the reference on modified object.
     */
     Params<Net>& constInput(const std::string &layer_name,
-                            const cv::Mat &data,
+                            const ncvslideio::Mat &data,
                             TraitAs hint = TraitAs::TENSOR) {
         desc.const_inputs[layer_name] = {data, hint};
         return *this;
@@ -454,9 +454,9 @@ public:
     The function is used to set mean value and standard deviation for preprocessing
     of input data.
 
-    @param m std::array<cv::Scalar, N> where N is the number of inputs
+    @param m std::array<ncvslideio::Scalar, N> where N is the number of inputs
     as defined in the @ref G_API_NET. Contains mean values.
-    @param s std::array<cv::Scalar, N> where N is the number of inputs
+    @param s std::array<ncvslideio::Scalar, N> where N is the number of inputs
     as defined in the @ref G_API_NET. Contains standard deviation values.
     @return the reference on modified object.
     */
@@ -478,10 +478,10 @@ public:
     @param out_metas Out meta information about your output (type, dimension).
     @param remap_function Post processing function, which has two parameters. First is onnx
     result, second is graph output. Both parameters is std::map that contain pair of
-    layer's name and cv::Mat.
+    layer's name and ncvslideio::Mat.
     @return the reference on modified object.
     */
-    Params<Net>& cfgPostProc(const std::vector<cv::GMatDesc> &out_metas,
+    Params<Net>& cfgPostProc(const std::vector<ncvslideio::GMatDesc> &out_metas,
                              const PostProc &remap_function) {
         desc.out_metas        = out_metas;
         desc.custom_post_proc = remap_function;
@@ -494,10 +494,10 @@ public:
     @param out_metas rvalue out meta information about your output (type, dimension).
     @param remap_function rvalue post processing function, which has two parameters. First is onnx
     result, second is graph output. Both parameters is std::map that contain pair of
-    layer's name and cv::Mat.
+    layer's name and ncvslideio::Mat.
     @return the reference on modified object.
     */
-    Params<Net>& cfgPostProc(std::vector<cv::GMatDesc> &&out_metas,
+    Params<Net>& cfgPostProc(std::vector<ncvslideio::GMatDesc> &&out_metas,
                              PostProc &&remap_function) {
         desc.out_metas        = std::move(out_metas);
         desc.custom_post_proc = std::move(remap_function);
@@ -516,7 +516,7 @@ public:
     function using these names.
     @return the reference on modified object.
     */
-    Params<Net>& cfgPostProc(const std::vector<cv::GMatDesc> &out_metas,
+    Params<Net>& cfgPostProc(const std::vector<ncvslideio::GMatDesc> &out_metas,
                              const PostProc &remap_function,
                              const std::vector<std::string> &names_to_remap) {
         desc.out_metas        = out_metas;
@@ -535,7 +535,7 @@ public:
     function using these names.
     @return the reference on modified object.
     */
-    Params<Net>& cfgPostProc(std::vector<cv::GMatDesc> &&out_metas,
+    Params<Net>& cfgPostProc(std::vector<ncvslideio::GMatDesc> &&out_metas,
                              PostProc &&remap_function,
                              std::vector<std::string> &&names_to_remap) {
         desc.out_metas        = std::move(out_metas);
@@ -548,7 +548,7 @@ public:
 
     The function is used to set normalize parameter for preprocessing of input data.
 
-    @param normalizations std::array<cv::Scalar, N> where N is the number of inputs
+    @param normalizations std::array<ncvslideio::Scalar, N> where N is the number of inputs
     as defined in the @ref G_API_NET. Сontains bool values that enabled or disabled
     normalize of input data.
     @return the reference on modified object.
@@ -563,7 +563,7 @@ public:
     The function is used to add ONNX Runtime OpenVINO Execution Provider options.
 
     @param ep OpenVINO Execution Provider options.
-    @see cv::gapi::onnx::ep::OpenVINO.
+    @see ncvslideio::gapi::onnx::ep::OpenVINO.
 
     @return the reference on modified object.
     */
@@ -577,7 +577,7 @@ public:
     The function is used to add ONNX Runtime DirectML Execution Provider options.
 
     @param ep DirectML Execution Provider options.
-    @see cv::gapi::onnx::ep::DirectML.
+    @see ncvslideio::gapi::onnx::ep::DirectML.
 
     @return the reference on modified object.
     */
@@ -591,7 +591,7 @@ public:
     The function is used to add ONNX Runtime CoreML Execution Provider options.
 
     @param ep CoreML Execution Provider options.
-    @see cv::gapi::onnx::ep::CoreML.
+    @see ncvslideio::gapi::onnx::ep::CoreML.
 
     @return the reference on modified object.
     */
@@ -605,7 +605,7 @@ public:
     The function is used to add ONNX Runtime CUDA Execution Provider options.
 
     @param ep CUDA Execution Provider options.
-    @see cv::gapi::onnx::ep::CUDA.
+    @see ncvslideio::gapi::onnx::ep::CUDA.
 
     @return the reference on modified object.
     */
@@ -619,7 +619,7 @@ public:
     The function is used to add ONNX Runtime TensorRT Execution Provider options.
 
     @param ep TensorRT Execution Provider options.
-    @see cv::gapi::onnx::ep::TensorRT.
+    @see ncvslideio::gapi::onnx::ep::TensorRT.
 
     @return the reference on modified object.
     */
@@ -657,14 +657,14 @@ public:
     @return the reference on modified object.
     */
     Params<Net>& cfgOptLevel(const int opt_level) {
-        desc.opt_level = cv::util::make_optional(opt_level);
+        desc.opt_level = ncvslideio::util::make_optional(opt_level);
         return *this;
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend() const { return cv::gapi::onnx::backend(); }
+    GBackend      backend() const { return ncvslideio::gapi::onnx::backend(); }
     std::string   tag()     const { return Net::tag(); }
-    cv::util::any params()  const { return { desc }; }
+    ncvslideio::util::any params()  const { return { desc }; }
     // END(G-API's network parametrization API)
 
 protected:
@@ -677,7 +677,7 @@ protected:
 * @see struct Generic
 */
 template<>
-class Params<cv::gapi::Generic> {
+class Params<ncvslideio::gapi::Generic> {
 public:
     /** @brief Class constructor.
 
@@ -692,8 +692,8 @@ public:
 
     /** @see onnx::Params::cfgMeanStdDev. */
     void cfgMeanStdDev(const std::string &layer,
-                       const cv::Scalar &m,
-                       const cv::Scalar &s) {
+                       const ncvslideio::Scalar &m,
+                       const ncvslideio::Scalar &s) {
         desc.generic_mstd[layer] = std::make_pair(m, s);
     }
 
@@ -739,13 +739,13 @@ public:
 
 /** @see onnx::Params::cfgOptLevel. */
     void cfgOptLevel(const int opt_level) {
-        desc.opt_level = cv::util::make_optional(opt_level);
+        desc.opt_level = ncvslideio::util::make_optional(opt_level);
     }
 
     // BEGIN(G-API's network parametrization API)
-    GBackend      backend() const { return cv::gapi::onnx::backend(); }
+    GBackend      backend() const { return ncvslideio::gapi::onnx::backend(); }
     std::string   tag()     const { return m_tag; }
-    cv::util::any params()  const { return { desc }; }
+    ncvslideio::util::any params()  const { return { desc }; }
     // END(G-API's network parametrization API)
 protected:
     detail::ParamDesc desc;
@@ -754,6 +754,6 @@ protected:
 
 } // namespace onnx
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_INFER_HPP

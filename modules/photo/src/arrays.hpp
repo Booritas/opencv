@@ -44,7 +44,7 @@
 #ifndef __OPENCV_DENOISING_ARRAYS_HPP__
 #define __OPENCV_DENOISING_ARRAYS_HPP__
 
-namespace cv
+namespace ncvslideio
 {
 
 template <class T>

@@ -58,7 +58,7 @@
 #include "grfmt_base.hpp"
 #include "bitstrm.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 class PAMDecoder CV_FINAL : public BaseImageDecoder

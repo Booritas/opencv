@@ -8,10 +8,10 @@ from tests_common import NewOpenCVTests, unittest
 class tracking_test(NewOpenCVTests):
 
     def test_createTracker(self):
-        t = cv.TrackerMIL_create()
+        t = ncvslideio.TrackerMIL_create()
         try:
-            t = cv.TrackerGOTURN_create()
-        except cv.error as e:
+            t = ncvslideio.TrackerGOTURN_create()
+        except ncvslideio.error as e:
             pass  # may fail due to missing DL model files
 
 

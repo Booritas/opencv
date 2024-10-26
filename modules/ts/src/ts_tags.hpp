@@ -19,7 +19,7 @@
 
 namespace cvtest {
 
-void activateTestTags(const cv::CommandLineParser& parser);
+void activateTestTags(const ncvslideio::CommandLineParser& parser);
 
 void testTagIncreaseSkipCount(const std::string& tag, bool isMain = true, bool appendSkipTests = false);
 

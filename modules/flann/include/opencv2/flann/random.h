@@ -44,9 +44,9 @@ inline int rand()
 {
 #ifndef OPENCV_FLANN_USE_STD_RAND
 #   if INT_MAX == RAND_MAX
-    int v = cv::theRNG().next() & INT_MAX;
+    int v = ncvslideio::theRNG().next() & INT_MAX;
 #   else
-    int v = cv::theRNG().uniform(0, RAND_MAX + 1);
+    int v = ncvslideio::theRNG().uniform(0, RAND_MAX + 1);
 #   endif
 #else
     int v = std::rand();
@@ -61,7 +61,7 @@ inline int rand()
 inline void seed_random(unsigned int seed)
 {
 #ifndef OPENCV_FLANN_USE_STD_RAND
-    cv::theRNG() = cv::RNG(seed);
+    ncvslideio::theRNG() = ncvslideio::RNG(seed);
 #else
     std::srand(seed);
 #endif
@@ -125,7 +125,7 @@ public:
 
         // shuffle the elements in the array
 #ifndef OPENCV_FLANN_USE_STD_RAND
-        cv::randShuffle(vals_);
+        ncvslideio::randShuffle(vals_);
 #else
         std::random_shuffle(vals_.begin(), vals_.end());
 #endif

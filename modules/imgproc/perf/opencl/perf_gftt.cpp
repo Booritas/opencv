@@ -66,7 +66,7 @@ OCL_PERF_TEST_P(GoodFeaturesToTrackFixture, GoodFeaturesToTrack,
     const bool harrisDetector = get<2>(params);
     const int maxCorners = 1000;
 
-    Mat img = imread(getDataPath(fileName), cv::IMREAD_GRAYSCALE);
+    Mat img = imread(getDataPath(fileName), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(img.empty()) << "could not load " << fileName;
 
     checkDeviceMaxMemoryAllocSize(img.size(), img.type());
@@ -76,7 +76,7 @@ OCL_PERF_TEST_P(GoodFeaturesToTrackFixture, GoodFeaturesToTrack,
 
     declare.in(src, WARMUP_READ).out(dst);
 
-    OCL_TEST_CYCLE() cv::goodFeaturesToTrack(src, dst, maxCorners, qualityLevel,
+    OCL_TEST_CYCLE() ncvslideio::goodFeaturesToTrack(src, dst, maxCorners, qualityLevel,
                                              minDistance, noArray(), 3, 3, harrisDetector, 0.04);
 
     SANITY_CHECK(dst);
@@ -92,7 +92,7 @@ OCL_PERF_TEST_P(GoodFeaturesToTrackFixture, GoodFeaturesToTrackWithQuality,
     const bool harrisDetector = get<2>(params);
     const int maxCorners = 1000;
 
-    Mat img = imread(getDataPath(fileName), cv::IMREAD_GRAYSCALE);
+    Mat img = imread(getDataPath(fileName), ncvslideio::IMREAD_GRAYSCALE);
     ASSERT_FALSE(img.empty()) << "could not load " << fileName;
 
     checkDeviceMaxMemoryAllocSize(img.size(), img.type());
@@ -104,7 +104,7 @@ OCL_PERF_TEST_P(GoodFeaturesToTrackFixture, GoodFeaturesToTrackWithQuality,
 
     declare.in(src, WARMUP_READ).out(dst);
 
-    OCL_TEST_CYCLE() cv::goodFeaturesToTrack(src, dst, maxCorners, qualityLevel, minDistance,
+    OCL_TEST_CYCLE() ncvslideio::goodFeaturesToTrack(src, dst, maxCorners, qualityLevel, minDistance,
                                              noArray(), cornersQuality, 3, 3, harrisDetector, 0.04);
 
     SANITY_CHECK(dst);

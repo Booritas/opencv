@@ -12,7 +12,7 @@
 #include <tuple>
 #include <numeric>
 
-namespace cv { namespace gapi {
+namespace ncvslideio { namespace gapi {
 
 nn::parsers::GDetections parseSSD(const GMat& in,
                                   const GOpaque<Size>& inSz,
@@ -41,4 +41,4 @@ nn::parsers::GDetections parseYolo(const GMat& in,
 }
 
 } //namespace gapi
-} //namespace cv
+} //namespace ncvslideio

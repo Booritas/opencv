@@ -126,7 +126,7 @@ public:
         for (int i = 0; i < trees_; i++) {
             /* Randomize the order of vectors to allow for unbiased sampling. */
 #ifndef OPENCV_FLANN_USE_STD_RAND
-            cv::randShuffle(vind_);
+            ncvslideio::randShuffle(vind_);
 #else
             std::random_shuffle(vind_.begin(), vind_.end());
 #endif
@@ -449,7 +449,7 @@ private:
         DynamicBitset checked(size_);
 
         // Priority queue storing intermediate branches in the best-bin-first search
-        const cv::Ptr<Heap<BranchSt>>& heap = Heap<BranchSt>::getPooledInstance(cv::utils::getThreadID(), (int)size_);
+        const ncvslideio::Ptr<Heap<BranchSt>>& heap = Heap<BranchSt>::getPooledInstance(ncvslideio::utils::getThreadID(), (int)size_);
 
         /* Search once through each tree down to root. */
         for (i = 0; i < trees_; ++i) {
@@ -475,7 +475,7 @@ private:
      *  at least "mindistsq".
      */
     void searchLevel(ResultSet<DistanceType>& result_set, const ElementType* vec, NodePtr node, DistanceType mindist, int& checkCount, int maxCheck,
-                     float epsError, const cv::Ptr<Heap<BranchSt>>& heap, DynamicBitset& checked, bool explore_all_trees = false)
+                     float epsError, const ncvslideio::Ptr<Heap<BranchSt>>& heap, DynamicBitset& checked, bool explore_all_trees = false)
     {
         if (result_set.worstDist()<mindist) {
             //			printf("Ignoring branch, too far\n");

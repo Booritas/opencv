@@ -8,7 +8,7 @@
 #include <opencv2/gapi/streaming/onevpl/device_selector_interface.hpp>
 #include <opencv2/gapi/own/assert.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -134,4 +134,4 @@ Context create_vaapi_context(Context::Ptr ctx_ptr) {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio

@@ -27,7 +27,7 @@
 // Heap property: a parent is greater than (or equal to) its children.
 
 #define MIN_CAPACITY 16
-namespace cv {
+namespace ncvslideio {
 namespace aruco {
 struct zmaxheap
 {
@@ -48,7 +48,7 @@ static inline void _swap_default(zmaxheap_t *heap, int a, int b)
     heap->values[a] = heap->values[b];
     heap->values[b] = t;
 
-    cv::AutoBuffer<char> tmp(heap->el_sz);
+    ncvslideio::AutoBuffer<char> tmp(heap->el_sz);
     memcpy(tmp.data(), &heap->data[a*heap->el_sz], heap->el_sz);
     memcpy(&heap->data[a*heap->el_sz], &heap->data[b*heap->el_sz], heap->el_sz);
     memcpy(&heap->data[b*heap->el_sz], tmp.data(), heap->el_sz);

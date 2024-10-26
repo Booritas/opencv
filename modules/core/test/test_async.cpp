@@ -23,7 +23,7 @@ TEST(Core_Async, BasicCheck)
 
     // Follow the limitations of std::promise::get_future
     // https://en.cppreference.com/w/cpp/thread/promise/get_future
-    EXPECT_THROW(AsyncArray r2 = p.getArrayResult(), cv::Exception);
+    EXPECT_THROW(AsyncArray r2 = p.getArrayResult(), ncvslideio::Exception);
 
     p.setValue(m);
 
@@ -35,7 +35,7 @@ TEST(Core_Async, BasicCheck)
     // https://en.cppreference.com/w/cpp/thread/future/get
     EXPECT_FALSE(r.valid());
     Mat m3;
-    EXPECT_THROW(r.get(m3), cv::Exception);
+    EXPECT_THROW(r.get(m3), ncvslideio::Exception);
 }
 
 TEST(Core_Async, ExceptionCheck)
@@ -49,7 +49,7 @@ TEST(Core_Async, ExceptionCheck)
     {
         CV_Error(Error::StsOk, "Test: Generated async error");
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         p.setException(e);
     }
@@ -59,7 +59,7 @@ TEST(Core_Async, ExceptionCheck)
         r.get(m2);
         FAIL() << "Exception is expected";
     }
-    catch (const cv::Exception& e)
+    catch (const ncvslideio::Exception& e)
     {
         EXPECT_EQ(Error::StsOk, e.code) << e.what();
     }
@@ -73,7 +73,7 @@ TEST(Core_Async, ExceptionCheck)
 TEST(Core_Async, LikePythonTest)
 {
     Mat m(3, 3, CV_32FC1, Scalar::all(5.0f));
-    AsyncArray r = cv::utils::testAsyncArray(m);
+    AsyncArray r = ncvslideio::utils::testAsyncArray(m);
     EXPECT_TRUE(r.valid());
     Mat m2;
     r.get(m2);
@@ -134,7 +134,7 @@ TEST(Core_Async, AsyncThread_DetachedResult)
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         try {
             p.setValue(m);
-        } catch (const cv::Exception& e) {
+        } catch (const ncvslideio::Exception& e) {
             if (e.code == Error::StsError)
                 exception_ok = true;
             else

@@ -38,7 +38,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <opencv2/core.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace IPPE {
 
 class PoseSolver {
@@ -255,5 +255,5 @@ void homographyHO(InputArray srcPoints, InputArray targPoints, Matx33d& H);
 void normalizeDataIsotropic(InputArray Data, OutputArray DataN, OutputArray T, OutputArray Ti);
 
 }
-} //namespace cv
+} //namespace ncvslideio
 #endif

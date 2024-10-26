@@ -159,8 +159,8 @@ TEST(Calib3d_DecomposeHomography, issue_4978)
     for (size_t i = 0; i < rotations.size(); i++)
     {
         // check: det(R) = 1
-        EXPECT_TRUE(std::fabs(cv::determinant(rotations[i]) - 1.0) < 0.01)
-            << "R: det=" << cv::determinant(rotations[0]) << std::endl << rotations[i] << std::endl
+        EXPECT_TRUE(std::fabs(ncvslideio::determinant(rotations[i]) - 1.0) < 0.01)
+            << "R: det=" << ncvslideio::determinant(rotations[0]) << std::endl << rotations[i] << std::endl
             << "T:" << std::endl << translations[i] << std::endl;
     }
 }

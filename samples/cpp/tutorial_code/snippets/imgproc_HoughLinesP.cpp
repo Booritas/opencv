@@ -1,7 +1,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 int main(int argc, char** argv)

@@ -7,7 +7,7 @@
 
 #include <cuda_runtime.h>
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl { namespace device {
 
 template <class T>
 __device__ T load_ldg(const T& src) {
@@ -27,6 +27,6 @@ __device__ T load_ldg(const T* src) {
 #endif
 }
 
-}}}}} /* namespace cv::dnn::cuda4dnn::csl::device */
+}}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl::device */
 
 #endif /* OPENCV_DNN_SRC_CUDA_MEMORY_HPP */

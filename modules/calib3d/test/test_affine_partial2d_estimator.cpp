@@ -188,7 +188,7 @@ TEST(EstimateAffinePartial2D, issue_14259_dont_change_inputs)
 
     Mat inliers;
 
-    cv::Mat A = cv::estimateAffinePartial2D(pts0, pts1, inliers);
+    ncvslideio::Mat A = ncvslideio::estimateAffinePartial2D(pts0, pts1, inliers);
 
     for(int i = 0; i < pts0.rows; ++i)
     {

@@ -25,7 +25,7 @@
 #include <CL/cl_d3d11.h>
 #endif
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -167,7 +167,7 @@ size_t VPLDX11AccelerationPolicy::get_surface_count(pool_key_t key) const {
     return pool_it->second.total_size();
 }
 
-cv::MediaFrame::AdapterPtr
+ncvslideio::MediaFrame::AdapterPtr
 VPLDX11AccelerationPolicy::create_frame_adapter(pool_key_t key,
                                                 const FrameConstructorArgs &params) {
     auto pool_it = pool_table.find(key);
@@ -180,7 +180,7 @@ VPLDX11AccelerationPolicy::create_frame_adapter(pool_key_t key,
     }
 
     pool_t& requested_pool = pool_it->second;
-    return cv::MediaFrame::AdapterPtr{new VPLMediaFrameDX11Adapter(requested_pool.find_by_handle(params.assoc_surface),
+    return ncvslideio::MediaFrame::AdapterPtr{new VPLMediaFrameDX11Adapter(requested_pool.find_by_handle(params.assoc_surface),
                                                                    params.assoc_handle)};
 }
 
@@ -198,14 +198,14 @@ mfxStatus VPLDX11AccelerationPolicy::alloc_cb(mfxHDL pthis, mfxFrameAllocRequest
 mfxStatus VPLDX11AccelerationPolicy::lock_cb(mfxHDL pthis, mfxMemId mid, mfxFrameData *ptr) {
     VPLDX11AccelerationPolicy *self = static_cast<VPLDX11AccelerationPolicy *>(pthis);
     GAPI_LOG_DEBUG(nullptr, "called from: " << self ? "Policy" : "Resource");
-    cv::util::suppress_unused_warning(self);
+    ncvslideio::util::suppress_unused_warning(self);
     return on_lock(mid, ptr);
 }
 
 mfxStatus VPLDX11AccelerationPolicy::unlock_cb(mfxHDL pthis, mfxMemId mid, mfxFrameData *ptr) {
     VPLDX11AccelerationPolicy *self = static_cast<VPLDX11AccelerationPolicy *>(pthis);
     GAPI_LOG_DEBUG(nullptr, "called from: " << self ? "Policy" : "Resource");
-    cv::util::suppress_unused_warning(self);
+    ncvslideio::util::suppress_unused_warning(self);
     return on_unlock(mid, ptr);
 }
 
@@ -213,7 +213,7 @@ mfxStatus VPLDX11AccelerationPolicy::get_hdl_cb(mfxHDL pthis, mfxMemId mid, mfxH
     VPLDX11AccelerationPolicy *self = static_cast<VPLDX11AccelerationPolicy *>(pthis);
 
     GAPI_LOG_DEBUG(nullptr, "called from: " << self ? "Policy" : "Resource");
-    cv::util::suppress_unused_warning(self);
+    ncvslideio::util::suppress_unused_warning(self);
     return on_get_hdl(mid, handle);
 }
 
@@ -438,11 +438,11 @@ mfxStatus VPLDX11AccelerationPolicy::on_free(mfxFrameAllocResponse *response) {
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #else // #if defined(HAVE_DIRECTX) && defined(HAVE_D3D11)
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 namespace onevpl {
@@ -478,13 +478,13 @@ size_t VPLDX11AccelerationPolicy::get_surface_count(pool_key_t) const {
     GAPI_Error("VPLDX11AccelerationPolicy unavailable in current configuration");
 }
 
-cv::MediaFrame::AdapterPtr VPLDX11AccelerationPolicy::create_frame_adapter(pool_key_t,
+ncvslideio::MediaFrame::AdapterPtr VPLDX11AccelerationPolicy::create_frame_adapter(pool_key_t,
                                                                           const FrameConstructorArgs &) {
     GAPI_Error("VPLDX11AccelerationPolicy unavailable in current configuration");
 }
 } // namespace onevpl
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 #endif // #if defined(HAVE_DIRECTX) && defined(HAVE_D3D11)
 #endif // HAVE_ONEVPL

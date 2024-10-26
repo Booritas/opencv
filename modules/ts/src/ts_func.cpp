@@ -3,7 +3,7 @@
 #include <limits.h>
 #include "opencv2/imgproc/types_c.h"
 
-using namespace cv;
+using namespace ncvslideio;
 
 namespace cvtest
 {
@@ -277,7 +277,7 @@ convertTo(const _Tp* src, void* dst, int dtype, size_t total, double alpha, doub
     }
 }
 
-void convert(const Mat& src, cv::OutputArray _dst, int dtype, double alpha, double beta)
+void convert(const Mat& src, ncvslideio::OutputArray _dst, int dtype, double alpha, double beta)
 {
     if (dtype < 0) dtype = _dst.depth();
 
@@ -2267,7 +2267,7 @@ void gemm( const Mat& _a, const Mat& _b, double alpha,
     if( b.data == d.data )
         b = b.clone();
 
-    if( !c.empty() && c.data == d.data && (flags & cv::GEMM_3_T) )
+    if( !c.empty() && c.data == d.data && (flags & ncvslideio::GEMM_3_T) )
         c = c.clone();
 
     int a_rows = a.rows, a_cols = a.cols, b_rows = b.rows, b_cols = b.cols;
@@ -2278,13 +2278,13 @@ void gemm( const Mat& _a, const Mat& _b, double alpha,
 
     CV_Assert( a.type() == b.type() && a.dims == 2 && b.dims == 2 && cn <= 2 );
 
-    if( flags & cv::GEMM_1_T )
+    if( flags & ncvslideio::GEMM_1_T )
     {
         std::swap( a_rows, a_cols );
         std::swap( a_step, a_delta );
     }
 
-    if( flags & cv::GEMM_2_T )
+    if( flags & ncvslideio::GEMM_2_T )
     {
         std::swap( b_rows, b_cols );
         std::swap( b_step, b_delta );
@@ -2297,7 +2297,7 @@ void gemm( const Mat& _a, const Mat& _b, double alpha,
         c_step = (int)c.step1();
         c_delta = cn;
 
-        if( flags & cv::GEMM_3_T )
+        if( flags & ncvslideio::GEMM_3_T )
         {
             std::swap( c_rows, c_cols );
             std::swap( c_step, c_delta );
@@ -3088,7 +3088,7 @@ void threshold( const Mat& _src, Mat& _dst,
 
     switch( thresh_type )
     {
-    case cv::THRESH_BINARY:
+    case ncvslideio::THRESH_BINARY:
         for( i = 0; i < height; i++ )
         {
             if( depth == CV_8U )
@@ -3114,7 +3114,7 @@ void threshold( const Mat& _src, Mat& _dst,
             }
         }
         break;
-    case cv::THRESH_BINARY_INV:
+    case ncvslideio::THRESH_BINARY_INV:
         for( i = 0; i < height; i++ )
         {
             if( depth == CV_8U )
@@ -3140,7 +3140,7 @@ void threshold( const Mat& _src, Mat& _dst,
             }
         }
         break;
-    case cv::THRESH_TRUNC:
+    case ncvslideio::THRESH_TRUNC:
         for( i = 0; i < height; i++ )
         {
             if( depth == CV_8U )
@@ -3175,7 +3175,7 @@ void threshold( const Mat& _src, Mat& _dst,
             }
         }
         break;
-    case cv::THRESH_TOZERO:
+    case ncvslideio::THRESH_TOZERO:
         for( i = 0; i < height; i++ )
         {
             if( depth == CV_8U )
@@ -3210,7 +3210,7 @@ void threshold( const Mat& _src, Mat& _dst,
             }
         }
         break;
-    case cv::THRESH_TOZERO_INV:
+    case ncvslideio::THRESH_TOZERO_INV:
         for( i = 0; i < height; i++ )
         {
             if( depth == CV_8U )

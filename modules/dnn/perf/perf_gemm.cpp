@@ -232,10 +232,10 @@ PERF_TEST_P_(Gemm, innerproduct)
     lp.type = "InnerProduct";
     lp.name = "testLayer";
     if (trans_a) {
-        cv::transpose(A, A);
+        ncvslideio::transpose(A, A);
     }
     if (!trans_b) {
-        cv::transpose(B, B);
+        ncvslideio::transpose(B, B);
     }
     lp.blobs.push_back(B);
     lp.set("num_output", B.size[0]);

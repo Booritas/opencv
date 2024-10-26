@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void help(char** argv)
@@ -19,7 +19,7 @@ static void help(char** argv)
 int main(int argc, char** argv)
 {
     help(argv);
-    cv::CommandLineParser parser(argc, argv, "{@image| ../data/left%02d.jpg |}");
+    ncvslideio::CommandLineParser parser(argc, argv, "{@image| ../data/left%02d.jpg |}");
     string first_file = parser.get<string>("@image");
 
     if(first_file.empty())

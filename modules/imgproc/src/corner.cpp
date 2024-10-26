@@ -46,7 +46,7 @@
 #include "opencv2/core/hal/intrin.hpp"
 #include "corner.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 static void calcMinEigenVal( const Mat& _cov, Mat& _dst )
@@ -353,7 +353,7 @@ static bool extractCovData(InputArray _src, UMat & Dx, UMat & Dy, int depth,
                                              "BORDER_WRAP", "BORDER_REFLECT101" };
 
         ocl::Kernel k(format("sobel%d", aperture_size).c_str(), ocl::imgproc::covardata_oclsrc,
-                      cv::format("-D BLK_X=%d -D BLK_Y=%d -D %s -D SRCTYPE=%s%s",
+                      ncvslideio::format("-D BLK_X=%d -D BLK_Y=%d -D %s -D SRCTYPE=%s%s",
                                  (int)localsize[0], (int)localsize[1], borderTypes[borderType], ocl::typeToStr(depth),
                                  aperture_size < 0 ? " -D SCHARR" : ""));
         if (k.empty())
@@ -472,7 +472,7 @@ static bool ocl_preCornerDetect( InputArray _src, OutputArray _dst, int ksize, i
 }
 
 #if 0 //defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_cornerMinEigenVal( InputArray _src, OutputArray _dst, int blockSize, int ksize, int borderType )
 {
@@ -547,7 +547,7 @@ static bool ipp_cornerMinEigenVal( InputArray _src, OutputArray _dst, int blockS
 }
 #endif
 
-void cv::cornerMinEigenVal( InputArray _src, OutputArray _dst, int blockSize, int ksize, int borderType )
+void ncvslideio::cornerMinEigenVal( InputArray _src, OutputArray _dst, int blockSize, int ksize, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -573,7 +573,7 @@ void cv::cornerMinEigenVal( InputArray _src, OutputArray _dst, int blockSize, in
 
 
 #if defined(HAVE_IPP)
-namespace cv
+namespace ncvslideio
 {
 static bool ipp_cornerHarris( Mat &src, Mat &dst, int blockSize, int ksize, double k, int borderType )
 {
@@ -631,7 +631,7 @@ static bool ipp_cornerHarris( Mat &src, Mat &dst, int blockSize, int ksize, doub
 }
 #endif
 
-void cv::cornerHarris( InputArray _src, OutputArray _dst, int blockSize, int ksize, double k, int borderType )
+void ncvslideio::cornerHarris( InputArray _src, OutputArray _dst, int blockSize, int ksize, double k, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -654,7 +654,7 @@ void cv::cornerHarris( InputArray _src, OutputArray _dst, int blockSize, int ksi
 }
 
 
-void cv::cornerEigenValsAndVecs( InputArray _src, OutputArray _dst, int blockSize, int ksize, int borderType )
+void ncvslideio::cornerEigenValsAndVecs( InputArray _src, OutputArray _dst, int blockSize, int ksize, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -669,7 +669,7 @@ void cv::cornerEigenValsAndVecs( InputArray _src, OutputArray _dst, int blockSiz
 }
 
 
-void cv::preCornerDetect( InputArray _src, OutputArray _dst, int ksize, int borderType )
+void ncvslideio::preCornerDetect( InputArray _src, OutputArray _dst, int ksize, int borderType )
 {
     CV_INSTRUMENT_REGION();
 
@@ -740,20 +740,20 @@ CV_IMPL void
 cvCornerMinEigenVal( const CvArr* srcarr, CvArr* dstarr,
                      int block_size, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.size() == dst.size() && dst.type() == CV_32FC1 );
-    cv::cornerMinEigenVal( src, dst, block_size, aperture_size, cv::BORDER_REPLICATE );
+    ncvslideio::cornerMinEigenVal( src, dst, block_size, aperture_size, ncvslideio::BORDER_REPLICATE );
 }
 
 CV_IMPL void
 cvCornerHarris( const CvArr* srcarr, CvArr* dstarr,
                 int block_size, int aperture_size, double k )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.size() == dst.size() && dst.type() == CV_32FC1 );
-    cv::cornerHarris( src, dst, block_size, aperture_size, k, cv::BORDER_REPLICATE );
+    ncvslideio::cornerHarris( src, dst, block_size, aperture_size, k, ncvslideio::BORDER_REPLICATE );
 }
 
 
@@ -761,20 +761,20 @@ CV_IMPL void
 cvCornerEigenValsAndVecs( const void* srcarr, void* dstarr,
                           int block_size, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.rows == dst.rows && src.cols*6 == dst.cols*dst.channels() && dst.depth() == CV_32F );
-    cv::cornerEigenValsAndVecs( src, dst, block_size, aperture_size, cv::BORDER_REPLICATE );
+    ncvslideio::cornerEigenValsAndVecs( src, dst, block_size, aperture_size, ncvslideio::BORDER_REPLICATE );
 }
 
 
 CV_IMPL void
 cvPreCornerDetect( const void* srcarr, void* dstarr, int aperture_size )
 {
-    cv::Mat src = cv::cvarrToMat(srcarr), dst = cv::cvarrToMat(dstarr);
+    ncvslideio::Mat src = ncvslideio::cvarrToMat(srcarr), dst = ncvslideio::cvarrToMat(dstarr);
 
     CV_Assert( src.size() == dst.size() && dst.type() == CV_32FC1 );
-    cv::preCornerDetect( src, dst, aperture_size, cv::BORDER_REPLICATE );
+    ncvslideio::preCornerDetect( src, dst, aperture_size, ncvslideio::BORDER_REPLICATE );
 }
 
 /* End of file */

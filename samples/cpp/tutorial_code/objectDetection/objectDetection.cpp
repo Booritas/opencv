@@ -5,7 +5,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 /** Function Headers */
 void detectAndDisplay( Mat frame );
@@ -23,7 +23,7 @@ int main( int argc, const char** argv )
                              "{eyes_cascade|data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|Path to eyes cascade.}"
                              "{camera|0|Camera device number.}");
 
-    parser.about( "\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
+    parser.about( "\nThis program demonstrates using the ncvslideio::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
                   "You can use Haar or LBP features.\n\n" );
     parser.printMessage();
 

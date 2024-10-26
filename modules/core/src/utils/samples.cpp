@@ -13,23 +13,23 @@
 #include "opencv2/core/utils/filesystem.hpp"
 #include "opencv2/core/utils/filesystem.private.hpp"
 
-namespace cv { namespace samples {
+namespace ncvslideio { namespace samples {
 
-static cv::Ptr< std::vector<cv::String> > g_data_search_path;
-static cv::Ptr< std::vector<cv::String> > g_data_search_subdir;
+static ncvslideio::Ptr< std::vector<ncvslideio::String> > g_data_search_path;
+static ncvslideio::Ptr< std::vector<ncvslideio::String> > g_data_search_subdir;
 
-static std::vector<cv::String>& _getDataSearchPath()
+static std::vector<ncvslideio::String>& _getDataSearchPath()
 {
     if (g_data_search_path.empty())
-        g_data_search_path.reset(new std::vector<cv::String>());
+        g_data_search_path.reset(new std::vector<ncvslideio::String>());
     return *(g_data_search_path.get());
 }
 
-static std::vector<cv::String>& _getDataSearchSubDirectory()
+static std::vector<ncvslideio::String>& _getDataSearchSubDirectory()
 {
     if (g_data_search_subdir.empty())
     {
-        g_data_search_subdir.reset(new std::vector<cv::String>());
+        g_data_search_subdir.reset(new std::vector<ncvslideio::String>());
         g_data_search_subdir->push_back("samples/data");
         g_data_search_subdir->push_back("data");
         g_data_search_subdir->push_back("");
@@ -38,30 +38,30 @@ static std::vector<cv::String>& _getDataSearchSubDirectory()
 }
 
 
-CV_EXPORTS void addSamplesDataSearchPath(const cv::String& path)
+CV_EXPORTS void addSamplesDataSearchPath(const ncvslideio::String& path)
 {
     if (utils::fs::isDirectory(path))
         _getDataSearchPath().push_back(path);
 }
-CV_EXPORTS void addSamplesDataSearchSubDirectory(const cv::String& subdir)
+CV_EXPORTS void addSamplesDataSearchSubDirectory(const ncvslideio::String& subdir)
 {
     _getDataSearchSubDirectory().push_back(subdir);
 }
 
-cv::String findFile(const cv::String& relative_path, bool required, bool silentMode)
+ncvslideio::String findFile(const ncvslideio::String& relative_path, bool required, bool silentMode)
 {
 #if OPENCV_HAVE_FILESYSTEM_SUPPORT
-    CV_LOG_DEBUG(NULL, cv::format("cv::samples::findFile('%s', %s)", relative_path.c_str(), required ? "true" : "false"));
-    cv::String result = cv::utils::findDataFile(relative_path,
+    CV_LOG_DEBUG(NULL, ncvslideio::format("ncvslideio::samples::findFile('%s', %s)", relative_path.c_str(), required ? "true" : "false"));
+    ncvslideio::String result = ncvslideio::utils::findDataFile(relative_path,
                                                 "OPENCV_SAMPLES_DATA_PATH",
                                                 &_getDataSearchPath(),
                                                 &_getDataSearchSubDirectory());
     if (result != relative_path && !silentMode)
     {
-        CV_LOG_WARNING(NULL, "cv::samples::findFile('" << relative_path << "') => '" << result << "'");
+        CV_LOG_WARNING(NULL, "ncvslideio::samples::findFile('" << relative_path << "') => '" << result << "'");
     }
     if (result.empty() && required)
-        CV_Error(cv::Error::StsError, cv::format("OpenCV samples: Can't find required data file: %s", relative_path.c_str()));
+        CV_Error(ncvslideio::Error::StsError, ncvslideio::format("OpenCV samples: Can't find required data file: %s", relative_path.c_str()));
     return result;
 #else
     CV_UNUSED(relative_path);

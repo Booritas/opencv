@@ -10,13 +10,13 @@
 #include <cuda_runtime_api.h>
 
 #define CUDA4DNN_CHECK_CUDA(call) \
-    ::cv::dnn::cuda4dnn::csl::detail::check((call), CV_Func, __FILE__, __LINE__)
+    ::ncvslideio::dnn::cuda4dnn::csl::detail::check((call), CV_Func, __FILE__, __LINE__)
 
-namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
+namespace ncvslideio { namespace dnn { namespace cuda4dnn { namespace csl {
     /** @brief exception class for errors thrown by the CUDA APIs */
-    class CUDAException : public cv::Exception {
+    class CUDAException : public ncvslideio::Exception {
     public:
-        using cv::Exception::Exception;
+        using ncvslideio::Exception::Exception;
     };
 
     namespace detail {
@@ -25,6 +25,6 @@ namespace cv { namespace dnn { namespace cuda4dnn { namespace csl {
                 throw CUDAException(Error::GpuApiCallError, cudaGetErrorString(err), func, file, line);
         }
     }
-}}}} /* namespace cv::dnn::cuda4dnn::csl */
+}}}} /* namespace ncvslideio::dnn::cuda4dnn::csl */
 
 #endif /* OPENCV_DNN_SRC_CUDA4DNN_CSL_ERROR_HPP */

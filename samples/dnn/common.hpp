@@ -1,6 +1,6 @@
 #include <opencv2/core/utils/filesystem.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 
 std::string genArgument(const std::string& argName, const std::string& help,
                         const std::string& modelName, const std::string& zooFile,

@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 /**
@@ -18,7 +18,7 @@ using namespace std;
  */
 int main( int argc, char** argv )
 {
-  cv::CommandLineParser parser(argc, argv,
+  ncvslideio::CommandLineParser parser(argc, argv,
                                "{@input   |lena.jpg|input image}"
                                "{ksize   k|1|ksize (hit 'K' to increase its value at run time)}"
                                "{scale   s|1|scale (hit 'S' to increase its value at run time)}"

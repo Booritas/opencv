@@ -1,6 +1,6 @@
 #include <opencv2/imgcodecs.hpp>
 
-using namespace cv;
+using namespace ncvslideio;
 using namespace std;
 
 static void paintAlphaMat(Mat &mat)
@@ -33,7 +33,7 @@ int main()
     {
         result = imwrite("alpha.png", mat, compression_params);
     }
-    catch (const cv::Exception& ex)
+    catch (const ncvslideio::Exception& ex)
     {
         fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());
     }

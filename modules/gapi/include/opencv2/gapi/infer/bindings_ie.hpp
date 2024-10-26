@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace ie {
 
@@ -38,7 +38,7 @@ public:
 
     GAPI_WRAP
     PyParams& constInput(const std::string &layer_name,
-                         const cv::Mat &data,
+                         const ncvslideio::Mat &data,
                          TraitAs hint = TraitAs::TENSOR);
 
     GAPI_WRAP
@@ -49,10 +49,10 @@ public:
 
     GBackend      backend() const;
     std::string   tag()     const;
-    cv::util::any params()  const;
+    ncvslideio::util::any params()  const;
 
 private:
-    std::shared_ptr<Params<cv::gapi::Generic>> m_priv;
+    std::shared_ptr<Params<ncvslideio::gapi::Generic>> m_priv;
 };
 
 GAPI_EXPORTS_W PyParams params(const std::string &tag,
@@ -65,6 +65,6 @@ GAPI_EXPORTS_W PyParams params(const std::string &tag,
                                const std::string &device);
 } // namespace ie
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_INFER_BINDINGS_IE_HPP

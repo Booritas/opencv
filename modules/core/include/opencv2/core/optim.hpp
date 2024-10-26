@@ -44,7 +44,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace cv
+namespace ncvslideio
 {
 
 /** @addtogroup core_optim
@@ -103,7 +103,7 @@ public:
     the function values at the vertices of simplex are within termcrit.epsilon range or simplex
     becomes so small that it can enclosed in a box with termcrit.epsilon sides, whatever comes
     first.
-    @param termcrit Terminal criteria to be used, represented as cv::TermCriteria structure.
+    @param termcrit Terminal criteria to be used, represented as ncvslideio::TermCriteria structure.
      */
     virtual void setTermCriteria(const TermCriteria& termcrit) = 0;
 
@@ -143,7 +143,7 @@ small that it can enclosed in a box with termcrit.epsilon sides, whatever comes 
 defined by user positive integer termcrit.maxCount and positive non-integer termcrit.epsilon.
 
 @note DownhillSolver is a derivative of the abstract interface
-cv::MinProblemSolver, which in turn is derived from the Algorithm interface and is used to
+ncvslideio::MinProblemSolver, which in turn is derived from the Algorithm interface and is used to
 encapsulate the functionality, common to all non-linear optimization algorithms in the optim
 module.
 
@@ -253,7 +253,7 @@ public:
                                       TermCriteria termcrit=TermCriteria(TermCriteria::MAX_ITER+TermCriteria::EPS,5000,0.000001));
 };
 
-//! return codes for cv::solveLP() function
+//! return codes for ncvslideio::solveLP() function
 enum SolveLPResult
 {
     SOLVELP_LOST   = -3, //!< problem is feasible, but solver lost solution due to floating-point arithmetic errors
@@ -293,7 +293,7 @@ and the remaining to \f$A\f$. It should contain 32- or 64-bit floating point num
 @param z The solution will be returned here as a column-vector - it corresponds to \f$c\f$ in the
 formulation above. It will contain 64-bit floating point numbers.
 @param constr_eps allowed numeric disparity for constraints
-@return One of cv::SolveLPResult
+@return One of ncvslideio::SolveLPResult
  */
 CV_EXPORTS_W int solveLP(InputArray Func, InputArray Constr, OutputArray z, double constr_eps);
 

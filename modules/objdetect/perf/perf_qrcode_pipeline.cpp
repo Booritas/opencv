@@ -15,7 +15,7 @@ typedef ::perf::TestBaseWithParam< std::string > Perf_Objdetect_QRCode;
 PERF_TEST_P_(Perf_Objdetect_QRCode, detect)
 {
     const std::string name_current_image = GetParam();
-    const std::string root = "cv/qrcode/";
+    const std::string root = "ncvslideio/qrcode/";
 
     std::string image_path = findDataFile(root + name_current_image);
     Mat src = imread(image_path, IMREAD_GRAYSCALE), straight_barcode;
@@ -32,7 +32,7 @@ PERF_TEST_P_(Perf_Objdetect_QRCode, detect)
 PERF_TEST_P_(Perf_Objdetect_QRCode, decode)
 {
     const std::string name_current_image = GetParam();
-    const std::string root = "cv/qrcode/";
+    const std::string root = "ncvslideio/qrcode/";
 
     std::string image_path = findDataFile(root + name_current_image);
     Mat src = imread(image_path, IMREAD_GRAYSCALE), straight_barcode;
@@ -60,7 +60,7 @@ PERF_TEST_P_(Perf_Objdetect_QRCode_Multi, detectMulti)
 {
     const std::string name_current_image = get<0>(GetParam());
     const std::string method = get<1>(GetParam());
-    const std::string root = "cv/qrcode/multiple/";
+    const std::string root = "ncvslideio/qrcode/multiple/";
 
     std::string image_path = findDataFile(root + name_current_image);
     Mat src = imread(image_path);
@@ -80,7 +80,7 @@ PERF_TEST_P_(Perf_Objdetect_QRCode_Multi, decodeMulti)
 {
     const std::string name_current_image = get<0>(GetParam());
     std::string method = get<1>(GetParam());
-    const std::string root = "cv/qrcode/multiple/";
+    const std::string root = "ncvslideio/qrcode/multiple/";
     std::string image_path = findDataFile(root + name_current_image);
     Mat src = imread(image_path);
     ASSERT_FALSE(src.empty()) << "Can't read image: " << image_path;
@@ -94,7 +94,7 @@ PERF_TEST_P_(Perf_Objdetect_QRCode_Multi, decodeMulti)
     std::vector<Point2f> corners;
     ASSERT_TRUE(qrcode.detectMulti(src, corners));
     std::vector<Mat> straight_barcode;
-    std::vector< cv::String > decoded_info;
+    std::vector< ncvslideio::String > decoded_info;
     TEST_CYCLE()
     {
         ASSERT_TRUE(qrcode.decodeMulti(src, corners, decoded_info, straight_barcode));

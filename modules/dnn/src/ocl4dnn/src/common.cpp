@@ -44,11 +44,11 @@
 #include "../include/common.hpp"
 #include "opencl_kernels_dnn.hpp"
 
-using namespace cv;
+using namespace ncvslideio;
 
-bool clOptionSupport(cv::String option)
+bool clOptionSupport(ncvslideio::String option)
 {
-    cv::String errmsg;
+    ncvslideio::String errmsg;
     ocl::Program program = ocl::Context::getDefault().getProg(ocl::dnn::dummy_oclsrc, option, errmsg);
     return program.ptr() ? true : false;
 }

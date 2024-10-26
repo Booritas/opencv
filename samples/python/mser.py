@@ -30,21 +30,21 @@ def main():
         video_src = 0
 
     cam = video.create_capture(video_src)
-    mser = cv.MSER_create()
+    mser = ncvslideio.MSER_create()
 
     while True:
         ret, img = cam.read()
         if ret == 0:
             break
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        gray = ncvslideio.cvtColor(img, ncvslideio.COLOR_BGR2GRAY)
         vis = img.copy()
 
         regions, _ = mser.detectRegions(gray)
-        hulls = [cv.convexHull(p.reshape(-1, 1, 2)) for p in regions]
-        cv.polylines(vis, hulls, 1, (0, 255, 0))
+        hulls = [ncvslideio.convexHull(p.reshape(-1, 1, 2)) for p in regions]
+        ncvslideio.polylines(vis, hulls, 1, (0, 255, 0))
 
-        cv.imshow('img', vis)
-        if cv.waitKey(5) == 27:
+        ncvslideio.imshow('img', vis)
+        if ncvslideio.waitKey(5) == 27:
             break
 
     print('Done')
@@ -53,4 +53,4 @@ def main():
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    ncvslideio.destroyAllWindows()

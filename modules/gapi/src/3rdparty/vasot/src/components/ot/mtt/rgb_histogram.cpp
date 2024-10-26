@@ -17,20 +17,20 @@ RgbHistogram::RgbHistogram(int32_t rgb_bin_size)
 RgbHistogram::~RgbHistogram(void) {
 }
 
-void RgbHistogram::Compute(const cv::Mat &image, cv::Mat *hist) {
+void RgbHistogram::Compute(const ncvslideio::Mat &image, ncvslideio::Mat *hist) {
     // Init output buffer
     hist->create(1, rgb_hist_size_, CV_32FC1);
-    (*hist) = cv::Scalar(0);
+    (*hist) = ncvslideio::Scalar(0);
     float *hist_data = hist->ptr<float>();
 
     // Compute quantized RGB histogram
     AccumulateRgbHistogram(image, hist_data);
 }
 
-void RgbHistogram::ComputeFromBgra32(const cv::Mat &image, cv::Mat *hist) {
+void RgbHistogram::ComputeFromBgra32(const ncvslideio::Mat &image, ncvslideio::Mat *hist) {
     // Init output buffer
     hist->create(1, rgb_hist_size_, CV_32FC1);
-    (*hist) = cv::Scalar(0);
+    (*hist) = ncvslideio::Scalar(0);
     float *hist_data = hist->ptr<float>();
 
     // Compute quantized RGB histogram
@@ -41,7 +41,7 @@ int32_t RgbHistogram::FeatureSize(void) const {
     return rgb_hist_size_;
 }
 
-float RgbHistogram::ComputeSimilarity(const cv::Mat &hist1, const cv::Mat &hist2) {
+float RgbHistogram::ComputeSimilarity(const ncvslideio::Mat &hist1, const ncvslideio::Mat &hist2) {
     // PROF_START(PROF_COMPONENTS_OT_SHORTTERM_HIST_SIMILARITY);
     // Bhattacharyya coeff (w/o weights)
     const float eps = 0.0001f;
@@ -67,9 +67,9 @@ float RgbHistogram::ComputeSimilarity(const cv::Mat &hist1, const cv::Mat &hist2
     }
 }
 
-void RgbHistogram::AccumulateRgbHistogram(const cv::Mat &patch, float *rgb_hist) const {
+void RgbHistogram::AccumulateRgbHistogram(const ncvslideio::Mat &patch, float *rgb_hist) const {
     for (int32_t y = 0; y < patch.rows; ++y) {
-        const cv::Vec3b *patch_ptr = patch.ptr<cv::Vec3b>(y);
+        const ncvslideio::Vec3b *patch_ptr = patch.ptr<ncvslideio::Vec3b>(y);
         for (int32_t x = 0; x < patch.cols; ++x) {
             int32_t index0 = patch_ptr[x][0] / rgb_bin_size_;
             int32_t index1 = patch_ptr[x][1] / rgb_bin_size_;
@@ -80,9 +80,9 @@ void RgbHistogram::AccumulateRgbHistogram(const cv::Mat &patch, float *rgb_hist)
     }
 }
 
-void RgbHistogram::AccumulateRgbHistogram(const cv::Mat &patch, const cv::Mat &weight, float *rgb_hist) const {
+void RgbHistogram::AccumulateRgbHistogram(const ncvslideio::Mat &patch, const ncvslideio::Mat &weight, float *rgb_hist) const {
     for (int32_t y = 0; y < patch.rows; ++y) {
-        const cv::Vec3b *patch_ptr = patch.ptr<cv::Vec3b>(y);
+        const ncvslideio::Vec3b *patch_ptr = patch.ptr<ncvslideio::Vec3b>(y);
         const float *weight_ptr = weight.ptr<float>(y);
         for (int32_t x = 0; x < patch.cols; ++x) {
             int32_t index0 = patch_ptr[x][0] / rgb_bin_size_;
@@ -94,9 +94,9 @@ void RgbHistogram::AccumulateRgbHistogram(const cv::Mat &patch, const cv::Mat &w
     }
 }
 
-void RgbHistogram::AccumulateRgbHistogramFromBgra32(const cv::Mat &patch, float *rgb_hist) const {
+void RgbHistogram::AccumulateRgbHistogramFromBgra32(const ncvslideio::Mat &patch, float *rgb_hist) const {
     for (int32_t y = 0; y < patch.rows; ++y) {
-        const cv::Vec4b *patch_ptr = patch.ptr<cv::Vec4b>(y);
+        const ncvslideio::Vec4b *patch_ptr = patch.ptr<ncvslideio::Vec4b>(y);
         for (int32_t x = 0; x < patch.cols; ++x) {
             int32_t index0 = patch_ptr[x][0] / rgb_bin_size_;
             int32_t index1 = patch_ptr[x][1] / rgb_bin_size_;
@@ -107,10 +107,10 @@ void RgbHistogram::AccumulateRgbHistogramFromBgra32(const cv::Mat &patch, float 
     }
 }
 
-void RgbHistogram::AccumulateRgbHistogramFromBgra32(const cv::Mat &patch, const cv::Mat &weight,
+void RgbHistogram::AccumulateRgbHistogramFromBgra32(const ncvslideio::Mat &patch, const ncvslideio::Mat &weight,
                                                     float *rgb_hist) const {
     for (int32_t y = 0; y < patch.rows; ++y) {
-        const cv::Vec4b *patch_ptr = patch.ptr<cv::Vec4b>(y);
+        const ncvslideio::Vec4b *patch_ptr = patch.ptr<ncvslideio::Vec4b>(y);
         const float *weight_ptr = weight.ptr<float>(y);
         for (int32_t x = 0; x < patch.cols; ++x) {
             int32_t index0 = patch_ptr[x][0] / rgb_bin_size_;

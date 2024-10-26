@@ -61,11 +61,11 @@
 
 #ifdef HAVE_CUDA
 #include "../cuda4dnn/primitives/activation.hpp"
-using namespace cv::dnn::cuda4dnn;
+using namespace ncvslideio::dnn::cuda4dnn;
 #endif
 #include <opencv2/core/utils/logger.hpp>
 
-namespace cv
+namespace ncvslideio
 {
 namespace dnn
 {
@@ -98,7 +98,7 @@ template<typename Func>
 class ElementWiseLayer : public Func::Layer
 {
 public:
-    class PBody : public cv::ParallelLoopBody
+    class PBody : public ncvslideio::ParallelLoopBody
     {
     public:
         const Func* func_;
@@ -656,12 +656,12 @@ struct ReLU6Functor : public BaseFunctor
 
         Mat min_value_mat(1, 1, CV_32F, Scalar(minValue));
         std::vector<int> shape_{1};
-        auto op_const_minv = std::make_shared<CannConstOp>(min_value_mat.data, min_value_mat.type(), shape_, cv::format("%s_min_value", name.c_str()));
+        auto op_const_minv = std::make_shared<CannConstOp>(min_value_mat.data, min_value_mat.type(), shape_, ncvslideio::format("%s_min_value", name.c_str()));
         op->set_input_clip_value_min(*(op_const_minv->getOp()));
         op->update_input_desc_clip_value_min(*(op_const_minv->getTensorDesc()));
 
         Mat max_value_mat(1, 1, CV_32F, Scalar(maxValue));
-        auto op_const_maxv = std::make_shared<CannConstOp>(max_value_mat.data, max_value_mat.type(), shape_, cv::format("%s_max_value", name.c_str()));
+        auto op_const_maxv = std::make_shared<CannConstOp>(max_value_mat.data, max_value_mat.type(), shape_, ncvslideio::format("%s_max_value", name.c_str()));
         op->set_input_clip_value_max(*(op_const_maxv->getOp()));
         op->update_input_desc_clip_value_max(*(op_const_maxv->getTensorDesc()));
 
@@ -2899,7 +2899,7 @@ struct ChannelsPReLUFunctor : public BaseFunctor
         op->update_input_desc_x(*x_desc);
 
         std::vector<int> shape_{scale.size[0]}; // scale should be a 1d of shape [n] tensor, and it is a 2d mat of shape [n, 1] in opencv
-        auto op_const_slope = std::make_shared<CannConstOp>(scale.data, scale.type(), shape_, cv::format("%s_weight", name.c_str()));
+        auto op_const_slope = std::make_shared<CannConstOp>(scale.data, scale.type(), shape_, ncvslideio::format("%s_weight", name.c_str()));
         op->set_input_weight(*(op_const_slope->getOp()));
         op->update_input_desc_weight(*(op_const_slope->getTensorDesc()));
 

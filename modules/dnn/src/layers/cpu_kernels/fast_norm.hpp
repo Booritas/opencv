@@ -7,7 +7,7 @@
 
 #include <opencv2/dnn/shape_utils.hpp>
 
-namespace cv { namespace dnn {
+namespace ncvslideio { namespace dnn {
 
 // Normalization speedup by multi-threading, mainly for Caffe MVN layer which has normalize_variance parameter.
 void fastNorm(const Mat &input, Mat &output, float epsilon, size_t normalized_axis = 0, bool normalize_variance = true);
@@ -24,6 +24,6 @@ void fastNormChannel(const Mat &input, const Mat &scale, const Mat &bias, Mat &o
 // Group-wise Normalization speedup by multi-threading. Scale and bias should have the same shape (C). Input should have dimension >= 3.
 void fastNormGroup(const Mat &input, const Mat &scale, const Mat &bias, Mat &output, float epsilon, size_t num_groups);
 
-}} // cv::dnn
+}} // ncvslideio::dnn
 
 #endif // OPENCV_DNN_FAST_NORM_HPP

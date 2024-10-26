@@ -107,7 +107,7 @@ void _stackblurRef(const Mat& src, Mat& dst, Size ksize)
 
             for(int ci = 0; ci < CN; ci++)
             {
-                *(dstPtr + ci) = cv::saturate_cast<T>(sum[ci] * mulW);
+                *(dstPtr + ci) = ncvslideio::saturate_cast<T>(sum[ci] * mulW);
                 sum[ci] -= sumOut[ci];
                 sumOut[ci] -= stack[stackStart*CN + ci];
             }

@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='This sample demonstrates the camsh
 parser.add_argument('image', type=str, help='path to image file')
 args = parser.parse_args()
 
-cap = cv.VideoCapture(args.image)
+cap = ncvslideio.VideoCapture(args.image)
 
 # take first frame of the video
 ret,frame = cap.read()
@@ -19,31 +19,31 @@ track_window = (x, y, w, h)
 
 # set up the ROI for tracking
 roi = frame[y:y+h, x:x+w]
-hsv_roi =  cv.cvtColor(roi, cv.COLOR_BGR2HSV)
-mask = cv.inRange(hsv_roi, np.array((0., 60.,32.)), np.array((180.,255.,255.)))
-roi_hist = cv.calcHist([hsv_roi],[0],mask,[180],[0,180])
-cv.normalize(roi_hist,roi_hist,0,255,cv.NORM_MINMAX)
+hsv_roi =  ncvslideio.cvtColor(roi, ncvslideio.COLOR_BGR2HSV)
+mask = ncvslideio.inRange(hsv_roi, np.array((0., 60.,32.)), np.array((180.,255.,255.)))
+roi_hist = ncvslideio.calcHist([hsv_roi],[0],mask,[180],[0,180])
+cv.normalize(roi_hist,roi_hist,0,255,ncvslideio.NORM_MINMAX)
 
 # Setup the termination criteria, either 10 iteration or move by at least 1 pt
-term_crit = ( cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1 )
+term_crit = ( ncvslideio.TERM_CRITERIA_EPS | ncvslideio.TERM_CRITERIA_COUNT, 10, 1 )
 
 while(1):
     ret, frame = cap.read()
 
     if ret == True:
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        dst = cv.calcBackProject([hsv],[0],roi_hist,[0,180],1)
+        hsv = ncvslideio.cvtColor(frame, ncvslideio.COLOR_BGR2HSV)
+        dst = ncvslideio.calcBackProject([hsv],[0],roi_hist,[0,180],1)
 
         # apply camshift to get the new location
-        ret, track_window = cv.CamShift(dst, track_window, term_crit)
+        ret, track_window = ncvslideio.CamShift(dst, track_window, term_crit)
 
         # Draw it on image
-        pts = cv.boxPoints(ret)
+        pts = ncvslideio.boxPoints(ret)
         pts = np.int0(pts)
-        img2 = cv.polylines(frame,[pts],True, 255,2)
-        cv.imshow('img2',img2)
+        img2 = ncvslideio.polylines(frame,[pts],True, 255,2)
+        ncvslideio.imshow('img2',img2)
 
-        k = cv.waitKey(30) & 0xff
+        k = ncvslideio.waitKey(30) & 0xff
         if k == 27:
             break
     else:

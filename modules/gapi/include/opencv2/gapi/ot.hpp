@@ -11,7 +11,7 @@
 #include <opencv2/gapi/s11n.hpp>
 #include <opencv2/gapi/gkernel.hpp>
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 /**
  * @brief This namespace contains G-API Operation Types for
@@ -70,25 +70,25 @@ struct GAPI_EXPORTS_W_SIMPLE ObjectTrackerParams
     }
 };
 
-using GTrackedInfo = std::tuple<cv::GArray<cv::Rect>, cv::GArray<int32_t>, cv::GArray<uint64_t>, cv::GArray<int>>;
+using GTrackedInfo = std::tuple<ncvslideio::GArray<ncvslideio::Rect>, ncvslideio::GArray<int32_t>, ncvslideio::GArray<uint64_t>, ncvslideio::GArray<int>>;
 
-G_API_OP(GTrackFromMat, <GTrackedInfo(cv::GMat, cv::GArray<cv::Rect>, cv::GArray<int32_t>, float)>, "com.intel.track_from_mat")
+G_API_OP(GTrackFromMat, <GTrackedInfo(ncvslideio::GMat, ncvslideio::GArray<ncvslideio::Rect>, ncvslideio::GArray<int32_t>, float)>, "com.intel.track_from_mat")
 {
-    static std::tuple<cv::GArrayDesc, cv::GArrayDesc,
-                      cv::GArrayDesc, cv::GArrayDesc> outMeta(cv::GMatDesc, cv::GArrayDesc, cv::GArrayDesc, float)
+    static std::tuple<ncvslideio::GArrayDesc, ncvslideio::GArrayDesc,
+                      ncvslideio::GArrayDesc, ncvslideio::GArrayDesc> outMeta(ncvslideio::GMatDesc, ncvslideio::GArrayDesc, ncvslideio::GArrayDesc, float)
     {
-        return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc(),
-                               cv::empty_array_desc(), cv::empty_array_desc());
+        return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc(),
+                               ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
-G_API_OP(GTrackFromFrame, <GTrackedInfo(cv::GFrame, cv::GArray<cv::Rect>, cv::GArray<int32_t>, float)>, "com.intel.track_from_frame")
+G_API_OP(GTrackFromFrame, <GTrackedInfo(ncvslideio::GFrame, ncvslideio::GArray<ncvslideio::Rect>, ncvslideio::GArray<int32_t>, float)>, "com.intel.track_from_frame")
 {
-    static std::tuple<cv::GArrayDesc, cv::GArrayDesc,
-                      cv::GArrayDesc, cv::GArrayDesc> outMeta(cv::GFrameDesc, cv::GArrayDesc, cv::GArrayDesc, float)
+    static std::tuple<ncvslideio::GArrayDesc, ncvslideio::GArrayDesc,
+                      ncvslideio::GArrayDesc, ncvslideio::GArrayDesc> outMeta(ncvslideio::GFrameDesc, ncvslideio::GArrayDesc, ncvslideio::GArrayDesc, float)
     {
-       return std::make_tuple(cv::empty_array_desc(), cv::empty_array_desc(),
-                              cv::empty_array_desc(), cv::empty_array_desc());
+       return std::make_tuple(ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc(),
+                              ncvslideio::empty_array_desc(), ncvslideio::empty_array_desc());
     }
 };
 
@@ -107,21 +107,21 @@ G_API_OP(GTrackFromFrame, <GTrackedInfo(cv::GFrame, cv::GArray<cv::Rect>, cv::GA
  * @param delta                     Frame_delta_t Delta time between two consecutive tracking in seconds.
  *                                  The valid range is [0.005 ~ 0.5].
  * @return                          Tracking results of target objects.
- *                                  cv::GArray<cv::Rect>  Array of rectangles for tracked objects.
- *                                  cv::GArray<int32_t>   Array of detected objects labels.
- *                                  cv::GArray<uint64_t>  Array of tracking IDs for objects.
+ *                                  ncvslideio::GArray<ncvslideio::Rect>  Array of rectangles for tracked objects.
+ *                                  ncvslideio::GArray<int32_t>   Array of detected objects labels.
+ *                                  ncvslideio::GArray<uint64_t>  Array of tracking IDs for objects.
  *                                                        Numbering sequence starts from 1.
  *                                                        The value 0 means the tracking ID of this object has
  *                                                        not been assigned.
- *                                  cv::GArray<int>       Array of tracking statuses for objects.
+ *                                  ncvslideio::GArray<int>       Array of tracking statuses for objects.
  */
-GAPI_EXPORTS_W std::tuple<cv::GArray<cv::Rect>,
-                          cv::GArray<int>,
-                          cv::GArray<uint64_t>,
-                          cv::GArray<int>>
-    track(const cv::GMat& mat,
-          const cv::GArray<cv::Rect>& detected_rects,
-          const cv::GArray<int>& detected_class_labels,
+GAPI_EXPORTS_W std::tuple<ncvslideio::GArray<ncvslideio::Rect>,
+                          ncvslideio::GArray<int>,
+                          ncvslideio::GArray<uint64_t>,
+                          ncvslideio::GArray<int>>
+    track(const ncvslideio::GMat& mat,
+          const ncvslideio::GArray<ncvslideio::Rect>& detected_rects,
+          const ncvslideio::GArray<int>& detected_class_labels,
           float delta);
 
 
@@ -136,36 +136,36 @@ GAPI_EXPORTS_W std::tuple<cv::GArray<cv::Rect>,
  *                                  The valid range is [0.005 ~ 0.5].
  * @return                          Tracking results of target objects.
  * @return                          Tracking results of target objects.
- *                                  cv::GArray<cv::Rect>          Array of rectangles for tracked objects.
- *                                  cv::GArray<int32_t>           Array of detected objects labels.
- *                                  cv::GArray<uint64_t>          Array of tracking IDs for objects.
+ *                                  ncvslideio::GArray<ncvslideio::Rect>          Array of rectangles for tracked objects.
+ *                                  ncvslideio::GArray<int32_t>           Array of detected objects labels.
+ *                                  ncvslideio::GArray<uint64_t>          Array of tracking IDs for objects.
  *                                                                Numbering sequence starts from 1.
  *                                                                The value 0 means the tracking ID of this object has
  *                                                                not been assigned.
- *                                  cv::GArray<int>    Array of tracking statuses for objects.
+ *                                  ncvslideio::GArray<int>    Array of tracking statuses for objects.
  */
-GAPI_EXPORTS_W std::tuple<cv::GArray<cv::Rect>,
-                         cv::GArray<int>,
-                         cv::GArray<uint64_t>,
-                         cv::GArray<int>>
-    track(const cv::GFrame& frame,
-          const cv::GArray<cv::Rect>& detected_rects,
-          const cv::GArray<int>& detected_class_labels,
+GAPI_EXPORTS_W std::tuple<ncvslideio::GArray<ncvslideio::Rect>,
+                         ncvslideio::GArray<int>,
+                         ncvslideio::GArray<uint64_t>,
+                         ncvslideio::GArray<int>>
+    track(const ncvslideio::GFrame& frame,
+          const ncvslideio::GArray<ncvslideio::Rect>& detected_rects,
+          const ncvslideio::GArray<int>& detected_class_labels,
           float delta);
 } // namespace ot
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 // FIXME: move to a separate file?
-namespace cv
+namespace ncvslideio
 {
 namespace detail
 {
-template<> struct CompileArgTag<cv::gapi::ot::ObjectTrackerParams>
+template<> struct CompileArgTag<ncvslideio::gapi::ot::ObjectTrackerParams>
 {
     static const char* tag()
     {
-        return "cv.gapi.ot.object_tracker_params";
+        return "ncvslideio.gapi.ot.object_tracker_params";
     }
 };
 } // namespace detail
@@ -176,12 +176,12 @@ namespace s11n
 {
 namespace detail
 {
-template<> struct S11N<cv::gapi::ot::ObjectTrackerParams> {
-    static void serialize(IOStream &os, const cv::gapi::ot::ObjectTrackerParams &p) {
+template<> struct S11N<ncvslideio::gapi::ot::ObjectTrackerParams> {
+    static void serialize(IOStream &os, const ncvslideio::gapi::ot::ObjectTrackerParams &p) {
         os << p. max_num_objects << p.input_image_format << p.tracking_per_class;
     }
-    static cv::gapi::ot::ObjectTrackerParams deserialize(IIStream &is) {
-        cv::gapi::ot::ObjectTrackerParams p;
+    static ncvslideio::gapi::ot::ObjectTrackerParams deserialize(IIStream &is) {
+        ncvslideio::gapi::ot::ObjectTrackerParams p;
         is >> p. max_num_objects >> p.input_image_format >> p.tracking_per_class;
         return p;
     }
@@ -189,6 +189,6 @@ template<> struct S11N<cv::gapi::ot::ObjectTrackerParams> {
 } // namespace detail
 } // namespace s11n
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // OPENCV_GAPI_OT_HPP

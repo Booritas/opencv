@@ -13,7 +13,7 @@
 // Includes
 #include "AKAZEConfig.h"
 
-namespace cv
+namespace ncvslideio
 {
 
 /// A-KAZE nonlinear diffusion filtering evolution
@@ -84,9 +84,9 @@ private:
   std::vector<int> nsteps_;      ///< Vector of number of steps per cycle
 
   /// Matrices for the M-LDB descriptor computation
-  cv::Mat descriptorSamples_;  // List of positions in the grids to sample LDB bits from.
-  cv::Mat descriptorBits_;
-  cv::Mat bitMask_;
+  ncvslideio::Mat descriptorSamples_;  // List of positions in the grids to sample LDB bits from.
+  ncvslideio::Mat descriptorBits_;
+  ncvslideio::Mat bitMask_;
 
   /// Scale Space methods
   void Allocate_Memory_Evolution();
@@ -95,19 +95,19 @@ private:
     std::vector<KeyPoint>& kpts);
 
   /// Feature description methods
-  void Compute_Keypoints_Orientation(std::vector<cv::KeyPoint>& kpts) const;
+  void Compute_Keypoints_Orientation(std::vector<ncvslideio::KeyPoint>& kpts) const;
 
 public:
   /// Constructor with input arguments
   AKAZEFeatures(const AKAZEOptions& options);
   void Create_Nonlinear_Scale_Space(InputArray img);
-  void Feature_Detection(std::vector<cv::KeyPoint>& kpts);
-  void Compute_Descriptors(std::vector<cv::KeyPoint>& kpts, OutputArray desc);
+  void Feature_Detection(std::vector<ncvslideio::KeyPoint>& kpts);
+  void Compute_Descriptors(std::vector<ncvslideio::KeyPoint>& kpts, OutputArray desc);
 };
 
 /* ************************************************************************* */
 /// Inline functions
-void generateDescriptorSubsample(cv::Mat& sampleList, cv::Mat& comparisons,
+void generateDescriptorSubsample(ncvslideio::Mat& sampleList, ncvslideio::Mat& comparisons,
                                  int nbits, int pattern_size, int nchannels);
 
 }

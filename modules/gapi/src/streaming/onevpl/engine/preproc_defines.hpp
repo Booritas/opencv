@@ -13,26 +13,26 @@
 #endif // HAVE_ONEVPL
 
 
-namespace cv {
+namespace ncvslideio {
 namespace gapi {
 namespace wip {
 
 #ifdef VPP_PREPROC_ENGINE
-#define GAPI_BACKEND_PP_PARAMS          cv::gapi::wip::onevpl::vpp_pp_params
-#define GAPI_BACKEND_PP_SESSIONS        cv::gapi::wip::onevpl::vpp_pp_session
+#define GAPI_BACKEND_PP_PARAMS          ncvslideio::gapi::wip::onevpl::vpp_pp_params
+#define GAPI_BACKEND_PP_SESSIONS        ncvslideio::gapi::wip::onevpl::vpp_pp_session
 #else // VPP_PREPROC_ENGINE
 struct empty_pp_params {};
 struct empty_pp_session {};
-#define GAPI_BACKEND_PP_PARAMS          cv::gapi::wip::empty_pp_params
-#define GAPI_BACKEND_PP_SESSIONS        cv::gapi::wip::empty_pp_session
+#define GAPI_BACKEND_PP_PARAMS          ncvslideio::gapi::wip::empty_pp_params
+#define GAPI_BACKEND_PP_SESSIONS        ncvslideio::gapi::wip::empty_pp_session
 #endif // VPP_PREPROC_ENGINE
 
 struct pp_params {
-    using value_type = cv::util::variant<GAPI_BACKEND_PP_PARAMS>;
+    using value_type = ncvslideio::util::variant<GAPI_BACKEND_PP_PARAMS>;
 
     template<typename BackendSpecificParamType, typename ...Args>
     static pp_params create(Args&& ...args) {
-        static_assert(cv::detail::contains<BackendSpecificParamType, GAPI_BACKEND_PP_PARAMS>::value,
+        static_assert(ncvslideio::detail::contains<BackendSpecificParamType, GAPI_BACKEND_PP_PARAMS>::value,
                       "Invalid BackendSpecificParamType requested");
         pp_params ret;
         ret.value = BackendSpecificParamType{std::forward<Args>(args)...};
@@ -41,9 +41,9 @@ struct pp_params {
 
     template<typename BackendSpecificParamType>
     BackendSpecificParamType& get() {
-        static_assert(cv::detail::contains<BackendSpecificParamType, GAPI_BACKEND_PP_PARAMS>::value,
+        static_assert(ncvslideio::detail::contains<BackendSpecificParamType, GAPI_BACKEND_PP_PARAMS>::value,
                       "Invalid BackendSpecificParamType requested");
-        return cv::util::get<BackendSpecificParamType>(value);
+        return ncvslideio::util::get<BackendSpecificParamType>(value);
     }
 
     template<typename BackendSpecificParamType>
@@ -55,11 +55,11 @@ private:
 };
 
 struct pp_session {
-    using value_type = cv::util::variant<GAPI_BACKEND_PP_SESSIONS>;
+    using value_type = ncvslideio::util::variant<GAPI_BACKEND_PP_SESSIONS>;
 
     template<typename BackendSpecificSesionType, typename ...Args>
     static pp_session create(Args&& ...args) {
-        static_assert(cv::detail::contains<BackendSpecificSesionType,
+        static_assert(ncvslideio::detail::contains<BackendSpecificSesionType,
                                            GAPI_BACKEND_PP_SESSIONS>::value,
                       "Invalid BackendSpecificSesionType requested");
         pp_session ret;
@@ -69,9 +69,9 @@ struct pp_session {
 
     template<typename BackendSpecificSesionType>
     BackendSpecificSesionType &get() {
-        static_assert(cv::detail::contains<BackendSpecificSesionType, GAPI_BACKEND_PP_SESSIONS>::value,
+        static_assert(ncvslideio::detail::contains<BackendSpecificSesionType, GAPI_BACKEND_PP_SESSIONS>::value,
                       "Invalid BackendSpecificSesionType requested");
-        return cv::util::get<BackendSpecificSesionType>(value);
+        return ncvslideio::util::get<BackendSpecificSesionType>(value);
     }
 
     template<typename BackendSpecificSesionType>
@@ -83,6 +83,6 @@ private:
 };
 } // namespace wip
 } // namespace gapi
-} // namespace cv
+} // namespace ncvslideio
 
 #endif // GAPI_STREAMING_ONEVPL_ENGINE_PREPROC_DEFINES_HPP

@@ -88,7 +88,7 @@ extern "C" {
   #undef CV_MANUAL_JPEG_STD_HUFF_TABLES
 #endif
 
-namespace cv
+namespace ncvslideio
 {
 
 struct JpegErrorMgr
@@ -694,7 +694,7 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
 #endif
                 break;
             default:
-                CV_Error(cv::Error::StsError, cv::format("Unsupported number of _channels: %06d", _channels) );
+                CV_Error(ncvslideio::Error::StsError, ncvslideio::format("Unsupported number of _channels: %06d", _channels) );
                 break;
         }
 
@@ -768,7 +768,7 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
                     break;
 
                     default:
-                    CV_LOG_WARNING(NULL, cv::format("Unknown value for IMWRITE_JPEG_SAMPLING_FACTOR: 0x%06x", sampling_factor ) );
+                    CV_LOG_WARNING(NULL, ncvslideio::format("Unknown value for IMWRITE_JPEG_SAMPLING_FACTOR: 0x%06x", sampling_factor ) );
                     sampling_factor = 0;
                     break;
                 }
@@ -809,7 +809,7 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
             jpeg_default_qtables( &cinfo, TRUE );
 #else
             // See https://github.com/opencv/opencv/issues/25646
-            CV_LOG_ONCE_WARNING(NULL, cv::format("IMWRITE_JPEG_LUMA/CHROMA_QUALITY are not supported bacause JPEG_LIB_VERSION < 70."));
+            CV_LOG_ONCE_WARNING(NULL, ncvslideio::format("IMWRITE_JPEG_LUMA/CHROMA_QUALITY are not supported bacause JPEG_LIB_VERSION < 70."));
 #endif // #if JPEG_LIB_VERSION >= 70
         }
 

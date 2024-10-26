@@ -11,8 +11,8 @@
 
 namespace
 {
-#define CORE_CPU [] () { return cv::compile_args(cv::gapi::use_only{cv::gapi::core::cpu::kernels()}); }
-    const std::vector <cv::Size> in_sizes{ cv::Size(1280, 720), cv::Size(128, 128) };
+#define CORE_CPU [] () { return ncvslideio::compile_args(ncvslideio::gapi::use_only{ncvslideio::gapi::core::cpu::kernels()}); }
+    const std::vector <ncvslideio::Size> in_sizes{ ncvslideio::Size(1280, 720), ncvslideio::Size(128, 128) };
 }  // anonymous namespace
 
 namespace opencv_test

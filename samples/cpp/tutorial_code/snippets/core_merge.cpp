@@ -1,6 +1,6 @@
 /**
  * @file core_merge.cpp
- * @brief It demonstrates the usage of cv::merge.
+ * @brief It demonstrates the usage of ncvslideio::merge.
  *
  * It shows how to merge 3 single channel matrices into a 3-channel matrix.
  *
@@ -12,7 +12,7 @@
 #include <opencv2/core.hpp>
 
 using namespace std;
-using namespace cv;
+using namespace ncvslideio;
 
 int main()
 {
