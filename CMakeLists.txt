@@ -8,6 +8,7 @@ set(BUILD_OBJC OFF)
 set(BUILD_opencv_python2 OFF)
 set(BUILD_opencv_python3 OFF)
 set(BUILD_SHARED_LIBS OFF)
+set(BUILD_WITH_STATIC_CRT OFF)
 # ----------------------------------------------------------------------------
 #  Root CMake file for OpenCV
 #
