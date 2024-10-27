@@ -2191,7 +2191,7 @@ static void showSaveDialog(CvWindow& window)
     }
 #else
     CV_UNUSED(window);
-    CV_LOG_WARNING("Save dialog requires enabled 'imgcodecs' module.");
+    //CV_LOG_WARNING("Save dialog requires enabled 'imgcodecs' module.");
     return;
 #endif
 }

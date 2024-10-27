@@ -9,6 +9,8 @@ set(BUILD_opencv_python2 OFF)
 set(BUILD_opencv_python3 OFF)
 set(BUILD_SHARED_LIBS OFF)
 set(BUILD_WITH_STATIC_CRT OFF)
+set(WITH_JPEG OFF)
+set(WITH_OPENJPEG OFF)
 # ----------------------------------------------------------------------------
 #  Root CMake file for OpenCV
 #
@@ -203,7 +205,7 @@ ocv_cmake_hook(POST_DETECT_COMPILER)
 # ----------------------------------------------------------------------------
 # OpenCV cmake options
 # ----------------------------------------------------------------------------
-set(BUILD_LIST "core,imgcodecs,imgproc,highgui" CACHE STRING "Build only listed modules (comma-separated, e.g. 'videoio,dnn,ts')")
+set(BUILD_LIST "core,imgproc,highgui" CACHE STRING "Build only listed modules (comma-separated, e.g. 'videoio,dnn,ts')")
 OCV_OPTION(OPENCV_ENABLE_NONFREE "Enable non-free algorithms" OFF)
 
 # 3rd party libs
