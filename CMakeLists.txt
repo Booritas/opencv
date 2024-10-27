@@ -202,7 +202,7 @@ ocv_cmake_hook(POST_DETECT_COMPILER)
 # ----------------------------------------------------------------------------
 # OpenCV cmake options
 # ----------------------------------------------------------------------------
-set(BUILD_LIST "" CACHE STRING "Build only listed modules (comma-separated, e.g. 'videoio,dnn,ts')")
+set(BUILD_LIST "core,imgcodecs,imgproc,highgui" CACHE STRING "Build only listed modules (comma-separated, e.g. 'videoio,dnn,ts')")
 OCV_OPTION(OPENCV_ENABLE_NONFREE "Enable non-free algorithms" OFF)
 
 # 3rd party libs
