@@ -11,6 +11,8 @@ set(BUILD_SHARED_LIBS OFF)
 set(BUILD_WITH_STATIC_CRT OFF)
 set(WITH_JPEG OFF)
 set(WITH_OPENJPEG OFF)
+set(WITH_OPENCL OFF)
+set(WITH_LAPACK OFF)
 # ----------------------------------------------------------------------------
 #  Root CMake file for OpenCV
 #
