@@ -1734,66 +1734,66 @@ static GtkFileFilter* icvMakeGtkFilter(const char* name, const char* patterns, G
 
 static void icvShowSaveAsDialog(GtkWidget* widget, CvWindow* window)
 {
-    if (!window || !widget)
-        return;
+    // if (!window || !widget)
+    //     return;
 
-    CvImageWidget* image_widget = CV_IMAGE_WIDGET(window->widget);
-    if (!image_widget || !image_widget->original_image)
-        return;
+    // CvImageWidget* image_widget = CV_IMAGE_WIDGET(window->widget);
+    // if (!image_widget || !image_widget->original_image)
+    //     return;
 
-    GtkWidget* dialog = gtk_file_chooser_dialog_new("Save As...",
-                      GTK_WINDOW(widget),
-                      GTK_FILE_CHOOSER_ACTION_SAVE,
-                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-                      NULL);
-    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    // GtkWidget* dialog = gtk_file_chooser_dialog_new("Save As...",
+    //                   GTK_WINDOW(widget),
+    //                   GTK_FILE_CHOOSER_ACTION_SAVE,
+    //                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+    //                   GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+    //                   NULL);
+    // gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
 
-    ncvslideio::String sname = gtk_window_get_title(GTK_WINDOW(window->frame));
-    sname = sname.substr(sname.find_last_of("\\/") + 1) + ".png";
-    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sname.c_str());
+    // ncvslideio::String sname = gtk_window_get_title(GTK_WINDOW(window->frame));
+    // sname = sname.substr(sname.find_last_of("\\/") + 1) + ".png";
+    // gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sname.c_str());
 
-    GtkFileFilter* filter_all = gtk_file_filter_new();
-    gtk_file_filter_set_name(filter_all, "All Files");
-    gtk_file_filter_add_pattern(filter_all, "*");
+    // GtkFileFilter* filter_all = gtk_file_filter_new();
+    // gtk_file_filter_set_name(filter_all, "All Files");
+    // gtk_file_filter_add_pattern(filter_all, "*");
 
-    GtkFileFilter* filter_images = gtk_file_filter_new();
-    gtk_file_filter_set_name(filter_images, "All Images");
+    // GtkFileFilter* filter_images = gtk_file_filter_new();
+    // gtk_file_filter_set_name(filter_images, "All Images");
 
-    GtkFileFilter* file_filters[] = {
-        icvMakeGtkFilter("Portable Network Graphics files (*.png)",               "*.png\0",                             filter_images),
-        icvMakeGtkFilter("JPEG files (*.jpeg;*.jpg;*.jpe)",                       "*.jpeg\0*.jpg\0*.jpe\0",              filter_images),
-        icvMakeGtkFilter("Windows bitmap (*.bmp;*.dib)",                          "*.bmp\0*.dib\0",                      filter_images),
-        icvMakeGtkFilter("TIFF Files (*.tiff;*.tif)",                             "*.tiff\0*.tif\0",                     filter_images),
-        icvMakeGtkFilter("JPEG-2000 files (*.jp2)",                               "*.jp2\0",                             filter_images),
-        icvMakeGtkFilter("WebP files (*.webp)",                                   "*.webp\0",                            filter_images),
-        icvMakeGtkFilter("Portable image format (*.pbm;*.pgm;*.ppm;*.pxm;*.pnm)", "*.pbm\0*.pgm\0*.ppm\0*.pxm\0*.pnm\0", filter_images),
-        icvMakeGtkFilter("OpenEXR Image files (*.exr)",                           "*.exr\0",                             filter_images),
-        icvMakeGtkFilter("Radiance HDR (*.hdr;*.pic)",                            "*.hdr\0*.pic\0",                      filter_images),
-        icvMakeGtkFilter("Sun raster files (*.sr;*.ras)",                         "*.sr\0*.ras\0",                       filter_images),
-        filter_images,
-        filter_all
-    };
+    // GtkFileFilter* file_filters[] = {
+    //     icvMakeGtkFilter("Portable Network Graphics files (*.png)",               "*.png\0",                             filter_images),
+    //     icvMakeGtkFilter("JPEG files (*.jpeg;*.jpg;*.jpe)",                       "*.jpeg\0*.jpg\0*.jpe\0",              filter_images),
+    //     icvMakeGtkFilter("Windows bitmap (*.bmp;*.dib)",                          "*.bmp\0*.dib\0",                      filter_images),
+    //     icvMakeGtkFilter("TIFF Files (*.tiff;*.tif)",                             "*.tiff\0*.tif\0",                     filter_images),
+    //     icvMakeGtkFilter("JPEG-2000 files (*.jp2)",                               "*.jp2\0",                             filter_images),
+    //     icvMakeGtkFilter("WebP files (*.webp)",                                   "*.webp\0",                            filter_images),
+    //     icvMakeGtkFilter("Portable image format (*.pbm;*.pgm;*.ppm;*.pxm;*.pnm)", "*.pbm\0*.pgm\0*.ppm\0*.pxm\0*.pnm\0", filter_images),
+    //     icvMakeGtkFilter("OpenEXR Image files (*.exr)",                           "*.exr\0",                             filter_images),
+    //     icvMakeGtkFilter("Radiance HDR (*.hdr;*.pic)",                            "*.hdr\0*.pic\0",                      filter_images),
+    //     icvMakeGtkFilter("Sun raster files (*.sr;*.ras)",                         "*.sr\0*.ras\0",                       filter_images),
+    //     filter_images,
+    //     filter_all
+    // };
 
-    for (size_t idx = 0; idx < sizeof(file_filters)/sizeof(file_filters[0]); ++idx)
-        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), file_filters[idx]); // filter ownership is transferred to dialog
-    gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter_images);
+    // for (size_t idx = 0; idx < sizeof(file_filters)/sizeof(file_filters[0]); ++idx)
+    //     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), file_filters[idx]); // filter ownership is transferred to dialog
+    // gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter_images);
 
-    ncvslideio::String filename;
-    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
-    {
-        char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-        filename = fname;
-        g_free(fname);
-    }
-    gtk_widget_destroy(dialog);
+    // ncvslideio::String filename;
+    // if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
+    // {
+    //     char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+    //     filename = fname;
+    //     g_free(fname);
+    // }
+    // gtk_widget_destroy(dialog);
 
-    if (!filename.empty())
-    {
-        ncvslideio::Mat bgr;
-        ncvslideio::cvtColor(ncvslideio::cvarrToMat(image_widget->original_image), bgr, ncvslideio::COLOR_RGB2BGR);
-        ncvslideio::imwrite(filename, bgr);
-    }
+    // if (!filename.empty())
+    // {
+    //     ncvslideio::Mat bgr;
+    //     ncvslideio::cvtColor(ncvslideio::cvarrToMat(image_widget->original_image), bgr, ncvslideio::COLOR_RGB2BGR);
+    //     ncvslideio::imwrite(filename, bgr);
+    // }
 }
 
 #if defined(GTK_VERSION2) && !defined (GDK_KEY_Escape)
