@@ -1,4 +1,4 @@
-set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS ON)
 set(BUILD_opencv_js OFF)
 set(BUILD_opencv_apps OFF)
 set(BUILD_DOCS OFF)
@@ -7,12 +7,13 @@ set(BUILD_JAVA OFF)
 set(BUILD_OBJC OFF)
 set(BUILD_opencv_python2 OFF)
 set(BUILD_opencv_python3 OFF)
-set(BUILD_SHARED_LIBS OFF)
 set(BUILD_WITH_STATIC_CRT OFF)
 set(WITH_JPEG OFF)
 set(WITH_OPENJPEG OFF)
 set(WITH_OPENCL OFF)
 set(WITH_LAPACK OFF)
+set(CMAKE_INSTALL_RPATH $ORIGIN)
+
 # ----------------------------------------------------------------------------
 #  Root CMake file for OpenCV
 #
@@ -168,7 +169,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)  # https://cmake.org/cmake/help/
     if(WIN32)
       set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
     else()
-      set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory" FORCE)
+      set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
     endif()
   else()
     # any cross-compiling
